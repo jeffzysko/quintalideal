@@ -48,7 +48,7 @@ export function ExplorerProgress({ currentStep, onBack }: ExplorerProgressProps)
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.3 }}
-        className="mt-4 flex items-center gap-3"
+        className="mt-3 flex items-center gap-3"
       >
         <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-lg shrink-0">
           {stepInfo.emoji}
