@@ -274,7 +274,30 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      leads_map: {
+        Row: {
+          cidade: string | null
+          created_at: string | null
+          id: string | null
+          modelo_recomendado: string | null
+          pontuacao_quintal: number | null
+        }
+        Insert: {
+          cidade?: string | null
+          created_at?: string | null
+          id?: string | null
+          modelo_recomendado?: string | null
+          pontuacao_quintal?: number | null
+        }
+        Update: {
+          cidade?: string | null
+          created_at?: string | null
+          id?: string | null
+          modelo_recomendado?: string | null
+          pontuacao_quintal?: number | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_user_franquia_id: { Args: { _user_id: string }; Returns: string }

@@ -58,8 +58,8 @@ export default function MapaQuintais() {
 
   const loadData = async () => {
     const { data } = await supabase
-      .from('leads')
-      .select('cidade, pontuacao_quintal');
+      .from('leads_map' as any)
+      .select('cidade, pontuacao_quintal') as { data: { cidade: string; pontuacao_quintal: number }[] | null };
     setLeads(data || []);
     setLoading(false);
   };
