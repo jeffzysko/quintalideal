@@ -38,11 +38,12 @@ export default function ProfileSettings() {
       // Load profile name
       const { data: profile } = await supabase
         .from('profiles')
-        .select('full_name')
+        .select('full_name, telefone')
         .eq('user_id', user!.id)
         .maybeSingle();
 
       if (profile?.full_name) setFullName(profile.full_name);
+      if (profile?.telefone) setTelefone(profile.telefone);
 
       // Load franchise data if franchise user
       if (franchiseId) {
