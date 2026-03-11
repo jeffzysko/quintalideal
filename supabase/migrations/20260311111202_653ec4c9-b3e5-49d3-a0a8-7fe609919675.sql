@@ -1,0 +1,1 @@
+UPDATE pool_models SET descricao = regexp_replace(descricao, '\s*(Faixa de preço|Preço):?\s*R\$[^.]+\.', '', 'g') WHERE descricao LIKE '%R$%';
