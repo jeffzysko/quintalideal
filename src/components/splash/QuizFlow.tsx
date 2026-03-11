@@ -223,8 +223,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       ...analyticsCtx,
       metadata: { quantidade_de_fotos: urls.length },
     });
-    // Skip pre-diagnosis if no photos were uploaded
-    setStep(urls.length > 0 ? 'pre-diagnosis' : 'quiz');
+    setStep(urls.length > 0 ? 'photo-analysis' : 'quiz');
   };
 
   const handleResultContinue = () => {
