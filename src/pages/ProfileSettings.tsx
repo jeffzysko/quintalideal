@@ -10,7 +10,7 @@ import { ArrowLeft, Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff } from
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import logoSplash from '@/assets/logo-splash.webp';
+import logoSplash from '@/assets/logo-splash.png';
 
 export default function ProfileSettings() {
   const { user, role, franchiseId } = useAuth();

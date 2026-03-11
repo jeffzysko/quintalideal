@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Lock, Mail, ArrowRight, Droplets, Shield } from 'lucide-react';
-import logoSplash from '@/assets/logo-splash.webp';
+import logoSplash from '@/assets/logo-splash.png';
 
 export default function Login() {
   const { signIn } = useAuth();

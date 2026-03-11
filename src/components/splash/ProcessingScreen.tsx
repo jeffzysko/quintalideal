@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import logoSplash from '@/assets/logo-splash.webp';
+import logoSplash from '@/assets/logo-splash.png';
 import { CheckCircle2 } from 'lucide-react';
 
 interface ProcessingScreenProps {
