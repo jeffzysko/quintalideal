@@ -8,6 +8,7 @@ interface Franchise {
   nome_franquia: string;
   slug_url: string;
   whatsapp: string;
+  ativa: boolean;
 }
 
 export default function FranchiseLanding() {
