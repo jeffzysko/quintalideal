@@ -13,8 +13,10 @@ export function ProtectedRoute({ children, allowedRoles }: { children: React.Rea
   }
 
   if (!user) return <Navigate to="/login" replace />;
-  if (allowedRoles && role && !allowedRoles.includes(role)) {
-    return <Navigate to="/painel" replace />;
+
+  if (allowedRoles) {
+    if (!role) return <Navigate to="/login" replace />;
+    if (!allowedRoles.includes(role)) return <Navigate to="/painel" replace />;
   }
 
   return <>{children}</>;

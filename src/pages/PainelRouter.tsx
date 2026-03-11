@@ -2,7 +2,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Navigate } from 'react-router-dom';
 
 export default function PainelRouter() {
-  const { role, loading } = useAuth();
+  const { user, role, loading } = useAuth();
 
   if (loading) {
     return (
@@ -12,6 +12,7 @@ export default function PainelRouter() {
     );
   }
 
+  if (!user) return <Navigate to="/login" replace />;
   if (role === 'admin_fabrica') return <Navigate to="/admin" replace />;
   if (role === 'franquia') return <Navigate to="/franquia" replace />;
   return <Navigate to="/login" replace />;

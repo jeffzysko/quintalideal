@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
-import type { User } from '@supabase/supabase-js';
+import type { Session, User } from '@supabase/supabase-js';
+import type { Enums } from '@/integrations/supabase/types';
 
 interface AuthContextType {
   user: User | null;
@@ -10,6 +11,14 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
 }
+
+type AppRole = Enums<'app_role'>;
+
+const ROLE_PRIORITY: AppRole[] = ['admin_fabrica', 'franquia', 'visualizador'];
+
+const resolvePrimaryRole = (roles: AppRole[]): AppRole | null => {
+  return ROLE_PRIORITY.find(role => roles.includes(role)) ?? roles[0] ?? null;
+};
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
@@ -31,52 +40,60 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const fetchUserMeta = async (userId: string) => {
-    const { data: roleData } = await supabase
-      .from('user_roles')
-      .select('role')
-      .eq('user_id', userId)
-      .single();
-    setRole(roleData?.role || null);
+    const [{ data: rolesData, error: rolesError }, { data: profileData, error: profileError }] = await Promise.all([
+      supabase.from('user_roles').select('role').eq('user_id', userId),
+      supabase.from('profiles').select('franquia_id').eq('user_id', userId).maybeSingle(),
+    ]);
 
-    const { data: profileData } = await supabase
-      .from('profiles')
-      .select('franquia_id')
-      .eq('user_id', userId)
-      .single();
-    setFranchiseId(profileData?.franquia_id || null);
+    if (rolesError) {
+      console.error('Error loading user roles:', rolesError);
+    }
+
+    if (profileError) {
+      console.error('Error loading user profile:', profileError);
+    }
+
+    const roles = (rolesData ?? []).map(item => item.role);
+
+    return {
+      role: resolvePrimaryRole(roles),
+      franchiseId: profileData?.franquia_id ?? null,
+    };
   };
 
   useEffect(() => {
     let mounted = true;
-    let initialLoad = true;
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        if (!mounted) return;
-        const currentUser = session?.user ?? null;
-        setUser(currentUser);
-        if (currentUser) {
-          // Don't await — fetch in background to avoid blocking
-          fetchUserMeta(currentUser.id).then(() => {
-            if (mounted && !initialLoad) setLoading(false);
-          });
-        } else {
-          setRole(null);
-          setFranchiseId(null);
-          if (!initialLoad) setLoading(false);
-        }
-      }
-    );
-
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    const syncSession = async (session: Session | null) => {
       if (!mounted) return;
+
+      setLoading(true);
       const currentUser = session?.user ?? null;
       setUser(currentUser);
-      if (currentUser) {
-        await fetchUserMeta(currentUser.id);
+
+      if (!currentUser) {
+        setRole(null);
+        setFranchiseId(null);
+        setLoading(false);
+        return;
       }
-      initialLoad = false;
-      if (mounted) setLoading(false);
+
+      const userMeta = await fetchUserMeta(currentUser.id);
+      if (!mounted) return;
+
+      setRole(userMeta.role);
+      setFranchiseId(userMeta.franchiseId);
+      setLoading(false);
+    };
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      void syncSession(session);
+    });
+
+    void supabase.auth.getSession().then(({ data: { session } }) => {
+      void syncSession(session);
     });
 
     return () => {
@@ -86,15 +103,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const signIn = async (email: string, password: string) => {
+    setLoading(true);
     const { error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      setLoading(false);
+    }
+
     return { error: error?.message || null };
   };
 
   const signOut = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-    setRole(null);
-    setFranchiseId(null);
+    setLoading(true);
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      console.error('Error signing out:', error);
+      setLoading(false);
+    }
   };
 
   return (
