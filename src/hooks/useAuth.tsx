@@ -47,8 +47,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       supabase.from('profiles').select('franquia_id').eq('user_id', userId).maybeSingle(),
     ]);
 
-    if (rolesError) console.error('Error loading user roles:', rolesError);
-    if (profileError) console.error('Error loading user profile:', profileError);
+    if (rolesError) { /* role fetch failed silently */ }
+    if (profileError) { /* profile fetch failed silently */ }
 
     const roles = (rolesData ?? []).map(item => item.role);
     const primaryRole = resolvePrimaryRole(roles);
