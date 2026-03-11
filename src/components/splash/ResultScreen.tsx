@@ -241,6 +241,31 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
           ))}
           <span className="text-white/30 text-xs ml-2 font-medium">Análise completa</span>
         </motion.div>
+        {/* Avançar button */}
+        {animDone && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mt-8"
+          >
+            <Button
+              onClick={onContinue}
+              className="w-full py-7 text-[15px] rounded-2xl font-bold shadow-xl gradient-blue glow-blue hover:glow-blue-strong hover:scale-[1.01] transition-all duration-300 gap-2 group"
+            >
+              Avançar
+              <motion.span
+                animate={{ x: [0, 4, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                <ArrowRight className="w-5 h-5" />
+              </motion.span>
+            </Button>
+            <p className="text-white/30 text-[10px] text-center mt-2">
+              Prossiga para falar com nossa equipe comercial
+            </p>
+          </motion.div>
+        )}
       </motion.div>
     </motion.div>
   );
