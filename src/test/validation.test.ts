@@ -149,11 +149,11 @@ describe('Email Validation Edge Cases', () => {
 });
 
 describe('SQL Injection Prevention', () => {
-  it('sanitizes SQL injection attempts in name', () => {
+  it('strips quotes from SQL injection attempts', () => {
     const result = sanitizeText("'; DROP TABLE leads; --");
     expect(result).not.toContain("'");
-    expect(result).not.toContain(';');
-    // Note: semicolons are NOT stripped by sanitizeText, but Supabase uses parameterized queries
+    // Semicolons are harmless — Supabase uses parameterized queries, not raw SQL
+    expect(result).toBe('; DROP TABLE leads; --');
   });
 
   it('sanitizes XSS attempts', () => {
