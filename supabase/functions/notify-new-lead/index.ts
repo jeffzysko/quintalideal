@@ -6,6 +6,96 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
+const SENDER = "Quintal Ideal Splash <noreply@quintalideal.com.br>";
+const BRAND_BLUE = "#0369a1";
+const BRAND_BLUE_LIGHT = "#e0f2fe";
+const BRAND_GRADIENT = "linear-gradient(135deg, #0284c7, #0369a1)";
+
+function buildLeadEmailHTML(lead: Record<string, unknown>, franchiseName: string, leadDate: string): string {
+  const score = Number(lead.pontuacao_quintal || 0);
+  const scoreColor = score >= 70 ? "#16a34a" : score >= 40 ? "#d97706" : "#dc2626";
+
+  return `
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
+<body style="margin:0;padding:0;background:#f1f5f9;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f1f5f9;padding:24px 0;">
+    <tr><td align="center">
+      <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
+        
+        <!-- Header -->
+        <tr><td style="background:${BRAND_GRADIENT};padding:40px 32px;text-align:center;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+            <tr><td align="center">
+              <div style="width:56px;height:56px;background:rgba(255,255,255,0.2);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px;">
+                <span style="font-size:28px;">🎯</span>
+              </div>
+              <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:700;letter-spacing:-0.3px;">Novo Lead Recebido!</h1>
+              <p style="color:${BRAND_BLUE_LIGHT};margin:8px 0 0;font-size:13px;font-weight:500;">${franchiseName} • ${leadDate}</p>
+            </td></tr>
+          </table>
+        </td></tr>
+
+        <!-- Score Badge -->
+        <tr><td style="padding:32px 32px 0;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+            <tr><td align="center">
+              <div style="display:inline-block;background:${BRAND_BLUE_LIGHT};border-radius:12px;padding:16px 32px;text-align:center;">
+                <p style="margin:0;font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:1px;font-weight:600;">Índice do Quintal</p>
+                <p style="margin:4px 0 0;font-size:36px;font-weight:800;color:${scoreColor};letter-spacing:-1px;">${score}%</p>
+              </div>
+            </td></tr>
+          </table>
+        </td></tr>
+
+        <!-- Lead Details -->
+        <tr><td style="padding:24px 32px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #e2e8f0;border-radius:12px;overflow:hidden;">
+            ${buildRow("👤", "Nome", String(lead.nome || "Não informado"), true)}
+            ${buildRow("📱", "Telefone", String(lead.telefone || "Não informado"), false)}
+            ${buildRow("✉️", "E-mail", String(lead.email || "Não informado"), false)}
+            ${buildRow("📍", "Cidade", String(lead.cidade || "Não informada"), false)}
+            ${buildRow("🏊", "Modelo Recomendado", String(lead.modelo_recomendado || "—"), false)}
+            ${lead.referred_by ? buildRow("🔗", "Indicado por", String(lead.referred_by), false) : ""}
+          </table>
+        </td></tr>
+
+        <!-- CTA -->
+        <tr><td style="padding:8px 32px 32px;text-align:center;">
+          <a href="https://quintalideal.com.br/franquia" style="display:inline-block;background:${BRAND_GRADIENT};color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:10px;font-weight:700;font-size:15px;letter-spacing:0.2px;box-shadow:0 4px 12px rgba(3,105,161,0.3);">
+            Ver detalhes na plataforma →
+          </a>
+        </td></tr>
+
+        <!-- Footer -->
+        <tr><td style="padding:24px 32px;background:#f8fafc;border-top:1px solid #e2e8f0;text-align:center;">
+          <p style="margin:0;color:#94a3b8;font-size:11px;line-height:1.6;">
+            Quintal Ideal Splash • Notificação automática<br/>
+            <a href="https://quintalideal.com.br" style="color:${BRAND_BLUE};text-decoration:none;font-weight:500;">quintalideal.com.br</a>
+          </p>
+        </td></tr>
+
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+}
+
+function buildRow(emoji: string, label: string, value: string, isFirst: boolean): string {
+  const borderTop = isFirst ? "" : "border-top:1px solid #f1f5f9;";
+  return `
+    <tr>
+      <td style="padding:14px 16px;${borderTop}width:140px;vertical-align:top;">
+        <span style="font-size:13px;color:#64748b;white-space:nowrap;">${emoji} ${label}</span>
+      </td>
+      <td style="padding:14px 16px;${borderTop}font-weight:600;font-size:14px;color:#1e293b;">
+        ${value}
+      </td>
+    </tr>`;
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -18,21 +108,17 @@ Deno.serve(async (req) => {
     }
 
     const payload = await req.json();
-
-    // Support both direct call and DB webhook trigger format
     const lead = payload.record || payload;
 
     if (!lead || !lead.id) {
       throw new Error("No lead data provided");
     }
 
-    // Get franchise info to find the email
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     if (!lead.franquia_id) {
-      console.log("Lead without franchise, skipping notification");
       return new Response(JSON.stringify({ skipped: true, reason: "no_franchise" }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -50,7 +136,6 @@ Deno.serve(async (req) => {
     }
 
     if (!franchise.email) {
-      console.log("Franchise has no email configured, skipping");
       return new Response(JSON.stringify({ skipped: true, reason: "no_franchise_email" }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -65,53 +150,8 @@ Deno.serve(async (req) => {
       minute: "2-digit",
     });
 
-    const platformUrl = "https://quintalideal.com.br/franquia";
+    const htmlContent = buildLeadEmailHTML(lead, franchise.nome_franquia, leadDate);
 
-    const htmlContent = `
-      <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden;">
-        <div style="background: linear-gradient(135deg, #0ea5e9, #0284c7); padding: 32px 24px; text-align: center;">
-          <h1 style="color: #ffffff; margin: 0; font-size: 24px;">🎯 Novo Lead Recebido!</h1>
-          <p style="color: #e0f2fe; margin: 8px 0 0; font-size: 14px;">${leadDate}</p>
-        </div>
-        
-        <div style="padding: 24px;">
-          <table style="width: 100%; border-collapse: collapse;">
-            <tr>
-              <td style="padding: 12px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-size: 14px;">👤 Nome</td>
-              <td style="padding: 12px 8px; border-bottom: 1px solid #f1f5f9; font-weight: 600; font-size: 14px;">${lead.nome || "Não informado"}</td>
-            </tr>
-            <tr>
-              <td style="padding: 12px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-size: 14px;">📱 Telefone</td>
-              <td style="padding: 12px 8px; border-bottom: 1px solid #f1f5f9; font-weight: 600; font-size: 14px;">${lead.telefone || "Não informado"}</td>
-            </tr>
-            <tr>
-              <td style="padding: 12px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-size: 14px;">📍 Cidade</td>
-              <td style="padding: 12px 8px; border-bottom: 1px solid #f1f5f9; font-weight: 600; font-size: 14px;">${lead.cidade || "Não informada"}</td>
-            </tr>
-            <tr>
-              <td style="padding: 12px 8px; border-bottom: 1px solid #f1f5f9; color: #64748b; font-size: 14px;">🏊 Modelo</td>
-              <td style="padding: 12px 8px; border-bottom: 1px solid #f1f5f9; font-weight: 600; font-size: 14px;">${lead.modelo_recomendado || "—"}</td>
-            </tr>
-            <tr>
-              <td style="padding: 12px 8px; color: #64748b; font-size: 14px;">📊 Índice do Quintal</td>
-              <td style="padding: 12px 8px; font-weight: 700; font-size: 18px; color: #0ea5e9;">${lead.pontuacao_quintal || 0}%</td>
-            </tr>
-          </table>
-          
-          <div style="text-align: center; margin-top: 32px;">
-            <a href="${platformUrl}" style="display: inline-block; background: linear-gradient(135deg, #0ea5e9, #0284c7); color: #ffffff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-weight: 600; font-size: 16px;">
-              Ver detalhes na plataforma →
-            </a>
-          </div>
-          
-          <p style="text-align: center; color: #94a3b8; font-size: 12px; margin-top: 24px;">
-            Quintal Ideal • Notificação automática de novo lead
-          </p>
-        </div>
-      </div>
-    `;
-
-    // Send via Resend
     const resendResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
@@ -119,9 +159,9 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Quintal Ideal Splash <noreply@quintalideal.com.br>",
+        from: SENDER,
         to: [franchise.email],
-        subject: `🎯 Novo Lead: ${lead.nome || "Cliente"} - ${lead.cidade || ""}`,
+        subject: `🎯 Novo Lead: ${lead.nome || "Cliente"} — ${lead.cidade || "Quintal Ideal"}`,
         html: htmlContent,
       }),
     });
