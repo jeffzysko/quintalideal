@@ -91,18 +91,18 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
             </div>
 
             {totalCount > 0 && (
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/30">
-                <p className="text-sm text-muted-foreground">
-                  Mostrando {from + 1}–{Math.min(to, totalCount)} de {totalCount} leads
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mt-4 pt-4 border-t border-border/30">
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  {from + 1}–{Math.min(to, totalCount)} de {totalCount}
                 </p>
                 <div className="flex gap-2">
-                  <Button variant="outline" size="sm" onClick={() => onPageChange(Math.max(1, page - 1))} disabled={page === 1} className="rounded-xl">
+                  <Button variant="outline" size="sm" onClick={() => onPageChange(Math.max(1, page - 1))} disabled={page === 1} className="rounded-xl h-8 text-xs">
                     Anterior
                   </Button>
-                  <span className="flex items-center text-sm text-muted-foreground px-2">
-                    {page} / {totalPages}
+                  <span className="flex items-center text-xs text-muted-foreground px-2">
+                    {page}/{totalPages}
                   </span>
-                  <Button variant="outline" size="sm" onClick={() => onPageChange(page + 1)} disabled={page >= totalPages} className="rounded-xl">
+                  <Button variant="outline" size="sm" onClick={() => onPageChange(page + 1)} disabled={page >= totalPages} className="rounded-xl h-8 text-xs">
                     Próximo
                   </Button>
                 </div>

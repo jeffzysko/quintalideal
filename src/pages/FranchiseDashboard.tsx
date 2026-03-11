@@ -142,22 +142,22 @@ export default function FranchiseDashboard() {
         )}
 
         {/* Tab switcher */}
-        <div className="flex gap-1 mb-6 bg-muted rounded-xl p-1 w-fit" role="tablist">
+        <div className="flex gap-1 mb-6 bg-muted rounded-xl p-1 w-full sm:w-fit overflow-x-auto scrollbar-none" role="tablist">
           <button
             role="tab"
             aria-selected={activeTab === 'leads'}
             onClick={() => setActiveTab('leads')}
-            className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'leads' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+            className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === 'leads' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
           >
-            <Users className="w-4 h-4 inline mr-1.5" /> Leads
+            <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 inline mr-1" /> Leads
           </button>
           <button
             role="tab"
             aria-selected={activeTab === 'reports'}
             onClick={() => setActiveTab('reports')}
-            className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'reports' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+            className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === 'reports' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
           >
-            <BarChart3 className="w-4 h-4 inline mr-1.5" /> Relatórios
+            <BarChart3 className="w-3.5 h-3.5 sm:w-4 sm:h-4 inline mr-1" /> Relatórios
           </button>
         </div>
 
