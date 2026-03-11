@@ -156,7 +156,15 @@ export default function LeadDetail() {
     <div className="min-h-screen gradient-hero">
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-5">
         {/* Back */}
-        <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="text-muted-foreground hover:text-foreground -ml-2">
+        <Button variant="ghost" size="sm" onClick={() => {
+          // If we have history, go back; otherwise navigate to the appropriate dashboard
+          if (window.history.length > 2) {
+            navigate(-1);
+          } else {
+            const isAdminRoute = window.location.pathname.startsWith('/admin');
+            navigate(isAdminRoute ? '/admin' : '/franquia');
+          }
+        }} className="text-muted-foreground hover:text-foreground -ml-2">
           <ArrowLeft className="w-4 h-4 mr-1" /> Voltar
         </Button>
 
