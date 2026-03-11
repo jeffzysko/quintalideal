@@ -66,6 +66,7 @@ function AppRoutes() {
                 <Suspense fallback={<LazyFallback />}>
                   <Routes>
                     <Route path="/" element={<Index />} />
+                    <Route path="/explorar" element={<Index />} />
                     <Route path="/mapa" element={<MapaQuintais />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/forgot-password" element={<ForgotPassword />} />
