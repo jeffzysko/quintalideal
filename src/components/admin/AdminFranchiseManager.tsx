@@ -209,7 +209,6 @@ export function AdminFranchiseManager() {
       setInviteDialogOpen(false);
     } catch (err: any) {
       toast.error(err.message || 'Erro ao enviar convite.');
-      console.error(err);
     } finally {
       setSaving(false);
     }
