@@ -182,25 +182,34 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b bg-card">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <img src={logoSplash} alt="Splash" className="w-16" />
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-primary" />
-                Painel da Fábrica
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-5 flex items-center justify-between">
+          <div className="flex items-center gap-3 md:gap-4 min-w-0">
+            <img src={logoSplash} alt="Splash" className="w-10 md:w-16 shrink-0" />
+            <div className="min-w-0">
+              <h1 className="text-base md:text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
+                <Building2 className="w-4 h-4 md:w-5 md:h-5 text-primary shrink-0" />
+                <span className="truncate">Painel da Fábrica</span>
               </h1>
-              <p className="text-xs text-muted-foreground mt-0.5">Visão geral de desempenho</p>
+              <p className="text-xs text-muted-foreground mt-0.5 hidden sm:block">Visão geral de desempenho</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => navigate('/admin/radar')} className="rounded-xl gap-1.5" aria-label="Abrir radar de mercado">
+          <div className="flex items-center gap-1.5 md:gap-2 shrink-0">
+            <Button variant="outline" size="sm" onClick={() => navigate('/admin/radar')} className="rounded-xl gap-1.5 hidden sm:flex" aria-label="Abrir radar de mercado">
               <Target className="w-4 h-4" /> Radar
             </Button>
-            <Button variant="outline" size="sm" onClick={() => navigate('/mapa')} className="rounded-xl gap-1.5" aria-label="Abrir mapa de quintais">
+            <Button variant="outline" size="icon" onClick={() => navigate('/admin/radar')} className="rounded-xl sm:hidden h-9 w-9" aria-label="Abrir radar de mercado">
+              <Target className="w-4 h-4" />
+            </Button>
+            <Button variant="outline" size="icon" onClick={() => navigate('/mapa')} className="rounded-xl h-9 w-9 sm:hidden" aria-label="Abrir mapa de quintais">
+              <MapPin className="w-4 h-4" />
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => navigate('/mapa')} className="rounded-xl gap-1.5 hidden sm:flex" aria-label="Abrir mapa de quintais">
               <MapPin className="w-4 h-4" /> Mapa
             </Button>
-            <Button variant="outline" size="sm" onClick={exportCSV} className="rounded-xl gap-1.5" aria-label="Exportar leads para CSV">
+            <Button variant="outline" size="icon" onClick={exportCSV} className="rounded-xl h-9 w-9 sm:hidden" aria-label="Exportar leads para CSV">
+              <Download className="w-4 h-4" />
+            </Button>
+            <Button variant="outline" size="sm" onClick={exportCSV} className="rounded-xl gap-1.5 hidden sm:flex" aria-label="Exportar leads para CSV">
               <Download className="w-4 h-4" /> CSV
             </Button>
             <UserAvatarMenu />
