@@ -23,7 +23,7 @@ export default function FranchiseLanding() {
     async function load() {
       if (!slug) return;
       const { data } = await supabase
-        .from('franchises')
+        .from('franchises_public')
         .select('id, nome_franquia, slug_url, whatsapp, ativa')
         .eq('slug_url', slug)
         .maybeSingle();
