@@ -170,6 +170,17 @@ export default function ProfileSettings() {
                 />
               </div>
               <div className="space-y-2">
+                <Label htmlFor="personalPhone" className="flex items-center gap-1.5">
+                  <Phone className="w-3.5 h-3.5" /> Telefone pessoal
+                </Label>
+                <Input
+                  id="personalPhone"
+                  placeholder="(51) 99999-9999"
+                  value={telefone}
+                  onChange={e => setTelefone(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
                 <Label htmlFor="loginEmail">E-mail de login</Label>
                 <Input
                   id="loginEmail"
