@@ -201,7 +201,8 @@ Deno.serve(async (req) => {
 
       if (RESEND_API_KEY) {
         const html = buildInviteEmailHTML(full_name || email, roleLabels[role] || role, recoveryLink);
-        await fetch("https://api.resend.com/emails", {
+        console.log("Sending invite email to:", email, "from:", SENDER);
+        const resendRes = await fetch("https://api.resend.com/emails", {
           method: "POST",
           headers: { Authorization: `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -211,6 +212,14 @@ Deno.serve(async (req) => {
             html,
           }),
         });
+        const resendData = await resendRes.json();
+        if (!resendRes.ok) {
+          console.error("Resend error:", JSON.stringify(resendData));
+        } else {
+          console.log("Invite email sent successfully:", JSON.stringify(resendData));
+        }
+      } else {
+        console.warn("RESEND_API_KEY not configured, skipping email send");
       }
 
       return new Response(JSON.stringify({ success: true, message: `Usuário criado e convite enviado para ${email}.` }), {
