@@ -1,0 +1,1 @@
+UPDATE public.franchises SET email = 'xangri-la@splashpiscinas.com' WHERE id = 'ee4c8787-38c6-4b96-b81d-f780c8656502';
