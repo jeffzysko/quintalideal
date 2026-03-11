@@ -40,6 +40,7 @@ export default function FranchiseDashboard() {
   const navigate = useNavigate();
   const [leads, setLeads] = useState<LeadRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [franchiseSlug, setFranchiseSlug] = useState<string | null>(null);
 
   useEffect(() => {
     if (franchiseId) {
@@ -51,7 +52,17 @@ export default function FranchiseDashboard() {
 
   const loadLeads = async () => {
     setLoading(true);
-    // RLS already filters by franchise, but we add the filter explicitly for clarity
+    
+    // Load franchise slug for the copy link button
+    if (franchiseId) {
+      const { data: franchiseData } = await supabase
+        .from('franchises')
+        .select('slug_url')
+        .eq('id', franchiseId)
+        .single();
+      if (franchiseData) setFranchiseSlug(franchiseData.slug_url);
+    }
+
     let query = supabase
       .from('leads')
       .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at')
@@ -140,7 +151,10 @@ export default function FranchiseDashboard() {
               <p className="text-sm text-muted-foreground text-center max-w-md mb-6">
                 Seus leads aparecerão aqui assim que os primeiros clientes responderem ao quiz da sua página. Compartilhe seu link para começar!
               </p>
-              <Button variant="outline" className="gap-2" onClick={() => navigator.clipboard.writeText(SITE_URL)}>
+              <Button variant="outline" className="gap-2" onClick={() => {
+                const url = franchiseSlug ? `${SITE_URL}/${franchiseSlug}` : SITE_URL;
+                navigator.clipboard.writeText(url);
+              }}>
                 <Share2 className="w-4 h-4" />
                 Copiar link do quiz
               </Button>
