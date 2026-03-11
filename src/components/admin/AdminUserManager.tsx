@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Plus, Pencil, Trash2, UserPlus, Shield, Building2, Eye, Search, Loader2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, UserPlus, Shield, Building2, Eye, Search, Loader2, Send } from 'lucide-react';
 
 interface ManagedUser {
   id: string;
@@ -43,6 +43,7 @@ export function AdminUserManager() {
   const [franchises, setFranchises] = useState<Franchise[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [resendingId, setResendingId] = useState<string | null>(null);
 
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -185,6 +186,24 @@ export function AdminUserManager() {
     }
   }
 
+  async function handleResendInvite(user: ManagedUser) {
+    setResendingId(user.id);
+    try {
+      const { data, error } = await supabase.functions.invoke('manage-users', {
+        body: { action: 'resend_invite', user_id: user.id },
+      });
+      if (error || data?.error) {
+        toast.error(extractError(data, error));
+        return;
+      }
+      toast.success(data?.message || `Convite reenviado para ${user.email}`);
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao reenviar convite.');
+    } finally {
+      setResendingId(null);
+    }
+  }
+
   const filteredUsers = users.filter(u => {
     const term = searchTerm.toLowerCase();
     return (
@@ -266,6 +285,16 @@ export function AdminUserManager() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex gap-1 justify-end">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-primary hover:text-primary"
+                            onClick={() => handleResendInvite(user)}
+                            disabled={resendingId === user.id}
+                            title="Reenviar convite"
+                          >
+                            {resendingId === user.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                          </Button>
                           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEditDialog(user)}>
                             <Pencil className="w-4 h-4" />
                           </Button>
