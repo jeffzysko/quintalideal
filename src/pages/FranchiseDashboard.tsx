@@ -40,6 +40,7 @@ export default function FranchiseDashboard() {
   const navigate = useNavigate();
   const [leads, setLeads] = useState<LeadRow[]>([]);
   const [loading, setLoading] = useState(true);
+  const [franchiseSlug, setFranchiseSlug] = useState<string | null>(null);
 
   useEffect(() => {
     if (franchiseId) {
