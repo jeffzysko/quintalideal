@@ -40,7 +40,7 @@ export default function ProfileSettings() {
         .from('profiles')
         .select('full_name, telefone')
         .eq('user_id', user!.id)
-        .maybeSingle();
+        .maybeSingle() as { data: { full_name: string | null; telefone: string | null } | null };
 
       if (profile?.full_name) setFullName(profile.full_name);
       if (profile?.telefone) setTelefone(profile.telefone);
