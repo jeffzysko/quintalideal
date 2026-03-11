@@ -34,14 +34,18 @@ const statusLabels: Record<string, string> = {
 };
 
 export default function FranchiseDashboard() {
-  const { franchiseId } = useAuth();
+  const { franchiseId, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [leads, setLeads] = useState<LeadRow[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (franchiseId) loadLeads();
-  }, [franchiseId]);
+    if (franchiseId) {
+      loadLeads();
+    } else if (!authLoading) {
+      setLoading(false);
+    }
+  }, [franchiseId, authLoading]);
 
   const loadLeads = async () => {
     setLoading(true);
