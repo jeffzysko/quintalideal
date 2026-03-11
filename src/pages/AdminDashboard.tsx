@@ -103,7 +103,7 @@ export default function AdminDashboard() {
   const loadKpiData = async () => {
     try {
       const [leadsRes, franchisesRes] = await Promise.all([
-        supabase.from('leads').select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, ref_code, referred_by').order('created_at', { ascending: false }),
+        supabase.from('leads').select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by').order('created_at', { ascending: false }),
         supabase.from('franchises').select('id, nome_franquia'),
       ]);
       if (leadsRes.error) throw leadsRes.error;
