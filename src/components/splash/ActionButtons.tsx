@@ -163,37 +163,6 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
     return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
   };
 
-  const handleShare = async () => {
-    trackEvent('result_shared', { franchiseId, metadata: { plataforma: 'share_api' } });
-    setSharing(true);
-    try {
-      const blob = await generateShareImage();
-      if (!blob) return;
-      const file = new File([blob], `meu-quintal-splash-${score}pct.png`, { type: 'image/png' });
-      if (navigator.share && navigator.canShare?.({ files: [file] })) {
-        await navigator.share({
-          title: `Meu quintal tem ${score}% de potencial!`,
-          text: `${classification.emoji} ${classification.label} • ${ranking.label}`,
-          files: [file],
-        });
-      } else {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url; a.download = file.name; a.click();
-        URL.revokeObjectURL(url);
-      }
-    } catch (err) { console.error('Share error:', err); }
-    finally { setSharing(false); }
-  };
-
-  const handleDownload = async () => {
-    const blob = await generateShareImage();
-    if (!blob) return;
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `meu-quintal-splash-${score}pct.png`; a.click();
-    URL.revokeObjectURL(url);
-  };
 
   const circumference = 2 * Math.PI * 46;
   const offset = circumference - (score / 100) * circumference;
