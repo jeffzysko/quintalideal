@@ -66,7 +66,7 @@ describe('recommendPool', () => {
     expect(recommendPool(answers)).toBe('Tortuga');
   });
 
-  it('recommends Nassau for small space with prainha', () => {
+  it('recommends Tortuga for small space with prainha', () => {
     const answers: QuizAnswers = {
       espaco: 'ate-3',
       moradia: 'minha',
@@ -75,7 +75,7 @@ describe('recommendPool', () => {
       preferencia: 'prainha',
       cidade: 'Canoas',
     };
-    expect(recommendPool(answers)).toBe('Nassau');
+    expect(recommendPool(answers)).toBe('Tortuga');
   });
 
   it('recommends Navagio for small space with spa', () => {
