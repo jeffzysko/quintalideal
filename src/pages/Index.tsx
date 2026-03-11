@@ -108,14 +108,6 @@ const Index = () => {
             >
               Área do Franqueado <ArrowRight className="w-4 h-4" />
             </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="rounded-2xl px-8 py-6 text-base font-bold gap-2"
-              onClick={() => window.open('https://wa.me/555199999999', '_blank')}
-            >
-              <Phone className="w-4 h-4" /> Fale Conosco
-            </Button>
           </div>
         </div>
       </section>
