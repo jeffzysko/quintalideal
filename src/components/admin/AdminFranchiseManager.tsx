@@ -174,7 +174,6 @@ export function AdminFranchiseManager() {
       .eq('id', f.id);
     if (error) {
       toast.error('Erro ao atualizar status.');
-      console.error(error);
     } else {
       toast.success(newStatus ? 'Franquia reativada!' : 'Franquia desativada.');
       load();
