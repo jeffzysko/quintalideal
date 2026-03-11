@@ -55,81 +55,82 @@ function LazyFallback() {
 function AppRoutes() {
   usePrefetchRoutes();
   return (
-    <ErrorBoundary>
-      <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-      <AuthProvider>
-        <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Suspense fallback={<LazyFallback />}>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/explorar" element={<Index />} />
-              <Route path="/mapa" element={<MapaQuintais />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route
-                path="/perfil"
-                element={
-                  <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
-                    <ProfileSettings />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/painel" element={<PainelRouter />} />
-              <Route
-                path="/franquia"
-                element={
-                  <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
-                    <FranchiseDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/painel/lead/:id"
-                element={
-                  <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
-                    <LeadDetail />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute allowedRoles={['admin_fabrica']}>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/radar"
-                element={
-                  <ProtectedRoute allowedRoles={['admin_fabrica']}>
-                    <RadarMercado />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/lead/:id"
-                element={
-                  <ProtectedRoute allowedRoles={['admin_fabrica']}>
-                    <LeadDetail />
-                  </ProtectedRoute>
-                }
-              />
-              {/* Franchise dynamic landing - must be last before catch-all */}
-              <Route path="/:slug" element={<FranchiseLanding />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </BrowserRouter>
-        </TooltipProvider>
-      </AuthProvider>
-      </ThemeProvider>
-    </ErrorBoundary>
-  </QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <ErrorBoundary>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+          <AuthProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Suspense fallback={<LazyFallback />}>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/explorar" element={<Index />} />
+                    <Route path="/mapa" element={<MapaQuintais />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route
+                      path="/perfil"
+                      element={
+                        <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
+                          <ProfileSettings />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route path="/painel" element={<PainelRouter />} />
+                    <Route
+                      path="/franquia"
+                      element={
+                        <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
+                          <FranchiseDashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/painel/lead/:id"
+                      element={
+                        <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
+                          <LeadDetail />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin_fabrica']}>
+                          <AdminDashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/radar"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin_fabrica']}>
+                          <RadarMercado />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/lead/:id"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin_fabrica']}>
+                          <LeadDetail />
+                        </ProtectedRoute>
+                      }
+                    />
+                    {/* Franchise dynamic landing - must be last before catch-all */}
+                    <Route path="/:slug" element={<FranchiseLanding />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Suspense>
+              </BrowserRouter>
+            </TooltipProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </ErrorBoundary>
+    </QueryClientProvider>
   );
 }
 
