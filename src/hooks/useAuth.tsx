@@ -102,8 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setRole(meta.role);
       setFranchiseId(meta.franchiseId);
-    } catch (err) {
-      console.error('Error syncing session:', err);
+    } catch (_err) {
       if (syncLockRef.current !== lockId || !mountedRef.current) return;
       setRole(null);
       setFranchiseId(null);
