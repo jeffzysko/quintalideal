@@ -7,20 +7,20 @@ const base = (overrides: Partial<QuizAnswers> = {}): QuizAnswers => ({
   intencao: '2026',
   uso: 'familia-grande',
   preferencia: 'prainha',
-  orcamento: '50-80',
+  orcamento: '30-50',
   cidade: 'Porto Alegre',
   ...overrides,
 });
 
 describe('calculateScore', () => {
   it('returns max score for best answers', () => {
-    expect(calculateScore(base({ orcamento: 'acima-80' }))).toBe(100);
+    expect(calculateScore(base({ orcamento: '30-50' }))).toBe(100);
   });
 
   it('returns min score for lowest answers', () => {
     const answers = base({
       espaco: 'ate-3', moradia: 'planejando', intencao: 'pesquisando',
-      uso: 'casal', preferencia: 'simples', orcamento: 'ate-30', cidade: 'Bagé',
+      uso: 'casal', preferencia: 'simples', orcamento: 'ate-18', cidade: 'Bagé',
     });
     expect(calculateScore(answers)).toBe(34);
   });
@@ -28,7 +28,7 @@ describe('calculateScore', () => {
   it('handles mid-range answers', () => {
     const answers = base({
       espaco: '3-5', moradia: 'construindo', intencao: '2026-2027',
-      uso: 'familia-pequena', preferencia: 'spa', orcamento: '30-50',
+      uso: 'familia-pequena', preferencia: 'spa', orcamento: '18-30',
     });
     const score = calculateScore(answers);
     expect(score).toBeGreaterThan(34);
@@ -62,7 +62,7 @@ describe('recommendPool', () => {
   });
 
   it('recommends Cancún for large space with family', () => {
-    expect(recommendPool(base({ preferencia: 'simples', orcamento: '30-50' }))).toBe('Cancún');
+    expect(recommendPool(base({ preferencia: 'simples', orcamento: '18-30' }))).toBe('Cancún');
   });
 
   it('recommends Atalaia for large space with spa', () => {
@@ -70,7 +70,7 @@ describe('recommendPool', () => {
   });
 
   it('recommends Tropical for medium space with unknown preference', () => {
-    expect(recommendPool(base({ espaco: '5-7', preferencia: 'nao-sei', uso: 'casal', orcamento: '30-50' }))).toBe('Tropical');
+    expect(recommendPool(base({ espaco: '5-7', preferencia: 'nao-sei', uso: 'casal', orcamento: '18-30' }))).toBe('Tropical');
   });
 
   it('recommends Bonaire for medium space with spa', () => {
@@ -78,10 +78,10 @@ describe('recommendPool', () => {
   });
 
   it('recommends Atalaia for large space + high budget + family', () => {
-    expect(recommendPool(base({ preferencia: 'simples', orcamento: 'acima-80' }))).toBe('Atalaia');
+    expect(recommendPool(base({ preferencia: 'simples', orcamento: '30-50' }))).toBe('Atalaia');
   });
 
   it('recommends Bonaire for medium space + high budget + family', () => {
-    expect(recommendPool(base({ espaco: '5-7', preferencia: 'simples', orcamento: 'acima-80' }))).toBe('Bonaire');
+    expect(recommendPool(base({ espaco: '5-7', preferencia: 'simples', orcamento: '30-50' }))).toBe('Bonaire');
   });
 });
