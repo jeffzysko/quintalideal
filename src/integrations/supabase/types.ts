@@ -14,16 +14,228 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      franchises: {
+        Row: {
+          cidade_base: string
+          created_at: string
+          email: string | null
+          id: string
+          nome_franquia: string
+          responsavel: string | null
+          slug_url: string
+          whatsapp: string | null
+        }
+        Insert: {
+          cidade_base: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          nome_franquia: string
+          responsavel?: string | null
+          slug_url: string
+          whatsapp?: string | null
+        }
+        Update: {
+          cidade_base?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          nome_franquia?: string
+          responsavel?: string | null
+          slug_url?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      leads: {
+        Row: {
+          cidade: string | null
+          created_at: string
+          email: string | null
+          foto1: string | null
+          foto2: string | null
+          foto3: string | null
+          foto4: string | null
+          franquia_id: string | null
+          id: string
+          modelo_recomendado: string | null
+          nome: string | null
+          observacoes: string | null
+          pontuacao_quintal: number | null
+          respostas_questionario: Json | null
+          status_lead: Database["public"]["Enums"]["lead_status"]
+          telefone: string | null
+          updated_at: string
+        }
+        Insert: {
+          cidade?: string | null
+          created_at?: string
+          email?: string | null
+          foto1?: string | null
+          foto2?: string | null
+          foto3?: string | null
+          foto4?: string | null
+          franquia_id?: string | null
+          id?: string
+          modelo_recomendado?: string | null
+          nome?: string | null
+          observacoes?: string | null
+          pontuacao_quintal?: number | null
+          respostas_questionario?: Json | null
+          status_lead?: Database["public"]["Enums"]["lead_status"]
+          telefone?: string | null
+          updated_at?: string
+        }
+        Update: {
+          cidade?: string | null
+          created_at?: string
+          email?: string | null
+          foto1?: string | null
+          foto2?: string | null
+          foto3?: string | null
+          foto4?: string | null
+          franquia_id?: string | null
+          id?: string
+          modelo_recomendado?: string | null
+          nome?: string | null
+          observacoes?: string | null
+          pontuacao_quintal?: number | null
+          respostas_questionario?: Json | null
+          status_lead?: Database["public"]["Enums"]["lead_status"]
+          telefone?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_franquia_id_fkey"
+            columns: ["franquia_id"]
+            isOneToOne: false
+            referencedRelation: "franchises"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pool_models: {
+        Row: {
+          categoria_tamanho: Database["public"]["Enums"]["categoria_tamanho"]
+          comprimento: number | null
+          created_at: string
+          descricao: string | null
+          id: string
+          imagem_principal: string | null
+          largura: number | null
+          nome_modelo: string
+          possui_prainha: boolean | null
+          possui_spa: boolean | null
+          profundidade: number | null
+          tamanho: string | null
+        }
+        Insert: {
+          categoria_tamanho: Database["public"]["Enums"]["categoria_tamanho"]
+          comprimento?: number | null
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          imagem_principal?: string | null
+          largura?: number | null
+          nome_modelo: string
+          possui_prainha?: boolean | null
+          possui_spa?: boolean | null
+          profundidade?: number | null
+          tamanho?: string | null
+        }
+        Update: {
+          categoria_tamanho?: Database["public"]["Enums"]["categoria_tamanho"]
+          comprimento?: number | null
+          created_at?: string
+          descricao?: string | null
+          id?: string
+          imagem_principal?: string | null
+          largura?: number | null
+          nome_modelo?: string
+          possui_prainha?: boolean | null
+          possui_spa?: boolean | null
+          profundidade?: number | null
+          tamanho?: string | null
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          franquia_id: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          franquia_id?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          franquia_id?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profiles_franquia_id_fkey"
+            columns: ["franquia_id"]
+            isOneToOne: false
+            referencedRelation: "franchises"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_franquia_id: { Args: { _user_id: string }; Returns: string }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin_fabrica" | "franquia" | "visualizador"
+      categoria_tamanho: "pequena" | "media" | "grande"
+      lead_status:
+        | "novo"
+        | "contatado"
+        | "em_negociacao"
+        | "vendido"
+        | "perdido"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +362,10 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin_fabrica", "franquia", "visualizador"],
+      categoria_tamanho: ["pequena", "media", "grande"],
+      lead_status: ["novo", "contatado", "em_negociacao", "vendido", "perdido"],
+    },
   },
 } as const
