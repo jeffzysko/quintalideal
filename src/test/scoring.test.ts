@@ -20,7 +20,7 @@ describe('calculateScore', () => {
   it('returns min score for lowest answers', () => {
     const answers = base({
       espaco: 'ate-3', moradia: 'planejando', intencao: 'pesquisando',
-      uso: 'casal', preferencia: 'simples', orcamento: 'ate-30', cidade: 'Bagé',
+      uso: 'casal', preferencia: 'simples', orcamento: 'ate-18', cidade: 'Bagé',
     });
     expect(calculateScore(answers)).toBe(34);
   });
