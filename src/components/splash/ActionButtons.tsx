@@ -33,6 +33,20 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
   const classification = getYardClassification(score);
   const socialComparison = getSocialComparison(score);
   const [sharing, setSharing] = useState(false);
+  const [showInstaGuide, setShowInstaGuide] = useState(false);
+
+  const handleInstagramShare = async () => {
+    trackEvent('result_shared', { franchiseId, metadata: { plataforma: 'instagram_stories' } });
+    const blob = await generateShareImage();
+    if (!blob) return;
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `meu-quintal-splash-${score}pct.png`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setShowInstaGuide(true);
+  };
 
   const handleWhatsApp = () => {
     trackEvent('whatsapp_clicked', { franchiseId });
