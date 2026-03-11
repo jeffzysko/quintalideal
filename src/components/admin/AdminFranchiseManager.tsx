@@ -159,9 +159,8 @@ export function AdminFranchiseManager() {
       setDeleteDialogOpen(false);
       setDeletingFranchise(null);
       load();
-    } catch (err) {
+    } catch (_err) {
       toast.error('Erro ao excluir franquia. Verifique se não há leads vinculados.');
-      console.error(err);
     } finally {
       setSaving(false);
     }
