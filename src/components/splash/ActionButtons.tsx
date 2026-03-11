@@ -45,7 +45,7 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
 
   const handleCopyLink = () => {
     trackEvent('result_shared', { franchiseId, metadata: { plataforma: 'link_copiado' } });
-    navigator.clipboard.writeText('https://splash-quintal-magic.lovable.app');
+    navigator.clipboard.writeText(window.location.origin);
   };
 
   const generateShareImage = async (): Promise<Blob | null> => {
