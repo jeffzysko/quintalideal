@@ -188,7 +188,9 @@ export default function LeadDetail() {
         <Card className="mb-4">
           <CardHeader><CardTitle className="text-base">Respostas do Questionário</CardTitle></CardHeader>
           <CardContent className="space-y-1">
-            {Object.entries(lead.respostas_questionario).map(([key, value]) => {
+            {Object.entries(lead.respostas_questionario)
+              .filter(([key]) => questionLabels[key])
+              .map(([key, value]) => {
               const q = questionLabels[key];
               const displayValue = answerLabels[value as string] || (value as string);
               return (
