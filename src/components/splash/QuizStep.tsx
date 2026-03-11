@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { useState, useMemo } from 'react';
 import { cidadesRS } from '@/lib/cities';
 import { ExplorerProgress } from './ExplorerProgress';
+import { MapPin, Search, Check } from 'lucide-react';
 
 interface QuizOption {
   value: string;
@@ -18,12 +19,12 @@ interface QuizStepProps {
   type?: 'options' | 'city';
   onAnswer: (value: string) => void;
   onBack: () => void;
-  /** 0-based explorer step index for progress display */
   explorerStep: number;
 }
 
 export function QuizStep({ step, totalSteps, question, options, type = 'options', onAnswer, onBack, explorerStep }: QuizStepProps) {
   const [citySearch, setCitySearch] = useState('');
+  const [selectedValue, setSelectedValue] = useState<string | null>(null);
 
   const filteredCities = useMemo(() => {
     if (!citySearch || citySearch.length < 2) return [];
@@ -31,61 +32,121 @@ export function QuizStep({ step, totalSteps, question, options, type = 'options'
     return cidadesRS.filter(c => c.toLowerCase().includes(search)).slice(0, 6);
   }, [citySearch]);
 
+  const handleSelect = (value: string) => {
+    setSelectedValue(value);
+    setTimeout(() => onAnswer(value), 350);
+  };
+
   return (
     <motion.div
       key={step}
-      initial={{ opacity: 0, x: 50 }}
+      initial={{ opacity: 0, x: 60 }}
       animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -50 }}
-      className="min-h-screen flex flex-col px-6 py-8"
+      exit={{ opacity: 0, x: -60 }}
+      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      className="min-h-screen flex flex-col px-6 py-8 gradient-hero"
     >
-      <ExplorerProgress currentStep={explorerStep} onBack={onBack} />
+      <div className="w-full max-w-lg mx-auto flex-1 flex flex-col">
+        <ExplorerProgress currentStep={explorerStep} onBack={onBack} />
 
-      <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full">
-        <h2 className="text-2xl md:text-3xl font-bold mb-8 leading-tight" style={{ fontFamily: 'Montserrat' }}>
-          {question}
-        </h2>
+        <div className="flex-1 flex flex-col justify-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.08, duration: 0.4 }}
+            className="glass-card rounded-3xl p-8"
+          >
+            <h2 className="text-xl md:text-2xl font-bold mb-8 text-foreground leading-snug tracking-tight">
+              {question}
+            </h2>
 
-        {type === 'options' && options && (
-          <div className="space-y-3">
-            {options.map(opt => (
-              <motion.button
-                key={opt.value}
-                whileTap={{ scale: 0.97 }}
-                onClick={() => onAnswer(opt.value)}
-                className="w-full text-left px-5 py-4 rounded-2xl border-2 border-border bg-card hover:border-primary hover:bg-accent/50 transition-all font-medium text-base flex items-center gap-3"
-              >
-                {opt.emoji && <span className="text-2xl">{opt.emoji}</span>}
-                {opt.label}
-              </motion.button>
-            ))}
-          </div>
-        )}
+            {type === 'options' && options && (
+              <div className="space-y-2.5">
+                {options.map((opt, i) => {
+                  const isSelected = selectedValue === opt.value;
+                  return (
+                    <motion.button
+                      key={opt.value}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.12 + i * 0.05 }}
+                      onClick={() => handleSelect(opt.value)}
+                      className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-200 text-left group relative overflow-hidden ${
+                        isSelected
+                          ? 'border-primary bg-primary/5 shadow-md'
+                          : 'border-border bg-background hover:border-primary/40 hover:bg-accent/30'
+                      }`}
+                    >
+                      {/* Selection indicator */}
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+                        isSelected ? 'border-primary bg-primary' : 'border-muted-foreground/30'
+                      }`}>
+                        {isSelected && <Check className="w-3 h-3 text-primary-foreground" />}
+                      </div>
 
-        {type === 'city' && (
-          <div className="space-y-2">
-            <Input
-              value={citySearch}
-              onChange={e => setCitySearch(e.target.value)}
-              placeholder="Digite sua cidade..."
-              className="text-lg py-6 rounded-xl"
-              autoFocus
-            />
-            {filteredCities.length > 0 && (
-              <div className="bg-card border rounded-xl overflow-hidden">
-                {filteredCities.map(city => (
-                  <button
-                    key={city}
-                    onClick={() => onAnswer(city)}
-                    className="w-full text-left px-4 py-3 hover:bg-accent/50 transition-colors border-b last:border-b-0 border-border"
-                  >
-                    📍 {city}
-                  </button>
-                ))}
+                      {opt.emoji && (
+                        <span className="text-2xl w-10 h-10 flex items-center justify-center rounded-xl bg-muted group-hover:bg-accent transition-colors shrink-0">
+                          {opt.emoji}
+                        </span>
+                      )}
+                      <span className="font-medium text-sm text-foreground">{opt.label}</span>
+
+                      {/* Selected glow */}
+                      {isSelected && (
+                        <motion.div
+                          layoutId="selected-glow"
+                          className="absolute inset-0 rounded-2xl pointer-events-none"
+                          style={{ boxShadow: 'inset 0 0 0 2px hsl(207 90% 42%)' }}
+                        />
+                      )}
+                    </motion.button>
+                  );
+                })}
               </div>
             )}
-          </div>
-        )}
+
+            {type === 'city' && (
+              <div>
+                <div className="relative">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    value={citySearch}
+                    onChange={e => setCitySearch(e.target.value)}
+                    placeholder="Digite o nome da sua cidade..."
+                    className="pl-11 py-6 rounded-2xl text-base bg-background border-border"
+                    autoFocus
+                  />
+                </div>
+                {filteredCities.length > 0 && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mt-3 space-y-1"
+                  >
+                    {filteredCities.map((city, i) => (
+                      <motion.button
+                        key={city}
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.04 }}
+                        onClick={() => onAnswer(city)}
+                        className="w-full text-left px-4 py-3.5 rounded-xl hover:bg-accent transition-colors flex items-center gap-3 text-sm group"
+                      >
+                        <MapPin className="w-4 h-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
+                        <span className="font-medium">{city}</span>
+                      </motion.button>
+                    ))}
+                  </motion.div>
+                )}
+                {citySearch.length >= 2 && filteredCities.length === 0 && (
+                  <p className="text-sm text-muted-foreground mt-4 text-center">
+                    Nenhuma cidade encontrada
+                  </p>
+                )}
+              </div>
+            )}
+          </motion.div>
+        </div>
       </div>
     </motion.div>
   );
