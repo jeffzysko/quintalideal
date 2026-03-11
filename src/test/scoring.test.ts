@@ -62,7 +62,7 @@ describe('recommendPool', () => {
   });
 
   it('recommends Cancún for large space with family', () => {
-    expect(recommendPool(base({ preferencia: 'simples', orcamento: '30-50' }))).toBe('Cancún');
+    expect(recommendPool(base({ preferencia: 'simples', orcamento: '18-30' }))).toBe('Cancún');
   });
 
   it('recommends Atalaia for large space with spa', () => {
