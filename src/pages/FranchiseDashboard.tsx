@@ -134,10 +134,10 @@ export default function FranchiseDashboard() {
             {kpis.map((kpi, i) => (
               <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
                 <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
-                  <CardContent className="p-5">
-                    <kpi.icon className={`w-5 h-5 ${kpi.color} mb-2`} />
-                    <p className="text-2xl font-bold tracking-tight text-foreground">{kpi.value}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5">{kpi.label}</p>
+                  <CardContent className="p-3 md:p-5">
+                    <kpi.icon className={`w-4 h-4 md:w-5 md:h-5 ${kpi.color} mb-1.5 md:mb-2`} />
+                    <p className="text-xl md:text-2xl font-bold tracking-tight text-foreground">{kpi.value}</p>
+                    <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5">{kpi.label}</p>
                   </CardContent>
                 </Card>
               </motion.div>
