@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,126 +12,68 @@ import { motion } from 'framer-motion';
 import { SITE_URL } from '@/lib/constants';
 import { FranchiseContactSettings } from '@/components/franchise/FranchiseContactSettings';
 import { FranchiseReports } from '@/components/franchise/FranchiseReports';
+import { STATUS_LABELS, STATUS_COLORS, LeadRow } from '@/lib/lead-constants';
 import logoSplash from '@/assets/logo-splash.png';
-
-interface LeadRow {
-  id: string;
-  nome: string | null;
-  cidade: string | null;
-  pontuacao_quintal: number | null;
-  modelo_recomendado: string | null;
-  status_lead: string;
-  created_at: string;
-}
-
-const statusColors: Record<string, string> = {
-  novo: 'bg-primary/10 text-primary border-primary/20',
-  contatado: 'bg-amber-50 text-amber-700 border-amber-200',
-  em_negociacao: 'bg-violet-50 text-violet-700 border-violet-200',
-  vendido: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  perdido: 'bg-red-50 text-red-700 border-red-200',
-};
-
-const statusLabels: Record<string, string> = {
-  novo: 'Novo',
-  contatado: 'Contatado',
-  em_negociacao: 'Em Negociação',
-  vendido: 'Vendido',
-  perdido: 'Perdido',
-};
 
 const PAGE_SIZE = 20;
 
 export default function FranchiseDashboard() {
   const { franchiseId, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
-  // All leads for KPIs
-  const [allLeads, setAllLeads] = useState<LeadRow[]>([]);
-  // Paginated leads for table
-  const [leads, setLeads] = useState<LeadRow[]>([]);
-  const [totalCount, setTotalCount] = useState(0);
   const [page, setPage] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [tableLoading, setTableLoading] = useState(false);
-  const [franchiseSlug, setFranchiseSlug] = useState<string | null>(null);
-  const [franchiseName, setFranchiseName] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'leads' | 'reports'>('leads');
 
-  useEffect(() => {
-    if (franchiseId) {
-      loadKpiData();
-    } else if (!authLoading) {
-      setLoading(false);
-    }
-  }, [franchiseId, authLoading]);
+  // ── Franchise info ──
+  const { data: franchiseInfo } = useQuery({
+    queryKey: ['franchise-info', franchiseId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('franchises')
+        .select('slug_url, nome_franquia')
+        .eq('id', franchiseId!)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!franchiseId,
+  });
 
-  useEffect(() => {
-    if (franchiseId) {
-      loadPaginatedLeads();
-    }
-  }, [franchiseId, page]);
-
-  const loadKpiData = async () => {
-    try {
-      if (franchiseId) {
-        const { data: franchiseData } = await supabase
-          .from('franchises')
-          .select('slug_url, nome_franquia')
-          .eq('id', franchiseId)
-          .maybeSingle();
-        if (franchiseData) {
-          setFranchiseSlug(franchiseData.slug_url);
-          setFranchiseName(franchiseData.nome_franquia || '');
-        }
-      }
-
-      let query = supabase
+  // ── All leads for KPIs ──
+  const { data: allLeads = [], isLoading: loadingKpis } = useQuery({
+    queryKey: ['franchise-leads-all', franchiseId],
+    queryFn: async () => {
+      const { data, error } = await supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at')
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by')
+        .eq('franquia_id', franchiseId!)
         .order('created_at', { ascending: false });
-
-      if (franchiseId) {
-        query = query.eq('franquia_id', franchiseId);
-      }
-
-      const { data, error } = await query;
       if (error) throw error;
-      setAllLeads(data || []);
-    } catch (err) {
-      console.error('Erro ao carregar dados:', err);
-      toast.error('Erro ao carregar dados. Tente recarregar a página.');
-    } finally {
-      setLoading(false);
-    }
-  };
+      return (data || []) as LeadRow[];
+    },
+    enabled: !!franchiseId,
+  });
 
-  const loadPaginatedLeads = async () => {
-    setTableLoading(true);
-    try {
+  // ── Paginated leads for table ──
+  const { data: paginatedData, isLoading: loadingTable } = useQuery({
+    queryKey: ['franchise-leads-table', franchiseId, page],
+    queryFn: async () => {
       const from = (page - 1) * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
-
-      let query = supabase
+      const { data, count, error } = await supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at', { count: 'exact' })
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by', { count: 'exact' })
+        .eq('franquia_id', franchiseId!)
         .order('created_at', { ascending: false })
         .range(from, to);
-
-      if (franchiseId) {
-        query = query.eq('franquia_id', franchiseId);
-      }
-
-      const { data, count, error } = await query;
       if (error) throw error;
-      setLeads(data || []);
-      setTotalCount(count || 0);
-    } catch (err) {
-      console.error('Erro ao carregar leads:', err);
-      toast.error('Erro ao carregar leads.');
-    } finally {
-      setTableLoading(false);
-    }
-  };
+      return { leads: (data || []) as LeadRow[], total: count || 0 };
+    },
+    enabled: !!franchiseId,
+  });
+
+  const leads = paginatedData?.leads || [];
+  const totalCount = paginatedData?.total || 0;
+  const franchiseSlug = franchiseInfo?.slug_url || null;
+  const franchiseName = franchiseInfo?.nome_franquia || '';
 
   const totalLeads = allLeads.length;
   const newLeads = allLeads.filter(l => l.status_lead === 'novo').length;
@@ -147,6 +90,7 @@ export default function FranchiseDashboard() {
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE;
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+  const isLoading = authLoading || loadingKpis || loadingTable;
 
   return (
     <div className="min-h-screen bg-background">
@@ -175,7 +119,6 @@ export default function FranchiseDashboard() {
       </div>
 
       <div className="max-w-6xl mx-auto px-6 py-8">
-        {/* Contact Settings */}
         {franchiseId && (
           <div className="mb-8">
             <FranchiseContactSettings franchiseId={franchiseId} />
@@ -219,7 +162,7 @@ export default function FranchiseDashboard() {
               <CardTitle className="text-sm font-semibold">Leads Recentes ({totalCount})</CardTitle>
             </CardHeader>
             <CardContent>
-              {(loading || tableLoading) ? (
+              {isLoading ? (
                 <div className="flex justify-center py-12">
                   <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" />
                 </div>
@@ -271,8 +214,8 @@ export default function FranchiseDashboard() {
                             </td>
                             <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.modelo_recomendado || '—'}</td>
                             <td className="py-3.5 px-3">
-                              <Badge className={`${statusColors[lead.status_lead] || ''} border text-xs font-medium`} variant="secondary">
-                                {statusLabels[lead.status_lead] || lead.status_lead}
+                              <Badge className={`${STATUS_COLORS[lead.status_lead] || ''} border text-xs font-medium`} variant="secondary">
+                                {STATUS_LABELS[lead.status_lead] || lead.status_lead}
                               </Badge>
                             </td>
                             <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground text-xs">
@@ -289,7 +232,6 @@ export default function FranchiseDashboard() {
                     </table>
                   </div>
 
-                  {/* Pagination */}
                   {totalCount > PAGE_SIZE && (
                     <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/30">
                       <p className="text-sm text-muted-foreground">

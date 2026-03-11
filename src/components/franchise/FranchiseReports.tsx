@@ -1,43 +1,16 @@
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { BarChart, Bar, XAxis, YAxis, PieChart, Pie, Cell, LineChart, Line, ResponsiveContainer } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 import { TrendingUp, TrendingDown, Target, Zap, MapPin, Droplets, CalendarDays, BarChart3 } from 'lucide-react';
 import { motion } from 'framer-motion';
-
-interface LeadRow {
-  id: string;
-  nome: string | null;
-  cidade: string | null;
-  pontuacao_quintal: number | null;
-  modelo_recomendado: string | null;
-  status_lead: string;
-  created_at: string;
-}
+import { STATUS_LABELS, STATUS_CHART_COLORS, LeadRow } from '@/lib/lead-constants';
 
 interface FranchiseReportsProps {
   leads: LeadRow[];
 }
 
-const statusLabels: Record<string, string> = {
-  novo: 'Novo',
-  contatado: 'Contatado',
-  em_negociacao: 'Em Negociação',
-  vendido: 'Vendido',
-  perdido: 'Perdido',
-};
-
-const STATUS_COLORS: Record<string, string> = {
-  novo: '#0ea5e9',
-  contatado: '#f59e0b',
-  em_negociacao: '#8b5cf6',
-  vendido: '#10b981',
-  perdido: '#ef4444',
-};
-
 export function FranchiseReports({ leads }: FranchiseReportsProps) {
-  // ── KPIs ──
   const totalLeads = leads.length;
   const avgScore = totalLeads > 0
     ? Math.round(leads.reduce((s, l) => s + (l.pontuacao_quintal || 0), 0) / totalLeads)
@@ -45,7 +18,6 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
   const soldCount = leads.filter(l => l.status_lead === 'vendido').length;
   const conversionRate = totalLeads > 0 ? Math.round((soldCount / totalLeads) * 100) : 0;
 
-  // Leads this month vs last month
   const now = new Date();
   const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
   const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
@@ -58,7 +30,6 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
     ? Math.round(((leadsThisMonth - leadsLastMonth) / leadsLastMonth) * 100)
     : leadsThisMonth > 0 ? 100 : 0;
 
-  // ── Leads por mês (últimos 6 meses) ──
   const leadsPerMonth = useMemo(() => {
     const months: { month: string; label: string; count: number }[] = [];
     for (let i = 5; i >= 0; i--) {
@@ -76,18 +47,16 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
     return months;
   }, [leads]);
 
-  // ── Status distribution ──
   const statusData = useMemo(() => {
     const counts: Record<string, number> = {};
     leads.forEach(l => { counts[l.status_lead] = (counts[l.status_lead] || 0) + 1; });
     return Object.entries(counts).map(([status, count]) => ({
-      name: statusLabels[status] || status,
+      name: STATUS_LABELS[status] || status,
       value: count,
-      color: STATUS_COLORS[status] || '#94a3b8',
+      color: STATUS_CHART_COLORS[status] || '#94a3b8',
     }));
   }, [leads]);
 
-  // ── Top cidades ──
   const topCities = useMemo(() => {
     const counts: Record<string, number> = {};
     leads.forEach(l => { if (l.cidade) counts[l.cidade] = (counts[l.cidade] || 0) + 1; });
@@ -97,7 +66,6 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
       .map(([city, count]) => ({ city, count }));
   }, [leads]);
 
-  // ── Top modelos ──
   const topModels = useMemo(() => {
     const counts: Record<string, number> = {};
     leads.forEach(l => { if (l.modelo_recomendado) counts[l.modelo_recomendado] = (counts[l.modelo_recomendado] || 0) + 1; });
@@ -107,7 +75,6 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
       .map(([model, count]) => ({ model, count }));
   }, [leads]);
 
-  // ── Score distribution ──
   const scoreDistribution = useMemo(() => {
     const buckets = [
       { range: '0-20%', min: 0, max: 20, count: 0 },
@@ -124,7 +91,6 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
     return buckets;
   }, [leads]);
 
-  // ── Leads acumulados por semana (últimas 8 semanas) ──
   const weeklyTrend = useMemo(() => {
     const weeks: { week: string; count: number }[] = [];
     for (let i = 7; i >= 0; i--) {
@@ -202,7 +168,6 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
 
       {/* Charts Row 1 */}
       <div className="grid md:grid-cols-2 gap-4">
-        {/* Leads por mês */}
         <Card className="border-border/50 shadow-sm">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
@@ -221,7 +186,6 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
           </CardContent>
         </Card>
 
-        {/* Distribuição de status */}
         <Card className="border-border/50 shadow-sm">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
@@ -258,7 +222,6 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
 
       {/* Charts Row 2 */}
       <div className="grid md:grid-cols-2 gap-4">
-        {/* Tendência semanal */}
         <Card className="border-border/50 shadow-sm">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
@@ -277,7 +240,6 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
           </CardContent>
         </Card>
 
-        {/* Distribuição de score */}
         <Card className="border-border/50 shadow-sm">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
@@ -299,7 +261,6 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
 
       {/* Rankings Row */}
       <div className="grid md:grid-cols-2 gap-4">
-        {/* Top cidades */}
         {topCities.length > 0 && (
           <Card className="border-border/50 shadow-sm">
             <CardHeader className="pb-2">
@@ -336,7 +297,6 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
           </Card>
         )}
 
-        {/* Top modelos */}
         {topModels.length > 0 && (
           <Card className="border-border/50 shadow-sm">
             <CardHeader className="pb-2">

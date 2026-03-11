@@ -1,0 +1,66 @@
+import { Input } from '@/components/ui/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Card, CardContent } from '@/components/ui/card';
+import { STATUS_LABELS, Franchise } from '@/lib/lead-constants';
+
+interface AdminLeadFiltersProps {
+  searchInput: string;
+  onSearchChange: (v: string) => void;
+  cidadeInput: string;
+  onCidadeChange: (v: string) => void;
+  filterFranquia: string;
+  onFranquiaChange: (v: string) => void;
+  filterStatus: string;
+  onStatusChange: (v: string) => void;
+  filterModelo: string;
+  onModeloChange: (v: string) => void;
+  franchises: Franchise[];
+  models: string[];
+}
+
+export function AdminLeadFilters({
+  searchInput, onSearchChange,
+  cidadeInput, onCidadeChange,
+  filterFranquia, onFranquiaChange,
+  filterStatus, onStatusChange,
+  filterModelo, onModeloChange,
+  franchises, models,
+}: AdminLeadFiltersProps) {
+  return (
+    <Card className="mb-6 border-border/50 shadow-sm">
+      <CardContent className="p-4">
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+          <Input placeholder="Buscar por nome..." value={searchInput} onChange={e => onSearchChange(e.target.value)} className="rounded-xl" />
+          <Select value={filterFranquia} onValueChange={onFranquiaChange}>
+            <SelectTrigger className="rounded-xl"><SelectValue placeholder="Franquia" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas Franquias</SelectItem>
+              {franchises.map(f => (
+                <SelectItem key={f.id} value={f.id}>{f.nome_franquia}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={filterStatus} onValueChange={onStatusChange}>
+            <SelectTrigger className="rounded-xl"><SelectValue placeholder="Status" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos Status</SelectItem>
+              {Object.entries(STATUS_LABELS).map(([v, l]) => (
+                <SelectItem key={v} value={v}>{l}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={filterModelo} onValueChange={onModeloChange}>
+            <SelectTrigger className="rounded-xl"><SelectValue placeholder="Modelo" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todos Modelos</SelectItem>
+              {models.map(m => (
+                <SelectItem key={m} value={m}>{m}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Input placeholder="Filtrar cidade..." value={cidadeInput} onChange={e => onCidadeChange(e.target.value)} className="rounded-xl" />
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
