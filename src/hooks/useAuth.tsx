@@ -48,19 +48,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let mounted = true;
+    let initialLoad = true;
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      (_event, session) => {
         if (!mounted) return;
         const currentUser = session?.user ?? null;
         setUser(currentUser);
         if (currentUser) {
-          await fetchUserMeta(currentUser.id);
+          // Don't await — fetch in background to avoid blocking
+          fetchUserMeta(currentUser.id).then(() => {
+            if (mounted && !initialLoad) setLoading(false);
+          });
         } else {
           setRole(null);
           setFranchiseId(null);
+          if (!initialLoad) setLoading(false);
         }
-        if (mounted) setLoading(false);
       }
     );
 
@@ -71,6 +75,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (currentUser) {
         await fetchUserMeta(currentUser.id);
       }
+      initialLoad = false;
       if (mounted) setLoading(false);
     });
 
