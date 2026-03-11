@@ -20,6 +20,34 @@ import logoSplash from '@/assets/logo-splash.png';
 
 const PAGE_SIZE = 20;
 
+function FranchiseLinkBanner({ slug }: { slug: string }) {
+  const [copied, setCopied] = useState(false);
+  const url = `${SITE_URL}/${slug}`;
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    toast.success('Link copiado!');
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="mb-6 rounded-xl border border-primary/20 bg-primary/5 p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+      <div className="flex items-center gap-2 min-w-0 flex-1">
+        <Link2 className="w-5 h-5 text-primary shrink-0" />
+        <div className="min-w-0">
+          <p className="text-xs font-semibold text-foreground mb-0.5">Seu link de divulgação</p>
+          <p className="text-sm text-primary font-mono truncate">{url}</p>
+        </div>
+      </div>
+      <Button size="sm" variant="outline" onClick={handleCopy} className="gap-2 rounded-lg border-primary/30 hover:bg-primary/10 shrink-0">
+        {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+        {copied ? 'Copiado!' : 'Copiar link'}
+      </Button>
+    </div>
+  );
+}
+
 export default function FranchiseDashboard() {
   const { franchiseId, loading: authLoading } = useAuth();
   const navigate = useNavigate();
