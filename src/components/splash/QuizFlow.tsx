@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import { HeroSection } from './HeroSection';
@@ -9,6 +9,7 @@ import { LeadForm } from './LeadForm';
 import { ActionButtons } from './ActionButtons';
 import { calculateScore, recommendPool, type QuizAnswers } from '@/lib/scoring';
 import { supabase } from '@/lib/supabase';
+import { toast } from 'sonner';
 
 const quizQuestions = [
   {
@@ -79,6 +80,9 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   const [leadName, setLeadName] = useState('');
   const [leadRefCode, setLeadRefCode] = useState('');
   const [saving, setSaving] = useState(false);
+  
+  // Guard against double submissions
+  const isSubmittingRef = useRef(false);
 
   const answerKeys: (keyof QuizAnswers)[] = ['espaco', 'moradia', 'uso', 'intencao', 'preferencia', 'cidade'];
 
@@ -103,12 +107,16 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   }, [quizStep, answers]);
 
   const fetchPoolDescription = async (name: string) => {
-    const { data } = await supabase
-      .from('pool_models')
-      .select('descricao')
-      .eq('nome_modelo', name)
-      .single();
-    if (data) setPoolDesc(data.descricao || '');
+    try {
+      const { data } = await supabase
+        .from('pool_models')
+        .select('descricao')
+        .eq('nome_modelo', name)
+        .single();
+      if (data) setPoolDesc(data.descricao || '');
+    } catch {
+      // Non-critical: description is optional
+    }
   };
 
   const checkDuplicate = async (telefone: string, email: string) => {
@@ -120,10 +128,14 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   };
 
   const handleLeadSubmit = async (data: { nome: string; telefone: string; email: string }) => {
+    // Prevent double submission
+    if (isSubmittingRef.current) return;
+    isSubmittingRef.current = true;
+    
     setSaving(true);
     setLeadName(data.nome);
     try {
-      const { data: inserted } = await supabase.from('leads').insert({
+      const { data: inserted, error } = await supabase.from('leads').insert({
         nome: data.nome,
         telefone: data.telefone,
         email: data.email || null,
@@ -139,14 +151,21 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         referred_by: referredBy || null,
       }).select('ref_code').single();
 
+      if (error) {
+        throw error;
+      }
+
       if (inserted?.ref_code) {
         setLeadRefCode(inserted.ref_code);
       }
+      setStep('actions');
     } catch (err) {
       console.error('Error saving lead:', err);
+      toast.error('Erro ao salvar seus dados. Tente novamente.');
+      isSubmittingRef.current = false;
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
-    setStep('actions');
   };
 
   const currentQuizQuestion = quizStep < quizQuestions.length ? quizQuestions[quizStep] : null;
