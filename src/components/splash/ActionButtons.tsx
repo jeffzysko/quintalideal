@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { MessageCircle, FileText, Share2, Trophy, Download, ArrowRight, Sparkles, Zap, Star } from 'lucide-react';
+import { MessageCircle, FileText, Share2, Trophy, Download, ArrowRight, Sparkles, Star, Users } from 'lucide-react';
 import logoSplash from '@/assets/logo-splash.png';
-import { getRankingGaucho } from '@/lib/ranking';
+import { getRankingGaucho, getYardClassification, getSharePhrase, getSocialComparison } from '@/lib/ranking';
 import { ValorizationSimulator } from './ValorizationSimulator';
 import { FriendChallenge } from './FriendChallenge';
 import { trackEvent } from '@/lib/analytics';
@@ -20,15 +20,31 @@ interface ActionButtonsProps {
 
 export function ActionButtons({ score, poolName, poolDescription, whatsappNumber, leadName, refCode, franchiseId }: ActionButtonsProps) {
   const ranking = getRankingGaucho(score);
+  const classification = getYardClassification(score);
+  const socialComparison = getSocialComparison(score);
   const [sharing, setSharing] = useState(false);
 
   const handleWhatsApp = () => {
     trackEvent('whatsapp_clicked', { franchiseId });
     const phone = whatsappNumber || '5551999999999';
     const message = encodeURIComponent(
-      `Olá! Fiz o teste do Índice do Quintal Splash e meu quintal tem ${score}% de potencial. O modelo recomendado foi a ${poolName}. Gostaria de saber mais!`
+      `Olá! Fiz o teste do Índice do Quintal Splash e meu quintal tem ${score}% de potencial (${classification.label}). O modelo recomendado foi a ${poolName}. Gostaria de saber mais!`
     );
     window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
+  };
+
+  const handleShareWhatsApp = () => {
+    trackEvent('result_shared', { franchiseId, metadata: { plataforma: 'whatsapp' } });
+    const phrase = getSharePhrase(score);
+    const text = encodeURIComponent(
+      `${phrase}\n\n${classification.emoji} ${classification.label}\n🏊 Modelo recomendado: ${poolName}\n\nDescubra o potencial do seu quintal:\nhttps://splash-quintal-magic.lovable.app`
+    );
+    window.open(`https://wa.me/?text=${text}`, '_blank');
+  };
+
+  const handleCopyLink = () => {
+    trackEvent('result_shared', { franchiseId, metadata: { plataforma: 'link_copiado' } });
+    navigator.clipboard.writeText('https://splash-quintal-magic.lovable.app');
   };
 
   const generateShareImage = async (): Promise<Blob | null> => {
@@ -58,37 +74,53 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
     ctx.font = '800 36px Inter, sans-serif';
     ctx.fillText('SPLASH PISCINAS', 540, 250);
 
-    ctx.beginPath(); ctx.arc(540, 580, 195, 0, Math.PI * 2);
+    // Score ring
+    ctx.beginPath(); ctx.arc(540, 560, 195, 0, Math.PI * 2);
     ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 12; ctx.stroke();
-    ctx.beginPath(); ctx.arc(540, 580, 195, -Math.PI / 2, -Math.PI / 2 + (score / 100) * Math.PI * 2);
+    ctx.beginPath(); ctx.arc(540, 560, 195, -Math.PI / 2, -Math.PI / 2 + (score / 100) * Math.PI * 2);
     ctx.strokeStyle = '#1e88e5'; ctx.lineWidth = 12; ctx.lineCap = 'round'; ctx.stroke();
 
     ctx.fillStyle = '#ffffff'; ctx.font = '900 110px Inter, sans-serif';
-    ctx.fillText(`${score}%`, 540, 610);
+    ctx.fillText(`${score}%`, 540, 590);
     ctx.font = '400 24px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.fillText('de potencial', 540, 660);
+    ctx.fillText('de potencial', 540, 640);
 
-    ctx.font = '700 46px Inter, sans-serif'; ctx.fillStyle = '#ffffff';
-    ['Meu quintal tem', `${score}% de potencial para`, 'uma piscina Splash!']
-      .forEach((line, i) => ctx.fillText(line, 540, 870 + i * 65));
+    // Classification
+    ctx.font = '700 42px Inter, sans-serif'; ctx.fillStyle = classification.color;
+    ctx.fillText(`${classification.emoji} ${classification.label}`, 540, 830);
 
-    const badgeY = 1120;
+    // Main text
+    ctx.font = '700 44px Inter, sans-serif'; ctx.fillStyle = '#ffffff';
+    ctx.fillText(`Meu quintal tem ${score}%`, 540, 950);
+    ctx.fillText('de potencial para', 540, 1010);
+    ctx.fillText('uma piscina Splash!', 540, 1070);
+
+    // Ranking badge
+    const badgeY = 1170;
     ctx.fillStyle = 'rgba(255,215,0,0.12)';
-    ctx.beginPath(); ctx.roundRect(220, badgeY - 28, 640, 56, 28); ctx.fill();
-    ctx.font = '600 28px Inter, sans-serif'; ctx.fillStyle = '#ffd700';
+    ctx.beginPath(); ctx.roundRect(180, badgeY - 28, 720, 56, 28); ctx.fill();
+    ctx.font = '600 26px Inter, sans-serif'; ctx.fillStyle = '#ffd700';
     ctx.fillText(`🏆 ${ranking.label}`, 540, badgeY + 8);
 
+    // Model
     ctx.font = '400 30px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.6)';
     ctx.fillText(`Modelo recomendado: ${poolName}`, 540, 1300);
 
+    // Social comparison
+    ctx.font = '400 26px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.fillText(socialComparison, 540, 1380);
+
+    // Divider
     ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(340, 1400); ctx.lineTo(740, 1400); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(340, 1450); ctx.lineTo(740, 1450); ctx.stroke();
 
+    // CTA
     ctx.font = '500 26px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.4)';
-    ctx.fillText('Descubra o potencial do seu quintal em', 540, 1490);
+    ctx.fillText('Descubra o potencial do seu quintal em', 540, 1530);
     ctx.font = '700 30px Inter, sans-serif'; ctx.fillStyle = '#ffffff';
-    ctx.fillText('splashpiscinas.com.br', 540, 1535);
+    ctx.fillText('splashpiscinas.com.br', 540, 1575);
 
+    // Footer
     ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 1820, 1080, 100);
     ctx.font = '400 20px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.3)';
     ctx.fillText('© Splash Piscinas', 540, 1878);
@@ -106,7 +138,7 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
         await navigator.share({
           title: `Meu quintal tem ${score}% de potencial!`,
-          text: `🏊 ${ranking.label}`,
+          text: `${classification.emoji} ${classification.label} • ${ranking.label}`,
           files: [file],
         });
       } else {
@@ -142,7 +174,6 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
         className="relative overflow-hidden"
         style={{ background: 'linear-gradient(160deg, #06101f 0%, #0b2a52 35%, #0d3468 60%, #081d38 100%)' }}
       >
-        {/* Animated glows */}
         <motion.div
           animate={{ scale: [1, 1.15, 1], opacity: [0.15, 0.25, 0.15] }}
           transition={{ duration: 4, repeat: Infinity }}
@@ -192,14 +223,13 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
             é <span className="bg-gradient-to-r from-blue-300 via-cyan-300 to-blue-400 bg-clip-text text-transparent">incrível</span>! 🎉
           </motion.h2>
 
-          {/* Score ring + stats row */}
+          {/* Score ring + stats */}
           <motion.div
             initial={{ scale: 0.6, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.5, type: 'spring', damping: 14 }}
             className="flex items-center justify-center gap-6 mb-6"
           >
-            {/* Score ring */}
             <div className="relative w-32 h-32">
               <motion.div
                 animate={{ opacity: [0.2, 0.5, 0.2] }}
@@ -229,7 +259,6 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
               </div>
             </div>
 
-            {/* Stats column */}
             <div className="text-left space-y-3">
               <div>
                 <p className="text-white/35 text-[10px] uppercase tracking-wider">Potencial</p>
@@ -242,12 +271,27 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
             </div>
           </motion.div>
 
+          {/* Classification badge */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.7 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.7, type: 'spring' }}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full mb-2"
+            style={{
+              background: `linear-gradient(135deg, ${classification.color}18, ${classification.color}08)`,
+              border: `1px solid ${classification.color}30`,
+            }}
+          >
+            <span className="text-lg">{classification.emoji}</span>
+            <span className="font-bold text-sm" style={{ color: classification.color }}>{classification.label}</span>
+          </motion.div>
+
           {/* Ranking badge */}
           <motion.div
             initial={{ opacity: 0, scale: 0.7 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.8, type: 'spring' }}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full mb-4"
+            transition={{ delay: 0.85, type: 'spring' }}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full mb-3"
             style={{
               background: 'linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,215,0,0.04))',
               border: '1px solid rgba(255,215,0,0.2)',
@@ -257,6 +301,16 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
             <Trophy className="w-4 h-4 text-amber-400" />
             <span className="font-bold text-sm text-amber-300">{ranking.label}</span>
           </motion.div>
+
+          {/* Social comparison */}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.95 }}
+            className="text-white/45 text-xs italic mb-4"
+          >
+            {socialComparison}
+          </motion.p>
 
           {/* Pool card */}
           {poolDescription && (
@@ -295,7 +349,7 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
       {/* === CONTENT SECTIONS === */}
       <div className="px-6 max-w-md mx-auto -mt-2 relative z-20">
 
-        {/* Primary CTA — THE most important */}
+        {/* Primary CTA */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -320,25 +374,80 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
           </p>
         </motion.div>
 
+        {/* Challenge CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.35 }}
+          className="mt-5 rounded-2xl p-5 text-center"
+          style={{
+            background: 'linear-gradient(135deg, hsl(207 90% 54% / 0.08), hsl(180 100% 50% / 0.04))',
+            border: '1px solid hsl(207 90% 54% / 0.15)',
+          }}
+        >
+          <Users className="w-6 h-6 text-primary mx-auto mb-2" />
+          <p className="text-sm font-semibold text-foreground mb-1">
+            Será que o quintal dos seus amigos tem mais potencial que o seu?
+          </p>
+          <p className="text-xs text-muted-foreground mb-3">Desafie seus amigos e descubra!</p>
+          <Button
+            variant="outline"
+            onClick={handleShareWhatsApp}
+            className="rounded-xl border-primary/20 text-primary hover:bg-primary/5 gap-2"
+          >
+            <MessageCircle className="w-4 h-4" />
+            Desafiar um amigo
+          </Button>
+        </motion.div>
+
         {/* Valorization */}
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.4 }}>
+        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.5 }}>
           <ValorizationSimulator score={score} />
         </motion.div>
 
         {/* Friend Challenge */}
         {refCode && (
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.6 }}>
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.7 }}>
             <FriendChallenge refCode={refCode} score={score} leadName={leadName} />
           </motion.div>
         )}
 
-        {/* Secondary Actions */}
+        {/* Share & Secondary Actions */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.8 }}
+          transition={{ delay: 1.9 }}
           className="space-y-3 mt-8 pb-14"
         >
+          {/* Share buttons row */}
+          <div className="grid grid-cols-3 gap-2">
+            <Button
+              variant="outline"
+              onClick={handleShareWhatsApp}
+              className="py-5 text-xs rounded-2xl font-medium border-border hover:bg-accent gap-1.5 flex-col h-auto"
+            >
+              <MessageCircle className="w-4 h-4 text-green-500" />
+              WhatsApp
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleShare}
+              disabled={sharing}
+              className="py-5 text-xs rounded-2xl font-medium border-border hover:bg-accent gap-1.5 flex-col h-auto"
+            >
+              <Share2 className="w-4 h-4 text-primary" />
+              {sharing ? 'Gerando...' : 'Compartilhar'}
+            </Button>
+            <Button
+              variant="outline"
+              onClick={handleDownload}
+              className="py-5 text-xs rounded-2xl font-medium border-border hover:bg-accent gap-1.5 flex-col h-auto"
+            >
+              <Download className="w-4 h-4 text-muted-foreground" />
+              Baixar imagem
+            </Button>
+          </div>
+
           <Button
             onClick={handleWhatsApp}
             variant="outline"
@@ -355,26 +464,6 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
             <FileText className="w-4 h-4" />
             Receber estimativa gratuita
           </Button>
-
-          <div className="flex gap-2 pt-1">
-            <Button
-              variant="ghost"
-              onClick={handleShare}
-              disabled={sharing}
-              className="flex-1 py-5 text-xs rounded-2xl font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 gap-1.5"
-            >
-              <Share2 className="w-4 h-4" />
-              {sharing ? 'Gerando...' : 'Compartilhar'}
-            </Button>
-            <Button
-              variant="ghost"
-              onClick={handleDownload}
-              className="flex-1 py-5 text-xs rounded-2xl font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 gap-1.5"
-            >
-              <Download className="w-4 h-4" />
-              Baixar imagem
-            </Button>
-          </div>
 
           {/* Trust footer */}
           <div className="text-center pt-4 space-y-2">
