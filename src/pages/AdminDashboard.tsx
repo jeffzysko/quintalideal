@@ -1,4 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
+import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -71,13 +72,21 @@ export default function AdminDashboard() {
   useEffect(() => { loadData(); }, []);
 
   const loadData = async () => {
-    const [leadsRes, franchisesRes] = await Promise.all([
-      supabase.from('leads').select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by').order('created_at', { ascending: false }),
-      supabase.from('franchises').select('id, nome_franquia'),
-    ]);
-    setLeads(leadsRes.data || []);
-    setFranchises(franchisesRes.data || []);
-    setLoading(false);
+    try {
+      const [leadsRes, franchisesRes] = await Promise.all([
+        supabase.from('leads').select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by').order('created_at', { ascending: false }),
+        supabase.from('franchises').select('id, nome_franquia'),
+      ]);
+      if (leadsRes.error) throw leadsRes.error;
+      if (franchisesRes.error) throw franchisesRes.error;
+      setLeads(leadsRes.data || []);
+      setFranchises(franchisesRes.data || []);
+    } catch (err) {
+      console.error('Erro ao carregar dados:', err);
+      toast.error('Erro ao carregar dados. Tente recarregar a página.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const franchiseMap = useMemo(() => {
