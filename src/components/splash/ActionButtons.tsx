@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { motion } from 'framer-motion';
-import { MessageCircle, Share2, Trophy, Download, ArrowRight, Sparkles, Ruler, Waves, Droplets, Users } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MessageCircle, Share2, Trophy, Download, ArrowRight, Sparkles, Ruler, Waves, Droplets, Users, Instagram, X } from 'lucide-react';
 import logoSplash from '@/assets/logo-splash.png';
 import { getRankingGaucho, getYardClassification, getSharePhrase, getSocialComparison } from '@/lib/ranking';
 import { getPoolImage } from '@/lib/poolImages';
