@@ -59,7 +59,7 @@ const App = () => (
               <Route
                 path="/perfil"
                 element={
-                  <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'visualizador']}>
+                  <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
                     <ProfileSettings />
                   </ProtectedRoute>
                 }
