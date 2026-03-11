@@ -70,7 +70,7 @@ describe('recommendPool', () => {
   });
 
   it('recommends Tropical for medium space with unknown preference', () => {
-    expect(recommendPool(base({ espaco: '5-7', preferencia: 'nao-sei', uso: 'casal', orcamento: '30-50' }))).toBe('Tropical');
+    expect(recommendPool(base({ espaco: '5-7', preferencia: 'nao-sei', uso: 'casal', orcamento: '18-30' }))).toBe('Tropical');
   });
 
   it('recommends Bonaire for medium space with spa', () => {
