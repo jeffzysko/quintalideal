@@ -21,6 +21,7 @@ interface ActionButtonsProps {
   poolName: string;
   poolDescription?: string;
   poolSpecs?: PoolSpecs | null;
+  recommendedSize?: string;
   whatsappNumber?: string;
   leadName?: string;
   refCode?: string;
