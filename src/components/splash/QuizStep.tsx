@@ -1,8 +1,8 @@
 import { motion } from 'framer-motion';
-import { Progress } from '@/components/ui/progress';
 import { Input } from '@/components/ui/input';
 import { useState, useMemo } from 'react';
 import { cidadesRS } from '@/lib/cities';
+import { ExplorerProgress } from './ExplorerProgress';
 
 interface QuizOption {
   value: string;
@@ -18,11 +18,12 @@ interface QuizStepProps {
   type?: 'options' | 'city';
   onAnswer: (value: string) => void;
   onBack: () => void;
+  /** 0-based explorer step index for progress display */
+  explorerStep: number;
 }
 
-export function QuizStep({ step, totalSteps, question, options, type = 'options', onAnswer, onBack }: QuizStepProps) {
+export function QuizStep({ step, totalSteps, question, options, type = 'options', onAnswer, onBack, explorerStep }: QuizStepProps) {
   const [citySearch, setCitySearch] = useState('');
-  const progress = ((step) / totalSteps) * 100;
 
   const filteredCities = useMemo(() => {
     if (!citySearch || citySearch.length < 2) return [];
@@ -38,15 +39,7 @@ export function QuizStep({ step, totalSteps, question, options, type = 'options'
       exit={{ opacity: 0, x: -50 }}
       className="min-h-screen flex flex-col px-6 py-8"
     >
-      <div className="mb-6">
-        <Progress value={progress} className="h-2 mb-2" />
-        <div className="flex justify-between items-center">
-          <button onClick={onBack} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-            ← Voltar
-          </button>
-          <span className="text-xs text-muted-foreground">{step}/{totalSteps}</span>
-        </div>
-      </div>
+      <ExplorerProgress currentStep={explorerStep} onBack={onBack} />
 
       <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full">
         <h2 className="text-2xl md:text-3xl font-bold mb-8 leading-tight" style={{ fontFamily: 'Montserrat' }}>

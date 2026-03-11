@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { HeroSection } from './HeroSection';
 import { PhotoUpload } from './PhotoUpload';
@@ -28,20 +28,20 @@ const quizQuestions = [
     ],
   },
   {
-    question: 'Você pretende colocar piscina:',
-    options: [
-      { value: '2026', label: 'Ainda em 2026', emoji: '🔥' },
-      { value: '2026-2027', label: 'Talvez em 2026 ou 2027', emoji: '🤔' },
-      { value: 'pesquisando', label: 'Só estou pesquisando', emoji: '🔍' },
-    ],
-  },
-  {
-    question: 'Quem usaria mais a piscina?',
+    question: 'Como você imagina aproveitar sua piscina?',
     options: [
       { value: 'casal', label: 'Casal', emoji: '💑' },
       { value: 'familia-pequena', label: 'Família pequena', emoji: '👨‍👩‍👧' },
       { value: 'familia-grande', label: 'Família grande', emoji: '👨‍👩‍👧‍👦' },
       { value: 'amigos', label: 'Amigos e festas', emoji: '🎉' },
+    ],
+  },
+  {
+    question: 'Quando você gostaria de ter sua piscina?',
+    options: [
+      { value: '2026', label: 'Ainda em 2026', emoji: '🔥' },
+      { value: '2026-2027', label: 'Talvez em 2026 ou 2027', emoji: '🤔' },
+      { value: 'pesquisando', label: 'Só estou pesquisando', emoji: '🔍' },
     ],
   },
   {
@@ -75,7 +75,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   const [leadName, setLeadName] = useState('');
   const [saving, setSaving] = useState(false);
 
-  const answerKeys: (keyof QuizAnswers)[] = ['espaco', 'moradia', 'intencao', 'uso', 'preferencia', 'cidade'];
+  const answerKeys: (keyof QuizAnswers)[] = ['espaco', 'moradia', 'uso', 'intencao', 'preferencia', 'cidade'];
 
   const handleQuizAnswer = useCallback((value: string) => {
     const key = answerKeys[quizStep];
@@ -86,9 +86,8 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       setQuizStep(prev => prev + 1);
     }
 
-    // Last question (city = index 5, but questions array has 5 items, city is extra)
+    // City is the last step (index 5)
     if (quizStep === 5) {
-      // Calculate score
       const fullAnswers = newAnswers as QuizAnswers;
       const s = calculateScore(fullAnswers);
       const pool = recommendPool(fullAnswers);
@@ -133,25 +132,18 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
     setStep('actions');
   };
 
-  const currentQuizQuestion = quizStep < quizQuestions.length
-    ? quizQuestions[quizStep]
-    : null;
+  const currentQuizQuestion = quizStep < quizQuestions.length ? quizQuestions[quizStep] : null;
+
+  // Explorer step index: 0 = photos, 1-5 = quiz questions, 6 = city
+  const explorerStepIndex = step === 'photos' ? 0 : quizStep + 1;
 
   return (
     <AnimatePresence mode="wait">
       {step === 'hero' && (
-        <HeroSection
-          key="hero"
-          onStart={() => setStep('photos')}
-          franchiseName={franchiseName}
-        />
+        <HeroSection key="hero" onStart={() => setStep('photos')} franchiseName={franchiseName} />
       )}
       {step === 'photos' && (
-        <PhotoUpload
-          key="photos"
-          onNext={(urls) => { setPhotoUrls(urls); setStep('quiz'); }}
-          onBack={() => setStep('hero')}
-        />
+        <PhotoUpload key="photos" onNext={(urls) => { setPhotoUrls(urls); setStep('quiz'); }} onBack={() => setStep('hero')} />
       )}
       {step === 'quiz' && currentQuizQuestion && (
         <QuizStep
@@ -161,6 +153,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
           question={currentQuizQuestion.question}
           options={currentQuizQuestion.options}
           onAnswer={handleQuizAnswer}
+          explorerStep={quizStep + 1}
           onBack={() => {
             if (quizStep === 0) setStep('photos');
             else setQuizStep(prev => prev - 1);
@@ -175,34 +168,18 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
           question="Cidade onde você mora"
           type="city"
           onAnswer={handleQuizAnswer}
+          explorerStep={6}
           onBack={() => setQuizStep(4)}
         />
       )}
       {step === 'result' && (
-        <ResultScreen
-          key="result"
-          score={score}
-          poolName={poolName}
-          poolDescription={poolDesc}
-          onContinue={() => setStep('lead-form')}
-        />
+        <ResultScreen key="result" score={score} poolName={poolName} poolDescription={poolDesc} onContinue={() => setStep('lead-form')} />
       )}
       {step === 'lead-form' && (
-        <LeadForm
-          key="lead-form"
-          onSubmit={handleLeadSubmit}
-          loading={saving}
-        />
+        <LeadForm key="lead-form" onSubmit={handleLeadSubmit} loading={saving} />
       )}
       {step === 'actions' && (
-        <ActionButtons
-          key="actions"
-          score={score}
-          poolName={poolName}
-          poolDescription={poolDesc}
-          whatsappNumber={franchiseWhatsapp}
-          leadName={leadName}
-        />
+        <ActionButtons key="actions" score={score} poolName={poolName} poolDescription={poolDesc} whatsappNumber={franchiseWhatsapp} leadName={leadName} />
       )}
     </AnimatePresence>
   );

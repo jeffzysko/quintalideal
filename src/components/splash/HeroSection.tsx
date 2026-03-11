@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 import logoSplash from '@/assets/logo-splash.png';
+import { Compass } from 'lucide-react';
 
 interface HeroSectionProps {
   onStart: () => void;
@@ -14,11 +15,9 @@ export function HeroSection({ onStart, franchiseName }: HeroSectionProps) {
         background: 'linear-gradient(160deg, hsl(207 65% 93%) 0%, hsl(0 0% 99.6%) 40%, hsl(130 20% 92%) 100%)'
       }}
     >
-      {/* Decorative wave shapes */}
+      {/* Decorative shapes */}
       <div className="absolute bottom-0 left-0 right-0 h-48 opacity-20"
-        style={{
-          background: 'linear-gradient(180deg, transparent, hsl(207 65% 76%))'
-        }}
+        style={{ background: 'linear-gradient(180deg, transparent, hsl(207 65% 76%))' }}
       />
       <div className="absolute top-[-15%] right-[-15%] w-[55vw] h-[55vw] rounded-full opacity-10"
         style={{ background: 'radial-gradient(circle, hsl(322 95% 47%), transparent 70%)' }}
@@ -46,20 +45,20 @@ export function HeroSection({ onStart, franchiseName }: HeroSectionProps) {
         )}
 
         <h1 className="text-3xl md:text-5xl font-extrabold leading-tight mb-4 text-foreground">
-          Seu quintal tem potencial para ter uma{' '}
-          <span className="text-primary">piscina</span>?
+          Seu quintal pode esconder mais potencial do que você imagina.
         </h1>
 
         <p className="text-lg md:text-xl text-muted-foreground mb-8">
-          Descubra em menos de 1 minuto qual piscina Splash combina com sua casa.
+          Vamos explorar seu quintal e descobrir se ele pode ter uma piscina.
         </p>
 
         <Button
           onClick={onStart}
           size="lg"
-          className="text-lg px-10 py-6 rounded-full shadow-lg hover:shadow-xl transition-all font-bold"
+          className="text-lg px-10 py-6 rounded-full shadow-lg hover:shadow-xl transition-all font-bold gap-2"
         >
-          Descobrir agora
+          <Compass className="w-5 h-5" />
+          Explorar meu quintal
         </Button>
       </motion.div>
     </div>
