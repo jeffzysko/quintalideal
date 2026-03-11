@@ -60,7 +60,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
   const handleShareWhatsApp = () => {
     trackEvent('result_shared', { franchiseId, metadata: { plataforma: 'whatsapp' } });
     const phrase = getSharePhrase(score);
-    const siteUrl = window.location.origin;
+    const siteUrl = SITE_URL;
     const text = encodeURIComponent(
       `${phrase}\n\n${classification.emoji} ${classification.label}\n🏊 Modelo recomendado: ${poolName}\n\nDescubra o potencial do seu quintal:\n${siteUrl}`
     );
