@@ -56,7 +56,7 @@ export function AdminAnalytics({ franchiseMap: _franchiseMap }: AdminAnalyticsPr
     try {
       const { data, error: queryError } = await supabase
         .from('analytics_events')
-        .select('*')
+        .select('id, session_id, event_name, franchise_id, city, device_type, utm_source, utm_medium, utm_campaign, metadata, created_at')
         .gte('created_at', since.toISOString())
         .order('created_at', { ascending: false })
         .limit(10000);

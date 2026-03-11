@@ -110,7 +110,7 @@ export default function LeadDetail() {
   }, [id]);
 
   const loadLead = async () => {
-    const { data } = await supabase.from('leads').select('*').eq('id', id!).maybeSingle();
+    const { data } = await supabase.from('leads').select('id, nome, telefone, email, cidade, pontuacao_quintal, modelo_recomendado, respostas_questionario, foto1, foto2, foto3, foto4, status_lead, observacoes, created_at').eq('id', id!).maybeSingle();
     if (data) {
       setLead(data as Lead);
       setStatus(data.status_lead);
@@ -267,7 +267,7 @@ export default function LeadDetail() {
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   {photos.map((url, i) => (
-                    <img key={i} src={url} alt={`Quintal ${i + 1}`} className="rounded-xl w-full aspect-square object-cover border border-border/50" />
+                    <img key={i} src={url} alt={`Quintal ${i + 1}`} className="rounded-xl w-full aspect-square object-cover border border-border/50" loading="lazy" />
                   ))}
                 </div>
               </CardContent>

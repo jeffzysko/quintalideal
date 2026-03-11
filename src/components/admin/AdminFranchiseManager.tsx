@@ -60,7 +60,7 @@ export function AdminFranchiseManager() {
   const load = async () => {
     const { data } = await supabase
       .from('franchises')
-      .select('*')
+      .select('id, nome_franquia, slug_url, cidade_base, responsavel, whatsapp, email, ativa, created_at')
       .order('nome_franquia');
     setFranchises((data || []) as Franchise[]);
     setLoading(false);

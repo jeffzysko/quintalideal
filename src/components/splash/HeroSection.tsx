@@ -14,7 +14,7 @@ export function HeroSection({ onStart, franchiseName }: HeroSectionProps) {
     <div className="h-[100dvh] flex flex-col relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
-        <img src={heroPool} alt="" className="w-full h-full object-cover scale-105" loading="eager" />
+        <img src={heroPool} alt="" className="w-full h-full object-cover scale-105" loading="eager" fetchPriority="high" />
         <div className="absolute inset-0" style={{
           background: 'linear-gradient(180deg, rgba(8,20,40,0.4) 0%, rgba(8,20,40,0.2) 30%, rgba(8,20,40,0.5) 60%, rgba(8,20,40,0.92) 100%)'
         }} />

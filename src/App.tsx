@@ -7,9 +7,20 @@ import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+
+// Prefetch likely routes after initial load
+function usePrefetchRoutes() {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      import("./pages/Login");
+      import("./pages/FranchiseLanding");
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
+}
 
 // Lazy load non-critical routes
 const MapaQuintais = lazy(() => import("./pages/MapaQuintais"));
@@ -41,83 +52,86 @@ function LazyFallback() {
   );
 }
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <ErrorBoundary>
-      <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-      <AuthProvider>
-        <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Suspense fallback={<LazyFallback />}>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/explorar" element={<Index />} />
-              <Route path="/mapa" element={<MapaQuintais />} />
-              <Route path="/login" element={<Login />} />
-              <Route path="/forgot-password" element={<ForgotPassword />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route
-                path="/perfil"
-                element={
-                  <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
-                    <ProfileSettings />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/painel" element={<PainelRouter />} />
-              <Route
-                path="/franquia"
-                element={
-                  <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
-                    <FranchiseDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/painel/lead/:id"
-                element={
-                  <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
-                    <LeadDetail />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin"
-                element={
-                  <ProtectedRoute allowedRoles={['admin_fabrica']}>
-                    <AdminDashboard />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/radar"
-                element={
-                  <ProtectedRoute allowedRoles={['admin_fabrica']}>
-                    <RadarMercado />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/admin/lead/:id"
-                element={
-                  <ProtectedRoute allowedRoles={['admin_fabrica']}>
-                    <LeadDetail />
-                  </ProtectedRoute>
-                }
-              />
-              {/* Franchise dynamic landing - must be last before catch-all */}
-              <Route path="/:slug" element={<FranchiseLanding />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </Suspense>
-        </BrowserRouter>
-        </TooltipProvider>
-      </AuthProvider>
-      </ThemeProvider>
-    </ErrorBoundary>
-  </QueryClientProvider>
-);
+function AppRoutes() {
+  usePrefetchRoutes();
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ErrorBoundary>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+          <AuthProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <Suspense fallback={<LazyFallback />}>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/explorar" element={<Index />} />
+                    <Route path="/mapa" element={<MapaQuintais />} />
+                    <Route path="/login" element={<Login />} />
+                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                    <Route path="/reset-password" element={<ResetPassword />} />
+                    <Route
+                      path="/perfil"
+                      element={
+                        <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
+                          <ProfileSettings />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route path="/painel" element={<PainelRouter />} />
+                    <Route
+                      path="/franquia"
+                      element={
+                        <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
+                          <FranchiseDashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/painel/lead/:id"
+                      element={
+                        <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
+                          <LeadDetail />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin_fabrica']}>
+                          <AdminDashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/radar"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin_fabrica']}>
+                          <RadarMercado />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/admin/lead/:id"
+                      element={
+                        <ProtectedRoute allowedRoles={['admin_fabrica']}>
+                          <LeadDetail />
+                        </ProtectedRoute>
+                      }
+                    />
+                    {/* Franchise dynamic landing - must be last before catch-all */}
+                    <Route path="/:slug" element={<FranchiseLanding />} />
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </Suspense>
+              </BrowserRouter>
+            </TooltipProvider>
+          </AuthProvider>
+        </ThemeProvider>
+      </ErrorBoundary>
+    </QueryClientProvider>
+  );
+}
 
-export default App;
+export default AppRoutes;
