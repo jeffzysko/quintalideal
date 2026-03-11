@@ -6,7 +6,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type",
 };
 
-const SENDER = "Quintal Ideal Splash <noreply@quintalideal.com.br>";
+const SENDER = "Quintal Ideal Splash <noreply@hallow.com.br>";
 const BRAND_BLUE = "#0369a1";
 const BRAND_GRADIENT = "linear-gradient(135deg, #0284c7, #0369a1)";
 

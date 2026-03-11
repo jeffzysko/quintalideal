@@ -6,7 +6,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SENDER = "Quintal Ideal Splash <noreply@quintalideal.com.br>";
+const SENDER = "Quintal Ideal Splash <noreply@hallow.com.br>";
 const BRAND_BLUE = "#0369a1";
 const BRAND_GRADIENT = "linear-gradient(135deg, #0284c7, #0369a1)";
 
