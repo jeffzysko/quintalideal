@@ -205,6 +205,37 @@ export function AdminUserManager() {
     }
   }
 
+  async function handleResendAll() {
+    const nonAdminUsers = users.filter(u => !u.roles.includes('admin_fabrica'));
+    if (nonAdminUsers.length === 0) {
+      toast.info('Nenhum usuário para reenviar.');
+      return;
+    }
+    setResendingAll(true);
+    let success = 0;
+    let fail = 0;
+    for (const user of nonAdminUsers) {
+      try {
+        const { data, error } = await supabase.functions.invoke('manage-users', {
+          body: { action: 'resend_invite', user_id: user.id },
+        });
+        if (error || data?.error) {
+          fail++;
+        } else {
+          success++;
+        }
+      } catch {
+        fail++;
+      }
+    }
+    setResendingAll(false);
+    if (fail === 0) {
+      toast.success(`Convite reenviado para ${success} usuário(s).`);
+    } else {
+      toast.warning(`Enviados: ${success} | Falhas: ${fail}`);
+    }
+  }
+
   const filteredUsers = users.filter(u => {
     const term = searchTerm.toLowerCase();
     return (
