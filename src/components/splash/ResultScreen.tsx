@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import logoSplash from '@/assets/logo-splash.png';
+import { getRankingGaucho } from '@/lib/ranking';
+import { Trophy } from 'lucide-react';
 
 interface ResultScreenProps {
   score: number;
@@ -11,6 +13,7 @@ interface ResultScreenProps {
 
 export function ResultScreen({ score, poolName, poolDescription, onContinue }: ResultScreenProps) {
   const [displayScore, setDisplayScore] = useState(0);
+  const ranking = getRankingGaucho(score);
 
   useEffect(() => {
     let current = 0;
@@ -19,7 +22,7 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
       if (current >= score) {
         current = score;
         clearInterval(interval);
-        setTimeout(onContinue, 2000);
+        setTimeout(onContinue, 3000);
       }
       setDisplayScore(current);
     }, 20);
@@ -29,7 +32,6 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
   const circumference = 2 * Math.PI * 70;
   const offset = circumference - (displayScore / 100) * circumference;
 
-  // Pink for high, blue for medium, muted for low
   const getColor = () => {
     if (displayScore >= 70) return 'hsl(322, 95%, 47%)';
     if (displayScore >= 40) return 'hsl(196, 93%, 44%)';
@@ -53,7 +55,7 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
       >
         <img src={logoSplash} alt="Splash Piscinas" className="mx-auto w-32 mb-6" />
 
-        <div className="relative mx-auto w-48 h-48 mb-8">
+        <div className="relative mx-auto w-48 h-48 mb-6">
           <svg className="w-48 h-48 transform -rotate-90" viewBox="0 0 160 160">
             <circle cx="80" cy="80" r="70" stroke="hsl(var(--border))" strokeWidth="10" fill="none" />
             <circle
@@ -74,13 +76,26 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
           </div>
         </div>
 
-        <h2 className="text-2xl md:text-3xl font-bold mb-3" style={{ fontFamily: 'Montserrat' }}>
+        <h2 className="text-2xl md:text-3xl font-bold mb-2" style={{ fontFamily: 'Montserrat' }}>
           Seu quintal tem{' '}
           <span style={{ color: getColor() }}>{score}%</span>{' '}
           de potencial!
         </h2>
 
-        <div className="bg-card border rounded-2xl p-6 max-w-sm mx-auto shadow-sm">
+        {/* Ranking Gaúcho */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="flex items-center justify-center gap-2 my-4 px-5 py-3 rounded-full bg-primary/10 border border-primary/20 mx-auto w-fit"
+        >
+          <Trophy className="w-5 h-5 text-primary" />
+          <span className="font-bold text-sm text-primary">
+            {ranking.label}
+          </span>
+        </motion.div>
+
+        <div className="bg-card border rounded-2xl p-6 max-w-sm mx-auto shadow-sm mt-4">
           <span className="text-xs font-semibold text-secondary uppercase tracking-wide">Modelo recomendado</span>
           <h3 className="text-xl font-bold mt-1 mb-1" style={{ fontFamily: 'Montserrat' }}>{poolName}</h3>
           {poolDescription && <p className="text-sm text-muted-foreground">{poolDescription}</p>}

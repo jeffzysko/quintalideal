@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Camera, X, ArrowRight, ImagePlus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
+import { ExplorerProgress } from './ExplorerProgress';
 
 interface PhotoUploadProps {
   onNext: (urls: string[]) => void;
@@ -59,13 +60,11 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
       initial={{ opacity: 0, x: 50 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -50 }}
-      className="min-h-screen flex flex-col items-center justify-center px-6 py-12"
+      className="min-h-screen flex flex-col px-6 py-8"
     >
-      <div className="w-full max-w-md">
-        <button onClick={onBack} className="text-sm text-muted-foreground mb-4 hover:text-foreground transition-colors">
-          ← Voltar
-        </button>
+      <ExplorerProgress currentStep={0} onBack={onBack} />
 
+      <div className="flex-1 flex flex-col justify-center max-w-md mx-auto w-full">
         <div className="flex items-center gap-3 mb-2">
           <Camera className="w-6 h-6 text-primary" />
           <h2 className="text-2xl font-bold" style={{ fontFamily: 'Montserrat' }}>
