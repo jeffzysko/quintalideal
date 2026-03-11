@@ -69,7 +69,7 @@ const quizQuestions = [
   },
 ];
 
-type Step = 'hero' | 'pre-diagnosis' | 'photos' | 'quiz' | 'processing' | 'result' | 'lead-form' | 'actions';
+type Step = 'hero' | 'photos' | 'photo-analysis' | 'pre-diagnosis' | 'quiz' | 'processing' | 'result' | 'lead-form' | 'actions';
 
 interface QuizFlowProps {
   franchiseSlug?: string;
