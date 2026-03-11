@@ -1,7 +1,9 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { QuizFlow } from '@/components/splash/QuizFlow';
+import { Button } from '@/components/ui/button';
+import { AlertTriangle, Home } from 'lucide-react';
 
 interface Franchise {
   id: string;
