@@ -221,11 +221,11 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       {step === 'hero' && (
         <HeroSection key="hero" onStart={handleStartQuiz} franchiseName={franchiseName} />
       )}
-      {step === 'pre-diagnosis' && (
-        <PreDiagnosis key="pre-diagnosis" onContinue={() => setStep('photos')} />
-      )}
       {step === 'photos' && (
-        <PhotoUpload key="photos" onNext={handlePhotosNext} onBack={() => setStep('pre-diagnosis')} />
+        <PhotoUpload key="photos" onNext={handlePhotosNext} onBack={() => setStep('hero')} />
+      )}
+      {step === 'pre-diagnosis' && (
+        <PreDiagnosis key="pre-diagnosis" onContinue={() => setStep('quiz')} />
       )}
       {step === 'quiz' && currentQuizQuestion && (
         <QuizStep
