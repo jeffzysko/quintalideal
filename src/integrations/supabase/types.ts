@@ -66,6 +66,7 @@ export type Database = {
       }
       franchises: {
         Row: {
+          ativa: boolean
           cidade_base: string
           created_at: string
           email: string | null
@@ -76,6 +77,7 @@ export type Database = {
           whatsapp: string | null
         }
         Insert: {
+          ativa?: boolean
           cidade_base: string
           created_at?: string
           email?: string | null
@@ -86,6 +88,7 @@ export type Database = {
           whatsapp?: string | null
         }
         Update: {
+          ativa?: boolean
           cidade_base?: string
           created_at?: string
           email?: string | null

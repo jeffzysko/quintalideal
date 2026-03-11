@@ -8,6 +8,7 @@ interface Franchise {
   nome_franquia: string;
   slug_url: string;
   whatsapp: string;
+  ativa: boolean;
 }
 
 export default function FranchiseLanding() {
@@ -20,7 +21,7 @@ export default function FranchiseLanding() {
       if (!slug) return;
       const { data } = await supabase
         .from('franchises')
-        .select('id, nome_franquia, slug_url, whatsapp')
+        .select('id, nome_franquia, slug_url, whatsapp, ativa')
         .eq('slug_url', slug)
         .maybeSingle();
       setFranchise(data);
@@ -37,10 +38,15 @@ export default function FranchiseLanding() {
     );
   }
 
-  if (!franchise) {
+  if (!franchise || !franchise.ativa) {
     return (
       <div className="min-h-screen flex items-center justify-center px-6">
-        <p className="text-muted-foreground">Franquia não encontrada.</p>
+        <div className="text-center">
+          <p className="text-muted-foreground text-lg mb-2">
+            {franchise && !franchise.ativa ? 'Esta franquia está temporariamente indisponível.' : 'Franquia não encontrada.'}
+          </p>
+          <p className="text-sm text-muted-foreground">Entre em contato com a Splash Piscinas para mais informações.</p>
+        </div>
       </div>
     );
   }
