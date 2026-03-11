@@ -15,6 +15,7 @@ import { AdminFranchiseRanking } from '@/components/admin/AdminFranchiseRanking'
 import { AdminReferralMetrics } from '@/components/admin/AdminReferralMetrics';
 import { AdminAnalytics } from '@/components/admin/AdminAnalytics';
 import { AdminFranchiseManager } from '@/components/admin/AdminFranchiseManager';
+import { AdminEmailTemplates } from '@/components/admin/AdminEmailTemplates';
 import { motion } from 'framer-motion';
 import logoSplash from '@/assets/logo-splash.png';
 
