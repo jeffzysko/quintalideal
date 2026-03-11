@@ -34,13 +34,44 @@ const statusLabels: Record<string, string> = {
   perdido: 'Perdido',
 };
 
-const questionLabels: Record<string, string> = {
-  espaco: 'Espaço disponível',
-  moradia: 'Situação da casa',
-  intencao: 'Intenção de compra',
-  uso: 'Perfil de uso',
-  preferencia: 'Preferência',
-  cidade: 'Cidade',
+const questionLabels: Record<string, { label: string; icon: string }> = {
+  espaco: { label: 'Espaço disponível', icon: '📏' },
+  moradia: { label: 'Situação da casa', icon: '🏠' },
+  uso: { label: 'Perfil de uso', icon: '👨‍👩‍👧‍👦' },
+  intencao: { label: 'Quando pretende comprar', icon: '📅' },
+  preferencia: { label: 'Preferência', icon: '✨' },
+  orcamento: { label: 'Orçamento estimado', icon: '💰' },
+  cidade: { label: 'Cidade', icon: '📍' },
+};
+
+const answerLabels: Record<string, string> = {
+  // Espaço
+  'ate-3': 'Até 3 metros',
+  '3-5': 'Entre 3 e 5 metros',
+  '5-7': 'Entre 5 e 7 metros',
+  'mais-7': 'Mais de 7 metros',
+  // Moradia
+  'minha': 'Já é minha casa',
+  'construindo': 'Estou construindo',
+  'planejando': 'Ainda estou planejando',
+  // Uso
+  'casal': 'Momentos a dois',
+  'familia-pequena': 'Diversão com os filhos',
+  'familia-grande': 'Reunir toda a família',
+  'amigos': 'Churrascos e festas',
+  // Intenção
+  '2026': 'Ainda em 2026',
+  '2026-2027': 'Talvez em 2026 ou 2027',
+  'pesquisando': 'Só estou pesquisando',
+  // Preferência
+  'prainha': 'Prainha',
+  'spa': 'Spa ou Hidromassagem',
+  'simples': 'Piscina clássica e elegante',
+  'nao-sei': 'Ainda não sei',
+  // Orçamento
+  'ate-18': 'Até R$ 18 mil',
+  '18-30': 'R$ 18 a 30 mil',
+  '30-50': 'R$ 30 a 50 mil',
 };
 
 export default function LeadDetail() {
