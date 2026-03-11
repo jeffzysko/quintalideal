@@ -340,8 +340,8 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
             variant="outline"
             className="w-full py-6 text-sm rounded-2xl font-semibold border-primary/20 text-primary hover:bg-primary/5 transition-all gap-2"
           >
-            <Zap className="w-4 h-4" />
-            Falar com especialista agora
+            <FileText className="w-4 h-4" />
+            Solicitar orçamento
           </Button>
 
           <Button
