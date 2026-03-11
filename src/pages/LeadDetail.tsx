@@ -187,13 +187,20 @@ export default function LeadDetail() {
       {lead.respostas_questionario && (
         <Card className="mb-4">
           <CardHeader><CardTitle className="text-base">Respostas do Questionário</CardTitle></CardHeader>
-          <CardContent className="space-y-2">
-            {Object.entries(lead.respostas_questionario).map(([key, value]) => (
-              <div key={key} className="flex justify-between text-sm">
-                <span className="text-muted-foreground">{questionLabels[key] || key}</span>
-                <span className="font-medium">{value}</span>
-              </div>
-            ))}
+          <CardContent className="space-y-1">
+            {Object.entries(lead.respostas_questionario).map(([key, value]) => {
+              const q = questionLabels[key];
+              const displayValue = answerLabels[value as string] || (value as string);
+              return (
+                <div key={key} className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/50">
+                  <span className="text-sm text-muted-foreground flex items-center gap-2">
+                    <span>{q?.icon || '❓'}</span>
+                    {q?.label || key}
+                  </span>
+                  <span className="text-sm font-semibold text-foreground">{displayValue}</span>
+                </div>
+              );
+            })}
           </CardContent>
         </Card>
       )}
