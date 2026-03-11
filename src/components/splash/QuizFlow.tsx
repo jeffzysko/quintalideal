@@ -283,6 +283,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
           poolName={poolName}
           poolDescription={poolDesc}
           poolSpecs={poolSpecs}
+          recommendedSize={recommendedSize}
           whatsappNumber={franchiseWhatsapp}
           leadName={leadName}
           refCode={leadRefCode}
