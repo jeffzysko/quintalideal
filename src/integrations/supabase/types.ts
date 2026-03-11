@@ -14,6 +14,56 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          city: string | null
+          created_at: string
+          device_type: string | null
+          event_name: string
+          franchise_id: string | null
+          id: string
+          metadata: Json | null
+          session_id: string
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+        }
+        Insert: {
+          city?: string | null
+          created_at?: string
+          device_type?: string | null
+          event_name: string
+          franchise_id?: string | null
+          id?: string
+          metadata?: Json | null
+          session_id: string
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Update: {
+          city?: string | null
+          created_at?: string
+          device_type?: string | null
+          event_name?: string
+          franchise_id?: string | null
+          id?: string
+          metadata?: Json | null
+          session_id?: string
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "analytics_events_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchises"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       franchises: {
         Row: {
           cidade_base: string
