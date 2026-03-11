@@ -30,11 +30,11 @@ export interface LeadRow {
   modelo_recomendado: string | null;
   status_lead: string;
   created_at: string;
-  franquia_id?: string | null;
-  telefone?: string | null;
-  email?: string | null;
-  ref_code?: string | null;
-  referred_by?: string | null;
+  franquia_id: string | null;
+  telefone: string | null;
+  email: string | null;
+  ref_code: string | null;
+  referred_by: string | null;
 }
 
 export interface Franchise {
