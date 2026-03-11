@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { SITE_URL } from '@/lib/constants';
+import { FranchiseContactSettings } from '@/components/franchise/FranchiseContactSettings';
 
 interface LeadRow {
   id: string;
