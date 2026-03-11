@@ -43,6 +43,7 @@ export function AdminUserManager() {
   const [franchises, setFranchises] = useState<Franchise[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [resendingId, setResendingId] = useState<string | null>(null);
 
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
