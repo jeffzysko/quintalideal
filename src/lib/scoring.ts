@@ -46,22 +46,26 @@ export function calculateScore(answers: QuizAnswers): number {
 export function recommendPool(answers: QuizAnswers): string {
   const espaco = answers.espaco;
   const pref = answers.preferencia;
+  const uso = answers.uso;
 
+  // Espaço pequeno (até 5m)
   if (espaco === 'ate-3' || espaco === '3-5') {
-    if (pref === 'prainha') return 'Tortuga';
-    if (pref === 'spa') return 'Cancún';
-    return 'Italiana';
+    if (pref === 'prainha') return 'Nassau'; // borda infinita + prainha, tamanho compacto
+    if (pref === 'spa') return 'Navagio'; // moderno, compacto, design premium
+    return 'Italiana'; // mais vendida, maior variedade de tamanhos pequenos
   }
 
+  // Espaço médio (5-7m)
   if (espaco === '5-7') {
-    if (pref === 'prainha') return 'Tortuga';
-    if (pref === 'spa') return 'Cancún';
-    return 'Tortuga';
+    if (pref === 'prainha') return 'Tortuga'; // prainha integrada a partir de 5m
+    if (pref === 'spa') return 'Bonaire'; // hidromassagem, bordas pastilhadas
+    if (uso === 'familia-grande' || uso === 'amigos') return 'Farol da Barra'; // versátil, família
+    return 'Tropical'; // elegante, boa variedade
   }
 
-  // mais-7
-  // Large space with premium features
-  if (pref === 'prainha') return 'Bahamas';
-  if (pref === 'spa') return 'Bahamas';
-  return 'Tradicional';
+  // Espaço grande (mais de 7m)
+  if (pref === 'prainha') return 'Tortuga'; // prainha até 10m
+  if (pref === 'spa') return 'Atalaia'; // SPA + prainha + deck molhado, linha mais completa
+  if (uso === 'familia-grande' || uso === 'amigos') return 'Cancún'; // área útil ampla, até 10m
+  return 'Tradicional'; // clássica, elegante, versátil
 }
