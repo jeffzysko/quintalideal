@@ -9,7 +9,7 @@ import { ProcessingScreen } from './ProcessingScreen';
 import { ResultScreen } from './ResultScreen';
 import { LeadForm } from './LeadForm';
 import { ActionButtons } from './ActionButtons';
-import { calculateScore, recommendPool, type QuizAnswers } from '@/lib/scoring';
+import { calculateScore, recommendPool, recommendSize, type QuizAnswers } from '@/lib/scoring';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { trackEvent } from '@/lib/analytics';
@@ -81,6 +81,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   const [poolName, setPoolName] = useState('');
   const [poolDesc, setPoolDesc] = useState('');
   const [poolSpecs, setPoolSpecs] = useState<{ tamanho?: string; profundidade?: number; possui_prainha?: boolean; possui_spa?: boolean } | null>(null);
+  const [recommendedSize, setRecommendedSize] = useState('');
   const [leadName, setLeadName] = useState('');
   const [leadRefCode, setLeadRefCode] = useState('');
   const [saving, setSaving] = useState(false);
@@ -112,8 +113,10 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       const fullAnswers = newAnswers as QuizAnswers;
       const s = calculateScore(fullAnswers);
       const pool = recommendPool(fullAnswers);
+      const size = recommendSize(fullAnswers.espaco, pool);
       setScore(s);
       setPoolName(pool);
+      setRecommendedSize(size);
       fetchPoolDescription(pool);
 
       trackEvent('quiz_completed', {
@@ -280,6 +283,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
           poolName={poolName}
           poolDescription={poolDesc}
           poolSpecs={poolSpecs}
+          recommendedSize={recommendedSize}
           whatsappNumber={franchiseWhatsapp}
           leadName={leadName}
           refCode={leadRefCode}

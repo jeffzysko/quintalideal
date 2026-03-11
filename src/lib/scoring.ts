@@ -43,6 +43,42 @@ export function calculateScore(answers: QuizAnswers): number {
   return score;
 }
 
+/** Returns a recommended size string based on user's available space and pool model */
+export function recommendSize(espaco: string, poolName: string): string {
+  const sizeMap: Record<string, Record<string, string>> = {
+    'ate-3': {
+      'Tortuga': '3,00 x 2,00m',
+      'Navagio': '3,00 x 2,00m',
+      'Italiana': '3,00 x 2,00m',
+      'default': '3,00 x 2,00m',
+    },
+    '3-5': {
+      'Tortuga': '4,50 x 2,50m',
+      'Navagio': '4,00 x 2,50m',
+      'Italiana': '4,00 x 2,20m',
+      'default': '4,00 x 2,50m',
+    },
+    '5-7': {
+      'Tortuga': '6,00 x 3,00m',
+      'Bonaire': '6,00 x 3,00m',
+      'Farol da Barra': '6,00 x 3,00m',
+      'Tropical': '6,00 x 3,00m',
+      'default': '6,00 x 3,00m',
+    },
+    'mais-7': {
+      'Tortuga': '8,00 x 3,50m',
+      'Atalaia': '8,00 x 4,00m',
+      'Cancún': '8,00 x 3,50m',
+      'Tradicional': '8,00 x 3,50m',
+      'default': '8,00 x 3,50m',
+    },
+  };
+
+  const sizes = sizeMap[espaco];
+  if (!sizes) return '';
+  return sizes[poolName] || sizes['default'] || '';
+}
+
 export function recommendPool(answers: QuizAnswers): string {
   const espaco = answers.espaco;
   const pref = answers.preferencia;
