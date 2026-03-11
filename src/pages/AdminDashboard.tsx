@@ -209,6 +209,12 @@ export default function AdminDashboard() {
           >
             <Building2 className="w-4 h-4 inline mr-1.5" /> Franquias
           </button>
+          <button
+            onClick={() => setActiveTab('emails')}
+            className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'emails' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            <Mail className="w-4 h-4 inline mr-1.5" /> E-mails
+          </button>
         </div>
 
         {/* KPI Cards */}
