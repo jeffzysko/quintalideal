@@ -5,6 +5,7 @@ import { MessageCircle, FileText, Share2, Trophy, Download } from 'lucide-react'
 import logoSplash from '@/assets/logo-splash.png';
 import { getRankingGaucho } from '@/lib/ranking';
 import { ValorizationSimulator } from './ValorizationSimulator';
+import { FriendChallenge } from './FriendChallenge';
 
 interface ActionButtonsProps {
   score: number;
@@ -12,9 +13,10 @@ interface ActionButtonsProps {
   poolDescription?: string;
   whatsappNumber?: string;
   leadName?: string;
+  refCode?: string;
 }
 
-export function ActionButtons({ score, poolName, poolDescription, whatsappNumber, leadName }: ActionButtonsProps) {
+export function ActionButtons({ score, poolName, poolDescription, whatsappNumber, leadName, refCode }: ActionButtonsProps) {
   const ranking = getRankingGaucho(score);
   const [sharing, setSharing] = useState(false);
 
@@ -33,7 +35,6 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
     const ctx = canvas.getContext('2d');
     if (!ctx) return null;
 
-    // Background gradient
     const gradient = ctx.createLinearGradient(0, 0, 1080, 1920);
     gradient.addColorStop(0, '#e80685');
     gradient.addColorStop(0.4, '#c2066e');
@@ -42,7 +43,6 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, 1080, 1920);
 
-    // Subtle pattern overlay
     ctx.fillStyle = 'rgba(255,255,255,0.03)';
     for (let i = 0; i < 20; i++) {
       ctx.beginPath();
@@ -50,30 +50,25 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
       ctx.fill();
     }
 
-    // Top area - brand text
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
     ctx.font = '600 32px Montserrat, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText('ÍNDICE DO QUINTAL', 540, 180);
-
     ctx.fillStyle = '#ffffff';
     ctx.font = '900 42px Montserrat, sans-serif';
     ctx.fillText('SPLASH PISCINAS', 540, 240);
 
-    // Score circle background
     ctx.beginPath();
     ctx.arc(540, 580, 220, 0, Math.PI * 2);
     ctx.fillStyle = 'rgba(0,0,0,0.2)';
     ctx.fill();
 
-    // Score arc background
     ctx.beginPath();
     ctx.arc(540, 580, 195, 0, Math.PI * 2);
     ctx.strokeStyle = 'rgba(255,255,255,0.15)';
     ctx.lineWidth = 22;
     ctx.stroke();
 
-    // Score arc
     ctx.beginPath();
     ctx.arc(540, 580, 195, -Math.PI / 2, -Math.PI / 2 + (score / 100) * Math.PI * 2);
     ctx.strokeStyle = '#FFD700';
@@ -81,47 +76,35 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
     ctx.lineCap = 'round';
     ctx.stroke();
 
-    // Score text
     ctx.fillStyle = '#ffffff';
     ctx.font = '900 120px Montserrat, sans-serif';
-    ctx.textAlign = 'center';
     ctx.fillText(`${score}%`, 540, 620);
 
     ctx.font = '500 28px Open Sans, sans-serif';
     ctx.fillStyle = 'rgba(255,255,255,0.7)';
     ctx.fillText('de potencial', 540, 670);
 
-    // Motivational phrase
     ctx.font = '700 52px Montserrat, sans-serif';
     ctx.fillStyle = '#ffffff';
-    const phrases = [
-      'Meu quintal tem',
-      `${score}% de potencial para`,
-      'uma piscina Splash!'
-    ];
-    phrases.forEach((line, i) => ctx.fillText(line, 540, 880 + i * 70));
+    ['Meu quintal tem', `${score}% de potencial para`, 'uma piscina Splash!']
+      .forEach((line, i) => ctx.fillText(line, 540, 880 + i * 70));
 
-    // Ranking badge background
     const badgeY = 1130;
     ctx.fillStyle = 'rgba(255,215,0,0.2)';
-    const badgeWidth = 700;
     ctx.beginPath();
-    ctx.roundRect(540 - badgeWidth / 2, badgeY - 30, badgeWidth, 65, 32);
+    ctx.roundRect(190, badgeY - 30, 700, 65, 32);
     ctx.fill();
     ctx.strokeStyle = 'rgba(255,215,0,0.5)';
     ctx.lineWidth = 2;
     ctx.stroke();
-
     ctx.font = '700 34px Montserrat, sans-serif';
     ctx.fillStyle = '#FFD700';
     ctx.fillText(`🏆 ${ranking.label}`, 540, badgeY + 15);
 
-    // Pool model
     ctx.font = '500 36px Open Sans, sans-serif';
     ctx.fillStyle = 'rgba(255,255,255,0.8)';
     ctx.fillText(`Modelo recomendado: ${poolName}`, 540, 1300);
 
-    // Divider
     ctx.strokeStyle = 'rgba(255,255,255,0.2)';
     ctx.lineWidth = 1;
     ctx.beginPath();
@@ -129,7 +112,6 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
     ctx.lineTo(740, 1400);
     ctx.stroke();
 
-    // CTA
     ctx.font = '600 30px Montserrat, sans-serif';
     ctx.fillStyle = 'rgba(255,255,255,0.6)';
     ctx.fillText('Descubra o potencial do seu quintal em', 540, 1480);
@@ -137,7 +119,6 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
     ctx.fillStyle = '#ffffff';
     ctx.fillText('splashpiscinas.com.br', 540, 1530);
 
-    // Footer bar
     ctx.fillStyle = 'rgba(0,0,0,0.3)';
     ctx.fillRect(0, 1800, 1080, 120);
     ctx.font = '500 24px Open Sans, sans-serif';
@@ -152,10 +133,7 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
     try {
       const blob = await generateShareImage();
       if (!blob) return;
-
       const file = new File([blob], `meu-quintal-splash-${score}pct.png`, { type: 'image/png' });
-
-      // Try native share first (mobile)
       if (navigator.share && navigator.canShare?.({ files: [file] })) {
         await navigator.share({
           title: `Meu quintal tem ${score}% de potencial!`,
@@ -163,7 +141,6 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
           files: [file],
         });
       } else {
-        // Fallback: download
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
@@ -193,7 +170,7 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      className="min-h-screen flex flex-col items-center justify-center px-6 py-12"
+      className="min-h-screen flex flex-col items-center px-6 py-12"
       style={{
         background: 'linear-gradient(160deg, hsl(207 65% 93%) 0%, hsl(0 0% 99.6%) 40%, hsl(130 20% 92%) 100%)'
       }}
@@ -208,7 +185,6 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
           Seu quintal tem <strong className="text-primary">{score}%</strong> de potencial para a piscina <strong>{poolName}</strong>.
         </p>
 
-        {/* Ranking badge */}
         <div className="flex items-center justify-center gap-2 my-3 px-4 py-2.5 rounded-full bg-primary/10 border border-primary/20 mx-auto w-fit">
           <Trophy className="w-4 h-4 text-primary" />
           <span className="font-bold text-xs text-primary">{ranking.label}</span>
@@ -218,10 +194,13 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
           <p className="text-sm text-muted-foreground mb-4">{poolDescription}</p>
         )}
 
-        {/* Valorization Simulator */}
         <ValorizationSimulator score={score} />
 
-        {/* Action buttons */}
+        {/* Friend Challenge */}
+        {refCode && (
+          <FriendChallenge refCode={refCode} score={score} leadName={leadName} />
+        )}
+
         <div className="space-y-3 mt-6">
           <Button
             onClick={handleWhatsApp}
