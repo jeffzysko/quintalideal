@@ -54,7 +54,7 @@ const quizQuestions = [
     options: [
       { value: 'prainha', label: 'Prainha', emoji: '🏖️' },
       { value: 'spa', label: 'Spa ou Hidromassagem', emoji: '🧖' },
-      { value: 'simples', label: 'Piscina simples', emoji: '💧' },
+      { value: 'simples', label: 'Piscina clássica e elegante', emoji: '✨' },
       { value: 'nao-sei', label: 'Ainda não sei', emoji: '🤷' },
     ],
   },
