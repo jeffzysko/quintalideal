@@ -1,0 +1,1 @@
+ALTER TABLE public.franchises ADD COLUMN ativa boolean NOT NULL DEFAULT true;
