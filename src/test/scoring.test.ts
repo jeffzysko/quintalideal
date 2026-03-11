@@ -7,7 +7,7 @@ const base = (overrides: Partial<QuizAnswers> = {}): QuizAnswers => ({
   intencao: '2026',
   uso: 'familia-grande',
   preferencia: 'prainha',
-  orcamento: '50-80',
+  orcamento: '30-50',
   cidade: 'Porto Alegre',
   ...overrides,
 });
