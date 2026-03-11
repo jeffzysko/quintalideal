@@ -110,13 +110,11 @@ export default function FranchiseDashboard() {
               <p className="text-xs text-muted-foreground mt-0.5">Gestão de leads e contatos</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Badge variant="outline" className="text-xs px-3 py-1.5 border-primary/30 text-primary">
               {totalLeads} leads
             </Badge>
-            <Button variant="ghost" size="sm" onClick={() => signOut()} className="rounded-xl gap-1.5 text-muted-foreground hover:text-destructive" aria-label="Sair da conta">
-              <LogOut className="w-4 h-4" /> Sair
-            </Button>
+            <UserAvatarMenu />
           </div>
         </div>
       </div>

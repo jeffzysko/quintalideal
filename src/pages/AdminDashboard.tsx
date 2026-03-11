@@ -203,9 +203,7 @@ export default function AdminDashboard() {
             <Button variant="outline" size="sm" onClick={exportCSV} className="rounded-xl gap-1.5" aria-label="Exportar leads para CSV">
               <Download className="w-4 h-4" /> CSV
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => signOut()} className="rounded-xl gap-1.5 text-muted-foreground hover:text-destructive" aria-label="Sair da conta">
-              <LogOut className="w-4 h-4" /> Sair
-            </Button>
+            <UserAvatarMenu />
           </div>
         </div>
       </div>

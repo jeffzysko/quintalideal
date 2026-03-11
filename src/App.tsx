@@ -56,6 +56,14 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route
+                path="/perfil"
+                element={
+                  <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'visualizador']}>
+                    <ProfileSettings />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/painel" element={<PainelRouter />} />
               <Route
                 path="/franquia"
