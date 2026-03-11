@@ -1,8 +1,10 @@
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { MessageCircle, FileText, Share2, Trophy } from 'lucide-react';
+import { MessageCircle, FileText, Share2, Trophy, Download } from 'lucide-react';
 import logoSplash from '@/assets/logo-splash.png';
 import { getRankingGaucho } from '@/lib/ranking';
+import { ValorizationSimulator } from './ValorizationSimulator';
 
 interface ActionButtonsProps {
   score: number;
@@ -14,6 +16,7 @@ interface ActionButtonsProps {
 
 export function ActionButtons({ score, poolName, poolDescription, whatsappNumber, leadName }: ActionButtonsProps) {
   const ranking = getRankingGaucho(score);
+  const [sharing, setSharing] = useState(false);
 
   const handleWhatsApp = () => {
     const phone = whatsappNumber || '5551999999999';
@@ -23,65 +26,161 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
     window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
   };
 
-  const handleShare = async () => {
+  const generateShareImage = async (): Promise<Blob | null> => {
     const canvas = document.createElement('canvas');
     canvas.width = 1080;
     canvas.height = 1920;
     const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!ctx) return null;
 
-    const gradient = ctx.createLinearGradient(0, 0, 0, 1920);
+    // Background gradient
+    const gradient = ctx.createLinearGradient(0, 0, 1080, 1920);
     gradient.addColorStop(0, '#e80685');
-    gradient.addColorStop(0.5, '#08a1d6');
-    gradient.addColorStop(1, '#08a1d6');
+    gradient.addColorStop(0.4, '#c2066e');
+    gradient.addColorStop(0.7, '#08a1d6');
+    gradient.addColorStop(1, '#066a8f');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, 1080, 1920);
 
-    ctx.fillStyle = 'rgba(0,0,0,0.15)';
-    ctx.fillRect(0, 0, 1080, 1920);
+    // Subtle pattern overlay
+    ctx.fillStyle = 'rgba(255,255,255,0.03)';
+    for (let i = 0; i < 20; i++) {
+      ctx.beginPath();
+      ctx.arc(Math.random() * 1080, Math.random() * 1920, Math.random() * 150 + 50, 0, Math.PI * 2);
+      ctx.fill();
+    }
 
-    // Score circle
+    // Top area - brand text
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = '600 32px Montserrat, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('ÍNDICE DO QUINTAL', 540, 180);
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '900 42px Montserrat, sans-serif';
+    ctx.fillText('SPLASH PISCINAS', 540, 240);
+
+    // Score circle background
     ctx.beginPath();
-    ctx.arc(540, 620, 200, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.lineWidth = 20;
+    ctx.arc(540, 580, 220, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0,0,0,0.2)';
+    ctx.fill();
+
+    // Score arc background
+    ctx.beginPath();
+    ctx.arc(540, 580, 195, 0, Math.PI * 2);
+    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+    ctx.lineWidth = 22;
     ctx.stroke();
 
+    // Score arc
     ctx.beginPath();
-    ctx.arc(540, 620, 200, -Math.PI / 2, -Math.PI / 2 + (score / 100) * Math.PI * 2);
-    ctx.strokeStyle = '#ffffff';
-    ctx.lineWidth = 20;
+    ctx.arc(540, 580, 195, -Math.PI / 2, -Math.PI / 2 + (score / 100) * Math.PI * 2);
+    ctx.strokeStyle = '#FFD700';
+    ctx.lineWidth = 22;
     ctx.lineCap = 'round';
     ctx.stroke();
 
+    // Score text
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 96px Montserrat, sans-serif';
+    ctx.font = '900 120px Montserrat, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(`${score}%`, 540, 650);
+    ctx.fillText(`${score}%`, 540, 620);
 
-    // Main text
-    ctx.font = 'bold 48px Montserrat, sans-serif';
-    ctx.fillText('Meu quintal tem', 540, 960);
-    ctx.fillText(`${score}% de potencial`, 540, 1030);
-    ctx.fillText('para uma piscina Splash!', 540, 1100);
+    ctx.font = '500 28px Open Sans, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.7)';
+    ctx.fillText('de potencial', 540, 670);
 
-    // Ranking badge
-    ctx.font = 'bold 40px Montserrat, sans-serif';
+    // Motivational phrase
+    ctx.font = '700 52px Montserrat, sans-serif';
+    ctx.fillStyle = '#ffffff';
+    const phrases = [
+      'Meu quintal tem',
+      `${score}% de potencial para`,
+      'uma piscina Splash!'
+    ];
+    phrases.forEach((line, i) => ctx.fillText(line, 540, 880 + i * 70));
+
+    // Ranking badge background
+    const badgeY = 1130;
+    ctx.fillStyle = 'rgba(255,215,0,0.2)';
+    const badgeWidth = 700;
+    ctx.beginPath();
+    ctx.roundRect(540 - badgeWidth / 2, badgeY - 30, badgeWidth, 65, 32);
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(255,215,0,0.5)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.font = '700 34px Montserrat, sans-serif';
     ctx.fillStyle = '#FFD700';
-    ctx.fillText(`🏆 ${ranking.label}`, 540, 1220);
+    ctx.fillText(`🏆 ${ranking.label}`, 540, badgeY + 15);
 
-    // Model
-    ctx.font = '36px Open Sans, sans-serif';
+    // Pool model
+    ctx.font = '500 36px Open Sans, sans-serif';
     ctx.fillStyle = 'rgba(255,255,255,0.8)';
-    ctx.fillText(`Modelo recomendado: ${poolName}`, 540, 1340);
+    ctx.fillText(`Modelo recomendado: ${poolName}`, 540, 1300);
 
-    ctx.font = 'bold 28px Montserrat, sans-serif';
+    // Divider
+    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(340, 1400);
+    ctx.lineTo(740, 1400);
+    ctx.stroke();
+
+    // CTA
+    ctx.font = '600 30px Montserrat, sans-serif';
     ctx.fillStyle = 'rgba(255,255,255,0.6)';
-    ctx.fillText('splashpiscinas.com.br', 540, 1800);
+    ctx.fillText('Descubra o potencial do seu quintal em', 540, 1480);
+    ctx.font = '700 34px Montserrat, sans-serif';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText('splashpiscinas.com.br', 540, 1530);
 
-    const blob = await new Promise<Blob | null>(resolve => canvas.toBlob(resolve, 'image/png'));
+    // Footer bar
+    ctx.fillStyle = 'rgba(0,0,0,0.3)';
+    ctx.fillRect(0, 1800, 1080, 120);
+    ctx.font = '500 24px Open Sans, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.fillText('© Splash Piscinas — Feito com 💧', 540, 1870);
+
+    return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+  };
+
+  const handleShare = async () => {
+    setSharing(true);
+    try {
+      const blob = await generateShareImage();
+      if (!blob) return;
+
+      const file = new File([blob], `meu-quintal-splash-${score}pct.png`, { type: 'image/png' });
+
+      // Try native share first (mobile)
+      if (navigator.share && navigator.canShare?.({ files: [file] })) {
+        await navigator.share({
+          title: `Meu quintal tem ${score}% de potencial!`,
+          text: `🏊 ${ranking.label} — Descubra o potencial do seu quintal em splashpiscinas.com.br`,
+          files: [file],
+        });
+      } else {
+        // Fallback: download
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = file.name;
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+    } catch (err) {
+      console.error('Share error:', err);
+    } finally {
+      setSharing(false);
+    }
+  };
+
+  const handleDownload = async () => {
+    const blob = await generateShareImage();
     if (!blob) return;
-
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -116,10 +215,14 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
         </div>
 
         {poolDescription && (
-          <p className="text-sm text-muted-foreground mb-8">{poolDescription}</p>
+          <p className="text-sm text-muted-foreground mb-4">{poolDescription}</p>
         )}
 
-        <div className="space-y-3">
+        {/* Valorization Simulator */}
+        <ValorizationSimulator score={score} />
+
+        {/* Action buttons */}
+        <div className="space-y-3 mt-6">
           <Button
             onClick={handleWhatsApp}
             className="w-full py-6 text-base rounded-full font-bold bg-[#25D366] hover:bg-[#1fb855] text-white"
@@ -136,14 +239,25 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
             Receber estimativa
           </Button>
 
-          <Button
-            variant="ghost"
-            onClick={handleShare}
-            className="w-full py-6 text-base rounded-full font-bold text-muted-foreground"
-          >
-            <Share2 className="w-5 h-5 mr-2" />
-            Compartilhar meu resultado
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              onClick={handleShare}
+              disabled={sharing}
+              className="flex-1 py-6 text-sm rounded-full font-bold text-muted-foreground"
+            >
+              <Share2 className="w-4 h-4 mr-1" />
+              {sharing ? 'Gerando...' : 'Compartilhar'}
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={handleDownload}
+              className="flex-1 py-6 text-sm rounded-full font-bold text-muted-foreground"
+            >
+              <Download className="w-4 h-4 mr-1" />
+              Baixar imagem
+            </Button>
+          </div>
         </div>
       </div>
     </motion.div>
