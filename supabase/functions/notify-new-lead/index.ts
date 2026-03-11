@@ -65,7 +65,7 @@ Deno.serve(async (req) => {
       minute: "2-digit",
     });
 
-    const platformUrl = "https://quintalideal.lovable.app/franquia";
+    const platformUrl = "https://quintalideal.com.br/franquia";
 
     const htmlContent = `
       <div style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden;">
