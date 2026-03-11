@@ -436,25 +436,6 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
               Instagram Stories
             </Button>
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <Button
-              variant="outline"
-              onClick={handleShare}
-              disabled={sharing}
-              className="py-5 text-xs rounded-2xl font-medium border-border hover:bg-accent gap-1.5 flex-col h-auto"
-            >
-              <Share2 className="w-4 h-4 text-primary" />
-              {sharing ? 'Gerando...' : 'Compartilhar'}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={handleDownload}
-              className="py-5 text-xs rounded-2xl font-medium border-border hover:bg-accent gap-1.5 flex-col h-auto"
-            >
-              <Download className="w-4 h-4 text-muted-foreground" />
-              Baixar imagem
-            </Button>
-          </div>
 
           {/* Trust footer */}
           <div className="text-center pt-4 space-y-2">
