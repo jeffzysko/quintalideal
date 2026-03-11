@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Building2, Plus, Pencil, Trash2, Link2, Phone, Mail, MapPin, User, Power, PowerOff } from 'lucide-react';
+import { Building2, Plus, Pencil, Trash2, Link2, Phone, Mail, MapPin, User, Power, PowerOff, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { SITE_URL } from '@/lib/constants';
@@ -46,6 +46,10 @@ export function AdminFranchiseManager() {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+  const [invitingFranchise, setInvitingFranchise] = useState<Franchise | null>(null);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteName, setInviteName] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deletingFranchise, setDeletingFranchise] = useState<Franchise | null>(null);
   const [form, setForm] = useState<FranchiseFormData>(emptyForm);
@@ -179,6 +183,41 @@ export function AdminFranchiseManager() {
     }
   };
 
+  const openInvite = (f: Franchise) => {
+    setInvitingFranchise(f);
+    setInviteEmail('');
+    setInviteName('');
+    setInviteDialogOpen(true);
+  };
+
+  const handleInvite = async () => {
+    if (!invitingFranchise || !inviteEmail.trim()) {
+      toast.error('Informe o e-mail do franqueado.');
+      return;
+    }
+    setSaving(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await supabase.functions.invoke('invite-franchise-user', {
+        body: {
+          email: inviteEmail.trim(),
+          franchise_id: invitingFranchise.id,
+          full_name: inviteName.trim() || null,
+        },
+      });
+      if (res.error || res.data?.error) {
+        throw new Error(res.data?.error || res.error?.message || 'Erro ao enviar convite');
+      }
+      toast.success(res.data?.message || 'Convite enviado com sucesso!');
+      setInviteDialogOpen(false);
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao enviar convite.');
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center py-12">
@@ -232,6 +271,15 @@ export function AdminFranchiseManager() {
                       )}
                     </div>
                     <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 rounded-lg text-muted-foreground hover:text-primary"
+                        onClick={() => openInvite(f)}
+                        title="Convidar franqueado"
+                      >
+                        <UserPlus className="w-3.5 h-3.5" />
+                      </Button>
                       <Button
                         variant="ghost"
                         size="icon"
@@ -369,6 +417,43 @@ export function AdminFranchiseManager() {
             <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} className="rounded-xl">Cancelar</Button>
             <Button variant="destructive" onClick={handleDelete} disabled={saving} className="rounded-xl">
               {saving ? 'Excluindo...' : 'Excluir'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Invite Franchise User Dialog */}
+      <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Convidar Franqueado</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Enviar convite para <strong>{invitingFranchise?.nome_franquia}</strong>. O usuário receberá um e-mail para definir sua senha.
+          </p>
+          <div className="space-y-3 py-2">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Nome do Responsável</Label>
+              <Input
+                value={inviteName}
+                onChange={e => setInviteName(e.target.value)}
+                placeholder="João Silva"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">E-mail *</Label>
+              <Input
+                type="email"
+                value={inviteEmail}
+                onChange={e => setInviteEmail(e.target.value)}
+                placeholder="franqueado@email.com"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setInviteDialogOpen(false)} className="rounded-xl">Cancelar</Button>
+            <Button onClick={handleInvite} disabled={saving || !inviteEmail.trim()} className="rounded-xl gap-1.5">
+              <UserPlus className="w-4 h-4" />
+              {saving ? 'Enviando...' : 'Enviar Convite'}
             </Button>
           </DialogFooter>
         </DialogContent>
