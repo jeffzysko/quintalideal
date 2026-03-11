@@ -105,6 +105,7 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading }: LeadFormProps)
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-5 sm:mb-6 p-4 rounded-2xl bg-primary/5 border border-primary/15 flex gap-3 items-start"
+            aria-live="polite"
           >
             <AlertCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
             <p className="text-[13px] sm:text-sm text-foreground leading-relaxed">{duplicateMsg}</p>
