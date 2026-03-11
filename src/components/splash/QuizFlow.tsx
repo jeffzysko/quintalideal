@@ -118,7 +118,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       setQuizStep(prev => prev + 1);
     }
 
-    if (quizStep === 5) {
+    if (quizStep === 6) {
       const fullAnswers = newAnswers as QuizAnswers;
       const s = calculateScore(fullAnswers);
       const pool = recommendPool(fullAnswers);
