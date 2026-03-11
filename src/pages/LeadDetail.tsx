@@ -29,7 +29,7 @@ interface Lead {
 }
 
 const statusConfig: Record<string, { label: string; color: string }> = {
-  novo: { label: 'Novo', color: 'bg-primary/15 text-primary border-primary/30' },
+  novo: { label: 'Novo', color: 'bg-white/20 text-white border-white/40' },
   contatado: { label: 'Contatado', color: 'bg-accent text-accent-foreground border-accent' },
   em_negociacao: { label: 'Em Negociação', color: 'bg-secondary/15 text-secondary border-secondary/30' },
   vendido: { label: 'Vendido', color: 'bg-emerald-500/15 text-emerald-700 border-emerald-500/30' },
