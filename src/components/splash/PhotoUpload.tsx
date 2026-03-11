@@ -120,9 +120,16 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
         video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
       });
       streamRef.current = stream;
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
+      // Video element may not be mounted yet due to AnimatePresence,
+      // so we retry assigning the stream until it's available
+      const assignStream = () => {
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        } else {
+          requestAnimationFrame(assignStream);
+        }
+      };
+      assignStream();
     } catch {
       toast.error('Não foi possível acessar a câmera. Verifique as permissões.');
       setShowCamera(false);
