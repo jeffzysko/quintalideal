@@ -304,12 +304,12 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
             {/* Technical specs */}
             {poolSpecs && (
               <div className="grid grid-cols-2 gap-2">
-                {poolSpecs.tamanho && (
+                {recommendedSize && (
                   <div className="flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2.5">
                     <Ruler className="w-4 h-4 text-muted-foreground shrink-0" />
                     <div>
-                      <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Tamanhos</p>
-                      <p className="text-xs font-semibold text-foreground">{poolSpecs.tamanho}</p>
+                      <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Tamanho ideal</p>
+                      <p className="text-xs font-semibold text-foreground">{recommendedSize}</p>
                     </div>
                   </div>
                 )}
