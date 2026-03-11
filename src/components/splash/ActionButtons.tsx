@@ -97,6 +97,7 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
   };
 
   const handleShare = async () => {
+    trackEvent('result_shared', { franchiseId, metadata: { plataforma: 'share_api' } });
     setSharing(true);
     try {
       const blob = await generateShareImage();
