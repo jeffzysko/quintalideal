@@ -213,8 +213,7 @@ export function QuizFlow({ franchiseSlug: _franchiseSlug, franchiseName, franchi
       });
 
       setStep('actions');
-    } catch (err) {
-      console.error('Error saving lead:', err);
+    } catch (_err) {
       toast.error('Erro ao salvar seus dados. Tente novamente.');
       isSubmittingRef.current = false;
     } finally {
