@@ -51,6 +51,8 @@ const App = () => (
               <Route path="/explorar" element={<Index />} />
               <Route path="/mapa" element={<MapaQuintais />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/painel" element={<PainelRouter />} />
               <Route
                 path="/franquia"
