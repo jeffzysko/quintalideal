@@ -13,6 +13,8 @@ import NotFound from "./pages/NotFound";
 const MapaQuintais = lazy(() => import("./pages/MapaQuintais"));
 const FranchiseLanding = lazy(() => import("./pages/FranchiseLanding"));
 const Login = lazy(() => import("./pages/Login"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const PainelRouter = lazy(() => import("./pages/PainelRouter"));
 const FranchiseDashboard = lazy(() => import("./pages/FranchiseDashboard"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
