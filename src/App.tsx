@@ -75,6 +75,13 @@ const App = () => (
                 }
               />
               <Route
+                path="/admin/radar"
+                element={
+                  <ProtectedRoute allowedRoles={['admin_fabrica']}>
+                    <RadarMercado />
+                  </ProtectedRoute>
+                }
+              />
                 path="/admin/lead/:id"
                 element={
                   <ProtectedRoute allowedRoles={['admin_fabrica']}>
