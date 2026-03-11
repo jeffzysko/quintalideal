@@ -5,7 +5,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Users, TrendingUp, Building2, MapPin, Eye, Download, BarChart3, Share2, Target, Activity, LogOut } from 'lucide-react';
+import { Users, TrendingUp, Building2, MapPin, Eye, Download, BarChart3, Share2, Target, Activity, LogOut, Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -15,6 +15,7 @@ import { AdminFranchiseRanking } from '@/components/admin/AdminFranchiseRanking'
 import { AdminReferralMetrics } from '@/components/admin/AdminReferralMetrics';
 import { AdminAnalytics } from '@/components/admin/AdminAnalytics';
 import { AdminFranchiseManager } from '@/components/admin/AdminFranchiseManager';
+import { AdminEmailTemplates } from '@/components/admin/AdminEmailTemplates';
 import { motion } from 'framer-motion';
 import logoSplash from '@/assets/logo-splash.png';
 
@@ -59,7 +60,7 @@ export default function AdminDashboard() {
   const [leads, setLeads] = useState<LeadRow[]>([]);
   const [franchises, setFranchises] = useState<Franchise[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'analytics' | 'franchises'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'analytics' | 'franchises' | 'emails'>('overview');
 
   const [filterFranquia, setFilterFranquia] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -207,6 +208,12 @@ export default function AdminDashboard() {
             className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'franchises' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
           >
             <Building2 className="w-4 h-4 inline mr-1.5" /> Franquias
+          </button>
+          <button
+            onClick={() => setActiveTab('emails')}
+            className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'emails' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            <Mail className="w-4 h-4 inline mr-1.5" /> E-mails
           </button>
         </div>
 
@@ -367,6 +374,9 @@ export default function AdminDashboard() {
 
         {activeTab === 'franchises' && (
           <AdminFranchiseManager />
+        )}
+        {activeTab === 'emails' && (
+          <AdminEmailTemplates />
         )}
       </div>
     </div>
