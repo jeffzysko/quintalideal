@@ -105,7 +105,7 @@ export function recommendPool(answers: QuizAnswers): string {
     if (pref === 'prainha') return 'Tortuga';
     if (pref === 'spa') return 'Bonaire';
     // Orçamento alto com família → Bonaire (mais premium)
-    if ((uso === 'familia-grande' || uso === 'amigos') && (orcamento === 'acima-80' || orcamento === '50-80')) return 'Bonaire';
+    if ((uso === 'familia-grande' || uso === 'amigos') && orcamento === '30-50') return 'Bonaire';
     if (uso === 'familia-grande' || uso === 'amigos') return 'Farol da Barra';
     return 'Tropical';
   }
@@ -114,9 +114,8 @@ export function recommendPool(answers: QuizAnswers): string {
   if (pref === 'prainha') return 'Tortuga';
   if (pref === 'spa') return 'Atalaia';
   // Orçamento premium → Atalaia (linha mais completa)
-  if (orcamento === 'acima-80' && (uso === 'familia-grande' || uso === 'amigos')) return 'Atalaia';
+  if (orcamento === '30-50' && (uso === 'familia-grande' || uso === 'amigos')) return 'Atalaia';
   if (uso === 'familia-grande' || uso === 'amigos') return 'Cancún';
-  // Orçamento alto sem preferência → Tradicional Praia
-  if (orcamento === 'acima-80' || orcamento === '50-80') return 'Tradicional';
+  if (orcamento === '30-50') return 'Tradicional';
   return 'Tradicional';
 }
