@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Users, TrendingUp, Clock, Eye, Inbox, Share2, LogOut, Droplets, BarChart3 } from 'lucide-react';
+import { Users, TrendingUp, Clock, Eye, Inbox, Share2, LogOut, Droplets, BarChart3, Search } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -13,6 +13,8 @@ import { SITE_URL } from '@/lib/constants';
 import { FranchiseContactSettings } from '@/components/franchise/FranchiseContactSettings';
 import { FranchiseReports } from '@/components/franchise/FranchiseReports';
 import { STATUS_LABELS, STATUS_COLORS, LeadRow } from '@/lib/lead-constants';
+import { KPISkeleton } from '@/components/ui/kpi-skeleton';
+import { TableSkeleton } from '@/components/ui/table-skeleton';
 import logoSplash from '@/assets/logo-splash.png';
 
 const PAGE_SIZE = 20;
@@ -90,7 +92,7 @@ export default function FranchiseDashboard() {
   const from = (page - 1) * PAGE_SIZE;
   const to = from + PAGE_SIZE;
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
-  const isLoading = authLoading || loadingKpis || loadingTable;
+  const isLoading = authLoading || loadingTable;
 
   return (
     <div className="min-h-screen bg-background">
@@ -111,7 +113,7 @@ export default function FranchiseDashboard() {
             <Badge variant="outline" className="text-xs px-3 py-1.5 border-primary/30 text-primary">
               {totalLeads} leads
             </Badge>
-            <Button variant="ghost" size="sm" onClick={() => signOut()} className="rounded-xl gap-1.5 text-muted-foreground hover:text-destructive">
+            <Button variant="ghost" size="sm" onClick={() => signOut()} className="rounded-xl gap-1.5 text-muted-foreground hover:text-destructive" aria-label="Sair da conta">
               <LogOut className="w-4 h-4" /> Sair
             </Button>
           </div>
@@ -126,29 +128,37 @@ export default function FranchiseDashboard() {
         )}
 
         {/* KPI Cards */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-          {kpis.map((kpi, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-              <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
-                <CardContent className="p-5">
-                  <kpi.icon className={`w-5 h-5 ${kpi.color} mb-2`} />
-                  <p className="text-2xl font-bold tracking-tight text-foreground">{kpi.value}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">{kpi.label}</p>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
+        {loadingKpis ? (
+          <div className="mb-8"><KPISkeleton count={4} /></div>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            {kpis.map((kpi, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+                <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
+                  <CardContent className="p-5">
+                    <kpi.icon className={`w-5 h-5 ${kpi.color} mb-2`} />
+                    <p className="text-2xl font-bold tracking-tight text-foreground">{kpi.value}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">{kpi.label}</p>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </div>
+        )}
 
         {/* Tab switcher */}
-        <div className="flex gap-1 mb-6 bg-muted rounded-xl p-1 w-fit">
+        <div className="flex gap-1 mb-6 bg-muted rounded-xl p-1 w-fit" role="tablist">
           <button
+            role="tab"
+            aria-selected={activeTab === 'leads'}
             onClick={() => setActiveTab('leads')}
             className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'leads' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
           >
             <Users className="w-4 h-4 inline mr-1.5" /> Leads
           </button>
           <button
+            role="tab"
+            aria-selected={activeTab === 'reports'}
             onClick={() => setActiveTab('reports')}
             className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'reports' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
           >
@@ -163,9 +173,7 @@ export default function FranchiseDashboard() {
             </CardHeader>
             <CardContent>
               {isLoading ? (
-                <div className="flex justify-center py-12">
-                  <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" />
-                </div>
+                <TableSkeleton rows={8} cols={6} />
               ) : totalCount === 0 ? (
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }} 
@@ -192,37 +200,37 @@ export default function FranchiseDashboard() {
               ) : (
                 <>
                   <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
+                    <table className="w-full text-sm" role="table">
                       <thead>
-                        <tr className="border-b border-border/50">
-                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Nome</th>
-                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Cidade</th>
-                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Score</th>
-                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Modelo</th>
-                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Status</th>
-                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Data</th>
-                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider"></th>
+                        <tr className="border-b border-border/50" role="row">
+                          <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Nome</th>
+                          <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Cidade</th>
+                          <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Score</th>
+                          <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Modelo</th>
+                          <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Status</th>
+                          <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Data</th>
+                          <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider"></th>
                         </tr>
                       </thead>
                       <tbody>
                         {leads.map(lead => (
-                          <tr key={lead.id} className="border-b border-border/30 hover:bg-muted/30 transition-colors">
-                            <td className="py-3.5 px-3 font-medium">{lead.nome || '—'}</td>
-                            <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.cidade || '—'}</td>
-                            <td className="py-3.5 px-3">
+                          <tr key={lead.id} className="border-b border-border/30 hover:bg-muted/30 transition-colors" role="row">
+                            <td role="cell" className="py-3.5 px-3 font-medium">{lead.nome || '—'}</td>
+                            <td role="cell" className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.cidade || '—'}</td>
+                            <td role="cell" className="py-3.5 px-3">
                               <span className="font-bold text-primary">{lead.pontuacao_quintal || 0}%</span>
                             </td>
-                            <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.modelo_recomendado || '—'}</td>
-                            <td className="py-3.5 px-3">
+                            <td role="cell" className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.modelo_recomendado || '—'}</td>
+                            <td role="cell" className="py-3.5 px-3">
                               <Badge className={`${STATUS_COLORS[lead.status_lead] || ''} border text-xs font-medium`} variant="secondary">
                                 {STATUS_LABELS[lead.status_lead] || lead.status_lead}
                               </Badge>
                             </td>
-                            <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground text-xs">
+                            <td role="cell" className="py-3.5 px-3 hidden md:table-cell text-muted-foreground text-xs">
                               {new Date(lead.created_at).toLocaleDateString('pt-BR')}
                             </td>
-                            <td className="py-3.5 px-3">
-                              <Button size="sm" variant="ghost" onClick={() => navigate(`/painel/lead/${lead.id}`)} className="rounded-lg">
+                            <td role="cell" className="py-3.5 px-3">
+                              <Button size="sm" variant="ghost" onClick={() => navigate(`/painel/lead/${lead.id}`)} className="rounded-lg" aria-label="Ver detalhes do lead">
                                 <Eye className="w-4 h-4" />
                               </Button>
                             </td>

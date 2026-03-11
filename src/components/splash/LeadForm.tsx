@@ -105,6 +105,7 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading }: LeadFormProps)
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             className="mb-5 sm:mb-6 p-4 rounded-2xl bg-primary/5 border border-primary/15 flex gap-3 items-start"
+            aria-live="polite"
           >
             <AlertCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
             <p className="text-[13px] sm:text-sm text-foreground leading-relaxed">{duplicateMsg}</p>
@@ -124,7 +125,7 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading }: LeadFormProps)
               maxLength={100}
               autoComplete="name"
             />
-            {errors.nome && <p className="text-sm text-destructive mt-1.5">{errors.nome}</p>}
+            {errors.nome && <p className="text-sm text-destructive mt-1.5" aria-live="polite">{errors.nome}</p>}
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
@@ -139,7 +140,7 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading }: LeadFormProps)
               type="tel"
               autoComplete="tel"
             />
-            {errors.telefone && <p className="text-sm text-destructive mt-1.5">{errors.telefone}</p>}
+            {errors.telefone && <p className="text-sm text-destructive mt-1.5" aria-live="polite">{errors.telefone}</p>}
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
@@ -155,7 +156,7 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading }: LeadFormProps)
               maxLength={255}
               autoComplete="email"
             />
-            {errors.email && <p className="text-sm text-destructive mt-1.5">{errors.email}</p>}
+            {errors.email && <p className="text-sm text-destructive mt-1.5" aria-live="polite">{errors.email}</p>}
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
