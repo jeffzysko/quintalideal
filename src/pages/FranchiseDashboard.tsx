@@ -59,7 +59,7 @@ export default function FranchiseDashboard() {
         .from('franchises')
         .select('slug_url')
         .eq('id', franchiseId)
-        .single();
+        .maybeSingle();
       if (franchiseData) setFranchiseSlug(franchiseData.slug_url);
     }
 

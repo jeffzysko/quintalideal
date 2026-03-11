@@ -110,7 +110,7 @@ export default function LeadDetail() {
   }, [id]);
 
   const loadLead = async () => {
-    const { data } = await supabase.from('leads').select('*').eq('id', id!).single();
+    const { data } = await supabase.from('leads').select('*').eq('id', id!).maybeSingle();
     if (data) {
       setLead(data as Lead);
       setStatus(data.status_lead);
