@@ -266,7 +266,7 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ delay: 0.1 }}
-                className="glass-card rounded-3xl p-8"
+                className="glass-card rounded-3xl p-5 sm:p-8"
               >
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-10 h-10 rounded-xl gradient-blue flex items-center justify-center">
