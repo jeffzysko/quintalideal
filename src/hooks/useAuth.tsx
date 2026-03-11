@@ -47,8 +47,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       supabase.from('profiles').select('franquia_id').eq('user_id', userId).maybeSingle(),
     ]);
 
-    if (rolesError) console.error('Error loading user roles:', rolesError);
-    if (profileError) console.error('Error loading user profile:', profileError);
+    if (rolesError) { /* role fetch failed silently */ }
+    if (profileError) { /* profile fetch failed silently */ }
 
     const roles = (rolesData ?? []).map(item => item.role);
     const primaryRole = resolvePrimaryRole(roles);
@@ -102,8 +102,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setRole(meta.role);
       setFranchiseId(meta.franchiseId);
-    } catch (err) {
-      console.error('Error syncing session:', err);
+    } catch (_err) {
       if (syncLockRef.current !== lockId || !mountedRef.current) return;
       setRole(null);
       setFranchiseId(null);
@@ -156,7 +155,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
     const { error } = await supabase.auth.signOut();
     if (error) {
-      console.error('Error signing out:', error);
       setLoading(false);
     }
     // onAuthStateChange will handle clearing state

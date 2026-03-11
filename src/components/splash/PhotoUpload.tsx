@@ -199,8 +199,7 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
         urls.push(urlData.publicUrl);
       }
       onNext(urls);
-    } catch (err) {
-      console.error('Upload error:', err);
+    } catch (_err) {
       toast.error('Erro ao enviar fotos. Tente novamente.');
     } finally {
       setUploading(false);

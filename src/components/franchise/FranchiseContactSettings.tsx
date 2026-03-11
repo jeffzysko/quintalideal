@@ -45,7 +45,6 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
 
     if (error) {
       toast.error('Erro ao salvar. Tente novamente.');
-      console.error('Error updating franchise:', error);
     } else {
       toast.success('Dados de contato atualizados!');
     }

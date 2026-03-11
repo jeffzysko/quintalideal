@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -141,7 +141,6 @@ export function AdminFranchiseManager() {
         ? 'Já existe uma franquia com esse slug.' 
         : 'Erro ao salvar franquia.';
       toast.error(msg);
-      console.error(err);
     } finally {
       setSaving(false);
     }
@@ -160,9 +159,8 @@ export function AdminFranchiseManager() {
       setDeleteDialogOpen(false);
       setDeletingFranchise(null);
       load();
-    } catch (err) {
+    } catch (_err) {
       toast.error('Erro ao excluir franquia. Verifique se não há leads vinculados.');
-      console.error(err);
     } finally {
       setSaving(false);
     }
@@ -176,7 +174,6 @@ export function AdminFranchiseManager() {
       .eq('id', f.id);
     if (error) {
       toast.error('Erro ao atualizar status.');
-      console.error(error);
     } else {
       toast.success(newStatus ? 'Franquia reativada!' : 'Franquia desativada.');
       load();
@@ -197,7 +194,7 @@ export function AdminFranchiseManager() {
     }
     setSaving(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      await supabase.auth.getSession();
       const res = await supabase.functions.invoke('invite-franchise-user', {
         body: {
           email: inviteEmail.trim(),
@@ -212,7 +209,6 @@ export function AdminFranchiseManager() {
       setInviteDialogOpen(false);
     } catch (err: any) {
       toast.error(err.message || 'Erro ao enviar convite.');
-      console.error(err);
     } finally {
       setSaving(false);
     }

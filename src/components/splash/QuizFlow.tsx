@@ -88,7 +88,7 @@ function StepFallback() {
   );
 }
 
-export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseWhatsapp }: QuizFlowProps) {
+export function QuizFlow({ franchiseSlug: _franchiseSlug, franchiseName, franchiseId, franchiseWhatsapp }: QuizFlowProps) {
   const [searchParams] = useSearchParams();
   const referredBy = searchParams.get('ref') || '';
 
@@ -213,8 +213,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       });
 
       setStep('actions');
-    } catch (err) {
-      console.error('Error saving lead:', err);
+    } catch (_err) {
       toast.error('Erro ao salvar seus dados. Tente novamente.');
       isSubmittingRef.current = false;
     } finally {

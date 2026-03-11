@@ -37,7 +37,7 @@ interface AdminAnalyticsProps {
   franchiseMap: Record<string, string>;
 }
 
-export function AdminAnalytics({ franchiseMap }: AdminAnalyticsProps) {
+export function AdminAnalytics({ franchiseMap: _franchiseMap }: AdminAnalyticsProps) {
   const [events, setEvents] = useState<AnalyticsEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -63,8 +63,7 @@ export function AdminAnalytics({ franchiseMap }: AdminAnalyticsProps) {
       
       if (queryError) throw queryError;
       setEvents((data || []) as AnalyticsEvent[]);
-    } catch (err) {
-      console.error('Erro ao carregar analytics:', err);
+    } catch (_err) {
       setError('Não foi possível carregar analytics.');
     } finally {
       setLoading(false);
