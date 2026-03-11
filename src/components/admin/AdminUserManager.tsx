@@ -101,6 +101,18 @@ export function AdminUserManager() {
     setDialogOpen(true);
   }
 
+  function extractError(data: any, error: any): string | null {
+    if (data?.error) return data.error;
+    if (error?.message && !error.message.includes('non-2xx')) return error.message;
+    if (error?.context?.body) {
+      try {
+        const body = typeof error.context.body === 'string' ? JSON.parse(error.context.body) : error.context.body;
+        if (body?.error) return body.error;
+      } catch {}
+    }
+    return error?.message || 'Erro desconhecido';
+  }
+
   async function handleSave() {
     setSaving(true);
     try {
@@ -116,8 +128,10 @@ export function AdminUserManager() {
             franchise_id: formRole === 'franquia' ? formFranchiseId : null,
           },
         });
-        if (error) throw error;
-        if (data?.error) throw new Error(data.error);
+        if (error || data?.error) {
+          toast.error(extractError(data, error));
+          return;
+        }
         toast.success('Usuário atualizado com sucesso.');
       } else {
         // Create
@@ -135,8 +149,10 @@ export function AdminUserManager() {
             franchise_id: formRole === 'franquia' ? formFranchiseId : null,
           },
         });
-        if (error) throw error;
-        if (data?.error) throw new Error(data.error);
+        if (error || data?.error) {
+          toast.error(extractError(data, error));
+          return;
+        }
         toast.success(data?.message || 'Usuário criado com sucesso.');
       }
       setDialogOpen(false);
@@ -155,8 +171,10 @@ export function AdminUserManager() {
       const { data, error } = await supabase.functions.invoke('manage-users', {
         body: { action: 'delete', user_id: deleteUser.id },
       });
-      if (error) throw error;
-      if (data?.error) throw new Error(data.error);
+      if (error || data?.error) {
+        toast.error(extractError(data, error));
+        return;
+      }
       toast.success('Usuário excluído com sucesso.');
       setDeleteUser(null);
       await loadData();
