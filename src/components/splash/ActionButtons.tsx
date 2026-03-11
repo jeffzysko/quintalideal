@@ -36,8 +36,9 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
   const handleShareWhatsApp = () => {
     trackEvent('result_shared', { franchiseId, metadata: { plataforma: 'whatsapp' } });
     const phrase = getSharePhrase(score);
+    const siteUrl = window.location.origin;
     const text = encodeURIComponent(
-      `${phrase}\n\n${classification.emoji} ${classification.label}\n🏊 Modelo recomendado: ${poolName}\n\nDescubra o potencial do seu quintal:\nhttps://splash-quintal-magic.lovable.app`
+      `${phrase}\n\n${classification.emoji} ${classification.label}\n🏊 Modelo recomendado: ${poolName}\n\nDescubra o potencial do seu quintal:\n${siteUrl}`
     );
     window.open(`https://wa.me/?text=${text}`, '_blank');
   };
