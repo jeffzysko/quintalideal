@@ -253,7 +253,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         <QuizStep
           key={`quiz-${quizStep}`}
           step={quizStep + 1}
-          totalSteps={6}
+          totalSteps={7}
           question={currentQuizQuestion.question}
           options={currentQuizQuestion.options}
           onAnswer={handleQuizAnswer}
@@ -264,16 +264,16 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
           }}
         />
       )}
-      {step === 'quiz' && quizStep === 5 && (
+      {step === 'quiz' && quizStep === 6 && (
         <QuizStep
           key="quiz-city"
-          step={6}
-          totalSteps={6}
+          step={7}
+          totalSteps={7}
           question="Cidade onde você mora"
           type="city"
           onAnswer={handleQuizAnswer}
-          explorerStep={6}
-          onBack={() => setQuizStep(4)}
+          explorerStep={7}
+          onBack={() => setQuizStep(5)}
         />
       )}
       {step === 'processing' && (
