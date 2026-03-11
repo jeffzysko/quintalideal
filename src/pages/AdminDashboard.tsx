@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -56,30 +56,59 @@ const statusColors: Record<string, string> = {
   perdido: 'bg-red-50 text-red-700 border-red-200',
 };
 
+const PAGE_SIZE = 25;
+
 export default function AdminDashboard() {
   const navigate = useNavigate();
+  // All leads for KPIs/charts (loaded once)
+  const [allLeads, setAllLeads] = useState<LeadRow[]>([]);
+  // Paginated leads for table
   const [leads, setLeads] = useState<LeadRow[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
   const [franchises, setFranchises] = useState<Franchise[]>([]);
   const [loading, setLoading] = useState(true);
+  const [tableLoading, setTableLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'analytics' | 'franchises' | 'emails'>('overview');
 
   const [filterFranquia, setFilterFranquia] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
-  const [filterCidade, setFilterCidade] = useState('');
   const [filterModelo, setFilterModelo] = useState('all');
+  const [page, setPage] = useState(1);
+
+  // Debounced inputs
+  const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
+  const [cidadeInput, setCidadeInput] = useState('');
+  const [filterCidade, setFilterCidade] = useState('');
 
-  useEffect(() => { loadData(); }, []);
+  useEffect(() => {
+    const timer = setTimeout(() => { setSearch(searchInput); setPage(1); }, 400);
+    return () => clearTimeout(timer);
+  }, [searchInput]);
 
-  const loadData = async () => {
+  useEffect(() => {
+    const timer = setTimeout(() => { setFilterCidade(cidadeInput); setPage(1); }, 400);
+    return () => clearTimeout(timer);
+  }, [cidadeInput]);
+
+  // Reset page when filters change
+  useEffect(() => { setPage(1); }, [filterFranquia, filterStatus, filterModelo]);
+
+  // Load KPI data + franchises once
+  useEffect(() => { loadKpiData(); }, []);
+
+  // Load paginated leads when filters/page change
+  useEffect(() => { loadPaginatedLeads(); }, [page, filterFranquia, filterStatus, filterModelo, search, filterCidade]);
+
+  const loadKpiData = async () => {
     try {
       const [leadsRes, franchisesRes] = await Promise.all([
-        supabase.from('leads').select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by').order('created_at', { ascending: false }),
+        supabase.from('leads').select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, ref_code, referred_by').order('created_at', { ascending: false }),
         supabase.from('franchises').select('id, nome_franquia'),
       ]);
       if (leadsRes.error) throw leadsRes.error;
       if (franchisesRes.error) throw franchisesRes.error;
-      setLeads(leadsRes.data || []);
+      setAllLeads(leadsRes.data || []);
       setFranchises(franchisesRes.data || []);
     } catch (err) {
       console.error('Erro ao carregar dados:', err);
@@ -89,63 +118,99 @@ export default function AdminDashboard() {
     }
   };
 
+  const buildFilteredQuery = useCallback(() => {
+    let query = supabase
+      .from('leads')
+      .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by', { count: 'exact' });
+
+    if (filterFranquia !== 'all') query = query.eq('franquia_id', filterFranquia);
+    if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus);
+    if (filterModelo !== 'all') query = query.eq('modelo_recomendado', filterModelo);
+    if (filterCidade) query = query.ilike('cidade', `%${filterCidade}%`);
+    if (search) query = query.ilike('nome', `%${search}%`);
+
+    return query;
+  }, [filterFranquia, filterStatus, filterModelo, filterCidade, search]);
+
+  const loadPaginatedLeads = async () => {
+    setTableLoading(true);
+    try {
+      const from = (page - 1) * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+
+      const { data, count, error } = await buildFilteredQuery()
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      if (error) throw error;
+      setLeads(data || []);
+      setTotalCount(count || 0);
+    } catch (err) {
+      console.error('Erro ao carregar leads:', err);
+      toast.error('Erro ao carregar leads.');
+    } finally {
+      setTableLoading(false);
+    }
+  };
+
   const franchiseMap = useMemo(() => {
     const map: Record<string, string> = {};
     franchises.forEach(f => { map[f.id] = f.nome_franquia; });
     return map;
   }, [franchises]);
 
-  const filteredLeads = useMemo(() => {
-    return leads.filter(l => {
-      if (filterFranquia !== 'all' && l.franquia_id !== filterFranquia) return false;
-      if (filterStatus !== 'all' && l.status_lead !== filterStatus) return false;
-      if (filterCidade && !l.cidade?.toLowerCase().includes(filterCidade.toLowerCase())) return false;
-      if (filterModelo !== 'all' && l.modelo_recomendado !== filterModelo) return false;
-      if (search && !l.nome?.toLowerCase().includes(search.toLowerCase())) return false;
-      return true;
-    });
-  }, [leads, filterFranquia, filterStatus, filterCidade, filterModelo, search]);
-
   const leadsPerMonth = useMemo(() => {
     const counts: Record<string, number> = {};
-    leads.forEach(l => {
+    allLeads.forEach(l => {
       const d = new Date(l.created_at);
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
       counts[key] = (counts[key] || 0) + 1;
     });
     return Object.entries(counts).sort().map(([month, count]) => ({ month, count }));
-  }, [leads]);
+  }, [allLeads]);
 
   const models = useMemo(() => {
-    const set = new Set(leads.map(l => l.modelo_recomendado).filter(Boolean));
+    const set = new Set(allLeads.map(l => l.modelo_recomendado).filter(Boolean));
     return Array.from(set) as string[];
-  }, [leads]);
+  }, [allLeads]);
 
-  const exportCSV = () => {
-    const headers = ['Nome', 'Telefone', 'Email', 'Cidade', 'Franquia', 'Pontuação', 'Modelo', 'Status', 'Referência', 'Data'];
-    const rows = filteredLeads.map(l => [
-      l.nome || '', l.telefone || '', l.email || '', l.cidade || '',
-      l.franquia_id ? (franchiseMap[l.franquia_id] || '') : '',
-      String(l.pontuacao_quintal || 0), l.modelo_recomendado || '',
-      statusLabels[l.status_lead] || l.status_lead,
-      l.referred_by || '',
-      new Date(l.created_at).toLocaleDateString('pt-BR'),
-    ]);
-    const csv = [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `leads-splash-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const exportCSV = async () => {
+    try {
+      // Fetch all filtered leads (no pagination) for export
+      const { data, error } = await buildFilteredQuery()
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      const exportLeads = data || [];
+
+      const headers = ['Nome', 'Telefone', 'Email', 'Cidade', 'Franquia', 'Pontuação', 'Modelo', 'Status', 'Referência', 'Data'];
+      const rows = exportLeads.map(l => [
+        l.nome || '', l.telefone || '', l.email || '', l.cidade || '',
+        l.franquia_id ? (franchiseMap[l.franquia_id] || '') : '',
+        String(l.pontuacao_quintal || 0), l.modelo_recomendado || '',
+        statusLabels[l.status_lead] || l.status_lead,
+        l.referred_by || '',
+        new Date(l.created_at).toLocaleDateString('pt-BR'),
+      ]);
+      const csv = '\ufeff' + [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `leads-splash-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error('Erro ao exportar CSV:', err);
+      toast.error('Erro ao exportar CSV.');
+    }
   };
 
-  const totalLeads = leads.length;
-  const newLeads = leads.filter(l => l.status_lead === 'novo').length;
-  const cities = new Set(leads.map(l => l.cidade).filter(Boolean)).size;
-  const avgScore = totalLeads > 0 ? Math.round(leads.reduce((s, l) => s + (l.pontuacao_quintal || 0), 0) / totalLeads) : 0;
-  const referralCount = leads.filter(l => l.referred_by).length;
+  const totalLeads = allLeads.length;
+  const newLeads = allLeads.filter(l => l.status_lead === 'novo').length;
+  const cities = new Set(allLeads.map(l => l.cidade).filter(Boolean)).size;
+  const avgScore = totalLeads > 0 ? Math.round(allLeads.reduce((s, l) => s + (l.pontuacao_quintal || 0), 0) / totalLeads) : 0;
+  const referralCount = allLeads.filter(l => l.referred_by).length;
 
   const kpis = [
     { icon: Users, label: 'Quintais explorados', value: totalLeads, color: 'text-primary' },
@@ -157,6 +222,10 @@ export default function AdminDashboard() {
   ];
 
   const { signOut } = useAuth();
+
+  const from = (page - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE;
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   return (
     <div className="min-h-screen bg-background">
@@ -244,12 +313,12 @@ export default function AdminDashboard() {
         {activeTab === 'overview' && (
           <>
             <div className="grid md:grid-cols-2 gap-6 mb-6">
-              <AdminCityRanking leads={leads} />
-              <AdminFranchiseRanking leads={leads} franchiseMap={franchiseMap} />
+              <AdminCityRanking leads={allLeads} />
+              <AdminFranchiseRanking leads={allLeads} franchiseMap={franchiseMap} />
             </div>
 
             <div className="grid md:grid-cols-2 gap-6 mb-6">
-              <AdminReferralMetrics leads={leads} />
+              <AdminReferralMetrics leads={allLeads} />
               <Card className="border-border/50 shadow-sm">
                 <CardHeader><CardTitle className="text-sm font-semibold">Leads por Mês</CardTitle></CardHeader>
                 <CardContent>
@@ -281,7 +350,7 @@ export default function AdminDashboard() {
             <Card className="mb-6 border-border/50 shadow-sm">
               <CardContent className="p-4">
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-                  <Input placeholder="Buscar por nome..." value={search} onChange={e => setSearch(e.target.value)} className="rounded-xl" />
+                  <Input placeholder="Buscar por nome..." value={searchInput} onChange={e => setSearchInput(e.target.value)} className="rounded-xl" />
                   <Select value={filterFranquia} onValueChange={setFilterFranquia}>
                     <SelectTrigger className="rounded-xl"><SelectValue placeholder="Franquia" /></SelectTrigger>
                     <SelectContent>
@@ -309,7 +378,7 @@ export default function AdminDashboard() {
                       ))}
                     </SelectContent>
                   </Select>
-                  <Input placeholder="Filtrar cidade..." value={filterCidade} onChange={e => setFilterCidade(e.target.value)} className="rounded-xl" />
+                  <Input placeholder="Filtrar cidade..." value={cidadeInput} onChange={e => setCidadeInput(e.target.value)} className="rounded-xl" />
                 </div>
               </CardContent>
             </Card>
@@ -317,64 +386,86 @@ export default function AdminDashboard() {
             {/* Table */}
             <Card className="border-border/50 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-sm font-semibold">Todos os Leads ({filteredLeads.length})</CardTitle>
+                <CardTitle className="text-sm font-semibold">Todos os Leads ({totalCount})</CardTitle>
               </CardHeader>
               <CardContent>
-                {loading ? (
+                {(loading || tableLoading) ? (
                   <div className="flex justify-center py-12">
                     <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" />
                   </div>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-sm">
-                      <thead>
-                        <tr className="border-b border-border/50">
-                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Nome</th>
-                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Cidade</th>
-                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden lg:table-cell">Franquia</th>
-                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Score</th>
-                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Modelo</th>
-                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Status</th>
-                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden lg:table-cell">Ref</th>
-                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Data</th>
-                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider"></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {filteredLeads.map(lead => (
-                          <tr key={lead.id} className="border-b border-border/30 hover:bg-muted/30 transition-colors">
-                            <td className="py-3.5 px-3 font-medium">{lead.nome || '—'}</td>
-                            <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.cidade || '—'}</td>
-                            <td className="py-3.5 px-3 hidden lg:table-cell text-muted-foreground">
-                              {lead.franquia_id ? (franchiseMap[lead.franquia_id] || '—') : '—'}
-                            </td>
-                            <td className="py-3.5 px-3">
-                              <span className="font-bold text-primary">{lead.pontuacao_quintal || 0}%</span>
-                            </td>
-                            <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.modelo_recomendado || '—'}</td>
-                            <td className="py-3.5 px-3">
-                              <Badge className={`${statusColors[lead.status_lead] || ''} border text-xs font-medium`} variant="secondary">
-                                {statusLabels[lead.status_lead] || lead.status_lead}
-                              </Badge>
-                            </td>
-                            <td className="py-3.5 px-3 hidden lg:table-cell">
-                              {lead.referred_by ? (
-                                <span className="text-xs font-mono text-muted-foreground bg-muted px-2 py-1 rounded-md">{lead.referred_by}</span>
-                              ) : '—'}
-                            </td>
-                            <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground text-xs">
-                              {new Date(lead.created_at).toLocaleDateString('pt-BR')}
-                            </td>
-                            <td className="py-3.5 px-3">
-                              <Button size="sm" variant="ghost" onClick={() => navigate(`/admin/lead/${lead.id}`)} className="rounded-lg">
-                                <Eye className="w-4 h-4" />
-                              </Button>
-                            </td>
+                  <>
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm">
+                        <thead>
+                          <tr className="border-b border-border/50">
+                            <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Nome</th>
+                            <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Cidade</th>
+                            <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden lg:table-cell">Franquia</th>
+                            <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Score</th>
+                            <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Modelo</th>
+                            <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Status</th>
+                            <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden lg:table-cell">Ref</th>
+                            <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Data</th>
+                            <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider"></th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
+                        </thead>
+                        <tbody>
+                          {leads.map(lead => (
+                            <tr key={lead.id} className="border-b border-border/30 hover:bg-muted/30 transition-colors">
+                              <td className="py-3.5 px-3 font-medium">{lead.nome || '—'}</td>
+                              <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.cidade || '—'}</td>
+                              <td className="py-3.5 px-3 hidden lg:table-cell text-muted-foreground">
+                                {lead.franquia_id ? (franchiseMap[lead.franquia_id] || '—') : '—'}
+                              </td>
+                              <td className="py-3.5 px-3">
+                                <span className="font-bold text-primary">{lead.pontuacao_quintal || 0}%</span>
+                              </td>
+                              <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.modelo_recomendado || '—'}</td>
+                              <td className="py-3.5 px-3">
+                                <Badge className={`${statusColors[lead.status_lead] || ''} border text-xs font-medium`} variant="secondary">
+                                  {statusLabels[lead.status_lead] || lead.status_lead}
+                                </Badge>
+                              </td>
+                              <td className="py-3.5 px-3 hidden lg:table-cell">
+                                {lead.referred_by ? (
+                                  <span className="text-xs font-mono text-muted-foreground bg-muted px-2 py-1 rounded-md">{lead.referred_by}</span>
+                                ) : '—'}
+                              </td>
+                              <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground text-xs">
+                                {new Date(lead.created_at).toLocaleDateString('pt-BR')}
+                              </td>
+                              <td className="py-3.5 px-3">
+                                <Button size="sm" variant="ghost" onClick={() => navigate(`/admin/lead/${lead.id}`)} className="rounded-lg">
+                                  <Eye className="w-4 h-4" />
+                                </Button>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+
+                    {/* Pagination */}
+                    {totalCount > 0 && (
+                      <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/30">
+                        <p className="text-sm text-muted-foreground">
+                          Mostrando {from + 1}–{Math.min(to, totalCount)} de {totalCount} leads
+                        </p>
+                        <div className="flex gap-2">
+                          <Button variant="outline" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="rounded-xl">
+                            Anterior
+                          </Button>
+                          <span className="flex items-center text-sm text-muted-foreground px-2">
+                            {page} / {totalPages}
+                          </span>
+                          <Button variant="outline" size="sm" onClick={() => setPage(p => p + 1)} disabled={page >= totalPages} className="rounded-xl">
+                            Próximo
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 )}
               </CardContent>
             </Card>
