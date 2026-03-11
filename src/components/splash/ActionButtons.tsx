@@ -6,6 +6,7 @@ import logoSplash from '@/assets/logo-splash.png';
 import { getRankingGaucho, getYardClassification, getSharePhrase, getSocialComparison } from '@/lib/ranking';
 import { getPoolImage } from '@/lib/poolImages';
 import { FriendChallenge } from './FriendChallenge';
+import { ValorizationSimulator } from './ValorizationSimulator';
 import { trackEvent } from '@/lib/analytics';
 
 interface PoolSpecs {
