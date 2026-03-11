@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { Droplets, Shield, MapPin, Phone, ArrowRight } from 'lucide-react';
+import { Droplets, Shield, MapPin, ArrowRight } from 'lucide-react';
 import logoSplash from '@/assets/logo-splash.png';
 import heroPool from '@/assets/hero-pool.jpg';
 import { useNavigate } from 'react-router-dom';
