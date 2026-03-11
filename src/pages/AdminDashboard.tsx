@@ -364,6 +364,10 @@ export default function AdminDashboard() {
             </Card>
           </>
         )}
+
+        {activeTab === 'franchises' && (
+          <AdminFranchiseManager />
+        )}
       </div>
     </div>
   );
