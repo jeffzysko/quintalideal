@@ -130,6 +130,7 @@ function AppRoutes() {
       </ThemeProvider>
     </ErrorBoundary>
   </QueryClientProvider>
-);
+  );
+}
 
-export default App;
+export default AppRoutes;
