@@ -285,6 +285,72 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
                   </div>
                 </div>
 
+                {/* Botões de captura lado a lado */}
+                {photos.length < 4 && (
+                  <div className="flex gap-3 my-4">
+                    <button
+                      onClick={() => { setReplacingIndex(null); openCamera(); }}
+                      className="flex-1 py-4 rounded-2xl border-2 border-dashed border-primary/30 flex flex-col items-center justify-center cursor-pointer hover:bg-primary/5 hover:border-primary/50 transition-all"
+                    >
+                      <Camera className="w-6 h-6 text-primary/50 mb-1" />
+                      <span className="text-xs text-muted-foreground font-medium">Tirar foto</span>
+                    </button>
+                    <label className="flex-1 py-4 rounded-2xl border-2 border-dashed border-primary/20 flex flex-col items-center justify-center cursor-pointer hover:bg-accent/30 hover:border-primary/40 transition-all">
+                      <ImagePlus className="w-6 h-6 text-primary/35 mb-1" />
+                      <span className="text-xs text-muted-foreground font-medium">Da galeria</span>
+                      <input
+                        type="file"
+                        accept="image/jpeg,image/png,image/webp"
+                        multiple
+                        onChange={handleFileChange}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
+                )}
+
+                {/* Fotos adicionadas */}
+                {photos.length > 0 && (
+                  <div className="grid grid-cols-2 gap-3 my-4">
+                    <AnimatePresence>
+                      {photos.map((photo, i) => (
+                        <motion.div
+                          key={photo.preview}
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.8 }}
+                          className="relative aspect-square rounded-2xl overflow-hidden border border-border shadow-sm group"
+                        >
+                          <img src={photo.preview} alt={`Quintal ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
+                          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
+                            <button
+                              onClick={() => replacePhoto(i)}
+                              className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-sm"
+                              title="Tirar outra foto"
+                            >
+                              <RotateCcw className="w-3.5 h-3.5 text-foreground" />
+                            </button>
+                            <button
+                              onClick={() => removePhoto(i)}
+                              className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-sm"
+                              title="Remover"
+                            >
+                              <X className="w-3.5 h-3.5 text-destructive" />
+                            </button>
+                          </div>
+                          <button
+                            onClick={() => removePhoto(i)}
+                            className="absolute top-2 right-2 w-6 h-6 bg-foreground/60 text-background rounded-full flex items-center justify-center group-hover:hidden transition-colors"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </motion.div>
+                      ))}
+                    </AnimatePresence>
+                  </div>
+                )}
+
+                {/* Dicas */}
                 <AnimatePresence>
                   {showTips && photos.length === 0 && (
                     <motion.div
@@ -314,67 +380,6 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
                     </motion.div>
                   )}
                 </AnimatePresence>
-
-                <div className="grid grid-cols-2 gap-3 my-4">
-                  <AnimatePresence>
-                    {photos.map((photo, i) => (
-                      <motion.div
-                        key={photo.preview}
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        className="relative aspect-square rounded-2xl overflow-hidden border border-border shadow-sm group"
-                      >
-                        <img src={photo.preview} alt={`Quintal ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
-                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
-                          <button
-                            onClick={() => replacePhoto(i)}
-                            className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-sm"
-                            title="Tirar outra foto"
-                          >
-                            <RotateCcw className="w-3.5 h-3.5 text-foreground" />
-                          </button>
-                          <button
-                            onClick={() => removePhoto(i)}
-                            className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-sm"
-                            title="Remover"
-                          >
-                            <X className="w-3.5 h-3.5 text-destructive" />
-                          </button>
-                        </div>
-                        <button
-                          onClick={() => removePhoto(i)}
-                          className="absolute top-2 right-2 w-6 h-6 bg-foreground/60 text-background rounded-full flex items-center justify-center group-hover:hidden transition-colors"
-                        >
-                          <X className="w-3 h-3" />
-                        </button>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
-
-                  {photos.length < 4 && (
-                    <div className="grid gap-2">
-                      <button
-                        onClick={() => { setReplacingIndex(null); openCamera(); }}
-                        className="aspect-[2/1] rounded-2xl border-2 border-dashed border-primary/30 flex flex-col items-center justify-center cursor-pointer hover:bg-primary/5 hover:border-primary/50 transition-all"
-                      >
-                        <Camera className="w-5 h-5 text-primary/50 mb-0.5" />
-                        <span className="text-[10px] text-muted-foreground font-medium">Tirar foto</span>
-                      </button>
-                      <label className="aspect-[2/1] rounded-2xl border-2 border-dashed border-primary/20 flex flex-col items-center justify-center cursor-pointer hover:bg-accent/30 hover:border-primary/40 transition-all">
-                        <ImagePlus className="w-5 h-5 text-primary/35 mb-0.5" />
-                        <span className="text-[10px] text-muted-foreground font-medium">Da galeria</span>
-                        <input
-                          type="file"
-                          accept="image/jpeg,image/png,image/webp"
-                          multiple
-                          onChange={handleFileChange}
-                          className="hidden"
-                        />
-                      </label>
-                    </div>
-                  )}
-                </div>
 
                 <p className="text-[10px] text-muted-foreground text-center mb-5">
                   {photos.length}/4 fotos • JPG, PNG ou WebP • Máx. 10MB
