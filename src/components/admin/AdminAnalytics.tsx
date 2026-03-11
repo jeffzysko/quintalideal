@@ -181,6 +181,18 @@ export function AdminAnalytics({ franchiseMap }: AdminAnalyticsProps) {
     );
   }
 
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 gap-4">
+        <AlertCircle className="w-10 h-10 text-destructive" />
+        <p className="text-muted-foreground text-sm">{error}</p>
+        <Button variant="outline" size="sm" onClick={loadEvents} className="gap-2 rounded-xl">
+          <RefreshCw className="w-4 h-4" /> Tentar novamente
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Period selector */}

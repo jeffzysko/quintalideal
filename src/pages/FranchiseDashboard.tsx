@@ -58,34 +58,37 @@ export default function FranchiseDashboard() {
 
   const loadLeads = async () => {
     setLoading(true);
-    
-    if (franchiseId) {
-      const { data: franchiseData } = await supabase
-        .from('franchises')
-        .select('slug_url, nome_franquia')
-        .eq('id', franchiseId)
-        .maybeSingle();
-      if (franchiseData) {
-        setFranchiseSlug(franchiseData.slug_url);
-        setFranchiseName(franchiseData.nome_franquia || '');
+    try {
+      if (franchiseId) {
+        const { data: franchiseData } = await supabase
+          .from('franchises')
+          .select('slug_url, nome_franquia')
+          .eq('id', franchiseId)
+          .maybeSingle();
+        if (franchiseData) {
+          setFranchiseSlug(franchiseData.slug_url);
+          setFranchiseName(franchiseData.nome_franquia || '');
+        }
       }
-    }
 
-    let query = supabase
-      .from('leads')
-      .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at')
-      .order('created_at', { ascending: false });
-    
-    if (franchiseId) {
-      query = query.eq('franquia_id', franchiseId);
+      let query = supabase
+        .from('leads')
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at')
+        .order('created_at', { ascending: false });
+      
+      if (franchiseId) {
+        query = query.eq('franquia_id', franchiseId);
+      }
+      
+      const { data, error } = await query;
+      if (error) throw error;
+      setLeads(data || []);
+    } catch (err) {
+      console.error('Erro ao carregar leads:', err);
+      toast.error('Erro ao carregar leads. Tente recarregar a página.');
+    } finally {
+      setLoading(false);
     }
-    
-    const { data, error } = await query;
-    if (error) {
-      console.error('Error loading leads:', error);
-    }
-    setLeads(data || []);
-    setLoading(false);
   };
 
   const totalLeads = leads.length;

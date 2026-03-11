@@ -43,13 +43,20 @@ export default function FranchiseLanding() {
 
   if (!franchise || !franchise.ativa) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-6">
-        <div className="text-center">
-          <p className="text-muted-foreground text-lg mb-2">
-            {franchise && !franchise.ativa ? 'Esta franquia está temporariamente indisponível.' : 'Franquia não encontrada.'}
-          </p>
-          <p className="text-sm text-muted-foreground">Entre em contato com a Splash Piscinas para mais informações.</p>
-        </div>
+      <div className="min-h-screen flex flex-col items-center justify-center px-6 gap-4">
+        <AlertTriangle className="w-12 h-12 text-amber-500" />
+        <h1 className="text-xl font-bold text-foreground">
+          {franchise && !franchise.ativa ? 'Franquia indisponível' : 'Página não encontrada'}
+        </h1>
+        <p className="text-muted-foreground text-center max-w-md">
+          {franchise && !franchise.ativa
+            ? 'Esta franquia está temporariamente indisponível. Tente novamente mais tarde.'
+            : 'Não encontramos a página que você procura. Verifique o link e tente novamente.'}
+        </p>
+        <p className="text-sm text-muted-foreground">Entre em contato com a Splash Piscinas para mais informações.</p>
+        <Button onClick={() => navigate('/')} className="gap-2 mt-2">
+          <Home className="w-4 h-4" /> Voltar ao início
+        </Button>
       </div>
     );
   }
