@@ -82,6 +82,7 @@ const App = () => (
                   </ProtectedRoute>
                 }
               />
+              <Route
                 path="/admin/lead/:id"
                 element={
                   <ProtectedRoute allowedRoles={['admin_fabrica']}>
