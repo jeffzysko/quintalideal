@@ -5,13 +5,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Users, TrendingUp, Building2, MapPin, Eye, Download, BarChart3, Share2, Target } from 'lucide-react';
+import { Users, TrendingUp, Building2, MapPin, Eye, Download, BarChart3, Share2, Target, Activity } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis } from 'recharts';
 import { AdminCityRanking } from '@/components/admin/AdminCityRanking';
 import { AdminFranchiseRanking } from '@/components/admin/AdminFranchiseRanking';
 import { AdminReferralMetrics } from '@/components/admin/AdminReferralMetrics';
+import { AdminAnalytics } from '@/components/admin/AdminAnalytics';
 
 interface LeadRow {
   id: string;
