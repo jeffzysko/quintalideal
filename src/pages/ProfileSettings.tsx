@@ -40,7 +40,7 @@ export default function ProfileSettings() {
         .from('profiles')
         .select('full_name, telefone')
         .eq('user_id', user!.id)
-        .maybeSingle();
+        .maybeSingle() as { data: { full_name: string | null; telefone: string | null } | null };
 
       if (profile?.full_name) setFullName(profile.full_name);
       if (profile?.telefone) setTelefone(profile.telefone);
@@ -73,7 +73,7 @@ export default function ProfileSettings() {
       // Update profile name
       const { error: profileError } = await supabase
         .from('profiles')
-        .update({ full_name: fullName.trim() || null, telefone: telefone.trim() || null })
+        .update({ full_name: fullName.trim() || null, telefone: telefone.trim() || null } as any)
         .eq('user_id', user!.id);
 
       if (profileError) throw profileError;
