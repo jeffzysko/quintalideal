@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { MessageCircle, FileText, Share2, Trophy, Download, ArrowRight, Sparkles, Zap, Star, Eye } from 'lucide-react';
+import { MessageCircle, FileText, Share2, Trophy, Download, ArrowRight, Sparkles, Zap, Star } from 'lucide-react';
 import logoSplash from '@/assets/logo-splash.png';
 import { getRankingGaucho } from '@/lib/ranking';
 import { ValorizationSimulator } from './ValorizationSimulator';
@@ -302,8 +302,8 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
             onClick={handleWhatsApp}
             className="w-full py-7 text-[15px] rounded-2xl font-bold shadow-xl shadow-primary/25 gradient-blue glow-blue hover:glow-blue-strong hover:scale-[1.01] transition-all duration-300 gap-2 group"
           >
-            <Eye className="w-5 h-5" />
-            Quero ver como ficaria no meu quintal
+            <MessageCircle className="w-5 h-5" />
+            Falar com um consultor
             <motion.span
               animate={{ x: [0, 3, 0] }}
               transition={{ duration: 1.5, repeat: Infinity }}
@@ -312,7 +312,7 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
             </motion.span>
           </Button>
           <p className="text-center text-[10px] text-muted-foreground mt-2">
-            Receba uma simulação personalizada no WhatsApp
+            Tire suas dúvidas e solicite um orçamento pelo WhatsApp
           </p>
         </motion.div>
 
@@ -340,8 +340,8 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
             variant="outline"
             className="w-full py-6 text-sm rounded-2xl font-semibold border-primary/20 text-primary hover:bg-primary/5 transition-all gap-2"
           >
-            <Zap className="w-4 h-4" />
-            Falar com especialista agora
+            <FileText className="w-4 h-4" />
+            Solicitar orçamento
           </Button>
 
           <Button
