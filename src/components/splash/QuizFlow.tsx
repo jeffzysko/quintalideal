@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { HeroSection } from './HeroSection';
 import { PreDiagnosis } from './PreDiagnosis';
 import { PhotoUpload } from './PhotoUpload';
+import { PhotoAnalysis } from './PhotoAnalysis';
 import { QuizStep } from './QuizStep';
 import { ProcessingScreen } from './ProcessingScreen';
 import { ResultScreen } from './ResultScreen';
