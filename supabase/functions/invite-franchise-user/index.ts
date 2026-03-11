@@ -176,27 +176,11 @@ Deno.serve(async (req) => {
       .update({ franquia_id: franchise_id, full_name: full_name || franchise.nome_franquia })
       .eq("user_id", userId);
 
-    // Generate recovery link
-    const { data: linkData, error: linkError } = await adminClient.auth.admin.generateLink({
-      type: "recovery",
-      email,
-      options: {
-        redirectTo: "https://quintalideal.com.br/reset-password",
-      },
-    });
-
-    if (linkError) {
-      console.error("Error generating recovery link:", linkError);
-      return new Response(JSON.stringify({ error: "Usuário criado mas houve erro ao gerar link de acesso." }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const recoveryLink = linkData?.properties?.action_link || "https://quintalideal.com.br/login";
+    // Build a link to the forgot-password page (pre-filled with user email)
+    const resetPageLink = `https://quintalideal.com.br/forgot-password?email=${encodeURIComponent(email)}`;
     const userName = full_name || franchise.nome_franquia;
 
-    const htmlContent = buildInviteEmailHTML(userName, franchise.nome_franquia, recoveryLink);
+    const htmlContent = buildInviteEmailHTML(userName, franchise.nome_franquia, resetPageLink);
 
     const resendResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
