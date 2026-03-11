@@ -28,11 +28,11 @@ export function AdminLeadFilters({
 }: AdminLeadFiltersProps) {
   return (
     <Card className="mb-6 border-border/50 shadow-sm">
-      <CardContent className="p-4">
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
-          <Input placeholder="Buscar por nome..." value={searchInput} onChange={e => onSearchChange(e.target.value)} className="rounded-xl" />
+      <CardContent className="p-3 sm:p-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2 sm:gap-3">
+          <Input placeholder="Buscar por nome..." value={searchInput} onChange={e => onSearchChange(e.target.value)} className="rounded-xl text-sm h-9" />
           <Select value={filterFranquia} onValueChange={onFranquiaChange}>
-            <SelectTrigger className="rounded-xl"><SelectValue placeholder="Franquia" /></SelectTrigger>
+            <SelectTrigger className="rounded-xl h-9 text-sm"><SelectValue placeholder="Franquia" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todas Franquias</SelectItem>
               {franchises.map(f => (
@@ -41,7 +41,7 @@ export function AdminLeadFilters({
             </SelectContent>
           </Select>
           <Select value={filterStatus} onValueChange={onStatusChange}>
-            <SelectTrigger className="rounded-xl"><SelectValue placeholder="Status" /></SelectTrigger>
+            <SelectTrigger className="rounded-xl h-9 text-sm"><SelectValue placeholder="Status" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos Status</SelectItem>
               {Object.entries(STATUS_LABELS).map(([v, l]) => (
@@ -50,7 +50,7 @@ export function AdminLeadFilters({
             </SelectContent>
           </Select>
           <Select value={filterModelo} onValueChange={onModeloChange}>
-            <SelectTrigger className="rounded-xl"><SelectValue placeholder="Modelo" /></SelectTrigger>
+            <SelectTrigger className="rounded-xl h-9 text-sm"><SelectValue placeholder="Modelo" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos Modelos</SelectItem>
               {models.map(m => (
@@ -58,7 +58,7 @@ export function AdminLeadFilters({
               ))}
             </SelectContent>
           </Select>
-          <Input placeholder="Filtrar cidade..." value={cidadeInput} onChange={e => onCidadeChange(e.target.value)} className="rounded-xl" />
+          <Input placeholder="Filtrar cidade..." value={cidadeInput} onChange={e => onCidadeChange(e.target.value)} className="rounded-xl text-sm h-9" />
         </div>
       </CardContent>
     </Card>

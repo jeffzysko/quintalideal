@@ -212,23 +212,25 @@ export default function AdminDashboard() {
 
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
         {/* Tab switcher */}
-        <div className="flex gap-1 mb-6 md:mb-8 bg-muted rounded-xl p-1 w-full md:w-fit overflow-x-auto scrollbar-none" role="tablist">
+        <div className="flex gap-0.5 mb-6 md:mb-8 bg-muted rounded-xl p-1 w-full overflow-x-auto scrollbar-none" role="tablist">
           {[
-            { key: 'overview' as const, icon: BarChart3, label: 'Inteligência' },
-            { key: 'analytics' as const, icon: Activity, label: 'Analytics' },
-            { key: 'leads' as const, icon: Users, label: 'Leads' },
-            { key: 'franchises' as const, icon: Building2, label: 'Franquias' },
-            { key: 'users' as const, icon: Users, label: 'Usuários' },
-            { key: 'emails' as const, icon: Mail, label: 'E-mails' },
+            { key: 'overview' as const, icon: BarChart3, label: 'Inteligência', short: 'Intel' },
+            { key: 'analytics' as const, icon: Activity, label: 'Analytics', short: 'Stats' },
+            { key: 'leads' as const, icon: Users, label: 'Leads', short: 'Leads' },
+            { key: 'franchises' as const, icon: Building2, label: 'Franquias', short: 'Franq' },
+            { key: 'users' as const, icon: Users, label: 'Usuários', short: 'Users' },
+            { key: 'emails' as const, icon: Mail, label: 'E-mails', short: 'Mail' },
           ].map(tab => (
             <button
               key={tab.key}
               role="tab"
               aria-selected={activeTab === tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-3 md:px-5 py-2 md:py-2.5 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap flex-1 md:flex-none ${activeTab === tab.key ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`px-2.5 sm:px-4 md:px-5 py-2 md:py-2.5 rounded-lg text-[11px] sm:text-xs md:text-sm font-medium transition-all whitespace-nowrap flex-1 min-w-0 ${activeTab === tab.key ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
             >
-              <tab.icon className="w-3.5 h-3.5 md:w-4 md:h-4 inline mr-1" /> <span className="hidden sm:inline">{tab.label}</span><span className="sm:hidden">{tab.label.slice(0, 5)}</span>
+              <tab.icon className="w-3.5 h-3.5 md:w-4 md:h-4 inline mr-0.5 sm:mr-1" />
+              <span className="hidden md:inline">{tab.label}</span>
+              <span className="md:hidden">{tab.short}</span>
             </button>
           ))}
         </div>
