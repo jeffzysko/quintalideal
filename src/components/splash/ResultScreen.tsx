@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Droplets } from 'lucide-react';
+import logoSplash from '@/assets/logo-splash.png';
 
 interface ResultScreenProps {
   score: number;
@@ -29,17 +29,21 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
   const circumference = 2 * Math.PI * 70;
   const offset = circumference - (displayScore / 100) * circumference;
 
+  // Pink for high, blue for medium, muted for low
   const getColor = () => {
-    if (displayScore >= 70) return 'hsl(var(--splash-green))';
-    if (displayScore >= 40) return 'hsl(var(--splash-orange))';
-    return 'hsl(var(--destructive))';
+    if (displayScore >= 70) return 'hsl(322, 95%, 47%)';
+    if (displayScore >= 40) return 'hsl(196, 93%, 44%)';
+    return 'hsl(var(--muted-foreground))';
   };
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen flex flex-col items-center justify-center px-6 py-12 bg-gradient-to-br from-primary/5 via-background to-accent/20"
+      className="min-h-screen flex flex-col items-center justify-center px-6 py-12"
+      style={{
+        background: 'linear-gradient(160deg, hsl(207 65% 93%) 0%, hsl(0 0% 99.6%) 50%, hsl(130 20% 92%) 100%)'
+      }}
     >
       <motion.div
         initial={{ scale: 0.5, opacity: 0 }}
@@ -47,6 +51,8 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
         transition={{ delay: 0.2, type: 'spring' }}
         className="text-center"
       >
+        <img src={logoSplash} alt="Splash Piscinas" className="mx-auto w-32 mb-6" />
+
         <div className="relative mx-auto w-48 h-48 mb-8">
           <svg className="w-48 h-48 transform -rotate-90" viewBox="0 0 160 160">
             <circle cx="80" cy="80" r="70" stroke="hsl(var(--border))" strokeWidth="10" fill="none" />
@@ -74,12 +80,9 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
           de potencial!
         </h2>
 
-        <div className="bg-card border rounded-2xl p-6 max-w-sm mx-auto">
-          <div className="flex items-center gap-2 mb-2">
-            <Droplets className="w-5 h-5 text-primary" />
-            <span className="text-sm font-semibold text-primary uppercase tracking-wide">Modelo recomendado</span>
-          </div>
-          <h3 className="text-xl font-bold mb-1" style={{ fontFamily: 'Montserrat' }}>{poolName}</h3>
+        <div className="bg-card border rounded-2xl p-6 max-w-sm mx-auto shadow-sm">
+          <span className="text-xs font-semibold text-secondary uppercase tracking-wide">Modelo recomendado</span>
+          <h3 className="text-xl font-bold mt-1 mb-1" style={{ fontFamily: 'Montserrat' }}>{poolName}</h3>
           {poolDescription && <p className="text-sm text-muted-foreground">{poolDescription}</p>}
         </div>
       </motion.div>

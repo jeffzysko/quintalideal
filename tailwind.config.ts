@@ -57,6 +57,12 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        splash: {
+          pink: "hsl(var(--splash-pink))",
+          blue: "hsl(var(--splash-blue))",
+          "light-blue": "hsl(var(--splash-light-blue))",
+          sage: "hsl(var(--splash-sage))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
