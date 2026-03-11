@@ -20,32 +20,27 @@ export function HeroSection({ onStart, franchiseName }: HeroSectionProps) {
         }} />
       </div>
 
-      {/* Floating water drops */}
+      {/* Floating water drops - hidden on very small screens */}
       <motion.div
         animate={{ y: [-8, 8, -8] }}
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-[15%] left-[10%] text-3xl opacity-20"
+        className="absolute top-[15%] left-[10%] text-3xl opacity-20 hidden sm:block"
       >💧</motion.div>
       <motion.div
         animate={{ y: [6, -10, 6] }}
         transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-        className="absolute top-[25%] right-[12%] text-2xl opacity-15"
-      >💧</motion.div>
-      <motion.div
-        animate={{ y: [-5, 12, -5] }}
-        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
-        className="absolute top-[40%] left-[75%] text-xl opacity-10"
+        className="absolute top-[25%] right-[12%] text-2xl opacity-15 hidden sm:block"
       >💧</motion.div>
 
       {/* Content */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pb-10 pt-12 max-w-lg mx-auto w-full">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-end sm:justify-center px-5 pb-8 pt-16 sm:pb-10 sm:pt-12 max-w-lg mx-auto w-full safe-bottom">
         <motion.img
           src={logoSplash}
           alt="Splash Piscinas"
           initial={{ opacity: 0, scale: 0.85 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="mx-auto mb-6 w-36 md:w-44 h-auto drop-shadow-2xl"
+          className="mx-auto mb-5 sm:mb-6 w-28 sm:w-36 md:w-44 h-auto drop-shadow-2xl"
         />
 
         {franchiseName && (
@@ -53,7 +48,7 @@ export function HeroSection({ onStart, franchiseName }: HeroSectionProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
-            className="text-[11px] font-semibold uppercase tracking-[0.25em] mb-4 text-white/50"
+            className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.25em] mb-3 sm:mb-4 text-white/50"
           >
             {franchiseName}
           </motion.p>
@@ -63,7 +58,7 @@ export function HeroSection({ onStart, franchiseName }: HeroSectionProps) {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.35, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="text-center text-[2rem] md:text-[2.75rem] font-extrabold leading-[1.08] mb-4 text-white tracking-tight"
+          className="text-center text-[1.75rem] sm:text-[2rem] md:text-[2.75rem] font-extrabold leading-[1.08] mb-3 sm:mb-4 text-white tracking-tight"
         >
           Descubra o <br />
           <span className="bg-gradient-to-r from-blue-300 via-blue-200 to-cyan-300 bg-clip-text text-transparent">
@@ -76,7 +71,7 @@ export function HeroSection({ onStart, franchiseName }: HeroSectionProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.55 }}
-          className="text-center text-sm md:text-base text-white/55 mb-8 max-w-xs mx-auto leading-relaxed"
+          className="text-center text-[13px] sm:text-sm md:text-base text-white/55 mb-6 sm:mb-8 max-w-xs mx-auto leading-relaxed"
         >
           Análise inteligente em menos de 60 segundos. Descubra se seu quintal pode ter uma piscina Splash.
         </motion.p>
@@ -91,7 +86,7 @@ export function HeroSection({ onStart, franchiseName }: HeroSectionProps) {
           <Button
             onClick={onStart}
             size="lg"
-            className="text-[15px] px-8 py-7 rounded-2xl font-bold gap-3 w-full gradient-blue glow-blue hover:glow-blue-strong hover:scale-[1.02] transition-all duration-300"
+            className="text-[15px] px-8 py-7 rounded-2xl font-bold gap-3 w-full gradient-blue glow-blue hover:glow-blue-strong hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
           >
             Explorar meu quintal
             <motion.span
@@ -108,21 +103,21 @@ export function HeroSection({ onStart, franchiseName }: HeroSectionProps) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
-          className="flex items-center justify-center gap-5 mt-8 mb-2"
+          className="flex items-center justify-center gap-3 sm:gap-5 mt-6 sm:mt-8 mb-2 flex-wrap"
         >
           <div className="flex items-center gap-1.5 text-white/35">
-            <Clock className="w-3.5 h-3.5" />
-            <span className="text-[10px] font-medium">60 segundos</span>
+            <Clock className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
+            <span className="text-[9px] sm:text-[10px] font-medium">60 segundos</span>
           </div>
           <div className="w-px h-3 bg-white/15" />
           <div className="flex items-center gap-1.5 text-white/35">
-            <Shield className="w-3.5 h-3.5" />
-            <span className="text-[10px] font-medium">100% gratuito</span>
+            <Shield className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
+            <span className="text-[9px] sm:text-[10px] font-medium">100% gratuito</span>
           </div>
           <div className="w-px h-3 bg-white/15" />
           <div className="flex items-center gap-1.5 text-white/35">
-            <Droplets className="w-3.5 h-3.5" />
-            <span className="text-[10px] font-medium">+2.500 análises</span>
+            <Droplets className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
+            <span className="text-[9px] sm:text-[10px] font-medium">+2.500 análises</span>
           </div>
         </motion.div>
       </div>

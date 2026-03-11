@@ -84,7 +84,7 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading }: LeadFormProps)
       initial={{ opacity: 0, x: 50 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-      className="min-h-screen flex flex-col items-center justify-center px-6 py-12 gradient-hero"
+      className="min-h-screen flex flex-col items-center justify-center px-5 sm:px-6 py-10 sm:py-12 gradient-hero"
     >
       <div className="w-full max-w-md">
         <motion.div
@@ -92,10 +92,10 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading }: LeadFormProps)
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <h2 className="text-2xl font-bold mb-2 tracking-tight text-foreground">
+          <h2 className="text-xl sm:text-2xl font-bold mb-2 tracking-tight text-foreground">
             Quase lá! 🎉
           </h2>
-          <p className="text-muted-foreground mb-8 text-sm">
+          <p className="text-muted-foreground mb-6 sm:mb-8 text-[13px] sm:text-sm">
             Preencha seus dados para receber sua recomendação personalizada.
           </p>
         </motion.div>
@@ -104,14 +104,14 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading }: LeadFormProps)
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-4 rounded-2xl bg-primary/5 border border-primary/15 flex gap-3 items-start"
+            className="mb-5 sm:mb-6 p-4 rounded-2xl bg-primary/5 border border-primary/15 flex gap-3 items-start"
           >
             <AlertCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-            <p className="text-sm text-foreground leading-relaxed">{duplicateMsg}</p>
+            <p className="text-[13px] sm:text-sm text-foreground leading-relaxed">{duplicateMsg}</p>
           </motion.div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
             <Label className="flex items-center gap-2 mb-2 text-sm font-medium">
               <User className="w-4 h-4 text-muted-foreground" /> Nome
@@ -162,7 +162,7 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading }: LeadFormProps)
             <Button
               type="submit"
               disabled={isLoading}
-              className="w-full py-6 text-base rounded-2xl font-semibold mt-2 gradient-blue hover:opacity-90 transition-all"
+              className="w-full py-6 text-base rounded-2xl font-semibold mt-2 gradient-blue hover:opacity-90 active:scale-[0.98] transition-all"
             >
               {isLoading ? (checking ? 'Verificando...' : 'Salvando...') : 'Ver meu resultado'}
               {!isLoading && <ArrowRight className="w-5 h-5 ml-2" />}
