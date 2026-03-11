@@ -44,6 +44,7 @@ function LazyFallback() {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ErrorBoundary>
+      <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
       <AuthProvider>
         <TooltipProvider>
         <Toaster />
