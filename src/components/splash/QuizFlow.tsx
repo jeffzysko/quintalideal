@@ -2,8 +2,10 @@ import { useState, useCallback, useRef, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import { HeroSection } from './HeroSection';
+import { PreDiagnosis } from './PreDiagnosis';
 import { PhotoUpload } from './PhotoUpload';
 import { QuizStep } from './QuizStep';
+import { ProcessingScreen } from './ProcessingScreen';
 import { ResultScreen } from './ResultScreen';
 import { LeadForm } from './LeadForm';
 import { ActionButtons } from './ActionButtons';
@@ -58,7 +60,7 @@ const quizQuestions = [
   },
 ];
 
-type Step = 'hero' | 'photos' | 'quiz' | 'result' | 'lead-form' | 'actions';
+type Step = 'hero' | 'pre-diagnosis' | 'photos' | 'quiz' | 'processing' | 'result' | 'lead-form' | 'actions';
 
 interface QuizFlowProps {
   franchiseSlug?: string;
@@ -81,11 +83,10 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   const [leadName, setLeadName] = useState('');
   const [leadRefCode, setLeadRefCode] = useState('');
   const [saving, setSaving] = useState(false);
-  
+
   const isSubmittingRef = useRef(false);
   const analyticsCtx = { franchiseId };
 
-  // Track landing page view
   useEffect(() => {
     trackEvent('landing_page_viewed', analyticsCtx);
   }, []);
@@ -97,7 +98,6 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
     const newAnswers = { ...answers, [key]: value };
     setAnswers(newAnswers);
 
-    // Track each question answer
     trackEvent('quiz_question_answered', {
       ...analyticsCtx,
       metadata: { question_number: quizStep + 1, answer: value },
@@ -121,7 +121,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         metadata: { score: s, modelo_recomendado: pool },
       });
 
-      setStep('result');
+      setStep('processing');
     }
   }, [quizStep, answers]);
 
@@ -149,7 +149,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   const handleLeadSubmit = async (data: { nome: string; telefone: string; email: string }) => {
     if (isSubmittingRef.current) return;
     isSubmittingRef.current = true;
-    
+
     setSaving(true);
     setLeadName(data.nome);
     try {
@@ -193,7 +193,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
 
   const handleStartQuiz = () => {
     trackEvent('quiz_started', analyticsCtx);
-    setStep('photos');
+    setStep('pre-diagnosis');
   };
 
   const handlePhotosNext = (urls: string[]) => {
@@ -221,8 +221,11 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       {step === 'hero' && (
         <HeroSection key="hero" onStart={handleStartQuiz} franchiseName={franchiseName} />
       )}
+      {step === 'pre-diagnosis' && (
+        <PreDiagnosis key="pre-diagnosis" onContinue={() => setStep('photos')} />
+      )}
       {step === 'photos' && (
-        <PhotoUpload key="photos" onNext={handlePhotosNext} onBack={() => setStep('hero')} />
+        <PhotoUpload key="photos" onNext={handlePhotosNext} onBack={() => setStep('pre-diagnosis')} />
       )}
       {step === 'quiz' && currentQuizQuestion && (
         <QuizStep
@@ -250,6 +253,9 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
           explorerStep={6}
           onBack={() => setQuizStep(4)}
         />
+      )}
+      {step === 'processing' && (
+        <ProcessingScreen key="processing" onDone={() => setStep('result')} />
       )}
       {step === 'result' && (
         <ResultScreen key="result" score={score} poolName={poolName} poolDescription={poolDesc} onContinue={handleResultContinue} />
