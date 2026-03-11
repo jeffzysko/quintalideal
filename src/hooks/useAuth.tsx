@@ -1,6 +1,6 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, useRef, ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
-import type { Session, User } from '@supabase/supabase-js';
+import type { User } from '@supabase/supabase-js';
 import type { Enums } from '@/integrations/supabase/types';
 
 interface AuthContextType {
@@ -38,90 +38,106 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [role, setRole] = useState<string | null>(null);
   const [franchiseId, setFranchiseId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const mountedRef = useRef(true);
+  const syncLockRef = useRef<string | null>(null);
 
-  const fetchUserMeta = async (userId: string) => {
+  const fetchUserMeta = useCallback(async (userId: string) => {
     const [{ data: rolesData, error: rolesError }, { data: profileData, error: profileError }] = await Promise.all([
       supabase.from('user_roles').select('role').eq('user_id', userId),
       supabase.from('profiles').select('franquia_id').eq('user_id', userId).maybeSingle(),
     ]);
 
-    if (rolesError) {
-      console.error('Error loading user roles:', rolesError);
-    }
-
-    if (profileError) {
-      console.error('Error loading user profile:', profileError);
-    }
+    if (rolesError) console.error('Error loading user roles:', rolesError);
+    if (profileError) console.error('Error loading user profile:', profileError);
 
     const roles = (rolesData ?? []).map(item => item.role);
-
     return {
       role: resolvePrimaryRole(roles),
       franchiseId: profileData?.franquia_id ?? null,
     };
-  };
+  }, []);
+
+  const syncSession = useCallback(async (currentUser: User | null, lockId: string) => {
+    if (!mountedRef.current) return;
+
+    // Only the latest sync call should apply state
+    syncLockRef.current = lockId;
+
+    if (!currentUser) {
+      if (syncLockRef.current !== lockId || !mountedRef.current) return;
+      setUser(null);
+      setRole(null);
+      setFranchiseId(null);
+      setLoading(false);
+      return;
+    }
+
+    setUser(currentUser);
+
+    try {
+      const meta = await fetchUserMeta(currentUser.id);
+      if (syncLockRef.current !== lockId || !mountedRef.current) return;
+      setRole(meta.role);
+      setFranchiseId(meta.franchiseId);
+    } catch (err) {
+      console.error('Error syncing session:', err);
+      if (syncLockRef.current !== lockId || !mountedRef.current) return;
+      setRole(null);
+      setFranchiseId(null);
+    }
+
+    if (syncLockRef.current === lockId && mountedRef.current) {
+      setLoading(false);
+    }
+  }, [fetchUserMeta]);
 
   useEffect(() => {
-    let mounted = true;
+    mountedRef.current = true;
 
-    const syncSession = async (session: Session | null) => {
-      if (!mounted) return;
-
-      setLoading(true);
-      const currentUser = session?.user ?? null;
-      setUser(currentUser);
-
-      if (!currentUser) {
-        setRole(null);
-        setFranchiseId(null);
-        setLoading(false);
-        return;
-      }
-
-      const userMeta = await fetchUserMeta(currentUser.id);
-      if (!mounted) return;
-
-      setRole(userMeta.role);
-      setFranchiseId(userMeta.franchiseId);
-      setLoading(false);
-    };
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
-      void syncSession(session);
+    // Initial session check
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      syncSession(session?.user ?? null, 'init');
     });
 
-    void supabase.auth.getSession().then(({ data: { session } }) => {
-      void syncSession(session);
+    // Listen for auth changes (sign in, sign out, token refresh)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      const id = crypto.randomUUID();
+      syncSession(session?.user ?? null, id);
     });
 
     return () => {
-      mounted = false;
+      mountedRef.current = false;
       subscription.unsubscribe();
     };
-  }, []);
+  }, [syncSession]);
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = useCallback(async (email: string, password: string) => {
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
     if (error) {
       setLoading(false);
+      return { error: error.message };
     }
 
-    return { error: error?.message || null };
-  };
+    // Immediately sync session so role is available before navigation
+    if (data.user) {
+      const lockId = 'signin-' + Date.now();
+      await syncSession(data.user, lockId);
+    }
 
-  const signOut = async () => {
+    return { error: null };
+  }, [syncSession]);
+
+  const signOut = useCallback(async () => {
     setLoading(true);
     const { error } = await supabase.auth.signOut();
-
     if (error) {
       console.error('Error signing out:', error);
       setLoading(false);
     }
-  };
+    // onAuthStateChange will handle clearing state
+  }, []);
 
   return (
     <AuthContext.Provider value={{ user, role, franchiseId, loading, signIn, signOut }}>
