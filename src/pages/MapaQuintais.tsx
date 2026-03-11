@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPin, BarChart3, Users, TrendingUp, ArrowLeft } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import logoSplash from '@/assets/logo-splash.webp';
+import logoSplash from '@/assets/logo-splash.png';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 

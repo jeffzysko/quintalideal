@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { ArrowLeft, Droplets } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import logoSplash from '@/assets/logo-splash.webp';
+import logoSplash from '@/assets/logo-splash.png';
 
 const NotFound = () => {
   const navigate = useNavigate();
