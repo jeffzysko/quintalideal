@@ -124,7 +124,7 @@ export default function AdminDashboard() {
       .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by', { count: 'exact' });
 
     if (filterFranquia !== 'all') query = query.eq('franquia_id', filterFranquia);
-    if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus);
+    if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus as any);
     if (filterModelo !== 'all') query = query.eq('modelo_recomendado', filterModelo);
     if (filterCidade) query = query.ilike('cidade', `%${filterCidade}%`);
     if (search) query = query.ilike('nome', `%${search}%`);
