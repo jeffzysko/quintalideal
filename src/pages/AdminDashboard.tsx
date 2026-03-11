@@ -157,8 +157,7 @@ export default function AdminDashboard() {
       a.download = `leads-splash-${new Date().toISOString().slice(0, 10)}.csv`;
       a.click();
       URL.revokeObjectURL(url);
-    } catch (err) {
-      console.error('Erro ao exportar CSV:', err);
+    } catch (_err) {
       toast.error('Erro ao exportar CSV.');
     }
   };

@@ -63,8 +63,7 @@ export function AdminAnalytics({ franchiseMap: _franchiseMap }: AdminAnalyticsPr
       
       if (queryError) throw queryError;
       setEvents((data || []) as AnalyticsEvent[]);
-    } catch (err) {
-      console.error('Erro ao carregar analytics:', err);
+    } catch (_err) {
       setError('Não foi possível carregar analytics.');
     } finally {
       setLoading(false);
