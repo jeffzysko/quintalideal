@@ -314,7 +314,6 @@ export function AdminUserManager() {
                 <SelectContent>
                   <SelectItem value="admin_fabrica">Admin Fábrica</SelectItem>
                   <SelectItem value="franquia">Franquia</SelectItem>
-                  <SelectItem value="visualizador">Visualizador</SelectItem>
                 </SelectContent>
               </Select>
             </div>
