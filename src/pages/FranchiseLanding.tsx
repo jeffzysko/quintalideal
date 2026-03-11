@@ -21,7 +21,7 @@ export default function FranchiseLanding() {
       if (!slug) return;
       const { data } = await supabase
         .from('franchises')
-        .select('id, nome_franquia, slug_url, whatsapp')
+        .select('id, nome_franquia, slug_url, whatsapp, ativa')
         .eq('slug_url', slug)
         .maybeSingle();
       setFranchise(data);
