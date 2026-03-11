@@ -226,6 +226,7 @@ export default function AdminDashboard() {
             { key: 'analytics' as const, icon: Activity, label: 'Analytics' },
             { key: 'leads' as const, icon: Users, label: 'Leads' },
             { key: 'franchises' as const, icon: Building2, label: 'Franquias' },
+            { key: 'users' as const, icon: Users, label: 'Usuários' },
             { key: 'emails' as const, icon: Mail, label: 'E-mails' },
           ].map(tab => (
             <button
