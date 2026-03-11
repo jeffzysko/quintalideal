@@ -193,7 +193,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
 
   const handleStartQuiz = () => {
     trackEvent('quiz_started', analyticsCtx);
-    setStep('pre-diagnosis');
+    setStep('photos');
   };
 
   const handlePhotosNext = (urls: string[]) => {
@@ -202,7 +202,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       ...analyticsCtx,
       metadata: { quantidade_de_fotos: urls.length },
     });
-    setStep('quiz');
+    setStep('pre-diagnosis');
   };
 
   const handleResultContinue = () => {
