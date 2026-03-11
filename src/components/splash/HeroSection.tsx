@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import logoSplash from '@/assets/logo-splash.png';
+import logoSplash from '@/assets/logo-splash.webp';
 import heroPool from '@/assets/hero-pool.jpg';
 import { ArrowRight, Droplets, Shield, Clock } from 'lucide-react';
 
