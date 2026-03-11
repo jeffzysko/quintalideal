@@ -35,10 +35,10 @@ const quizQuestions = [
   {
     question: 'Como você imagina aproveitar sua piscina?',
     options: [
-      { value: 'casal', label: 'Casal', emoji: '💑' },
-      { value: 'familia-pequena', label: 'Família pequena', emoji: '👨‍👩‍👧' },
-      { value: 'familia-grande', label: 'Família grande', emoji: '👨‍👩‍👧‍👦' },
-      { value: 'amigos', label: 'Amigos e festas', emoji: '🎉' },
+      { value: 'casal', label: 'Momentos a dois', emoji: '💑' },
+      { value: 'familia-pequena', label: 'Diversão com os filhos', emoji: '👨‍👩‍👧' },
+      { value: 'familia-grande', label: 'Reunir toda a família', emoji: '👨‍👩‍👧‍👦' },
+      { value: 'amigos', label: 'Churrascos e festas', emoji: '🎉' },
     ],
   },
   {
@@ -54,7 +54,7 @@ const quizQuestions = [
     options: [
       { value: 'prainha', label: 'Prainha', emoji: '🏖️' },
       { value: 'spa', label: 'Spa ou Hidromassagem', emoji: '🧖' },
-      { value: 'simples', label: 'Piscina simples', emoji: '💧' },
+      { value: 'simples', label: 'Piscina clássica e elegante', emoji: '✨' },
       { value: 'nao-sei', label: 'Ainda não sei', emoji: '🤷' },
     ],
   },
