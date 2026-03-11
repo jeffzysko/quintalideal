@@ -93,6 +93,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const meta = await fetchUserMeta(currentUser.id);
       if (syncLockRef.current !== lockId || !mountedRef.current) return;
+
+      if (meta.inactive) {
+        // Franchise is deactivated — sign out
+        await supabase.auth.signOut();
+        return;
+      }
+
       setRole(meta.role);
       setFranchiseId(meta.franchiseId);
     } catch (err) {
