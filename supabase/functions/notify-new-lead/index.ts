@@ -119,7 +119,7 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: "Quintal Ideal <noreply@quintalideal.com.br>",
+        from: "Quintal Ideal <noreply@hallow.com.br>",
         to: [franchise.email],
         subject: `🎯 Novo Lead: ${lead.nome || "Cliente"} - ${lead.cidade || ""}`,
         html: htmlContent,
