@@ -1,5 +1,6 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
+import { useSearchParams } from 'react-router-dom';
 import { HeroSection } from './HeroSection';
 import { PhotoUpload } from './PhotoUpload';
 import { QuizStep } from './QuizStep';
@@ -65,6 +66,9 @@ interface QuizFlowProps {
 }
 
 export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseWhatsapp }: QuizFlowProps) {
+  const [searchParams] = useSearchParams();
+  const referredBy = searchParams.get('ref') || '';
+
   const [step, setStep] = useState<Step>('hero');
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
   const [quizStep, setQuizStep] = useState(0);
@@ -73,6 +77,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   const [poolName, setPoolName] = useState('');
   const [poolDesc, setPoolDesc] = useState('');
   const [leadName, setLeadName] = useState('');
+  const [leadRefCode, setLeadRefCode] = useState('');
   const [saving, setSaving] = useState(false);
 
   const answerKeys: (keyof QuizAnswers)[] = ['espaco', 'moradia', 'uso', 'intencao', 'preferencia', 'cidade'];
@@ -86,7 +91,6 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       setQuizStep(prev => prev + 1);
     }
 
-    // City is the last step (index 5)
     if (quizStep === 5) {
       const fullAnswers = newAnswers as QuizAnswers;
       const s = calculateScore(fullAnswers);
@@ -111,7 +115,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
     setSaving(true);
     setLeadName(data.nome);
     try {
-      await supabase.from('leads').insert({
+      const { data: inserted } = await supabase.from('leads').insert({
         nome: data.nome,
         telefone: data.telefone,
         email: data.email || null,
@@ -124,7 +128,12 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         foto2: photoUrls[1] || null,
         foto3: photoUrls[2] || null,
         foto4: photoUrls[3] || null,
-      });
+        referred_by: referredBy || null,
+      }).select('ref_code').single();
+
+      if (inserted?.ref_code) {
+        setLeadRefCode(inserted.ref_code);
+      }
     } catch (err) {
       console.error('Error saving lead:', err);
     }
@@ -133,9 +142,6 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   };
 
   const currentQuizQuestion = quizStep < quizQuestions.length ? quizQuestions[quizStep] : null;
-
-  // Explorer step index: 0 = photos, 1-5 = quiz questions, 6 = city
-  const explorerStepIndex = step === 'photos' ? 0 : quizStep + 1;
 
   return (
     <AnimatePresence mode="wait">
@@ -179,7 +185,15 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         <LeadForm key="lead-form" onSubmit={handleLeadSubmit} loading={saving} />
       )}
       {step === 'actions' && (
-        <ActionButtons key="actions" score={score} poolName={poolName} poolDescription={poolDesc} whatsappNumber={franchiseWhatsapp} leadName={leadName} />
+        <ActionButtons
+          key="actions"
+          score={score}
+          poolName={poolName}
+          poolDescription={poolDesc}
+          whatsappNumber={franchiseWhatsapp}
+          leadName={leadName}
+          refCode={leadRefCode}
+        />
       )}
     </AnimatePresence>
   );

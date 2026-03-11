@@ -62,6 +62,8 @@ export type Database = {
           nome: string | null
           observacoes: string | null
           pontuacao_quintal: number | null
+          ref_code: string | null
+          referred_by: string | null
           respostas_questionario: Json | null
           status_lead: Database["public"]["Enums"]["lead_status"]
           telefone: string | null
@@ -81,6 +83,8 @@ export type Database = {
           nome?: string | null
           observacoes?: string | null
           pontuacao_quintal?: number | null
+          ref_code?: string | null
+          referred_by?: string | null
           respostas_questionario?: Json | null
           status_lead?: Database["public"]["Enums"]["lead_status"]
           telefone?: string | null
@@ -100,6 +104,8 @@ export type Database = {
           nome?: string | null
           observacoes?: string | null
           pontuacao_quintal?: number | null
+          ref_code?: string | null
+          referred_by?: string | null
           respostas_questionario?: Json | null
           status_lead?: Database["public"]["Enums"]["lead_status"]
           telefone?: string | null
