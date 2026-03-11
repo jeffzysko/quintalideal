@@ -19,6 +19,7 @@ interface Franchise {
   responsavel: string | null;
   whatsapp: string | null;
   email: string | null;
+  ativa: boolean;
   created_at: string;
 }
 
