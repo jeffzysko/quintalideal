@@ -183,6 +183,41 @@ export function AdminFranchiseManager() {
     }
   };
 
+  const openInvite = (f: Franchise) => {
+    setInvitingFranchise(f);
+    setInviteEmail('');
+    setInviteName('');
+    setInviteDialogOpen(true);
+  };
+
+  const handleInvite = async () => {
+    if (!invitingFranchise || !inviteEmail.trim()) {
+      toast.error('Informe o e-mail do franqueado.');
+      return;
+    }
+    setSaving(true);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const res = await supabase.functions.invoke('invite-franchise-user', {
+        body: {
+          email: inviteEmail.trim(),
+          franchise_id: invitingFranchise.id,
+          full_name: inviteName.trim() || null,
+        },
+      });
+      if (res.error || res.data?.error) {
+        throw new Error(res.data?.error || res.error?.message || 'Erro ao enviar convite');
+      }
+      toast.success(res.data?.message || 'Convite enviado com sucesso!');
+      setInviteDialogOpen(false);
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao enviar convite.');
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center py-12">
