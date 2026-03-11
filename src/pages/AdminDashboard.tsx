@@ -226,6 +226,10 @@ export default function AdminDashboard() {
           </>
         )}
 
+        {activeTab === 'analytics' && (
+          <AdminAnalytics franchiseMap={franchiseMap} />
+        )}
+
         {activeTab === 'leads' && (
           <>
             {/* Filters */}
