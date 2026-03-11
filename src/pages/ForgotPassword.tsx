@@ -26,15 +26,19 @@ export default function ForgotPassword() {
     setError('');
     setLoading(true);
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke('send-recovery-email', {
+        body: { email },
+      });
 
-    if (error) {
-      setError(error.message);
-      setLoading(false);
-    } else {
-      setSent(true);
+      if (fnError) {
+        setError('Erro ao enviar e-mail. Tente novamente.');
+      } else {
+        setSent(true);
+      }
+    } catch {
+      setError('Erro ao enviar e-mail. Tente novamente.');
+    } finally {
       setLoading(false);
     }
   };
