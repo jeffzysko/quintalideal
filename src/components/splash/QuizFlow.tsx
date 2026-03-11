@@ -58,6 +58,15 @@ const quizQuestions = [
       { value: 'nao-sei', label: 'Ainda não sei', emoji: '🤷' },
     ],
   },
+  {
+    question: 'Qual o orçamento estimado para sua piscina?',
+    options: [
+      { value: 'ate-30', label: 'Até R$ 30 mil', emoji: '💰' },
+      { value: '30-50', label: 'R$ 30 a 50 mil', emoji: '💎' },
+      { value: '50-80', label: 'R$ 50 a 80 mil', emoji: '🏆' },
+      { value: 'acima-80', label: 'Acima de R$ 80 mil', emoji: '👑' },
+    ],
+  },
 ];
 
 type Step = 'hero' | 'pre-diagnosis' | 'photos' | 'quiz' | 'processing' | 'result' | 'lead-form' | 'actions';
@@ -93,7 +102,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
     trackEvent('landing_page_viewed', analyticsCtx);
   }, []);
 
-  const answerKeys: (keyof QuizAnswers)[] = ['espaco', 'moradia', 'uso', 'intencao', 'preferencia', 'cidade'];
+  const answerKeys: (keyof QuizAnswers)[] = ['espaco', 'moradia', 'uso', 'intencao', 'preferencia', 'orcamento', 'cidade'];
 
   const handleQuizAnswer = useCallback((value: string) => {
     const key = answerKeys[quizStep];
@@ -109,7 +118,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       setQuizStep(prev => prev + 1);
     }
 
-    if (quizStep === 5) {
+    if (quizStep === 6) {
       const fullAnswers = newAnswers as QuizAnswers;
       const s = calculateScore(fullAnswers);
       const pool = recommendPool(fullAnswers);
@@ -244,7 +253,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         <QuizStep
           key={`quiz-${quizStep}`}
           step={quizStep + 1}
-          totalSteps={6}
+          totalSteps={7}
           question={currentQuizQuestion.question}
           options={currentQuizQuestion.options}
           onAnswer={handleQuizAnswer}
@@ -255,16 +264,16 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
           }}
         />
       )}
-      {step === 'quiz' && quizStep === 5 && (
+      {step === 'quiz' && quizStep === 6 && (
         <QuizStep
           key="quiz-city"
-          step={6}
-          totalSteps={6}
+          step={7}
+          totalSteps={7}
           question="Cidade onde você mora"
           type="city"
           onAnswer={handleQuizAnswer}
-          explorerStep={6}
-          onBack={() => setQuizStep(4)}
+          explorerStep={7}
+          onBack={() => setQuizStep(5)}
         />
       )}
       {step === 'processing' && (
