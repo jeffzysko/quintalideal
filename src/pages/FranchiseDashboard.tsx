@@ -5,12 +5,13 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Users, TrendingUp, Clock, Eye, Inbox, Share2, LogOut, Droplets, BarChart3 } from 'lucide-react';
+import { Users, TrendingUp, Clock, Eye, Inbox, Share2, Droplets, BarChart3 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { SITE_URL } from '@/lib/constants';
 import { FranchiseContactSettings } from '@/components/franchise/FranchiseContactSettings';
+import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { FranchiseReports } from '@/components/franchise/FranchiseReports';
 import { STATUS_LABELS, STATUS_COLORS, LeadRow } from '@/lib/lead-constants';
 import { KPISkeleton } from '@/components/ui/kpi-skeleton';
@@ -20,7 +21,7 @@ import logoSplash from '@/assets/logo-splash.png';
 const PAGE_SIZE = 20;
 
 export default function FranchiseDashboard() {
-  const { franchiseId, loading: authLoading, signOut } = useAuth();
+  const { franchiseId, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState<'leads' | 'reports'>('leads');
@@ -109,13 +110,11 @@ export default function FranchiseDashboard() {
               <p className="text-xs text-muted-foreground mt-0.5">Gestão de leads e contatos</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <Badge variant="outline" className="text-xs px-3 py-1.5 border-primary/30 text-primary">
               {totalLeads} leads
             </Badge>
-            <Button variant="ghost" size="sm" onClick={() => signOut()} className="rounded-xl gap-1.5 text-muted-foreground hover:text-destructive" aria-label="Sair da conta">
-              <LogOut className="w-4 h-4" /> Sair
-            </Button>
+            <UserAvatarMenu />
           </div>
         </div>
       </div>

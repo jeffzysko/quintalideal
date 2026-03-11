@@ -21,6 +21,7 @@ const FranchiseDashboard = lazy(() => import("./pages/FranchiseDashboard"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const LeadDetail = lazy(() => import("./pages/LeadDetail"));
 const RadarMercado = lazy(() => import("./pages/RadarMercado"));
+const ProfileSettings = lazy(() => import("./pages/ProfileSettings"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -55,6 +56,14 @@ const App = () => (
               <Route path="/login" element={<Login />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
               <Route path="/reset-password" element={<ResetPassword />} />
+              <Route
+                path="/perfil"
+                element={
+                  <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'visualizador']}>
+                    <ProfileSettings />
+                  </ProtectedRoute>
+                }
+              />
               <Route path="/painel" element={<PainelRouter />} />
               <Route
                 path="/franquia"

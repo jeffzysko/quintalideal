@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Share2, Target, Activity, LogOut, Mail } from 'lucide-react';
+import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Share2, Target, Activity, Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -21,13 +21,14 @@ import { AdminLeadsTable } from '@/components/admin/AdminLeadsTable';
 import { KPISkeleton } from '@/components/ui/kpi-skeleton';
 import { TableSkeleton } from '@/components/ui/table-skeleton';
 import { STATUS_LABELS, LeadRow } from '@/lib/lead-constants';
+import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import logoSplash from '@/assets/logo-splash.png';
 
 const PAGE_SIZE = 25;
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const { signOut } = useAuth();
+  const { signOut: _signOut } = useAuth();
   const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'analytics' | 'franchises' | 'emails'>('overview');
 
   const [filterFranquia, setFilterFranquia] = useState('all');
@@ -202,9 +203,7 @@ export default function AdminDashboard() {
             <Button variant="outline" size="sm" onClick={exportCSV} className="rounded-xl gap-1.5" aria-label="Exportar leads para CSV">
               <Download className="w-4 h-4" /> CSV
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => signOut()} className="rounded-xl gap-1.5 text-muted-foreground hover:text-destructive" aria-label="Sair da conta">
-              <LogOut className="w-4 h-4" /> Sair
-            </Button>
+            <UserAvatarMenu />
           </div>
         </div>
       </div>
