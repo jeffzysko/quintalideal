@@ -5,11 +5,10 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { LogOut, Settings } from 'lucide-react';
+import { LogOut, Settings, ChevronDown } from 'lucide-react';
 
 export function UserAvatarMenu() {
   const { user, role, signOut } = useAuth();
@@ -28,36 +27,37 @@ export function UserAvatarMenu() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
-          className="flex items-center gap-2 rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          className="flex items-center gap-1.5 rounded-full pl-0.5 pr-1.5 py-0.5 hover:bg-muted/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
           aria-label="Menu do usuário"
         >
-          <Avatar className="h-9 w-9 border-2 border-primary/20 hover:border-primary/50 transition-colors cursor-pointer">
-            <AvatarFallback className="bg-primary/10 text-primary text-xs font-semibold">
+          <Avatar className="h-8 w-8 border border-border/60">
+            <AvatarFallback className="bg-primary/10 text-primary text-[11px] font-semibold">
               {initials}
             </AvatarFallback>
           </Avatar>
+          <ChevronDown className="w-3 h-3 text-muted-foreground" />
         </button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="font-normal">
-          <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none text-foreground">{email}</p>
-            {roleLabel && (
-              <p className="text-xs leading-none text-muted-foreground">{roleLabel}</p>
-            )}
-          </div>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={() => navigate('/perfil')} className="cursor-pointer">
-          <Settings className="mr-2 h-4 w-4" />
+      <DropdownMenuContent align="end" sideOffset={8} className="w-60 rounded-xl p-1.5 shadow-lg border-border/50">
+        <div className="px-3 py-2.5">
+          <p className="text-sm font-medium text-foreground leading-tight truncate">{email}</p>
+          {roleLabel && (
+            <p className="text-[11px] text-muted-foreground mt-0.5">{roleLabel}</p>
+          )}
+        </div>
+        <DropdownMenuSeparator className="my-1" />
+        <DropdownMenuItem
+          onClick={() => navigate('/perfil')}
+          className="cursor-pointer rounded-lg px-3 py-2 text-sm gap-2.5"
+        >
+          <Settings className="w-4 h-4 text-muted-foreground" />
           Configurações
         </DropdownMenuItem>
-        <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => signOut()}
-          className="cursor-pointer text-destructive focus:text-destructive"
+          className="cursor-pointer rounded-lg px-3 py-2 text-sm gap-2.5 text-destructive focus:text-destructive"
         >
-          <LogOut className="mr-2 h-4 w-4" />
+          <LogOut className="w-4 h-4" />
           Sair
         </DropdownMenuItem>
       </DropdownMenuContent>
