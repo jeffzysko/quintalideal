@@ -170,6 +170,12 @@ export default function AdminDashboard() {
             <BarChart3 className="w-4 h-4 inline mr-1.5" /> Inteligência
           </button>
           <button
+            onClick={() => setActiveTab('analytics')}
+            className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'analytics' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            <Activity className="w-4 h-4 inline mr-1.5" /> Analytics
+          </button>
+          <button
             onClick={() => setActiveTab('leads')}
             className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'leads' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
           >
