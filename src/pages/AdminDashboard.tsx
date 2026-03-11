@@ -18,6 +18,8 @@ import { AdminEmailTemplates } from '@/components/admin/AdminEmailTemplates';
 import { AdminKPICards } from '@/components/admin/AdminKPICards';
 import { AdminLeadFilters } from '@/components/admin/AdminLeadFilters';
 import { AdminLeadsTable } from '@/components/admin/AdminLeadsTable';
+import { KPISkeleton } from '@/components/ui/kpi-skeleton';
+import { TableSkeleton } from '@/components/ui/table-skeleton';
 import { STATUS_LABELS, LeadRow } from '@/lib/lead-constants';
 import logoSplash from '@/assets/logo-splash.png';
 
@@ -192,16 +194,16 @@ export default function AdminDashboard() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => navigate('/admin/radar')} className="rounded-xl gap-1.5">
+            <Button variant="outline" size="sm" onClick={() => navigate('/admin/radar')} className="rounded-xl gap-1.5" aria-label="Abrir radar de mercado">
               <Target className="w-4 h-4" /> Radar
             </Button>
-            <Button variant="outline" size="sm" onClick={() => navigate('/mapa')} className="rounded-xl gap-1.5">
+            <Button variant="outline" size="sm" onClick={() => navigate('/mapa')} className="rounded-xl gap-1.5" aria-label="Abrir mapa de quintais">
               <MapPin className="w-4 h-4" /> Mapa
             </Button>
-            <Button variant="outline" size="sm" onClick={exportCSV} className="rounded-xl gap-1.5">
+            <Button variant="outline" size="sm" onClick={exportCSV} className="rounded-xl gap-1.5" aria-label="Exportar leads para CSV">
               <Download className="w-4 h-4" /> CSV
             </Button>
-            <Button variant="ghost" size="sm" onClick={() => signOut()} className="rounded-xl gap-1.5 text-muted-foreground hover:text-destructive">
+            <Button variant="ghost" size="sm" onClick={() => signOut()} className="rounded-xl gap-1.5 text-muted-foreground hover:text-destructive" aria-label="Sair da conta">
               <LogOut className="w-4 h-4" /> Sair
             </Button>
           </div>
@@ -210,7 +212,7 @@ export default function AdminDashboard() {
 
       <div className="max-w-7xl mx-auto px-6 py-8">
         {/* Tab switcher */}
-        <div className="flex gap-1 mb-8 bg-muted rounded-xl p-1 w-fit">
+        <div className="flex gap-1 mb-8 bg-muted rounded-xl p-1 w-fit" role="tablist">
           {[
             { key: 'overview' as const, icon: BarChart3, label: 'Inteligência' },
             { key: 'analytics' as const, icon: Activity, label: 'Analytics' },
@@ -220,6 +222,8 @@ export default function AdminDashboard() {
           ].map(tab => (
             <button
               key={tab.key}
+              role="tab"
+              aria-selected={activeTab === tab.key}
               onClick={() => setActiveTab(tab.key)}
               className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === tab.key ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
             >
@@ -228,7 +232,7 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        <AdminKPICards kpis={kpis} />
+        {loadingKpis ? <KPISkeleton count={6} /> : <AdminKPICards kpis={kpis} />}
 
         {activeTab === 'overview' && (
           <>
@@ -274,15 +278,22 @@ export default function AdminDashboard() {
               franchises={franchises}
               models={models}
             />
-            <AdminLeadsTable
-              leads={leads}
-              totalCount={totalCount}
-              page={page}
-              pageSize={PAGE_SIZE}
-              onPageChange={setPage}
-              isLoading={loadingKpis || loadingTable}
-              franchiseMap={franchiseMap}
-            />
+            {loadingTable ? (
+              <Card className="border-border/50 shadow-sm">
+                <CardHeader><CardTitle className="text-sm font-semibold">Todos os Leads</CardTitle></CardHeader>
+                <CardContent><TableSkeleton rows={10} cols={8} /></CardContent>
+              </Card>
+            ) : (
+              <AdminLeadsTable
+                leads={leads}
+                totalCount={totalCount}
+                page={page}
+                pageSize={PAGE_SIZE}
+                onPageChange={setPage}
+                isLoading={false}
+                franchiseMap={franchiseMap}
+              />
+            )}
           </>
         )}
 

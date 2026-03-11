@@ -96,6 +96,7 @@ const App = () => (
                   </ProtectedRoute>
                 }
               />
+              {/* Franchise dynamic landing - must be last before catch-all */}
               <Route path="/:slug" element={<FranchiseLanding />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
