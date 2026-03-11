@@ -6,7 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Building2, Plus, Pencil, Trash2, Link2, Phone, Mail, MapPin, User } from 'lucide-react';
+import { Building2, Plus, Pencil, Trash2, Link2, Phone, Mail, MapPin, User, Power, PowerOff } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { SITE_URL } from '@/lib/constants';
