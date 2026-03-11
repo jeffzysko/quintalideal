@@ -285,6 +285,16 @@ export function AdminUserManager() {
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex gap-1 justify-end">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-primary hover:text-primary"
+                            onClick={() => handleResendInvite(user)}
+                            disabled={resendingId === user.id}
+                            title="Reenviar convite"
+                          >
+                            {resendingId === user.id ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                          </Button>
                           <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => openEditDialog(user)}>
                             <Pencil className="w-4 h-4" />
                           </Button>
