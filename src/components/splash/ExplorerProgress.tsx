@@ -33,6 +33,21 @@ export function ExplorerProgress({ currentStep, onBack }: ExplorerProgressProps)
         <Progress value={progress} className="h-1 bg-muted" />
       </div>
 
+      {/* Discovery percentage */}
+      <motion.p
+        key={`discovery-${currentStep}`}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="text-[11px] text-primary font-semibold mt-2 text-right"
+      >
+        🔎 Já temos {Math.round(progress)}% do diagnóstico do seu quintal
+      </motion.p>
+      </div>
+
+      <div className="relative">
+        <Progress value={progress} className="h-1 bg-muted" />
+      </div>
+
       {/* Step info */}
       <motion.div
         key={currentStep}
