@@ -30,7 +30,7 @@ export function AdminFranchiseRanking({ leads, franchiseMap }: AdminFranchiseRan
   const maxCount = Math.max(...data.map(d => d.count), 1);
 
   return (
-    <Card>
+    <Card className="border-border/50 shadow-sm">
       <CardHeader>
         <CardTitle className="text-base flex items-center gap-2">
           <Building2 className="w-4 h-4 text-primary" /> Ranking de Franquias

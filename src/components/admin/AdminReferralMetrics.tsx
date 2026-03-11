@@ -27,7 +27,7 @@ export function AdminReferralMetrics({ leads }: AdminReferralMetricsProps) {
   }, [leads]);
 
   return (
-    <Card>
+    <Card className="border-border/50 shadow-sm">
       <CardHeader>
         <CardTitle className="text-base flex items-center gap-2">
           <Share2 className="w-4 h-4 text-primary" /> Métricas de Viralização
