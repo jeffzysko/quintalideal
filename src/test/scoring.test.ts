@@ -54,7 +54,7 @@ describe('calculateScore', () => {
 });
 
 describe('recommendPool', () => {
-  it('recommends Bahamas for large space with prainha', () => {
+  it('recommends Tortuga for large space with prainha', () => {
     const answers: QuizAnswers = {
       espaco: 'mais-7',
       moradia: 'minha',
@@ -63,10 +63,10 @@ describe('recommendPool', () => {
       preferencia: 'prainha',
       cidade: 'Porto Alegre',
     };
-    expect(recommendPool(answers)).toBe('Bahamas');
+    expect(recommendPool(answers)).toBe('Tortuga');
   });
 
-  it('recommends Tortuga for small space with prainha', () => {
+  it('recommends Nassau for small space with prainha', () => {
     const answers: QuizAnswers = {
       espaco: 'ate-3',
       moradia: 'minha',
@@ -75,10 +75,10 @@ describe('recommendPool', () => {
       preferencia: 'prainha',
       cidade: 'Canoas',
     };
-    expect(recommendPool(answers)).toBe('Tortuga');
+    expect(recommendPool(answers)).toBe('Nassau');
   });
 
-  it('recommends Cancún for small space with spa', () => {
+  it('recommends Navagio for small space with spa', () => {
     const answers: QuizAnswers = {
       espaco: '3-5',
       moradia: 'minha',
@@ -87,7 +87,7 @@ describe('recommendPool', () => {
       preferencia: 'spa',
       cidade: 'Canoas',
     };
-    expect(recommendPool(answers)).toBe('Cancún');
+    expect(recommendPool(answers)).toBe('Navagio');
   });
 
   it('recommends Italiana for small space with simple preference', () => {
@@ -102,7 +102,7 @@ describe('recommendPool', () => {
     expect(recommendPool(answers)).toBe('Italiana');
   });
 
-  it('recommends Tradicional for large space with simple preference', () => {
+  it('recommends Cancún for large space with family', () => {
     const answers: QuizAnswers = {
       espaco: 'mais-7',
       moradia: 'minha',
@@ -111,10 +111,22 @@ describe('recommendPool', () => {
       preferencia: 'simples',
       cidade: 'Canoas',
     };
-    expect(recommendPool(answers)).toBe('Tradicional');
+    expect(recommendPool(answers)).toBe('Cancún');
   });
 
-  it('recommends Tortuga for medium space with unknown preference', () => {
+  it('recommends Atalaia for large space with spa', () => {
+    const answers: QuizAnswers = {
+      espaco: 'mais-7',
+      moradia: 'minha',
+      intencao: '2026',
+      uso: 'casal',
+      preferencia: 'spa',
+      cidade: 'Canoas',
+    };
+    expect(recommendPool(answers)).toBe('Atalaia');
+  });
+
+  it('recommends Tropical for medium space with unknown preference', () => {
     const answers: QuizAnswers = {
       espaco: '5-7',
       moradia: 'minha',
@@ -123,6 +135,18 @@ describe('recommendPool', () => {
       preferencia: 'nao-sei',
       cidade: 'Canoas',
     };
-    expect(recommendPool(answers)).toBe('Tortuga');
+    expect(recommendPool(answers)).toBe('Tropical');
+  });
+
+  it('recommends Bonaire for medium space with spa', () => {
+    const answers: QuizAnswers = {
+      espaco: '5-7',
+      moradia: 'minha',
+      intencao: '2026',
+      uso: 'casal',
+      preferencia: 'spa',
+      cidade: 'Canoas',
+    };
+    expect(recommendPool(answers)).toBe('Bonaire');
   });
 });
