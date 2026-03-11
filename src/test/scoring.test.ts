@@ -14,7 +14,7 @@ const base = (overrides: Partial<QuizAnswers> = {}): QuizAnswers => ({
 
 describe('calculateScore', () => {
   it('returns max score for best answers', () => {
-    expect(calculateScore(base({ orcamento: 'acima-80' }))).toBe(100);
+    expect(calculateScore(base({ orcamento: '30-50' }))).toBe(100);
   });
 
   it('returns min score for lowest answers', () => {
