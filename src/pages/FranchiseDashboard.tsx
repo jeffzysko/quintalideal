@@ -46,6 +46,7 @@ export default function FranchiseDashboard() {
   const [loading, setLoading] = useState(true);
   const [franchiseSlug, setFranchiseSlug] = useState<string | null>(null);
   const [franchiseName, setFranchiseName] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<'leads' | 'reports'>('leads');
 
   useEffect(() => {
     if (franchiseId) {
