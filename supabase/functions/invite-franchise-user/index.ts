@@ -62,7 +62,7 @@ function buildInviteEmailHTML(userName: string, franchiseName: string, resetPage
 
           <p style="color:#94a3b8;font-size:12px;line-height:1.6;margin:0;">
             Se o botão acima não funcionar, copie e cole este link no seu navegador:<br/>
-            <a href="${recoveryLink}" style="color:${BRAND_BLUE};word-break:break-all;font-size:11px;">${recoveryLink}</a>
+            <a href="${resetPageLink}" style="color:${BRAND_BLUE};word-break:break-all;font-size:11px;">${resetPageLink}</a>
           </p>
         </td></tr>
 
