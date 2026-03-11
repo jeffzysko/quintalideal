@@ -30,19 +30,19 @@ function buildInviteEmailHTML(userName: string, roleName: string, resetPageLink:
           <p style="color:#1e293b;font-size:16px;line-height:1.7;margin:0 0 16px;">
             Olá <strong>${userName}</strong>,
           </p>
-          <p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 28px;">
-            Você foi convidado(a) para acessar a plataforma Quintal Ideal como <strong style="color:${BRAND_BLUE};">${roleName}</strong>. Clique no botão abaixo para definir sua senha:
-          </p>
-          <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
-            <tr><td align="center" style="padding:8px 0 32px;">
-              <a href="${recoveryLink}" style="display:inline-block;background:${BRAND_GRADIENT};color:#ffffff;text-decoration:none;padding:16px 48px;border-radius:10px;font-weight:700;font-size:16px;box-shadow:0 4px 12px rgba(3,105,161,0.3);">
-                Definir minha senha →
-              </a>
-            </td></tr>
-          </table>
-          <p style="color:#94a3b8;font-size:12px;line-height:1.6;margin:0;">
-            Se o botão não funcionar, copie e cole:<br/>
-            <a href="${recoveryLink}" style="color:${BRAND_BLUE};word-break:break-all;font-size:11px;">${recoveryLink}</a>
+           <p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 28px;">
+             Você foi convidado(a) para acessar a plataforma Quintal Ideal como <strong style="color:${BRAND_BLUE};">${roleName}</strong>. Clique no botão abaixo para definir sua senha:
+           </p>
+           <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+             <tr><td align="center" style="padding:8px 0 32px;">
+               <a href="${resetPageLink}" style="display:inline-block;background:${BRAND_GRADIENT};color:#ffffff;text-decoration:none;padding:16px 48px;border-radius:10px;font-weight:700;font-size:16px;box-shadow:0 4px 12px rgba(3,105,161,0.3);">
+                 Definir minha senha →
+               </a>
+             </td></tr>
+           </table>
+           <p style="color:#94a3b8;font-size:12px;line-height:1.6;margin:0;">
+             Se o botão não funcionar, copie e cole:<br/>
+             <a href="${resetPageLink}" style="color:${BRAND_BLUE};word-break:break-all;font-size:11px;">${resetPageLink}</a>
           </p>
         </td></tr>
         <tr><td style="padding:24px 32px;background:#f8fafc;border-top:1px solid #e2e8f0;text-align:center;">
