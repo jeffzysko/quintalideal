@@ -2,7 +2,8 @@ import { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MapPin, BarChart3, Users, TrendingUp } from 'lucide-react';
+import { MapPin, BarChart3, Users, TrendingUp, ArrowLeft } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import logoSplash from '@/assets/logo-splash.png';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
@@ -88,19 +89,25 @@ export default function MapaQuintais() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="px-6 py-6 flex items-center justify-between border-b">
-        <div className="flex items-center gap-3">
-          <img src={logoSplash} alt="Splash" className="w-20" />
-          <div>
-            <h1 className="text-xl font-bold" style={{ fontFamily: 'Montserrat' }}>
-              Mapa dos Quintais
-            </h1>
-            <p className="text-xs text-muted-foreground">Rio Grande do Sul</p>
+      <div className="border-b bg-card">
+        <div className="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="rounded-xl">
+              <ArrowLeft className="w-5 h-5" />
+            </Button>
+            <img src={logoSplash} alt="Splash" className="w-16" />
+            <div>
+              <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-primary" />
+                Mapa dos Quintais
+              </h1>
+              <p className="text-xs text-muted-foreground mt-0.5">Rio Grande do Sul</p>
+            </div>
           </div>
+          <Badge variant="outline" className="text-xs px-3 py-1.5 border-primary/30 text-primary">
+            {totalQuintais} quintais analisados
+          </Badge>
         </div>
-        <Button variant="ghost" size="sm" onClick={() => navigate('/')}>
-          Fazer o teste
-        </Button>
       </div>
 
       <div className="p-6 max-w-5xl mx-auto">
