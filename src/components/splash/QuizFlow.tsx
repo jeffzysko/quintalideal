@@ -35,10 +35,10 @@ const quizQuestions = [
   {
     question: 'Como você imagina aproveitar sua piscina?',
     options: [
-      { value: 'casal', label: 'Casal', emoji: '💑' },
-      { value: 'familia-pequena', label: 'Família pequena', emoji: '👨‍👩‍👧' },
-      { value: 'familia-grande', label: 'Família grande', emoji: '👨‍👩‍👧‍👦' },
-      { value: 'amigos', label: 'Amigos e festas', emoji: '🎉' },
+      { value: 'casal', label: 'Momentos a dois', emoji: '💑' },
+      { value: 'familia-pequena', label: 'Diversão com os filhos', emoji: '👨‍👩‍👧' },
+      { value: 'familia-grande', label: 'Reunir toda a família', emoji: '👨‍👩‍👧‍👦' },
+      { value: 'amigos', label: 'Churrascos e festas', emoji: '🎉' },
     ],
   },
   {
