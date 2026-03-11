@@ -115,6 +115,7 @@ const App = () => (
         </BrowserRouter>
         </TooltipProvider>
       </AuthProvider>
+      </ThemeProvider>
     </ErrorBoundary>
   </QueryClientProvider>
 );

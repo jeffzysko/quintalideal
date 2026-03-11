@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
+import { useTheme } from 'next-themes';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   DropdownMenu,
@@ -8,11 +9,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { LogOut, Settings, ChevronDown } from 'lucide-react';
+import { LogOut, Settings, ChevronDown, Sun, Moon } from 'lucide-react';
 
 export function UserAvatarMenu() {
   const { user, role, signOut } = useAuth();
   const navigate = useNavigate();
+  const { theme, setTheme } = useTheme();
 
   const email = user?.email || '';
   const initials = email
@@ -22,6 +24,8 @@ export function UserAvatarMenu() {
   const roleLabel =
     role === 'admin_fabrica' ? 'Administrador' :
     role === 'franquia' ? 'Franquia' : '';
+
+  const isDark = theme === 'dark';
 
   return (
     <DropdownMenu>
@@ -47,12 +51,24 @@ export function UserAvatarMenu() {
         </div>
         <DropdownMenuSeparator className="my-1" />
         <DropdownMenuItem
+          onClick={() => setTheme(isDark ? 'light' : 'dark')}
+          className="cursor-pointer rounded-lg px-3 py-2 text-sm gap-2.5"
+        >
+          {isDark ? (
+            <Sun className="w-4 h-4 text-muted-foreground" />
+          ) : (
+            <Moon className="w-4 h-4 text-muted-foreground" />
+          )}
+          {isDark ? 'Modo claro' : 'Modo escuro'}
+        </DropdownMenuItem>
+        <DropdownMenuItem
           onClick={() => navigate('/perfil')}
           className="cursor-pointer rounded-lg px-3 py-2 text-sm gap-2.5"
         >
           <Settings className="w-4 h-4 text-muted-foreground" />
           Configurações
         </DropdownMenuItem>
+        <DropdownMenuSeparator className="my-1" />
         <DropdownMenuItem
           onClick={() => signOut()}
           className="cursor-pointer rounded-lg px-3 py-2 text-sm gap-2.5 text-destructive focus:text-destructive"
