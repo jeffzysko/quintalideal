@@ -294,6 +294,72 @@ Deno.serve(async (req) => {
       });
     }
 
+    // ── RESEND INVITE ──
+    if (action === "resend_invite") {
+      const { user_id } = body;
+      if (!user_id) {
+        return new Response(JSON.stringify({ error: "user_id é obrigatório" }), {
+          status: 400,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Get user info
+      const { data: targetUser, error: userError } = await adminClient.auth.admin.getUserById(user_id);
+      if (userError || !targetUser?.user) {
+        return new Response(JSON.stringify({ error: "Usuário não encontrado" }), {
+          status: 404,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const email = targetUser.user.email!;
+      const { data: profileData } = await adminClient.from("profiles").select("full_name, franquia_id").eq("user_id", user_id).maybeSingle();
+      const { data: roleData } = await adminClient.from("user_roles").select("role").eq("user_id", user_id).maybeSingle();
+
+      const roleLabels: Record<string, string> = {
+        admin_fabrica: "Administrador da Fábrica",
+        franquia: "Franquia",
+      };
+      const roleName = roleLabels[roleData?.role || ""] || roleData?.role || "Usuário";
+      const userName = profileData?.full_name || email;
+
+      const resetPageLink = `https://quintalideal.com.br/forgot-password?email=${encodeURIComponent(email)}`;
+
+      if (!RESEND_API_KEY) {
+        return new Response(JSON.stringify({ error: "RESEND_API_KEY não configurada" }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const html = buildInviteEmailHTML(userName, roleName, resetPageLink);
+      const resendRes = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          from: SENDER,
+          to: [email],
+          subject: `🏊 Seu acesso ao Quintal Ideal`,
+          html,
+        }),
+      });
+
+      if (!resendRes.ok) {
+        const errData = await resendRes.text();
+        console.error("Resend error:", errData);
+        return new Response(JSON.stringify({ error: "Falha ao enviar e-mail" }), {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      console.log("Invite re-sent to:", email);
+      return new Response(JSON.stringify({ success: true, message: `Convite reenviado para ${email}.` }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
     return new Response(JSON.stringify({ error: "Ação inválida" }), {
       status: 400,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
