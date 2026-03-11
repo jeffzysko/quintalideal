@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { MessageCircle, FileText, Share2, Trophy, Download, ArrowRight, Sparkles, Star, Users } from 'lucide-react';
 import logoSplash from '@/assets/logo-splash.png';
 import { getRankingGaucho, getYardClassification, getSharePhrase, getSocialComparison } from '@/lib/ranking';
+import { getPoolImage } from '@/lib/poolImages';
 import { ValorizationSimulator } from './ValorizationSimulator';
 import { FriendChallenge } from './FriendChallenge';
 import { trackEvent } from '@/lib/analytics';
