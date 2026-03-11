@@ -1,19 +1,21 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, lazy, Suspense } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import { HeroSection } from './HeroSection';
-import { PreDiagnosis } from './PreDiagnosis';
-import { PhotoUpload } from './PhotoUpload';
-import { PhotoAnalysis } from './PhotoAnalysis';
-import { QuizStep } from './QuizStep';
-import { ProcessingScreen } from './ProcessingScreen';
-import { ResultScreen } from './ResultScreen';
-import { LeadForm } from './LeadForm';
-import { ActionButtons } from './ActionButtons';
 import { calculateScore, recommendPool, recommendSize, type QuizAnswers } from '@/lib/scoring';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { trackEvent } from '@/lib/analytics';
+
+// Lazy load non-critical steps
+const PhotoUpload = lazy(() => import('./PhotoUpload').then(m => ({ default: m.PhotoUpload })));
+const PhotoAnalysis = lazy(() => import('./PhotoAnalysis').then(m => ({ default: m.PhotoAnalysis })));
+const PreDiagnosis = lazy(() => import('./PreDiagnosis').then(m => ({ default: m.PreDiagnosis })));
+const QuizStep = lazy(() => import('./QuizStep').then(m => ({ default: m.QuizStep })));
+const ProcessingScreen = lazy(() => import('./ProcessingScreen').then(m => ({ default: m.ProcessingScreen })));
+const ResultScreen = lazy(() => import('./ResultScreen').then(m => ({ default: m.ResultScreen })));
+const LeadForm = lazy(() => import('./LeadForm').then(m => ({ default: m.LeadForm })));
+const ActionButtons = lazy(() => import('./ActionButtons').then(m => ({ default: m.ActionButtons })));
 
 const quizQuestions = [
   {
@@ -76,6 +78,14 @@ interface QuizFlowProps {
   franchiseName?: string;
   franchiseId?: string;
   franchiseWhatsapp?: string;
+}
+
+function StepFallback() {
+  return (
+    <div className="min-h-screen flex items-center justify-center gradient-hero">
+      <div className="animate-spin w-7 h-7 border-3 border-primary border-t-transparent rounded-full" />
+    </div>
+  );
 }
 
 export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseWhatsapp }: QuizFlowProps) {
@@ -242,65 +252,67 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       {step === 'hero' && (
         <HeroSection key="hero" onStart={handleStartQuiz} franchiseName={franchiseName} />
       )}
-      {step === 'photos' && (
-        <PhotoUpload key="photos" onNext={handlePhotosNext} onBack={() => setStep('hero')} />
-      )}
-      {step === 'photo-analysis' && (
-        <PhotoAnalysis key="photo-analysis" onDone={() => setStep('pre-diagnosis')} />
-      )}
-      {step === 'pre-diagnosis' && (
-        <PreDiagnosis key="pre-diagnosis" onContinue={() => setStep('quiz')} />
-      )}
-      {step === 'quiz' && currentQuizQuestion && (
-        <QuizStep
-          key={`quiz-${quizStep}`}
-          step={quizStep + 1}
-          totalSteps={7}
-          question={currentQuizQuestion.question}
-          options={currentQuizQuestion.options}
-          onAnswer={handleQuizAnswer}
-          explorerStep={quizStep + 1}
-          onBack={() => {
-            if (quizStep === 0) setStep('photos');
-            else setQuizStep(prev => prev - 1);
-          }}
-        />
-      )}
-      {step === 'quiz' && quizStep === 6 && (
-        <QuizStep
-          key="quiz-city"
-          step={7}
-          totalSteps={7}
-          question="Cidade onde você mora"
-          type="city"
-          onAnswer={handleQuizAnswer}
-          explorerStep={7}
-          onBack={() => setQuizStep(5)}
-        />
-      )}
-      {step === 'processing' && (
-        <ProcessingScreen key="processing" onDone={() => setStep('result')} />
-      )}
-      {step === 'result' && (
-        <ResultScreen key="result" score={score} poolName={poolName} poolDescription={poolDesc} onContinue={handleResultContinue} />
-      )}
-      {step === 'lead-form' && (
-        <LeadForm key="lead-form" onSubmit={handleLeadSubmit} onCheckDuplicate={checkDuplicate} loading={saving} />
-      )}
-      {step === 'actions' && (
-        <ActionButtons
-          key="actions"
-          score={score}
-          poolName={poolName}
-          poolDescription={poolDesc}
-          poolSpecs={poolSpecs}
-          recommendedSize={recommendedSize}
-          whatsappNumber={franchiseWhatsapp}
-          leadName={leadName}
-          refCode={leadRefCode}
-          franchiseId={franchiseId}
-        />
-      )}
+      <Suspense fallback={<StepFallback />}>
+        {step === 'photos' && (
+          <PhotoUpload key="photos" onNext={handlePhotosNext} onBack={() => setStep('hero')} />
+        )}
+        {step === 'photo-analysis' && (
+          <PhotoAnalysis key="photo-analysis" onDone={() => setStep('pre-diagnosis')} />
+        )}
+        {step === 'pre-diagnosis' && (
+          <PreDiagnosis key="pre-diagnosis" onContinue={() => setStep('quiz')} />
+        )}
+        {step === 'quiz' && currentQuizQuestion && (
+          <QuizStep
+            key={`quiz-${quizStep}`}
+            step={quizStep + 1}
+            totalSteps={7}
+            question={currentQuizQuestion.question}
+            options={currentQuizQuestion.options}
+            onAnswer={handleQuizAnswer}
+            explorerStep={quizStep + 1}
+            onBack={() => {
+              if (quizStep === 0) setStep('photos');
+              else setQuizStep(prev => prev - 1);
+            }}
+          />
+        )}
+        {step === 'quiz' && quizStep === 6 && (
+          <QuizStep
+            key="quiz-city"
+            step={7}
+            totalSteps={7}
+            question="Cidade onde você mora"
+            type="city"
+            onAnswer={handleQuizAnswer}
+            explorerStep={7}
+            onBack={() => setQuizStep(5)}
+          />
+        )}
+        {step === 'processing' && (
+          <ProcessingScreen key="processing" onDone={() => setStep('result')} />
+        )}
+        {step === 'result' && (
+          <ResultScreen key="result" score={score} poolName={poolName} poolDescription={poolDesc} onContinue={handleResultContinue} />
+        )}
+        {step === 'lead-form' && (
+          <LeadForm key="lead-form" onSubmit={handleLeadSubmit} onCheckDuplicate={checkDuplicate} loading={saving} />
+        )}
+        {step === 'actions' && (
+          <ActionButtons
+            key="actions"
+            score={score}
+            poolName={poolName}
+            poolDescription={poolDesc}
+            poolSpecs={poolSpecs}
+            recommendedSize={recommendedSize}
+            whatsappNumber={franchiseWhatsapp}
+            leadName={leadName}
+            refCode={leadRefCode}
+            franchiseId={franchiseId}
+          />
+        )}
+      </Suspense>
     </AnimatePresence>
   );
 }
