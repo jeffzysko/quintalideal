@@ -155,6 +155,7 @@ export default function FranchiseDashboard() {
               <Button variant="outline" className="gap-2" onClick={() => {
                 const url = franchiseSlug ? `${SITE_URL}/${franchiseSlug}` : SITE_URL;
                 navigator.clipboard.writeText(url);
+                toast.success('Link copiado!');
               }}>
                 <Share2 className="w-4 h-4" />
                 Copiar link do quiz
