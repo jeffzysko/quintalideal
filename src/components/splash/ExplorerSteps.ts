@@ -11,5 +11,6 @@ export const explorerSteps: ExplorerStep[] = [
   { emoji: '🌞', title: 'Estilo de uso', message: 'Como você imagina aproveitar sua piscina?' },
   { emoji: '📅', title: 'Plano de piscina', message: 'Quando você gostaria de ter sua piscina?' },
   { emoji: '💧', title: 'Preferência', message: 'O que você gostaria na sua piscina?' },
+  { emoji: '💰', title: 'Orçamento', message: 'Qual o investimento que você imagina?' },
   { emoji: '📍', title: 'Localização', message: 'Onde fica seu quintal?' },
 ];
