@@ -31,7 +31,6 @@ interface Franchise {
 const ROLE_LABELS: Record<string, string> = {
   admin_fabrica: 'Admin Fábrica',
   franquia: 'Franquia',
-  visualizador: 'Visualizador',
 };
 
 const ROLE_COLORS: Record<string, string> = {
