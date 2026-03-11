@@ -7,8 +7,20 @@ import { ThemeProvider } from "next-themes";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import Index from "./pages/Index";
+import NotFound from "./pages/NotFound";
+
+// Prefetch likely routes after initial load
+function usePrefetchRoutes() {
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      import("./pages/Login");
+      import("./pages/FranchiseLanding");
+    }, 3000);
+    return () => clearTimeout(timer);
+  }, []);
+}
 import NotFound from "./pages/NotFound";
 
 // Lazy load non-critical routes
