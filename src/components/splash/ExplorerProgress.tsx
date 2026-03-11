@@ -1,9 +1,9 @@
 import { Progress } from '@/components/ui/progress';
 import { explorerSteps } from './ExplorerSteps';
 import { motion } from 'framer-motion';
+import { ArrowLeft } from 'lucide-react';
 
 interface ExplorerProgressProps {
-  /** 0-based current step index (0 = photos, 1-5 = quiz questions, 6 = city) */
   currentStep: number;
   onBack: () => void;
 }
@@ -14,33 +14,38 @@ export function ExplorerProgress({ currentStep, onBack }: ExplorerProgressProps)
   const stepInfo = explorerSteps[currentStep] || explorerSteps[0];
 
   return (
-    <div className="mb-6">
-      {/* Progress bar */}
-      <div className="mb-3">
-        <p className="text-xs font-medium text-muted-foreground mb-1.5 tracking-wide">
-          Explorando seu quintal...
-        </p>
-        <Progress value={progress} className="h-2.5" />
+    <div className="mb-8">
+      {/* Thin top progress */}
+      <div className="flex items-center justify-between mb-2">
+        <button
+          onClick={onBack}
+          className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Voltar
+        </button>
+        <span className="text-xs font-medium text-muted-foreground">
+          Etapa {currentStep + 1} de {totalSteps}
+        </span>
+      </div>
+
+      <div className="relative">
+        <Progress value={progress} className="h-1 bg-muted" />
       </div>
 
       {/* Step info */}
-      <div className="flex items-center justify-between">
-        <button onClick={onBack} className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-          ← Voltar
-        </button>
-        <span className="text-xs text-muted-foreground">{currentStep + 1}/{totalSteps}</span>
-      </div>
-
-      {/* Step title + message */}
       <motion.div
         key={currentStep}
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mt-4 flex items-start gap-3"
+        initial={{ opacity: 0, x: 20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.3 }}
+        className="mt-5 flex items-center gap-3"
       >
-        <span className="text-2xl">{stepInfo.emoji}</span>
+        <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-lg shrink-0">
+          {stepInfo.emoji}
+        </div>
         <div>
-          <p className="font-bold text-sm text-foreground">{stepInfo.title}</p>
+          <p className="font-semibold text-sm text-foreground">{stepInfo.title}</p>
           <p className="text-xs text-muted-foreground">{stepInfo.message}</p>
         </div>
       </motion.div>

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { MessageCircle, FileText, Share2, Trophy, Download } from 'lucide-react';
+import { MessageCircle, FileText, Share2, Trophy, Download, ArrowRight } from 'lucide-react';
 import logoSplash from '@/assets/logo-splash.png';
 import { getRankingGaucho } from '@/lib/ranking';
 import { ValorizationSimulator } from './ValorizationSimulator';
@@ -35,95 +35,101 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
     const ctx = canvas.getContext('2d');
     if (!ctx) return null;
 
+    // Premium dark blue gradient
     const gradient = ctx.createLinearGradient(0, 0, 1080, 1920);
-    gradient.addColorStop(0, '#e80685');
-    gradient.addColorStop(0.4, '#c2066e');
-    gradient.addColorStop(0.7, '#08a1d6');
-    gradient.addColorStop(1, '#066a8f');
+    gradient.addColorStop(0, '#0a1628');
+    gradient.addColorStop(0.5, '#0d2847');
+    gradient.addColorStop(1, '#061220');
     ctx.fillStyle = gradient;
     ctx.fillRect(0, 0, 1080, 1920);
 
-    ctx.fillStyle = 'rgba(255,255,255,0.03)';
-    for (let i = 0; i < 20; i++) {
-      ctx.beginPath();
-      ctx.arc(Math.random() * 1080, Math.random() * 1920, Math.random() * 150 + 50, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.font = '600 32px Montserrat, sans-serif';
-    ctx.textAlign = 'center';
-    ctx.fillText('ÍNDICE DO QUINTAL', 540, 180);
-    ctx.fillStyle = '#ffffff';
-    ctx.font = '900 42px Montserrat, sans-serif';
-    ctx.fillText('SPLASH PISCINAS', 540, 240);
-
+    // Subtle light effects
+    ctx.fillStyle = 'rgba(30,120,200,0.08)';
     ctx.beginPath();
-    ctx.arc(540, 580, 220, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(0,0,0,0.2)';
+    ctx.arc(800, 400, 400, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = 'rgba(30,120,200,0.05)';
+    ctx.beginPath();
+    ctx.arc(200, 1400, 500, 0, Math.PI * 2);
     ctx.fill();
 
+    // Title
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.font = '500 28px Inter, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('ÍNDICE DO QUINTAL', 540, 200);
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '800 36px Inter, sans-serif';
+    ctx.fillText('SPLASH PISCINAS', 540, 250);
+
+    // Score ring
     ctx.beginPath();
     ctx.arc(540, 580, 195, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
-    ctx.lineWidth = 22;
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.lineWidth = 12;
     ctx.stroke();
 
     ctx.beginPath();
     ctx.arc(540, 580, 195, -Math.PI / 2, -Math.PI / 2 + (score / 100) * Math.PI * 2);
-    ctx.strokeStyle = '#FFD700';
-    ctx.lineWidth = 22;
+    ctx.strokeStyle = '#1e88e5';
+    ctx.lineWidth = 12;
     ctx.lineCap = 'round';
     ctx.stroke();
 
+    // Score text
     ctx.fillStyle = '#ffffff';
-    ctx.font = '900 120px Montserrat, sans-serif';
-    ctx.fillText(`${score}%`, 540, 620);
+    ctx.font = '900 110px Inter, sans-serif';
+    ctx.fillText(`${score}%`, 540, 610);
+    ctx.font = '400 24px Inter, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.fillText('de potencial', 540, 660);
 
-    ctx.font = '500 28px Open Sans, sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.fillText('de potencial', 540, 670);
-
-    ctx.font = '700 52px Montserrat, sans-serif';
+    // Main text
+    ctx.font = '700 46px Inter, sans-serif';
     ctx.fillStyle = '#ffffff';
     ['Meu quintal tem', `${score}% de potencial para`, 'uma piscina Splash!']
-      .forEach((line, i) => ctx.fillText(line, 540, 880 + i * 70));
+      .forEach((line, i) => ctx.fillText(line, 540, 870 + i * 65));
 
-    const badgeY = 1130;
-    ctx.fillStyle = 'rgba(255,215,0,0.2)';
+    // Badge
+    const badgeY = 1120;
+    ctx.fillStyle = 'rgba(30,136,229,0.15)';
     ctx.beginPath();
-    ctx.roundRect(190, badgeY - 30, 700, 65, 32);
+    ctx.roundRect(220, badgeY - 28, 640, 56, 28);
     ctx.fill();
-    ctx.strokeStyle = 'rgba(255,215,0,0.5)';
-    ctx.lineWidth = 2;
+    ctx.strokeStyle = 'rgba(30,136,229,0.3)';
+    ctx.lineWidth = 1;
     ctx.stroke();
-    ctx.font = '700 34px Montserrat, sans-serif';
-    ctx.fillStyle = '#FFD700';
-    ctx.fillText(`🏆 ${ranking.label}`, 540, badgeY + 15);
+    ctx.font = '600 28px Inter, sans-serif';
+    ctx.fillStyle = '#64b5f6';
+    ctx.fillText(`🏆 ${ranking.label}`, 540, badgeY + 8);
 
-    ctx.font = '500 36px Open Sans, sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    // Model
+    ctx.font = '400 30px Inter, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.6)';
     ctx.fillText(`Modelo recomendado: ${poolName}`, 540, 1300);
 
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+    // Divider
+    ctx.strokeStyle = 'rgba(255,255,255,0.1)';
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(340, 1400);
     ctx.lineTo(740, 1400);
     ctx.stroke();
 
-    ctx.font = '600 30px Montserrat, sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.6)';
-    ctx.fillText('Descubra o potencial do seu quintal em', 540, 1480);
-    ctx.font = '700 34px Montserrat, sans-serif';
+    // CTA
+    ctx.font = '500 26px Inter, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.fillText('Descubra o potencial do seu quintal em', 540, 1490);
+    ctx.font = '700 30px Inter, sans-serif';
     ctx.fillStyle = '#ffffff';
-    ctx.fillText('splashpiscinas.com.br', 540, 1530);
+    ctx.fillText('splashpiscinas.com.br', 540, 1535);
 
+    // Footer
     ctx.fillStyle = 'rgba(0,0,0,0.3)';
-    ctx.fillRect(0, 1800, 1080, 120);
-    ctx.font = '500 24px Open Sans, sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.5)';
-    ctx.fillText('© Splash Piscinas — Feito com 💧', 540, 1870);
+    ctx.fillRect(0, 1820, 1080, 100);
+    ctx.font = '400 20px Inter, sans-serif';
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.fillText('© Splash Piscinas', 540, 1878);
 
     return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
   };
@@ -170,70 +176,71 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      className="min-h-screen flex flex-col items-center px-6 py-12"
-      style={{
-        background: 'linear-gradient(160deg, hsl(207 65% 93%) 0%, hsl(0 0% 99.6%) 40%, hsl(130 20% 92%) 100%)'
-      }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="min-h-screen flex flex-col items-center px-6 py-12 gradient-hero"
     >
       <div className="w-full max-w-md text-center">
-        <img src={logoSplash} alt="Splash Piscinas" className="mx-auto w-36 mb-6" />
+        <img src={logoSplash} alt="Splash Piscinas" className="mx-auto w-28 mb-6 opacity-80" />
 
-        <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: 'Montserrat' }}>
+        <h2 className="text-2xl font-bold mb-2 tracking-tight text-foreground">
           {leadName ? `Parabéns, ${leadName.split(' ')[0]}!` : 'Parabéns!'} 🎉
         </h2>
-        <p className="text-muted-foreground mb-2">
-          Seu quintal tem <strong className="text-primary">{score}%</strong> de potencial para a piscina <strong>{poolName}</strong>.
+        <p className="text-sm text-muted-foreground mb-2">
+          Seu quintal tem <strong className="text-primary font-semibold">{score}%</strong> de potencial para a piscina <strong className="font-semibold">{poolName}</strong>.
         </p>
 
-        <div className="flex items-center justify-center gap-2 my-3 px-4 py-2.5 rounded-full bg-primary/10 border border-primary/20 mx-auto w-fit">
+        <div className="inline-flex items-center gap-2 my-4 px-4 py-2 rounded-full bg-primary/8 border border-primary/15">
           <Trophy className="w-4 h-4 text-primary" />
-          <span className="font-bold text-xs text-primary">{ranking.label}</span>
+          <span className="font-semibold text-xs text-primary">{ranking.label}</span>
         </div>
 
         {poolDescription && (
-          <p className="text-sm text-muted-foreground mb-4">{poolDescription}</p>
+          <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{poolDescription}</p>
         )}
 
         <ValorizationSimulator score={score} />
 
-        {/* Friend Challenge */}
         {refCode && (
           <FriendChallenge refCode={refCode} score={score} leadName={leadName} />
         )}
 
         <div className="space-y-3 mt-6">
+          {/* Primary CTA */}
           <Button
             onClick={handleWhatsApp}
-            className="w-full py-6 text-base rounded-full font-bold bg-[#25D366] hover:bg-[#1fb855] text-white"
+            className="w-full py-6 text-base rounded-2xl font-semibold gradient-blue hover:opacity-90 transition-all gap-2"
           >
-            <MessageCircle className="w-5 h-5 mr-2" />
+            <MessageCircle className="w-5 h-5" />
             Falar com especialista
+            <ArrowRight className="w-4 h-4" />
           </Button>
 
+          {/* Secondary */}
           <Button
             variant="outline"
-            className="w-full py-6 text-base rounded-full font-bold border-secondary text-secondary hover:bg-secondary hover:text-secondary-foreground"
+            className="w-full py-6 text-base rounded-2xl font-semibold border-border hover:bg-accent transition-all"
           >
             <FileText className="w-5 h-5 mr-2" />
             Receber estimativa
           </Button>
 
+          {/* Tertiary actions */}
           <div className="flex gap-2">
             <Button
               variant="ghost"
               onClick={handleShare}
               disabled={sharing}
-              className="flex-1 py-6 text-sm rounded-full font-bold text-muted-foreground"
+              className="flex-1 py-5 text-sm rounded-2xl font-medium text-muted-foreground hover:text-foreground"
             >
-              <Share2 className="w-4 h-4 mr-1" />
+              <Share2 className="w-4 h-4 mr-1.5" />
               {sharing ? 'Gerando...' : 'Compartilhar'}
             </Button>
             <Button
               variant="ghost"
               onClick={handleDownload}
-              className="flex-1 py-6 text-sm rounded-full font-bold text-muted-foreground"
+              className="flex-1 py-5 text-sm rounded-2xl font-medium text-muted-foreground hover:text-foreground"
             >
-              <Download className="w-4 h-4 mr-1" />
+              <Download className="w-4 h-4 mr-1.5" />
               Baixar imagem
             </Button>
           </div>

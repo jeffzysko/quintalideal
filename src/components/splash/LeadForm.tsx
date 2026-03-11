@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { motion } from 'framer-motion';
-import { User, Phone, Mail, ArrowRight, AlertCircle } from 'lucide-react';
+import { User, Phone, Mail, ArrowRight, AlertCircle, Shield } from 'lucide-react';
 
 interface LeadFormProps {
   onSubmit: (data: { nome: string; telefone: string; email: string }) => void;
@@ -40,7 +40,6 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading }: LeadFormProps)
       return;
     }
 
-    // Check for duplicates
     if (onCheckDuplicate) {
       setChecking(true);
       try {
@@ -60,7 +59,7 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading }: LeadFormProps)
           return;
         }
       } catch {
-        // If check fails, proceed with submission
+        // If check fails, proceed
       }
       setChecking(false);
     }
@@ -74,79 +73,93 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading }: LeadFormProps)
     <motion.div
       initial={{ opacity: 0, x: 50 }}
       animate={{ opacity: 1, x: 0 }}
-      className="min-h-screen flex flex-col items-center justify-center px-6 py-12"
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      className="min-h-screen flex flex-col items-center justify-center px-6 py-12 gradient-hero"
     >
       <div className="w-full max-w-md">
-        <h2 className="text-2xl font-bold mb-2" style={{ fontFamily: 'Montserrat' }}>
-          Quase lá! 🎉
-        </h2>
-        <p className="text-muted-foreground mb-8">
-          Preencha seus dados para receber sua recomendação personalizada.
-        </p>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+        >
+          <h2 className="text-2xl font-bold mb-2 tracking-tight text-foreground">
+            Quase lá! 🎉
+          </h2>
+          <p className="text-muted-foreground mb-8 text-sm">
+            Preencha seus dados para receber sua recomendação personalizada.
+          </p>
+        </motion.div>
 
         {duplicateMsg && (
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-4 rounded-2xl bg-secondary/10 border border-secondary/30 flex gap-3 items-start"
+            className="mb-6 p-4 rounded-2xl bg-primary/5 border border-primary/15 flex gap-3 items-start"
           >
-            <AlertCircle className="w-5 h-5 text-secondary shrink-0 mt-0.5" />
-            <p className="text-sm text-foreground">{duplicateMsg}</p>
+            <AlertCircle className="w-5 h-5 text-primary shrink-0 mt-0.5" />
+            <p className="text-sm text-foreground leading-relaxed">{duplicateMsg}</p>
           </motion.div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          <div>
-            <Label className="flex items-center gap-2 mb-2">
-              <User className="w-4 h-4" /> Nome
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+            <Label className="flex items-center gap-2 mb-2 text-sm font-medium">
+              <User className="w-4 h-4 text-muted-foreground" /> Nome
             </Label>
             <Input
               value={nome}
               onChange={e => { setNome(e.target.value); setErrors(p => ({ ...p, nome: '' })); setDuplicateMsg(''); }}
               placeholder="Seu nome completo"
-              className="py-6 rounded-xl text-base"
+              className="py-6 rounded-2xl text-base bg-background border-border"
               maxLength={100}
             />
-            {errors.nome && <p className="text-sm text-destructive mt-1">{errors.nome}</p>}
-          </div>
+            {errors.nome && <p className="text-sm text-destructive mt-1.5">{errors.nome}</p>}
+          </motion.div>
 
-          <div>
-            <Label className="flex items-center gap-2 mb-2">
-              <Phone className="w-4 h-4" /> WhatsApp
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+            <Label className="flex items-center gap-2 mb-2 text-sm font-medium">
+              <Phone className="w-4 h-4 text-muted-foreground" /> WhatsApp
             </Label>
             <Input
               value={telefone}
               onChange={e => { setTelefone(formatPhone(e.target.value)); setErrors(p => ({ ...p, telefone: '' })); setDuplicateMsg(''); }}
               placeholder="(51) 99999-9999"
-              className="py-6 rounded-xl text-base"
+              className="py-6 rounded-2xl text-base bg-background border-border"
               type="tel"
             />
-            {errors.telefone && <p className="text-sm text-destructive mt-1">{errors.telefone}</p>}
-          </div>
+            {errors.telefone && <p className="text-sm text-destructive mt-1.5">{errors.telefone}</p>}
+          </motion.div>
 
-          <div>
-            <Label className="flex items-center gap-2 mb-2">
-              <Mail className="w-4 h-4" /> Email <span className="text-muted-foreground text-xs">(opcional)</span>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+            <Label className="flex items-center gap-2 mb-2 text-sm font-medium">
+              <Mail className="w-4 h-4 text-muted-foreground" /> Email <span className="text-muted-foreground text-xs">(opcional)</span>
             </Label>
             <Input
               value={email}
               onChange={e => { setEmail(e.target.value); setErrors(p => ({ ...p, email: '' })); setDuplicateMsg(''); }}
               placeholder="seu@email.com"
-              className="py-6 rounded-xl text-base"
+              className="py-6 rounded-2xl text-base bg-background border-border"
               type="email"
               maxLength={255}
             />
-            {errors.email && <p className="text-sm text-destructive mt-1">{errors.email}</p>}
-          </div>
+            {errors.email && <p className="text-sm text-destructive mt-1.5">{errors.email}</p>}
+          </motion.div>
 
-          <Button
-            type="submit"
-            disabled={isLoading}
-            className="w-full py-6 text-lg rounded-full font-bold mt-4"
-          >
-            {isLoading ? (checking ? 'Verificando...' : 'Salvando...') : 'Ver meu resultado'}
-            {!isLoading && <ArrowRight className="w-5 h-5 ml-2" />}
-          </Button>
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+            <Button
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-6 text-base rounded-2xl font-semibold mt-2 gradient-blue hover:opacity-90 transition-all"
+            >
+              {isLoading ? (checking ? 'Verificando...' : 'Salvando...') : 'Ver meu resultado'}
+              {!isLoading && <ArrowRight className="w-5 h-5 ml-2" />}
+            </Button>
+          </motion.div>
+
+          <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground mt-4">
+            <Shield className="w-3.5 h-3.5" />
+            <span>Seus dados estão seguros e protegidos</span>
+          </div>
         </form>
       </div>
     </motion.div>
