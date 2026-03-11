@@ -11,6 +11,10 @@ interface LeadFormProps {
   loading?: boolean;
 }
 
+function sanitizeText(input: string): string {
+  return input.replace(/[<>'"&]/g, '').trim();
+}
+
 export function LeadForm({ onSubmit, onCheckDuplicate, loading }: LeadFormProps) {
   const [nome, setNome] = useState('');
   const [telefone, setTelefone] = useState('');
@@ -30,10 +34,16 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading }: LeadFormProps)
     e.preventDefault();
     setDuplicateMsg('');
     const newErrors: Record<string, string> = {};
-    if (!nome.trim() || nome.trim().length < 2) newErrors.nome = 'Informe seu nome';
+    
+    const cleanName = sanitizeText(nome);
+    if (!cleanName || cleanName.length < 2) newErrors.nome = 'Informe seu nome';
+    if (cleanName.length > 100) newErrors.nome = 'Nome muito longo';
+    
     const phoneDigits = telefone.replace(/\D/g, '');
-    if (phoneDigits.length < 10) newErrors.telefone = 'Informe um telefone válido';
-    if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) newErrors.email = 'Email inválido';
+    if (phoneDigits.length < 10 || phoneDigits.length > 11) newErrors.telefone = 'Informe um telefone válido';
+    
+    const cleanEmail = email.trim().slice(0, 255);
+    if (cleanEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) newErrors.email = 'Email inválido';
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -43,7 +53,7 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading }: LeadFormProps)
     if (onCheckDuplicate) {
       setChecking(true);
       try {
-        const result = await onCheckDuplicate(phoneDigits, email.trim());
+        const result = await onCheckDuplicate(phoneDigits, cleanEmail);
         if (result.duplicate) {
           const franchise = result.franchiseName || 'Splash Piscinas';
           if (result.field === 'telefone') {
@@ -59,12 +69,12 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading }: LeadFormProps)
           return;
         }
       } catch {
-        // If check fails, proceed
+        // If check fails, proceed with submission
       }
       setChecking(false);
     }
 
-    onSubmit({ nome: nome.trim(), telefone: phoneDigits, email: email.trim() });
+    onSubmit({ nome: cleanName, telefone: phoneDigits, email: cleanEmail });
   };
 
   const isLoading = loading || checking;
@@ -112,6 +122,7 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading }: LeadFormProps)
               placeholder="Seu nome completo"
               className="py-6 rounded-2xl text-base bg-background border-border"
               maxLength={100}
+              autoComplete="name"
             />
             {errors.nome && <p className="text-sm text-destructive mt-1.5">{errors.nome}</p>}
           </motion.div>
@@ -126,6 +137,7 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading }: LeadFormProps)
               placeholder="(51) 99999-9999"
               className="py-6 rounded-2xl text-base bg-background border-border"
               type="tel"
+              autoComplete="tel"
             />
             {errors.telefone && <p className="text-sm text-destructive mt-1.5">{errors.telefone}</p>}
           </motion.div>
@@ -141,6 +153,7 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading }: LeadFormProps)
               className="py-6 rounded-2xl text-base bg-background border-border"
               type="email"
               maxLength={255}
+              autoComplete="email"
             />
             {errors.email && <p className="text-sm text-destructive mt-1.5">{errors.email}</p>}
           </motion.div>

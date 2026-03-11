@@ -3,7 +3,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
 serve(async (req) => {
@@ -12,7 +12,16 @@ serve(async (req) => {
   }
 
   try {
-    const { email, telefone } = await req.json();
+    const body = await req.json();
+    const email = typeof body.email === "string" ? body.email.trim().slice(0, 255) : null;
+    const telefone = typeof body.telefone === "string" ? body.telefone.replace(/\D/g, "").slice(0, 15) : null;
+
+    if (!telefone && !email) {
+      return new Response(
+        JSON.stringify({ error: "telefone or email required" }),
+        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
 
     const supabase = createClient(
       Deno.env.get("SUPABASE_URL")!,
