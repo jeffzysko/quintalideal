@@ -43,7 +43,7 @@ export default function FranchiseDashboard() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at')
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by')
         .eq('franquia_id', franchiseId!)
         .order('created_at', { ascending: false });
       if (error) throw error;
