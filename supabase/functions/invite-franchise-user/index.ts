@@ -10,7 +10,7 @@ const SENDER = "Quintal Ideal Splash <noreply@hallow.com.br>";
 const BRAND_BLUE = "#0369a1";
 const BRAND_GRADIENT = "linear-gradient(135deg, #0284c7, #0369a1)";
 
-function buildInviteEmailHTML(userName: string, franchiseName: string, recoveryLink: string): string {
+function buildInviteEmailHTML(userName: string, franchiseName: string, resetPageLink: string): string {
   return `
 <!DOCTYPE html>
 <html lang="pt-BR">
