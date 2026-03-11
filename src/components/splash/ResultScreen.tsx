@@ -216,10 +216,18 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
           className="rounded-2xl p-5 text-left mt-4 backdrop-blur-sm"
           style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}
         >
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-3">
             <Sparkles className="w-4 h-4 text-blue-300" />
             <span className="text-[10px] font-bold text-blue-300 uppercase tracking-[0.15em]">Modelo recomendado</span>
           </div>
+          {getPoolImage(poolName) && (
+            <img
+              src={getPoolImage(poolName)}
+              alt={`Piscina ${poolName}`}
+              className="w-full h-40 object-cover rounded-xl mb-3"
+              loading="lazy"
+            />
+          )}
           <h3 className="text-lg font-bold text-white mb-1">{poolName}</h3>
           {poolDescription && <p className="text-sm text-white/40 leading-relaxed">{poolDescription}</p>}
         </motion.div>
