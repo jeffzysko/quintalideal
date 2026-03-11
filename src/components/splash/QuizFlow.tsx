@@ -113,8 +113,10 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       const fullAnswers = newAnswers as QuizAnswers;
       const s = calculateScore(fullAnswers);
       const pool = recommendPool(fullAnswers);
+      const size = recommendSize(fullAnswers.espaco, pool);
       setScore(s);
       setPoolName(pool);
+      setRecommendedSize(size);
       fetchPoolDescription(pool);
 
       trackEvent('quiz_completed', {
