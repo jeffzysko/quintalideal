@@ -1,4 +1,6 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
+import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import logoSplash from '@/assets/logo-splash.png';
 import { getRankingGaucho, getYardClassification, getSocialComparison } from '@/lib/ranking';
