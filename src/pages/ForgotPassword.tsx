@@ -27,7 +27,7 @@ export default function ForgotPassword() {
     setLoading(true);
 
     try {
-      const { data, error: fnError } = await supabase.functions.invoke('send-recovery-email', {
+      const { error: fnError } = await supabase.functions.invoke('send-recovery-email', {
         body: { email },
       });
 
