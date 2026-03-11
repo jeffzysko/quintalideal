@@ -215,16 +215,32 @@ export function AdminFranchiseManager() {
         <div className="grid gap-4 md:grid-cols-2">
           {franchises.map((f, i) => (
             <motion.div key={f.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-              <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
+              <Card className={`border-border/50 shadow-sm hover:shadow-md transition-shadow ${!f.ativa ? 'opacity-60' : ''}`}>
                 <CardContent className="p-5">
                   <div className="flex items-start justify-between mb-3">
-                    <div>
-                      <h3 className="font-semibold text-foreground text-sm">{f.nome_franquia}</h3>
-                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
-                        <MapPin className="w-3 h-3" /> {f.cidade_base}
+                    <div className="flex items-center gap-2">
+                      <div>
+                        <h3 className="font-semibold text-foreground text-sm">{f.nome_franquia}</h3>
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
+                          <MapPin className="w-3 h-3" /> {f.cidade_base}
+                        </div>
                       </div>
+                      {!f.ativa && (
+                        <Badge variant="secondary" className="text-[10px] bg-destructive/10 text-destructive border-destructive/20 border">
+                          Desativada
+                        </Badge>
+                      )}
                     </div>
                     <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className={`h-8 w-8 rounded-lg ${f.ativa ? 'text-muted-foreground hover:text-amber-600' : 'text-muted-foreground hover:text-emerald-600'}`}
+                        onClick={() => toggleActive(f)}
+                        title={f.ativa ? 'Desativar franquia' : 'Reativar franquia'}
+                      >
+                        {f.ativa ? <PowerOff className="w-3.5 h-3.5" /> : <Power className="w-3.5 h-3.5" />}
+                      </Button>
                       <Button variant="ghost" size="icon" className="h-8 w-8 rounded-lg" onClick={() => openEdit(f)}>
                         <Pencil className="w-3.5 h-3.5" />
                       </Button>
@@ -237,7 +253,7 @@ export function AdminFranchiseManager() {
                   <div className="space-y-1.5 text-xs">
                     <div className="flex items-center gap-2 text-muted-foreground">
                       <Link2 className="w-3 h-3 shrink-0" />
-                      <code className="bg-muted px-1.5 py-0.5 rounded truncate">{SITE_URL}/{f.slug_url}</code>
+                      <code className={`bg-muted px-1.5 py-0.5 rounded truncate ${!f.ativa ? 'line-through' : ''}`}>{SITE_URL}/{f.slug_url}</code>
                     </div>
                     {f.responsavel && (
                       <div className="flex items-center gap-2 text-muted-foreground">

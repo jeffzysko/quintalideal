@@ -38,10 +38,15 @@ export default function FranchiseLanding() {
     );
   }
 
-  if (!franchise) {
+  if (!franchise || !franchise.ativa) {
     return (
       <div className="min-h-screen flex items-center justify-center px-6">
-        <p className="text-muted-foreground">Franquia não encontrada.</p>
+        <div className="text-center">
+          <p className="text-muted-foreground text-lg mb-2">
+            {franchise && !franchise.ativa ? 'Esta franquia está temporariamente indisponível.' : 'Franquia não encontrada.'}
+          </p>
+          <p className="text-sm text-muted-foreground">Entre em contato com a Splash Piscinas para mais informações.</p>
+        </div>
       </div>
     );
   }
