@@ -61,10 +61,9 @@ const quizQuestions = [
   {
     question: 'Qual o orçamento estimado para sua piscina?',
     options: [
-      { value: 'ate-30', label: 'Até R$ 30 mil', emoji: '💰' },
-      { value: '30-50', label: 'R$ 30 a 50 mil', emoji: '💎' },
-      { value: '50-80', label: 'R$ 50 a 80 mil', emoji: '🏆' },
-      { value: 'acima-80', label: 'Acima de R$ 80 mil', emoji: '👑' },
+      { value: 'ate-18', label: 'Até R$ 18 mil', emoji: '💰' },
+      { value: '18-30', label: 'R$ 18 a 30 mil', emoji: '💎' },
+      { value: '30-50', label: 'R$ 30 a 50 mil', emoji: '🏆' },
     ],
   },
 ];
