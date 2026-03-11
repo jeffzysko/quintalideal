@@ -193,7 +193,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
 
   const handleStartQuiz = () => {
     trackEvent('quiz_started', analyticsCtx);
-    setStep('pre-diagnosis');
+    setStep('photos');
   };
 
   const handlePhotosNext = (urls: string[]) => {
@@ -202,7 +202,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       ...analyticsCtx,
       metadata: { quantidade_de_fotos: urls.length },
     });
-    setStep('quiz');
+    setStep('pre-diagnosis');
   };
 
   const handleResultContinue = () => {
@@ -221,11 +221,11 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       {step === 'hero' && (
         <HeroSection key="hero" onStart={handleStartQuiz} franchiseName={franchiseName} />
       )}
-      {step === 'pre-diagnosis' && (
-        <PreDiagnosis key="pre-diagnosis" onContinue={() => setStep('photos')} />
-      )}
       {step === 'photos' && (
-        <PhotoUpload key="photos" onNext={handlePhotosNext} onBack={() => setStep('pre-diagnosis')} />
+        <PhotoUpload key="photos" onNext={handlePhotosNext} onBack={() => setStep('hero')} />
+      )}
+      {step === 'pre-diagnosis' && (
+        <PreDiagnosis key="pre-diagnosis" onContinue={() => setStep('quiz')} />
       )}
       {step === 'quiz' && currentQuizQuestion && (
         <QuizStep
