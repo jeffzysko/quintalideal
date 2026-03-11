@@ -3,7 +3,6 @@ import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Share2, Target, Activity, Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -181,42 +180,35 @@ export default function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b bg-card">
-        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-5 flex items-center justify-between">
-          <div className="flex items-center gap-3 md:gap-4 min-w-0">
-            <img src={logoSplash} alt="Splash" className="w-10 md:w-16 shrink-0" />
-            <div className="min-w-0">
-              <h1 className="text-base md:text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-                <Building2 className="w-4 h-4 md:w-5 md:h-5 text-primary shrink-0" />
-                <span className="truncate">Painel da Fábrica</span>
-              </h1>
-              <p className="text-xs text-muted-foreground mt-0.5 hidden sm:block">Visão geral de desempenho</p>
-            </div>
+      <header className="sticky top-0 z-30 border-b border-border/40 bg-card/80 backdrop-blur-xl">
+        <div className="max-w-7xl mx-auto px-4 md:px-6 h-14 md:h-16 flex items-center justify-between">
+          <div className="flex items-center gap-3 min-w-0">
+            <img src={logoSplash} alt="Splash" className="h-7 md:h-9 shrink-0" />
+            <div className="h-5 w-px bg-border/60 hidden sm:block" />
+            <span className="text-sm font-semibold text-foreground tracking-tight truncate hidden sm:block">Fábrica</span>
           </div>
-          <div className="flex items-center gap-1.5 md:gap-2 shrink-0">
-            <Button variant="outline" size="sm" onClick={() => navigate('/admin/radar')} className="rounded-xl gap-1.5 hidden sm:flex" aria-label="Abrir radar de mercado">
-              <Target className="w-4 h-4" /> Radar
-            </Button>
-            <Button variant="outline" size="icon" onClick={() => navigate('/admin/radar')} className="rounded-xl sm:hidden h-9 w-9" aria-label="Abrir radar de mercado">
-              <Target className="w-4 h-4" />
-            </Button>
-            <Button variant="outline" size="icon" onClick={() => navigate('/mapa')} className="rounded-xl h-9 w-9 sm:hidden" aria-label="Abrir mapa de quintais">
-              <MapPin className="w-4 h-4" />
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => navigate('/mapa')} className="rounded-xl gap-1.5 hidden sm:flex" aria-label="Abrir mapa de quintais">
-              <MapPin className="w-4 h-4" /> Mapa
-            </Button>
-            <Button variant="outline" size="icon" onClick={exportCSV} className="rounded-xl h-9 w-9 sm:hidden" aria-label="Exportar leads para CSV">
-              <Download className="w-4 h-4" />
-            </Button>
-            <Button variant="outline" size="sm" onClick={exportCSV} className="rounded-xl gap-1.5 hidden sm:flex" aria-label="Exportar leads para CSV">
-              <Download className="w-4 h-4" /> CSV
-            </Button>
+
+          <nav className="flex items-center gap-1">
+            {[
+              { icon: Target, label: 'Radar', action: () => navigate('/admin/radar') },
+              { icon: MapPin, label: 'Mapa', action: () => navigate('/mapa') },
+              { icon: Download, label: 'CSV', action: exportCSV },
+            ].map((item) => (
+              <button
+                key={item.label}
+                onClick={item.action}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+                aria-label={item.label}
+              >
+                <item.icon className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">{item.label}</span>
+              </button>
+            ))}
+            <div className="h-5 w-px bg-border/60 mx-1" />
             <UserAvatarMenu />
-          </div>
+          </nav>
         </div>
-      </div>
+      </header>
 
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
         {/* Tab switcher */}
