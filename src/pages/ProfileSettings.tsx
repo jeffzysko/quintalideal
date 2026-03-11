@@ -194,7 +194,7 @@ export default function ProfileSettings() {
           </Card>
         </motion.div>
 
-        {/* Franchise contact info */}
+        {/* Franchise contact info - visible for franchise users */}
         {isFranchise && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
             <Card className="border-border/50 shadow-sm">
@@ -232,6 +232,32 @@ export default function ProfileSettings() {
                     onChange={e => setEmail(e.target.value)}
                   />
                   <p className="text-xs text-muted-foreground">Os leads gerados pelo quiz serão enviados para este e-mail.</p>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Admin info card */}
+        {isAdmin && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+            <Card className="border-border/50 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                  <Building2 className="w-4 h-4 text-primary" />
+                  Informações do Administrador
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Você é administrador da fábrica. Use o painel admin para gerenciar franquias e seus dados de contato.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
+                  <Building2 className="w-5 h-5 text-primary" />
+                  <div>
+                    <p className="text-sm font-medium text-foreground">Painel da Fábrica</p>
+                    <p className="text-xs text-muted-foreground">Gerencie franquias, leads e configurações de e-mail no painel admin.</p>
+                  </div>
                 </div>
               </CardContent>
             </Card>
