@@ -217,9 +217,9 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
         {/* Tab switcher */}
-        <div className="flex gap-1 mb-8 bg-muted rounded-xl p-1 w-fit" role="tablist">
+        <div className="flex gap-1 mb-6 md:mb-8 bg-muted rounded-xl p-1 w-full md:w-fit overflow-x-auto scrollbar-none" role="tablist">
           {[
             { key: 'overview' as const, icon: BarChart3, label: 'Inteligência' },
             { key: 'analytics' as const, icon: Activity, label: 'Analytics' },
@@ -232,9 +232,9 @@ export default function AdminDashboard() {
               role="tab"
               aria-selected={activeTab === tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === tab.key ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`px-3 md:px-5 py-2 md:py-2.5 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap flex-1 md:flex-none ${activeTab === tab.key ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
             >
-              <tab.icon className="w-4 h-4 inline mr-1.5" /> {tab.label}
+              <tab.icon className="w-3.5 h-3.5 md:w-4 md:h-4 inline mr-1" /> <span className="hidden sm:inline">{tab.label}</span><span className="sm:hidden">{tab.label.slice(0, 5)}</span>
             </button>
           ))}
         </div>

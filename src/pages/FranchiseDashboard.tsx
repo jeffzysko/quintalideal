@@ -99,19 +99,19 @@ export default function FranchiseDashboard() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b bg-card">
-        <div className="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <img src={logoSplash} alt="Splash" className="w-16" />
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-                <Users className="w-5 h-5 text-primary" />
-                {franchiseName || 'Dashboard da Franquia'}
+        <div className="max-w-6xl mx-auto px-4 md:px-6 py-4 md:py-5 flex items-center justify-between">
+          <div className="flex items-center gap-3 md:gap-4 min-w-0">
+            <img src={logoSplash} alt="Splash" className="w-10 md:w-16 shrink-0" />
+            <div className="min-w-0">
+              <h1 className="text-base md:text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
+                <Users className="w-4 h-4 md:w-5 md:h-5 text-primary shrink-0" />
+                <span className="truncate">{franchiseName || 'Dashboard'}</span>
               </h1>
-              <p className="text-xs text-muted-foreground mt-0.5">Gestão de leads e contatos</p>
+              <p className="text-xs text-muted-foreground mt-0.5 hidden sm:block">Gestão de leads e contatos</p>
             </div>
           </div>
-          <div className="flex items-center gap-3">
-            <Badge variant="outline" className="text-xs px-3 py-1.5 border-primary/30 text-primary">
+          <div className="flex items-center gap-2 md:gap-3 shrink-0">
+            <Badge variant="outline" className="text-xs px-2 md:px-3 py-1 md:py-1.5 border-primary/30 text-primary hidden sm:flex">
               {totalLeads} leads
             </Badge>
             <UserAvatarMenu />
