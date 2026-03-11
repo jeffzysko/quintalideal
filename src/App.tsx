@@ -6,6 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import Index from "./pages/Index";
+import MapaQuintais from "./pages/MapaQuintais";
 import FranchiseLanding from "./pages/FranchiseLanding";
 import Login from "./pages/Login";
 import PainelRouter from "./pages/PainelRouter";
