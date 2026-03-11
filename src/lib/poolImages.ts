@@ -20,7 +20,7 @@ export const poolImages: Record<string, string> = {
   'Farol da Barra': faroldabarra,
   'Tropical': tropical,
   'Italiana': italiana,
-  'Navagio': nassau, // fallback similar style
+  'Navagio': navagio,
 };
 
 export function getPoolImage(poolName: string): string | undefined {
