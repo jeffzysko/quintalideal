@@ -395,12 +395,6 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, wha
           <ValorizationSimulator score={score} />
         </motion.div>
 
-        {/* Friend Challenge ranking */}
-        {refCode && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.4 }}>
-            <FriendChallenge refCode={refCode} score={score} leadName={leadName} />
-          </motion.div>
-        )}
 
         {/* Share row */}
         <motion.div
