@@ -40,6 +40,7 @@ interface AdminAnalyticsProps {
 export function AdminAnalytics({ franchiseMap }: AdminAnalyticsProps) {
   const [events, setEvents] = useState<AnalyticsEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [periodDays, setPeriodDays] = useState('30');
 
   useEffect(() => {
@@ -48,18 +49,26 @@ export function AdminAnalytics({ franchiseMap }: AdminAnalyticsProps) {
 
   const loadEvents = async () => {
     setLoading(true);
+    setError(null);
     const since = new Date();
     since.setDate(since.getDate() - parseInt(periodDays));
     
-    const { data } = await supabase
-      .from('analytics_events')
-      .select('*')
-      .gte('created_at', since.toISOString())
-      .order('created_at', { ascending: false })
-      .limit(10000);
-    
-    setEvents((data || []) as AnalyticsEvent[]);
-    setLoading(false);
+    try {
+      const { data, error: queryError } = await supabase
+        .from('analytics_events')
+        .select('*')
+        .gte('created_at', since.toISOString())
+        .order('created_at', { ascending: false })
+        .limit(10000);
+      
+      if (queryError) throw queryError;
+      setEvents((data || []) as AnalyticsEvent[]);
+    } catch (err) {
+      console.error('Erro ao carregar analytics:', err);
+      setError('Não foi possível carregar analytics.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Funnel data
