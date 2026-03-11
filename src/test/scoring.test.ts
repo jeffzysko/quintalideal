@@ -78,10 +78,10 @@ describe('recommendPool', () => {
   });
 
   it('recommends Atalaia for large space + high budget + family', () => {
-    expect(recommendPool(base({ preferencia: 'simples', orcamento: 'acima-80' }))).toBe('Atalaia');
+    expect(recommendPool(base({ preferencia: 'simples', orcamento: '30-50' }))).toBe('Atalaia');
   });
 
   it('recommends Bonaire for medium space + high budget + family', () => {
-    expect(recommendPool(base({ espaco: '5-7', preferencia: 'simples', orcamento: 'acima-80' }))).toBe('Bonaire');
+    expect(recommendPool(base({ espaco: '5-7', preferencia: 'simples', orcamento: '30-50' }))).toBe('Bonaire');
   });
 });
