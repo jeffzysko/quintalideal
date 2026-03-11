@@ -358,7 +358,7 @@ function PasswordChangeCard() {
               onChange={e => setConfirmPassword(e.target.value)}
             />
           </div>
-          {error && <p className="text-sm text-destructive">{error}</p>}
+          {error && <p className="text-sm text-destructive bg-destructive/10 rounded-lg px-3 py-2">{error}</p>}
           <Button onClick={handleChangePassword} disabled={saving || !newPassword} variant="outline" className="gap-2 rounded-xl">
             <Lock className="w-4 h-4" />
             {saving ? 'Alterando...' : 'Alterar senha'}

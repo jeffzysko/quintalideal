@@ -65,9 +65,9 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
   return (
     <Card className="border-border/50 shadow-sm">
       <CardHeader>
-        <CardTitle className="text-base flex items-center gap-2">
+        <CardTitle className="text-sm font-semibold flex items-center gap-2">
           <Phone className="w-4 h-4 text-primary" />
-          Dados de Contato da Franquia
+          Dados de Contato
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
