@@ -52,7 +52,17 @@ export default function FranchiseDashboard() {
 
   const loadLeads = async () => {
     setLoading(true);
-    // RLS already filters by franchise, but we add the filter explicitly for clarity
+    
+    // Load franchise slug for the copy link button
+    if (franchiseId) {
+      const { data: franchiseData } = await supabase
+        .from('franchises')
+        .select('slug_url')
+        .eq('id', franchiseId)
+        .single();
+      if (franchiseData) setFranchiseSlug(franchiseData.slug_url);
+    }
+
     let query = supabase
       .from('leads')
       .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at')
