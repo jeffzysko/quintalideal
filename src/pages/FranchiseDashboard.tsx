@@ -39,25 +39,38 @@ const statusLabels: Record<string, string> = {
   perdido: 'Perdido',
 };
 
+const PAGE_SIZE = 20;
+
 export default function FranchiseDashboard() {
   const { franchiseId, loading: authLoading, signOut } = useAuth();
   const navigate = useNavigate();
+  // All leads for KPIs
+  const [allLeads, setAllLeads] = useState<LeadRow[]>([]);
+  // Paginated leads for table
   const [leads, setLeads] = useState<LeadRow[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [tableLoading, setTableLoading] = useState(false);
   const [franchiseSlug, setFranchiseSlug] = useState<string | null>(null);
   const [franchiseName, setFranchiseName] = useState<string>('');
   const [activeTab, setActiveTab] = useState<'leads' | 'reports'>('leads');
 
   useEffect(() => {
     if (franchiseId) {
-      loadLeads();
+      loadKpiData();
     } else if (!authLoading) {
       setLoading(false);
     }
   }, [franchiseId, authLoading]);
 
-  const loadLeads = async () => {
-    setLoading(true);
+  useEffect(() => {
+    if (franchiseId) {
+      loadPaginatedLeads();
+    }
+  }, [franchiseId, page]);
+
+  const loadKpiData = async () => {
     try {
       if (franchiseId) {
         const { data: franchiseData } = await supabase
@@ -75,26 +88,54 @@ export default function FranchiseDashboard() {
         .from('leads')
         .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at')
         .order('created_at', { ascending: false });
-      
+
       if (franchiseId) {
         query = query.eq('franquia_id', franchiseId);
       }
-      
+
       const { data, error } = await query;
       if (error) throw error;
-      setLeads(data || []);
+      setAllLeads(data || []);
     } catch (err) {
-      console.error('Erro ao carregar leads:', err);
-      toast.error('Erro ao carregar leads. Tente recarregar a página.');
+      console.error('Erro ao carregar dados:', err);
+      toast.error('Erro ao carregar dados. Tente recarregar a página.');
     } finally {
       setLoading(false);
     }
   };
 
-  const totalLeads = leads.length;
-  const newLeads = leads.filter(l => l.status_lead === 'novo').length;
-  const inNegotiation = leads.filter(l => l.status_lead === 'em_negociacao').length;
-  const sold = leads.filter(l => l.status_lead === 'vendido').length;
+  const loadPaginatedLeads = async () => {
+    setTableLoading(true);
+    try {
+      const from = (page - 1) * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
+
+      let query = supabase
+        .from('leads')
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at', { count: 'exact' })
+        .order('created_at', { ascending: false })
+        .range(from, to);
+
+      if (franchiseId) {
+        query = query.eq('franquia_id', franchiseId);
+      }
+
+      const { data, count, error } = await query;
+      if (error) throw error;
+      setLeads(data || []);
+      setTotalCount(count || 0);
+    } catch (err) {
+      console.error('Erro ao carregar leads:', err);
+      toast.error('Erro ao carregar leads.');
+    } finally {
+      setTableLoading(false);
+    }
+  };
+
+  const totalLeads = allLeads.length;
+  const newLeads = allLeads.filter(l => l.status_lead === 'novo').length;
+  const inNegotiation = allLeads.filter(l => l.status_lead === 'em_negociacao').length;
+  const sold = allLeads.filter(l => l.status_lead === 'vendido').length;
 
   const kpis = [
     { icon: Users, label: 'Total de Leads', value: totalLeads, color: 'text-primary' },
@@ -102,6 +143,10 @@ export default function FranchiseDashboard() {
     { icon: TrendingUp, label: 'Em Negociação', value: inNegotiation, color: 'text-violet-600' },
     { icon: Droplets, label: 'Vendidos', value: sold, color: 'text-emerald-600' },
   ];
+
+  const from = (page - 1) * PAGE_SIZE;
+  const to = from + PAGE_SIZE;
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   return (
     <div className="min-h-screen bg-background">
@@ -171,14 +216,14 @@ export default function FranchiseDashboard() {
         {activeTab === 'leads' && (
           <Card className="border-border/50 shadow-sm">
             <CardHeader>
-              <CardTitle className="text-sm font-semibold">Leads Recentes</CardTitle>
+              <CardTitle className="text-sm font-semibold">Leads Recentes ({totalCount})</CardTitle>
             </CardHeader>
             <CardContent>
-              {loading ? (
+              {(loading || tableLoading) ? (
                 <div className="flex justify-center py-12">
                   <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" />
                 </div>
-              ) : leads.length === 0 ? (
+              ) : totalCount === 0 ? (
                 <motion.div 
                   initial={{ opacity: 0, y: 20 }} 
                   animate={{ opacity: 1, y: 0 }} 
@@ -202,53 +247,75 @@ export default function FranchiseDashboard() {
                   </Button>
                 </motion.div>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-border/50">
-                        <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Nome</th>
-                        <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Cidade</th>
-                        <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Score</th>
-                        <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Modelo</th>
-                        <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Status</th>
-                        <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Data</th>
-                        <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {leads.map(lead => (
-                        <tr key={lead.id} className="border-b border-border/30 hover:bg-muted/30 transition-colors">
-                          <td className="py-3.5 px-3 font-medium">{lead.nome || '—'}</td>
-                          <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.cidade || '—'}</td>
-                          <td className="py-3.5 px-3">
-                            <span className="font-bold text-primary">{lead.pontuacao_quintal || 0}%</span>
-                          </td>
-                          <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.modelo_recomendado || '—'}</td>
-                          <td className="py-3.5 px-3">
-                            <Badge className={`${statusColors[lead.status_lead] || ''} border text-xs font-medium`} variant="secondary">
-                              {statusLabels[lead.status_lead] || lead.status_lead}
-                            </Badge>
-                          </td>
-                          <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground text-xs">
-                            {new Date(lead.created_at).toLocaleDateString('pt-BR')}
-                          </td>
-                          <td className="py-3.5 px-3">
-                            <Button size="sm" variant="ghost" onClick={() => navigate(`/painel/lead/${lead.id}`)} className="rounded-lg">
-                              <Eye className="w-4 h-4" />
-                            </Button>
-                          </td>
+                <>
+                  <div className="overflow-x-auto">
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="border-b border-border/50">
+                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Nome</th>
+                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Cidade</th>
+                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Score</th>
+                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Modelo</th>
+                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Status</th>
+                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Data</th>
+                          <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider"></th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody>
+                        {leads.map(lead => (
+                          <tr key={lead.id} className="border-b border-border/30 hover:bg-muted/30 transition-colors">
+                            <td className="py-3.5 px-3 font-medium">{lead.nome || '—'}</td>
+                            <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.cidade || '—'}</td>
+                            <td className="py-3.5 px-3">
+                              <span className="font-bold text-primary">{lead.pontuacao_quintal || 0}%</span>
+                            </td>
+                            <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.modelo_recomendado || '—'}</td>
+                            <td className="py-3.5 px-3">
+                              <Badge className={`${statusColors[lead.status_lead] || ''} border text-xs font-medium`} variant="secondary">
+                                {statusLabels[lead.status_lead] || lead.status_lead}
+                              </Badge>
+                            </td>
+                            <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground text-xs">
+                              {new Date(lead.created_at).toLocaleDateString('pt-BR')}
+                            </td>
+                            <td className="py-3.5 px-3">
+                              <Button size="sm" variant="ghost" onClick={() => navigate(`/painel/lead/${lead.id}`)} className="rounded-lg">
+                                <Eye className="w-4 h-4" />
+                              </Button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  {/* Pagination */}
+                  {totalCount > PAGE_SIZE && (
+                    <div className="flex items-center justify-between mt-4 pt-4 border-t border-border/30">
+                      <p className="text-sm text-muted-foreground">
+                        Mostrando {from + 1}–{Math.min(to, totalCount)} de {totalCount} leads
+                      </p>
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="rounded-xl">
+                          Anterior
+                        </Button>
+                        <span className="flex items-center text-sm text-muted-foreground px-2">
+                          {page} / {totalPages}
+                        </span>
+                        <Button variant="outline" size="sm" onClick={() => setPage(p => p + 1)} disabled={page >= totalPages} className="rounded-xl">
+                          Próximo
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </>
               )}
             </CardContent>
           </Card>
         )}
 
         {activeTab === 'reports' && (
-          <FranchiseReports leads={leads} />
+          <FranchiseReports leads={allLeads} />
         )}
       </div>
     </div>
