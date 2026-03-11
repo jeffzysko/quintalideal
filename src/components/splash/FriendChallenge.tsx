@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Users, Trophy, Link2, Copy, Check, Crown, Medal, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabase';
+import { SITE_URL } from '@/lib/constants';
 
 interface FriendData {
   nome: string;
@@ -19,7 +20,7 @@ export function FriendChallenge({ refCode, score, leadName }: FriendChallengePro
   const [friends, setFriends] = useState<FriendData[]>([]);
   const [copied, setCopied] = useState(false);
 
-  const inviteUrl = `${window.location.origin}/explorar?ref=${refCode}`;
+  const inviteUrl = `${SITE_URL}/explorar?ref=${refCode}`;
 
   useEffect(() => {
     loadFriends();

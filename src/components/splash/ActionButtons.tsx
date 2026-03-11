@@ -8,6 +8,7 @@ import { getPoolImage } from '@/lib/poolImages';
 import { FriendChallenge } from './FriendChallenge';
 import { ValorizationSimulator } from './ValorizationSimulator';
 import { trackEvent } from '@/lib/analytics';
+import { SITE_URL, SITE_DOMAIN } from '@/lib/constants';
 
 interface PoolSpecs {
   tamanho?: string;
@@ -60,7 +61,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
   const handleShareWhatsApp = () => {
     trackEvent('result_shared', { franchiseId, metadata: { plataforma: 'whatsapp' } });
     const phrase = getSharePhrase(score);
-    const siteUrl = window.location.origin;
+    const siteUrl = SITE_URL;
     const text = encodeURIComponent(
       `${phrase}\n\n${classification.emoji} ${classification.label}\n🏊 Modelo recomendado: ${poolName}\n\nDescubra o potencial do seu quintal:\n${siteUrl}`
     );
@@ -154,7 +155,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
     ctx.font = '500 24px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.4)';
     ctx.fillText('Descubra o potencial do seu quintal em', 540, 1770);
     ctx.font = '700 28px Inter, sans-serif'; ctx.fillStyle = '#ffffff';
-    ctx.fillText('quintalideal.lovable.app', 540, 1810);
+    ctx.fillText(SITE_DOMAIN, 540, 1810);
 
     ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 1860, 1080, 60);
     ctx.font = '400 18px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.3)';

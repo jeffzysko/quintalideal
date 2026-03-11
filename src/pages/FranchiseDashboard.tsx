@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Users, TrendingUp, Clock, Eye, Inbox, Share2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { SITE_URL } from '@/lib/constants';
 
 interface LeadRow {
   id: string;
@@ -139,7 +140,7 @@ export default function FranchiseDashboard() {
               <p className="text-sm text-muted-foreground text-center max-w-md mb-6">
                 Seus leads aparecerão aqui assim que os primeiros clientes responderem ao quiz da sua página. Compartilhe seu link para começar!
               </p>
-              <Button variant="outline" className="gap-2" onClick={() => navigator.clipboard.writeText(window.location.origin)}>
+              <Button variant="outline" className="gap-2" onClick={() => navigator.clipboard.writeText(SITE_URL)}>
                 <Share2 className="w-4 h-4" />
                 Copiar link do quiz
               </Button>
