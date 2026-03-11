@@ -29,7 +29,7 @@ export function AdminCityRanking({ leads }: AdminCityRankingProps) {
   const maxCount = Math.max(...cityData.map(c => c.count), 1);
 
   return (
-    <Card>
+    <Card className="border-border/50 shadow-sm">
       <CardHeader>
         <CardTitle className="text-base flex items-center gap-2">
           <MapPin className="w-4 h-4 text-secondary" /> Ranking de Cidades

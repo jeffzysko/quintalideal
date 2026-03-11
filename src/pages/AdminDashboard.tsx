@@ -5,14 +5,17 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Users, TrendingUp, Building2, MapPin, Eye, Download, BarChart3, Share2, Target, Activity } from 'lucide-react';
+import { Users, TrendingUp, Building2, MapPin, Eye, Download, BarChart3, Share2, Target, Activity, LogOut } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis } from 'recharts';
 import { AdminCityRanking } from '@/components/admin/AdminCityRanking';
 import { AdminFranchiseRanking } from '@/components/admin/AdminFranchiseRanking';
 import { AdminReferralMetrics } from '@/components/admin/AdminReferralMetrics';
 import { AdminAnalytics } from '@/components/admin/AdminAnalytics';
+import { motion } from 'framer-motion';
+import logoSplash from '@/assets/logo-splash.png';
 
 interface LeadRow {
   id: string;
@@ -142,27 +145,41 @@ export default function AdminDashboard() {
     { icon: Share2, label: 'Via convite', value: referralCount, color: 'text-secondary' },
   ];
 
+  const { signOut } = useAuth();
+
   return (
     <div className="min-h-screen bg-background">
-      <div className="max-w-7xl mx-auto px-6 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight text-foreground">Painel da Fábrica</h1>
-            <p className="text-sm text-muted-foreground mt-1">Visão geral de desempenho</p>
+      {/* Header */}
+      <div className="border-b bg-card">
+        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <img src={logoSplash} alt="Splash" className="w-16" />
+            <div>
+              <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
+                <Building2 className="w-5 h-5 text-primary" />
+                Painel da Fábrica
+              </h1>
+              <p className="text-xs text-muted-foreground mt-0.5">Visão geral de desempenho</p>
+            </div>
           </div>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" onClick={() => navigate('/admin/radar')} className="rounded-xl">
-              <Target className="w-4 h-4 mr-1.5" /> Radar
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => navigate('/admin/radar')} className="rounded-xl gap-1.5">
+              <Target className="w-4 h-4" /> Radar
             </Button>
-            <Button variant="outline" size="sm" onClick={() => navigate('/mapa')} className="rounded-xl">
-              <MapPin className="w-4 h-4 mr-1.5" /> Mapa
+            <Button variant="outline" size="sm" onClick={() => navigate('/mapa')} className="rounded-xl gap-1.5">
+              <MapPin className="w-4 h-4" /> Mapa
             </Button>
-            <Button variant="outline" size="sm" onClick={exportCSV} className="rounded-xl">
-              <Download className="w-4 h-4 mr-1.5" /> CSV
+            <Button variant="outline" size="sm" onClick={exportCSV} className="rounded-xl gap-1.5">
+              <Download className="w-4 h-4" /> CSV
+            </Button>
+            <Button variant="ghost" size="sm" onClick={() => signOut()} className="rounded-xl gap-1.5 text-muted-foreground hover:text-destructive">
+              <LogOut className="w-4 h-4" /> Sair
             </Button>
           </div>
         </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-6 py-8">
 
         {/* Tab switcher */}
         <div className="flex gap-1 mb-8 bg-muted rounded-xl p-1 w-fit">
@@ -189,13 +206,15 @@ export default function AdminDashboard() {
         {/* KPI Cards */}
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-8">
           {kpis.map((kpi, i) => (
-            <Card key={i} className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
-              <CardContent className="p-4">
-                <kpi.icon className={`w-5 h-5 ${kpi.color} mb-2`} />
-                <p className="text-2xl font-bold tracking-tight text-foreground">{kpi.value}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">{kpi.label}</p>
-              </CardContent>
-            </Card>
+            <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+              <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
+                <CardContent className="p-4">
+                  <kpi.icon className={`w-5 h-5 ${kpi.color} mb-2`} />
+                  <p className="text-2xl font-bold tracking-tight text-foreground">{kpi.value}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5">{kpi.label}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
         </div>
 
