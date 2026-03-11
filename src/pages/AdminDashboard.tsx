@@ -182,25 +182,34 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b bg-card">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <img src={logoSplash} alt="Splash" className="w-16" />
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-                <Building2 className="w-5 h-5 text-primary" />
-                Painel da Fábrica
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 md:py-5 flex items-center justify-between">
+          <div className="flex items-center gap-3 md:gap-4 min-w-0">
+            <img src={logoSplash} alt="Splash" className="w-10 md:w-16 shrink-0" />
+            <div className="min-w-0">
+              <h1 className="text-base md:text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
+                <Building2 className="w-4 h-4 md:w-5 md:h-5 text-primary shrink-0" />
+                <span className="truncate">Painel da Fábrica</span>
               </h1>
-              <p className="text-xs text-muted-foreground mt-0.5">Visão geral de desempenho</p>
+              <p className="text-xs text-muted-foreground mt-0.5 hidden sm:block">Visão geral de desempenho</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => navigate('/admin/radar')} className="rounded-xl gap-1.5" aria-label="Abrir radar de mercado">
+          <div className="flex items-center gap-1.5 md:gap-2 shrink-0">
+            <Button variant="outline" size="sm" onClick={() => navigate('/admin/radar')} className="rounded-xl gap-1.5 hidden sm:flex" aria-label="Abrir radar de mercado">
               <Target className="w-4 h-4" /> Radar
             </Button>
-            <Button variant="outline" size="sm" onClick={() => navigate('/mapa')} className="rounded-xl gap-1.5" aria-label="Abrir mapa de quintais">
+            <Button variant="outline" size="icon" onClick={() => navigate('/admin/radar')} className="rounded-xl sm:hidden h-9 w-9" aria-label="Abrir radar de mercado">
+              <Target className="w-4 h-4" />
+            </Button>
+            <Button variant="outline" size="icon" onClick={() => navigate('/mapa')} className="rounded-xl h-9 w-9 sm:hidden" aria-label="Abrir mapa de quintais">
+              <MapPin className="w-4 h-4" />
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => navigate('/mapa')} className="rounded-xl gap-1.5 hidden sm:flex" aria-label="Abrir mapa de quintais">
               <MapPin className="w-4 h-4" /> Mapa
             </Button>
-            <Button variant="outline" size="sm" onClick={exportCSV} className="rounded-xl gap-1.5" aria-label="Exportar leads para CSV">
+            <Button variant="outline" size="icon" onClick={exportCSV} className="rounded-xl h-9 w-9 sm:hidden" aria-label="Exportar leads para CSV">
+              <Download className="w-4 h-4" />
+            </Button>
+            <Button variant="outline" size="sm" onClick={exportCSV} className="rounded-xl gap-1.5 hidden sm:flex" aria-label="Exportar leads para CSV">
               <Download className="w-4 h-4" /> CSV
             </Button>
             <UserAvatarMenu />
@@ -208,9 +217,9 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
         {/* Tab switcher */}
-        <div className="flex gap-1 mb-8 bg-muted rounded-xl p-1 w-fit" role="tablist">
+        <div className="flex gap-1 mb-6 md:mb-8 bg-muted rounded-xl p-1 w-full md:w-fit overflow-x-auto scrollbar-none" role="tablist">
           {[
             { key: 'overview' as const, icon: BarChart3, label: 'Inteligência' },
             { key: 'analytics' as const, icon: Activity, label: 'Analytics' },
@@ -223,9 +232,9 @@ export default function AdminDashboard() {
               role="tab"
               aria-selected={activeTab === tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === tab.key ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`px-3 md:px-5 py-2 md:py-2.5 rounded-lg text-xs md:text-sm font-medium transition-all whitespace-nowrap flex-1 md:flex-none ${activeTab === tab.key ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
             >
-              <tab.icon className="w-4 h-4 inline mr-1.5" /> {tab.label}
+              <tab.icon className="w-3.5 h-3.5 md:w-4 md:h-4 inline mr-1" /> <span className="hidden sm:inline">{tab.label}</span><span className="sm:hidden">{tab.label.slice(0, 5)}</span>
             </button>
           ))}
         </div>
