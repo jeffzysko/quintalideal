@@ -38,12 +38,12 @@ function buildInviteEmailHTML(userName: string, franchiseName: string, recoveryL
             Você foi convidado(a) para acessar o painel da franquia <strong style="color:${BRAND_BLUE};">${franchiseName}</strong> na plataforma Quintal Ideal.
           </p>
           <p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 28px;">
-            Para começar, clique no botão abaixo e defina sua senha de acesso:
+            Para começar, clique no botão abaixo e solicite a definição da sua senha de acesso:
           </p>
           
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
             <tr><td align="center" style="padding:8px 0 32px;">
-              <a href="${recoveryLink}" style="display:inline-block;background:${BRAND_GRADIENT};color:#ffffff;text-decoration:none;padding:16px 48px;border-radius:10px;font-weight:700;font-size:16px;letter-spacing:0.2px;box-shadow:0 4px 12px rgba(3,105,161,0.3);">
+              <a href="${resetPageLink}" style="display:inline-block;background:${BRAND_GRADIENT};color:#ffffff;text-decoration:none;padding:16px 48px;border-radius:10px;font-weight:700;font-size:16px;letter-spacing:0.2px;box-shadow:0 4px 12px rgba(3,105,161,0.3);">
                 Definir minha senha →
               </a>
             </td></tr>
