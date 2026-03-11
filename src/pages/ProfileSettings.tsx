@@ -17,6 +17,7 @@ export default function ProfileSettings() {
   const navigate = useNavigate();
 
   const [fullName, setFullName] = useState('');
+  const [telefone, setTelefone] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [email, setEmail] = useState('');
   const [franchiseName, setFranchiseName] = useState('');
