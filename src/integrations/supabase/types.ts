@@ -62,6 +62,13 @@ export type Database = {
             referencedRelation: "franchises"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "analytics_events_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchises_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       franchises: {
@@ -172,6 +179,13 @@ export type Database = {
             referencedRelation: "franchises"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "leads_franquia_id_fkey"
+            columns: ["franquia_id"]
+            isOneToOne: false
+            referencedRelation: "franchises_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       pool_models: {
@@ -255,6 +269,13 @@ export type Database = {
             referencedRelation: "franchises"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "profiles_franquia_id_fkey"
+            columns: ["franquia_id"]
+            isOneToOne: false
+            referencedRelation: "franchises_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       user_roles: {
@@ -277,6 +298,33 @@ export type Database = {
       }
     }
     Views: {
+      franchises_public: {
+        Row: {
+          ativa: boolean | null
+          cidade_base: string | null
+          id: string | null
+          nome_franquia: string | null
+          slug_url: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          ativa?: boolean | null
+          cidade_base?: string | null
+          id?: string | null
+          nome_franquia?: string | null
+          slug_url?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          ativa?: boolean | null
+          cidade_base?: string | null
+          id?: string | null
+          nome_franquia?: string | null
+          slug_url?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
       leads_map: {
         Row: {
           cidade: string | null
