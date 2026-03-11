@@ -114,19 +114,21 @@ export default function ProfileSettings() {
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b bg-card">
-        <div className="max-w-3xl mx-auto px-6 py-5 flex items-center gap-4">
-          <Button variant="ghost" size="sm" onClick={() => navigate(backPath)} className="rounded-xl gap-1.5" aria-label="Voltar">
+      <header className="sticky top-0 z-30 border-b border-border/40 bg-card/80 backdrop-blur-xl">
+        <div className="max-w-3xl mx-auto px-4 md:px-6 h-14 md:h-16 flex items-center gap-3">
+          <button
+            onClick={() => navigate(backPath)}
+            className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+            aria-label="Voltar"
+          >
             <ArrowLeft className="w-4 h-4" />
-          </Button>
-          <img src={logoSplash} alt="Splash" className="w-12" />
-          <div>
-            <h1 className="text-lg font-bold tracking-tight text-foreground">Configurações do Perfil</h1>
-            <p className="text-xs text-muted-foreground">Gerencie suas informações pessoais</p>
-          </div>
+          </button>
+          <div className="h-5 w-px bg-border/60" />
+          <img src={logoSplash} alt="Splash" className="h-7 md:h-9 shrink-0" />
+          <div className="h-5 w-px bg-border/60 hidden sm:block" />
+          <span className="text-sm font-semibold text-foreground tracking-tight hidden sm:block">Configurações</span>
         </div>
-      </div>
+      </header>
 
       <div className="max-w-3xl mx-auto px-6 py-8 space-y-6">
         {/* Avatar section */}
