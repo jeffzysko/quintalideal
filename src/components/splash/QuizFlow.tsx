@@ -190,7 +190,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         <ResultScreen key="result" score={score} poolName={poolName} poolDescription={poolDesc} onContinue={() => setStep('lead-form')} />
       )}
       {step === 'lead-form' && (
-        <LeadForm key="lead-form" onSubmit={handleLeadSubmit} loading={saving} />
+        <LeadForm key="lead-form" onSubmit={handleLeadSubmit} onCheckDuplicate={checkDuplicate} loading={saving} />
       )}
       {step === 'actions' && (
         <ActionButtons
