@@ -56,7 +56,7 @@ export async function trackEvent(
       utm_source: utm.utm_source,
       utm_medium: utm.utm_medium,
       utm_campaign: utm.utm_campaign,
-      metadata: options?.metadata || {},
+      metadata: (options?.metadata || {}) as Record<string, string | number | boolean | null>,
     }]);
   } catch {
     // Analytics should never break the user experience
