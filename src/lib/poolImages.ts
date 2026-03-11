@@ -1,12 +1,12 @@
-import tradicional from '@/assets/pools/tradicional.jpg';
-import nassau from '@/assets/pools/nassau.png';
-import tortuga from '@/assets/pools/tortuga.jpg';
-import bonaire from '@/assets/pools/bonaire.png';
-import cancun from '@/assets/pools/cancun.jpg';
-import atalaia from '@/assets/pools/atalaia.png';
-import faroldabarra from '@/assets/pools/faroldabarra.jpg';
-import tropical from '@/assets/pools/tropical.jpg';
-import italiana from '@/assets/pools/italiana.jpg';
+import tradicional from '@/assets/pools/tradicional.webp';
+import nassau from '@/assets/pools/nassau.webp';
+import tortuga from '@/assets/pools/tortuga.webp';
+import bonaire from '@/assets/pools/bonaire.webp';
+import cancun from '@/assets/pools/cancun.webp';
+import atalaia from '@/assets/pools/atalaia.webp';
+import faroldabarra from '@/assets/pools/faroldabarra.webp';
+import tropical from '@/assets/pools/tropical.webp';
+import italiana from '@/assets/pools/italiana.webp';
 import navagio from '@/assets/pools/navagio.webp';
 
 export const poolImages: Record<string, string> = {
