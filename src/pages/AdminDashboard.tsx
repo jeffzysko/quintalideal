@@ -15,6 +15,7 @@ import { AdminReferralMetrics } from '@/components/admin/AdminReferralMetrics';
 import { AdminAnalytics } from '@/components/admin/AdminAnalytics';
 import { AdminFranchiseManager } from '@/components/admin/AdminFranchiseManager';
 import { AdminEmailTemplates } from '@/components/admin/AdminEmailTemplates';
+import { AdminUserManager } from '@/components/admin/AdminUserManager';
 import { AdminKPICards } from '@/components/admin/AdminKPICards';
 import { AdminLeadFilters } from '@/components/admin/AdminLeadFilters';
 import { AdminLeadsTable } from '@/components/admin/AdminLeadsTable';
