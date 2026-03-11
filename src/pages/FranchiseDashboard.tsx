@@ -21,7 +21,7 @@ import logoSplash from '@/assets/logo-splash.png';
 const PAGE_SIZE = 20;
 
 export default function FranchiseDashboard() {
-  const { franchiseId, loading: authLoading, signOut } = useAuth();
+  const { franchiseId, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState<'leads' | 'reports'>('leads');
