@@ -352,22 +352,31 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
             {socialComparison}
           </motion.p>
 
-          {/* Pool card */}
-          {poolDescription && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1 }}
-              className="rounded-2xl p-4 text-left mt-2 backdrop-blur-sm"
-              style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
-            >
+          {/* Pool card with image */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1 }}
+            className="rounded-2xl overflow-hidden mt-2 backdrop-blur-sm"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
+          >
+            {getPoolImage(poolName) && (
+              <img
+                src={getPoolImage(poolName)}
+                alt={`Piscina ${poolName}`}
+                className="w-full h-40 object-cover"
+                loading="lazy"
+              />
+            )}
+            <div className="p-4 text-left">
               <div className="flex items-center gap-2 mb-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-blue-300" />
-                <span className="text-[9px] font-bold text-blue-300 uppercase tracking-[0.15em]">Recomendação</span>
+                <span className="text-[9px] font-bold text-blue-300 uppercase tracking-[0.15em]">Modelo recomendado</span>
               </div>
-              <p className="text-xs text-white/40 leading-relaxed">{poolDescription}</p>
-            </motion.div>
-          )}
+              <h3 className="text-base font-bold text-white mb-1">{poolName}</h3>
+              {poolDescription && <p className="text-xs text-white/40 leading-relaxed">{poolDescription}</p>}
+            </div>
+          </motion.div>
 
           {/* 5 stars */}
           <motion.div

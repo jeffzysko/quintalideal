@@ -3,9 +3,7 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import logoSplash from '@/assets/logo-splash.png';
-import { getRankingGaucho, getYardClassification, getSocialComparison } from '@/lib/ranking';
-import { getPoolImage } from '@/lib/poolImages';
-import { Trophy, Sparkles, Star } from 'lucide-react';
+import { getYardClassification } from '@/lib/ranking';
 
 interface ResultScreenProps {
   score: number;
@@ -30,17 +28,14 @@ function ConfettiParticle({ delay, color }: { delay: number; color: string }) {
   );
 }
 
-export function ResultScreen({ score, poolName, poolDescription, onContinue }: ResultScreenProps) {
+export function ResultScreen({ score, onContinue }: ResultScreenProps) {
   const [displayScore, setDisplayScore] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
-  const ranking = getRankingGaucho(score);
   const classification = getYardClassification(score);
-  const socialComparison = getSocialComparison(score);
   const onContinueRef = useRef(onContinue);
   onContinueRef.current = onContinue;
 
   const confettiColors = ['#1e88e5', '#42a5f5', '#64b5f6', '#e91e91', '#ffd700', '#00e5ff', '#76ff03'];
-
   const [animDone, setAnimDone] = useState(false);
 
   useEffect(() => {
@@ -84,9 +79,6 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
 
       <div className="absolute top-[-20%] right-[-15%] w-[70vw] h-[70vw] rounded-full opacity-15"
         style={{ background: 'radial-gradient(circle, hsl(207 90% 50%), transparent 65%)' }}
-      />
-      <div className="absolute bottom-[-15%] left-[-20%] w-[60vw] h-[60vw] rounded-full opacity-[0.08]"
-        style={{ background: 'radial-gradient(circle, hsl(322 85% 50%), transparent 65%)' }}
       />
 
       <motion.div
@@ -167,7 +159,7 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
           <br />de potencial!
         </motion.h2>
 
-        {/* Gamified Classification */}
+        {/* Classification badge */}
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -183,73 +175,6 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
           <span className="font-bold text-sm" style={{ color: classification.color }}>{classification.label}</span>
         </motion.div>
 
-        {/* Ranking badge */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.5 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.9, type: 'spring' }}
-          className="inline-flex items-center gap-2 my-2 px-5 py-2.5 rounded-full"
-          style={{
-            background: 'linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,215,0,0.05))',
-            border: '1px solid rgba(255,215,0,0.2)',
-            boxShadow: '0 0 30px rgba(255,215,0,0.08)',
-          }}
-        >
-          <Trophy className="w-4 h-4 text-amber-400" />
-          <span className="font-bold text-sm text-amber-300">{ranking.label}</span>
-        </motion.div>
-
-        {/* Social comparison */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
-          className="text-white/50 text-sm mt-3 mb-4 italic"
-        >
-          {socialComparison}
-        </motion.p>
-
-        <motion.div
-          initial={{ opacity: 0, y: 25 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.1 }}
-          className="rounded-2xl p-5 text-left mt-4 backdrop-blur-sm"
-          style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}
-        >
-          <div className="flex items-center gap-2 mb-3">
-            <Sparkles className="w-4 h-4 text-blue-300" />
-            <span className="text-[10px] font-bold text-blue-300 uppercase tracking-[0.15em]">Modelo recomendado</span>
-          </div>
-          {getPoolImage(poolName) && (
-            <img
-              src={getPoolImage(poolName)}
-              alt={`Piscina ${poolName}`}
-              className="w-full h-40 object-cover rounded-xl mb-3"
-              loading="lazy"
-            />
-          )}
-          <h3 className="text-lg font-bold text-white mb-1">{poolName}</h3>
-          {poolDescription && <p className="text-sm text-white/40 leading-relaxed">{poolDescription}</p>}
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.3 }}
-          className="flex items-center justify-center gap-1 mt-6"
-        >
-          {[...Array(5)].map((_, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1.4 + i * 0.1 }}
-            >
-              <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
-            </motion.div>
-          ))}
-          <span className="text-white/30 text-xs ml-2 font-medium">Análise completa</span>
-        </motion.div>
         {/* Avançar button */}
         {animDone && (
           <motion.div
@@ -271,7 +196,7 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
               </motion.span>
             </Button>
             <p className="text-white/30 text-[10px] text-center mt-2">
-              Prossiga para falar com nossa equipe comercial
+              Veja sua piscina recomendada e fale com nossa equipe
             </p>
           </motion.div>
         )}
