@@ -38,6 +38,8 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
 
   const confettiColors = ['#1e88e5', '#42a5f5', '#64b5f6', '#e91e91', '#ffd700', '#00e5ff', '#76ff03'];
 
+  const [animDone, setAnimDone] = useState(false);
+
   useEffect(() => {
     let current = 0;
     const interval = setInterval(() => {
@@ -46,7 +48,7 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
         current = score;
         clearInterval(interval);
         setShowConfetti(true);
-        setTimeout(() => onContinueRef.current(), 3500);
+        setAnimDone(true);
       }
       setDisplayScore(current);
     }, 18);
