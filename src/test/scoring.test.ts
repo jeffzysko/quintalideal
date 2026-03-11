@@ -28,7 +28,7 @@ describe('calculateScore', () => {
   it('handles mid-range answers', () => {
     const answers = base({
       espaco: '3-5', moradia: 'construindo', intencao: '2026-2027',
-      uso: 'familia-pequena', preferencia: 'spa', orcamento: '30-50',
+      uso: 'familia-pequena', preferencia: 'spa', orcamento: '18-30',
     });
     const score = calculateScore(answers);
     expect(score).toBeGreaterThan(34);
