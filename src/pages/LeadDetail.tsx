@@ -267,7 +267,7 @@ export default function LeadDetail() {
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   {photos.map((url, i) => (
-                    <img key={i} src={url} alt={`Quintal ${i + 1}`} className="rounded-xl w-full aspect-square object-cover border border-border/50" />
+                    <img key={i} src={url} alt={`Quintal ${i + 1}`} className="rounded-xl w-full aspect-square object-cover border border-border/50" loading="lazy" />
                   ))}
                 </div>
               </CardContent>
