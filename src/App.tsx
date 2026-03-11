@@ -21,6 +21,7 @@ const FranchiseDashboard = lazy(() => import("./pages/FranchiseDashboard"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const LeadDetail = lazy(() => import("./pages/LeadDetail"));
 const RadarMercado = lazy(() => import("./pages/RadarMercado"));
+const ProfileSettings = lazy(() => import("./pages/ProfileSettings"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
