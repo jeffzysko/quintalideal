@@ -80,6 +80,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   const [score, setScore] = useState(0);
   const [poolName, setPoolName] = useState('');
   const [poolDesc, setPoolDesc] = useState('');
+  const [poolSpecs, setPoolSpecs] = useState<{ tamanho?: string; profundidade?: number; possui_prainha?: boolean; possui_spa?: boolean } | null>(null);
   const [leadName, setLeadName] = useState('');
   const [leadRefCode, setLeadRefCode] = useState('');
   const [saving, setSaving] = useState(false);
@@ -129,10 +130,18 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
     try {
       const { data } = await supabase
         .from('pool_models')
-        .select('descricao')
+        .select('descricao, tamanho, profundidade, possui_prainha, possui_spa')
         .eq('nome_modelo', name)
         .single();
-      if (data) setPoolDesc(data.descricao || '');
+      if (data) {
+        setPoolDesc(data.descricao || '');
+        setPoolSpecs({
+          tamanho: data.tamanho || undefined,
+          profundidade: data.profundidade || undefined,
+          possui_prainha: data.possui_prainha || false,
+          possui_spa: data.possui_spa || false,
+        });
+      }
     } catch {
       // Non-critical
     }
@@ -270,6 +279,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
           score={score}
           poolName={poolName}
           poolDescription={poolDesc}
+          poolSpecs={poolSpecs}
           whatsappNumber={franchiseWhatsapp}
           leadName={leadName}
           refCode={leadRefCode}

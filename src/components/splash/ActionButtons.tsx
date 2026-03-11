@@ -1,25 +1,32 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { MessageCircle, FileText, Share2, Trophy, Download, ArrowRight, Sparkles, Star, Users } from 'lucide-react';
+import { MessageCircle, Share2, Trophy, Download, ArrowRight, Sparkles, Star, Users, Ruler, Waves, Droplets } from 'lucide-react';
 import logoSplash from '@/assets/logo-splash.png';
 import { getRankingGaucho, getYardClassification, getSharePhrase, getSocialComparison } from '@/lib/ranking';
 import { getPoolImage } from '@/lib/poolImages';
-import { ValorizationSimulator } from './ValorizationSimulator';
 import { FriendChallenge } from './FriendChallenge';
 import { trackEvent } from '@/lib/analytics';
+
+interface PoolSpecs {
+  tamanho?: string;
+  profundidade?: number;
+  possui_prainha?: boolean;
+  possui_spa?: boolean;
+}
 
 interface ActionButtonsProps {
   score: number;
   poolName: string;
   poolDescription?: string;
+  poolSpecs?: PoolSpecs | null;
   whatsappNumber?: string;
   leadName?: string;
   refCode?: string;
   franchiseId?: string;
 }
 
-export function ActionButtons({ score, poolName, poolDescription, whatsappNumber, leadName, refCode, franchiseId }: ActionButtonsProps) {
+export function ActionButtons({ score, poolName, poolDescription, poolSpecs, whatsappNumber, leadName, refCode, franchiseId }: ActionButtonsProps) {
   const ranking = getRankingGaucho(score);
   const classification = getYardClassification(score);
   const socialComparison = getSocialComparison(score);
@@ -42,11 +49,6 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
       `${phrase}\n\n${classification.emoji} ${classification.label}\n🏊 Modelo recomendado: ${poolName}\n\nDescubra o potencial do seu quintal:\n${siteUrl}`
     );
     window.open(`https://wa.me/?text=${text}`, '_blank');
-  };
-
-  const handleCopyLink = () => {
-    trackEvent('result_shared', { franchiseId, metadata: { plataforma: 'link_copiado' } });
-    navigator.clipboard.writeText(window.location.origin);
   };
 
   const generateShareImage = async (): Promise<Blob | null> => {
@@ -76,7 +78,6 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
     ctx.font = '800 36px Inter, sans-serif';
     ctx.fillText('SPLASH PISCINAS', 540, 250);
 
-    // Score ring
     ctx.beginPath(); ctx.arc(540, 560, 195, 0, Math.PI * 2);
     ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 12; ctx.stroke();
     ctx.beginPath(); ctx.arc(540, 560, 195, -Math.PI / 2, -Math.PI / 2 + (score / 100) * Math.PI * 2);
@@ -87,24 +88,20 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
     ctx.font = '400 24px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.5)';
     ctx.fillText('de potencial', 540, 640);
 
-    // Classification
     ctx.font = '700 42px Inter, sans-serif'; ctx.fillStyle = classification.color;
     ctx.fillText(`${classification.emoji} ${classification.label}`, 540, 830);
 
-    // Main text
     ctx.font = '700 44px Inter, sans-serif'; ctx.fillStyle = '#ffffff';
     ctx.fillText(`Meu quintal tem ${score}%`, 540, 950);
     ctx.fillText('de potencial para', 540, 1010);
     ctx.fillText('uma piscina Splash!', 540, 1070);
 
-    // Ranking badge
     const badgeY = 1150;
     ctx.fillStyle = 'rgba(255,215,0,0.12)';
     ctx.beginPath(); ctx.roundRect(180, badgeY - 28, 720, 56, 28); ctx.fill();
     ctx.font = '600 26px Inter, sans-serif'; ctx.fillStyle = '#ffd700';
     ctx.fillText(`🏆 ${ranking.label}`, 540, badgeY + 8);
 
-    // Pool image
     const poolImgSrc = getPoolImage(poolName);
     if (poolImgSrc) {
       try {
@@ -115,52 +112,34 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
           img.onerror = () => reject();
           img.src = poolImgSrc;
         });
-        const imgX = 140;
-        const imgY = 1210;
-        const imgW = 800;
-        const imgH = 360;
-        const radius = 24;
+        const imgX = 140, imgY = 1210, imgW = 800, imgH = 360, radius = 24;
         ctx.save();
-        ctx.beginPath();
-        ctx.roundRect(imgX, imgY, imgW, imgH, radius);
-        ctx.clip();
-        // Cover-fit the image
+        ctx.beginPath(); ctx.roundRect(imgX, imgY, imgW, imgH, radius); ctx.clip();
         const scale = Math.max(imgW / img.width, imgH / img.height);
-        const sw = imgW / scale;
-        const sh = imgH / scale;
-        const sx = (img.width - sw) / 2;
-        const sy = (img.height - sh) / 2;
+        const sw = imgW / scale, sh = imgH / scale;
+        const sx = (img.width - sw) / 2, sy = (img.height - sh) / 2;
         ctx.drawImage(img, sx, sy, sw, sh, imgX, imgY, imgW, imgH);
         ctx.restore();
-        // Border
-        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
-        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 2;
         ctx.beginPath(); ctx.roundRect(imgX, imgY, imgW, imgH, radius); ctx.stroke();
-      } catch {
-        // Image failed to load, skip
-      }
+      } catch { /* skip */ }
     }
 
-    // Model label
     ctx.font = '400 28px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.6)';
     ctx.textAlign = 'center';
     ctx.fillText(`Modelo recomendado: ${poolName}`, 540, 1620);
 
-    // Social comparison
     ctx.font = '400 24px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.45)';
     ctx.fillText(socialComparison, 540, 1670);
 
-    // Divider
     ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
     ctx.beginPath(); ctx.moveTo(340, 1720); ctx.lineTo(740, 1720); ctx.stroke();
 
-    // CTA
     ctx.font = '500 24px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.4)';
     ctx.fillText('Descubra o potencial do seu quintal em', 540, 1770);
     ctx.font = '700 28px Inter, sans-serif'; ctx.fillStyle = '#ffffff';
     ctx.fillText('quintalideal.lovable.app', 540, 1810);
 
-    // Footer
     ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 1860, 1080, 60);
     ctx.font = '400 18px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.3)';
     ctx.fillText('© Splash Piscinas', 540, 1895);
@@ -206,74 +185,47 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
 
   return (
     <div className="min-h-screen bg-background">
-      {/* === HERO WITH POOL IMAGE === */}
+      {/* === COMPACT HEADER === */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
         className="relative overflow-hidden"
+        style={{ background: 'linear-gradient(160deg, #06101f 0%, #0b2a52 35%, #0d3468 60%, #081d38 100%)' }}
       >
-        {/* Pool image as background */}
-        {getPoolImage(poolName) && (
-          <img
-            src={getPoolImage(poolName)}
-            alt={`Piscina ${poolName}`}
-            className="absolute inset-0 w-full h-full object-cover"
-            loading="eager"
-          />
-        )}
-        {/* Gradient overlay */}
-        <div className="absolute inset-0" style={{
-          background: 'linear-gradient(180deg, rgba(6,16,31,0.55) 0%, rgba(6,16,31,0.3) 35%, rgba(6,16,31,0.7) 65%, rgba(6,16,31,0.95) 100%)',
-        }} />
-
-        <div className="relative z-10 px-6 pt-8 pb-10 max-w-md mx-auto text-center">
+        <div className="relative z-10 px-6 pt-8 pb-6 max-w-md mx-auto text-center">
           <motion.img
             src={logoSplash}
             alt="Splash Piscinas"
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 0.85, y: 0 }}
-            transition={{ delay: 0.15 }}
-            className="mx-auto w-16 mb-3"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.7 }}
+            className="mx-auto w-14 mb-3"
           />
 
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="text-white text-xl md:text-2xl font-extrabold tracking-tight mb-1"
-          >
-            {firstName ? `${firstName}, seu quintal` : 'Seu quintal'}
-          </motion.h1>
-          <motion.h2
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="text-white text-xl md:text-2xl font-extrabold tracking-tight mb-5"
+            transition={{ delay: 0.2 }}
+            className="text-white text-lg md:text-xl font-extrabold tracking-tight mb-4"
           >
-            é <span className="bg-gradient-to-r from-blue-300 via-cyan-300 to-blue-400 bg-clip-text text-transparent">incrível</span>! 🎉
-          </motion.h2>
+            {firstName ? `${firstName}, seu quintal` : 'Seu quintal'} é{' '}
+            <span className="bg-gradient-to-r from-blue-300 via-cyan-300 to-blue-400 bg-clip-text text-transparent">incrível</span>! 🎉
+          </motion.h1>
 
-          {/* Score ring compact */}
+          {/* Score + badges row */}
           <motion.div
             initial={{ scale: 0.6, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            transition={{ delay: 0.5, type: 'spring', damping: 14 }}
-            className="flex items-center justify-center gap-5 mb-5"
+            transition={{ delay: 0.35, type: 'spring', damping: 14 }}
+            className="flex items-center justify-center gap-4 mb-4"
           >
-            <div className="relative w-24 h-24">
-              <motion.div
-                animate={{ opacity: [0.2, 0.5, 0.2] }}
-                transition={{ duration: 2.5, repeat: Infinity }}
-                className="absolute inset-[-8px] rounded-full"
-                style={{ background: 'radial-gradient(circle, rgba(30,136,229,0.3), transparent 70%)' }}
-              />
-              <svg className="w-24 h-24 transform -rotate-90 relative z-10" viewBox="0 0 100 100">
+            <div className="relative w-20 h-20">
+              <svg className="w-20 h-20 transform -rotate-90 relative z-10" viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r="46" stroke="rgba(255,255,255,0.08)" strokeWidth="5" fill="none" />
                 <circle cx="50" cy="50" r="46"
                   stroke="url(#actionGrad)" strokeWidth="5" fill="none" strokeLinecap="round"
                   strokeDasharray={circumference} strokeDashoffset={offset}
-                  style={{ filter: 'drop-shadow(0 0 8px rgba(30,136,229,0.6))' }}
+                  style={{ filter: 'drop-shadow(0 0 6px rgba(30,136,229,0.6))' }}
                 />
                 <defs>
                   <linearGradient id="actionGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -283,92 +235,114 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
                 </defs>
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
-                <span className="text-3xl font-black text-white" style={{ textShadow: '0 0 30px rgba(30,136,229,0.5)' }}>
-                  {score}
-                </span>
-                <span className="text-[9px] font-medium text-white/50">pontos</span>
+                <span className="text-2xl font-black text-white">{score}</span>
+                <span className="text-[8px] font-medium text-white/50">pontos</span>
               </div>
             </div>
 
-            <div className="text-left space-y-2">
-              <div>
-                <p className="text-white/40 text-[9px] uppercase tracking-wider">Potencial</p>
-                <p className="text-white text-base font-bold">{score}%</p>
+            <div className="flex flex-col gap-1.5">
+              <div
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+                style={{
+                  background: `linear-gradient(135deg, ${classification.color}18, ${classification.color}08)`,
+                  border: `1px solid ${classification.color}30`,
+                }}
+              >
+                <span className="text-sm">{classification.emoji}</span>
+                <span className="font-bold text-[11px]" style={{ color: classification.color }}>{classification.label}</span>
               </div>
-              <div>
-                <p className="text-white/40 text-[9px] uppercase tracking-wider">Modelo</p>
-                <p className="text-white text-sm font-semibold">{poolName}</p>
+              <div
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,215,0,0.04))',
+                  border: '1px solid rgba(255,215,0,0.2)',
+                }}
+              >
+                <Trophy className="w-3 h-3 text-amber-400" />
+                <span className="font-bold text-[11px] text-amber-300">{ranking.label}</span>
               </div>
             </div>
           </motion.div>
 
-          {/* Badges side by side */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.7 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.7, type: 'spring' }}
-            className="flex items-center justify-center gap-2 flex-wrap mb-3"
-          >
-            <div
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full"
-              style={{
-                background: `linear-gradient(135deg, ${classification.color}18, ${classification.color}08)`,
-                border: `1px solid ${classification.color}30`,
-              }}
-            >
-              <span className="text-base">{classification.emoji}</span>
-              <span className="font-bold text-xs" style={{ color: classification.color }}>{classification.label}</span>
-            </div>
-            <div
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full"
-              style={{
-                background: 'linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,215,0,0.04))',
-                border: '1px solid rgba(255,215,0,0.2)',
-              }}
-            >
-              <Trophy className="w-3.5 h-3.5 text-amber-400" />
-              <span className="font-bold text-xs text-amber-300">{ranking.label}</span>
-            </div>
-          </motion.div>
-
-          {/* Social comparison */}
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.85 }}
-            className="text-white/50 text-[11px] italic mb-2"
+            transition={{ delay: 0.5 }}
+            className="text-white/45 text-[11px] italic"
           >
             {socialComparison}
           </motion.p>
-
-          {/* Pool description */}
-          {poolDescription && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.95 }}
-              className="rounded-xl p-3 mt-2 text-left backdrop-blur-md"
-              style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)' }}
-            >
-              <div className="flex items-center gap-1.5 mb-1">
-                <Sparkles className="w-3 h-3 text-blue-300" />
-                <span className="text-[8px] font-bold text-blue-300 uppercase tracking-[0.15em]">Sobre este modelo</span>
-              </div>
-              <p className="text-[11px] text-white/50 leading-relaxed">{poolDescription}</p>
-            </motion.div>
-          )}
         </div>
       </motion.div>
 
-      {/* === CONTENT SECTIONS === */}
-      <div className="px-6 max-w-md mx-auto -mt-2 relative z-20">
+      {/* === POOL CARD === */}
+      <div className="px-6 max-w-md mx-auto -mt-3 relative z-20">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="rounded-2xl overflow-hidden border border-border bg-card shadow-lg"
+        >
+          {getPoolImage(poolName) && (
+            <img
+              src={getPoolImage(poolName)}
+              alt={`Piscina ${poolName}`}
+              className="w-full h-48 object-cover"
+              loading="eager"
+            />
+          )}
+          <div className="p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="w-3.5 h-3.5 text-primary" />
+              <span className="text-[9px] font-bold text-primary uppercase tracking-[0.15em]">Modelo recomendado</span>
+            </div>
+            <h3 className="text-lg font-bold text-foreground mb-1">{poolName}</h3>
+            {poolDescription && <p className="text-xs text-muted-foreground leading-relaxed mb-4">{poolDescription}</p>}
+
+            {/* Technical specs */}
+            {poolSpecs && (
+              <div className="grid grid-cols-2 gap-2">
+                {poolSpecs.tamanho && (
+                  <div className="flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2.5">
+                    <Ruler className="w-4 h-4 text-muted-foreground shrink-0" />
+                    <div>
+                      <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Tamanhos</p>
+                      <p className="text-xs font-semibold text-foreground">{poolSpecs.tamanho}</p>
+                    </div>
+                  </div>
+                )}
+                {poolSpecs.profundidade && (
+                  <div className="flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2.5">
+                    <Waves className="w-4 h-4 text-muted-foreground shrink-0" />
+                    <div>
+                      <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Profundidade</p>
+                      <p className="text-xs font-semibold text-foreground">{poolSpecs.profundidade}m</p>
+                    </div>
+                  </div>
+                )}
+                {poolSpecs.possui_prainha && (
+                  <div className="flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2.5">
+                    <span className="text-sm">🏖️</span>
+                    <p className="text-xs font-semibold text-foreground">Com prainha</p>
+                  </div>
+                )}
+                {poolSpecs.possui_spa && (
+                  <div className="flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2.5">
+                    <Droplets className="w-4 h-4 text-muted-foreground shrink-0" />
+                    <p className="text-xs font-semibold text-foreground">Com hidro/SPA</p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </motion.div>
 
         {/* Primary CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2 }}
-          className="mt-6"
+          transition={{ delay: 0.8 }}
+          className="mt-5"
         >
           <Button
             onClick={handleWhatsApp}
@@ -390,9 +364,9 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
 
         {/* Challenge CTA */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.35 }}
+          transition={{ delay: 1 }}
           className="mt-5 rounded-2xl p-5 text-center"
           style={{
             background: 'linear-gradient(135deg, hsl(207 90% 54% / 0.08), hsl(180 100% 50% / 0.04))',
@@ -414,26 +388,20 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
           </Button>
         </motion.div>
 
-        {/* Valorization */}
-        <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.5 }}>
-          <ValorizationSimulator score={score} />
-        </motion.div>
-
-        {/* Friend Challenge */}
+        {/* Friend Challenge ranking */}
         {refCode && (
-          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.7 }}>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2 }}>
             <FriendChallenge refCode={refCode} score={score} leadName={leadName} />
           </motion.div>
         )}
 
-        {/* Share & Secondary Actions */}
+        {/* Share row */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.9 }}
-          className="space-y-3 mt-8 pb-14"
+          transition={{ delay: 1.4 }}
+          className="space-y-3 mt-6 pb-14"
         >
-          {/* Share buttons row */}
           <div className="grid grid-cols-3 gap-2">
             <Button
               variant="outline"
@@ -461,23 +429,6 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
               Baixar imagem
             </Button>
           </div>
-
-          <Button
-            onClick={handleWhatsApp}
-            variant="outline"
-            className="w-full py-6 text-sm rounded-2xl font-semibold border-primary/20 text-primary hover:bg-primary/5 transition-all gap-2"
-          >
-            <FileText className="w-4 h-4" />
-            Solicitar orçamento
-          </Button>
-
-          <Button
-            variant="outline"
-            className="w-full py-6 text-sm rounded-2xl font-semibold border-border hover:bg-accent transition-all gap-2"
-          >
-            <FileText className="w-4 h-4" />
-            Receber estimativa gratuita
-          </Button>
 
           {/* Trust footer */}
           <div className="text-center pt-4 space-y-2">
