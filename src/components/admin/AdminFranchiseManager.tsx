@@ -421,6 +421,43 @@ export function AdminFranchiseManager() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {/* Invite Franchise User Dialog */}
+      <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
+        <DialogContent className="sm:max-w-sm">
+          <DialogHeader>
+            <DialogTitle>Convidar Franqueado</DialogTitle>
+          </DialogHeader>
+          <p className="text-sm text-muted-foreground">
+            Enviar convite para <strong>{invitingFranchise?.nome_franquia}</strong>. O usuário receberá um e-mail para definir sua senha.
+          </p>
+          <div className="space-y-3 py-2">
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Nome do Responsável</Label>
+              <Input
+                value={inviteName}
+                onChange={e => setInviteName(e.target.value)}
+                placeholder="João Silva"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">E-mail *</Label>
+              <Input
+                type="email"
+                value={inviteEmail}
+                onChange={e => setInviteEmail(e.target.value)}
+                placeholder="franqueado@email.com"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setInviteDialogOpen(false)} className="rounded-xl">Cancelar</Button>
+            <Button onClick={handleInvite} disabled={saving || !inviteEmail.trim()} className="rounded-xl gap-1.5">
+              <UserPlus className="w-4 h-4" />
+              {saving ? 'Enviando...' : 'Enviar Convite'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
