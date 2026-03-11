@@ -8,6 +8,7 @@ import { getPoolImage } from '@/lib/poolImages';
 import { FriendChallenge } from './FriendChallenge';
 import { ValorizationSimulator } from './ValorizationSimulator';
 import { trackEvent } from '@/lib/analytics';
+import { SITE_URL, SITE_DOMAIN } from '@/lib/constants';
 
 interface PoolSpecs {
   tamanho?: string;
