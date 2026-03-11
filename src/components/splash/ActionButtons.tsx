@@ -418,7 +418,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
           transition={{ delay: 1.4 }}
           className="space-y-3 mt-6 pb-14"
         >
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <Button
               variant="outline"
               onClick={handleShareWhatsApp}
@@ -427,6 +427,16 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
               <MessageCircle className="w-4 h-4 text-green-500" />
               WhatsApp
             </Button>
+            <Button
+              variant="outline"
+              onClick={handleInstagramShare}
+              className="py-5 text-xs rounded-2xl font-medium border-border hover:bg-accent gap-1.5 flex-col h-auto"
+            >
+              <Instagram className="w-4 h-4 text-pink-500" />
+              Instagram Stories
+            </Button>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
             <Button
               variant="outline"
               onClick={handleShare}
@@ -455,6 +465,76 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
           </div>
         </motion.div>
       </div>
+
+      {/* Instagram Stories Guide Modal */}
+      <AnimatePresence>
+        {showInstaGuide && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm"
+            onClick={() => setShowInstaGuide(false)}
+          >
+            <motion.div
+              initial={{ y: '100%' }}
+              animate={{ y: 0 }}
+              exit={{ y: '100%' }}
+              transition={{ type: 'spring', damping: 25 }}
+              className="w-full max-w-md rounded-t-3xl bg-card border-t border-border p-6 pb-10"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between mb-5">
+                <div className="flex items-center gap-2">
+                  <Instagram className="w-5 h-5 text-pink-500" />
+                  <h3 className="font-bold text-foreground text-base">Compartilhar nos Stories</h3>
+                </div>
+                <button onClick={() => setShowInstaGuide(false)} className="p-1 rounded-full hover:bg-muted">
+                  <X className="w-5 h-5 text-muted-foreground" />
+                </button>
+              </div>
+
+              <p className="text-sm text-muted-foreground mb-5">
+                Sua imagem foi salva! Agora siga estes passos:
+              </p>
+
+              <div className="space-y-4">
+                <div className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-bold text-primary">1</span>
+                  </div>
+                  <p className="text-sm text-foreground">Abra o <strong>Instagram</strong> no seu celular</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-bold text-primary">2</span>
+                  </div>
+                  <p className="text-sm text-foreground">Toque em <strong>"Seu story"</strong> ou deslize para a direita</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-bold text-primary">3</span>
+                  </div>
+                  <p className="text-sm text-foreground">Selecione a <strong>imagem salva</strong> na sua galeria</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                    <span className="text-xs font-bold text-primary">4</span>
+                  </div>
+                  <p className="text-sm text-foreground">Publique e <strong>desafie seus amigos!</strong> 🎉</p>
+                </div>
+              </div>
+
+              <Button
+                onClick={() => setShowInstaGuide(false)}
+                className="w-full mt-6 py-6 rounded-2xl font-bold gradient-blue"
+              >
+                Entendi!
+              </Button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
