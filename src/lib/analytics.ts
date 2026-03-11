@@ -47,7 +47,7 @@ export async function trackEvent(
 ) {
   try {
     const utm = getUtmParams();
-    await supabase.from('analytics_events').insert({
+    await supabase.from('analytics_events').insert([{
       session_id: getSessionId(),
       event_name: eventName,
       franchise_id: options?.franchiseId || null,
@@ -57,7 +57,7 @@ export async function trackEvent(
       utm_medium: utm.utm_medium,
       utm_campaign: utm.utm_campaign,
       metadata: options?.metadata || {},
-    });
+    }]);
   } catch {
     // Analytics should never break the user experience
   }
