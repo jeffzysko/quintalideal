@@ -152,6 +152,9 @@ export default function AdminDashboard() {
             <p className="text-sm text-muted-foreground mt-1">Visão geral de desempenho</p>
           </div>
           <div className="flex gap-2">
+            <Button variant="outline" size="sm" onClick={() => navigate('/admin/radar')} className="rounded-xl">
+              <Target className="w-4 h-4 mr-1.5" /> Radar
+            </Button>
             <Button variant="outline" size="sm" onClick={() => navigate('/mapa')} className="rounded-xl">
               <MapPin className="w-4 h-4 mr-1.5" /> Mapa
             </Button>

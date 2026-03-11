@@ -17,6 +17,7 @@ const PainelRouter = lazy(() => import("./pages/PainelRouter"));
 const FranchiseDashboard = lazy(() => import("./pages/FranchiseDashboard"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const LeadDetail = lazy(() => import("./pages/LeadDetail"));
+const RadarMercado = lazy(() => import("./pages/RadarMercado"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -70,6 +71,14 @@ const App = () => (
                 element={
                   <ProtectedRoute allowedRoles={['admin_fabrica']}>
                     <AdminDashboard />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/admin/radar"
+                element={
+                  <ProtectedRoute allowedRoles={['admin_fabrica']}>
+                    <RadarMercado />
                   </ProtectedRoute>
                 }
               />
