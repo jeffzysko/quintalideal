@@ -20,9 +20,6 @@ export default function ForgotPassword() {
     const prefill = searchParams.get('email');
     if (prefill) setEmail(prefill);
   }, [searchParams]);
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [sent, setSent] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
