@@ -4,8 +4,9 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Users, TrendingUp, Clock, Eye } from 'lucide-react';
+import { Users, TrendingUp, Clock, Eye, Inbox, Share2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 interface LeadRow {
   id: string;
@@ -125,7 +126,24 @@ export default function FranchiseDashboard() {
               <div className="animate-spin w-6 h-6 border-4 border-primary border-t-transparent rounded-full" />
             </div>
           ) : leads.length === 0 ? (
-            <p className="text-center text-muted-foreground py-8">Nenhum lead encontrado.</p>
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }} 
+              animate={{ opacity: 1, y: 0 }} 
+              transition={{ duration: 0.5 }}
+              className="flex flex-col items-center justify-center py-16 px-4"
+            >
+              <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+                <Inbox className="w-10 h-10 text-primary/60" />
+              </div>
+              <h3 className="text-lg font-semibold text-foreground mb-2">Nenhum lead ainda</h3>
+              <p className="text-sm text-muted-foreground text-center max-w-md mb-6">
+                Seus leads aparecerão aqui assim que os primeiros clientes responderem ao quiz da sua página. Compartilhe seu link para começar!
+              </p>
+              <Button variant="outline" className="gap-2" onClick={() => navigator.clipboard.writeText(window.location.origin)}>
+                <Share2 className="w-4 h-4" />
+                Copiar link do quiz
+              </Button>
+            </motion.div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
