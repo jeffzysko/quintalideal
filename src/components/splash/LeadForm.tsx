@@ -140,7 +140,7 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading }: LeadFormProps)
               type="tel"
               autoComplete="tel"
             />
-            {errors.telefone && <p className="text-sm text-destructive mt-1.5">{errors.telefone}</p>}
+            {errors.telefone && <p className="text-sm text-destructive mt-1.5" aria-live="polite">{errors.telefone}</p>}
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
