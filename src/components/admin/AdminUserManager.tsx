@@ -186,6 +186,24 @@ export function AdminUserManager() {
     }
   }
 
+  async function handleResendInvite(user: ManagedUser) {
+    setResendingId(user.id);
+    try {
+      const { data, error } = await supabase.functions.invoke('manage-users', {
+        body: { action: 'resend_invite', user_id: user.id },
+      });
+      if (error || data?.error) {
+        toast.error(extractError(data, error));
+        return;
+      }
+      toast.success(data?.message || `Convite reenviado para ${user.email}`);
+    } catch (err: any) {
+      toast.error(err.message || 'Erro ao reenviar convite.');
+    } finally {
+      setResendingId(null);
+    }
+  }
+
   const filteredUsers = users.filter(u => {
     const term = searchTerm.toLowerCase();
     return (
