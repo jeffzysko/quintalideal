@@ -15,6 +15,7 @@ import { AdminReferralMetrics } from '@/components/admin/AdminReferralMetrics';
 import { AdminAnalytics } from '@/components/admin/AdminAnalytics';
 import { AdminFranchiseManager } from '@/components/admin/AdminFranchiseManager';
 import { AdminEmailTemplates } from '@/components/admin/AdminEmailTemplates';
+import { AdminUserManager } from '@/components/admin/AdminUserManager';
 import { AdminKPICards } from '@/components/admin/AdminKPICards';
 import { AdminLeadFilters } from '@/components/admin/AdminLeadFilters';
 import { AdminLeadsTable } from '@/components/admin/AdminLeadsTable';
@@ -29,7 +30,7 @@ const PAGE_SIZE = 25;
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const { signOut: _signOut } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'analytics' | 'franchises' | 'emails'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'analytics' | 'franchises' | 'users' | 'emails'>('overview');
 
   const [filterFranquia, setFilterFranquia] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -225,6 +226,7 @@ export default function AdminDashboard() {
             { key: 'analytics' as const, icon: Activity, label: 'Analytics' },
             { key: 'leads' as const, icon: Users, label: 'Leads' },
             { key: 'franchises' as const, icon: Building2, label: 'Franquias' },
+            { key: 'users' as const, icon: Users, label: 'Usuários' },
             { key: 'emails' as const, icon: Mail, label: 'E-mails' },
           ].map(tab => (
             <button
@@ -305,6 +307,7 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === 'franchises' && <AdminFranchiseManager />}
+        {activeTab === 'users' && <AdminUserManager />}
         {activeTab === 'emails' && <AdminEmailTemplates />}
       </div>
     </div>
