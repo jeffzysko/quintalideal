@@ -206,7 +206,7 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -60 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="min-h-screen flex flex-col px-6 py-8 gradient-hero"
+      className="min-h-screen flex flex-col px-4 sm:px-6 py-6 sm:py-8 gradient-hero"
     >
       <div className="w-full max-w-lg mx-auto flex-1 flex flex-col">
         <ExplorerProgress currentStep={0} onBack={onBack} />
@@ -266,7 +266,7 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
                 transition={{ delay: 0.1 }}
-                className="glass-card rounded-3xl p-8"
+                className="glass-card rounded-3xl p-5 sm:p-8"
               >
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-10 h-10 rounded-xl gradient-blue flex items-center justify-center">

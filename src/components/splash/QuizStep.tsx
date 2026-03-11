@@ -44,7 +44,7 @@ export function QuizStep({ step, totalSteps, question, options, type = 'options'
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -60 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="min-h-screen flex flex-col px-6 py-8 gradient-hero"
+      className="min-h-screen flex flex-col px-4 sm:px-6 py-6 sm:py-8 gradient-hero"
     >
       <div className="w-full max-w-lg mx-auto flex-1 flex flex-col">
         <ExplorerProgress currentStep={explorerStep} onBack={onBack} />
@@ -54,14 +54,14 @@ export function QuizStep({ step, totalSteps, question, options, type = 'options'
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08, duration: 0.4 }}
-            className="glass-card rounded-3xl p-8"
+            className="glass-card rounded-3xl p-5 sm:p-8"
           >
-            <h2 className="text-xl md:text-2xl font-bold mb-8 text-foreground leading-snug tracking-tight">
+            <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-5 sm:mb-8 text-foreground leading-snug tracking-tight">
               {question}
             </h2>
 
             {type === 'options' && options && (
-              <div className="space-y-2.5">
+              <div className="space-y-2">
                 {options.map((opt, i) => {
                   const isSelected = selectedValue === opt.value;
                   return (
@@ -71,7 +71,7 @@ export function QuizStep({ step, totalSteps, question, options, type = 'options'
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.12 + i * 0.05 }}
                       onClick={() => handleSelect(opt.value)}
-                      className={`w-full flex items-center gap-4 p-4 rounded-2xl border-2 transition-all duration-200 text-left group relative overflow-hidden ${
+                      className={`w-full flex items-center gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-2xl border-2 transition-all duration-200 text-left group relative overflow-hidden active:scale-[0.98] ${
                         isSelected
                           ? 'border-primary bg-primary/5 shadow-md'
                           : 'border-border bg-background hover:border-primary/40 hover:bg-accent/30'
@@ -85,11 +85,11 @@ export function QuizStep({ step, totalSteps, question, options, type = 'options'
                       </div>
 
                       {opt.emoji && (
-                        <span className="text-2xl w-10 h-10 flex items-center justify-center rounded-xl bg-muted group-hover:bg-accent transition-colors shrink-0">
+                        <span className="text-xl sm:text-2xl w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl bg-muted group-hover:bg-accent transition-colors shrink-0">
                           {opt.emoji}
                         </span>
                       )}
-                      <span className="font-medium text-sm text-foreground">{opt.label}</span>
+                      <span className="font-medium text-[13px] sm:text-sm text-foreground">{opt.label}</span>
 
                       {/* Selected glow */}
                       {isSelected && (
@@ -130,7 +130,7 @@ export function QuizStep({ step, totalSteps, question, options, type = 'options'
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.04 }}
                         onClick={() => onAnswer(city)}
-                        className="w-full text-left px-4 py-3.5 rounded-xl hover:bg-accent transition-colors flex items-center gap-3 text-sm group"
+                        className="w-full text-left px-4 py-3.5 rounded-xl hover:bg-accent active:bg-accent/70 transition-colors flex items-center gap-3 text-sm group"
                       >
                         <MapPin className="w-4 h-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
                         <span className="font-medium">{city}</span>

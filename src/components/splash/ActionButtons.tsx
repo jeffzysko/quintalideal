@@ -209,7 +209,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
         className="relative overflow-hidden"
         style={{ background: 'linear-gradient(160deg, #06101f 0%, #0b2a52 35%, #0d3468 60%, #081d38 100%)' }}
       >
-        <div className="relative z-10 px-6 pt-8 pb-6 max-w-md mx-auto text-center">
+        <div className="relative z-10 px-5 sm:px-6 pt-6 sm:pt-8 pb-5 sm:pb-6 max-w-md mx-auto text-center">
           <motion.img
             src={logoSplash}
             alt="Splash Piscinas"
@@ -292,7 +292,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
       </motion.div>
 
       {/* === POOL CARD === */}
-      <div className="px-6 max-w-md mx-auto -mt-3 relative z-20">
+      <div className="px-4 sm:px-6 max-w-md mx-auto -mt-3 relative z-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

@@ -14,7 +14,7 @@ export function ExplorerProgress({ currentStep, onBack }: ExplorerProgressProps)
   const stepInfo = explorerSteps[currentStep] || explorerSteps[0];
 
   return (
-    <div className="mb-8">
+    <div className="mb-5 sm:mb-8">
       <div className="flex items-center justify-between mb-2">
         <button
           onClick={onBack}
