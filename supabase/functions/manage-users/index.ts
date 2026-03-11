@@ -197,7 +197,6 @@ Deno.serve(async (req) => {
       const roleLabels: Record<string, string> = {
         admin_fabrica: "Administrador da Fábrica",
         franquia: "Franquia",
-        visualizador: "Visualizador",
       };
 
       if (RESEND_API_KEY) {

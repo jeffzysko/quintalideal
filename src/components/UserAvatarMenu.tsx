@@ -22,8 +22,7 @@ export function UserAvatarMenu() {
 
   const roleLabel =
     role === 'admin_fabrica' ? 'Administrador' :
-    role === 'franquia' ? 'Franquia' :
-    role === 'visualizador' ? 'Visualizador' : '';
+    role === 'franquia' ? 'Franquia' : '';
 
   return (
     <DropdownMenu>

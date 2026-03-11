@@ -31,13 +31,11 @@ interface Franchise {
 const ROLE_LABELS: Record<string, string> = {
   admin_fabrica: 'Admin Fábrica',
   franquia: 'Franquia',
-  visualizador: 'Visualizador',
 };
 
 const ROLE_COLORS: Record<string, string> = {
   admin_fabrica: 'bg-primary/10 text-primary border-primary/20',
   franquia: 'bg-violet-500/10 text-violet-700 border-violet-500/20',
-  visualizador: 'bg-muted text-muted-foreground border-border',
 };
 
 export function AdminUserManager() {
@@ -316,7 +314,6 @@ export function AdminUserManager() {
                 <SelectContent>
                   <SelectItem value="admin_fabrica">Admin Fábrica</SelectItem>
                   <SelectItem value="franquia">Franquia</SelectItem>
-                  <SelectItem value="visualizador">Visualizador</SelectItem>
                 </SelectContent>
               </Select>
             </div>
