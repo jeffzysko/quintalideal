@@ -4,12 +4,13 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Users, TrendingUp, Clock, Eye, Inbox, Share2, LogOut, Droplets } from 'lucide-react';
+import { Users, TrendingUp, Clock, Eye, Inbox, Share2, LogOut, Droplets, BarChart3 } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { SITE_URL } from '@/lib/constants';
 import { FranchiseContactSettings } from '@/components/franchise/FranchiseContactSettings';
+import { FranchiseReports } from '@/components/franchise/FranchiseReports';
 import logoSplash from '@/assets/logo-splash.png';
 
 interface LeadRow {
@@ -45,6 +46,7 @@ export default function FranchiseDashboard() {
   const [loading, setLoading] = useState(true);
   const [franchiseSlug, setFranchiseSlug] = useState<string | null>(null);
   const [franchiseName, setFranchiseName] = useState<string>('');
+  const [activeTab, setActiveTab] = useState<'leads' | 'reports'>('leads');
 
   useEffect(() => {
     if (franchiseId) {
@@ -147,83 +149,104 @@ export default function FranchiseDashboard() {
           ))}
         </div>
 
-        {/* Leads Table */}
-        <Card className="border-border/50 shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-sm font-semibold">Leads Recentes</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {loading ? (
-              <div className="flex justify-center py-12">
-                <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" />
-              </div>
-            ) : leads.length === 0 ? (
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }} 
-                animate={{ opacity: 1, y: 0 }} 
-                transition={{ duration: 0.5 }}
-                className="flex flex-col items-center justify-center py-16 px-4"
-              >
-                <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
-                  <Inbox className="w-10 h-10 text-primary/60" />
+        {/* Tab switcher */}
+        <div className="flex gap-1 mb-6 bg-muted rounded-xl p-1 w-fit">
+          <button
+            onClick={() => setActiveTab('leads')}
+            className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'leads' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            <Users className="w-4 h-4 inline mr-1.5" /> Leads
+          </button>
+          <button
+            onClick={() => setActiveTab('reports')}
+            className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'reports' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            <BarChart3 className="w-4 h-4 inline mr-1.5" /> Relatórios
+          </button>
+        </div>
+
+        {activeTab === 'leads' && (
+          <Card className="border-border/50 shadow-sm">
+            <CardHeader>
+              <CardTitle className="text-sm font-semibold">Leads Recentes</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {loading ? (
+                <div className="flex justify-center py-12">
+                  <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" />
                 </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">Nenhum lead ainda</h3>
-                <p className="text-sm text-muted-foreground text-center max-w-md mb-6">
-                  Seus leads aparecerão aqui assim que os primeiros clientes responderem ao quiz da sua página. Compartilhe seu link para começar!
-                </p>
-                <Button variant="outline" className="gap-2 rounded-xl" onClick={() => {
-                  const url = franchiseSlug ? `${SITE_URL}/${franchiseSlug}` : SITE_URL;
-                  navigator.clipboard.writeText(url);
-                  toast.success('Link copiado!');
-                }}>
-                  <Share2 className="w-4 h-4" />
-                  Copiar link do quiz
-                </Button>
-              </motion.div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b border-border/50">
-                      <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Nome</th>
-                      <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Cidade</th>
-                      <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Score</th>
-                      <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Modelo</th>
-                      <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Status</th>
-                      <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Data</th>
-                      <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider"></th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {leads.map(lead => (
-                      <tr key={lead.id} className="border-b border-border/30 hover:bg-muted/30 transition-colors">
-                        <td className="py-3.5 px-3 font-medium">{lead.nome || '—'}</td>
-                        <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.cidade || '—'}</td>
-                        <td className="py-3.5 px-3">
-                          <span className="font-bold text-primary">{lead.pontuacao_quintal || 0}%</span>
-                        </td>
-                        <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.modelo_recomendado || '—'}</td>
-                        <td className="py-3.5 px-3">
-                          <Badge className={`${statusColors[lead.status_lead] || ''} border text-xs font-medium`} variant="secondary">
-                            {statusLabels[lead.status_lead] || lead.status_lead}
-                          </Badge>
-                        </td>
-                        <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground text-xs">
-                          {new Date(lead.created_at).toLocaleDateString('pt-BR')}
-                        </td>
-                        <td className="py-3.5 px-3">
-                          <Button size="sm" variant="ghost" onClick={() => navigate(`/painel/lead/${lead.id}`)} className="rounded-lg">
-                            <Eye className="w-4 h-4" />
-                          </Button>
-                        </td>
+              ) : leads.length === 0 ? (
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }} 
+                  animate={{ opacity: 1, y: 0 }} 
+                  transition={{ duration: 0.5 }}
+                  className="flex flex-col items-center justify-center py-16 px-4"
+                >
+                  <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+                    <Inbox className="w-10 h-10 text-primary/60" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">Nenhum lead ainda</h3>
+                  <p className="text-sm text-muted-foreground text-center max-w-md mb-6">
+                    Seus leads aparecerão aqui assim que os primeiros clientes responderem ao quiz da sua página. Compartilhe seu link para começar!
+                  </p>
+                  <Button variant="outline" className="gap-2 rounded-xl" onClick={() => {
+                    const url = franchiseSlug ? `${SITE_URL}/${franchiseSlug}` : SITE_URL;
+                    navigator.clipboard.writeText(url);
+                    toast.success('Link copiado!');
+                  }}>
+                    <Share2 className="w-4 h-4" />
+                    Copiar link do quiz
+                  </Button>
+                </motion.div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm">
+                    <thead>
+                      <tr className="border-b border-border/50">
+                        <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Nome</th>
+                        <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Cidade</th>
+                        <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Score</th>
+                        <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Modelo</th>
+                        <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Status</th>
+                        <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Data</th>
+                        <th className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider"></th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                    </thead>
+                    <tbody>
+                      {leads.map(lead => (
+                        <tr key={lead.id} className="border-b border-border/30 hover:bg-muted/30 transition-colors">
+                          <td className="py-3.5 px-3 font-medium">{lead.nome || '—'}</td>
+                          <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.cidade || '—'}</td>
+                          <td className="py-3.5 px-3">
+                            <span className="font-bold text-primary">{lead.pontuacao_quintal || 0}%</span>
+                          </td>
+                          <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.modelo_recomendado || '—'}</td>
+                          <td className="py-3.5 px-3">
+                            <Badge className={`${statusColors[lead.status_lead] || ''} border text-xs font-medium`} variant="secondary">
+                              {statusLabels[lead.status_lead] || lead.status_lead}
+                            </Badge>
+                          </td>
+                          <td className="py-3.5 px-3 hidden md:table-cell text-muted-foreground text-xs">
+                            {new Date(lead.created_at).toLocaleDateString('pt-BR')}
+                          </td>
+                          <td className="py-3.5 px-3">
+                            <Button size="sm" variant="ghost" onClick={() => navigate(`/painel/lead/${lead.id}`)} className="rounded-lg">
+                              <Eye className="w-4 h-4" />
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {activeTab === 'reports' && (
+          <FranchiseReports leads={leads} />
+        )}
       </div>
     </div>
   );
