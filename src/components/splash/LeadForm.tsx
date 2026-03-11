@@ -125,7 +125,7 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading }: LeadFormProps)
               maxLength={100}
               autoComplete="name"
             />
-            {errors.nome && <p className="text-sm text-destructive mt-1.5">{errors.nome}</p>}
+            {errors.nome && <p className="text-sm text-destructive mt-1.5" aria-live="polite">{errors.nome}</p>}
           </motion.div>
 
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
