@@ -50,7 +50,7 @@ export function recommendPool(answers: QuizAnswers): string {
 
   // Espaço pequeno (até 5m)
   if (espaco === 'ate-3' || espaco === '3-5') {
-    if (pref === 'prainha') return 'Nassau'; // borda infinita + prainha, tamanho compacto
+    if (pref === 'prainha') return 'Tortuga'; // prainha integrada, compacta
     if (pref === 'spa') return 'Navagio'; // moderno, compacto, design premium
     return 'Italiana'; // mais vendida, maior variedade de tamanhos pequenos
   }
