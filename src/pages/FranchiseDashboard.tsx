@@ -40,8 +40,12 @@ export default function FranchiseDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (franchiseId) loadLeads();
-  }, [franchiseId]);
+    if (franchiseId) {
+      loadLeads();
+    } else if (!authLoading) {
+      setLoading(false);
+    }
+  }, [franchiseId, authLoading]);
 
   const loadLeads = async () => {
     setLoading(true);
