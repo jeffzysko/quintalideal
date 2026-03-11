@@ -14,6 +14,7 @@ import { AdminCityRanking } from '@/components/admin/AdminCityRanking';
 import { AdminFranchiseRanking } from '@/components/admin/AdminFranchiseRanking';
 import { AdminReferralMetrics } from '@/components/admin/AdminReferralMetrics';
 import { AdminAnalytics } from '@/components/admin/AdminAnalytics';
+import { AdminFranchiseManager } from '@/components/admin/AdminFranchiseManager';
 import { motion } from 'framer-motion';
 import logoSplash from '@/assets/logo-splash.png';
 
@@ -58,7 +59,7 @@ export default function AdminDashboard() {
   const [leads, setLeads] = useState<LeadRow[]>([]);
   const [franchises, setFranchises] = useState<Franchise[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'analytics'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'analytics' | 'franchises'>('overview');
 
   const [filterFranquia, setFilterFranquia] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -200,6 +201,12 @@ export default function AdminDashboard() {
             className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'leads' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
           >
             <Users className="w-4 h-4 inline mr-1.5" /> Leads
+          </button>
+          <button
+            onClick={() => setActiveTab('franchises')}
+            className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'franchises' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            <Building2 className="w-4 h-4 inline mr-1.5" /> Franquias
           </button>
         </div>
 
@@ -356,6 +363,10 @@ export default function AdminDashboard() {
               </CardContent>
             </Card>
           </>
+        )}
+
+        {activeTab === 'franchises' && (
+          <AdminFranchiseManager />
         )}
       </div>
     </div>
