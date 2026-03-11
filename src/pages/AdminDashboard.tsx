@@ -30,7 +30,7 @@ const PAGE_SIZE = 25;
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const { signOut: _signOut } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'analytics' | 'franchises' | 'emails'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'analytics' | 'franchises' | 'users' | 'emails'>('overview');
 
   const [filterFranquia, setFilterFranquia] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
