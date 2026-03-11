@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import logoSplash from '@/assets/logo-splash.png';
-import { getRankingGaucho } from '@/lib/ranking';
+import { getRankingGaucho, getYardClassification, getSocialComparison } from '@/lib/ranking';
 import { Trophy, Sparkles, Star } from 'lucide-react';
 
 interface ResultScreenProps {
@@ -31,6 +31,8 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
   const [displayScore, setDisplayScore] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
   const ranking = getRankingGaucho(score);
+  const classification = getYardClassification(score);
+  const socialComparison = getSocialComparison(score);
   const onContinueRef = useRef(onContinue);
   onContinueRef.current = onContinue;
 
@@ -160,11 +162,28 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
           <br />de potencial!
         </motion.h2>
 
+        {/* Gamified Classification */}
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: 0.8, type: 'spring' }}
-          className="inline-flex items-center gap-2 my-5 px-6 py-3 rounded-full"
+          transition={{ delay: 0.7, type: 'spring' }}
+          className="inline-flex items-center gap-2 my-3 px-6 py-3 rounded-full"
+          style={{
+            background: `linear-gradient(135deg, ${classification.color}18, ${classification.color}08)`,
+            border: `1px solid ${classification.color}30`,
+            boxShadow: `0 0 30px ${classification.color}12`,
+          }}
+        >
+          <span className="text-xl">{classification.emoji}</span>
+          <span className="font-bold text-sm" style={{ color: classification.color }}>{classification.label}</span>
+        </motion.div>
+
+        {/* Ranking badge */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.9, type: 'spring' }}
+          className="inline-flex items-center gap-2 my-2 px-5 py-2.5 rounded-full"
           style={{
             background: 'linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,215,0,0.05))',
             border: '1px solid rgba(255,215,0,0.2)',
@@ -175,10 +194,20 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
           <span className="font-bold text-sm text-amber-300">{ranking.label}</span>
         </motion.div>
 
+        {/* Social comparison */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1 }}
+          className="text-white/50 text-sm mt-3 mb-4 italic"
+        >
+          {socialComparison}
+        </motion.p>
+
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1 }}
+          transition={{ delay: 1.1 }}
           className="rounded-2xl p-5 text-left mt-4 backdrop-blur-sm"
           style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}
         >
@@ -193,7 +222,7 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 1.2 }}
+          transition={{ delay: 1.3 }}
           className="flex items-center justify-center gap-1 mt-6"
         >
           {[...Array(5)].map((_, i) => (
@@ -201,7 +230,7 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
               key={i}
               initial={{ opacity: 0, scale: 0 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 1.3 + i * 0.1 }}
+              transition={{ delay: 1.4 + i * 0.1 }}
             >
               <Star className="w-4 h-4 text-amber-400 fill-amber-400" />
             </motion.div>
