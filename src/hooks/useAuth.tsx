@@ -40,6 +40,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
   const mountedRef = useRef(true);
   const syncLockRef = useRef<string | null>(null);
+  const lastSyncedUserRef = useRef<string | null>(null);
 
   const fetchUserMeta = useCallback(async (userId: string) => {
     const [{ data: rolesData, error: rolesError }, { data: profileData, error: profileError }] = await Promise.all([
@@ -81,6 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (!currentUser) {
       if (syncLockRef.current !== lockId || !mountedRef.current) return;
+      lastSyncedUserRef.current = null;
       setUser(null);
       setRole(null);
       setFranchiseId(null);
@@ -88,7 +90,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
+    // Skip duplicate sync for same user (avoids double queries from getSession + onAuthStateChange)
+    if (lastSyncedUserRef.current === currentUser.id && lockId !== 'signin-force') {
+      setLoading(false);
+      return;
+    }
+
     setUser(currentUser);
+    lastSyncedUserRef.current = currentUser.id;
 
     try {
       const meta = await fetchUserMeta(currentUser.id);
@@ -144,7 +153,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Immediately sync session so role is available before navigation
     if (data.user) {
-      const lockId = 'signin-' + Date.now();
+      lastSyncedUserRef.current = null; // Force re-fetch on explicit sign-in
+      const lockId = 'signin-force';
       await syncSession(data.user, lockId);
     }
 
