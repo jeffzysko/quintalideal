@@ -64,9 +64,8 @@ export function recommendPool(answers: QuizAnswers): string {
   }
 
   // Espaço grande (mais de 7m)
-  if (pref === 'prainha' && pref !== 'spa') return 'Tortuga'; // prainha até 10m
+  if (pref === 'prainha') return 'Tortuga'; // prainha até 10m
   if (pref === 'spa') return 'Atalaia'; // SPA + prainha + deck molhado, linha mais completa
-  if (pref === 'prainha') return 'Atalaia'; // prainha + SPA integrado
   if (uso === 'familia-grande' || uso === 'amigos') return 'Cancún'; // área útil ampla, até 10m
   return 'Tradicional'; // clássica, elegante, versátil
 }
