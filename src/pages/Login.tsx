@@ -162,6 +162,14 @@ export default function Login() {
                 </>
               )}
             </Button>
+
+            <button
+              type="button"
+              onClick={() => navigate('/forgot-password')}
+              className="w-full text-sm text-muted-foreground hover:text-primary transition-colors mt-1"
+            >
+              Esqueceu sua senha?
+            </button>
           </form>
 
           <div className="flex items-center justify-center gap-4 mt-5 pt-4 border-t border-border/40">

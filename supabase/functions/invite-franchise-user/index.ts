@@ -108,7 +108,7 @@ Deno.serve(async (req) => {
       type: "recovery",
       email,
       options: {
-        redirectTo: "https://quintalideal.com.br/login",
+        redirectTo: "https://quintalideal.com.br/reset-password",
       },
     });
 

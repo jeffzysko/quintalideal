@@ -13,6 +13,8 @@ import NotFound from "./pages/NotFound";
 const MapaQuintais = lazy(() => import("./pages/MapaQuintais"));
 const FranchiseLanding = lazy(() => import("./pages/FranchiseLanding"));
 const Login = lazy(() => import("./pages/Login"));
+const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
+const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const PainelRouter = lazy(() => import("./pages/PainelRouter"));
 const FranchiseDashboard = lazy(() => import("./pages/FranchiseDashboard"));
 const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
@@ -49,6 +51,8 @@ const App = () => (
               <Route path="/explorar" element={<Index />} />
               <Route path="/mapa" element={<MapaQuintais />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/painel" element={<PainelRouter />} />
               <Route
                 path="/franquia"
