@@ -9,7 +9,7 @@ import { ProcessingScreen } from './ProcessingScreen';
 import { ResultScreen } from './ResultScreen';
 import { LeadForm } from './LeadForm';
 import { ActionButtons } from './ActionButtons';
-import { calculateScore, recommendPool, type QuizAnswers } from '@/lib/scoring';
+import { calculateScore, recommendPool, recommendSize, type QuizAnswers } from '@/lib/scoring';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { trackEvent } from '@/lib/analytics';
