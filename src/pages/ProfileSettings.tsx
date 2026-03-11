@@ -17,6 +17,7 @@ export default function ProfileSettings() {
   const navigate = useNavigate();
 
   const [fullName, setFullName] = useState('');
+  const [telefone, setTelefone] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [email, setEmail] = useState('');
   const [franchiseName, setFranchiseName] = useState('');
@@ -37,11 +38,12 @@ export default function ProfileSettings() {
       // Load profile name
       const { data: profile } = await supabase
         .from('profiles')
-        .select('full_name')
+        .select('full_name, telefone')
         .eq('user_id', user!.id)
         .maybeSingle();
 
       if (profile?.full_name) setFullName(profile.full_name);
+      if (profile?.telefone) setTelefone(profile.telefone);
 
       // Load franchise data if franchise user
       if (franchiseId) {
@@ -71,7 +73,7 @@ export default function ProfileSettings() {
       // Update profile name
       const { error: profileError } = await supabase
         .from('profiles')
-        .update({ full_name: fullName.trim() || null })
+        .update({ full_name: fullName.trim() || null, telefone: telefone.trim() || null })
         .eq('user_id', user!.id);
 
       if (profileError) throw profileError;
@@ -165,6 +167,17 @@ export default function ProfileSettings() {
                   placeholder="Seu nome completo"
                   value={fullName}
                   onChange={e => setFullName(e.target.value)}
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="personalPhone" className="flex items-center gap-1.5">
+                  <Phone className="w-3.5 h-3.5" /> Telefone pessoal
+                </Label>
+                <Input
+                  id="personalPhone"
+                  placeholder="(51) 99999-9999"
+                  value={telefone}
+                  onChange={e => setTelefone(e.target.value)}
                 />
               </div>
               <div className="space-y-2">

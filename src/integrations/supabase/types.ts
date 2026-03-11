@@ -225,6 +225,7 @@ export type Database = {
           franquia_id: string | null
           full_name: string | null
           id: string
+          telefone: string | null
           updated_at: string
           user_id: string
         }
@@ -233,6 +234,7 @@ export type Database = {
           franquia_id?: string | null
           full_name?: string | null
           id?: string
+          telefone?: string | null
           updated_at?: string
           user_id: string
         }
@@ -241,6 +243,7 @@ export type Database = {
           franquia_id?: string | null
           full_name?: string | null
           id?: string
+          telefone?: string | null
           updated_at?: string
           user_id?: string
         }
