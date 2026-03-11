@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Users, TrendingUp, Clock, Eye, Inbox, Share2, Droplets, BarChart3 } from 'lucide-react';
+import { Users, TrendingUp, Clock, Eye, Inbox, Share2, Droplets, BarChart3, Link2, Copy, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -19,6 +19,34 @@ import { TableSkeleton } from '@/components/ui/table-skeleton';
 import logoSplash from '@/assets/logo-splash.png';
 
 const PAGE_SIZE = 20;
+
+function FranchiseLinkBanner({ slug }: { slug: string }) {
+  const [copied, setCopied] = useState(false);
+  const url = `${SITE_URL}/${slug}`;
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(url);
+    setCopied(true);
+    toast.success('Link copiado!');
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <div className="mb-6 rounded-xl border border-primary/20 bg-primary/5 p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+      <div className="flex items-center gap-2 min-w-0 flex-1">
+        <Link2 className="w-5 h-5 text-primary shrink-0" />
+        <div className="min-w-0">
+          <p className="text-xs font-semibold text-foreground mb-0.5">Seu link de divulgação</p>
+          <p className="text-sm text-primary font-mono truncate">{url}</p>
+        </div>
+      </div>
+      <Button size="sm" variant="outline" onClick={handleCopy} className="gap-2 rounded-lg border-primary/30 hover:bg-primary/10 shrink-0">
+        {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+        {copied ? 'Copiado!' : 'Copiar link'}
+      </Button>
+    </div>
+  );
+}
 
 export default function FranchiseDashboard() {
   const { franchiseId, loading: authLoading } = useAuth();
@@ -116,6 +144,11 @@ export default function FranchiseDashboard() {
       </header>
 
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8">
+        {/* Franchise Link Banner */}
+        {franchiseSlug && (
+          <FranchiseLinkBanner slug={franchiseSlug} />
+        )}
+
         {franchiseId && (
           <div className="mb-8">
             <FranchiseContactSettings franchiseId={franchiseId} />
