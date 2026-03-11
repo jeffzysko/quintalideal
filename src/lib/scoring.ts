@@ -60,7 +60,7 @@ export function recommendPool(answers: QuizAnswers): string {
   }
 
   // mais-7
-  if (pref === 'prainha' && pref === 'spa') return 'Bahamas';
+  // Large space with premium features
   if (pref === 'prainha') return 'Bahamas';
   if (pref === 'spa') return 'Bahamas';
   return 'Tradicional';
