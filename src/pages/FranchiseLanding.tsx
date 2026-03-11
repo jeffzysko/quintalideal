@@ -22,7 +22,7 @@ export default function FranchiseLanding() {
         .from('franchises')
         .select('id, nome_franquia, slug_url, whatsapp')
         .eq('slug_url', slug)
-        .single();
+        .maybeSingle();
       setFranchise(data);
       setLoading(false);
     }
