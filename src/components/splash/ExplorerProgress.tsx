@@ -15,7 +15,6 @@ export function ExplorerProgress({ currentStep, onBack }: ExplorerProgressProps)
 
   return (
     <div className="mb-8">
-      {/* Thin top progress */}
       <div className="flex items-center justify-between mb-2">
         <button
           onClick={onBack}
@@ -42,11 +41,6 @@ export function ExplorerProgress({ currentStep, onBack }: ExplorerProgressProps)
       >
         🔎 Já temos {Math.round(progress)}% do diagnóstico do seu quintal
       </motion.p>
-      </div>
-
-      <div className="relative">
-        <Progress value={progress} className="h-1 bg-muted" />
-      </div>
 
       {/* Step info */}
       <motion.div
@@ -54,7 +48,7 @@ export function ExplorerProgress({ currentStep, onBack }: ExplorerProgressProps)
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.3 }}
-        className="mt-5 flex items-center gap-3"
+        className="mt-4 flex items-center gap-3"
       >
         <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-lg shrink-0">
           {stepInfo.emoji}
