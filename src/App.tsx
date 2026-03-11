@@ -21,7 +21,6 @@ function usePrefetchRoutes() {
     return () => clearTimeout(timer);
   }, []);
 }
-import NotFound from "./pages/NotFound";
 
 // Lazy load non-critical routes
 const MapaQuintais = lazy(() => import("./pages/MapaQuintais"));
