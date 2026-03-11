@@ -43,10 +43,9 @@ export function calculateScore(answers: QuizAnswers): number {
 
   // Orçamento (max 20)
   switch (answers.orcamento) {
-    case 'acima-80': score += 20; break;
-    case '50-80': score += 16; break;
-    case '30-50': score += 10; break;
-    case 'ate-30': score += 5; break;
+    case '30-50': score += 20; break;
+    case '18-30': score += 12; break;
+    case 'ate-18': score += 5; break;
   }
 
   return score;
