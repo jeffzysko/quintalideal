@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Users, Trophy, Link2, Copy, Check } from 'lucide-react';
+import { Users, Trophy, Link2, Copy, Check, Crown, Medal, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabase';
 
-interface FriendChallenge {
+interface FriendData {
   nome: string;
   pontuacao_quintal: number;
 }
@@ -16,7 +16,7 @@ interface FriendChallengeProps {
 }
 
 export function FriendChallenge({ refCode, score, leadName }: FriendChallengeProps) {
-  const [friends, setFriends] = useState<FriendChallenge[]>([]);
+  const [friends, setFriends] = useState<FriendData[]>([]);
   const [copied, setCopied] = useState(false);
 
   const inviteUrl = `${window.location.origin}/explorar?ref=${refCode}`;
@@ -32,7 +32,7 @@ export function FriendChallenge({ refCode, score, leadName }: FriendChallengePro
       .eq('referred_by', refCode)
       .order('pontuacao_quintal', { ascending: false })
       .limit(10);
-    if (data) setFriends(data as FriendChallenge[]);
+    if (data) setFriends(data as FriendData[]);
   };
 
   const handleCopy = async () => {
@@ -48,7 +48,6 @@ export function FriendChallenge({ refCode, score, leadName }: FriendChallengePro
     window.open(`https://wa.me/?text=${text}`, '_blank');
   };
 
-  // Build ranking including the current user
   const allParticipants = [
     { nome: leadName || 'Você', pontuacao_quintal: score, isMe: true },
     ...friends.map(f => ({ ...f, isMe: false })),
@@ -57,73 +56,99 @@ export function FriendChallenge({ refCode, score, leadName }: FriendChallengePro
   const medals = ['🥇', '🥈', '🥉'];
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 15 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.4 }}
-      className="bg-card border rounded-2xl p-5 mt-5 text-left shadow-sm"
-    >
-      <div className="flex items-center gap-2 mb-2">
-        <Users className="w-5 h-5 text-secondary" />
-        <h3 className="font-bold text-sm" style={{ fontFamily: 'Montserrat' }}>
-          Desafio dos Quintais
-        </h3>
+    <div className="rounded-3xl border border-border bg-card shadow-sm overflow-hidden mt-6">
+      {/* Header with gradient accent bar */}
+      <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, hsl(207 90% 42%), hsl(322 85% 50%))' }} />
+      
+      <div className="px-6 pt-5 pb-4">
+        <div className="flex items-center gap-3 mb-1">
+          <div className="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center">
+            <Crown className="w-5 h-5 text-violet-600" />
+          </div>
+          <div>
+            <h3 className="font-bold text-sm text-foreground">Desafio dos Quintais</h3>
+            <p className="text-xs text-muted-foreground">Quem tem o melhor quintal?</p>
+          </div>
+        </div>
       </div>
 
-      <p className="text-xs text-muted-foreground mb-4">
-        Convide seus amigos para fazer o teste e descubra quem tem o quintal com maior potencial.
-      </p>
-
-      {/* Invite link */}
-      <div className="flex gap-2 mb-4">
-        <div className="flex-1 bg-muted rounded-lg px-3 py-2 text-xs text-muted-foreground truncate flex items-center gap-2">
-          <Link2 className="w-3.5 h-3.5 shrink-0" />
-          <span className="truncate">{inviteUrl}</span>
+      <div className="px-6 pb-6">
+        {/* Invite link */}
+        <div className="flex gap-2 mb-3">
+          <div className="flex-1 bg-muted rounded-xl px-3 py-3 text-xs text-muted-foreground truncate flex items-center gap-2">
+            <Link2 className="w-3.5 h-3.5 shrink-0 text-primary" />
+            <span className="truncate font-mono">{inviteUrl}</span>
+          </div>
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={handleCopy}
+            className="shrink-0 rounded-xl h-auto px-3"
+          >
+            {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
+          </Button>
         </div>
-        <Button size="sm" variant="outline" onClick={handleCopy} className="shrink-0">
-          {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+
+        <Button
+          onClick={handleShareWhatsApp}
+          className="w-full rounded-xl py-5 text-sm font-semibold mb-5 gap-2"
+          style={{ background: '#25D366' }}
+        >
+          <Send className="w-4 h-4" />
+          Convidar amigos pelo WhatsApp
         </Button>
-      </div>
 
-      <Button
-        size="sm"
-        onClick={handleShareWhatsApp}
-        className="w-full mb-4 bg-[#25D366] hover:bg-[#1fb855] text-white text-xs font-bold rounded-full"
-      >
-        Convidar pelo WhatsApp
-      </Button>
-
-      {/* Rankings */}
-      {allParticipants.length > 1 && (
-        <div className="space-y-2">
-          <p className="text-xs font-bold text-foreground flex items-center gap-1">
-            <Trophy className="w-3.5 h-3.5 text-primary" />
-            Ranking dos Quintais
-          </p>
-          {allParticipants.slice(0, 5).map((p, i) => (
-            <div
-              key={i}
-              className={`flex items-center justify-between px-3 py-2 rounded-lg text-xs ${
-                p.isMe ? 'bg-primary/10 border border-primary/20 font-bold' : 'bg-muted/50'
-              }`}
-            >
-              <span>
-                {i < 3 ? medals[i] : `${i + 1}º`}{' '}
-                {p.isMe ? (p.nome?.split(' ')[0] || 'Você') + ' (você)' : p.nome?.split(' ')[0] || 'Amigo'}
-              </span>
-              <span className="font-bold text-primary">{p.pontuacao_quintal || 0}%</span>
+        {/* Rankings */}
+        {allParticipants.length > 1 ? (
+          <div>
+            <div className="flex items-center gap-2 mb-3">
+              <Trophy className="w-4 h-4 text-amber-500" />
+              <p className="text-xs font-bold text-foreground uppercase tracking-wider">Ranking dos Quintais</p>
             </div>
-          ))}
-        </div>
-      )}
-
-      {allParticipants.length <= 1 && (
-        <div className="text-center py-3 bg-muted/30 rounded-lg">
-          <p className="text-xs text-muted-foreground">
-            Seus amigos ainda não participaram. Convide-os! 🎯
-          </p>
-        </div>
-      )}
-    </motion.div>
+            <div className="space-y-2">
+              {allParticipants.slice(0, 5).map((p, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-colors ${
+                    p.isMe
+                      ? 'bg-primary/8 border border-primary/15 shadow-sm'
+                      : 'bg-muted/40 hover:bg-muted/60'
+                  }`}
+                >
+                  <span className="text-lg w-8 text-center">
+                    {i < 3 ? medals[i] : <span className="text-xs font-bold text-muted-foreground">{i + 1}º</span>}
+                  </span>
+                  <span className={`flex-1 font-semibold text-sm ${p.isMe ? 'text-primary' : 'text-foreground'}`}>
+                    {p.isMe ? (p.nome?.split(' ')[0] || 'Você') + ' (você)' : p.nome?.split(' ')[0] || 'Amigo'}
+                  </span>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-primary transition-all"
+                        style={{ width: `${p.pontuacao_quintal || 0}%` }}
+                      />
+                    </div>
+                    <span className="font-bold text-sm text-primary w-10 text-right">{p.pontuacao_quintal || 0}%</span>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        ) : (
+          <div className="text-center py-6 rounded-2xl bg-muted/30 border border-dashed border-border">
+            <Users className="w-8 h-8 text-muted-foreground/40 mx-auto mb-2" />
+            <p className="text-sm font-medium text-muted-foreground">
+              Seus amigos ainda não participaram
+            </p>
+            <p className="text-xs text-muted-foreground/60 mt-1">
+              Convide-os e descubra quem tem o melhor quintal! 🎯
+            </p>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }
