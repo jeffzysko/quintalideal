@@ -98,34 +98,72 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
     ctx.fillText('uma piscina Splash!', 540, 1070);
 
     // Ranking badge
-    const badgeY = 1170;
+    const badgeY = 1150;
     ctx.fillStyle = 'rgba(255,215,0,0.12)';
     ctx.beginPath(); ctx.roundRect(180, badgeY - 28, 720, 56, 28); ctx.fill();
     ctx.font = '600 26px Inter, sans-serif'; ctx.fillStyle = '#ffd700';
     ctx.fillText(`🏆 ${ranking.label}`, 540, badgeY + 8);
 
-    // Model
-    ctx.font = '400 30px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.6)';
-    ctx.fillText(`Modelo recomendado: ${poolName}`, 540, 1300);
+    // Pool image
+    const poolImgSrc = getPoolImage(poolName);
+    if (poolImgSrc) {
+      try {
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        await new Promise<void>((resolve, reject) => {
+          img.onload = () => resolve();
+          img.onerror = () => reject();
+          img.src = poolImgSrc;
+        });
+        const imgX = 140;
+        const imgY = 1210;
+        const imgW = 800;
+        const imgH = 360;
+        const radius = 24;
+        ctx.save();
+        ctx.beginPath();
+        ctx.roundRect(imgX, imgY, imgW, imgH, radius);
+        ctx.clip();
+        // Cover-fit the image
+        const scale = Math.max(imgW / img.width, imgH / img.height);
+        const sw = imgW / scale;
+        const sh = imgH / scale;
+        const sx = (img.width - sw) / 2;
+        const sy = (img.height - sh) / 2;
+        ctx.drawImage(img, sx, sy, sw, sh, imgX, imgY, imgW, imgH);
+        ctx.restore();
+        // Border
+        ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+        ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.roundRect(imgX, imgY, imgW, imgH, radius); ctx.stroke();
+      } catch {
+        // Image failed to load, skip
+      }
+    }
+
+    // Model label
+    ctx.font = '400 28px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.6)';
+    ctx.textAlign = 'center';
+    ctx.fillText(`Modelo recomendado: ${poolName}`, 540, 1620);
 
     // Social comparison
-    ctx.font = '400 26px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.45)';
-    ctx.fillText(socialComparison, 540, 1380);
+    ctx.font = '400 24px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.45)';
+    ctx.fillText(socialComparison, 540, 1670);
 
     // Divider
     ctx.strokeStyle = 'rgba(255,255,255,0.1)'; ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(340, 1450); ctx.lineTo(740, 1450); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(340, 1720); ctx.lineTo(740, 1720); ctx.stroke();
 
     // CTA
-    ctx.font = '500 26px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.4)';
-    ctx.fillText('Descubra o potencial do seu quintal em', 540, 1530);
-    ctx.font = '700 30px Inter, sans-serif'; ctx.fillStyle = '#ffffff';
-    ctx.fillText('splashpiscinas.com.br', 540, 1575);
+    ctx.font = '500 24px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.4)';
+    ctx.fillText('Descubra o potencial do seu quintal em', 540, 1770);
+    ctx.font = '700 28px Inter, sans-serif'; ctx.fillStyle = '#ffffff';
+    ctx.fillText('quintalideal.lovable.app', 540, 1810);
 
     // Footer
-    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 1820, 1080, 100);
-    ctx.font = '400 20px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.3)';
-    ctx.fillText('© Splash Piscinas', 540, 1878);
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 1860, 1080, 60);
+    ctx.font = '400 18px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    ctx.fillText('© Splash Piscinas', 540, 1895);
 
     return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
   };
