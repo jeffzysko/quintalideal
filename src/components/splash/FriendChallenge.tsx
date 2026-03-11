@@ -19,7 +19,7 @@ export function FriendChallenge({ refCode, score, leadName }: FriendChallengePro
   const [friends, setFriends] = useState<FriendData[]>([]);
   const [copied, setCopied] = useState(false);
 
-  const inviteUrl = `${window.location.origin}/explorar?ref=${refCode}`;
+  const inviteUrl = `${SITE_URL}/explorar?ref=${refCode}`;
 
   useEffect(() => {
     loadFriends();

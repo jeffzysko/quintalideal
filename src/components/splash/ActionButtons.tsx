@@ -154,7 +154,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
     ctx.font = '500 24px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.4)';
     ctx.fillText('Descubra o potencial do seu quintal em', 540, 1770);
     ctx.font = '700 28px Inter, sans-serif'; ctx.fillStyle = '#ffffff';
-    ctx.fillText('quintalideal.lovable.app', 540, 1810);
+    ctx.fillText(SITE_DOMAIN, 540, 1810);
 
     ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 1860, 1080, 60);
     ctx.font = '400 18px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.3)';
