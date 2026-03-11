@@ -10,7 +10,7 @@ const SENDER = "Quintal Ideal Splash <noreply@hallow.com.br>";
 const BRAND_BLUE = "#0369a1";
 const BRAND_GRADIENT = "linear-gradient(135deg, #0284c7, #0369a1)";
 
-function buildInviteEmailHTML(userName: string, franchiseName: string, recoveryLink: string): string {
+function buildInviteEmailHTML(userName: string, franchiseName: string, resetPageLink: string): string {
   return `
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -38,12 +38,12 @@ function buildInviteEmailHTML(userName: string, franchiseName: string, recoveryL
             Você foi convidado(a) para acessar o painel da franquia <strong style="color:${BRAND_BLUE};">${franchiseName}</strong> na plataforma Quintal Ideal.
           </p>
           <p style="color:#475569;font-size:15px;line-height:1.7;margin:0 0 28px;">
-            Para começar, clique no botão abaixo e defina sua senha de acesso:
+            Para começar, clique no botão abaixo e solicite a definição da sua senha de acesso:
           </p>
           
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
             <tr><td align="center" style="padding:8px 0 32px;">
-              <a href="${recoveryLink}" style="display:inline-block;background:${BRAND_GRADIENT};color:#ffffff;text-decoration:none;padding:16px 48px;border-radius:10px;font-weight:700;font-size:16px;letter-spacing:0.2px;box-shadow:0 4px 12px rgba(3,105,161,0.3);">
+              <a href="${resetPageLink}" style="display:inline-block;background:${BRAND_GRADIENT};color:#ffffff;text-decoration:none;padding:16px 48px;border-radius:10px;font-weight:700;font-size:16px;letter-spacing:0.2px;box-shadow:0 4px 12px rgba(3,105,161,0.3);">
                 Definir minha senha →
               </a>
             </td></tr>
@@ -62,7 +62,7 @@ function buildInviteEmailHTML(userName: string, franchiseName: string, recoveryL
 
           <p style="color:#94a3b8;font-size:12px;line-height:1.6;margin:0;">
             Se o botão acima não funcionar, copie e cole este link no seu navegador:<br/>
-            <a href="${recoveryLink}" style="color:${BRAND_BLUE};word-break:break-all;font-size:11px;">${recoveryLink}</a>
+            <a href="${resetPageLink}" style="color:${BRAND_BLUE};word-break:break-all;font-size:11px;">${resetPageLink}</a>
           </p>
         </td></tr>
 
@@ -176,27 +176,11 @@ Deno.serve(async (req) => {
       .update({ franquia_id: franchise_id, full_name: full_name || franchise.nome_franquia })
       .eq("user_id", userId);
 
-    // Generate recovery link
-    const { data: linkData, error: linkError } = await adminClient.auth.admin.generateLink({
-      type: "recovery",
-      email,
-      options: {
-        redirectTo: "https://quintalideal.com.br/reset-password",
-      },
-    });
-
-    if (linkError) {
-      console.error("Error generating recovery link:", linkError);
-      return new Response(JSON.stringify({ error: "Usuário criado mas houve erro ao gerar link de acesso." }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
-    const recoveryLink = linkData?.properties?.action_link || "https://quintalideal.com.br/login";
+    // Build a link to the forgot-password page (pre-filled with user email)
+    const resetPageLink = `https://quintalideal.com.br/forgot-password?email=${encodeURIComponent(email)}`;
     const userName = full_name || franchise.nome_franquia;
 
-    const htmlContent = buildInviteEmailHTML(userName, franchise.nome_franquia, recoveryLink);
+    const htmlContent = buildInviteEmailHTML(userName, franchise.nome_franquia, resetPageLink);
 
     const resendResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
