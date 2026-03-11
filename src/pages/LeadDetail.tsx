@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, MessageCircle, Phone, Mail } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Camera, ClipboardList, Settings2, Save, CheckCircle2, User } from 'lucide-react';
+import { toast } from 'sonner';
+import { motion } from 'framer-motion';
 
 interface Lead {
   id: string;
@@ -26,12 +28,12 @@ interface Lead {
   created_at: string;
 }
 
-const statusLabels: Record<string, string> = {
-  novo: 'Novo',
-  contatado: 'Contatado',
-  em_negociacao: 'Em Negociação',
-  vendido: 'Vendido',
-  perdido: 'Perdido',
+const statusConfig: Record<string, { label: string; color: string }> = {
+  novo: { label: 'Novo', color: 'bg-primary/15 text-primary border-primary/30' },
+  contatado: { label: 'Contatado', color: 'bg-accent text-accent-foreground border-accent' },
+  em_negociacao: { label: 'Em Negociação', color: 'bg-secondary/15 text-secondary border-secondary/30' },
+  vendido: { label: 'Vendido', color: 'bg-emerald-500/15 text-emerald-700 border-emerald-500/30' },
+  perdido: { label: 'Perdido', color: 'bg-destructive/15 text-destructive border-destructive/30' },
 };
 
 const questionLabels: Record<string, { label: string; icon: string }> = {
@@ -45,34 +47,54 @@ const questionLabels: Record<string, { label: string; icon: string }> = {
 };
 
 const answerLabels: Record<string, string> = {
-  // Espaço
   'ate-3': 'Até 3 metros',
   '3-5': 'Entre 3 e 5 metros',
   '5-7': 'Entre 5 e 7 metros',
   'mais-7': 'Mais de 7 metros',
-  // Moradia
   'minha': 'Já é minha casa',
   'construindo': 'Estou construindo',
   'planejando': 'Ainda estou planejando',
-  // Uso
   'casal': 'Momentos a dois',
   'familia-pequena': 'Diversão com os filhos',
   'familia-grande': 'Reunir toda a família',
   'amigos': 'Churrascos e festas',
-  // Intenção
   '2026': 'Ainda em 2026',
   '2026-2027': 'Talvez em 2026 ou 2027',
   'pesquisando': 'Só estou pesquisando',
-  // Preferência
   'prainha': 'Prainha',
   'spa': 'Spa ou Hidromassagem',
   'simples': 'Piscina clássica e elegante',
   'nao-sei': 'Ainda não sei',
-  // Orçamento
   'ate-18': 'Até R$ 18 mil',
   '18-30': 'R$ 18 a 30 mil',
   '30-50': 'R$ 30 a 50 mil',
 };
+
+function ScoreRing({ score }: { score: number }) {
+  const radius = 40;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (score / 100) * circumference;
+  const color = score >= 80 ? 'hsl(var(--primary))' : score >= 60 ? 'hsl(var(--secondary))' : 'hsl(var(--destructive))';
+
+  return (
+    <div className="relative w-24 h-24 flex-shrink-0">
+      <svg className="w-24 h-24 -rotate-90" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r={radius} fill="none" stroke="hsl(var(--muted))" strokeWidth="6" />
+        <motion.circle
+          cx="50" cy="50" r={radius} fill="none"
+          stroke={color} strokeWidth="6" strokeLinecap="round"
+          strokeDasharray={circumference}
+          initial={{ strokeDashoffset: circumference }}
+          animate={{ strokeDashoffset: offset }}
+          transition={{ duration: 1, ease: 'easeOut' }}
+        />
+      </svg>
+      <div className="absolute inset-0 flex items-center justify-center">
+        <span className="text-xl font-bold text-foreground">{score}%</span>
+      </div>
+    </div>
+  );
+}
 
 export default function LeadDetail() {
   const { id } = useParams<{ id: string }>();
@@ -88,11 +110,7 @@ export default function LeadDetail() {
   }, [id]);
 
   const loadLead = async () => {
-    const { data } = await supabase
-      .from('leads')
-      .select('*')
-      .eq('id', id!)
-      .single();
+    const { data } = await supabase.from('leads').select('*').eq('id', id!).single();
     if (data) {
       setLead(data as Lead);
       setStatus(data.status_lead);
@@ -104,139 +122,233 @@ export default function LeadDetail() {
   const save = async () => {
     if (!lead) return;
     setSaving(true);
-    await supabase
+    const { error } = await supabase
       .from('leads')
       .update({ status_lead: status as any, observacoes })
       .eq('id', lead.id);
     setSaving(false);
+    if (!error) toast.success('Alterações salvas com sucesso!');
+    else toast.error('Erro ao salvar.');
   };
 
   const photos = lead ? [lead.foto1, lead.foto2, lead.foto3, lead.foto4].filter(Boolean) as string[] : [];
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center gradient-hero">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
       </div>
     );
   }
 
   if (!lead) {
-    return <div className="p-6 text-center text-muted-foreground">Lead não encontrado.</div>;
+    return (
+      <div className="min-h-screen flex items-center justify-center gradient-hero">
+        <p className="text-muted-foreground">Lead não encontrado.</p>
+      </div>
+    );
   }
 
+  const statusInfo = statusConfig[lead.status_lead] || statusConfig.novo;
+
   return (
-    <div className="p-6 max-w-3xl mx-auto">
-      <Button variant="ghost" onClick={() => navigate(-1)} className="mb-4">
-        <ArrowLeft className="w-4 h-4 mr-2" /> Voltar
-      </Button>
+    <div className="min-h-screen gradient-hero">
+      <div className="max-w-2xl mx-auto px-4 py-6 space-y-5">
+        {/* Back */}
+        <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="text-muted-foreground hover:text-foreground -ml-2">
+          <ArrowLeft className="w-4 h-4 mr-1" /> Voltar
+        </Button>
 
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold" style={{ fontFamily: 'Montserrat' }}>
-          {lead.nome || 'Lead sem nome'}
-        </h1>
-        <span className="text-3xl font-extrabold text-primary">{lead.pontuacao_quintal || 0}%</span>
-      </div>
-
-      {/* Contact info */}
-      <Card className="mb-4">
-        <CardContent className="p-4 space-y-2">
-          {lead.telefone && (
-            <div className="flex items-center gap-2">
-              <Phone className="w-4 h-4 text-muted-foreground" />
-              <span>{lead.telefone}</span>
-              <Button
-                size="sm"
-                variant="outline"
-                className="ml-auto"
-                onClick={() => {
-                  const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem? Vi que você fez o teste do Índice do Quintal Splash!`);
-                  window.open(`https://wa.me/55${lead.telefone}?text=${msg}`, '_blank');
-                }}
-              >
-                <MessageCircle className="w-4 h-4 mr-1" /> WhatsApp
-              </Button>
-            </div>
-          )}
-          {lead.email && (
-            <div className="flex items-center gap-2">
-              <Mail className="w-4 h-4 text-muted-foreground" />
-              <span>{lead.email}</span>
-            </div>
-          )}
-          <p className="text-sm text-muted-foreground">
-            📍 {lead.cidade || '—'} • Modelo: <strong>{lead.modelo_recomendado || '—'}</strong> •{' '}
-            {new Date(lead.created_at).toLocaleDateString('pt-BR')}
-          </p>
-        </CardContent>
-      </Card>
-
-      {/* Photos */}
-      {photos.length > 0 && (
-        <Card className="mb-4">
-          <CardHeader><CardTitle className="text-base">Fotos do Quintal</CardTitle></CardHeader>
-          <CardContent className="grid grid-cols-2 gap-2">
-            {photos.map((url, i) => (
-              <img key={i} src={url} alt={`Quintal ${i + 1}`} className="rounded-lg w-full aspect-square object-cover" />
-            ))}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Quiz answers */}
-      {lead.respostas_questionario && (
-        <Card className="mb-4">
-          <CardHeader><CardTitle className="text-base">Respostas do Questionário</CardTitle></CardHeader>
-          <CardContent className="space-y-1">
-            {Object.entries(lead.respostas_questionario)
-              .filter(([key]) => questionLabels[key])
-              .map(([key, value]) => {
-              const q = questionLabels[key];
-              const displayValue = answerLabels[value as string] || (value as string);
-              return (
-                <div key={key} className="flex items-center justify-between py-2 px-3 rounded-lg bg-muted/50">
-                  <span className="text-sm text-muted-foreground flex items-center gap-2">
-                    <span>{q?.icon || '❓'}</span>
-                    {q?.label || key}
-                  </span>
-                  <span className="text-sm font-semibold text-foreground">{displayValue}</span>
+        {/* Hero Card */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+          <Card className="glass-card overflow-hidden">
+            <div className="gradient-blue px-5 py-4">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur flex items-center justify-center">
+                  <User className="w-6 h-6 text-primary-foreground" />
                 </div>
-              );
-            })}
-          </CardContent>
-        </Card>
-      )}
+                <div className="flex-1 min-w-0">
+                  <h1 className="text-lg font-bold text-primary-foreground truncate">
+                    {lead.nome || 'Lead sem nome'}
+                  </h1>
+                  <div className="flex items-center gap-3 text-primary-foreground/80 text-sm mt-0.5">
+                    {lead.cidade && (
+                      <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{lead.cidade}</span>
+                    )}
+                    <span className="flex items-center gap-1">
+                      <Calendar className="w-3.5 h-3.5" />
+                      {new Date(lead.created_at).toLocaleDateString('pt-BR')}
+                    </span>
+                  </div>
+                </div>
+                <Badge className={`${statusInfo.color} border text-xs font-medium`}>
+                  {statusInfo.label}
+                </Badge>
+              </div>
+            </div>
 
-      {/* Status + Notes */}
-      <Card className="mb-4">
-        <CardHeader><CardTitle className="text-base">Gerenciar Lead</CardTitle></CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <label className="text-sm font-medium mb-1 block">Status</label>
-            <Select value={status} onValueChange={setStatus}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {Object.entries(statusLabels).map(([val, label]) => (
-                  <SelectItem key={val} value={val}>{label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div>
-            <label className="text-sm font-medium mb-1 block">Observações</label>
-            <Textarea
-              value={observacoes}
-              onChange={e => setObservacoes(e.target.value)}
-              rows={4}
-              placeholder="Adicionar observações sobre este lead..."
-              maxLength={1000}
-            />
-          </div>
-          <Button onClick={save} disabled={saving} className="w-full">
-            {saving ? 'Salvando...' : 'Salvar Alterações'}
-          </Button>
-        </CardContent>
-      </Card>
+            <CardContent className="p-5">
+              <div className="flex items-center gap-5">
+                <ScoreRing score={lead.pontuacao_quintal || 0} />
+                <div className="flex-1 space-y-2">
+                  <div>
+                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Índice do Quintal</p>
+                    <p className="text-sm text-foreground mt-0.5">Potencial de instalação de piscina</p>
+                  </div>
+                  {lead.modelo_recomendado && (
+                    <div className="flex items-center gap-2 bg-accent/50 rounded-lg px-3 py-2">
+                      <Droplets className="w-4 h-4 text-primary" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Modelo recomendado</p>
+                        <p className="text-sm font-semibold text-foreground">{lead.modelo_recomendado}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Contact */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+          <Card className="glass-card">
+            <CardContent className="p-5 space-y-3">
+              <div className="flex items-center gap-2 mb-1">
+                <Phone className="w-4 h-4 text-primary" />
+                <h2 className="text-sm font-semibold text-foreground">Contato</h2>
+              </div>
+
+              {lead.telefone && (
+                <div className="flex items-center justify-between bg-muted/50 rounded-lg px-4 py-3">
+                  <div className="flex items-center gap-3">
+                    <Phone className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm font-medium text-foreground">{lead.telefone}</span>
+                  </div>
+                  <Button
+                    size="sm"
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-8 gap-1.5"
+                    onClick={() => {
+                      const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem? Vi que você fez o teste do Índice do Quintal Splash!`);
+                      window.open(`https://wa.me/55${lead.telefone}?text=${msg}`, '_blank');
+                    }}
+                  >
+                    <MessageCircle className="w-3.5 h-3.5" /> WhatsApp
+                  </Button>
+                </div>
+              )}
+
+              {lead.email && (
+                <div className="flex items-center gap-3 bg-muted/50 rounded-lg px-4 py-3">
+                  <Mail className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm text-foreground">{lead.email}</span>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Photos */}
+        {photos.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+            <Card className="glass-card">
+              <CardContent className="p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <Camera className="w-4 h-4 text-primary" />
+                  <h2 className="text-sm font-semibold text-foreground">Fotos do Quintal</h2>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  {photos.map((url, i) => (
+                    <img key={i} src={url} alt={`Quintal ${i + 1}`} className="rounded-xl w-full aspect-square object-cover border border-border/50" />
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Quiz answers */}
+        {lead.respostas_questionario && (
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+            <Card className="glass-card">
+              <CardContent className="p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <ClipboardList className="w-4 h-4 text-primary" />
+                  <h2 className="text-sm font-semibold text-foreground">Respostas do Questionário</h2>
+                </div>
+                <div className="space-y-1.5">
+                  {Object.entries(lead.respostas_questionario)
+                    .filter(([key]) => questionLabels[key])
+                    .map(([key, value]) => {
+                      const q = questionLabels[key];
+                      const displayValue = answerLabels[value as string] || (value as string);
+                      return (
+                        <div key={key} className="flex items-center justify-between py-2.5 px-3.5 rounded-xl bg-muted/40 hover:bg-muted/60 transition-colors">
+                          <span className="text-sm text-muted-foreground flex items-center gap-2.5">
+                            <span className="text-base">{q.icon}</span>
+                            {q.label}
+                          </span>
+                          <span className="text-sm font-semibold text-foreground">{displayValue}</span>
+                        </div>
+                      );
+                    })}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Manage */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          <Card className="glass-card">
+            <CardContent className="p-5 space-y-4">
+              <div className="flex items-center gap-2 mb-1">
+                <Settings2 className="w-4 h-4 text-primary" />
+                <h2 className="text-sm font-semibold text-foreground">Gerenciar Lead</h2>
+              </div>
+
+              <div>
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Status</label>
+                <Select value={status} onValueChange={setStatus}>
+                  <SelectTrigger className="bg-muted/50"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(statusConfig).map(([val, cfg]) => (
+                      <SelectItem key={val} value={val}>{cfg.label}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Observações</label>
+                <Textarea
+                  value={observacoes}
+                  onChange={e => setObservacoes(e.target.value)}
+                  rows={3}
+                  placeholder="Adicionar observações sobre este lead..."
+                  maxLength={1000}
+                  className="bg-muted/50 resize-none"
+                />
+              </div>
+
+              <Button onClick={save} disabled={saving} className="w-full gap-2">
+                {saving ? (
+                  <>
+                    <div className="animate-spin w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full" />
+                    Salvando...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4" /> Salvar Alterações
+                  </>
+                )}
+              </Button>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <div className="h-4" />
+      </div>
     </div>
   );
 }
