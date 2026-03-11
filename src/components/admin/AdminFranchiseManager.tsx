@@ -46,6 +46,10 @@ export function AdminFranchiseManager() {
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [inviteDialogOpen, setInviteDialogOpen] = useState(false);
+  const [invitingFranchise, setInvitingFranchise] = useState<Franchise | null>(null);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteName, setInviteName] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [deletingFranchise, setDeletingFranchise] = useState<Franchise | null>(null);
   const [form, setForm] = useState<FranchiseFormData>(emptyForm);
