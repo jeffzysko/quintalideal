@@ -51,9 +51,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (profileError) console.error('Error loading user profile:', profileError);
 
     const roles = (rolesData ?? []).map(item => item.role);
+    const primaryRole = resolvePrimaryRole(roles);
+    const franchId = profileData?.franquia_id ?? null;
+
+    // Check if franchise is active (only for franchise users)
+    if (primaryRole === 'franquia' && franchId) {
+      const { data: franchData } = await supabase
+        .from('franchises')
+        .select('ativa')
+        .eq('id', franchId)
+        .maybeSingle();
+      if (franchData && !franchData.ativa) {
+        return { role: null, franchiseId: null, inactive: true };
+      }
+    }
+
     return {
-      role: resolvePrimaryRole(roles),
-      franchiseId: profileData?.franquia_id ?? null,
+      role: primaryRole,
+      franchiseId: franchId,
+      inactive: false,
     };
   }, []);
 
