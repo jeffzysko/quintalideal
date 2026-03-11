@@ -130,10 +130,18 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
     try {
       const { data } = await supabase
         .from('pool_models')
-        .select('descricao')
+        .select('descricao, tamanho, profundidade, possui_prainha, possui_spa')
         .eq('nome_modelo', name)
         .single();
-      if (data) setPoolDesc(data.descricao || '');
+      if (data) {
+        setPoolDesc(data.descricao || '');
+        setPoolSpecs({
+          tamanho: data.tamanho || undefined,
+          profundidade: data.profundidade || undefined,
+          possui_prainha: data.possui_prainha || false,
+          possui_spa: data.possui_spa || false,
+        });
+      }
     } catch {
       // Non-critical
     }
