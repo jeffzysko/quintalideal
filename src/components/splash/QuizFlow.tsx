@@ -111,6 +111,14 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
     if (data) setPoolDesc(data.descricao || '');
   };
 
+  const checkDuplicate = async (telefone: string, email: string) => {
+    const { data, error } = await supabase.functions.invoke('check-duplicate-lead', {
+      body: { telefone, email: email || null },
+    });
+    if (error) throw error;
+    return data as { duplicate: boolean; field?: string; franchiseName?: string | null };
+  };
+
   const handleLeadSubmit = async (data: { nome: string; telefone: string; email: string }) => {
     setSaving(true);
     setLeadName(data.nome);
