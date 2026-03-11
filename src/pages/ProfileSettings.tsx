@@ -73,7 +73,7 @@ export default function ProfileSettings() {
       // Update profile name
       const { error: profileError } = await supabase
         .from('profiles')
-        .update({ full_name: fullName.trim() || null })
+        .update({ full_name: fullName.trim() || null, telefone: telefone.trim() || null })
         .eq('user_id', user!.id);
 
       if (profileError) throw profileError;
