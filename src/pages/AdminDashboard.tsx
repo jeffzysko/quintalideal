@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Share2, Target, Activity, LogOut, Mail } from 'lucide-react';
+import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Share2, Target, Activity, Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
