@@ -375,6 +375,9 @@ export default function AdminDashboard() {
         {activeTab === 'franchises' && (
           <AdminFranchiseManager />
         )}
+        {activeTab === 'emails' && (
+          <AdminEmailTemplates />
+        )}
       </div>
     </div>
   );
