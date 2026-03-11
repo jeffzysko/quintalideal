@@ -164,6 +164,21 @@ export function AdminFranchiseManager() {
     }
   };
 
+  const toggleActive = async (f: Franchise) => {
+    const newStatus = !f.ativa;
+    const { error } = await supabase
+      .from('franchises')
+      .update({ ativa: newStatus } as any)
+      .eq('id', f.id);
+    if (error) {
+      toast.error('Erro ao atualizar status.');
+      console.error(error);
+    } else {
+      toast.success(newStatus ? 'Franquia reativada!' : 'Franquia desativada.');
+      load();
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center py-12">
