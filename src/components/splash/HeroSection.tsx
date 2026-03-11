@@ -38,7 +38,7 @@ export function HeroSection({ onStart, franchiseName }: HeroSectionProps) {
       >💧</motion.div>
 
       {/* Content */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-end px-6 pb-10 pt-12 max-w-lg mx-auto w-full">
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-6 pb-10 pt-12 max-w-lg mx-auto w-full">
         <motion.img
           src={logoSplash}
           alt="Splash Piscinas"
