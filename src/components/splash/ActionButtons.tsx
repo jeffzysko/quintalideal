@@ -206,83 +206,74 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
 
   return (
     <div className="min-h-screen bg-background">
-      {/* === HERO BANNER === */}
+      {/* === HERO WITH POOL IMAGE === */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6 }}
         className="relative overflow-hidden"
-        style={{ background: 'linear-gradient(160deg, #06101f 0%, #0b2a52 35%, #0d3468 60%, #081d38 100%)' }}
       >
-        <motion.div
-          animate={{ scale: [1, 1.15, 1], opacity: [0.15, 0.25, 0.15] }}
-          transition={{ duration: 4, repeat: Infinity }}
-          className="absolute top-[-25%] right-[-15%] w-[65vw] h-[65vw] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(30,136,229,0.4), transparent 65%)' }}
-        />
-        <motion.div
-          animate={{ scale: [1, 1.1, 1], opacity: [0.08, 0.15, 0.08] }}
-          transition={{ duration: 5, repeat: Infinity, delay: 1 }}
-          className="absolute bottom-[-10%] left-[-20%] w-[55vw] h-[55vw] rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(233,30,145,0.3), transparent 65%)' }}
-        />
+        {/* Pool image as background */}
+        {getPoolImage(poolName) && (
+          <img
+            src={getPoolImage(poolName)}
+            alt={`Piscina ${poolName}`}
+            className="absolute inset-0 w-full h-full object-cover"
+            loading="eager"
+          />
+        )}
+        {/* Gradient overlay */}
+        <div className="absolute inset-0" style={{
+          background: 'linear-gradient(180deg, rgba(6,16,31,0.55) 0%, rgba(6,16,31,0.3) 35%, rgba(6,16,31,0.7) 65%, rgba(6,16,31,0.95) 100%)',
+        }} />
 
-        <div className="relative z-10 px-6 pt-10 pb-16 max-w-md mx-auto text-center">
+        <div className="relative z-10 px-6 pt-8 pb-10 max-w-md mx-auto text-center">
           <motion.img
             src={logoSplash}
             alt="Splash Piscinas"
-            initial={{ opacity: 0, y: -15 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 0.85, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="mx-auto w-20 mb-5"
+            className="mx-auto w-16 mb-3"
           />
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.25 }}
-            className="text-white/40 text-[10px] uppercase tracking-[0.2em] mb-5"
-          >
-            Índice do Quintal Splash
-          </motion.p>
-
           <motion.h1
-            initial={{ opacity: 0, y: 25 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="text-white text-2xl md:text-3xl font-extrabold tracking-tight mb-1"
+            className="text-white text-xl md:text-2xl font-extrabold tracking-tight mb-1"
           >
             {firstName ? `${firstName}, seu quintal` : 'Seu quintal'}
           </motion.h1>
           <motion.h2
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="text-white text-2xl md:text-3xl font-extrabold tracking-tight mb-6"
+            className="text-white text-xl md:text-2xl font-extrabold tracking-tight mb-5"
           >
             é <span className="bg-gradient-to-r from-blue-300 via-cyan-300 to-blue-400 bg-clip-text text-transparent">incrível</span>! 🎉
           </motion.h2>
 
-          {/* Score ring + stats */}
+          {/* Score ring compact */}
           <motion.div
             initial={{ scale: 0.6, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.5, type: 'spring', damping: 14 }}
-            className="flex items-center justify-center gap-6 mb-6"
+            className="flex items-center justify-center gap-5 mb-5"
           >
-            <div className="relative w-32 h-32">
+            <div className="relative w-24 h-24">
               <motion.div
                 animate={{ opacity: [0.2, 0.5, 0.2] }}
                 transition={{ duration: 2.5, repeat: Infinity }}
-                className="absolute inset-[-12px] rounded-full"
-                style={{ background: 'radial-gradient(circle, rgba(30,136,229,0.25), transparent 70%)' }}
+                className="absolute inset-[-8px] rounded-full"
+                style={{ background: 'radial-gradient(circle, rgba(30,136,229,0.3), transparent 70%)' }}
               />
-              <svg className="w-32 h-32 transform -rotate-90 relative z-10" viewBox="0 0 100 100">
-                <circle cx="50" cy="50" r="46" stroke="rgba(255,255,255,0.06)" strokeWidth="4" fill="none" />
+              <svg className="w-24 h-24 transform -rotate-90 relative z-10" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" r="46" stroke="rgba(255,255,255,0.08)" strokeWidth="5" fill="none" />
                 <circle cx="50" cy="50" r="46"
-                  stroke="url(#actionGrad)" strokeWidth="4" fill="none" strokeLinecap="round"
+                  stroke="url(#actionGrad)" strokeWidth="5" fill="none" strokeLinecap="round"
                   strokeDasharray={circumference} strokeDashoffset={offset}
-                  style={{ filter: 'drop-shadow(0 0 6px rgba(30,136,229,0.5))' }}
+                  style={{ filter: 'drop-shadow(0 0 8px rgba(30,136,229,0.6))' }}
                 />
                 <defs>
                   <linearGradient id="actionGrad" x1="0%" y1="0%" x2="100%" y2="100%">
@@ -292,106 +283,80 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
                 </defs>
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
-                <span className="text-4xl font-black text-white" style={{ textShadow: '0 0 30px rgba(30,136,229,0.4)' }}>
+                <span className="text-3xl font-black text-white" style={{ textShadow: '0 0 30px rgba(30,136,229,0.5)' }}>
                   {score}
                 </span>
-                <span className="text-[10px] font-medium text-white/40">pontos</span>
+                <span className="text-[9px] font-medium text-white/50">pontos</span>
               </div>
             </div>
 
-            <div className="text-left space-y-3">
+            <div className="text-left space-y-2">
               <div>
-                <p className="text-white/35 text-[10px] uppercase tracking-wider">Potencial</p>
-                <p className="text-white text-lg font-bold">{score}%</p>
+                <p className="text-white/40 text-[9px] uppercase tracking-wider">Potencial</p>
+                <p className="text-white text-base font-bold">{score}%</p>
               </div>
               <div>
-                <p className="text-white/35 text-[10px] uppercase tracking-wider">Modelo</p>
+                <p className="text-white/40 text-[9px] uppercase tracking-wider">Modelo</p>
                 <p className="text-white text-sm font-semibold">{poolName}</p>
               </div>
             </div>
           </motion.div>
 
-          {/* Classification badge */}
+          {/* Badges side by side */}
           <motion.div
             initial={{ opacity: 0, scale: 0.7 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.7, type: 'spring' }}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full mb-2"
-            style={{
-              background: `linear-gradient(135deg, ${classification.color}18, ${classification.color}08)`,
-              border: `1px solid ${classification.color}30`,
-            }}
+            className="flex items-center justify-center gap-2 flex-wrap mb-3"
           >
-            <span className="text-lg">{classification.emoji}</span>
-            <span className="font-bold text-sm" style={{ color: classification.color }}>{classification.label}</span>
-          </motion.div>
-
-          {/* Ranking badge */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.7 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.85, type: 'spring' }}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full mb-3"
-            style={{
-              background: 'linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,215,0,0.04))',
-              border: '1px solid rgba(255,215,0,0.2)',
-              boxShadow: '0 0 25px rgba(255,215,0,0.06)',
-            }}
-          >
-            <Trophy className="w-4 h-4 text-amber-400" />
-            <span className="font-bold text-sm text-amber-300">{ranking.label}</span>
+            <div
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full"
+              style={{
+                background: `linear-gradient(135deg, ${classification.color}18, ${classification.color}08)`,
+                border: `1px solid ${classification.color}30`,
+              }}
+            >
+              <span className="text-base">{classification.emoji}</span>
+              <span className="font-bold text-xs" style={{ color: classification.color }}>{classification.label}</span>
+            </div>
+            <div
+              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full"
+              style={{
+                background: 'linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,215,0,0.04))',
+                border: '1px solid rgba(255,215,0,0.2)',
+              }}
+            >
+              <Trophy className="w-3.5 h-3.5 text-amber-400" />
+              <span className="font-bold text-xs text-amber-300">{ranking.label}</span>
+            </div>
           </motion.div>
 
           {/* Social comparison */}
           <motion.p
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.95 }}
-            className="text-white/45 text-xs italic mb-4"
+            transition={{ delay: 0.85 }}
+            className="text-white/50 text-[11px] italic mb-2"
           >
             {socialComparison}
           </motion.p>
 
-          {/* Pool card with image */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1 }}
-            className="rounded-2xl overflow-hidden mt-2 backdrop-blur-sm"
-            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
-          >
-            {getPoolImage(poolName) && (
-              <img
-                src={getPoolImage(poolName)}
-                alt={`Piscina ${poolName}`}
-                className="w-full h-40 object-cover"
-                loading="lazy"
-              />
-            )}
-            <div className="p-4 text-left">
-              <div className="flex items-center gap-2 mb-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-blue-300" />
-                <span className="text-[9px] font-bold text-blue-300 uppercase tracking-[0.15em]">Modelo recomendado</span>
+          {/* Pool description */}
+          {poolDescription && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.95 }}
+              className="rounded-xl p-3 mt-2 text-left backdrop-blur-md"
+              style={{ background: 'rgba(0,0,0,0.25)', border: '1px solid rgba(255,255,255,0.08)' }}
+            >
+              <div className="flex items-center gap-1.5 mb-1">
+                <Sparkles className="w-3 h-3 text-blue-300" />
+                <span className="text-[8px] font-bold text-blue-300 uppercase tracking-[0.15em]">Sobre este modelo</span>
               </div>
-              <h3 className="text-base font-bold text-white mb-1">{poolName}</h3>
-              {poolDescription && <p className="text-xs text-white/40 leading-relaxed">{poolDescription}</p>}
-            </div>
-          </motion.div>
-
-          {/* 5 stars */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.1 }}
-            className="flex items-center justify-center gap-0.5 mt-5"
-          >
-            {[...Array(5)].map((_, i) => (
-              <motion.div key={i} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 1.2 + i * 0.08 }}>
-                <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-              </motion.div>
-            ))}
-            <span className="text-white/25 text-[10px] ml-1.5">Análise premium</span>
-          </motion.div>
+              <p className="text-[11px] text-white/50 leading-relaxed">{poolDescription}</p>
+            </motion.div>
+          )}
         </div>
       </motion.div>
 
