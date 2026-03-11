@@ -29,7 +29,7 @@ interface ActionButtonsProps {
   franchiseId?: string;
 }
 
-export function ActionButtons({ score, poolName, poolDescription, poolSpecs, recommendedSize, whatsappNumber, leadName, refCode, franchiseId }: ActionButtonsProps) {
+export function ActionButtons({ score, poolName, poolDescription, poolSpecs, recommendedSize, whatsappNumber, leadName, refCode: _refCode, franchiseId }: ActionButtonsProps) {
   const ranking = getRankingGaucho(score);
   const classification = getYardClassification(score);
   const socialComparison = getSocialComparison(score);
