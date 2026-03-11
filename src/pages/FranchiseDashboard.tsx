@@ -18,11 +18,11 @@ interface LeadRow {
 }
 
 const statusColors: Record<string, string> = {
-  novo: 'bg-blue-100 text-blue-800',
-  contatado: 'bg-yellow-100 text-yellow-800',
-  em_negociacao: 'bg-purple-100 text-purple-800',
-  vendido: 'bg-green-100 text-green-800',
-  perdido: 'bg-red-100 text-red-800',
+  novo: 'bg-primary/10 text-primary border-primary/20',
+  contatado: 'bg-amber-50 text-amber-700 border-amber-200',
+  em_negociacao: 'bg-violet-50 text-violet-700 border-violet-200',
+  vendido: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  perdido: 'bg-red-50 text-red-700 border-red-200',
 };
 
 const statusLabels: Record<string, string> = {
@@ -40,15 +40,25 @@ export default function FranchiseDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    loadLeads();
+    if (franchiseId) loadLeads();
   }, [franchiseId]);
 
   const loadLeads = async () => {
     setLoading(true);
-    const { data } = await supabase
+    // RLS already filters by franchise, but we add the filter explicitly for clarity
+    let query = supabase
       .from('leads')
       .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at')
       .order('created_at', { ascending: false });
+    
+    if (franchiseId) {
+      query = query.eq('franquia_id', franchiseId);
+    }
+    
+    const { data, error } = await query;
+    if (error) {
+      console.error('Error loading leads:', error);
+    }
     setLeads(data || []);
     setLoading(false);
   };
@@ -60,7 +70,7 @@ export default function FranchiseDashboard() {
 
   return (
     <div className="p-6 max-w-6xl mx-auto">
-      <h1 className="text-2xl font-bold mb-6" style={{ fontFamily: 'Montserrat' }}>Dashboard da Franquia</h1>
+      <h1 className="text-2xl font-bold mb-6 text-foreground">Dashboard da Franquia</h1>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <Card>
@@ -83,7 +93,7 @@ export default function FranchiseDashboard() {
         </Card>
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
-            <TrendingUp className="w-8 h-8 text-purple-500" />
+            <TrendingUp className="w-8 h-8 text-violet-500" />
             <div>
               <p className="text-2xl font-bold">{inNegotiation}</p>
               <p className="text-xs text-muted-foreground">Em Negociação</p>
@@ -92,7 +102,7 @@ export default function FranchiseDashboard() {
         </Card>
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
-            <TrendingUp className="w-8 h-8 text-green-500" />
+            <TrendingUp className="w-8 h-8 text-emerald-500" />
             <div>
               <p className="text-2xl font-bold">{sold}</p>
               <p className="text-xs text-muted-foreground">Vendidos</p>
@@ -135,7 +145,7 @@ export default function FranchiseDashboard() {
                       </td>
                       <td className="py-3 px-2 hidden md:table-cell">{lead.modelo_recomendado || '—'}</td>
                       <td className="py-3 px-2">
-                        <Badge className={statusColors[lead.status_lead] || ''} variant="secondary">
+                        <Badge className={`${statusColors[lead.status_lead] || ''} border text-xs`} variant="secondary">
                           {statusLabels[lead.status_lead] || lead.status_lead}
                         </Badge>
                       </td>

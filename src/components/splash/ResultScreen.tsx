@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import logoSplash from '@/assets/logo-splash.png';
 import { getRankingGaucho } from '@/lib/ranking';
@@ -11,7 +11,6 @@ interface ResultScreenProps {
   onContinue: () => void;
 }
 
-// Confetti particle
 function ConfettiParticle({ delay, color }: { delay: number; color: string }) {
   const x = Math.random() * 100;
   const rotate = Math.random() * 720 - 360;
@@ -23,10 +22,7 @@ function ConfettiParticle({ delay, color }: { delay: number; color: string }) {
       className="fixed top-0 z-50 pointer-events-none"
       style={{ left: 0 }}
     >
-      <div
-        className="w-2 h-3 rounded-sm"
-        style={{ backgroundColor: color }}
-      />
+      <div className="w-2 h-3 rounded-sm" style={{ backgroundColor: color }} />
     </motion.div>
   );
 }
@@ -35,6 +31,8 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
   const [displayScore, setDisplayScore] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
   const ranking = getRankingGaucho(score);
+  const onContinueRef = useRef(onContinue);
+  onContinueRef.current = onContinue;
 
   const confettiColors = ['#1e88e5', '#42a5f5', '#64b5f6', '#e91e91', '#ffd700', '#00e5ff', '#76ff03'];
 
@@ -46,12 +44,12 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
         current = score;
         clearInterval(interval);
         setShowConfetti(true);
-        setTimeout(onContinue, 3500);
+        setTimeout(() => onContinueRef.current(), 3500);
       }
       setDisplayScore(current);
     }, 18);
     return () => clearInterval(interval);
-  }, [score, onContinue]);
+  }, [score]);
 
   const circumference = 2 * Math.PI * 58;
   const offset = circumference - (displayScore / 100) * circumference;
@@ -73,16 +71,14 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
         background: 'linear-gradient(160deg, #0a1628 0%, #0d3060 40%, #0a2445 100%)',
       }}
     >
-      {/* Confetti */}
       {showConfetti && confettiParticles.map(p => (
         <ConfettiParticle key={p.id} delay={p.delay} color={p.color} />
       ))}
 
-      {/* Background glows */}
       <div className="absolute top-[-20%] right-[-15%] w-[70vw] h-[70vw] rounded-full opacity-15"
         style={{ background: 'radial-gradient(circle, hsl(207 90% 50%), transparent 65%)' }}
       />
-      <div className="absolute bottom-[-15%] left-[-20%] w-[60vw] h-[60vw] rounded-full opacity-8"
+      <div className="absolute bottom-[-15%] left-[-20%] w-[60vw] h-[60vw] rounded-full opacity-[0.08]"
         style={{ background: 'radial-gradient(circle, hsl(322 85% 50%), transparent 65%)' }}
       />
 
@@ -99,9 +95,9 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
           animate={{ opacity: 0.7 }}
           transition={{ delay: 0.1 }}
           className="mx-auto w-24 mb-8"
+          loading="lazy"
         />
 
-        {/* Analyzing text before score appears */}
         {displayScore < score && displayScore < 10 && (
           <motion.p
             initial={{ opacity: 0 }}
@@ -112,14 +108,12 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
           </motion.p>
         )}
 
-        {/* Score circle with glow */}
         <motion.div
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, type: 'spring', damping: 12 }}
           className="relative mx-auto w-56 h-56 mb-8"
         >
-          {/* Glow behind the ring */}
           <motion.div
             animate={{ opacity: [0.3, 0.6, 0.3] }}
             transition={{ duration: 2, repeat: Infinity }}
@@ -166,7 +160,6 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
           <br />de potencial!
         </motion.h2>
 
-        {/* Ranking badge */}
         <motion.div
           initial={{ opacity: 0, scale: 0.5 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -182,7 +175,6 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
           <span className="font-bold text-sm text-amber-300">{ranking.label}</span>
         </motion.div>
 
-        {/* Pool recommendation */}
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
@@ -198,7 +190,6 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
           {poolDescription && <p className="text-sm text-white/40 leading-relaxed">{poolDescription}</p>}
         </motion.div>
 
-        {/* Subtle stars */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}

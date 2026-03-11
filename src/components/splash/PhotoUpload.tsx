@@ -1,14 +1,18 @@
 import { useState, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Camera, X, ArrowRight, ImagePlus, Video, Eye, Lightbulb, RotateCcw } from 'lucide-react';
+import { Camera, X, ArrowRight, ImagePlus, Eye, Lightbulb, RotateCcw } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { ExplorerProgress } from './ExplorerProgress';
+import { toast } from 'sonner';
 
 interface PhotoUploadProps {
   onNext: (urls: string[]) => void;
   onBack: () => void;
 }
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 const photoTips = [
   { icon: '☀️', text: 'Prefira luz natural (durante o dia)' },
@@ -16,6 +20,47 @@ const photoTips = [
   { icon: '🌿', text: 'Inclua os limites do quintal na foto' },
   { icon: '📏', text: 'Tire de pé, na altura dos olhos' },
 ];
+
+async function compressImage(file: File, maxWidth = 1920, quality = 0.85): Promise<File> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      let { width, height } = img;
+      if (width > maxWidth) {
+        height = (height * maxWidth) / width;
+        width = maxWidth;
+      }
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext('2d')!;
+      ctx.drawImage(img, 0, 0, width, height);
+      canvas.toBlob(
+        (blob) => {
+          if (blob) {
+            resolve(new File([blob], file.name, { type: 'image/jpeg' }));
+          } else {
+            resolve(file);
+          }
+        },
+        'image/jpeg',
+        quality
+      );
+    };
+    img.onerror = () => resolve(file);
+    img.src = URL.createObjectURL(file);
+  });
+}
+
+function validateFile(file: File): string | null {
+  if (!ACCEPTED_TYPES.includes(file.type)) {
+    return `Formato não suportado: ${file.type}. Use JPG, PNG ou WebP.`;
+  }
+  if (file.size > MAX_FILE_SIZE) {
+    return `Arquivo muito grande (${(file.size / 1024 / 1024).toFixed(1)}MB). Máximo: 10MB.`;
+  }
+  return null;
+}
 
 export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
   const [photos, setPhotos] = useState<{ file: File; preview: string }[]>([]);
@@ -27,15 +72,33 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
   const streamRef = useRef<MediaStream | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
+  const addFiles = useCallback(async (files: File[]) => {
     const remaining = 4 - photos.length;
-    const toAdd = files.slice(0, remaining).map(file => ({
+    const validFiles: File[] = [];
+    
+    for (const file of files.slice(0, remaining)) {
+      const error = validateFile(file);
+      if (error) {
+        toast.error(error);
+        continue;
+      }
+      const compressed = await compressImage(file);
+      validFiles.push(compressed);
+    }
+
+    const toAdd = validFiles.map(file => ({
       file,
       preview: URL.createObjectURL(file),
     }));
     setPhotos(prev => [...prev, ...toAdd]);
   }, [photos.length]);
+
+  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    addFiles(files);
+    // Reset input so same file can be selected again
+    e.target.value = '';
+  }, [addFiles]);
 
   const removePhoto = (index: number) => {
     setPhotos(prev => {
@@ -60,8 +123,8 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
-    } catch (err) {
-      console.error('Camera access denied:', err);
+    } catch {
+      toast.error('Não foi possível acessar a câmera. Verifique as permissões.');
       setShowCamera(false);
       setShowTips(true);
     }
@@ -114,10 +177,14 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
     try {
       const urls: string[] = [];
       for (const photo of photos) {
-        const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.jpg`;
+        const ext = photo.file.name.split('.').pop() || 'jpg';
+        const fileName = `${Date.now()}-${Math.random().toString(36).substring(7)}.${ext}`;
         const { data, error } = await supabase.storage
           .from('quintal-photos')
-          .upload(fileName, photo.file);
+          .upload(fileName, photo.file, {
+            cacheControl: '3600',
+            contentType: photo.file.type,
+          });
         if (error) throw error;
         const { data: urlData } = supabase.storage
           .from('quintal-photos')
@@ -127,6 +194,7 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
       onNext(urls);
     } catch (err) {
       console.error('Upload error:', err);
+      toast.error('Erro ao enviar fotos. Tente novamente.');
     } finally {
       setUploading(false);
     }
@@ -162,7 +230,6 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
                     muted
                     className="w-full h-full object-cover"
                   />
-                  {/* Guia visual de enquadramento */}
                   <div className="absolute inset-0 pointer-events-none">
                     <div className="absolute inset-4 border-2 border-dashed border-white/30 rounded-xl" />
                     <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-sm text-white text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5">
@@ -189,7 +256,7 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
                       <Camera className="w-6 h-6 text-primary-foreground" />
                     </div>
                   </button>
-                  <div className="w-12 h-12" /> {/* Spacer */}
+                  <div className="w-12 h-12" />
                 </div>
               </motion.div>
             ) : (
@@ -211,7 +278,6 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
                   </div>
                 </div>
 
-                {/* Dicas visuais */}
                 <AnimatePresence>
                   {showTips && photos.length === 0 && (
                     <motion.div
@@ -242,7 +308,6 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
                   )}
                 </AnimatePresence>
 
-                {/* Grid de fotos */}
                 <div className="grid grid-cols-2 gap-3 my-4">
                   <AnimatePresence>
                     {photos.map((photo, i) => (
@@ -253,7 +318,7 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
                         exit={{ opacity: 0, scale: 0.8 }}
                         className="relative aspect-square rounded-2xl overflow-hidden border border-border shadow-sm group"
                       >
-                        <img src={photo.preview} alt={`Quintal ${i + 1}`} className="w-full h-full object-cover" />
+                        <img src={photo.preview} alt={`Quintal ${i + 1}`} className="w-full h-full object-cover" loading="lazy" />
                         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100">
                           <button
                             onClick={() => replacePhoto(i)}
@@ -282,7 +347,6 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
 
                   {photos.length < 4 && (
                     <div className="grid gap-2">
-                      {/* Botão tirar foto */}
                       <button
                         onClick={() => { setReplacingIndex(null); openCamera(); }}
                         className="aspect-[2/1] rounded-2xl border-2 border-dashed border-primary/30 flex flex-col items-center justify-center cursor-pointer hover:bg-primary/5 hover:border-primary/50 transition-all"
@@ -290,13 +354,12 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
                         <Camera className="w-5 h-5 text-primary/50 mb-0.5" />
                         <span className="text-[10px] text-muted-foreground font-medium">Tirar foto</span>
                       </button>
-                      {/* Botão galeria */}
                       <label className="aspect-[2/1] rounded-2xl border-2 border-dashed border-primary/20 flex flex-col items-center justify-center cursor-pointer hover:bg-accent/30 hover:border-primary/40 transition-all">
                         <ImagePlus className="w-5 h-5 text-primary/35 mb-0.5" />
                         <span className="text-[10px] text-muted-foreground font-medium">Da galeria</span>
                         <input
                           type="file"
-                          accept="image/jpeg,image/png"
+                          accept="image/jpeg,image/png,image/webp"
                           multiple
                           onChange={handleFileChange}
                           className="hidden"
@@ -307,7 +370,7 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
                 </div>
 
                 <p className="text-[10px] text-muted-foreground text-center mb-5">
-                  {photos.length}/4 fotos • JPG ou PNG
+                  {photos.length}/4 fotos • JPG, PNG ou WebP • Máx. 10MB
                 </p>
 
                 <div className="flex gap-3">
