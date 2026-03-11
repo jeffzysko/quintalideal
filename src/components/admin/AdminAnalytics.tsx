@@ -37,7 +37,7 @@ interface AdminAnalyticsProps {
   franchiseMap: Record<string, string>;
 }
 
-export function AdminAnalytics({ franchiseMap }: AdminAnalyticsProps) {
+export function AdminAnalytics({ franchiseMap: _franchiseMap }: AdminAnalyticsProps) {
   const [events, setEvents] = useState<AnalyticsEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
