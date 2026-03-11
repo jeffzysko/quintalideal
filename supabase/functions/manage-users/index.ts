@@ -186,21 +186,15 @@ Deno.serve(async (req) => {
         await adminClient.from("profiles").update({ full_name: full_name || email }).eq("user_id", userId);
       }
 
-      // Send invite email
-      const { data: linkData } = await adminClient.auth.admin.generateLink({
-        type: "recovery",
-        email,
-        options: { redirectTo: "https://quintalideal.com.br/reset-password" },
-      });
-
-      const recoveryLink = linkData?.properties?.action_link || "https://quintalideal.com.br/login";
+      // Build link to forgot-password page (no expiring token)
+      const resetPageLink = `https://quintalideal.com.br/forgot-password?email=${encodeURIComponent(email)}`;
       const roleLabels: Record<string, string> = {
         admin_fabrica: "Administrador da Fábrica",
         franquia: "Franquia",
       };
 
       if (RESEND_API_KEY) {
-        const html = buildInviteEmailHTML(full_name || email, roleLabels[role] || role, recoveryLink);
+        const html = buildInviteEmailHTML(full_name || email, roleLabels[role] || role, resetPageLink);
         console.log("Sending invite email to:", email, "from:", SENDER);
         const resendRes = await fetch("https://api.resend.com/emails", {
           method: "POST",
