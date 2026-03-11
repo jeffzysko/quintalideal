@@ -52,8 +52,9 @@ function LazyFallback() {
   );
 }
 
-const App = () => (
-  <QueryClientProvider client={queryClient}>
+function AppRoutes() {
+  usePrefetchRoutes();
+  return (
     <ErrorBoundary>
       <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
       <AuthProvider>
