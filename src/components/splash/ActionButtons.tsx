@@ -6,6 +6,7 @@ import logoSplash from '@/assets/logo-splash.png';
 import { getRankingGaucho } from '@/lib/ranking';
 import { ValorizationSimulator } from './ValorizationSimulator';
 import { FriendChallenge } from './FriendChallenge';
+import { trackEvent } from '@/lib/analytics';
 
 interface ActionButtonsProps {
   score: number;
@@ -14,13 +15,15 @@ interface ActionButtonsProps {
   whatsappNumber?: string;
   leadName?: string;
   refCode?: string;
+  franchiseId?: string;
 }
 
-export function ActionButtons({ score, poolName, poolDescription, whatsappNumber, leadName, refCode }: ActionButtonsProps) {
+export function ActionButtons({ score, poolName, poolDescription, whatsappNumber, leadName, refCode, franchiseId }: ActionButtonsProps) {
   const ranking = getRankingGaucho(score);
   const [sharing, setSharing] = useState(false);
 
   const handleWhatsApp = () => {
+    trackEvent('whatsapp_clicked', { franchiseId });
     const phone = whatsappNumber || '5551999999999';
     const message = encodeURIComponent(
       `Olá! Fiz o teste do Índice do Quintal Splash e meu quintal tem ${score}% de potencial. O modelo recomendado foi a ${poolName}. Gostaria de saber mais!`
@@ -94,6 +97,7 @@ export function ActionButtons({ score, poolName, poolDescription, whatsappNumber
   };
 
   const handleShare = async () => {
+    trackEvent('result_shared', { franchiseId, metadata: { plataforma: 'share_api' } });
     setSharing(true);
     try {
       const blob = await generateShareImage();

@@ -5,13 +5,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Users, TrendingUp, Building2, MapPin, Eye, Download, BarChart3, Share2, Target } from 'lucide-react';
+import { Users, TrendingUp, Building2, MapPin, Eye, Download, BarChart3, Share2, Target, Activity } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis } from 'recharts';
 import { AdminCityRanking } from '@/components/admin/AdminCityRanking';
 import { AdminFranchiseRanking } from '@/components/admin/AdminFranchiseRanking';
 import { AdminReferralMetrics } from '@/components/admin/AdminReferralMetrics';
+import { AdminAnalytics } from '@/components/admin/AdminAnalytics';
 
 interface LeadRow {
   id: string;
@@ -54,7 +55,7 @@ export default function AdminDashboard() {
   const [leads, setLeads] = useState<LeadRow[]>([]);
   const [franchises, setFranchises] = useState<Franchise[]>([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'analytics'>('overview');
 
   const [filterFranquia, setFilterFranquia] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -169,6 +170,12 @@ export default function AdminDashboard() {
             <BarChart3 className="w-4 h-4 inline mr-1.5" /> Inteligência
           </button>
           <button
+            onClick={() => setActiveTab('analytics')}
+            className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'analytics' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+          >
+            <Activity className="w-4 h-4 inline mr-1.5" /> Analytics
+          </button>
+          <button
             onClick={() => setActiveTab('leads')}
             className={`px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${activeTab === 'leads' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
           >
@@ -217,6 +224,10 @@ export default function AdminDashboard() {
               </Card>
             </div>
           </>
+        )}
+
+        {activeTab === 'analytics' && (
+          <AdminAnalytics franchiseMap={franchiseMap} />
         )}
 
         {activeTab === 'leads' && (

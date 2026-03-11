@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import { HeroSection } from './HeroSection';
@@ -10,6 +10,7 @@ import { ActionButtons } from './ActionButtons';
 import { calculateScore, recommendPool, type QuizAnswers } from '@/lib/scoring';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
+import { trackEvent } from '@/lib/analytics';
 
 const quizQuestions = [
   {
@@ -81,8 +82,13 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   const [leadRefCode, setLeadRefCode] = useState('');
   const [saving, setSaving] = useState(false);
   
-  // Guard against double submissions
   const isSubmittingRef = useRef(false);
+  const analyticsCtx = { franchiseId };
+
+  // Track landing page view
+  useEffect(() => {
+    trackEvent('landing_page_viewed', analyticsCtx);
+  }, []);
 
   const answerKeys: (keyof QuizAnswers)[] = ['espaco', 'moradia', 'uso', 'intencao', 'preferencia', 'cidade'];
 
@@ -90,6 +96,12 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
     const key = answerKeys[quizStep];
     const newAnswers = { ...answers, [key]: value };
     setAnswers(newAnswers);
+
+    // Track each question answer
+    trackEvent('quiz_question_answered', {
+      ...analyticsCtx,
+      metadata: { question_number: quizStep + 1, answer: value },
+    });
 
     if (quizStep < quizQuestions.length) {
       setQuizStep(prev => prev + 1);
@@ -102,6 +114,13 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       setScore(s);
       setPoolName(pool);
       fetchPoolDescription(pool);
+
+      trackEvent('quiz_completed', {
+        ...analyticsCtx,
+        city: fullAnswers.cidade,
+        metadata: { score: s, modelo_recomendado: pool },
+      });
+
       setStep('result');
     }
   }, [quizStep, answers]);
@@ -115,7 +134,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         .single();
       if (data) setPoolDesc(data.descricao || '');
     } catch {
-      // Non-critical: description is optional
+      // Non-critical
     }
   };
 
@@ -128,7 +147,6 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   };
 
   const handleLeadSubmit = async (data: { nome: string; telefone: string; email: string }) => {
-    // Prevent double submission
     if (isSubmittingRef.current) return;
     isSubmittingRef.current = true;
     
@@ -151,13 +169,18 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         referred_by: referredBy || null,
       }).select('ref_code').single();
 
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
 
       if (inserted?.ref_code) {
         setLeadRefCode(inserted.ref_code);
       }
+
+      trackEvent('lead_created', {
+        ...analyticsCtx,
+        city: answers.cidade,
+        metadata: { modelo_recomendado: poolName, score },
+      });
+
       setStep('actions');
     } catch (err) {
       console.error('Error saving lead:', err);
@@ -168,15 +191,38 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
     }
   };
 
+  const handleStartQuiz = () => {
+    trackEvent('quiz_started', analyticsCtx);
+    setStep('photos');
+  };
+
+  const handlePhotosNext = (urls: string[]) => {
+    setPhotoUrls(urls);
+    trackEvent('photo_uploaded', {
+      ...analyticsCtx,
+      metadata: { quantidade_de_fotos: urls.length },
+    });
+    setStep('quiz');
+  };
+
+  const handleResultContinue = () => {
+    trackEvent('result_viewed', {
+      ...analyticsCtx,
+      city: answers.cidade,
+      metadata: { modelo_recomendado: poolName, indice_quintal: score },
+    });
+    setStep('lead-form');
+  };
+
   const currentQuizQuestion = quizStep < quizQuestions.length ? quizQuestions[quizStep] : null;
 
   return (
     <AnimatePresence mode="wait">
       {step === 'hero' && (
-        <HeroSection key="hero" onStart={() => setStep('photos')} franchiseName={franchiseName} />
+        <HeroSection key="hero" onStart={handleStartQuiz} franchiseName={franchiseName} />
       )}
       {step === 'photos' && (
-        <PhotoUpload key="photos" onNext={(urls) => { setPhotoUrls(urls); setStep('quiz'); }} onBack={() => setStep('hero')} />
+        <PhotoUpload key="photos" onNext={handlePhotosNext} onBack={() => setStep('hero')} />
       )}
       {step === 'quiz' && currentQuizQuestion && (
         <QuizStep
@@ -206,7 +252,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         />
       )}
       {step === 'result' && (
-        <ResultScreen key="result" score={score} poolName={poolName} poolDescription={poolDesc} onContinue={() => setStep('lead-form')} />
+        <ResultScreen key="result" score={score} poolName={poolName} poolDescription={poolDesc} onContinue={handleResultContinue} />
       )}
       {step === 'lead-form' && (
         <LeadForm key="lead-form" onSubmit={handleLeadSubmit} onCheckDuplicate={checkDuplicate} loading={saving} />
@@ -220,6 +266,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
           whatsappNumber={franchiseWhatsapp}
           leadName={leadName}
           refCode={leadRefCode}
+          franchiseId={franchiseId}
         />
       )}
     </AnimatePresence>
