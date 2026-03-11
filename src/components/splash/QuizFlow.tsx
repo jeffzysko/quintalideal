@@ -4,6 +4,7 @@ import { useSearchParams } from 'react-router-dom';
 import { HeroSection } from './HeroSection';
 import { PreDiagnosis } from './PreDiagnosis';
 import { PhotoUpload } from './PhotoUpload';
+import { PhotoAnalysis } from './PhotoAnalysis';
 import { QuizStep } from './QuizStep';
 import { ProcessingScreen } from './ProcessingScreen';
 import { ResultScreen } from './ResultScreen';
@@ -68,7 +69,7 @@ const quizQuestions = [
   },
 ];
 
-type Step = 'hero' | 'pre-diagnosis' | 'photos' | 'quiz' | 'processing' | 'result' | 'lead-form' | 'actions';
+type Step = 'hero' | 'photos' | 'photo-analysis' | 'pre-diagnosis' | 'quiz' | 'processing' | 'result' | 'lead-form' | 'actions';
 
 interface QuizFlowProps {
   franchiseSlug?: string;
@@ -222,8 +223,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       ...analyticsCtx,
       metadata: { quantidade_de_fotos: urls.length },
     });
-    // Skip pre-diagnosis if no photos were uploaded
-    setStep(urls.length > 0 ? 'pre-diagnosis' : 'quiz');
+    setStep(urls.length > 0 ? 'photo-analysis' : 'quiz');
   };
 
   const handleResultContinue = () => {
@@ -244,6 +244,9 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       )}
       {step === 'photos' && (
         <PhotoUpload key="photos" onNext={handlePhotosNext} onBack={() => setStep('hero')} />
+      )}
+      {step === 'photo-analysis' && (
+        <PhotoAnalysis key="photo-analysis" onDone={() => setStep('pre-diagnosis')} />
       )}
       {step === 'pre-diagnosis' && (
         <PreDiagnosis key="pre-diagnosis" onContinue={() => setStep('quiz')} />
