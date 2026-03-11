@@ -219,7 +219,7 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
         <ExplorerProgress currentStep={0} onBack={onBack} />
         <canvas ref={canvasRef} className="hidden" />
 
-        <div className="flex-1 flex flex-col justify-center -mt-16 sm:-mt-4">
+        <div className="flex-1 flex flex-col justify-center -mt-10 sm:-mt-4">
           <AnimatePresence mode="wait">
             {showCamera ? (
               <motion.div
