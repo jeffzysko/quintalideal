@@ -22,7 +22,7 @@ interface QuizStepProps {
   explorerStep: number;
 }
 
-export function QuizStep({ step, totalSteps, question, options, type = 'options', onAnswer, onBack, explorerStep }: QuizStepProps) {
+export function QuizStep({ step, totalSteps: _totalSteps, question, options, type = 'options', onAnswer, onBack, explorerStep }: QuizStepProps) {
   const [citySearch, setCitySearch] = useState('');
   const [selectedValue, setSelectedValue] = useState<string | null>(null);
 

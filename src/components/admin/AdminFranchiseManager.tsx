@@ -197,7 +197,7 @@ export function AdminFranchiseManager() {
     }
     setSaving(true);
     try {
-      const { data: { session } } = await supabase.auth.getSession();
+      await supabase.auth.getSession();
       const res = await supabase.functions.invoke('invite-franchise-user', {
         body: {
           email: inviteEmail.trim(),

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Users, Trophy, Link2, Copy, Check, Crown, Medal, Send } from 'lucide-react';
+import { Users, Trophy, Link2, Copy, Check, Crown, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabase';
 import { SITE_URL } from '@/lib/constants';

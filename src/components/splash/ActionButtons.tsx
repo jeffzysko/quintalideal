@@ -33,7 +33,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
   const ranking = getRankingGaucho(score);
   const classification = getYardClassification(score);
   const socialComparison = getSocialComparison(score);
-  const [sharing, setSharing] = useState(false);
+  const [_sharing, setSharing] = useState(false);
   const [showInstaGuide, setShowInstaGuide] = useState(false);
 
   const handleInstagramShare = async () => {

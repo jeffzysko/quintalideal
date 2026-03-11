@@ -8,7 +8,7 @@ interface ValorizationSimulatorProps {
   score: number;
 }
 
-export function ValorizationSimulator({ score }: ValorizationSimulatorProps) {
+export function ValorizationSimulator({ score: _score }: ValorizationSimulatorProps) {
   const [valorImovel, setValorImovel] = useState('');
   const [showResult, setShowResult] = useState(false);
 

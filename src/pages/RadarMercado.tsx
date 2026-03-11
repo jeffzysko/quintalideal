@@ -5,12 +5,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
-  MapPin, BarChart3, Users, TrendingUp, Target, Zap, Home,
+  MapPin, BarChart3, Users, TrendingUp, Target, Home,
   Crown, ArrowLeft, Sparkles, AlertTriangle, Trophy, Flame,
-  Building2, Eye, ArrowRight
 } from 'lucide-react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { BarChart, Bar, XAxis, YAxis, PieChart, Pie, Cell } from 'recharts';
+import { PieChart, Pie, Cell } from 'recharts';
 import logoSplash from '@/assets/logo-splash.png';
 import { useNavigate } from 'react-router-dom';
 
