@@ -15,6 +15,7 @@ interface Franchise {
 
 export default function FranchiseLanding() {
   const { slug } = useParams<{ slug: string }>();
+  const navigate = useNavigate();
   const [franchise, setFranchise] = useState<Franchise | null>(null);
   const [loading, setLoading] = useState(true);
 
