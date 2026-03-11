@@ -11,7 +11,7 @@ interface HeroSectionProps {
 
 export function HeroSection({ onStart, franchiseName }: HeroSectionProps) {
   return (
-    <div className="min-h-screen flex flex-col relative overflow-hidden">
+    <div className="h-[100dvh] flex flex-col relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
         <img src={heroPool} alt="" className="w-full h-full object-cover scale-105" loading="eager" />
