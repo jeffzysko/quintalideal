@@ -44,6 +44,7 @@ export function AdminUserManager() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [resendingId, setResendingId] = useState<string | null>(null);
+  const [resendingAll, setResendingAll] = useState(false);
 
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -204,6 +205,37 @@ export function AdminUserManager() {
     }
   }
 
+  async function handleResendAll() {
+    const nonAdminUsers = users.filter(u => !u.roles.includes('admin_fabrica'));
+    if (nonAdminUsers.length === 0) {
+      toast.info('Nenhum usuário para reenviar.');
+      return;
+    }
+    setResendingAll(true);
+    let success = 0;
+    let fail = 0;
+    for (const user of nonAdminUsers) {
+      try {
+        const { data, error } = await supabase.functions.invoke('manage-users', {
+          body: { action: 'resend_invite', user_id: user.id },
+        });
+        if (error || data?.error) {
+          fail++;
+        } else {
+          success++;
+        }
+      } catch {
+        fail++;
+      }
+    }
+    setResendingAll(false);
+    if (fail === 0) {
+      toast.success(`Convite reenviado para ${success} usuário(s).`);
+    } else {
+      toast.warning(`Enviados: ${success} | Falhas: ${fail}`);
+    }
+  }
+
   const filteredUsers = users.filter(u => {
     const term = searchTerm.toLowerCase();
     return (
@@ -239,6 +271,10 @@ export function AdminUserManager() {
                 className="pl-9 h-9 text-sm"
               />
             </div>
+            <Button size="sm" onClick={handleResendAll} variant="outline" disabled={resendingAll} className="gap-1.5 shrink-0">
+              {resendingAll ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+              <span className="hidden sm:inline">Reenviar Todos</span>
+            </Button>
             <Button size="sm" onClick={openCreateDialog} className="gap-1.5 shrink-0">
               <Plus className="w-4 h-4" /> <span className="hidden sm:inline">Novo Usuário</span>
             </Button>
