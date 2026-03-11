@@ -280,7 +280,7 @@ export default function ProfileSettings() {
 }
 
 function PasswordChangeCard() {
-  const [currentPassword, setCurrentPassword] = useState('');
+  const [_currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showNew, setShowNew] = useState(false);
