@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Users, TrendingUp, Clock, Eye, Inbox, Share2 } from 'lucide-react';
+import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { SITE_URL } from '@/lib/constants';
@@ -154,6 +155,7 @@ export default function FranchiseDashboard() {
               <Button variant="outline" className="gap-2" onClick={() => {
                 const url = franchiseSlug ? `${SITE_URL}/${franchiseSlug}` : SITE_URL;
                 navigator.clipboard.writeText(url);
+                toast.success('Link copiado!');
               }}>
                 <Share2 className="w-4 h-4" />
                 Copiar link do quiz
