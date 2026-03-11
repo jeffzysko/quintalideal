@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { SITE_URL } from '@/lib/constants';
+import { FranchiseContactSettings } from '@/components/franchise/FranchiseContactSettings';
 
 interface LeadRow {
   id: string;
@@ -89,6 +90,13 @@ export default function FranchiseDashboard() {
   return (
     <div className="p-6 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold mb-6 text-foreground">Dashboard da Franquia</h1>
+
+      {franchiseId && (
+        <div className="mb-8">
+          <FranchiseContactSettings franchiseId={franchiseId} />
+        </div>
+      )}
+
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <Card>
