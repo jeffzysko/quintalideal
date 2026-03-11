@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import logoSplash from '@/assets/logo-splash.png';
 import { getRankingGaucho } from '@/lib/ranking';
-import { Trophy } from 'lucide-react';
+import { Trophy, Sparkles } from 'lucide-react';
 
 interface ResultScreenProps {
   score: number;
@@ -33,8 +33,8 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
   const offset = circumference - (displayScore / 100) * circumference;
 
   const getColor = () => {
-    if (displayScore >= 70) return 'hsl(322, 95%, 47%)';
-    if (displayScore >= 40) return 'hsl(196, 93%, 44%)';
+    if (displayScore >= 70) return 'hsl(207, 90%, 42%)';
+    if (displayScore >= 40) return 'hsl(207, 90%, 55%)';
     return 'hsl(var(--muted-foreground))';
   };
 
@@ -42,26 +42,29 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="min-h-screen flex flex-col items-center justify-center px-6 py-12"
-      style={{
-        background: 'linear-gradient(160deg, hsl(207 65% 93%) 0%, hsl(0 0% 99.6%) 50%, hsl(130 20% 92%) 100%)'
-      }}
+      className="min-h-screen flex flex-col items-center justify-center px-6 py-12 gradient-hero"
     >
       <motion.div
-        initial={{ scale: 0.5, opacity: 0 }}
+        initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        transition={{ delay: 0.2, type: 'spring' }}
-        className="text-center"
+        transition={{ delay: 0.2, type: 'spring', damping: 20 }}
+        className="text-center max-w-md w-full"
       >
-        <img src={logoSplash} alt="Splash Piscinas" className="mx-auto w-32 mb-6" />
+        <img src={logoSplash} alt="Splash Piscinas" className="mx-auto w-28 mb-8 opacity-80" />
 
-        <div className="relative mx-auto w-48 h-48 mb-6">
-          <svg className="w-48 h-48 transform -rotate-90" viewBox="0 0 160 160">
-            <circle cx="80" cy="80" r="70" stroke="hsl(var(--border))" strokeWidth="10" fill="none" />
+        {/* Score circle */}
+        <motion.div
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ delay: 0.3, type: 'spring', damping: 15 }}
+          className="relative mx-auto w-52 h-52 mb-8"
+        >
+          <svg className="w-52 h-52 transform -rotate-90" viewBox="0 0 160 160">
+            <circle cx="80" cy="80" r="70" stroke="hsl(var(--border))" strokeWidth="6" fill="none" />
             <circle
               cx="80" cy="80" r="70"
               stroke={getColor()}
-              strokeWidth="10"
+              strokeWidth="6"
               fill="none"
               strokeLinecap="round"
               strokeDasharray={circumference}
@@ -70,36 +73,48 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
             />
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-4xl font-extrabold" style={{ fontFamily: 'Montserrat', color: getColor() }}>
-              {displayScore}%
+            <span className="text-5xl font-extrabold tracking-tight" style={{ color: getColor() }}>
+              {displayScore}
             </span>
+            <span className="text-lg font-medium text-muted-foreground">pontos</span>
           </div>
-        </div>
-
-        <h2 className="text-2xl md:text-3xl font-bold mb-2" style={{ fontFamily: 'Montserrat' }}>
-          Seu quintal tem{' '}
-          <span style={{ color: getColor() }}>{score}%</span>{' '}
-          de potencial!
-        </h2>
-
-        {/* Ranking Gaúcho */}
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="flex items-center justify-center gap-2 my-4 px-5 py-3 rounded-full bg-primary/10 border border-primary/20 mx-auto w-fit"
-        >
-          <Trophy className="w-5 h-5 text-primary" />
-          <span className="font-bold text-sm text-primary">
-            {ranking.label}
-          </span>
         </motion.div>
 
-        <div className="bg-card border rounded-2xl p-6 max-w-sm mx-auto shadow-sm mt-4">
-          <span className="text-xs font-semibold text-secondary uppercase tracking-wide">Modelo recomendado</span>
-          <h3 className="text-xl font-bold mt-1 mb-1" style={{ fontFamily: 'Montserrat' }}>{poolName}</h3>
-          {poolDescription && <p className="text-sm text-muted-foreground">{poolDescription}</p>}
-        </div>
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="text-2xl md:text-3xl font-bold mb-3 tracking-tight text-foreground"
+        >
+          Seu quintal tem{' '}
+          <span className="text-primary">{score}%</span> de potencial!
+        </motion.h2>
+
+        {/* Ranking badge */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.9 }}
+          className="inline-flex items-center gap-2 my-5 px-5 py-2.5 rounded-full bg-primary/8 border border-primary/15"
+        >
+          <Trophy className="w-4 h-4 text-primary" />
+          <span className="font-semibold text-sm text-primary">{ranking.label}</span>
+        </motion.div>
+
+        {/* Pool recommendation card */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.1 }}
+          className="glass-card rounded-2xl p-6 mt-4"
+        >
+          <div className="flex items-center gap-2 mb-2">
+            <Sparkles className="w-4 h-4 text-primary" />
+            <span className="text-xs font-semibold text-primary uppercase tracking-wider">Modelo recomendado</span>
+          </div>
+          <h3 className="text-xl font-bold text-foreground mb-1">{poolName}</h3>
+          {poolDescription && <p className="text-sm text-muted-foreground leading-relaxed">{poolDescription}</p>}
+        </motion.div>
       </motion.div>
     </motion.div>
   );
