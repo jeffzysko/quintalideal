@@ -1,4 +1,6 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
+import { Button } from '@/components/ui/button';
+import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import logoSplash from '@/assets/logo-splash.png';
 import { getRankingGaucho, getYardClassification, getSocialComparison } from '@/lib/ranking';
@@ -38,6 +40,8 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
 
   const confettiColors = ['#1e88e5', '#42a5f5', '#64b5f6', '#e91e91', '#ffd700', '#00e5ff', '#76ff03'];
 
+  const [animDone, setAnimDone] = useState(false);
+
   useEffect(() => {
     let current = 0;
     const interval = setInterval(() => {
@@ -46,7 +50,7 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
         current = score;
         clearInterval(interval);
         setShowConfetti(true);
-        setTimeout(() => onContinueRef.current(), 3500);
+        setAnimDone(true);
       }
       setDisplayScore(current);
     }, 18);
@@ -237,6 +241,31 @@ export function ResultScreen({ score, poolName, poolDescription, onContinue }: R
           ))}
           <span className="text-white/30 text-xs ml-2 font-medium">Análise completa</span>
         </motion.div>
+        {/* Avançar button */}
+        {animDone && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mt-8"
+          >
+            <Button
+              onClick={onContinue}
+              className="w-full py-7 text-[15px] rounded-2xl font-bold shadow-xl gradient-blue glow-blue hover:glow-blue-strong hover:scale-[1.01] transition-all duration-300 gap-2 group"
+            >
+              Avançar
+              <motion.span
+                animate={{ x: [0, 4, 0] }}
+                transition={{ duration: 1.5, repeat: Infinity }}
+              >
+                <ArrowRight className="w-5 h-5" />
+              </motion.span>
+            </Button>
+            <p className="text-white/30 text-[10px] text-center mt-2">
+              Prossiga para falar com nossa equipe comercial
+            </p>
+          </motion.div>
+        )}
       </motion.div>
     </motion.div>
   );
