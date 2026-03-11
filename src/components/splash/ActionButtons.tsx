@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
-import { MessageCircle, FileText, Share2, Trophy, Download, ArrowRight, Sparkles, Zap, Star, Eye } from 'lucide-react';
+import { MessageCircle, FileText, Share2, Trophy, Download, ArrowRight, Sparkles, Zap, Star } from 'lucide-react';
 import logoSplash from '@/assets/logo-splash.png';
 import { getRankingGaucho } from '@/lib/ranking';
 import { ValorizationSimulator } from './ValorizationSimulator';
