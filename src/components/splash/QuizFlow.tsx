@@ -245,6 +245,9 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       {step === 'photos' && (
         <PhotoUpload key="photos" onNext={handlePhotosNext} onBack={() => setStep('hero')} />
       )}
+      {step === 'photo-analysis' && (
+        <PhotoAnalysis key="photo-analysis" onDone={() => setStep('pre-diagnosis')} />
+      )}
       {step === 'pre-diagnosis' && (
         <PreDiagnosis key="pre-diagnosis" onContinue={() => setStep('quiz')} />
       )}
