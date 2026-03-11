@@ -91,6 +91,13 @@ export default function FranchiseDashboard() {
     <div className="p-6 max-w-6xl mx-auto">
       <h1 className="text-2xl font-bold mb-6 text-foreground">Dashboard da Franquia</h1>
 
+      {franchiseId && (
+        <div className="mb-8">
+          <FranchiseContactSettings franchiseId={franchiseId} />
+        </div>
+      )}
+
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
         <Card>
           <CardContent className="p-4 flex items-center gap-3">
