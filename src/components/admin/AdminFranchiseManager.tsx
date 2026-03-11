@@ -141,7 +141,6 @@ export function AdminFranchiseManager() {
         ? 'Já existe uma franquia com esse slug.' 
         : 'Erro ao salvar franquia.';
       toast.error(msg);
-      console.error(err);
     } finally {
       setSaving(false);
     }
