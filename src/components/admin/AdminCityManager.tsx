@@ -351,7 +351,7 @@ export function AdminCityManager() {
                     Cidades atendidas por múltiplas franquias ({duplicateCities.size})
                   </p>
                   <div className="space-y-1">
-                    {Array.from(duplicateCities.entries()).slice(0, 8).map(([cityNorm, fIds]) => {
+                    {Array.from(duplicateCities.entries()).map(([cityNorm, fIds]) => {
                       const cityObj = coveredCities.find(c => c.city_name_normalized === cityNorm);
                       return (
                         <p key={cityNorm} className="text-xs text-amber-700 dark:text-amber-300">
@@ -359,9 +359,6 @@ export function AdminCityManager() {
                         </p>
                       );
                     })}
-                    {duplicateCities.size > 8 && (
-                      <p className="text-xs text-amber-600">...e mais {duplicateCities.size - 8}</p>
-                    )}
                   </div>
                 </div>
               </div>
