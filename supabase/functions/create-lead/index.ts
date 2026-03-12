@@ -16,10 +16,20 @@ function normalizePhone(input: unknown): string {
   return input.replace(/\D/g, "").slice(0, 15);
 }
 
+function isValidBRPhone(digits: string): boolean {
+  return digits.length >= 10 && digits.length <= 11;
+}
+
+const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
 function normalizeEmail(input: unknown): string | null {
   if (typeof input !== "string") return null;
   const value = input.trim().slice(0, 255);
   return value.length > 0 ? value : null;
+}
+
+function isValidEmail(email: string): boolean {
+  return EMAIL_REGEX.test(email) && email.length <= 255;
 }
 
 function isValidUuid(value: string): boolean {
