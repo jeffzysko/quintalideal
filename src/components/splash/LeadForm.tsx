@@ -134,7 +134,7 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading, lang = 'pt' }: L
             </Label>
             <Input
               value={telefone}
-              onChange={e => { setTelefone(formatPhone(e.target.value)); setErrors(p => ({ ...p, telefone: '' })); setDuplicateMsg(''); }}
+              onChange={e => { handlePhoneChange(e.target.value); setErrors(p => ({ ...p, telefone: '' })); setDuplicateMsg(''); }}
               placeholder={t('lead_whatsapp_placeholder', lang)}
               className="py-6 rounded-2xl text-base bg-background border-border"
               type="tel"
