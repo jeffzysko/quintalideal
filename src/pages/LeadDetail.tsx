@@ -299,7 +299,7 @@ export default function LeadDetail() {
         {lead.respostas_questionario && (
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
             <Card className="glass-card">
-              <CardContent className="p-5">
+              <CardContent className="p-3 sm:p-5">
                 <div className="flex items-center gap-2 mb-3">
                   <ClipboardList className="w-4 h-4 text-primary" />
                   <h2 className="text-sm font-semibold text-foreground">Respostas do Questionário</h2>
@@ -311,12 +311,12 @@ export default function LeadDetail() {
                       const q = questionLabels[key];
                       const displayValue = answerLabels[value as string] || (value as string);
                       return (
-                        <div key={key} className="flex items-center justify-between py-2.5 px-3.5 rounded-xl bg-muted/40 hover:bg-muted/60 transition-colors">
-                          <span className="text-sm text-muted-foreground flex items-center gap-2.5">
+                        <div key={key} className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 py-2 sm:py-2.5 px-3 sm:px-3.5 rounded-xl bg-muted/40 hover:bg-muted/60 transition-colors">
+                          <span className="text-xs sm:text-sm text-muted-foreground flex items-center gap-2">
                             <span className="text-base">{q.icon}</span>
                             {q.label}
                           </span>
-                          <span className="text-sm font-semibold text-foreground">{displayValue}</span>
+                          <span className="text-xs sm:text-sm font-semibold text-foreground ml-7 sm:ml-0">{displayValue}</span>
                         </div>
                       );
                     })}

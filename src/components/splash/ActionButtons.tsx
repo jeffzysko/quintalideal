@@ -267,7 +267,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
       </motion.div>
 
       {/* === POOL CARD === */}
-      <div className="px-4 sm:px-6 max-w-md mx-auto -mt-3 relative z-20">
+      <div className="px-3 sm:px-6 max-w-md mx-auto -mt-3 relative z-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
