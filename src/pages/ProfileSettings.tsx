@@ -41,22 +41,6 @@ export default function ProfileSettings() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-export default function ProfileSettings() {
-  const { user, role, franchiseId } = useAuth();
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  const [fullName, setFullName] = useState('');
-  const [telefone, setTelefone] = useState('');
-  const [whatsapp, setWhatsapp] = useState('');
-  const [email, setEmail] = useState('');
-  const [franchiseName, setFranchiseName] = useState('');
-  const [availableFranchises, setAvailableFranchises] = useState<FranchiseOption[]>([]);
-  const [selectedIntegrationFranchiseId, setSelectedIntegrationFranchiseId] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   // Scroll to hash anchor after loading
   useEffect(() => {
