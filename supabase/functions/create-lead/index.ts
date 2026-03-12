@@ -79,6 +79,7 @@ Deno.serve(async (req) => {
     );
 
     let lastError: { code?: string; message?: string } | null = null;
+    let insertedRefCode = "";
 
     for (let attempt = 0; attempt < 3; attempt += 1) {
       const refCode = generateRefCode();
@@ -101,10 +102,8 @@ Deno.serve(async (req) => {
       });
 
       if (!error) {
-        return new Response(JSON.stringify({ success: true, refCode }), {
-          status: 200,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
+        insertedRefCode = refCode;
+        break;
       }
 
       lastError = error;
@@ -113,7 +112,21 @@ Deno.serve(async (req) => {
       }
     }
 
-    throw new Error(lastError?.message || "Falha ao salvar lead");
+    if (!insertedRefCode) {
+      throw new Error(lastError?.message || "Falha ao salvar lead");
+    }
+
+    // Fire webhook if franchise has one configured
+    if (franquiaId) {
+      fireWebhook(supabase, franquiaId, {
+        nome, telefone, email, cidade, pontuacaoQuintal, modeloRecomendado, referredBy,
+      }).catch((err) => console.error("Webhook error:", err));
+    }
+
+    return new Response(JSON.stringify({ success: true, refCode: insertedRefCode }), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown error";
     console.error("Error in create-lead:", message);
@@ -124,3 +137,76 @@ Deno.serve(async (req) => {
     });
   }
 });
+
+async function fireWebhook(
+  supabase: ReturnType<typeof createClient>,
+  franquiaId: string,
+  lead: {
+    nome: string;
+    telefone: string;
+    email: string | null;
+    cidade: string | null;
+    pontuacaoQuintal: number | null;
+    modeloRecomendado: string | null;
+    referredBy: string | null;
+  }
+) {
+  const { data: franchise } = await supabase
+    .from("franchises")
+    .select("webhook_url, webhook_secret, nome_franquia, slug_url")
+    .eq("id", franquiaId)
+    .maybeSingle();
+
+  if (!franchise?.webhook_url) return;
+
+  const payload = {
+    evento: "novo_lead",
+    lead: {
+      nome: lead.nome,
+      telefone: lead.telefone,
+      email: lead.email,
+      cidade: lead.cidade,
+      pontuacao_quintal: lead.pontuacaoQuintal,
+      modelo_recomendado: lead.modeloRecomendado,
+      referred_by: lead.referredBy,
+      created_at: new Date().toISOString(),
+    },
+    franquia: {
+      nome: franchise.nome_franquia,
+      slug: franchise.slug_url,
+    },
+  };
+
+  const body = JSON.stringify(payload);
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  // HMAC signature if secret is configured
+  if (franchise.webhook_secret) {
+    const encoder = new TextEncoder();
+    const key = await crypto.subtle.importKey(
+      "raw",
+      encoder.encode(franchise.webhook_secret),
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["sign"]
+    );
+    const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(body));
+    const hex = Array.from(new Uint8Array(signature), (b) => b.toString(16).padStart(2, "0")).join("");
+    headers["X-Webhook-Signature"] = `sha256=${hex}`;
+  }
+
+  const res = await fetch(franchise.webhook_url, {
+    method: "POST",
+    headers,
+    body,
+    signal: AbortSignal.timeout(10000),
+  });
+
+  if (!res.ok) {
+    console.error(`Webhook failed [${res.status}]: ${await res.text().catch(() => "")}`);
+  } else {
+    console.log("Webhook sent successfully to:", franchise.webhook_url);
+  }
+}
