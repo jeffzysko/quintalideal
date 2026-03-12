@@ -117,6 +117,22 @@
     min-height: 100vh;
     min-height: 100dvh;
   }
+
+  /* Enhanced focus states */
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible,
+  [role="combobox"]:focus-visible {
+    outline: none;
+    ring: 2px;
+    box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--primary) / 0.4);
+    border-color: hsl(var(--primary) / 0.5);
+  }
+
+  button:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--primary) / 0.3);
+  }
 }
 
 @layer utilities {

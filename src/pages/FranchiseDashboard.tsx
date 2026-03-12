@@ -10,6 +10,10 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { SITE_URL } from '@/lib/constants';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileLeadCard } from '@/components/admin/MobileLeadCard';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { PageTransition } from '@/components/PageTransition';
 
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { FranchiseReports } from '@/components/franchise/FranchiseReports';
@@ -59,6 +63,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   const { franchiseId: authFranchiseId, loading: authLoading } = useAuth();
   const franchiseId = overrideFranchiseId || authFranchiseId;
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState<'leads' | 'reports'>('leads');
 
@@ -213,6 +218,13 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
               </motion.div>
             ) : (
               <>
+                {isMobile ? (
+                  <div className="space-y-3">
+                    {leads.map((lead, i) => (
+                      <MobileLeadCard key={lead.id} lead={lead} index={i} basePath={leadDetailPath} />
+                    ))}
+                  </div>
+                ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm" role="table">
                     <thead>
@@ -253,6 +265,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                     </tbody>
                   </table>
                 </div>
+                )}
 
                  {totalCount > PAGE_SIZE && (
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mt-4 pt-4 border-t border-border/30">
@@ -289,6 +302,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   }
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-border/40 bg-card/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-4 md:px-6 h-14 md:h-16 flex items-center justify-between">
@@ -309,8 +323,10 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       </header>
 
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8">
+        <Breadcrumbs items={[{ label: 'Franquia' }]} />
         {content}
       </div>
     </div>
+    </PageTransition>
   );
 }

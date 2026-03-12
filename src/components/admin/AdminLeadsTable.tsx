@@ -5,6 +5,8 @@ import { Eye, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { STATUS_LABELS, STATUS_COLORS, LeadRow } from '@/lib/lead-constants';
 import { motion } from 'framer-motion';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileLeadCard } from './MobileLeadCard';
 
 interface AdminLeadsTableProps {
   leads: LeadRow[];
@@ -36,6 +38,7 @@ function AvatarInitial({ name }: { name: string | null }) {
 
 export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChange, isLoading, franchiseMap }: AdminLeadsTableProps) {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const from = (page - 1) * pageSize;
   const to = from + pageSize;
   const totalPages = Math.ceil(totalCount / pageSize);
@@ -64,6 +67,20 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
           </motion.div>
         ) : (
           <>
+            {/* Mobile card view */}
+            {isMobile ? (
+              <div className="space-y-3">
+                {leads.map((lead, i) => (
+                  <MobileLeadCard
+                    key={lead.id}
+                    lead={lead}
+                    index={i}
+                    basePath="/admin/lead"
+                    franchiseName={lead.franquia_id ? franchiseMap[lead.franquia_id] : undefined}
+                  />
+                ))}
+              </div>
+            ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm" role="table">
                 <thead>
@@ -133,6 +150,7 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                 </tbody>
               </table>
             </div>
+            )}
 
             {totalCount > 0 && (
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mt-4 pt-4 border-t border-border/30">

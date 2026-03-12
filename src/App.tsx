@@ -11,6 +11,7 @@ import { lazy, Suspense, useEffect } from "react";
 import Index from "./pages/Index";
 import { Footer } from "@/components/Footer";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
+import { ScrollToTop } from "@/components/ScrollToTop";
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Prefetch likely routes after initial load
@@ -85,6 +86,7 @@ function AppRoutes() {
               <Toaster />
               <Sonner />
               <BrowserRouter>
+                <ScrollToTop />
                 <Suspense fallback={<LazyFallback />}>
                   <Routes>
                     {/* Pages WITHOUT footer (quiz/lead flow) */}

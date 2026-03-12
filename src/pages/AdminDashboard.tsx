@@ -7,6 +7,8 @@ import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Acti
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import FranchiseDashboard from '@/pages/FranchiseDashboard';
 import { useNavigate } from 'react-router-dom';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { PageTransition } from '@/components/PageTransition';
 import { useAuth } from '@/hooks/useAuth';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis } from 'recharts';
@@ -185,6 +187,7 @@ export default function AdminDashboard() {
   ];
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-border/40 bg-card/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 md:px-6 h-14 md:h-16 flex items-center justify-between">
@@ -217,6 +220,7 @@ export default function AdminDashboard() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
+        <Breadcrumbs items={[{ label: 'Admin' }]} />
         {/* Tab switcher */}
         <div className="flex gap-1 mb-6 md:mb-8 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-full overflow-x-auto scrollbar-none border border-border/30" role="tablist">
           {([
@@ -345,5 +349,6 @@ export default function AdminDashboard() {
         )}
       </div>
     </div>
+    </PageTransition>
   );
 }
