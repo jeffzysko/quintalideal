@@ -96,36 +96,6 @@ export function AdminCityManager() {
     return cities;
   }, [coveredCities, selectedFranchise, searchQuery]);
 
-  const handleAddSingle = async () => {
-    if (!addFranchiseId || !addCityName.trim()) {
-      toast.error('Selecione uma franquia e informe o nome da cidade.');
-      return;
-    }
-    setSaving(true);
-    const normalized = normalizeCityName(addCityName.trim());
-
-    const { error } = await supabase.from('franchise_covered_cities').insert({
-      franchise_id: addFranchiseId,
-      city_name: addCityName.trim(),
-      city_name_normalized: normalized,
-      is_primary_city: addPrimary,
-    });
-
-    if (error) {
-      if (error.code === '23505') {
-        toast.error('Esta cidade já está cadastrada para esta franquia.');
-      } else {
-        toast.error('Erro ao cadastrar cidade.');
-      }
-    } else {
-      toast.success('Cidade cadastrada!');
-      setAddCityName('');
-      setAddPrimary(false);
-      loadData();
-    }
-    setSaving(false);
-  };
-
   const handleDelete = async () => {
     if (!deleteId) return;
     const { error } = await supabase.from('franchise_covered_cities').delete().eq('id', deleteId);
