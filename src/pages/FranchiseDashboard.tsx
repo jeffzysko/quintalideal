@@ -218,6 +218,13 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
               </motion.div>
             ) : (
               <>
+                {isMobile ? (
+                  <div className="space-y-3">
+                    {leads.map((lead, i) => (
+                      <MobileLeadCard key={lead.id} lead={lead} index={i} basePath={leadDetailPath} />
+                    ))}
+                  </div>
+                ) : (
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm" role="table">
                     <thead>
@@ -258,6 +265,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                     </tbody>
                   </table>
                 </div>
+                )}
 
                  {totalCount > PAGE_SIZE && (
                   <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mt-4 pt-4 border-t border-border/30">
