@@ -32,7 +32,7 @@ interface ActionButtonsProps {
   lang?: Lang;
 }
 
-export function ActionButtons({ score, poolName, poolDescription, poolSpecs, recommendedSize, whatsappNumber, leadName, refCode: _refCode, franchiseId, lang = 'pt' }: ActionButtonsProps) {
+export function ActionButtons({ score, poolName, poolDescription, poolSpecs, recommendedSize, whatsappNumber, assignedFranchiseName, assignedCidadeBase, leadName, refCode: _refCode, franchiseId, lang = 'pt' }: ActionButtonsProps) {
   const ranking = getRankingGaucho(score);
   const classification = getYardClassification(score);
   const socialComparison = getSocialComparison(score);
