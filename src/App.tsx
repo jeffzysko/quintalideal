@@ -142,7 +142,7 @@ function AppRoutes() {
                       <Route
                         path="/admin/radar"
                         element={
-                          <ProtectedRoute allowedRoles={['admin_fabrica']}>
+                          <ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}>
                             <RadarMercado />
                           </ProtectedRoute>
                         }
