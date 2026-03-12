@@ -416,5 +416,6 @@ export default function LeadDetail() {
         <div className="h-4" />
       </div>
     </div>
+    </PageTransition>
   );
 }
