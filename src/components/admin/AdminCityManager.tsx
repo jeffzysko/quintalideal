@@ -17,8 +17,9 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   MapPin, Plus, Trash2, AlertTriangle, Search, Building2, CheckCircle2,
-  Pencil, LayoutGrid, LayoutList, Globe, ShieldAlert, ArrowRight,
+  Pencil, LayoutGrid, LayoutList, Globe, ShieldAlert, ArrowRight, ChevronsUpDown,
 } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 /* ─── types ─── */
 interface CoveredCity {
@@ -342,28 +343,50 @@ export function AdminCityManager() {
       {/* Duplicates warning */}
       {duplicateCities.size > 0 && (
         <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}>
-          <Card className="border-amber-500/30 bg-amber-50 dark:bg-amber-950/20">
-            <CardContent className="p-4">
-              <div className="flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-                <div>
-                  <p className="text-sm font-semibold text-amber-800 dark:text-amber-200 mb-2">
-                    Cidades atendidas por múltiplas franquias ({duplicateCities.size})
-                  </p>
-                  <div className="space-y-1">
-                    {Array.from(duplicateCities.entries()).map(([cityNorm, fIds]) => {
-                      const cityObj = coveredCities.find(c => c.city_name_normalized === cityNorm);
-                      return (
-                        <p key={cityNorm} className="text-xs text-amber-700 dark:text-amber-300">
-                          <strong>{cityObj?.city_name || cityNorm}</strong>: {fIds.map(id => franchiseMap[id]?.nome_franquia || id).join(', ')}
-                        </p>
-                      );
-                    })}
+          <Collapsible>
+            <Card className="border-amber-500/30 bg-amber-50 dark:bg-amber-950/20">
+              <CardContent className="p-4">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-2">
+                      <p className="text-sm font-semibold text-amber-800 dark:text-amber-200">
+                        Cidades atendidas por múltiplas franquias ({duplicateCities.size})
+                      </p>
+                      <CollapsibleTrigger asChild>
+                        <button className="text-xs text-amber-600 hover:text-amber-800 dark:hover:text-amber-300 flex items-center gap-1 transition-colors">
+                          <ChevronsUpDown className="w-3.5 h-3.5" />
+                          <span>Expandir</span>
+                        </button>
+                      </CollapsibleTrigger>
+                    </div>
+                    <div className="space-y-1">
+                      {Array.from(duplicateCities.entries()).slice(0, 4).map(([cityNorm, fIds]) => {
+                        const cityObj = coveredCities.find(c => c.city_name_normalized === cityNorm);
+                        return (
+                          <p key={cityNorm} className="text-xs text-amber-700 dark:text-amber-300">
+                            <strong>{cityObj?.city_name || cityNorm}</strong>: {fIds.map(id => franchiseMap[id]?.nome_franquia || id).join(', ')}
+                          </p>
+                        );
+                      })}
+                    </div>
+                    <CollapsibleContent>
+                      <div className="space-y-1 mt-1">
+                        {Array.from(duplicateCities.entries()).slice(4).map(([cityNorm, fIds]) => {
+                          const cityObj = coveredCities.find(c => c.city_name_normalized === cityNorm);
+                          return (
+                            <p key={cityNorm} className="text-xs text-amber-700 dark:text-amber-300">
+                              <strong>{cityObj?.city_name || cityNorm}</strong>: {fIds.map(id => franchiseMap[id]?.nome_franquia || id).join(', ')}
+                            </p>
+                          );
+                        })}
+                      </div>
+                    </CollapsibleContent>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </Collapsible>
         </motion.div>
       )}
 
