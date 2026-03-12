@@ -147,7 +147,7 @@ export default function ProfileSettings() {
         const { error: franchiseError } = await supabase
           .from('franchises')
           .update({
-            whatsapp: whatsapp.trim() || null,
+            whatsapp: whatsapp.trim() ? `55${whatsapp.trim()}` : null,
             email: email.trim() || null,
             responsavel: fullName.trim() || null,
           })
