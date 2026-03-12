@@ -392,6 +392,50 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Per-franchise funnel comparison (super_admin only) */}
+      {isSuperAdmin && franchiseFunnels.length > 0 && (
+        <Card className="border-border/50 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-primary" />
+              Funil por Franquia
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border/50">
+                    <th className="text-left py-2 px-2 text-xs font-semibold text-muted-foreground">Franquia</th>
+                    <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">Visitas</th>
+                    <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">Quiz Iniciado</th>
+                    <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">Leads</th>
+                    <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">WhatsApp</th>
+                    <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">Conversão</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {franchiseFunnels.map(f => (
+                    <tr key={f.id} className="border-b border-border/20 hover:bg-muted/30 transition-colors">
+                      <td className="py-2.5 px-2 font-medium text-foreground">{f.name}</td>
+                      <td className="py-2.5 px-2 text-center text-muted-foreground">{f.visits}</td>
+                      <td className="py-2.5 px-2 text-center text-muted-foreground">{f.quizStarted}</td>
+                      <td className="py-2.5 px-2 text-center font-semibold text-foreground">{f.leads}</td>
+                      <td className="py-2.5 px-2 text-center text-muted-foreground">{f.whatsapp}</td>
+                      <td className="py-2.5 px-2 text-center">
+                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${f.convRate >= 10 ? 'bg-emerald-500/10 text-emerald-600' : f.convRate >= 5 ? 'bg-amber-500/10 text-amber-600' : 'bg-muted text-muted-foreground'}`}>
+                          {f.convRate}%
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
