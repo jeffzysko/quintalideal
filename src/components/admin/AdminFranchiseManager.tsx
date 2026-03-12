@@ -369,7 +369,15 @@ export function AdminFranchiseManager() {
                   onChange={e => setForm(prev => ({ ...prev, slug_url: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') }))}
                   placeholder="porto-alegre"
                 />
-              </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Cidades Atendidas</Label>
+              <Input
+                value={form.cidades_atendidas}
+                onChange={e => setForm(prev => ({ ...prev, cidades_atendidas: e.target.value }))}
+                placeholder="Canoas, Gravataí, Cachoeirinha"
+              />
+              <p className="text-[11px] text-muted-foreground">Separe as cidades por vírgula. A cidade base já é incluída automaticamente.</p>
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs font-medium">Cidade Base *</Label>
