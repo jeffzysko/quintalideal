@@ -221,11 +221,32 @@ export default function ProfileSettings() {
       <div className="max-w-3xl mx-auto px-4 md:px-6 py-6 md:py-8 space-y-6">
         {/* Avatar section */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-5">
-          <Avatar className="h-20 w-20 border-4 border-primary/20">
-            <AvatarFallback className="bg-primary/10 text-primary text-xl font-bold">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
+          <div className="relative group">
+            <Avatar className="h-20 w-20 border-4 border-primary/20">
+              {avatarUrl && <AvatarImage src={avatarUrl} alt="Avatar" />}
+              <AvatarFallback className="bg-primary/10 text-primary text-xl font-bold">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            <label
+              htmlFor="avatar-upload"
+              className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+            >
+              {uploadingAvatar ? (
+                <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+              ) : (
+                <Camera className="w-5 h-5 text-white" />
+              )}
+            </label>
+            <input
+              id="avatar-upload"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarUpload}
+              disabled={uploadingAvatar}
+            />
+          </div>
           <div>
             <p className="text-lg font-semibold text-foreground">{fullName || user?.email}</p>
             <p className="text-sm text-muted-foreground">{user?.email}</p>
