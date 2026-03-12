@@ -3,7 +3,8 @@ import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Share2, Globe } from 'lucide-react';
+import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Share2, Globe, ChevronsUpDown } from 'lucide-react';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import FranchiseDashboard from '@/pages/FranchiseDashboard';
 import { useNavigate } from 'react-router-dom';
@@ -249,7 +250,20 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        {loadingKpis ? <KPISkeleton count={6} /> : <AdminKPICards kpis={kpis} />}
+        <Collapsible defaultOpen>
+          <div className="flex items-center justify-between mb-2">
+            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Resumo</p>
+            <CollapsibleTrigger asChild>
+              <button className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors">
+                <ChevronsUpDown className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Recolher</span>
+              </button>
+            </CollapsibleTrigger>
+          </div>
+          <CollapsibleContent>
+            {loadingKpis ? <KPISkeleton count={6} /> : <AdminKPICards kpis={kpis} />}
+          </CollapsibleContent>
+        </Collapsible>
 
         {activeTab === 'overview' && (
           <>
