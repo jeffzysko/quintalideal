@@ -8,7 +8,9 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { lazy, Suspense, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import Index from "./pages/Index";
+import { Footer } from "@/components/Footer";
 const NotFound = lazy(() => import("./pages/NotFound"));
 
 // Prefetch likely routes after initial load
