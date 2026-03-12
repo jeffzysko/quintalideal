@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { motion } from 'framer-motion';
 import { User, Phone, Mail, ArrowRight, AlertCircle, Shield } from 'lucide-react';
 import { type Lang, t } from '@/lib/i18n';
+import { isValidBRPhone, isValidEmail, formatPhoneBR } from '@/lib/validation';
 
 interface LeadFormProps {
   onSubmit: (data: { nome: string; telefone: string; email: string }) => void;
