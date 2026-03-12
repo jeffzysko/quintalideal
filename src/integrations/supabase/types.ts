@@ -351,6 +351,16 @@ export type Database = {
       }
     }
     Functions: {
+      get_public_franchise_by_slug: {
+        Args: { _slug: string }
+        Returns: {
+          ativa: boolean
+          id: string
+          nome_franquia: string
+          slug_url: string
+          whatsapp: string
+        }[]
+      }
       get_user_franquia_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {

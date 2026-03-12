@@ -9,7 +9,7 @@ interface Franchise {
   id: string;
   nome_franquia: string;
   slug_url: string;
-  whatsapp: string;
+  whatsapp: string | null;
   ativa: boolean;
 }
 
@@ -21,15 +21,26 @@ export default function FranchiseLanding() {
 
   useEffect(() => {
     async function load() {
-      if (!slug) return;
-      const { data } = await supabase
-        .from('franchises_public')
-        .select('id, nome_franquia, slug_url, whatsapp, ativa')
-        .eq('slug_url', slug)
-        .maybeSingle();
-      setFranchise(data);
+      if (!slug) {
+        setLoading(false);
+        return;
+      }
+
+      const { data, error } = await supabase.rpc('get_public_franchise_by_slug', {
+        _slug: slug,
+      });
+
+      if (error) {
+        console.error('Erro ao carregar franquia pública:', error.message);
+        setFranchise(null);
+        setLoading(false);
+        return;
+      }
+
+      setFranchise((data?.[0] as Franchise) ?? null);
       setLoading(false);
     }
+
     load();
   }, [slug]);
 
@@ -66,7 +77,7 @@ export default function FranchiseLanding() {
       franchiseSlug={franchise.slug_url}
       franchiseName={franchise.nome_franquia}
       franchiseId={franchise.id}
-      franchiseWhatsapp={franchise.whatsapp}
+      franchiseWhatsapp={franchise.whatsapp || undefined}
     />
   );
 }
