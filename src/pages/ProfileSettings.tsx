@@ -28,6 +28,7 @@ export default function ProfileSettings() {
     }
   }, [loading, location.hash]);
 
+  const [fullName, setFullName] = useState('');
   const [telefone, setTelefone] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [email, setEmail] = useState('');
