@@ -187,7 +187,7 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
   // Model stats
   const modelStats = useMemo(() => {
     const models: Record<string, number> = {};
-    events
+    filteredEvents
       .filter(e => e.event_name === 'quiz_completed')
       .forEach(e => {
         const m = (e.metadata as Record<string, unknown>)?.modelo_recomendado as string;
