@@ -66,9 +66,9 @@ export default function ProfileSettings() {
       // Load profile name
       const { data: profile } = await supabase
         .from('profiles')
-        .select('full_name, telefone')
+        .select('full_name, telefone, avatar_url')
         .eq('user_id', user!.id)
-        .maybeSingle() as { data: { full_name: string | null; telefone: string | null } | null };
+        .maybeSingle() as { data: { full_name: string | null; telefone: string | null; avatar_url: string | null } | null };
 
       if (profile?.full_name) setFullName(profile.full_name);
       if (profile?.telefone) setTelefone(profile.telefone);
