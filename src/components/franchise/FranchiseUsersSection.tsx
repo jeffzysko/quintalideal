@@ -25,7 +25,7 @@ interface FranchiseUsersSectionProps {
   currentUserId: string;
 }
 
-export function FranchiseUsersSection({ franchiseId, currentUserId }: FranchiseUsersSectionProps) {
+export function FranchiseUsersSection({ franchiseId }: FranchiseUsersSectionProps) {
   const [users, setUsers] = useState<FranchiseUser[]>([]);
   const [loading, setLoading] = useState(true);
   const [dialogOpen, setDialogOpen] = useState(false);
