@@ -309,6 +309,7 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === 'franchises' && <AdminFranchiseManager />}
+        {activeTab === 'cities' && <AdminCityManager />}
         {activeTab === 'users' && <AdminUserManager />}
         {activeTab === 'emails' && <AdminEmailTemplates />}
 
