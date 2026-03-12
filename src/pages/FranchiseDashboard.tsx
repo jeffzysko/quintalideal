@@ -97,7 +97,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       const to = from + PAGE_SIZE - 1;
       const { data, count, error } = await supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by', { count: 'exact' })
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used', { count: 'exact' })
         .eq('franquia_id', franchiseId!)
         .order('created_at', { ascending: false })
         .range(from, to);
