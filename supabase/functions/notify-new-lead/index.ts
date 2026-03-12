@@ -110,7 +110,7 @@ Deno.serve(async (req) => {
     const payload = await req.json();
     const lead = payload.record || payload;
 
-    if (!lead || !lead.id) {
+    if (!lead || (!lead.id && !lead.nome)) {
       throw new Error("No lead data provided");
     }
 
