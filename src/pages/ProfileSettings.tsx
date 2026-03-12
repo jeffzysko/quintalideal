@@ -26,7 +26,7 @@ export default function ProfileSettings() {
   const [saving, setSaving] = useState(false);
 
   const isFranchise = role === 'franquia' && !!franchiseId;
-  const isAdmin = role === 'admin_fabrica';
+  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
 
   useEffect(() => {
     if (!user) return;
