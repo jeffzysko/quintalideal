@@ -21,6 +21,26 @@ type FranchiseOption = {
   nome_franquia: string;
 };
 
+/** Strip country code 55 prefix if present, return only local digits */
+function stripBR(digits: string): string {
+  if (digits.startsWith('55') && digits.length >= 12) return digits.slice(2);
+  return digits;
+}
+
+/** Format digits as (XX) XXXXX-XXXX, hiding the 55 prefix */
+function formatPhone(raw: string): string {
+  const digits = stripBR(raw.replace(/\D/g, ''));
+  if (digits.length === 0) return '';
+  if (digits.length <= 2) return `(${digits}`;
+  if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+}
+
+/** Parse masked phone back to raw digits (without 55) */
+function unformatPhone(masked: string): string {
+  return masked.replace(/\D/g, '').slice(0, 11);
+}
+
 export default function ProfileSettings() {
   const { user, role, franchiseId } = useAuth();
   const navigate = useNavigate();
