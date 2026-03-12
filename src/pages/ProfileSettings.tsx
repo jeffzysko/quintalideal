@@ -291,7 +291,7 @@ export default function ProfileSettings() {
                 <Input
                   id="personalPhone"
                   placeholder="(51) 99999-9999"
-                  value={formatPhone(telefone)}
+                  value={formatPhoneBR(telefone)}
                   onChange={e => setTelefone(unformatPhone(e.target.value))}
                   maxLength={16}
                 />
