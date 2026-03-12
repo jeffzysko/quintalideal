@@ -228,7 +228,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                     </thead>
                     <tbody>
                       {leads.map(lead => (
-                        <tr key={lead.id} className="border-b border-border/30 hover:bg-muted/30 transition-colors" role="row">
+                        <tr key={lead.id} className="border-b border-border/20 hover:bg-muted/40 transition-all cursor-pointer group" role="row" onClick={() => navigate(`${leadDetailPath}/${lead.id}`)}>
                           <td role="cell" className="py-3.5 px-3 font-medium">{lead.nome || '—'}</td>
                           <td role="cell" className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.cidade || '—'}</td>
                           <td role="cell" className="py-3.5 px-3">
