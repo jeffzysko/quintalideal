@@ -217,7 +217,7 @@ export function QuizFlow({ franchiseSlug: _franchiseSlug, franchiseName, franchi
       // Notify franchise about new lead (fire-and-forget)
       if (franchiseId) {
         supabase.functions.invoke('notify-new-lead', {
-          body: { ...inserted, ...{
+          body: {
             nome: data.nome,
             telefone: data.telefone,
             email: data.email || null,
@@ -227,7 +227,7 @@ export function QuizFlow({ franchiseSlug: _franchiseSlug, franchiseName, franchi
             modelo_recomendado: poolName,
             referred_by: referredBy || null,
             created_at: new Date().toISOString(),
-          }},
+          },
         }).catch(() => { /* non-critical */ });
       }
 
