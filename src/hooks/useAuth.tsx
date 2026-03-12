@@ -160,6 +160,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Immediately sync session so role is available before navigation
     if (data.user) {
       lastSyncedUserRef.current = null; // Force re-fetch on explicit sign-in
+      metaResolvedUserRef.current = null;
       const lockId = 'signin-force';
       await syncSession(data.user, lockId);
     }
