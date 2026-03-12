@@ -147,6 +147,7 @@ export function AdminUserManager() {
             action: 'create',
             email: formEmail,
             full_name: formName,
+            telefone: formTelefone,
             role: formRole,
             franchise_id: formRole === 'franquia' ? formFranchiseId : null,
           },
