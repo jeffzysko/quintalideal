@@ -88,7 +88,7 @@ function StepFallback() {
   );
 }
 
-export function QuizFlow({ franchiseSlug: _franchiseSlug, franchiseName, franchiseId, franchiseWhatsapp }: QuizFlowProps) {
+export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseWhatsapp }: QuizFlowProps) {
   const [searchParams] = useSearchParams();
   const referredBy = searchParams.get('ref') || '';
 
