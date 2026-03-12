@@ -150,6 +150,7 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                 </tbody>
               </table>
             </div>
+            )}
 
             {totalCount > 0 && (
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mt-4 pt-4 border-t border-border/30">
