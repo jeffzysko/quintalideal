@@ -7,8 +7,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { ArrowLeft, Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ArrowLeft, Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff, Camera } from 'lucide-react';
 import { FranchiseUsersSection } from '@/components/franchise/FranchiseUsersSection';
 import { FranchiseContactSettings } from '@/components/franchise/FranchiseContactSettings';
 import { toast } from 'sonner';
@@ -35,6 +35,8 @@ export default function ProfileSettings() {
   const [selectedIntegrationFranchiseId, setSelectedIntegrationFranchiseId] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   // Scroll to hash anchor after loading
   useEffect(() => {
@@ -64,12 +66,13 @@ export default function ProfileSettings() {
       // Load profile name
       const { data: profile } = await supabase
         .from('profiles')
-        .select('full_name, telefone')
+        .select('full_name, telefone, avatar_url')
         .eq('user_id', user!.id)
-        .maybeSingle() as { data: { full_name: string | null; telefone: string | null } | null };
+        .maybeSingle() as { data: { full_name: string | null; telefone: string | null; avatar_url: string | null } | null };
 
       if (profile?.full_name) setFullName(profile.full_name);
       if (profile?.telefone) setTelefone(profile.telefone);
+      if ((profile as any)?.avatar_url) setAvatarUrl((profile as any).avatar_url);
 
       // Load franchise data when user is linked to a franchise
       if (franchiseId) {
@@ -141,6 +144,50 @@ export default function ProfileSettings() {
     }
   };
 
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error('A imagem deve ter no máximo 2MB.');
+      return;
+    }
+
+    setUploadingAvatar(true);
+    try {
+      const ext = file.name.split('.').pop() || 'jpg';
+      const filePath = `${user.id}/avatar.${ext}`;
+
+      // Upload file (upsert to replace existing)
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      // Add cache-busting param
+      const urlWithCacheBust = `${publicUrl}?t=${Date.now()}`;
+
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ avatar_url: urlWithCacheBust } as any)
+        .eq('user_id', user.id);
+
+      if (updateError) throw updateError;
+
+      setAvatarUrl(urlWithCacheBust);
+      toast.success('Foto atualizada com sucesso!');
+    } catch (_err) {
+      toast.error('Erro ao enviar a foto. Tente novamente.');
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
   const initials = (fullName || user?.email || 'U').substring(0, 2).toUpperCase();
 
   const backPath = isAdmin ? '/admin' : isFranchise ? '/franquia' : '/painel';
@@ -174,11 +221,32 @@ export default function ProfileSettings() {
       <div className="max-w-3xl mx-auto px-4 md:px-6 py-6 md:py-8 space-y-6">
         {/* Avatar section */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-5">
-          <Avatar className="h-20 w-20 border-4 border-primary/20">
-            <AvatarFallback className="bg-primary/10 text-primary text-xl font-bold">
-              {initials}
-            </AvatarFallback>
-          </Avatar>
+          <div className="relative group">
+            <Avatar className="h-20 w-20 border-4 border-primary/20">
+              {avatarUrl && <AvatarImage src={avatarUrl} alt="Avatar" />}
+              <AvatarFallback className="bg-primary/10 text-primary text-xl font-bold">
+                {initials}
+              </AvatarFallback>
+            </Avatar>
+            <label
+              htmlFor="avatar-upload"
+              className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+            >
+              {uploadingAvatar ? (
+                <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+              ) : (
+                <Camera className="w-5 h-5 text-white" />
+              )}
+            </label>
+            <input
+              id="avatar-upload"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarUpload}
+              disabled={uploadingAvatar}
+            />
+          </div>
           <div>
             <p className="text-lg font-semibold text-foreground">{fullName || user?.email}</p>
             <p className="text-sm text-muted-foreground">{user?.email}</p>

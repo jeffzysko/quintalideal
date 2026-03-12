@@ -1,7 +1,9 @@
 import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from 'next-themes';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { supabase } from '@/lib/supabase';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +17,7 @@ export function UserAvatarMenu() {
   const { user, role, signOut } = useAuth();
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   const email = user?.email || '';
   const initials = email
@@ -23,9 +26,22 @@ export function UserAvatarMenu() {
 
   const roleLabel =
     role === 'admin_fabrica' ? 'Administrador' :
-    role === 'franquia' ? 'Franquia' : '';
+    role === 'franquia' ? 'Franquia' :
+    role === 'super_admin' ? 'Super Admin' : '';
 
   const isDark = theme === 'dark';
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('profiles')
+      .select('avatar_url')
+      .eq('user_id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if ((data as any)?.avatar_url) setAvatarUrl((data as any).avatar_url);
+      });
+  }, [user]);
 
   return (
     <DropdownMenu>
@@ -35,6 +51,7 @@ export function UserAvatarMenu() {
           aria-label="Menu do usuário"
         >
           <Avatar className="h-8 w-8 border border-border/60">
+            {avatarUrl && <AvatarImage src={avatarUrl} alt="Avatar" />}
             <AvatarFallback className="bg-primary/10 text-primary text-[11px] font-semibold">
               {initials}
             </AvatarFallback>
