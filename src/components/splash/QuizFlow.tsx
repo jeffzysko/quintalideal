@@ -184,29 +184,27 @@ export function QuizFlow({ franchiseSlug: _franchiseSlug, franchiseName, franchi
     setSaving(true);
     setLeadName(data.nome);
     try {
-      // Generate ref_code client-side (same logic as DB trigger)
-      const generatedRefCode = Math.random().toString(36).substring(2, 10);
-
-      const { error } = await supabase.from('leads').insert({
-        nome: data.nome,
-        telefone: data.telefone,
-        email: data.email || null,
-        cidade: answers.cidade || null,
-        franquia_id: franchiseId || null,
-        pontuacao_quintal: score,
-        modelo_recomendado: poolName,
-        respostas_questionario: answers,
-        foto1: photoUrls[0] || null,
-        foto2: photoUrls[1] || null,
-        foto3: photoUrls[2] || null,
-        foto4: photoUrls[3] || null,
-        referred_by: referredBy || null,
-        ref_code: generatedRefCode,
+      const { data: createLeadData, error } = await supabase.functions.invoke<{ success: boolean; refCode?: string }>('create-lead', {
+        body: {
+          nome: data.nome,
+          telefone: data.telefone,
+          email: data.email || null,
+          cidade: answers.cidade || null,
+          franquia_id: franchiseId || null,
+          pontuacao_quintal: score,
+          modelo_recomendado: poolName,
+          respostas_questionario: answers,
+          foto1: photoUrls[0] || null,
+          foto2: photoUrls[1] || null,
+          foto3: photoUrls[2] || null,
+          foto4: photoUrls[3] || null,
+          referred_by: referredBy || null,
+        },
       });
 
       if (error) throw error;
 
-      setLeadRefCode(generatedRefCode);
+      setLeadRefCode(createLeadData?.refCode || '');
 
       trackEvent('lead_created', {
         ...analyticsCtx,
