@@ -308,9 +308,46 @@ export default function ProfileSettings() {
         )}
 
         {/* Integrations: Meta Pixel + Webhook */}
-        {isFranchise && franchiseId && (
-          <motion.div id="integracoes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-            <FranchiseContactSettings franchiseId={franchiseId} />
+        {(isFranchise || isAdmin) && (
+          <motion.div id="integracoes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="space-y-4">
+            {isAdmin && (
+              <Card className="border-border/50 shadow-sm">
+                <CardHeader>
+                  <CardTitle className="text-sm font-semibold">Integrações da Franquia</CardTitle>
+                  <CardDescription className="text-xs">
+                    Selecione a franquia para configurar Meta Pixel e Webhook CRM.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <Label htmlFor="integration-franchise">Franquia</Label>
+                  <Select value={selectedIntegrationFranchiseId} onValueChange={setSelectedIntegrationFranchiseId}>
+                    <SelectTrigger id="integration-franchise" className="rounded-xl">
+                      <SelectValue placeholder="Selecione uma franquia" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableFranchises.map((franchise) => (
+                        <SelectItem key={franchise.id} value={franchise.id}>
+                          {franchise.nome_franquia}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">A configuração será salva na franquia selecionada.</p>
+                </CardContent>
+              </Card>
+            )}
+
+            {integrationFranchiseId ? (
+              <FranchiseContactSettings franchiseId={integrationFranchiseId} />
+            ) : (
+              isAdmin && (
+                <Card className="border-border/50 shadow-sm">
+                  <CardContent className="pt-6">
+                    <p className="text-sm text-muted-foreground">Nenhuma franquia disponível para configurar integrações.</p>
+                  </CardContent>
+                </Card>
+              )
+            )}
           </motion.div>
         )}
 
