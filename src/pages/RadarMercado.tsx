@@ -256,6 +256,7 @@ export default function RadarMercado() {
   }
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b bg-card">
@@ -280,6 +281,10 @@ export default function RadarMercado() {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-8">
+        <Breadcrumbs items={[
+          { label: 'Admin', href: '/admin' },
+          { label: 'Radar de Mercado' },
+        ]} />
         {/* KPI Row */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
