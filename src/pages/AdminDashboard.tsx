@@ -222,6 +222,7 @@ export default function AdminDashboard() {
             { key: 'analytics' as const, icon: Activity, label: 'Analytics', short: 'Stats' },
             { key: 'leads' as const, icon: Users, label: 'Leads', short: 'Leads' },
             { key: 'franchises' as const, icon: Building2, label: 'Franquias', short: 'Franq' },
+            { key: 'cities' as const, icon: Globe, label: 'Cidades', short: 'Cid' },
             { key: 'users' as const, icon: Users, label: 'Usuários', short: 'Users' },
             ...(role === 'super_admin' ? [
               { key: 'emails' as const, icon: Mail, label: 'E-mails', short: 'Mail' },
