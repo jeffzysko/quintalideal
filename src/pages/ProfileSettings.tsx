@@ -352,9 +352,10 @@ export default function ProfileSettings() {
                     id="franchiseWhatsapp"
                     placeholder="(51) 99999-9999"
                     value={formatPhoneBR(whatsapp)}
-                    onChange={e => setWhatsapp(unformatPhone(e.target.value))}
+                    onChange={e => { setWhatsapp(unformatPhone(e.target.value)); setFormErrors(p => ({ ...p, whatsapp: '' })); }}
                     maxLength={16}
                   />
+                  {formErrors.whatsapp && <p className="text-xs text-destructive mt-1">{formErrors.whatsapp}</p>}
                   <p className="text-xs text-muted-foreground">DDD + número. O código do Brasil (55) é adicionado automaticamente.</p>
                 </div>
                 <div className="space-y-2">
