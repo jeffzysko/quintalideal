@@ -21,9 +21,10 @@ import {
   Target,
   TrendingUp,
   ExternalLink,
+  Mail,
+  Trash2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Footer } from '@/components/Footer';
 
 /* ─── Animation variants ─── */
 const fadeUp = {
