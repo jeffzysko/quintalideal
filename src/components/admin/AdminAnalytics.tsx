@@ -397,10 +397,12 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
 
       {/* Per-franchise funnel comparison (super_admin only) */}
       {isSuperAdmin && franchiseFunnels.length > 0 && (
-        <Card className="border-border/50 shadow-sm">
+        <Card className="card-premium">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-primary" />
+            <CardTitle className="text-sm font-bold flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg icon-bg-blue flex items-center justify-center">
+                <Building2 className="w-4 h-4 text-primary" />
+              </div>
               Funil por Franquia
             </CardTitle>
           </CardHeader>
