@@ -371,10 +371,10 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
         </Card>
 
         {/* UTM Sources */}
-        <Card className="border-border/50 shadow-sm">
+        <Card className="card-premium">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold flex items-center gap-2">
-              <Zap className="w-4 h-4" />
+            <CardTitle className="text-sm font-bold flex items-center gap-2">
+              <Zap className="w-4 h-4 text-primary" />
               Origem do Tráfego
             </CardTitle>
           </CardHeader>
