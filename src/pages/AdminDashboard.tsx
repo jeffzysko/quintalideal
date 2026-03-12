@@ -219,10 +219,10 @@ export default function AdminDashboard() {
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
         <Breadcrumbs items={[{ label: 'Admin' }]} />
         {/* Tab switcher */}
-        <div className="flex gap-1 mb-6 md:mb-8 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-full overflow-x-auto scrollbar-none border border-border/30" role="tablist">
+        <div className="flex gap-0.5 sm:gap-1 mb-4 sm:mb-6 md:mb-8 bg-muted/60 backdrop-blur-sm rounded-2xl p-1 sm:p-1.5 w-full overflow-x-auto scrollbar-none border border-border/30" role="tablist">
           {([
             { key: 'overview' as const, icon: BarChart3, label: 'Inteligência', short: 'Intel' },
             { key: 'analytics' as const, icon: Activity, label: 'Analytics', short: 'Stats' },
@@ -240,9 +240,9 @@ export default function AdminDashboard() {
               role="tab"
               aria-selected={activeTab === tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-2.5 sm:px-4 md:px-5 py-2.5 md:py-3 rounded-xl text-[11px] sm:text-xs md:text-sm font-semibold transition-all whitespace-nowrap flex-1 min-w-0 ${activeTab === tab.key ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
+              className={`px-2 sm:px-3 md:px-5 py-2 sm:py-2.5 md:py-3 rounded-xl text-[10px] sm:text-xs md:text-sm font-semibold transition-all whitespace-nowrap flex-1 min-w-0 ${activeTab === tab.key ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
             >
-              <tab.icon className={`w-3.5 h-3.5 md:w-4 md:h-4 inline mr-0.5 sm:mr-1.5 ${activeTab === tab.key ? 'text-primary' : ''}`} />
+              <tab.icon className={`w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 inline mr-0 sm:mr-0.5 md:mr-1.5 ${activeTab === tab.key ? 'text-primary' : ''}`} />
               <span className="hidden md:inline">{tab.label}</span>
               <span className="md:hidden">{tab.short}</span>
             </button>
