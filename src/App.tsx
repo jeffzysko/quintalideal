@@ -38,6 +38,7 @@ const ProfileSettings = lazy(() => import("./pages/ProfileSettings"));
 const WebhookDocs = lazy(() => import("./pages/WebhookDocs"));
 const TermosDeUso = lazy(() => import("./pages/TermosDeUso"));
 const PoliticaPrivacidade = lazy(() => import("./pages/PoliticaPrivacidade"));
+const Suporte = lazy(() => import("./pages/Suporte"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
