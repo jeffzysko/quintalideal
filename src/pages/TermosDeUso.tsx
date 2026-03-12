@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Footer } from '@/components/Footer';
+
 
 export default function TermosDeUso() {
   const navigate = useNavigate();
