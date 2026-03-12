@@ -94,6 +94,12 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         metadata: { score: s, modelo_recomendado: pool },
       });
 
+      trackMetaEvent('CompleteRegistration', {
+        content_name: pool,
+        value: s,
+        currency: 'BRL',
+      });
+
       setStep('processing');
     }
   }, [quizStep, answers, lang]);
