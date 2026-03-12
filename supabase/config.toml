@@ -2,3 +2,12 @@ project_id = "bbfkorzehzoaogrnuyqp"
 
 [functions.send-recovery-email]
 verify_jwt = false
+
+[functions.create-lead]
+verify_jwt = false
+
+[functions.check-duplicate-lead]
+verify_jwt = false
+
+[functions.notify-new-lead]
+verify_jwt = false
