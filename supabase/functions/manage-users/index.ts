@@ -145,7 +145,7 @@ Deno.serve(async (req) => {
 
     // ── CREATE USER ──
     if (action === "create") {
-      const { email, full_name, role, franchise_id } = body;
+      const { email, full_name, telefone, role, franchise_id } = body;
       if (!email || !role) {
         return new Response(JSON.stringify({ error: "E-mail e papel são obrigatórios" }), {
           status: 400,
