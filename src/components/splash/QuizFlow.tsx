@@ -88,7 +88,7 @@ function StepFallback() {
   );
 }
 
-export function QuizFlow({ franchiseSlug: _franchiseSlug, franchiseName, franchiseId, franchiseWhatsapp }: QuizFlowProps) {
+export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseWhatsapp }: QuizFlowProps) {
   const [searchParams] = useSearchParams();
   const referredBy = searchParams.get('ref') || '';
 
@@ -304,6 +304,7 @@ export function QuizFlow({ franchiseSlug: _franchiseSlug, franchiseName, franchi
             onAnswer={handleQuizAnswer}
             explorerStep={7}
             onBack={() => setQuizStep(5)}
+            franchiseSlug={franchiseSlug}
           />
         )}
         {step === 'processing' && (
