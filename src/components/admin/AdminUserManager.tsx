@@ -273,7 +273,7 @@ export function AdminUserManager() {
                 className="pl-9 h-9 text-sm"
               />
             </div>
-            <Button size="sm" onClick={handleResendAll} variant="outline" disabled={resendingAll} className="gap-1.5 shrink-0">
+            <Button size="sm" onClick={() => setResendAllDialogOpen(true)} variant="outline" disabled={resendingAll} className="gap-1.5 shrink-0">
               {resendingAll ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               <span className="hidden sm:inline">Reenviar Todos</span>
             </Button>
