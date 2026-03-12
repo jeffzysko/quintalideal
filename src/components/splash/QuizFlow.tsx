@@ -184,7 +184,10 @@ export function QuizFlow({ franchiseSlug: _franchiseSlug, franchiseName, franchi
     setSaving(true);
     setLeadName(data.nome);
     try {
-      const { data: inserted, error } = await supabase.from('leads').insert({
+      // Generate ref_code client-side (same logic as DB trigger)
+      const generatedRefCode = Math.random().toString(36).substring(2, 10);
+
+      const { error } = await supabase.from('leads').insert({
         nome: data.nome,
         telefone: data.telefone,
         email: data.email || null,
@@ -198,13 +201,12 @@ export function QuizFlow({ franchiseSlug: _franchiseSlug, franchiseName, franchi
         foto3: photoUrls[2] || null,
         foto4: photoUrls[3] || null,
         referred_by: referredBy || null,
-      }).select('ref_code').single();
+        ref_code: generatedRefCode,
+      });
 
       if (error) throw error;
 
-      if (inserted?.ref_code) {
-        setLeadRefCode(inserted.ref_code);
-      }
+      setLeadRefCode(generatedRefCode);
 
       trackEvent('lead_created', {
         ...analyticsCtx,
@@ -215,7 +217,7 @@ export function QuizFlow({ franchiseSlug: _franchiseSlug, franchiseName, franchi
       // Notify franchise about new lead (fire-and-forget)
       if (franchiseId) {
         supabase.functions.invoke('notify-new-lead', {
-          body: { ...inserted, ...{
+          body: {
             nome: data.nome,
             telefone: data.telefone,
             email: data.email || null,
@@ -225,7 +227,7 @@ export function QuizFlow({ franchiseSlug: _franchiseSlug, franchiseName, franchi
             modelo_recomendado: poolName,
             referred_by: referredBy || null,
             created_at: new Date().toISOString(),
-          }},
+          },
         }).catch(() => { /* non-critical */ });
       }
 
