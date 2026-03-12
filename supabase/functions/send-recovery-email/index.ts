@@ -103,7 +103,7 @@ Deno.serve(async (req) => {
     });
 
     // Use the origin sent from the frontend, with fallbacks
-    const origin = siteOrigin || req.headers.get("origin") || "https://quintalideal.lovable.app";
+    const origin = siteOrigin || req.headers.get("origin") || "https://quintalideal.com.br";
     const redirectUrl = `${origin.replace(/\/$/, "")}/reset-password`;
     
     console.log("Email:", email);
