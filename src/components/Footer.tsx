@@ -1,5 +1,4 @@
 import { Link } from 'react-router-dom';
-import { Mail } from 'lucide-react';
 
 export function Footer() {
   return (
@@ -17,14 +16,6 @@ export function Footer() {
           <Link to="/privacidade" className="hover:text-foreground transition-colors underline underline-offset-2">
             Política de Privacidade
           </Link>
-          <span className="text-border">|</span>
-          <a
-            href="mailto:contato@hallow.com.br"
-            className="hover:text-foreground transition-colors underline underline-offset-2 inline-flex items-center gap-1"
-          >
-            <Mail className="w-3 h-3" />
-            Contato DPO
-          </a>
         </div>
       </div>
     </footer>
