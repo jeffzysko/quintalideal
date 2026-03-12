@@ -316,6 +316,7 @@ export default function ProfileSettings() {
                   maxLength={16}
                 />
                 {formErrors.telefone && <p className="text-xs text-destructive mt-1">{formErrors.telefone}</p>}
+              </div>
               <div className="space-y-2">
                 <Label htmlFor="loginEmail">E-mail de login</Label>
                 <Input
