@@ -5,6 +5,8 @@ import { Eye, Search, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { STATUS_LABELS, STATUS_COLORS, LeadRow } from '@/lib/lead-constants';
 import { motion } from 'framer-motion';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileLeadCard } from './MobileLeadCard';
 
 interface AdminLeadsTableProps {
   leads: LeadRow[];
