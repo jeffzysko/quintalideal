@@ -43,6 +43,8 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [periodDays, setPeriodDays] = useState('30');
+  const [filterFranchise, setFilterFranchise] = useState('all');
+  const isSuperAdmin = role === 'super_admin';
 
   useEffect(() => {
     loadEvents();
