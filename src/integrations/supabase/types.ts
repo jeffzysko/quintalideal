@@ -82,6 +82,8 @@ export type Database = {
           nome_franquia: string
           responsavel: string | null
           slug_url: string
+          webhook_secret: string | null
+          webhook_url: string | null
           whatsapp: string | null
         }
         Insert: {
@@ -94,6 +96,8 @@ export type Database = {
           nome_franquia: string
           responsavel?: string | null
           slug_url: string
+          webhook_secret?: string | null
+          webhook_url?: string | null
           whatsapp?: string | null
         }
         Update: {
@@ -106,6 +110,8 @@ export type Database = {
           nome_franquia?: string
           responsavel?: string | null
           slug_url?: string
+          webhook_secret?: string | null
+          webhook_url?: string | null
           whatsapp?: string | null
         }
         Relationships: []

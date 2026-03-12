@@ -34,6 +34,7 @@ const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const LeadDetail = lazy(() => import("./pages/LeadDetail"));
 const RadarMercado = lazy(() => import("./pages/RadarMercado"));
 const ProfileSettings = lazy(() => import("./pages/ProfileSettings"));
+const WebhookDocs = lazy(() => import("./pages/WebhookDocs"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -120,6 +121,8 @@ function AppRoutes() {
                         </ProtectedRoute>
                       }
                     />
+                    {/* Public docs */}
+                    <Route path="/docs/webhook" element={<WebhookDocs />} />
                     {/* Franchise dynamic landing - must be last before catch-all */}
                     <Route path="/:slug" element={<FranchiseLanding />} />
                     <Route path="*" element={<NotFound />} />
