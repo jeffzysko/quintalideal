@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Phone, Mail, Save, Share2, BarChart3, Webhook, Eye, EyeOff, RefreshCw } from 'lucide-react';
+import { Phone, Mail, Save, Share2, BarChart3, Webhook, Eye, EyeOff, RefreshCw, Send, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase as supabaseClient } from '@/integrations/supabase/client';
 import { SITE_URL } from '@/lib/constants';
 
 interface Props {
