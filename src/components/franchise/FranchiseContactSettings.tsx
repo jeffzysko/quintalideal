@@ -24,13 +24,14 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
     async function load() {
       const { data } = await supabase
         .from('franchises')
-        .select('whatsapp, email, slug_url')
+        .select('whatsapp, email, slug_url, meta_pixel_id')
         .eq('id', franchiseId)
         .maybeSingle();
       if (data) {
         setWhatsapp(data.whatsapp || '');
         setEmail(data.email || '');
         setSlug(data.slug_url || '');
+        setMetaPixelId(data.meta_pixel_id || '');
       }
       setLoading(false);
     }
