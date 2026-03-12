@@ -156,7 +156,7 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
         </CardContent>
       </Card>
 
-      {/* Integrações / Meta Pixel */}
+      {/* Integrações */}
       <Card className="border-border/50 shadow-sm">
         <CardHeader>
           <CardTitle className="text-sm font-semibold flex items-center gap-2">
@@ -164,11 +164,12 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
             Integrações
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-5">
           <p className="text-xs text-muted-foreground">
-            Configure o rastreamento de anúncios para medir conversões no seu link de divulgação.
+            Configure rastreamento de anúncios e envio automático de leads para o seu CRM.
           </p>
 
+          {/* Meta Pixel */}
           <div className="space-y-2">
             <Label htmlFor="meta_pixel_id" className="text-xs font-medium">
               Meta Pixel ID (Facebook/Instagram Ads)
@@ -189,9 +190,63 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
             </p>
           </div>
 
-          <Button onClick={handleSavePixel} disabled={savingPixel} className="w-full gap-2">
+          {/* Webhook CRM */}
+          <div className="pt-3 border-t border-border space-y-3">
+            <div className="flex items-center gap-2">
+              <Webhook className="w-4 h-4 text-primary" />
+              <Label className="text-xs font-semibold">Webhook para CRM</Label>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Receba os dados dos leads automaticamente no seu CRM.{' '}
+              <a href="/docs/webhook" target="_blank" className="text-primary underline">Ver documentação →</a>
+            </p>
+
+            <div className="space-y-2">
+              <Label htmlFor="webhook_url" className="text-xs font-medium">URL do Webhook</Label>
+              <Input
+                id="webhook_url"
+                value={webhookUrl}
+                onChange={e => setWebhookUrl(e.target.value)}
+                placeholder="https://seu-crm.com/api/webhook"
+                className="text-sm font-mono"
+                type="url"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="webhook_secret" className="text-xs font-medium">Secret (para validação HMAC)</Label>
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1">
+                  <Input
+                    id="webhook_secret"
+                    value={webhookSecret}
+                    onChange={e => setWebhookSecret(e.target.value)}
+                    placeholder="Gere ou cole um secret"
+                    className="text-sm font-mono pr-10"
+                    type={showSecret ? 'text' : 'password'}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowSecret(!showSecret)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                  >
+                    {showSecret ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
+                <Button variant="outline" size="sm" onClick={generateSecret} className="gap-1 shrink-0">
+                  <RefreshCw className="w-3.5 h-3.5" />
+                  Gerar
+                </Button>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Use este secret para validar a autenticidade dos webhooks recebidos.
+              </p>
+            </div>
+          </div>
+
+          <Button onClick={handleSaveIntegrations} disabled={savingIntegrations} className="w-full gap-2">
             <Save className="w-4 h-4" />
-            {savingPixel ? 'Salvando...' : 'Salvar integração'}
+            {savingIntegrations ? 'Salvando...' : 'Salvar integrações'}
           </Button>
         </CardContent>
       </Card>
