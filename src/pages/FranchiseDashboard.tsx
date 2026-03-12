@@ -63,6 +63,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   const { franchiseId: authFranchiseId, loading: authLoading } = useAuth();
   const franchiseId = overrideFranchiseId || authFranchiseId;
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState<'leads' | 'reports'>('leads');
 
