@@ -109,7 +109,7 @@ function AppRoutes() {
                       <Route
                         path="/perfil"
                         element={
-                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
+                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
                             <ProfileSettings />
                           </ProtectedRoute>
                         }
