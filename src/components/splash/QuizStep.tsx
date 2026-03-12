@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { useState, useMemo } from 'react';
-import { cidadesRS } from '@/lib/cities';
+import { cidades, type CityOption } from '@/lib/cities';
 import { ExplorerProgress } from './ExplorerProgress';
 import { MapPin, Search, Check } from 'lucide-react';
 
@@ -22,6 +22,11 @@ interface QuizStepProps {
   explorerStep: number;
 }
 
+function formatCityLabel(city: CityOption): string {
+  if (city.pais === 'UY') return `${city.nome}, Uruguai 🇺🇾`;
+  return `${city.nome}, ${city.estado || 'RS'}`;
+}
+
 export function QuizStep({ step, totalSteps: _totalSteps, question, options, type = 'options', onAnswer, onBack, explorerStep }: QuizStepProps) {
   const [citySearch, setCitySearch] = useState('');
   const [selectedValue, setSelectedValue] = useState<string | null>(null);
@@ -29,7 +34,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
   const filteredCities = useMemo(() => {
     if (!citySearch || citySearch.length < 2) return [];
     const search = citySearch.toLowerCase();
-    return cidadesRS.filter(c => c.toLowerCase().includes(search)).slice(0, 6);
+    return cidades.filter(c => c.nome.toLowerCase().includes(search)).slice(0, 8);
   }, [citySearch]);
 
   const handleSelect = (value: string) => {
