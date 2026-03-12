@@ -75,6 +75,7 @@ export type Database = {
         Row: {
           ativa: boolean
           cidade_base: string
+          cidades_atendidas: string[] | null
           created_at: string
           email: string | null
           id: string
@@ -89,6 +90,7 @@ export type Database = {
         Insert: {
           ativa?: boolean
           cidade_base: string
+          cidades_atendidas?: string[] | null
           created_at?: string
           email?: string | null
           id?: string
@@ -103,6 +105,7 @@ export type Database = {
         Update: {
           ativa?: boolean
           cidade_base?: string
+          cidades_atendidas?: string[] | null
           created_at?: string
           email?: string | null
           id?: string
