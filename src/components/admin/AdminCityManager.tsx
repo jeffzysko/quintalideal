@@ -96,7 +96,7 @@ export function AdminCityManager() {
     return cities;
   }, [coveredCities, selectedFranchise, searchQuery]);
 
-  const handleAdd = async () => {
+  const handleAddSingle = async () => {
     if (!addFranchiseId || !addCityName.trim()) {
       toast.error('Selecione uma franquia e informe o nome da cidade.');
       return;
