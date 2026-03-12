@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Input } from '@/components/ui/input';
 import { useState, useMemo } from 'react';
-import { cidadesRS } from '@/lib/cities';
+import { cidades, type CityOption } from '@/lib/cities';
 import { ExplorerProgress } from './ExplorerProgress';
 import { MapPin, Search, Check } from 'lucide-react';
 
@@ -22,6 +22,11 @@ interface QuizStepProps {
   explorerStep: number;
 }
 
+function formatCityLabel(city: CityOption): string {
+  if (city.pais === 'UY') return `${city.nome}, Uruguai 🇺🇾`;
+  return `${city.nome}, ${city.estado || 'RS'}`;
+}
+
 export function QuizStep({ step, totalSteps: _totalSteps, question, options, type = 'options', onAnswer, onBack, explorerStep }: QuizStepProps) {
   const [citySearch, setCitySearch] = useState('');
   const [selectedValue, setSelectedValue] = useState<string | null>(null);
@@ -29,7 +34,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
   const filteredCities = useMemo(() => {
     if (!citySearch || citySearch.length < 2) return [];
     const search = citySearch.toLowerCase();
-    return cidadesRS.filter(c => c.toLowerCase().includes(search)).slice(0, 6);
+    return cidades.filter(c => c.nome.toLowerCase().includes(search)).slice(0, 8);
   }, [citySearch]);
 
   const handleSelect = (value: string) => {
@@ -123,19 +128,23 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
                     animate={{ opacity: 1, y: 0 }}
                     className="mt-3 space-y-1"
                   >
-                    {filteredCities.map((city, i) => (
-                      <motion.button
-                        key={city}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.04 }}
-                        onClick={() => onAnswer(city)}
-                        className="w-full text-left px-4 py-3.5 rounded-xl hover:bg-accent active:bg-accent/70 transition-colors flex items-center gap-3 text-sm group"
-                      >
-                        <MapPin className="w-4 h-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
-                        <span className="font-medium">{city}</span>
-                      </motion.button>
-                    ))}
+                    {filteredCities.map((city, i) => {
+                      const label = formatCityLabel(city);
+                      const value = city.pais === 'UY' ? `${city.nome}, Uruguai` : city.nome;
+                      return (
+                        <motion.button
+                          key={`${city.pais}-${city.nome}`}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.04 }}
+                          onClick={() => onAnswer(value)}
+                          className="w-full text-left px-4 py-3.5 rounded-xl hover:bg-accent active:bg-accent/70 transition-colors flex items-center gap-3 text-sm group"
+                        >
+                          <MapPin className="w-4 h-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
+                          <span className="font-medium">{label}</span>
+                        </motion.button>
+                      );
+                    })}
                   </motion.div>
                 )}
                 {citySearch.length >= 2 && filteredCities.length === 0 && (

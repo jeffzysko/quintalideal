@@ -1,4 +1,10 @@
-export const cidadesRS = [
+export interface CityOption {
+  nome: string;
+  estado?: string;
+  pais: 'BR' | 'UY';
+}
+
+const cidadesRSRaw = [
   'Alegrete', 'Alvorada', 'Bagé', 'Bento Gonçalves', 'Cachoeira do Sul',
   'Cachoeirinha', 'Camaquã', 'Campo Bom', 'Canela', 'Canoas',
   'Capão da Canoa', 'Carazinho', 'Carlos Barbosa', 'Caxias do Sul',
@@ -15,5 +21,22 @@ export const cidadesRS = [
   'São Sebastião do Caí', 'Sapiranga', 'Sapucaia do Sul', 'Soledade',
   'Taquara', 'Taquari', 'Torres', 'Tramandaí', 'Três Coroas',
   'Três de Maio', 'Triunfo', 'Tupanciretã', 'Uruguaiana', 'Vacaria',
-  'Venâncio Aires', 'Vera Cruz', 'Veranópolis', 'Viamão', 'Xangri-lá'
+  'Venâncio Aires', 'Vera Cruz', 'Veranópolis', 'Viamão', 'Xangri-lá',
 ];
+
+const cidadesUYRaw = [
+  'Artigas', 'Bella Unión', 'Canelones', 'Carmelo', 'Chuy',
+  'Colonia del Sacramento', 'Dolores', 'Durazno', 'Florida', 'Fray Bentos',
+  'La Paz', 'Las Piedras', 'Maldonado', 'Melo', 'Mercedes',
+  'Minas', 'Montevideo', 'Pando', 'Paysandú', 'Piriápolis',
+  'Punta del Este', 'Rivera', 'Rocha', 'Salto', 'San Carlos',
+  'San José de Mayo', 'Santa Lucía', 'Tacuarembó', 'Treinta y Tres', 'Trinidad',
+];
+
+export const cidades: CityOption[] = [
+  ...cidadesRSRaw.map(nome => ({ nome, estado: 'RS', pais: 'BR' as const })),
+  ...cidadesUYRaw.map(nome => ({ nome, pais: 'UY' as const })),
+];
+
+/** @deprecated Use `cidades` instead */
+export const cidadesRS = cidadesRSRaw;
