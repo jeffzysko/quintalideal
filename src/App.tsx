@@ -38,6 +38,7 @@ const ProfileSettings = lazy(() => import("./pages/ProfileSettings"));
 const WebhookDocs = lazy(() => import("./pages/WebhookDocs"));
 const TermosDeUso = lazy(() => import("./pages/TermosDeUso"));
 const PoliticaPrivacidade = lazy(() => import("./pages/PoliticaPrivacidade"));
+const Suporte = lazy(() => import("./pages/Suporte"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -97,6 +98,14 @@ function AppRoutes() {
                       <Route path="/reset-password" element={<ResetPassword />} />
                       <Route path="/termos" element={<TermosDeUso />} />
                       <Route path="/privacidade" element={<PoliticaPrivacidade />} />
+                      <Route
+                        path="/suporte"
+                        element={
+                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
+                            <Suporte />
+                          </ProtectedRoute>
+                        }
+                      />
                       <Route
                         path="/perfil"
                         element={
