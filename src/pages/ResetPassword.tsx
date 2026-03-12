@@ -20,24 +20,41 @@ export default function ResetPassword() {
 
   useEffect(() => {
     // Listen for the PASSWORD_RECOVERY event from the auth state change
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      console.log('[ResetPassword] Auth event:', event);
       if (event === 'PASSWORD_RECOVERY') {
         setIsRecovery(true);
         setChecking(false);
+      } else if (event === 'SIGNED_IN' && session) {
+        // Sometimes Supabase fires SIGNED_IN instead of PASSWORD_RECOVERY
+        // Check if URL has recovery indicators
+        const hash = window.location.hash;
+        if (hash.includes('type=recovery')) {
+          setIsRecovery(true);
+          setChecking(false);
+        }
       }
     });
 
     // Also check URL hash for recovery token (Supabase appends it)
     const hash = window.location.hash;
+    console.log('[ResetPassword] URL hash:', hash);
     if (hash && hash.includes('type=recovery')) {
       setIsRecovery(true);
       setChecking(false);
     }
 
-    // Fallback: if after 3s no recovery event, show error
+    // Also check query params (some flows use query params)
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('type') === 'recovery') {
+      setIsRecovery(true);
+      setChecking(false);
+    }
+
+    // Fallback: if after 5s no recovery event, show error
     const timeout = setTimeout(() => {
       setChecking(false);
-    }, 3000);
+    }, 5000);
 
     return () => {
       subscription.unsubscribe();
