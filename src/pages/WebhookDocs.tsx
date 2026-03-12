@@ -326,7 +326,7 @@ export default function WebhookDocs() {
           </div>
         </motion.section>
 
-        {/* Respostas */}
+        {/* Eventos */}
         <motion.section
           variants={fadeUp}
           initial="hidden"
@@ -335,26 +335,157 @@ export default function WebhookDocs() {
           custom={4}
           className="mb-12"
         >
-          <SectionHeader icon={CheckCircle2} title="Respostas esperadas" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <SectionHeader icon={List} title="Tipos de Evento" />
+          <div className="overflow-x-auto rounded-2xl border border-border/50 shadow-sm">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-muted/60">
+                  <th className="px-5 py-3 text-left font-semibold text-foreground text-xs uppercase tracking-wider">Evento</th>
+                  <th className="px-5 py-3 text-left font-semibold text-foreground text-xs uppercase tracking-wider">Quando é disparado</th>
+                  <th className="px-5 py-3 text-left font-semibold text-foreground text-xs uppercase tracking-wider">Ação recomendada</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border/40 bg-background hover:bg-primary/5 transition-colors">
+                  <td className="px-5 py-2.5 font-mono text-xs text-primary font-medium">novo_lead</td>
+                  <td className="px-5 py-2.5 text-xs text-muted-foreground">Quando um visitante preenche o formulário de contato após o quiz</td>
+                  <td className="px-5 py-2.5 text-xs text-muted-foreground">Criar registro no CRM e iniciar fluxo de atendimento</td>
+                </tr>
+                <tr className="border-t border-border/40 bg-muted/20 hover:bg-primary/5 transition-colors">
+                  <td className="px-5 py-2.5 font-mono text-xs text-primary font-medium">teste_webhook</td>
+                  <td className="px-5 py-2.5 text-xs text-muted-foreground">Quando o franqueado clica em "Testar" nas configurações de integrações</td>
+                  <td className="px-5 py-2.5 text-xs text-muted-foreground">Ignorar ou registrar como teste — não criar lead real</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </motion.section>
+
+        {/* Headers */}
+        <motion.section
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-40px' }}
+          custom={5}
+          className="mb-12"
+        >
+          <SectionHeader icon={MailOpen} title="Headers da Requisição" />
+          <div className="overflow-x-auto rounded-2xl border border-border/50 shadow-sm">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-muted/60">
+                  <th className="px-5 py-3 text-left font-semibold text-foreground text-xs uppercase tracking-wider">Header</th>
+                  <th className="px-5 py-3 text-left font-semibold text-foreground text-xs uppercase tracking-wider">Valor</th>
+                  <th className="px-5 py-3 text-left font-semibold text-foreground text-xs uppercase tracking-wider">Obrigatório</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="border-t border-border/40 bg-background hover:bg-primary/5 transition-colors">
+                  <td className="px-5 py-2.5 font-mono text-xs text-primary font-medium">Content-Type</td>
+                  <td className="px-5 py-2.5 font-mono text-xs text-muted-foreground">application/json</td>
+                  <td className="px-5 py-2.5 text-xs text-muted-foreground">Sempre presente</td>
+                </tr>
+                <tr className="border-t border-border/40 bg-muted/20 hover:bg-primary/5 transition-colors">
+                  <td className="px-5 py-2.5 font-mono text-xs text-primary font-medium">X-Webhook-Signature</td>
+                  <td className="px-5 py-2.5 font-mono text-xs text-muted-foreground">sha256=&lt;hex&gt;</td>
+                  <td className="px-5 py-2.5 text-xs text-muted-foreground">Somente se um secret estiver configurado</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </motion.section>
+
+        {/* Respostas & Troubleshooting */}
+        <motion.section
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-40px' }}
+          custom={6}
+          className="mb-12"
+        >
+          <SectionHeader icon={AlertTriangle} title="Respostas & Troubleshooting" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-5">
             <div className="rounded-xl border border-emerald-200/50 bg-emerald-50/50 p-4">
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                <span className="text-xs font-bold text-emerald-700">Sucesso</span>
+                <span className="text-xs font-bold text-emerald-700">Sucesso (2xx)</span>
               </div>
               <p className="text-xs text-emerald-600">
-                Retorne status <code className="bg-emerald-100 px-1 py-0.5 rounded font-mono">2xx</code> para confirmar recebimento
+                Retorne status <code className="bg-emerald-100 px-1 py-0.5 rounded font-mono">2xx</code> para confirmar recebimento. O lead será marcado como entregue.
               </p>
             </div>
             <div className="rounded-xl border border-amber-200/50 bg-amber-50/50 p-4">
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="w-2 h-2 rounded-full bg-amber-500" />
-                <span className="text-xs font-bold text-amber-700">Timeout</span>
+                <span className="text-xs font-bold text-amber-700">Timeout (10s)</span>
               </div>
               <p className="text-xs text-amber-600">
-                Limite de <strong>10 segundos</strong>. Sem retry automático nesta versão.
+                Se o servidor não responder em <strong>10 segundos</strong>, a requisição será cancelada.
               </p>
             </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="rounded-xl border border-red-200/50 bg-red-50/50 p-4">
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="w-2 h-2 rounded-full bg-red-500" />
+                <span className="text-xs font-bold text-red-700">Erro (4xx/5xx)</span>
+              </div>
+              <p className="text-xs text-red-600">
+                O erro é registrado nos logs mas <strong>o lead é salvo normalmente</strong>. Nenhum retry automático nesta versão.
+              </p>
+            </div>
+            <div className="rounded-xl border border-border/50 bg-muted/30 p-4">
+              <div className="flex items-center gap-2 mb-1.5">
+                <span className="w-2 h-2 rounded-full bg-muted-foreground" />
+                <span className="text-xs font-bold text-foreground">Servidor offline</span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                Se a URL estiver inacessível, o envio falha silenciosamente. O lead continua salvo no painel.
+              </p>
+            </div>
+          </div>
+        </motion.section>
+
+        {/* FAQ */}
+        <motion.section
+          variants={fadeUp}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: '-40px' }}
+          custom={7}
+          className="mb-12"
+        >
+          <SectionHeader icon={MessageCircleQuestion} title="Perguntas Frequentes" badge="FAQ" />
+          <div className="space-y-3">
+            {[
+              {
+                q: 'Posso configurar mais de uma URL de webhook?',
+                a: 'Atualmente cada franquia suporta uma URL. Se precisar enviar para múltiplos destinos, use um serviço intermediário como Zapier, Make ou n8n para distribuir.',
+              },
+              {
+                q: 'O que acontece se meu servidor estiver fora do ar?',
+                a: 'O lead é salvo normalmente no painel do Quintal Ideal. O webhook falha silenciosamente — sem retry automático. Recomendamos monitorar a disponibilidade do seu endpoint.',
+              },
+              {
+                q: 'Como testar sem um CRM?',
+                a: 'Use serviços gratuitos como webhook.site ou requestbin.com para gerar uma URL temporária. Cole nas configurações e clique em "Testar" para ver o payload recebido.',
+              },
+              {
+                q: 'Preciso validar a assinatura HMAC?',
+                a: 'É altamente recomendado para segurança, mas não obrigatório. Sem validação, qualquer pessoa que conheça sua URL poderia enviar dados falsos.',
+              },
+              {
+                q: 'Qual o formato da data/hora?',
+                a: 'ISO 8601 em UTC (ex: 2026-03-12T16:00:00.000Z). Converta para o fuso horário local no seu CRM.',
+              },
+            ].map((item, i) => (
+              <div key={i} className="rounded-xl border border-border/50 bg-card/60 p-4 hover:bg-card/80 transition-colors">
+                <h3 className="text-sm font-semibold text-foreground mb-1.5">{item.q}</h3>
+                <p className="text-xs text-muted-foreground leading-relaxed">{item.a}</p>
+              </div>
+            ))}
           </div>
         </motion.section>
 
