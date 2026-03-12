@@ -1,4 +1,4 @@
-import { Copy, CheckCircle2, ArrowLeft, Webhook, Shield, Zap, Code2, FileJson, Lock, Send, HelpCircle } from 'lucide-react';
+import { Copy, CheckCircle2, ArrowLeft, Webhook, Shield, Zap, Code2, FileJson, Lock, Send, HelpCircle, AlertTriangle, List, MailOpen, MessageCircleQuestion } from 'lucide-react';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
