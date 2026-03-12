@@ -168,6 +168,13 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         metadata: { modelo_recomendado: poolName, score },
       });
 
+      trackMetaEvent('Lead', {
+        content_name: poolName,
+        content_category: answers.cidade || '',
+        value: score,
+        currency: 'BRL',
+      });
+
       if (franchiseId) {
         supabase.functions.invoke('notify-new-lead', {
           body: {
