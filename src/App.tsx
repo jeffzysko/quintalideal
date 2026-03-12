@@ -164,6 +164,7 @@ function AppRoutes() {
                     <Route path="*" element={<NotFound />} />
                   </Routes>
                 </Suspense>
+                <CookieConsentBanner />
               </BrowserRouter>
             </TooltipProvider>
           </AuthProvider>
