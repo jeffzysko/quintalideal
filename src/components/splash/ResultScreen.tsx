@@ -88,7 +88,7 @@ export function ResultScreen({ score, onContinue, lang = 'pt' }: ResultScreenPro
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.15, type: 'spring', damping: 18 }}
-        className="text-center max-w-md w-full px-6 py-12 relative z-10"
+        className="text-center max-w-md w-full px-4 sm:px-6 py-8 sm:py-12 relative z-10"
       >
         <motion.img
           src={logoSplash}
