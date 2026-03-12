@@ -11,6 +11,10 @@ interface QuizOption {
   emoji?: string;
 }
 
+const UY_ENABLED_SLUGS = new Set([
+  'santana-do-livramento', 'alegrete', 'bage', 'cassino', 'jaguarao',
+]);
+
 interface QuizStepProps {
   step: number;
   totalSteps: number;
@@ -20,6 +24,7 @@ interface QuizStepProps {
   onAnswer: (value: string) => void;
   onBack: () => void;
   explorerStep: number;
+  franchiseSlug?: string;
 }
 
 function formatCityLabel(city: CityOption): string {
@@ -27,15 +32,18 @@ function formatCityLabel(city: CityOption): string {
   return `${city.nome}, ${city.estado || 'RS'}`;
 }
 
-export function QuizStep({ step, totalSteps: _totalSteps, question, options, type = 'options', onAnswer, onBack, explorerStep }: QuizStepProps) {
+export function QuizStep({ step, totalSteps: _totalSteps, question, options, type = 'options', onAnswer, onBack, explorerStep, franchiseSlug }: QuizStepProps) {
   const [citySearch, setCitySearch] = useState('');
   const [selectedValue, setSelectedValue] = useState<string | null>(null);
+
+  const showUY = franchiseSlug ? UY_ENABLED_SLUGS.has(franchiseSlug) : false;
 
   const filteredCities = useMemo(() => {
     if (!citySearch || citySearch.length < 2) return [];
     const search = citySearch.toLowerCase();
-    return cidades.filter(c => c.nome.toLowerCase().includes(search)).slice(0, 8);
-  }, [citySearch]);
+    const pool = showUY ? cidades : cidades.filter(c => c.pais === 'BR');
+    return pool.filter(c => c.nome.toLowerCase().includes(search)).slice(0, 8);
+  }, [citySearch, showUY]);
 
   const handleSelect = (value: string) => {
     setSelectedValue(value);
