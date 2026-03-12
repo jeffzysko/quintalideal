@@ -187,6 +187,7 @@ export default function AdminDashboard() {
   ];
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-border/40 bg-card/80 backdrop-blur-xl">
         <div className="max-w-7xl mx-auto px-4 md:px-6 h-14 md:h-16 flex items-center justify-between">
