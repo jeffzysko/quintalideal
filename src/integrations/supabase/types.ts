@@ -78,6 +78,7 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
+          meta_pixel_id: string | null
           nome_franquia: string
           responsavel: string | null
           slug_url: string
@@ -89,6 +90,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          meta_pixel_id?: string | null
           nome_franquia: string
           responsavel?: string | null
           slug_url: string
@@ -100,6 +102,7 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          meta_pixel_id?: string | null
           nome_franquia?: string
           responsavel?: string | null
           slug_url?: string
@@ -356,6 +359,7 @@ export type Database = {
         Returns: {
           ativa: boolean
           id: string
+          meta_pixel_id: string
           nome_franquia: string
           slug_url: string
           whatsapp: string

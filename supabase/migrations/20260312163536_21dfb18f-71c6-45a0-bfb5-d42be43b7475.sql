@@ -1,0 +1,1 @@
+ALTER TABLE public.franchises ADD COLUMN meta_pixel_id text DEFAULT NULL;

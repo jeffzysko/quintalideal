@@ -6,6 +6,7 @@ import { calculateScore, recommendPool, recommendSize, type QuizAnswers } from '
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { trackEvent } from '@/lib/analytics';
+import { trackMetaEvent } from '@/components/MetaPixel';
 import { type Lang, getQuizQuestions, t } from '@/lib/i18n';
 
 const PhotoUpload = lazy(() => import('./PhotoUpload').then(m => ({ default: m.PhotoUpload })));
@@ -93,6 +94,12 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         metadata: { score: s, modelo_recomendado: pool },
       });
 
+      trackMetaEvent('CompleteRegistration', {
+        content_name: pool,
+        value: s,
+        currency: 'BRL',
+      });
+
       setStep('processing');
     }
   }, [quizStep, answers, lang]);
@@ -159,6 +166,13 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         ...analyticsCtx,
         city: answers.cidade,
         metadata: { modelo_recomendado: poolName, score },
+      });
+
+      trackMetaEvent('Lead', {
+        content_name: poolName,
+        content_category: answers.cidade || '',
+        value: score,
+        currency: 'BRL',
       });
 
       if (franchiseId) {

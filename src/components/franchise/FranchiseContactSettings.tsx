@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Phone, Mail, Save, Share2 } from 'lucide-react';
+import { Phone, Mail, Save, Share2, BarChart3 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SITE_URL } from '@/lib/constants';
 
@@ -15,6 +15,7 @@ interface Props {
 export function FranchiseContactSettings({ franchiseId }: Props) {
   const [whatsapp, setWhatsapp] = useState('');
   const [email, setEmail] = useState('');
+  const [metaPixelId, setMetaPixelId] = useState('');
   const [slug, setSlug] = useState('');
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -23,13 +24,14 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
     async function load() {
       const { data } = await supabase
         .from('franchises')
-        .select('whatsapp, email, slug_url')
+        .select('whatsapp, email, slug_url, meta_pixel_id')
         .eq('id', franchiseId)
         .maybeSingle();
       if (data) {
         setWhatsapp(data.whatsapp || '');
         setEmail(data.email || '');
         setSlug(data.slug_url || '');
+        setMetaPixelId(data.meta_pixel_id || '');
       }
       setLoading(false);
     }
@@ -40,7 +42,7 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
     setSaving(true);
     const { error } = await supabase
       .from('franchises')
-      .update({ whatsapp, email })
+      .update({ whatsapp, email, meta_pixel_id: metaPixelId || null })
       .eq('id', franchiseId);
 
     if (error) {
@@ -106,6 +108,26 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
               className="text-sm"
             />
           </div>
+        </div>
+
+        <div className="space-y-2 pt-2 border-t border-border">
+          <Label htmlFor="meta_pixel_id" className="text-xs font-medium">
+            <span className="flex items-center gap-1.5">
+              <BarChart3 className="w-3.5 h-3.5 text-muted-foreground" />
+              Meta Pixel ID (Facebook/Instagram Ads)
+            </span>
+          </Label>
+          <Input
+            id="meta_pixel_id"
+            value={metaPixelId}
+            onChange={e => setMetaPixelId(e.target.value.replace(/\D/g, ''))}
+            placeholder="123456789012345"
+            className="text-sm font-mono"
+            maxLength={20}
+          />
+          <p className="text-xs text-muted-foreground">
+            Encontre no <a href="https://business.facebook.com/events_manager" target="_blank" rel="noopener noreferrer" className="text-primary underline">Meta Business Suite → Gerenciador de Eventos</a>
+          </p>
         </div>
 
         <Button onClick={handleSave} disabled={saving} className="w-full gap-2">

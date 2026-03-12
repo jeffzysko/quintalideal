@@ -2,6 +2,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/lib/supabase';
 import { QuizFlow } from '@/components/splash/QuizFlow';
+import { MetaPixel } from '@/components/MetaPixel';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, Home } from 'lucide-react';
 
@@ -11,6 +12,7 @@ interface Franchise {
   slug_url: string;
   whatsapp: string | null;
   ativa: boolean;
+  meta_pixel_id: string | null;
 }
 
 export default function FranchiseLanding() {
@@ -73,11 +75,14 @@ export default function FranchiseLanding() {
   }
 
   return (
-    <QuizFlow
-      franchiseSlug={franchise.slug_url}
-      franchiseName={franchise.nome_franquia}
-      franchiseId={franchise.id}
-      franchiseWhatsapp={franchise.whatsapp || undefined}
-    />
+    <>
+      {franchise.meta_pixel_id && <MetaPixel pixelId={franchise.meta_pixel_id} />}
+      <QuizFlow
+        franchiseSlug={franchise.slug_url}
+        franchiseName={franchise.nome_franquia}
+        franchiseId={franchise.id}
+        franchiseWhatsapp={franchise.whatsapp || undefined}
+      />
+    </>
   );
 }
