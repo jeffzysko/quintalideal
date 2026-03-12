@@ -22,6 +22,24 @@ const PAYLOAD_EXAMPLE = `{
   }
 }`;
 
+const TEST_PAYLOAD_EXAMPLE = `{
+  "evento": "teste_webhook",
+  "lead": {
+    "nome": "Lead de Teste",
+    "telefone": "5551999999999",
+    "email": "teste@exemplo.com",
+    "cidade": "Cidade Teste",
+    "pontuacao_quintal": 75,
+    "modelo_recomendado": "Cancún",
+    "referred_by": null,
+    "created_at": "2026-03-12T16:00:00.000Z"
+  },
+  "franquia": {
+    "nome": "Splash Exemplo",
+    "slug": "exemplo"
+  }
+}`;
+
 const VALIDATION_EXAMPLE = `import hmac
 import hashlib
 
@@ -228,6 +246,20 @@ export default function WebhookDocs() {
             Corpo da requisição enviado com <code className="bg-muted px-1.5 py-0.5 rounded text-xs font-mono text-foreground">Content-Type: application/json</code>
           </p>
           <CodeBlock code={PAYLOAD_EXAMPLE} language="JSON" />
+
+          <div className="mt-6 rounded-2xl border border-amber-200/50 bg-amber-50/30 p-5">
+            <div className="flex items-center gap-2 mb-3">
+              <Send className="w-4 h-4 text-amber-600" />
+              <h3 className="text-sm font-bold text-foreground">Evento de teste</h3>
+            </div>
+            <p className="text-xs text-muted-foreground mb-3 leading-relaxed">
+              Ao clicar em <strong className="text-foreground">"Testar"</strong> nas configurações de integrações, enviamos um payload com 
+              <code className="bg-background/80 px-1.5 py-0.5 rounded text-xs font-mono mx-1">"evento": "teste_webhook"</code> 
+              em vez de <code className="bg-background/80 px-1.5 py-0.5 rounded text-xs font-mono mx-1">"novo_lead"</code>. 
+              Use este campo para ignorar dados de teste no seu CRM.
+            </p>
+            <CodeBlock code={TEST_PAYLOAD_EXAMPLE} language="JSON — Teste" />
+          </div>
         </motion.section>
 
         {/* Campos */}
