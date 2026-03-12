@@ -6,8 +6,8 @@ import { calculateScore, recommendPool, recommendSize, type QuizAnswers } from '
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { trackEvent } from '@/lib/analytics';
+import { type Lang, getQuizQuestions, t } from '@/lib/i18n';
 
-// Lazy load non-critical steps
 const PhotoUpload = lazy(() => import('./PhotoUpload').then(m => ({ default: m.PhotoUpload })));
 const PhotoAnalysis = lazy(() => import('./PhotoAnalysis').then(m => ({ default: m.PhotoAnalysis })));
 const PreDiagnosis = lazy(() => import('./PreDiagnosis').then(m => ({ default: m.PreDiagnosis })));
@@ -16,60 +16,6 @@ const ProcessingScreen = lazy(() => import('./ProcessingScreen').then(m => ({ de
 const ResultScreen = lazy(() => import('./ResultScreen').then(m => ({ default: m.ResultScreen })));
 const LeadForm = lazy(() => import('./LeadForm').then(m => ({ default: m.LeadForm })));
 const ActionButtons = lazy(() => import('./ActionButtons').then(m => ({ default: m.ActionButtons })));
-
-const quizQuestions = [
-  {
-    question: 'Qual o espaço aproximado disponível para a piscina?',
-    options: [
-      { value: 'ate-3', label: 'Até 3 metros', emoji: '📏' },
-      { value: '3-5', label: 'Entre 3 e 5 metros', emoji: '📐' },
-      { value: '5-7', label: 'Entre 5 e 7 metros', emoji: '🏡' },
-      { value: 'mais-7', label: 'Mais de 7 metros', emoji: '🏠' },
-    ],
-  },
-  {
-    question: 'Você já mora nessa casa?',
-    options: [
-      { value: 'minha', label: 'Sim, já é minha casa', emoji: '🏠' },
-      { value: 'construindo', label: 'Estou construindo', emoji: '🏗️' },
-      { value: 'planejando', label: 'Ainda estou planejando', emoji: '📋' },
-    ],
-  },
-  {
-    question: 'Como você imagina aproveitar sua piscina?',
-    options: [
-      { value: 'casal', label: 'Momentos a dois', emoji: '💑' },
-      { value: 'familia-pequena', label: 'Diversão com os filhos', emoji: '👨‍👩‍👧' },
-      { value: 'familia-grande', label: 'Reunir toda a família', emoji: '👨‍👩‍👧‍👦' },
-      { value: 'amigos', label: 'Churrascos e festas', emoji: '🎉' },
-    ],
-  },
-  {
-    question: 'Quando você gostaria de ter sua piscina?',
-    options: [
-      { value: '2026', label: 'Ainda em 2026', emoji: '🔥' },
-      { value: '2026-2027', label: 'Talvez em 2026 ou 2027', emoji: '🤔' },
-      { value: 'pesquisando', label: 'Só estou pesquisando', emoji: '🔍' },
-    ],
-  },
-  {
-    question: 'O que você gostaria na piscina?',
-    options: [
-      { value: 'prainha', label: 'Prainha', emoji: '🏖️' },
-      { value: 'spa', label: 'Spa ou Hidromassagem', emoji: '🧖' },
-      { value: 'simples', label: 'Piscina clássica e elegante', emoji: '✨' },
-      { value: 'nao-sei', label: 'Ainda não sei', emoji: '🤷' },
-    ],
-  },
-  {
-    question: 'Qual o orçamento estimado para sua piscina?',
-    options: [
-      { value: 'ate-18', label: 'Até R$ 18 mil', emoji: '💰' },
-      { value: '18-30', label: 'R$ 18 a 30 mil', emoji: '💎' },
-      { value: '30-50', label: 'R$ 30 a 50 mil', emoji: '🏆' },
-    ],
-  },
-];
 
 type Step = 'hero' | 'photos' | 'photo-analysis' | 'pre-diagnosis' | 'quiz' | 'processing' | 'result' | 'lead-form' | 'actions';
 
@@ -92,6 +38,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   const [searchParams] = useSearchParams();
   const referredBy = searchParams.get('ref') || '';
 
+  const [lang, setLang] = useState<Lang>('pt');
   const [step, setStep] = useState<Step>('hero');
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
   const [quizStep, setQuizStep] = useState(0);
@@ -107,6 +54,8 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
 
   const isSubmittingRef = useRef(false);
   const analyticsCtx = { franchiseId };
+
+  const quizQuestions = getQuizQuestions(lang);
 
   useEffect(() => {
     trackEvent('landing_page_viewed', analyticsCtx);
@@ -146,7 +95,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
 
       setStep('processing');
     }
-  }, [quizStep, answers]);
+  }, [quizStep, answers, lang]);
 
   const fetchPoolDescription = async (name: string) => {
     try {
@@ -212,7 +161,6 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         metadata: { modelo_recomendado: poolName, score },
       });
 
-      // Notify franchise about new lead (fire-and-forget)
       if (franchiseId) {
         supabase.functions.invoke('notify-new-lead', {
           body: {
@@ -232,7 +180,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       setStep('actions');
     } catch (err: unknown) {
       console.error('Lead submit error:', err);
-      toast.error('Erro ao salvar seus dados. Tente novamente.');
+      toast.error(t('lead_error_submit', lang));
       isSubmittingRef.current = false;
     } finally {
       setSaving(false);
@@ -267,17 +215,24 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   return (
     <AnimatePresence mode="wait">
       {step === 'hero' && (
-        <HeroSection key="hero" onStart={handleStartQuiz} franchiseName={franchiseName} />
+        <HeroSection
+          key="hero"
+          onStart={handleStartQuiz}
+          franchiseName={franchiseName}
+          franchiseSlug={franchiseSlug}
+          lang={lang}
+          onLangChange={setLang}
+        />
       )}
       <Suspense fallback={<StepFallback />}>
         {step === 'photos' && (
-          <PhotoUpload key="photos" onNext={handlePhotosNext} onBack={() => setStep('hero')} />
+          <PhotoUpload key="photos" onNext={handlePhotosNext} onBack={() => setStep('hero')} lang={lang} />
         )}
         {step === 'photo-analysis' && (
-          <PhotoAnalysis key="photo-analysis" onDone={() => setStep('pre-diagnosis')} />
+          <PhotoAnalysis key="photo-analysis" onDone={() => setStep('pre-diagnosis')} lang={lang} />
         )}
         {step === 'pre-diagnosis' && (
-          <PreDiagnosis key="pre-diagnosis" onContinue={() => setStep('quiz')} />
+          <PreDiagnosis key="pre-diagnosis" onContinue={() => setStep('quiz')} lang={lang} />
         )}
         {step === 'quiz' && currentQuizQuestion && (
           <QuizStep
@@ -292,6 +247,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
               if (quizStep === 0) setStep('photos');
               else setQuizStep(prev => prev - 1);
             }}
+            lang={lang}
           />
         )}
         {step === 'quiz' && quizStep === 6 && (
@@ -299,22 +255,23 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
             key="quiz-city"
             step={7}
             totalSteps={7}
-            question="Cidade onde você mora"
+            question={t('quiz_city', lang)}
             type="city"
             onAnswer={handleQuizAnswer}
             explorerStep={7}
             onBack={() => setQuizStep(5)}
             franchiseSlug={franchiseSlug}
+            lang={lang}
           />
         )}
         {step === 'processing' && (
-          <ProcessingScreen key="processing" onDone={() => setStep('result')} />
+          <ProcessingScreen key="processing" onDone={() => setStep('result')} lang={lang} />
         )}
         {step === 'result' && (
-          <ResultScreen key="result" score={score} poolName={poolName} poolDescription={poolDesc} onContinue={handleResultContinue} />
+          <ResultScreen key="result" score={score} poolName={poolName} poolDescription={poolDesc} onContinue={handleResultContinue} lang={lang} />
         )}
         {step === 'lead-form' && (
-          <LeadForm key="lead-form" onSubmit={handleLeadSubmit} onCheckDuplicate={checkDuplicate} loading={saving} />
+          <LeadForm key="lead-form" onSubmit={handleLeadSubmit} onCheckDuplicate={checkDuplicate} loading={saving} lang={lang} />
         )}
         {step === 'actions' && (
           <ActionButtons
@@ -328,6 +285,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
             leadName={leadName}
             refCode={leadRefCode}
             franchiseId={franchiseId}
+            lang={lang}
           />
         )}
       </Suspense>
