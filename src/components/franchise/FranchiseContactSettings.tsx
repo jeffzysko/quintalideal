@@ -4,8 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Phone, Mail, Save, Share2, BarChart3, Webhook, Eye, EyeOff, RefreshCw } from 'lucide-react';
+import { Phone, Mail, Save, Share2, BarChart3, Webhook, Eye, EyeOff, RefreshCw, Send, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase as supabaseClient } from '@/integrations/supabase/client';
 import { SITE_URL } from '@/lib/constants';
 
 interface Props {
@@ -22,6 +23,7 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
   const [slug, setSlug] = useState('');
   const [savingContact, setSavingContact] = useState(false);
   const [savingIntegrations, setSavingIntegrations] = useState(false);
+  const [testingWebhook, setTestingWebhook] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -75,6 +77,29 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
     crypto.getRandomValues(array);
     const secret = Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
     setWebhookSecret(secret);
+  };
+
+  const handleTestWebhook = async () => {
+    if (!webhookUrl) {
+      toast.error('Configure uma URL de webhook primeiro.');
+      return;
+    }
+    setTestingWebhook(true);
+    try {
+      const { data, error } = await supabaseClient.functions.invoke('test-webhook', {
+        body: { franchiseId },
+      });
+      if (error) throw error;
+      if (data?.success) {
+        toast.success(data.message || 'Webhook enviado com sucesso!');
+      } else {
+        toast.error(data?.message || 'Falha ao enviar webhook de teste.');
+      }
+    } catch {
+      toast.error('Erro ao testar webhook. Verifique a URL e tente novamente.');
+    } finally {
+      setTestingWebhook(false);
+    }
   };
 
   const franchiseUrl = slug ? `${SITE_URL}/${slug}` : '';
@@ -244,10 +269,23 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
             </div>
           </div>
 
-          <Button onClick={handleSaveIntegrations} disabled={savingIntegrations} className="w-full gap-2">
-            <Save className="w-4 h-4" />
-            {savingIntegrations ? 'Salvando...' : 'Salvar integrações'}
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={handleSaveIntegrations} disabled={savingIntegrations} className="flex-1 gap-2">
+              <Save className="w-4 h-4" />
+              {savingIntegrations ? 'Salvando...' : 'Salvar integrações'}
+            </Button>
+            {webhookUrl && (
+              <Button
+                variant="outline"
+                onClick={handleTestWebhook}
+                disabled={testingWebhook}
+                className="gap-2 shrink-0"
+              >
+                {testingWebhook ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                {testingWebhook ? 'Enviando...' : 'Testar'}
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>
