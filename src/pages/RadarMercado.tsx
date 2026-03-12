@@ -260,33 +260,33 @@ export default function RadarMercado() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b bg-card">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/admin')} className="rounded-xl">
-              <ArrowLeft className="w-5 h-5" />
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-5 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+            <Button variant="ghost" size="icon" onClick={() => navigate('/admin')} className="rounded-xl shrink-0 h-8 w-8 sm:h-10 sm:w-10">
+              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </Button>
-            <img src={logoSplash} alt="Splash" className="w-16" />
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-                <Target className="w-5 h-5 text-primary" />
-                Radar de Mercado Splash RS
+            <img src={logoSplash} alt="Splash" className="w-10 sm:w-16 shrink-0 hidden sm:block" />
+            <div className="min-w-0">
+              <h1 className="text-sm sm:text-xl font-bold tracking-tight text-foreground flex items-center gap-1.5 sm:gap-2">
+                <Target className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0" />
+                <span className="truncate">Radar de Mercado</span>
               </h1>
-              <p className="text-xs text-muted-foreground mt-0.5">Plataforma de Inteligência do Mercado de Piscinas</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 hidden sm:block">Inteligência do Mercado de Piscinas</p>
             </div>
           </div>
-          <Badge variant="outline" className="text-xs px-3 py-1.5 border-primary/30 text-primary">
-            {totalLeads} testes realizados
+          <Badge variant="outline" className="text-[10px] sm:text-xs px-2 sm:px-3 py-1 sm:py-1.5 border-primary/30 text-primary shrink-0">
+            {totalLeads} testes
           </Badge>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
         <Breadcrumbs items={[
           { label: 'Admin', href: '/admin' },
           { label: 'Radar de Mercado' },
         ]} />
         {/* KPI Row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
           {[
             { icon: Users, label: 'Testes Realizados', value: totalLeads, color: 'text-primary' },
             { icon: MapPin, label: 'Cidades Mapeadas', value: totalCities, color: 'text-secondary' },
@@ -295,10 +295,10 @@ export default function RadarMercado() {
           ].map((kpi, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
               <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
-                <CardContent className="p-5">
-                  <kpi.icon className={`w-6 h-6 ${kpi.color} mb-2`} />
-                  <p className="text-3xl font-bold tracking-tight text-foreground">{kpi.value}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{kpi.label}</p>
+                <CardContent className="p-3 sm:p-5">
+                  <kpi.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${kpi.color} mb-1.5 sm:mb-2`} />
+                  <p className="text-xl sm:text-3xl font-bold tracking-tight text-foreground">{kpi.value}</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">{kpi.label}</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -316,7 +316,7 @@ export default function RadarMercado() {
               <p className="text-xs text-muted-foreground">Heatmap baseado nos testes realizados por cidade</p>
             </CardHeader>
             <CardContent>
-              <div className="relative w-full aspect-[4/3] bg-muted/20 rounded-xl overflow-hidden border">
+              <div className="relative w-full aspect-square sm:aspect-[4/3] bg-muted/20 rounded-xl overflow-hidden border">
                 <svg viewBox="0 0 100 100" className="w-full h-full absolute inset-0 opacity-[0.07]">
                   <path
                     d="M 15,5 L 85,5 L 90,15 L 88,30 L 82,45 L 85,55 L 80,65 L 75,72 L 70,78 L 60,95 L 55,98 L 45,95 L 30,88 L 20,80 L 10,65 L 5,50 L 8,35 L 10,20 L 12,10 Z"
@@ -381,7 +381,7 @@ export default function RadarMercado() {
           </Card>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {/* 2. YARD SIZES */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
             <Card className="border-border/50 shadow-sm h-full">
@@ -395,10 +395,10 @@ export default function RadarMercado() {
                 {yardSizes.length === 0 ? (
                   <p className="text-muted-foreground text-center py-6 text-sm">Sem dados</p>
                 ) : (
-                  <div className="flex items-center gap-6">
-                    <ChartContainer config={{}} className="h-[180px] w-[180px] flex-shrink-0">
+                  <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+                    <ChartContainer config={{}} className="h-[140px] w-[140px] sm:h-[180px] sm:w-[180px] shrink-0">
                       <PieChart>
-                        <Pie data={yardSizes} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} innerRadius={40}>
+                        <Pie data={yardSizes} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={60} innerRadius={30}>
                           {yardSizes.map((_, i) => (
                             <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                           ))}
@@ -406,12 +406,12 @@ export default function RadarMercado() {
                         <ChartTooltip content={<ChartTooltipContent />} />
                       </PieChart>
                     </ChartContainer>
-                    <div className="space-y-2 flex-1">
+                    <div className="flex flex-wrap sm:flex-col gap-2 sm:gap-2 justify-center sm:flex-1">
                       {yardSizes.map((s, i) => (
-                        <div key={s.name} className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }} />
-                          <span className="text-xs flex-1 truncate">{s.name}</span>
-                          <span className="text-xs font-bold">{s.pct}%</span>
+                        <div key={s.name} className="flex items-center gap-1.5 sm:gap-2">
+                          <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shrink-0" style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }} />
+                          <span className="text-[10px] sm:text-xs truncate">{s.name}</span>
+                          <span className="text-[10px] sm:text-xs font-bold">{s.pct}%</span>
                         </div>
                       ))}
                     </div>

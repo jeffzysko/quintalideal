@@ -73,13 +73,11 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
     }
   };
 
-  // Filter events by franchise if selected
   const filteredEvents = useMemo(() => {
     if (filterFranchise === 'all') return events;
     return events.filter(e => e.franchise_id === filterFranchise);
   }, [events, filterFranchise]);
 
-  // Funnel data
   const funnelData = useMemo(() => {
     const counts: Record<string, Set<string>> = {};
     FUNNEL_STEPS.forEach(s => { counts[s.key] = new Set(); });
@@ -100,7 +98,6 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
     });
   }, [filteredEvents]);
 
-  // Per-franchise funnel comparison (super_admin only)
   const franchiseFunnels = useMemo(() => {
     if (!isSuperAdmin) return [];
     const franchiseIds = [...new Set(events.filter(e => e.franchise_id).map(e => e.franchise_id!))];
@@ -125,7 +122,6 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
     }).sort((a, b) => b.visits - a.visits);
   }, [events, isSuperAdmin, franchiseMap]);
 
-  // Question analysis
   const questionStats = useMemo(() => {
     const questionEvents = filteredEvents.filter(e => e.event_name === 'quiz_question_answered');
     const byQuestion: Record<number, Record<string, number>> = {};
@@ -149,7 +145,6 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
       }));
   }, [filteredEvents]);
 
-  // Device breakdown
   const deviceStats = useMemo(() => {
     const counts: Record<string, number> = { mobile: 0, tablet: 0, desktop: 0 };
     const sessions = new Set<string>();
@@ -167,7 +162,6 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
     }));
   }, [filteredEvents]);
 
-  // UTM breakdown
   const utmStats = useMemo(() => {
     const sources: Record<string, number> = {};
     const sessions = new Set<string>();
@@ -184,7 +178,6 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
       .map(([source, count]) => ({ source, count }));
   }, [filteredEvents]);
 
-  // Model stats
   const modelStats = useMemo(() => {
     const models: Record<string, number> = {};
     filteredEvents
@@ -227,22 +220,22 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Period selector */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Activity className="w-5 h-5 text-primary" />
-          <span className="font-semibold text-foreground">Product Analytics</span>
-          <span className="text-xs text-muted-foreground">({totalSessions} sessões)</span>
+          <span className="font-semibold text-foreground text-sm sm:text-base">Product Analytics</span>
+          <span className="text-[10px] sm:text-xs text-muted-foreground">({totalSessions} sessões)</span>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 w-full sm:w-auto">
           {isSuperAdmin && (
             <Select value={filterFranchise} onValueChange={setFilterFranchise}>
-              <SelectTrigger className="w-48 rounded-xl">
-                <SelectValue placeholder="Todas as franquias" />
+              <SelectTrigger className="flex-1 sm:w-44 rounded-xl h-9 text-xs sm:text-sm">
+                <SelectValue placeholder="Todas franquias" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">Todas as franquias</SelectItem>
+                <SelectItem value="all">Todas franquias</SelectItem>
                 {Object.entries(franchiseMap).map(([id, name]) => (
                   <SelectItem key={id} value={id}>{name}</SelectItem>
                 ))}
@@ -250,14 +243,14 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
             </Select>
           )}
           <Select value={periodDays} onValueChange={setPeriodDays}>
-            <SelectTrigger className="w-40 rounded-xl">
+            <SelectTrigger className="w-32 sm:w-40 rounded-xl h-9 text-xs sm:text-sm shrink-0">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="7">Últimos 7 dias</SelectItem>
-              <SelectItem value="30">Últimos 30 dias</SelectItem>
-              <SelectItem value="90">Últimos 90 dias</SelectItem>
-              <SelectItem value="365">Último ano</SelectItem>
+              <SelectItem value="7">7 dias</SelectItem>
+              <SelectItem value="30">30 dias</SelectItem>
+              <SelectItem value="90">90 dias</SelectItem>
+              <SelectItem value="365">1 ano</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -265,38 +258,38 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
 
       {/* Funnel */}
       <Card className="card-premium">
-        <CardHeader>
+        <CardHeader className="px-3 sm:px-6">
           <CardTitle className="text-sm font-bold flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg icon-bg-blue flex items-center justify-center">
-              <TrendingDown className="w-4 h-4 text-primary" />
+            <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg icon-bg-blue flex items-center justify-center">
+              <TrendingDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
             </div>
             Funil de Conversão
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="px-3 sm:px-6">
           {funnelData[0].count === 0 ? (
             <p className="text-muted-foreground text-center py-8 text-sm">Sem dados de analytics ainda.</p>
           ) : (
-            <div className="space-y-2.5">
+            <div className="space-y-2">
               {funnelData.map((step, i) => (
-                <div key={step.key} className="flex items-center gap-3 group">
-                  <div className="w-36 text-xs text-muted-foreground truncate font-medium group-hover:text-foreground transition-colors">{step.label}</div>
-                  <div className="flex-1 relative h-9 rounded-xl overflow-hidden bg-muted/40">
+                <div key={step.key} className="flex items-center gap-2 sm:gap-3 group">
+                  <div className="w-20 sm:w-36 text-[10px] sm:text-xs text-muted-foreground truncate font-medium group-hover:text-foreground transition-colors">{step.label}</div>
+                  <div className="flex-1 relative h-7 sm:h-9 rounded-xl overflow-hidden bg-muted/40">
                     <div
                       className="absolute inset-y-0 left-0 rounded-xl transition-all duration-700 ease-out"
                       style={{
                         width: `${step.rate}%`,
                         background: `linear-gradient(90deg, ${step.fill}, ${FUNNEL_COLORS[Math.min(i + 1, FUNNEL_COLORS.length - 1)]})`,
-                        minWidth: step.count > 0 ? '2.5rem' : 0,
+                        minWidth: step.count > 0 ? '2rem' : 0,
                       }}
                     />
-                    <div className="absolute inset-0 flex items-center px-3.5">
-                      <span className="text-xs font-extrabold text-foreground z-10">{step.count}</span>
-                      <span className="text-[10px] text-muted-foreground ml-2 z-10 font-medium">({step.rate}%)</span>
+                    <div className="absolute inset-0 flex items-center px-2 sm:px-3.5">
+                      <span className="text-[10px] sm:text-xs font-extrabold text-foreground z-10">{step.count}</span>
+                      <span className="text-[8px] sm:text-[10px] text-muted-foreground ml-1 sm:ml-2 z-10 font-medium">({step.rate}%)</span>
                     </div>
                   </div>
                   {i > 0 && step.dropoff > 0 && (
-                    <span className="text-[10px] text-red-500 font-bold w-14 text-right bg-red-500/8 px-1.5 py-0.5 rounded-md">-{step.dropoff}%</span>
+                    <span className="text-[9px] sm:text-[10px] text-red-500 font-bold w-10 sm:w-14 text-right bg-red-500/8 px-1 sm:px-1.5 py-0.5 rounded-md shrink-0">-{step.dropoff}%</span>
                   )}
                 </div>
               ))}
@@ -305,24 +298,24 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
         </CardContent>
       </Card>
 
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {/* Question Analysis */}
         <Card className="card-premium">
-          <CardHeader>
+          <CardHeader className="px-3 sm:px-6">
             <CardTitle className="text-sm font-bold">Análise por Pergunta</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-3 sm:px-6">
             {questionStats.length === 0 ? (
               <p className="text-muted-foreground text-center py-6 text-sm">Sem dados</p>
             ) : (
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {questionStats.map(q => (
-                  <div key={q.question} className="flex items-center justify-between py-2 border-b border-border/30 last:border-0">
-                    <div>
-                      <span className="text-xs font-bold text-foreground">Pergunta {q.question}</span>
-                      <p className="text-[10px] text-muted-foreground">{q.total} respostas</p>
+                  <div key={q.question} className="flex items-center justify-between py-2 border-b border-border/30 last:border-0 gap-2">
+                    <div className="min-w-0">
+                      <span className="text-xs font-bold text-foreground">P{q.question}</span>
+                      <p className="text-[10px] text-muted-foreground">{q.total} resp.</p>
                     </div>
-                    <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-md font-medium">{q.topAnswer}</span>
+                    <span className="text-[10px] sm:text-xs bg-primary/10 text-primary px-2 py-1 rounded-md font-medium truncate max-w-[120px] sm:max-w-none">{q.topAnswer}</span>
                   </div>
                 ))}
               </div>
@@ -332,17 +325,17 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
 
         {/* Model Stats */}
         <Card className="card-premium">
-          <CardHeader>
+          <CardHeader className="px-3 sm:px-6">
             <CardTitle className="text-sm font-bold">Modelos Recomendados</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-2 sm:px-6">
             {modelStats.length === 0 ? (
               <p className="text-muted-foreground text-center py-6 text-sm">Sem dados</p>
             ) : (
-              <ChartContainer config={{}} className="h-[200px]">
-                <BarChart data={modelStats} layout="vertical">
-                  <XAxis type="number" allowDecimals={false} />
-                  <YAxis type="category" dataKey="model" tick={{ fontSize: 11 }} width={80} />
+              <ChartContainer config={{}} className="h-[180px] sm:h-[200px] w-full">
+                <BarChart data={modelStats} layout="vertical" margin={{ left: 0, right: 5, top: 5, bottom: 0 }}>
+                  <XAxis type="number" allowDecimals={false} tick={{ fontSize: 10 }} />
+                  <YAxis type="category" dataKey="model" tick={{ fontSize: 9 }} width={65} />
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Bar dataKey="count" fill="hsl(207, 90%, 42%)" radius={[0, 6, 6, 0]} />
                 </BarChart>
@@ -353,10 +346,10 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
 
         {/* Device Breakdown */}
         <Card className="card-premium">
-          <CardHeader>
+          <CardHeader className="px-3 sm:px-6">
             <CardTitle className="text-sm font-bold">Dispositivos</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-3 sm:px-6">
             <div className="space-y-3">
               {deviceStats.map(d => (
                 <div key={d.device} className="flex items-center gap-3">
@@ -372,20 +365,20 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
 
         {/* UTM Sources */}
         <Card className="card-premium">
-          <CardHeader>
+          <CardHeader className="px-3 sm:px-6">
             <CardTitle className="text-sm font-bold flex items-center gap-2">
               <Zap className="w-4 h-4 text-primary" />
               Origem do Tráfego
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="px-2 sm:px-6">
             {utmStats.length === 0 ? (
               <p className="text-muted-foreground text-center py-6 text-sm">Sem dados</p>
             ) : (
-              <ChartContainer config={{}} className="h-[200px]">
-                <BarChart data={utmStats}>
-                  <XAxis dataKey="source" tick={{ fontSize: 10 }} />
-                  <YAxis allowDecimals={false} />
+              <ChartContainer config={{}} className="h-[180px] sm:h-[200px] w-full">
+                <BarChart data={utmStats} margin={{ left: -10, right: 5, top: 5, bottom: 0 }}>
+                  <XAxis dataKey="source" tick={{ fontSize: 9 }} interval={0} angle={-30} textAnchor="end" height={45} />
+                  <YAxis allowDecimals={false} tick={{ fontSize: 10 }} width={30} />
                   <ChartTooltip content={<ChartTooltipContent />} />
                   <Bar dataKey="count" fill="hsl(207, 90%, 54%)" radius={[6, 6, 0, 0]} />
                 </BarChart>
@@ -398,22 +391,43 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
       {/* Per-franchise funnel comparison (super_admin only) */}
       {isSuperAdmin && franchiseFunnels.length > 0 && (
         <Card className="card-premium">
-          <CardHeader>
+          <CardHeader className="px-3 sm:px-6">
             <CardTitle className="text-sm font-bold flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg icon-bg-blue flex items-center justify-center">
-                <Building2 className="w-4 h-4 text-primary" />
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg icon-bg-blue flex items-center justify-center">
+                <Building2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
               </div>
               Funil por Franquia
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="overflow-x-auto">
+          <CardContent className="px-0 sm:px-6">
+            {/* Mobile: card layout */}
+            <div className="block sm:hidden space-y-3 px-3">
+              {franchiseFunnels.map(f => (
+                <div key={f.id} className="p-3 rounded-xl bg-muted/30 space-y-1.5">
+                  <p className="text-sm font-semibold text-foreground">{f.name}</p>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div><span className="text-muted-foreground">Visitas:</span> <span className="font-bold">{f.visits}</span></div>
+                    <div><span className="text-muted-foreground">Quiz:</span> <span className="font-bold">{f.quizStarted}</span></div>
+                    <div><span className="text-muted-foreground">Leads:</span> <span className="font-bold">{f.leads}</span></div>
+                    <div><span className="text-muted-foreground">WhatsApp:</span> <span className="font-bold">{f.whatsapp}</span></div>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] text-muted-foreground">Conversão</span>
+                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${f.convRate >= 10 ? 'bg-emerald-500/10 text-emerald-600' : f.convRate >= 5 ? 'bg-amber-500/10 text-amber-600' : 'bg-muted text-muted-foreground'}`}>
+                      {f.convRate}%
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            {/* Desktop: table layout */}
+            <div className="hidden sm:block overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-b border-border/50">
                     <th className="text-left py-2 px-2 text-xs font-semibold text-muted-foreground">Franquia</th>
                     <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">Visitas</th>
-                    <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">Quiz Iniciado</th>
+                    <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">Quiz</th>
                     <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">Leads</th>
                     <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">WhatsApp</th>
                     <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">Conversão</th>
