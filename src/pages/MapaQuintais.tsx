@@ -114,24 +114,24 @@ export default function MapaQuintais() {
         {/* KPI cards */}
         <div className="grid grid-cols-3 gap-2 md:gap-3 mb-4 md:mb-6">
           <Card>
-            <CardContent className="p-4 text-center">
-              <Users className="w-6 h-6 text-primary mx-auto mb-1" />
-              <p className="text-2xl font-bold">{totalQuintais}</p>
-              <p className="text-xs text-muted-foreground">Quintais analisados</p>
+            <CardContent className="p-3 md:p-4 text-center">
+              <Users className="w-5 h-5 md:w-6 md:h-6 text-primary mx-auto mb-1" />
+              <p className="text-xl md:text-2xl font-bold">{totalQuintais}</p>
+              <p className="text-[10px] md:text-xs text-muted-foreground">Quintais</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
-              <MapPin className="w-6 h-6 text-secondary mx-auto mb-1" />
-              <p className="text-2xl font-bold">{cityData.length}</p>
-              <p className="text-xs text-muted-foreground">Cidades</p>
+            <CardContent className="p-3 md:p-4 text-center">
+              <MapPin className="w-5 h-5 md:w-6 md:h-6 text-secondary mx-auto mb-1" />
+              <p className="text-xl md:text-2xl font-bold">{cityData.length}</p>
+              <p className="text-[10px] md:text-xs text-muted-foreground">Cidades</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
-              <TrendingUp className="w-6 h-6 text-green-500 mx-auto mb-1" />
-              <p className="text-2xl font-bold">{avgGeral}%</p>
-              <p className="text-xs text-muted-foreground">Média geral</p>
+            <CardContent className="p-3 md:p-4 text-center">
+              <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-emerald-600 mx-auto mb-1" />
+              <p className="text-xl md:text-2xl font-bold">{avgGeral}%</p>
+              <p className="text-[10px] md:text-xs text-muted-foreground">Média</p>
             </CardContent>
           </Card>
         </div>
