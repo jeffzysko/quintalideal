@@ -307,8 +307,9 @@ export default function ProfileSettings() {
                 <Input
                   id="personalPhone"
                   placeholder="(51) 99999-9999"
-                  value={telefone}
-                  onChange={e => setTelefone(e.target.value)}
+                  value={formatPhone(telefone)}
+                  onChange={e => setTelefone(unformatPhone(e.target.value))}
+                  maxLength={16}
                 />
               </div>
               <div className="space-y-2">
