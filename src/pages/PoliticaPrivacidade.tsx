@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { ArrowLeft, Shield } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Footer } from '@/components/Footer';
+
 
 export default function PoliticaPrivacidade() {
   const navigate = useNavigate();
@@ -68,7 +68,7 @@ export default function PoliticaPrivacidade() {
           </div>
         </motion.div>
       </div>
-      <Footer />
+      
     </div>
   );
 }
