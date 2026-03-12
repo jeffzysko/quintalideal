@@ -331,7 +331,7 @@ export default function ProfileSettings() {
                   <Input
                     id="franchiseWhatsapp"
                     placeholder="(51) 99999-9999"
-                    value={formatPhone(whatsapp)}
+                    value={formatPhoneBR(whatsapp)}
                     onChange={e => setWhatsapp(unformatPhone(e.target.value))}
                     maxLength={16}
                   />
