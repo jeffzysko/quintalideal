@@ -79,6 +79,7 @@ export type Database = {
           franchise_id: string
           id: string
           is_primary_city: boolean
+          notes: string | null
         }
         Insert: {
           city_name: string
@@ -87,6 +88,7 @@ export type Database = {
           franchise_id: string
           id?: string
           is_primary_city?: boolean
+          notes?: string | null
         }
         Update: {
           city_name?: string
@@ -95,6 +97,7 @@ export type Database = {
           franchise_id?: string
           id?: string
           is_primary_city?: boolean
+          notes?: string | null
         }
         Relationships: [
           {
