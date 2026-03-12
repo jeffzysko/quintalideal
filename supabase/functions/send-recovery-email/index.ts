@@ -101,12 +101,18 @@ Deno.serve(async (req) => {
       auth: { autoRefreshToken: false, persistSession: false },
     });
 
+    // Determine redirect URL - use origin from request or fallback
+    const origin = req.headers.get("origin") || req.headers.get("referer")?.replace(/\/$/, "") || "https://quintalideal.lovable.app";
+    const redirectUrl = `${origin}/reset-password`;
+    
+    console.log("Using redirect URL:", redirectUrl);
+
     // Generate a recovery link using admin API
     const { data: linkData, error: linkError } = await adminClient.auth.admin.generateLink({
       type: "recovery",
       email,
       options: {
-        redirectTo: "https://quintalideal.com.br/reset-password",
+        redirectTo: redirectUrl,
       },
     });
 
