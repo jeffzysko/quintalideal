@@ -41,6 +41,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const mountedRef = useRef(true);
   const syncLockRef = useRef<string | null>(null);
   const lastSyncedUserRef = useRef<string | null>(null);
+  const metaResolvedUserRef = useRef<string | null>(null);
 
   const fetchUserMeta = useCallback(async (userId: string) => {
     const [{ data: rolesData, error: rolesError }, { data: profileData, error: profileError }] = await Promise.all([
