@@ -15,6 +15,8 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import logoSplash from '@/assets/logo-splash.png';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { PageTransition } from '@/components/PageTransition';
 
 import { formatPhoneBR, unformatPhone, isValidBRPhone, isValidEmail } from '@/lib/validation';
 
