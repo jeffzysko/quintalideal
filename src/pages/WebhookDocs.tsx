@@ -22,6 +22,24 @@ const PAYLOAD_EXAMPLE = `{
   }
 }`;
 
+const TEST_PAYLOAD_EXAMPLE = `{
+  "evento": "teste_webhook",
+  "lead": {
+    "nome": "Lead de Teste",
+    "telefone": "5551999999999",
+    "email": "teste@exemplo.com",
+    "cidade": "Cidade Teste",
+    "pontuacao_quintal": 75,
+    "modelo_recomendado": "Cancún",
+    "referred_by": null,
+    "created_at": "2026-03-12T16:00:00.000Z"
+  },
+  "franquia": {
+    "nome": "Splash Exemplo",
+    "slug": "exemplo"
+  }
+}`;
+
 const VALIDATION_EXAMPLE = `import hmac
 import hashlib
 
