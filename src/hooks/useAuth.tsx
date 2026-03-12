@@ -83,6 +83,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (!currentUser) {
       if (syncLockRef.current !== lockId || !mountedRef.current) return;
       lastSyncedUserRef.current = null;
+      metaResolvedUserRef.current = null;
       setUser(null);
       setRole(null);
       setFranchiseId(null);
@@ -90,8 +91,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    // Skip duplicate sync for same user (avoids double queries from getSession + onAuthStateChange)
-    if (lastSyncedUserRef.current === currentUser.id && lockId !== 'signin-force') {
+    // Skip duplicate sync only after metadata for this user has already been resolved once.
+    if (
+      lastSyncedUserRef.current === currentUser.id &&
+      lockId !== 'signin-force' &&
+      metaResolvedUserRef.current === currentUser.id
+    ) {
       setLoading(false);
       return;
     }
@@ -101,8 +106,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       const meta = await fetchUserMeta(currentUser.id);
-      // Don't discard results from stale lockId if the user is still the same —
-      // token refreshes fire new lockIds but the metadata is still valid.
       if (!mountedRef.current) return;
 
       if (meta.inactive) {
@@ -112,10 +115,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       setRole(meta.role);
       setFranchiseId(meta.franchiseId);
+      metaResolvedUserRef.current = currentUser.id;
     } catch (_err) {
       if (!mountedRef.current) return;
       setRole(null);
       setFranchiseId(null);
+      metaResolvedUserRef.current = currentUser.id;
     }
 
     if (mountedRef.current) {
