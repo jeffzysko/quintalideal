@@ -77,7 +77,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const syncSession = useCallback(async (currentUser: User | null, lockId: string) => {
     if (!mountedRef.current) return;
 
-    // Only the latest sync call should apply state
     syncLockRef.current = lockId;
 
     if (!currentUser) {
@@ -101,10 +100,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       const meta = await fetchUserMeta(currentUser.id);
-      if (syncLockRef.current !== lockId || !mountedRef.current) return;
+      // Don't discard results from stale lockId if the user is still the same —
+      // token refreshes fire new lockIds but the metadata is still valid.
+      if (!mountedRef.current) return;
 
       if (meta.inactive) {
-        // Franchise is deactivated — sign out
         await supabase.auth.signOut();
         return;
       }
@@ -112,12 +112,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setRole(meta.role);
       setFranchiseId(meta.franchiseId);
     } catch (_err) {
-      if (syncLockRef.current !== lockId || !mountedRef.current) return;
+      if (!mountedRef.current) return;
       setRole(null);
       setFranchiseId(null);
     }
 
-    if (syncLockRef.current === lockId && mountedRef.current) {
+    if (mountedRef.current) {
       setLoading(false);
     }
   }, [fetchUserMeta]);
