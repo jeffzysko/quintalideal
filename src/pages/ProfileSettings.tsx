@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ArrowLeft, Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff } from 'lucide-react';
 import { FranchiseUsersSection } from '@/components/franchise/FranchiseUsersSection';
