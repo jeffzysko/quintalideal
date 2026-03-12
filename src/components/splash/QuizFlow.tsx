@@ -304,6 +304,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
             onAnswer={handleQuizAnswer}
             explorerStep={7}
             onBack={() => setQuizStep(5)}
+            franchiseSlug={franchiseSlug}
           />
         )}
         {step === 'processing' && (
