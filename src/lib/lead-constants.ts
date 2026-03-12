@@ -22,6 +22,20 @@ export const STATUS_CHART_COLORS: Record<string, string> = {
   perdido: '#ef4444',
 };
 
+export const TERRITORY_LABELS: Record<string, string> = {
+  matched_unique_franchise: 'Cidade exclusiva',
+  matched_multiple_franchises: 'Múltiplas franquias',
+  kept_with_origin_franchise: 'Mantido com origem',
+  no_city_match_found: 'Sem cobertura',
+};
+
+export const TERRITORY_COLORS: Record<string, string> = {
+  matched_unique_franchise: 'bg-emerald-50 text-emerald-700 border-emerald-200',
+  matched_multiple_franchises: 'bg-amber-50 text-amber-700 border-amber-200',
+  kept_with_origin_franchise: 'bg-primary/10 text-primary border-primary/20',
+  no_city_match_found: 'bg-red-50 text-red-700 border-red-200',
+};
+
 export interface LeadRow {
   id: string;
   nome: string | null;
@@ -31,6 +45,10 @@ export interface LeadRow {
   status_lead: string;
   created_at: string;
   franquia_id: string | null;
+  origin_franchise_id: string | null;
+  territory_match_status: string | null;
+  coverage_match_count: number | null;
+  distribution_rule_used: string | null;
   telefone: string | null;
   email: string | null;
   ref_code: string | null;
