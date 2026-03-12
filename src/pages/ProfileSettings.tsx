@@ -72,6 +72,7 @@ export default function ProfileSettings() {
 
       if (profile?.full_name) setFullName(profile.full_name);
       if (profile?.telefone) setTelefone(profile.telefone);
+      if ((profile as any)?.avatar_url) setAvatarUrl((profile as any).avatar_url);
 
       // Load franchise data when user is linked to a franchise
       if (franchiseId) {
