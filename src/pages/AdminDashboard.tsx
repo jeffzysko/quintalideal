@@ -216,15 +216,17 @@ export default function AdminDashboard() {
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
         {/* Tab switcher */}
         <div className="flex gap-0.5 mb-6 md:mb-8 bg-muted rounded-xl p-1 w-full overflow-x-auto scrollbar-none" role="tablist">
-          {[
+          {([
             { key: 'overview' as const, icon: BarChart3, label: 'Inteligência', short: 'Intel' },
             { key: 'analytics' as const, icon: Activity, label: 'Analytics', short: 'Stats' },
             { key: 'leads' as const, icon: Users, label: 'Leads', short: 'Leads' },
             { key: 'franchises' as const, icon: Building2, label: 'Franquias', short: 'Franq' },
             { key: 'users' as const, icon: Users, label: 'Usuários', short: 'Users' },
-            { key: 'emails' as const, icon: Mail, label: 'E-mails', short: 'Mail' },
-            { key: 'franchise-view' as const, icon: Eye, label: 'Visão Franquia', short: 'Visão' },
-          ].map(tab => (
+            ...(role === 'super_admin' ? [
+              { key: 'emails' as const, icon: Mail, label: 'E-mails', short: 'Mail' },
+              { key: 'franchise-view' as const, icon: Eye, label: 'Visão Franquia', short: 'Visão' },
+            ] : []),
+          ]).map(tab => (
             <button
               key={tab.key}
               role="tab"
