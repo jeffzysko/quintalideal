@@ -43,7 +43,7 @@ export function AdminCityManager() {
   const [showAdd, setShowAdd] = useState(false);
   const [addFranchiseId, setAddFranchiseId] = useState('');
   const [addCityName, setAddCityName] = useState('');
-  const [addPrimary, setAddPrimary] = useState(false);
+  const [addPrimary, _setAddPrimary] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
 
