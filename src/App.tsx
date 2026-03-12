@@ -118,7 +118,7 @@ function AppRoutes() {
                       <Route
                         path="/franquia"
                         element={
-                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
+                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
                             <FranchiseDashboard />
                           </ProtectedRoute>
                         }
