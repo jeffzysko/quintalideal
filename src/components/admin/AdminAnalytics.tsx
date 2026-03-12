@@ -352,9 +352,9 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
         </Card>
 
         {/* Device Breakdown */}
-        <Card className="border-border/50 shadow-sm">
+        <Card className="card-premium">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold">Dispositivos</CardTitle>
+            <CardTitle className="text-sm font-bold">Dispositivos</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
