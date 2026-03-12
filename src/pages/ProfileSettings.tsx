@@ -35,6 +35,8 @@ export default function ProfileSettings() {
   const [selectedIntegrationFranchiseId, setSelectedIntegrationFranchiseId] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   // Scroll to hash anchor after loading
   useEffect(() => {
