@@ -256,7 +256,7 @@ export default function AdminDashboard() {
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <AdminReferralMetrics leads={allLeads} />
               <Card className="card-premium">
-                <CardHeader><CardTitle className="text-sm font-semibold">Leads por Mês</CardTitle></CardHeader>
+                <CardHeader><CardTitle className="text-sm font-bold">Leads por Mês</CardTitle></CardHeader>
                 <CardContent>
                   {leadsPerMonth.length > 0 ? (
                     <ChartContainer config={{}} className="h-[250px]">
