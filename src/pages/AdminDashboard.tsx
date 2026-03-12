@@ -30,7 +30,7 @@ const PAGE_SIZE = 25;
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const { signOut: _signOut } = useAuth();
+  const { signOut: _signOut, role } = useAuth();
   const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'analytics' | 'franchises' | 'users' | 'emails' | 'franchise-view'>('overview');
   const [viewFranchiseId, setViewFranchiseId] = useState<string>('');
 
