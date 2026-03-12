@@ -38,6 +38,7 @@ function AvatarInitial({ name }: { name: string | null }) {
 
 export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChange, isLoading, franchiseMap }: AdminLeadsTableProps) {
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const from = (page - 1) * pageSize;
   const to = from + pageSize;
   const totalPages = Math.ceil(totalCount / pageSize);
