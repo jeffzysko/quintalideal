@@ -131,15 +131,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     mountedRef.current = true;
 
-    // Initial session check
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      syncSession(session?.user ?? null, 'init');
-    });
-
-    // Listen for auth changes (sign in, sign out, token refresh)
+    // Listen first to avoid missing auth events between mount and initial session read.
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       const id = crypto.randomUUID();
       syncSession(session?.user ?? null, id);
+    });
+
+    // Initial session check
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      syncSession(session?.user ?? null, 'init');
     });
 
     return () => {
