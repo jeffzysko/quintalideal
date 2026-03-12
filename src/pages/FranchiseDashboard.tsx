@@ -10,7 +10,7 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { SITE_URL } from '@/lib/constants';
-import { FranchiseContactSettings } from '@/components/franchise/FranchiseContactSettings';
+
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { FranchiseReports } from '@/components/franchise/FranchiseReports';
 import { STATUS_LABELS, STATUS_COLORS, LeadRow } from '@/lib/lead-constants';
@@ -149,11 +149,6 @@ export default function FranchiseDashboard() {
           <FranchiseLinkBanner slug={franchiseSlug} />
         )}
 
-        {franchiseId && (
-          <div className="mb-8">
-            <FranchiseContactSettings franchiseId={franchiseId} />
-          </div>
-        )}
 
         {/* KPI Cards */}
         {loadingKpis ? (
