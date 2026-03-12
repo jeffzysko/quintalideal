@@ -76,8 +76,15 @@ Deno.serve(async (req) => {
       });
     }
 
-    if (telefone.length < 10 || telefone.length > 11) {
-      return new Response(JSON.stringify({ error: "Telefone inválido" }), {
+    if (!isValidBRPhone(telefone)) {
+      return new Response(JSON.stringify({ error: "Telefone inválido. Use DDD + número (10 ou 11 dígitos)." }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    if (email && !isValidEmail(email)) {
+      return new Response(JSON.stringify({ error: "E-mail inválido." }), {
         status: 400,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
