@@ -147,7 +147,7 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
         topAnswer: Object.entries(answers).sort(([, a], [, b]) => b - a)[0]?.[0] || '-',
         answers,
       }));
-  }, [events]);
+  }, [filteredEvents]);
 
   // Device breakdown
   const deviceStats = useMemo(() => {
