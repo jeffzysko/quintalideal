@@ -126,7 +126,7 @@ function AppRoutes() {
                       <Route
                         path="/painel/lead/:id"
                         element={
-                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
+                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
                             <LeadDetail />
                           </ProtectedRoute>
                         }
