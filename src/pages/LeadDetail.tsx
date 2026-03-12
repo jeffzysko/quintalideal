@@ -160,16 +160,25 @@ export default function LeadDetail() {
 
   const statusInfo = statusConfig[lead.status_lead] || statusConfig.novo;
 
+  const isAdminRoute = location.pathname.startsWith('/admin');
+  const breadcrumbItems = [
+    { label: isAdminRoute ? 'Admin' : 'Painel', href: isAdminRoute ? '/admin' : '/franquia' },
+    { label: 'Leads', href: isAdminRoute ? '/admin' : '/franquia' },
+    { label: lead.nome || 'Detalhes' },
+  ];
+
   return (
+    <PageTransition>
     <div className="min-h-screen gradient-hero">
       <div className="max-w-2xl mx-auto px-4 py-6 space-y-5">
+        {/* Breadcrumbs */}
+        <Breadcrumbs items={breadcrumbItems} />
+
         {/* Back */}
         <Button variant="ghost" size="sm" onClick={() => {
-          // If we have history, go back; otherwise navigate to the appropriate dashboard
           if (window.history.length > 2) {
             navigate(-1);
           } else {
-            const isAdminRoute = window.location.pathname.startsWith('/admin');
             navigate(isAdminRoute ? '/admin' : '/franquia');
           }
         }} className="text-muted-foreground hover:text-foreground -ml-2">
