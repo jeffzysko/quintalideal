@@ -128,19 +128,23 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
                     animate={{ opacity: 1, y: 0 }}
                     className="mt-3 space-y-1"
                   >
-                    {filteredCities.map((city, i) => (
-                      <motion.button
-                        key={city}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: i * 0.04 }}
-                        onClick={() => onAnswer(city)}
-                        className="w-full text-left px-4 py-3.5 rounded-xl hover:bg-accent active:bg-accent/70 transition-colors flex items-center gap-3 text-sm group"
-                      >
-                        <MapPin className="w-4 h-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
-                        <span className="font-medium">{city}</span>
-                      </motion.button>
-                    ))}
+                    {filteredCities.map((city, i) => {
+                      const label = formatCityLabel(city);
+                      const value = city.pais === 'UY' ? `${city.nome}, Uruguai` : city.nome;
+                      return (
+                        <motion.button
+                          key={`${city.pais}-${city.nome}`}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: i * 0.04 }}
+                          onClick={() => onAnswer(value)}
+                          className="w-full text-left px-4 py-3.5 rounded-xl hover:bg-accent active:bg-accent/70 transition-colors flex items-center gap-3 text-sm group"
+                        >
+                          <MapPin className="w-4 h-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
+                          <span className="font-medium">{label}</span>
+                        </motion.button>
+                      );
+                    })}
                   </motion.div>
                 )}
                 {citySearch.length >= 2 && filteredCities.length === 0 && (
