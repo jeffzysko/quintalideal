@@ -223,6 +223,7 @@ export default function AdminDashboard() {
             { key: 'franchises' as const, icon: Building2, label: 'Franquias', short: 'Franq' },
             { key: 'users' as const, icon: Users, label: 'Usuários', short: 'Users' },
             { key: 'emails' as const, icon: Mail, label: 'E-mails', short: 'Mail' },
+            { key: 'franchise-view' as const, icon: Eye, label: 'Visão Franquia', short: 'Visão' },
           ].map(tab => (
             <button
               key={tab.key}
