@@ -33,6 +33,7 @@ export default function ProfileSettings() {
   const [whatsapp, setWhatsapp] = useState('');
   const [email, setEmail] = useState('');
   const [franchiseName, setFranchiseName] = useState('');
+  const [cidadesAtendidas, setCidadesAtendidas] = useState('');
   const [availableFranchises, setAvailableFranchises] = useState<FranchiseOption[]>([]);
   const [selectedIntegrationFranchiseId, setSelectedIntegrationFranchiseId] = useState('');
   const [loading, setLoading] = useState(true);
