@@ -145,12 +145,14 @@ export default function AdminDashboard() {
       if (error) throw error;
       const exportLeads = (data || []) as LeadRow[];
 
-      const headers = ['Nome', 'Telefone', 'Email', 'Cidade', 'Franquia', 'Pontuação', 'Modelo', 'Status', 'Referência', 'Data'];
+      const headers = ['Nome', 'Telefone', 'Email', 'Cidade', 'Franquia Atribuída', 'Franquia Origem', 'Pontuação', 'Modelo', 'Status', 'Territorial', 'Referência', 'Data'];
       const rows = exportLeads.map(l => [
         l.nome || '', l.telefone || '', l.email || '', l.cidade || '',
         l.franquia_id ? (franchiseMap[l.franquia_id] || '') : '',
+        l.origin_franchise_id ? (franchiseMap[l.origin_franchise_id] || '') : '',
         String(l.pontuacao_quintal || 0), l.modelo_recomendado || '',
         STATUS_LABELS[l.status_lead] || l.status_lead,
+        l.territory_match_status || '',
         l.referred_by || '',
         new Date(l.created_at).toLocaleDateString('pt-BR'),
       ]);
