@@ -189,14 +189,18 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         currency: 'BRL',
       });
 
-      if (franchiseId) {
+      // Notify the ASSIGNED franchise (not necessarily origin)
+      const notifyFranchiseId = createLeadData?.assignedFranchiseId || franchiseId;
+      if (notifyFranchiseId) {
         supabase.functions.invoke('notify-new-lead', {
           body: {
             nome: data.nome,
             telefone: data.telefone,
             email: data.email || null,
             cidade: answers.cidade || null,
-            franquia_id: franchiseId,
+            franquia_id: notifyFranchiseId,
+            origin_franchise_id: franchiseId || null,
+            territory_match_status: createLeadData?.territoryMatchStatus || null,
             pontuacao_quintal: score,
             modelo_recomendado: poolName,
             referred_by: referredBy || null,
