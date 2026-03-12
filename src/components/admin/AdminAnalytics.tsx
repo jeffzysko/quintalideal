@@ -264,37 +264,39 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
       </div>
 
       {/* Funnel */}
-      <Card className="border-border/50 shadow-sm">
+      <Card className="card-premium">
         <CardHeader>
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <TrendingDown className="w-4 h-4 text-primary" />
+          <CardTitle className="text-sm font-bold flex items-center gap-2">
+            <div className="w-8 h-8 rounded-lg icon-bg-blue flex items-center justify-center">
+              <TrendingDown className="w-4 h-4 text-primary" />
+            </div>
             Funil de Conversão
           </CardTitle>
         </CardHeader>
         <CardContent>
           {funnelData[0].count === 0 ? (
-            <p className="text-muted-foreground text-center py-8 text-sm">Sem dados de analytics ainda. Os eventos serão registrados conforme os usuários interagem com o quiz.</p>
+            <p className="text-muted-foreground text-center py-8 text-sm">Sem dados de analytics ainda.</p>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-2.5">
               {funnelData.map((step, i) => (
-                <div key={step.key} className="flex items-center gap-3">
-                  <div className="w-36 text-xs text-muted-foreground truncate">{step.label}</div>
-                  <div className="flex-1 relative h-8 rounded-lg overflow-hidden bg-muted/50">
+                <div key={step.key} className="flex items-center gap-3 group">
+                  <div className="w-36 text-xs text-muted-foreground truncate font-medium group-hover:text-foreground transition-colors">{step.label}</div>
+                  <div className="flex-1 relative h-9 rounded-xl overflow-hidden bg-muted/40">
                     <div
-                      className="absolute inset-y-0 left-0 rounded-lg transition-all duration-500"
+                      className="absolute inset-y-0 left-0 rounded-xl transition-all duration-700 ease-out"
                       style={{
                         width: `${step.rate}%`,
-                        backgroundColor: step.fill,
-                        minWidth: step.count > 0 ? '2rem' : 0,
+                        background: `linear-gradient(90deg, ${step.fill}, ${FUNNEL_COLORS[Math.min(i + 1, FUNNEL_COLORS.length - 1)]})`,
+                        minWidth: step.count > 0 ? '2.5rem' : 0,
                       }}
                     />
-                    <div className="absolute inset-0 flex items-center px-3">
-                      <span className="text-xs font-bold text-foreground z-10">{step.count}</span>
-                      <span className="text-[10px] text-muted-foreground ml-2 z-10">({step.rate}%)</span>
+                    <div className="absolute inset-0 flex items-center px-3.5">
+                      <span className="text-xs font-extrabold text-foreground z-10">{step.count}</span>
+                      <span className="text-[10px] text-muted-foreground ml-2 z-10 font-medium">({step.rate}%)</span>
                     </div>
                   </div>
                   {i > 0 && step.dropoff > 0 && (
-                    <span className="text-[10px] text-red-500 font-medium w-14 text-right">-{step.dropoff}%</span>
+                    <span className="text-[10px] text-red-500 font-bold w-14 text-right bg-red-500/8 px-1.5 py-0.5 rounded-md">-{step.dropoff}%</span>
                   )}
                 </div>
               ))}
