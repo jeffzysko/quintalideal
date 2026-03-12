@@ -29,7 +29,7 @@ function normalizeCityName(city: string): string {
   const plain  = "AAAAAaaaaaEEEEeeeeIIIIiiiiOOOOOoooooUUUUuuuuCcNn";
   let result = city;
   for (let i = 0; i < accents.length; i++) {
-    result = result.replaceAll(accents[i], plain[i]);
+    result = result.split(accents[i]).join(plain[i]);
   }
   return result.toLowerCase().replace(/\s+/g, " ").trim();
 }
