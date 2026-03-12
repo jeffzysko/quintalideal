@@ -1,0 +1,1 @@
+ALTER TABLE public.franchise_covered_cities ADD COLUMN notes text DEFAULT null;
