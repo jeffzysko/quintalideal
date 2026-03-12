@@ -6,6 +6,7 @@ import { calculateScore, recommendPool, recommendSize, type QuizAnswers } from '
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { trackEvent } from '@/lib/analytics';
+import { trackMetaEvent } from '@/components/MetaPixel';
 import { type Lang, getQuizQuestions, t } from '@/lib/i18n';
 
 const PhotoUpload = lazy(() => import('./PhotoUpload').then(m => ({ default: m.PhotoUpload })));
