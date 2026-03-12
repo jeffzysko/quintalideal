@@ -165,7 +165,7 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
       count,
       pct: Math.round((count / total) * 100),
     }));
-  }, [events]);
+  }, [filteredEvents]);
 
   // UTM breakdown
   const utmStats = useMemo(() => {
