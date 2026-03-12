@@ -99,6 +99,14 @@ function AppRoutes() {
                       <Route path="/termos" element={<TermosDeUso />} />
                       <Route path="/privacidade" element={<PoliticaPrivacidade />} />
                       <Route
+                        path="/suporte"
+                        element={
+                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
+                            <Suporte />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
                         path="/perfil"
                         element={
                           <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
