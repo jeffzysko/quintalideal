@@ -127,7 +127,7 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
 
   // Question analysis
   const questionStats = useMemo(() => {
-    const questionEvents = events.filter(e => e.event_name === 'quiz_question_answered');
+    const questionEvents = filteredEvents.filter(e => e.event_name === 'quiz_question_answered');
     const byQuestion: Record<number, Record<string, number>> = {};
     
     questionEvents.forEach(e => {
