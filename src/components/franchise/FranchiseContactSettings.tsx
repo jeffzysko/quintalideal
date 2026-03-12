@@ -269,10 +269,23 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
             </div>
           </div>
 
-          <Button onClick={handleSaveIntegrations} disabled={savingIntegrations} className="w-full gap-2">
-            <Save className="w-4 h-4" />
-            {savingIntegrations ? 'Salvando...' : 'Salvar integrações'}
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={handleSaveIntegrations} disabled={savingIntegrations} className="flex-1 gap-2">
+              <Save className="w-4 h-4" />
+              {savingIntegrations ? 'Salvando...' : 'Salvar integrações'}
+            </Button>
+            {webhookUrl && (
+              <Button
+                variant="outline"
+                onClick={handleTestWebhook}
+                disabled={testingWebhook}
+                className="gap-2 shrink-0"
+              >
+                {testingWebhook ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                {testingWebhook ? 'Enviando...' : 'Testar'}
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
     </div>
