@@ -51,6 +51,7 @@ export function UserAvatarMenu() {
           aria-label="Menu do usuário"
         >
           <Avatar className="h-8 w-8 border border-border/60">
+            {avatarUrl && <AvatarImage src={avatarUrl} alt="Avatar" />}
             <AvatarFallback className="bg-primary/10 text-primary text-[11px] font-semibold">
               {initials}
             </AvatarFallback>
