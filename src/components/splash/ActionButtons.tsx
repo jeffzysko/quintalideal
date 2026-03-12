@@ -327,6 +327,23 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
           </div>
         </motion.div>
 
+        {/* Assigned franchise info */}
+        {assignedFranchiseName && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.75 }}
+            className="mt-5 rounded-2xl p-4 text-center border border-primary/20 bg-primary/5"
+          >
+            <MapPin className="w-5 h-5 text-primary mx-auto mb-1.5" />
+            <p className="text-xs text-muted-foreground mb-0.5">
+              {lang === 'es' ? 'Un especialista de tu región puede ayudarte ahora' : 'Um especialista da Splash da sua região pode te ajudar agora'}
+            </p>
+            <p className="text-sm font-bold text-foreground">{assignedFranchiseName}</p>
+            {assignedCidadeBase && <p className="text-xs text-muted-foreground">{assignedCidadeBase}</p>}
+          </motion.div>
+        )}
+
         {/* Primary CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
