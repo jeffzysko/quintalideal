@@ -3,13 +3,14 @@ import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Lock, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
 import logoSplash from '@/assets/logo-splash.png';
 
 export default function ResetPassword() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
@@ -19,48 +20,63 @@ export default function ResetPassword() {
   const [checking, setChecking] = useState(true);
 
   useEffect(() => {
-    // Listen for the PASSWORD_RECOVERY event from the auth state change
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      console.log('[ResetPassword] Auth event:', event);
-      if (event === 'PASSWORD_RECOVERY') {
+    const tokenHash = searchParams.get('token_hash');
+    const type = searchParams.get('type');
+
+    const verifyRecoveryToken = async () => {
+      // Preferred flow: verify token_hash from query params (more reliable against email scanners)
+      if (tokenHash && type === 'recovery') {
+        const { error } = await supabase.auth.verifyOtp({
+          type: 'recovery',
+          token_hash: tokenHash,
+        });
+
+        if (error) {
+          setIsRecovery(false);
+          setChecking(false);
+          return;
+        }
+
+        // Clean URL after verification
+        window.history.replaceState({}, '', '/reset-password');
         setIsRecovery(true);
         setChecking(false);
-      } else if (event === 'SIGNED_IN' && session) {
-        // Sometimes Supabase fires SIGNED_IN instead of PASSWORD_RECOVERY
-        // Check if URL has recovery indicators
-        const hash = window.location.hash;
-        if (hash.includes('type=recovery')) {
+        return;
+      }
+
+      // Legacy fallback for older links using hash-based session
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'PASSWORD_RECOVERY') {
+          setIsRecovery(true);
+          setChecking(false);
+        } else if (event === 'SIGNED_IN' && session && window.location.hash.includes('type=recovery')) {
           setIsRecovery(true);
           setChecking(false);
         }
+      });
+
+      const hash = window.location.hash;
+      if (hash && hash.includes('type=recovery')) {
+        setIsRecovery(true);
+        setChecking(false);
       }
-    });
 
-    // Also check URL hash for recovery token (Supabase appends it)
-    const hash = window.location.hash;
-    console.log('[ResetPassword] URL hash:', hash);
-    if (hash && hash.includes('type=recovery')) {
-      setIsRecovery(true);
-      setChecking(false);
-    }
+      const timeout = setTimeout(() => {
+        setChecking(false);
+      }, 5000);
 
-    // Also check query params (some flows use query params)
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('type') === 'recovery') {
-      setIsRecovery(true);
-      setChecking(false);
-    }
+      return () => {
+        subscription.unsubscribe();
+        clearTimeout(timeout);
+      };
+    };
 
-    // Fallback: if after 5s no recovery event, show error
-    const timeout = setTimeout(() => {
-      setChecking(false);
-    }, 5000);
+    const cleanupPromise = verifyRecoveryToken();
 
     return () => {
-      subscription.unsubscribe();
-      clearTimeout(timeout);
+      cleanupPromise.then(cleanup => cleanup?.());
     };
-  }, []);
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

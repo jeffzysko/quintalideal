@@ -127,21 +127,21 @@ Deno.serve(async (req) => {
       );
     }
 
-    // The generated link contains the token
-    const actionLink = linkData.properties?.action_link;
-    console.log("Action link generated:", actionLink ? "yes" : "no");
-    console.log("Action link:", actionLink);
-    
-    if (!actionLink) {
-      console.error("No action_link in response, linkData:", JSON.stringify(linkData));
+    // Build a bot-resistant app link (avoid one-time token consumption by link scanners)
+    const hashedToken = linkData.properties?.hashed_token;
+    if (!hashedToken) {
+      console.error("No hashed_token in response, linkData:", JSON.stringify(linkData));
       return new Response(
         JSON.stringify({ success: true }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
 
+    const recoveryAppLink = `${origin.replace(/\/$/, "")}/reset-password?token_hash=${encodeURIComponent(hashedToken)}&type=recovery`;
+    console.log("Recovery app link:", recoveryAppLink);
+
     // Send branded email via Resend
-    const html = buildRecoveryEmailHTML(actionLink);
+    const html = buildRecoveryEmailHTML(recoveryAppLink);
 
     const resendRes = await fetch("https://api.resend.com/emails", {
       method: "POST",
