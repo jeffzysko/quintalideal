@@ -9,7 +9,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { LogOut, Settings, ChevronDown, Sun, Moon, LifeBuoy } from 'lucide-react';
+import { LogOut, Settings, ChevronDown, Sun, Moon, LifeBuoy, BarChart3, Webhook } from 'lucide-react';
 
 export function UserAvatarMenu() {
   const { user, role, signOut } = useAuth();
@@ -68,6 +68,24 @@ export function UserAvatarMenu() {
           <Settings className="w-4 h-4 text-muted-foreground" />
           Configurações
         </DropdownMenuItem>
+        {role === 'franquia' && (
+          <>
+            <DropdownMenuItem
+              onClick={() => navigate('/perfil#integracoes')}
+              className="cursor-pointer rounded-lg px-3 py-2 text-sm gap-2.5"
+            >
+              <BarChart3 className="w-4 h-4 text-muted-foreground" />
+              Meta Pixel
+            </DropdownMenuItem>
+            <DropdownMenuItem
+              onClick={() => navigate('/perfil#integracoes')}
+              className="cursor-pointer rounded-lg px-3 py-2 text-sm gap-2.5"
+            >
+              <Webhook className="w-4 h-4 text-muted-foreground" />
+              Webhook CRM
+            </DropdownMenuItem>
+          </>
+        )}
         <DropdownMenuItem
           onClick={() => navigate('/suporte')}
           className="cursor-pointer rounded-lg px-3 py-2 text-sm gap-2.5"

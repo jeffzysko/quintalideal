@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
+import { useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -8,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ArrowLeft, Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff } from 'lucide-react';
 import { FranchiseUsersSection } from '@/components/franchise/FranchiseUsersSection';
+import { FranchiseContactSettings } from '@/components/franchise/FranchiseContactSettings';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -16,6 +18,7 @@ import logoSplash from '@/assets/logo-splash.png';
 export default function ProfileSettings() {
   const { user, role, franchiseId } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [fullName, setFullName] = useState('');
   const [telefone, setTelefone] = useState('');
@@ -24,6 +27,15 @@ export default function ProfileSettings() {
   const [franchiseName, setFranchiseName] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+
+  // Scroll to hash anchor after loading
+  useEffect(() => {
+    if (!loading && location.hash) {
+      const el = document.querySelector(location.hash);
+      el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [loading, location.hash]);
+
 
   const isFranchise = role === 'franquia' && !!franchiseId;
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
@@ -264,6 +276,13 @@ export default function ProfileSettings() {
                 </div>
               </CardContent>
             </Card>
+          </motion.div>
+        )}
+
+        {/* Integrations: Meta Pixel + Webhook */}
+        {isFranchise && franchiseId && (
+          <motion.div id="integracoes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+            <FranchiseContactSettings franchiseId={franchiseId} />
           </motion.div>
         )}
 
