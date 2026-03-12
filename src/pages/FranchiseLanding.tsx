@@ -75,11 +75,14 @@ export default function FranchiseLanding() {
   }
 
   return (
-    <QuizFlow
-      franchiseSlug={franchise.slug_url}
-      franchiseName={franchise.nome_franquia}
-      franchiseId={franchise.id}
-      franchiseWhatsapp={franchise.whatsapp || undefined}
-    />
+    <>
+      {franchise.meta_pixel_id && <MetaPixel pixelId={franchise.meta_pixel_id} />}
+      <QuizFlow
+        franchiseSlug={franchise.slug_url}
+        franchiseName={franchise.nome_franquia}
+        franchiseId={franchise.id}
+        franchiseWhatsapp={franchise.whatsapp || undefined}
+      />
+    </>
   );
 }
