@@ -111,6 +111,11 @@ export function AdminFranchiseManager() {
     }
 
     setSaving(true);
+    const cidadesArr = form.cidades_atendidas
+      .split(',')
+      .map(c => c.trim())
+      .filter(Boolean);
+
     try {
       if (editingId) {
         const { error } = await supabase
@@ -119,10 +124,11 @@ export function AdminFranchiseManager() {
             nome_franquia: form.nome_franquia.trim(),
             slug_url: form.slug_url.trim(),
             cidade_base: form.cidade_base.trim(),
+            cidades_atendidas: cidadesArr,
             responsavel: form.responsavel.trim() || null,
             whatsapp: form.whatsapp.trim() || null,
             email: form.email.trim() || null,
-          })
+          } as any)
           .eq('id', editingId);
         if (error) throw error;
         toast.success('Franquia atualizada!');
@@ -133,10 +139,11 @@ export function AdminFranchiseManager() {
             nome_franquia: form.nome_franquia.trim(),
             slug_url: form.slug_url.trim(),
             cidade_base: form.cidade_base.trim(),
+            cidades_atendidas: cidadesArr,
             responsavel: form.responsavel.trim() || null,
             whatsapp: form.whatsapp.trim() || null,
             email: form.email.trim() || null,
-          });
+          } as any);
         if (error) throw error;
         toast.success('Franquia criada com sucesso!');
       }
