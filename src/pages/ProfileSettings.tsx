@@ -16,6 +16,11 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import logoSplash from '@/assets/logo-splash.png';
 
+type FranchiseOption = {
+  id: string;
+  nome_franquia: string;
+};
+
 export default function ProfileSettings() {
   const { user, role, franchiseId } = useAuth();
   const navigate = useNavigate();
@@ -26,6 +31,8 @@ export default function ProfileSettings() {
   const [whatsapp, setWhatsapp] = useState('');
   const [email, setEmail] = useState('');
   const [franchiseName, setFranchiseName] = useState('');
+  const [availableFranchises, setAvailableFranchises] = useState<FranchiseOption[]>([]);
+  const [selectedIntegrationFranchiseId, setSelectedIntegrationFranchiseId] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
