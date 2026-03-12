@@ -77,11 +77,11 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
 
   const scoreDistribution = useMemo(() => {
     const buckets = [
-      { range: '0-20%', min: 0, max: 20, count: 0 },
-      { range: '21-40%', min: 21, max: 40, count: 0 },
-      { range: '41-60%', min: 41, max: 60, count: 0 },
-      { range: '61-80%', min: 61, max: 80, count: 0 },
-      { range: '81-100%', min: 81, max: 100, count: 0 },
+      { range: '0-20', min: 0, max: 20, count: 0 },
+      { range: '21-40', min: 21, max: 40, count: 0 },
+      { range: '41-60', min: 41, max: 60, count: 0 },
+      { range: '61-80', min: 61, max: 80, count: 0 },
+      { range: '81-100', min: 81, max: 100, count: 0 },
     ];
     leads.forEach(l => {
       const score = l.pontuacao_quintal || 0;
@@ -133,13 +133,13 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
       icon: Target,
       color: 'text-primary',
       bg: 'bg-primary/10',
-      text: `Média do Índice do Quintal: ${avgScore}% — ${avgScore >= 70 ? 'perfil forte!' : avgScore >= 50 ? 'potencial moderado' : 'leads precisam de mais qualificação'}`,
+      text: `Média do Índice: ${avgScore}% — ${avgScore >= 70 ? 'perfil forte!' : avgScore >= 50 ? 'potencial moderado' : 'leads precisam de mais qualificação'}`,
     },
     {
       icon: Zap,
       color: 'text-violet-600',
       bg: 'bg-violet-50',
-      text: `Taxa de conversão (vendidos): ${conversionRate}% — ${soldCount} de ${totalLeads} leads`,
+      text: `Conversão: ${conversionRate}% — ${soldCount} de ${totalLeads} leads`,
     },
   ];
 
@@ -148,37 +148,37 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
       icon: MapPin,
       color: 'text-amber-600',
       bg: 'bg-amber-50',
-      text: `Cidade com mais leads: ${topCities[0].city} (${topCities[0].count} leads)`,
+      text: `Top cidade: ${topCities[0].city} (${topCities[0].count} leads)`,
     });
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Insights */}
       <div className="space-y-2">
         {insights.map((insight, i) => (
           <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}>
-            <div className={`flex items-center gap-3 px-4 py-3 rounded-xl ${insight.bg}`}>
-              <insight.icon className={`w-4 h-4 ${insight.color} shrink-0`} />
-              <span className="text-sm text-foreground">{insight.text}</span>
+            <div className={`flex items-start sm:items-center gap-2.5 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl ${insight.bg}`}>
+              <insight.icon className={`w-4 h-4 ${insight.color} shrink-0 mt-0.5 sm:mt-0`} />
+              <span className="text-xs sm:text-sm text-foreground leading-snug">{insight.text}</span>
             </div>
           </motion.div>
         ))}
       </div>
 
       {/* Charts Row 1 */}
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="border-border/50 shadow-sm">
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-2 px-3 sm:px-6">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <CalendarDays className="w-4 h-4 text-primary" /> Leads por Mês
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <ChartContainer config={{}} className="h-[220px]">
-              <BarChart data={leadsPerMonth}>
-                <XAxis dataKey="label" tick={{ fontSize: 11 }} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+          <CardContent className="px-2 sm:px-6">
+            <ChartContainer config={{}} className="h-[200px] sm:h-[220px] w-full">
+              <BarChart data={leadsPerMonth} margin={{ left: -15, right: 5, top: 5, bottom: 0 }}>
+                <XAxis dataKey="label" tick={{ fontSize: 10 }} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 10 }} width={30} />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Bar dataKey="count" fill="hsl(207, 90%, 42%)" radius={[6, 6, 0, 0]} />
               </BarChart>
@@ -187,16 +187,16 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
         </Card>
 
         <Card className="border-border/50 shadow-sm">
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-2 px-3 sm:px-6">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <BarChart3 className="w-4 h-4 text-primary" /> Status dos Leads
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="flex items-center gap-4">
-              <ChartContainer config={{}} className="h-[200px] w-[200px]">
+          <CardContent className="px-2 sm:px-6">
+            <div className="flex flex-col sm:flex-row items-center gap-4">
+              <ChartContainer config={{}} className="h-[160px] sm:h-[200px] w-[160px] sm:w-[200px] shrink-0">
                 <PieChart>
-                  <Pie data={statusData} dataKey="value" cx="50%" cy="50%" innerRadius={50} outerRadius={80} paddingAngle={3}>
+                  <Pie data={statusData} dataKey="value" cx="50%" cy="50%" innerRadius={35} outerRadius={65} paddingAngle={3}>
                     {statusData.map((entry, i) => (
                       <Cell key={i} fill={entry.color} />
                     ))}
@@ -204,13 +204,11 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
                   <ChartTooltip content={<ChartTooltipContent />} />
                 </PieChart>
               </ChartContainer>
-              <div className="flex-1 space-y-2">
+              <div className="flex flex-wrap sm:flex-col gap-2 sm:gap-2 justify-center sm:flex-1">
                 {statusData.map((s, i) => (
-                  <div key={i} className="flex items-center justify-between text-xs">
-                    <div className="flex items-center gap-2">
-                      <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: s.color }} />
-                      <span className="text-muted-foreground">{s.name}</span>
-                    </div>
+                  <div key={i} className="flex items-center gap-2 text-xs">
+                    <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: s.color }} />
+                    <span className="text-muted-foreground">{s.name}</span>
                     <span className="font-semibold text-foreground">{s.value}</span>
                   </div>
                 ))}
@@ -221,36 +219,36 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
       </div>
 
       {/* Charts Row 2 */}
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Card className="border-border/50 shadow-sm">
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-2 px-3 sm:px-6">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-primary" /> Tendência Semanal
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <ChartContainer config={{}} className="h-[220px]">
-              <LineChart data={weeklyTrend}>
-                <XAxis dataKey="week" tick={{ fontSize: 10 }} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+          <CardContent className="px-2 sm:px-6">
+            <ChartContainer config={{}} className="h-[200px] sm:h-[220px] w-full">
+              <LineChart data={weeklyTrend} margin={{ left: -15, right: 5, top: 5, bottom: 0 }}>
+                <XAxis dataKey="week" tick={{ fontSize: 9 }} interval={1} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 10 }} width={30} />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Line type="monotone" dataKey="count" stroke="hsl(207, 90%, 42%)" strokeWidth={2.5} dot={{ r: 4, fill: 'hsl(207, 90%, 42%)' }} />
+                <Line type="monotone" dataKey="count" stroke="hsl(207, 90%, 42%)" strokeWidth={2.5} dot={{ r: 3, fill: 'hsl(207, 90%, 42%)' }} />
               </LineChart>
             </ChartContainer>
           </CardContent>
         </Card>
 
         <Card className="border-border/50 shadow-sm">
-          <CardHeader className="pb-2">
+          <CardHeader className="pb-2 px-3 sm:px-6">
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <Target className="w-4 h-4 text-primary" /> Distribuição do Índice
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <ChartContainer config={{}} className="h-[220px]">
-              <BarChart data={scoreDistribution}>
-                <XAxis dataKey="range" tick={{ fontSize: 10 }} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} />
+          <CardContent className="px-2 sm:px-6">
+            <ChartContainer config={{}} className="h-[200px] sm:h-[220px] w-full">
+              <BarChart data={scoreDistribution} margin={{ left: -15, right: 5, top: 5, bottom: 0 }}>
+                <XAxis dataKey="range" tick={{ fontSize: 9 }} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 10 }} width={30} />
                 <ChartTooltip content={<ChartTooltipContent />} />
                 <Bar dataKey="count" fill="hsl(330, 90%, 46%)" radius={[6, 6, 0, 0]} />
               </BarChart>
@@ -260,25 +258,25 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
       </div>
 
       {/* Rankings Row */}
-      <div className="grid md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {topCities.length > 0 && (
           <Card className="border-border/50 shadow-sm">
-            <CardHeader className="pb-2">
+            <CardHeader className="pb-2 px-3 sm:px-6">
               <CardTitle className="text-sm font-semibold flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-primary" /> Top Cidades
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-3 sm:px-6">
               <div className="space-y-2">
                 {topCities.map((c, i) => {
                   const pct = totalLeads > 0 ? Math.round((c.count / totalLeads) * 100) : 0;
                   return (
-                    <div key={i} className="flex items-center gap-3">
+                    <div key={i} className="flex items-center gap-2 sm:gap-3">
                       <span className="text-xs font-bold text-muted-foreground w-5">{i + 1}.</span>
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm font-medium text-foreground">{c.city}</span>
-                          <span className="text-xs text-muted-foreground">{c.count} ({pct}%)</span>
+                          <span className="text-xs sm:text-sm font-medium text-foreground truncate">{c.city}</span>
+                          <span className="text-[10px] sm:text-xs text-muted-foreground shrink-0 ml-2">{c.count} ({pct}%)</span>
                         </div>
                         <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                           <motion.div
@@ -299,22 +297,22 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
 
         {topModels.length > 0 && (
           <Card className="border-border/50 shadow-sm">
-            <CardHeader className="pb-2">
+            <CardHeader className="pb-2 px-3 sm:px-6">
               <CardTitle className="text-sm font-semibold flex items-center gap-2">
                 <Droplets className="w-4 h-4 text-primary" /> Modelos Mais Indicados
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-3 sm:px-6">
               <div className="space-y-2">
                 {topModels.map((m, i) => {
                   const pct = totalLeads > 0 ? Math.round((m.count / totalLeads) * 100) : 0;
                   return (
-                    <div key={i} className="flex items-center gap-3">
+                    <div key={i} className="flex items-center gap-2 sm:gap-3">
                       <span className="text-xs font-bold text-muted-foreground w-5">{i + 1}.</span>
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-1">
-                          <span className="text-sm font-medium text-foreground">{m.model}</span>
-                          <span className="text-xs text-muted-foreground">{m.count} ({pct}%)</span>
+                          <span className="text-xs sm:text-sm font-medium text-foreground truncate">{m.model}</span>
+                          <span className="text-[10px] sm:text-xs text-muted-foreground shrink-0 ml-2">{m.count} ({pct}%)</span>
                         </div>
                         <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                           <motion.div
