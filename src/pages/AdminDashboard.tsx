@@ -222,17 +222,48 @@ export default function AdminDashboard() {
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
         <Breadcrumbs items={[{ label: 'Admin' }]} />
         {/* Tab switcher */}
-        <div className="flex gap-0.5 sm:gap-1 mb-4 sm:mb-6 md:mb-8 bg-muted/60 backdrop-blur-sm rounded-2xl p-1 sm:p-1.5 w-full overflow-x-auto scrollbar-none border border-border/30 -mx-1 px-1" role="tablist">
+        {/* Mobile: Select dropdown */}
+        <div className="md:hidden mb-4">
+          <Select value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
+            <SelectTrigger className="w-full bg-card border-border/50">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {([
+                { key: 'overview' as const, icon: BarChart3, label: 'Inteligência' },
+                { key: 'analytics' as const, icon: Activity, label: 'Analytics' },
+                { key: 'leads' as const, icon: Users, label: 'Leads' },
+                { key: 'franchises' as const, icon: Building2, label: 'Franquias' },
+                { key: 'cities' as const, icon: Globe, label: 'Territórios' },
+                { key: 'users' as const, icon: Users, label: 'Usuários' },
+                ...(role === 'super_admin' ? [
+                  { key: 'emails' as const, icon: Mail, label: 'E-mails' },
+                  { key: 'franchise-view' as const, icon: Eye, label: 'Visão Franquia' },
+                ] : []),
+              ]).map(tab => (
+                <SelectItem key={tab.key} value={tab.key}>
+                  <span className="flex items-center gap-2">
+                    <tab.icon className="w-4 h-4 text-muted-foreground" />
+                    {tab.label}
+                  </span>
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
+        {/* Desktop: Tab bar */}
+        <div className="hidden md:flex gap-1 mb-8 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-fit border border-border/30" role="tablist">
           {([
-            { key: 'overview' as const, icon: BarChart3, label: 'Inteligência', short: 'Intel' },
-            { key: 'analytics' as const, icon: Activity, label: 'Analytics', short: 'Stats' },
-            { key: 'leads' as const, icon: Users, label: 'Leads', short: 'Leads' },
-            { key: 'franchises' as const, icon: Building2, label: 'Franquias', short: 'Franq' },
-            { key: 'cities' as const, icon: Globe, label: 'Territórios', short: 'Terr' },
-            { key: 'users' as const, icon: Users, label: 'Usuários', short: 'Users' },
+            { key: 'overview' as const, icon: BarChart3, label: 'Inteligência' },
+            { key: 'analytics' as const, icon: Activity, label: 'Analytics' },
+            { key: 'leads' as const, icon: Users, label: 'Leads' },
+            { key: 'franchises' as const, icon: Building2, label: 'Franquias' },
+            { key: 'cities' as const, icon: Globe, label: 'Territórios' },
+            { key: 'users' as const, icon: Users, label: 'Usuários' },
             ...(role === 'super_admin' ? [
-              { key: 'emails' as const, icon: Mail, label: 'E-mails', short: 'Mail' },
-              { key: 'franchise-view' as const, icon: Eye, label: 'Visão Franquia', short: 'Visão' },
+              { key: 'emails' as const, icon: Mail, label: 'E-mails' },
+              { key: 'franchise-view' as const, icon: Eye, label: 'Visão Franquia' },
             ] : []),
           ]).map(tab => (
             <button
@@ -240,11 +271,10 @@ export default function AdminDashboard() {
               role="tab"
               aria-selected={activeTab === tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-3 sm:px-4 md:px-5 py-2 sm:py-2.5 md:py-3 rounded-xl text-[11px] sm:text-xs md:text-sm font-semibold transition-all whitespace-nowrap shrink-0 ${activeTab === tab.key ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
+              className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all whitespace-nowrap ${activeTab === tab.key ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
             >
-              <tab.icon className={`w-3.5 h-3.5 md:w-4 md:h-4 inline mr-1 md:mr-1.5 ${activeTab === tab.key ? 'text-primary' : ''}`} />
-              <span className="hidden md:inline">{tab.label}</span>
-              <span className="md:hidden">{tab.short}</span>
+              <tab.icon className={`w-4 h-4 inline mr-1.5 ${activeTab === tab.key ? 'text-primary' : ''}`} />
+              {tab.label}
             </button>
           ))}
         </div>
