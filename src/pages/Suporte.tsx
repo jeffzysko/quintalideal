@@ -424,7 +424,7 @@ export default function Suporte() {
             <Button
               variant="outline"
               className="rounded-xl gap-2"
-              onClick={() => window.open('https://wa.me/5500000000000?text=Ol%C3%A1!%20Preciso%20de%20suporte%20com%20a%20plataforma.', '_blank')}
+              onClick={() => window.open('https://wa.me/5551981055425?text=Ol%C3%A1!%20Preciso%20de%20suporte%20com%20a%20plataforma.', '_blank')}
             >
               <ExternalLink className="w-4 h-4" />
               WhatsApp
