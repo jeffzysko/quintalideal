@@ -35,9 +35,10 @@ const FUNNEL_COLORS = ['#1e88e5', '#42a5f5', '#64b5f6', '#90caf9', '#bbdefb', '#
 
 interface AdminAnalyticsProps {
   franchiseMap: Record<string, string>;
+  role?: string | null;
 }
 
-export function AdminAnalytics({ franchiseMap: _franchiseMap }: AdminAnalyticsProps) {
+export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
   const [events, setEvents] = useState<AnalyticsEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);

@@ -273,7 +273,7 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === 'analytics' && (
-          <AdminAnalytics franchiseMap={franchiseMap} />
+          <AdminAnalytics franchiseMap={franchiseMap} role={role} />
         )}
 
         {activeTab === 'leads' && (
