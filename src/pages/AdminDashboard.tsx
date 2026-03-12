@@ -250,20 +250,9 @@ export default function AdminDashboard() {
           ))}
         </div>
 
-        <Collapsible defaultOpen>
-          <div className="flex items-center justify-between mb-2">
-            <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Resumo</p>
-            <CollapsibleTrigger asChild>
-              <button className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors">
-                <ChevronsUpDown className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Recolher</span>
-              </button>
-            </CollapsibleTrigger>
-          </div>
-          <CollapsibleContent>
-            {loadingKpis ? <KPISkeleton count={6} /> : <AdminKPICards kpis={kpis} />}
-          </CollapsibleContent>
-        </Collapsible>
+        {activeTab === 'overview' && (
+          loadingKpis ? <KPISkeleton count={6} /> : <AdminKPICards kpis={kpis} />
+        )}
 
         {activeTab === 'overview' && (
           <>
