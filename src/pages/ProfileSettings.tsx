@@ -116,9 +116,30 @@ export default function ProfileSettings() {
   };
 
   const handleSave = async () => {
+    const errors: Record<string, string> = {};
+
+    if (telefone.trim() && !isValidBRPhone(telefone)) {
+      errors.telefone = 'Telefone inválido. Use DDD + número (10 ou 11 dígitos).';
+    }
+
+    if (isFranchise) {
+      if (whatsapp.trim() && !isValidBRPhone(whatsapp)) {
+        errors.whatsapp = 'WhatsApp inválido. Use DDD + número (10 ou 11 dígitos).';
+      }
+      if (email.trim() && !isValidEmail(email)) {
+        errors.email = 'E-mail inválido.';
+      }
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      toast.error('Corrija os campos destacados antes de salvar.');
+      return;
+    }
+
+    setFormErrors({});
     setSaving(true);
     try {
-      // Update profile name
       const { error: profileError } = await supabase
         .from('profiles')
         .update({ full_name: fullName.trim() || null, telefone: telefone.trim() || null } as any)
@@ -126,7 +147,6 @@ export default function ProfileSettings() {
 
       if (profileError) throw profileError;
 
-      // Update franchise contact info if franchise user
       if (franchiseId) {
         const { error: franchiseError } = await supabase
           .from('franchises')
