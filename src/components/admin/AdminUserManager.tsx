@@ -385,7 +385,6 @@ export function AdminUserManager() {
                 value={formTelefone}
                 onChange={(e) => setFormTelefone(e.target.value)}
                 placeholder="(11) 99999-0000"
-                disabled={!editingUser}
               />
             </div>
             <div>
