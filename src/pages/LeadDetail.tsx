@@ -241,21 +241,21 @@ export default function LeadDetail() {
         {/* Contact */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
           <Card className="glass-card">
-            <CardContent className="p-5 space-y-3">
+            <CardContent className="p-3 sm:p-5 space-y-3">
               <div className="flex items-center gap-2 mb-1">
                 <Phone className="w-4 h-4 text-primary" />
                 <h2 className="text-sm font-semibold text-foreground">Contato</h2>
               </div>
 
               {lead.telefone && (
-                <div className="flex items-center justify-between bg-muted/50 rounded-lg px-4 py-3">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 bg-muted/50 rounded-lg px-3 sm:px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <Phone className="w-4 h-4 text-muted-foreground" />
+                    <Phone className="w-4 h-4 text-muted-foreground shrink-0" />
                     <span className="text-sm font-medium text-foreground">{lead.telefone}</span>
                   </div>
                   <Button
                     size="sm"
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-8 gap-1.5"
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-8 gap-1.5 w-full sm:w-auto"
                     onClick={() => {
                       const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem? Vi que você fez o teste do Índice do Quintal Splash!`);
                       window.open(`https://wa.me/55${lead.telefone}?text=${msg}`, '_blank');
@@ -267,9 +267,9 @@ export default function LeadDetail() {
               )}
 
               {lead.email && (
-                <div className="flex items-center gap-3 bg-muted/50 rounded-lg px-4 py-3">
-                  <Mail className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm text-foreground">{lead.email}</span>
+                <div className="flex items-center gap-3 bg-muted/50 rounded-lg px-3 sm:px-4 py-3">
+                  <Mail className="w-4 h-4 text-muted-foreground shrink-0" />
+                  <span className="text-sm text-foreground truncate">{lead.email}</span>
                 </div>
               )}
             </CardContent>
