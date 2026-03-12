@@ -369,6 +369,35 @@ export default function Suporte() {
           </div>
         </section>
 
+        {/* Data deletion section */}
+        <motion.section
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25 }}
+          className="glass-card rounded-2xl p-6 mb-8"
+        >
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0">
+              <Trash2 className="w-5 h-5 text-destructive" />
+            </div>
+            <div>
+              <h3 className="font-bold text-foreground mb-1">Exclusão de dados pessoais</h3>
+              <p className="text-sm text-muted-foreground mb-3 leading-relaxed">
+                Em conformidade com a LGPD, você pode solicitar a exclusão dos seus dados pessoais (nome, telefone, e-mail e fotos). 
+                O prazo de atendimento é de até 15 dias úteis.
+              </p>
+              <Button
+                variant="outline"
+                className="rounded-xl gap-2 text-destructive border-destructive/30 hover:bg-destructive/5"
+                onClick={() => window.open('mailto:contato@hallow.com.br?subject=Solicita%C3%A7%C3%A3o%20de%20Exclus%C3%A3o%20de%20Dados%20-%20LGPD&body=Ol%C3%A1%2C%0A%0ASolicito%20a%20exclus%C3%A3o%20dos%20meus%20dados%20pessoais%20da%20plataforma%20Quintal%20Ideal.%0A%0ANome%3A%20%0ATelefone%20cadastrado%3A%20%0AE-mail%20cadastrado%3A%20%0A%0AAtenciosamente.', '_blank')}
+              >
+                <Mail className="w-4 h-4" />
+                Solicitar exclusão de dados
+              </Button>
+            </div>
+          </div>
+        </motion.section>
+
         {/* Support contact */}
         <motion.section
           initial={{ opacity: 0, y: 16 }}
@@ -381,18 +410,26 @@ export default function Suporte() {
           <p className="text-sm text-muted-foreground mb-4">
             Entre em contato com o suporte técnico da <span className="font-semibold text-foreground">Hallow Comunicação</span> para assistência personalizada.
           </p>
-          <Button
-            variant="outline"
-            className="rounded-xl gap-2"
-            onClick={() => window.open('https://wa.me/5500000000000?text=Ol%C3%A1!%20Preciso%20de%20suporte%20com%20a%20plataforma.', '_blank')}
-          >
-            <ExternalLink className="w-4 h-4" />
-            Falar com o suporte
-          </Button>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Button
+              variant="outline"
+              className="rounded-xl gap-2"
+              onClick={() => window.open('mailto:contato@hallow.com.br', '_blank')}
+            >
+              <Mail className="w-4 h-4" />
+              contato@hallow.com.br
+            </Button>
+            <Button
+              variant="outline"
+              className="rounded-xl gap-2"
+              onClick={() => window.open('https://wa.me/5500000000000?text=Ol%C3%A1!%20Preciso%20de%20suporte%20com%20a%20plataforma.', '_blank')}
+            >
+              <ExternalLink className="w-4 h-4" />
+              WhatsApp
+            </Button>
+          </div>
         </motion.section>
       </div>
-
-      <Footer />
     </div>
   );
 }
