@@ -67,6 +67,20 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
           </motion.div>
         ) : (
           <>
+            {/* Mobile card view */}
+            {isMobile ? (
+              <div className="space-y-3">
+                {leads.map((lead, i) => (
+                  <MobileLeadCard
+                    key={lead.id}
+                    lead={lead}
+                    index={i}
+                    basePath="/admin/lead"
+                    franchiseName={lead.franquia_id ? franchiseMap[lead.franquia_id] : undefined}
+                  />
+                ))}
+              </div>
+            ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm" role="table">
                 <thead>
