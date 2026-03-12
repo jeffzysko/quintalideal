@@ -114,6 +114,7 @@ export default function MapaQuintais() {
       </div>
 
       <div className="px-4 md:px-6 py-4 md:py-6 max-w-5xl mx-auto">
+        <Breadcrumbs items={[{ label: 'Mapa dos Quintais' }]} />
         {/* KPI cards */}
         <div className="grid grid-cols-3 gap-2 md:gap-3 mb-4 md:mb-6">
           <Card>

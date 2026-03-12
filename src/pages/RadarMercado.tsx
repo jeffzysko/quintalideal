@@ -654,5 +654,6 @@ export default function RadarMercado() {
         </div>
       </div>
     </div>
+    </PageTransition>
   );
 }
