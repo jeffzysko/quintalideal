@@ -68,7 +68,7 @@ export default function PoliticaPrivacidade() {
           </div>
         </motion.div>
       </div>
-      <Footer />
+      
     </div>
   );
 }

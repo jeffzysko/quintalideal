@@ -68,7 +68,7 @@ export default function TermosDeUso() {
           </div>
         </motion.div>
       </div>
-      <Footer />
+      
     </div>
   );
 }
