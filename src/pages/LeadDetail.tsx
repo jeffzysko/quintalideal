@@ -170,7 +170,7 @@ export default function LeadDetail() {
   return (
     <PageTransition>
     <div className="min-h-screen gradient-hero">
-      <div className="max-w-2xl mx-auto px-4 py-6 space-y-5">
+      <div className="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-5">
         {/* Breadcrumbs */}
         <Breadcrumbs items={breadcrumbItems} />
 
@@ -188,45 +188,47 @@ export default function LeadDetail() {
         {/* Hero Card */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
           <Card className="glass-card overflow-hidden">
-            <div className="gradient-blue px-5 py-4">
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-white/20 backdrop-blur flex items-center justify-center">
-                  <User className="w-6 h-6 text-primary-foreground" />
+            <div className="gradient-blue px-3 sm:px-5 py-3 sm:py-4">
+              <div className="flex items-start sm:items-center gap-3 sm:gap-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 backdrop-blur flex items-center justify-center shrink-0">
+                  <User className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h1 className="text-lg font-bold text-primary-foreground truncate">
+                  <h1 className="text-base sm:text-lg font-bold text-primary-foreground truncate">
                     {lead.nome || 'Lead sem nome'}
                   </h1>
-                  <div className="flex items-center gap-3 text-primary-foreground/80 text-sm mt-0.5">
+                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-primary-foreground/80 text-xs sm:text-sm mt-0.5">
                     {lead.cidade && (
-                      <span className="flex items-center gap-1"><MapPin className="w-3.5 h-3.5" />{lead.cidade}</span>
+                      <span className="flex items-center gap-1"><MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5" />{lead.cidade}</span>
                     )}
                     <span className="flex items-center gap-1">
-                      <Calendar className="w-3.5 h-3.5" />
+                      <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
                       {new Date(lead.created_at).toLocaleDateString('pt-BR')}
                     </span>
                   </div>
                 </div>
-                <Badge className={`${statusInfo.color} border text-xs font-medium`}>
+              </div>
+              <div className="mt-2 sm:mt-0 sm:absolute sm:top-4 sm:right-5">
+                <Badge className={`${statusInfo.color} border text-[10px] sm:text-xs font-medium`}>
                   {statusInfo.label}
                 </Badge>
               </div>
             </div>
 
-            <CardContent className="p-5">
-              <div className="flex items-center gap-5">
+            <CardContent className="p-3 sm:p-5">
+              <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-5">
                 <ScoreRing score={lead.pontuacao_quintal || 0} />
-                <div className="flex-1 space-y-2">
-                  <div>
+                <div className="flex-1 space-y-2 w-full">
+                  <div className="text-center sm:text-left">
                     <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Índice do Quintal</p>
                     <p className="text-sm text-foreground mt-0.5">Potencial de instalação de piscina</p>
                   </div>
                   {lead.modelo_recomendado && (
                     <div className="flex items-center gap-2 bg-accent/50 rounded-lg px-3 py-2">
-                      <Droplets className="w-4 h-4 text-primary" />
-                      <div>
+                      <Droplets className="w-4 h-4 text-primary shrink-0" />
+                      <div className="min-w-0">
                         <p className="text-xs text-muted-foreground">Modelo recomendado</p>
-                        <p className="text-sm font-semibold text-foreground">{lead.modelo_recomendado}</p>
+                        <p className="text-sm font-semibold text-foreground truncate">{lead.modelo_recomendado}</p>
                       </div>
                     </div>
                   )}
@@ -239,21 +241,21 @@ export default function LeadDetail() {
         {/* Contact */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
           <Card className="glass-card">
-            <CardContent className="p-5 space-y-3">
+            <CardContent className="p-3 sm:p-5 space-y-3">
               <div className="flex items-center gap-2 mb-1">
                 <Phone className="w-4 h-4 text-primary" />
                 <h2 className="text-sm font-semibold text-foreground">Contato</h2>
               </div>
 
               {lead.telefone && (
-                <div className="flex items-center justify-between bg-muted/50 rounded-lg px-4 py-3">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 bg-muted/50 rounded-lg px-3 sm:px-4 py-3">
                   <div className="flex items-center gap-3">
-                    <Phone className="w-4 h-4 text-muted-foreground" />
+                    <Phone className="w-4 h-4 text-muted-foreground shrink-0" />
                     <span className="text-sm font-medium text-foreground">{lead.telefone}</span>
                   </div>
                   <Button
                     size="sm"
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-8 gap-1.5"
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-8 gap-1.5 w-full sm:w-auto"
                     onClick={() => {
                       const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem? Vi que você fez o teste do Índice do Quintal Splash!`);
                       window.open(`https://wa.me/55${lead.telefone}?text=${msg}`, '_blank');
@@ -265,9 +267,9 @@ export default function LeadDetail() {
               )}
 
               {lead.email && (
-                <div className="flex items-center gap-3 bg-muted/50 rounded-lg px-4 py-3">
-                  <Mail className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm text-foreground">{lead.email}</span>
+                <div className="flex items-center gap-3 bg-muted/50 rounded-lg px-3 sm:px-4 py-3">
+                  <Mail className="w-4 h-4 text-muted-foreground shrink-0" />
+                  <span className="text-sm text-foreground truncate">{lead.email}</span>
                 </div>
               )}
             </CardContent>
@@ -297,7 +299,7 @@ export default function LeadDetail() {
         {lead.respostas_questionario && (
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
             <Card className="glass-card">
-              <CardContent className="p-5">
+              <CardContent className="p-3 sm:p-5">
                 <div className="flex items-center gap-2 mb-3">
                   <ClipboardList className="w-4 h-4 text-primary" />
                   <h2 className="text-sm font-semibold text-foreground">Respostas do Questionário</h2>
@@ -309,12 +311,12 @@ export default function LeadDetail() {
                       const q = questionLabels[key];
                       const displayValue = answerLabels[value as string] || (value as string);
                       return (
-                        <div key={key} className="flex items-center justify-between py-2.5 px-3.5 rounded-xl bg-muted/40 hover:bg-muted/60 transition-colors">
-                          <span className="text-sm text-muted-foreground flex items-center gap-2.5">
+                        <div key={key} className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 py-2 sm:py-2.5 px-3 sm:px-3.5 rounded-xl bg-muted/40 hover:bg-muted/60 transition-colors">
+                          <span className="text-xs sm:text-sm text-muted-foreground flex items-center gap-2">
                             <span className="text-base">{q.icon}</span>
                             {q.label}
                           </span>
-                          <span className="text-sm font-semibold text-foreground">{displayValue}</span>
+                          <span className="text-xs sm:text-sm font-semibold text-foreground ml-7 sm:ml-0">{displayValue}</span>
                         </div>
                       );
                     })}

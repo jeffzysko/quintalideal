@@ -184,20 +184,20 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
         className="relative overflow-hidden"
         style={{ background: 'linear-gradient(160deg, #06101f 0%, #0b2a52 35%, #0d3468 60%, #081d38 100%)' }}
       >
-        <div className="relative z-10 px-5 sm:px-6 pt-6 sm:pt-8 pb-5 sm:pb-6 max-w-md mx-auto text-center">
+        <div className="relative z-10 px-4 sm:px-6 pt-5 sm:pt-8 pb-4 sm:pb-6 max-w-md mx-auto text-center">
           <motion.img
             src={logoSplash}
             alt="Splash Piscinas"
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.7 }}
-            className="mx-auto w-14 mb-3"
+            className="mx-auto w-12 sm:w-14 mb-2 sm:mb-3"
           />
 
           <motion.h1
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-white text-lg md:text-xl font-extrabold tracking-tight mb-4"
+            className="text-white text-base sm:text-lg md:text-xl font-extrabold tracking-tight mb-3 sm:mb-4"
           >
             {firstName ? `${firstName}, ${t('action_header_suffix', lang)}` : (lang === 'es' ? 'Tu patio es' : 'Seu quintal é')}{' '}
             <span className="bg-gradient-to-r from-blue-300 via-cyan-300 to-blue-400 bg-clip-text text-transparent">{t('action_header_amazing', lang)}</span>! 🎉
@@ -208,10 +208,10 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
             initial={{ scale: 0.6, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.35, type: 'spring', damping: 14 }}
-            className="flex items-center justify-center gap-4 mb-4"
+            className="flex items-center justify-center gap-3 sm:gap-4 mb-3 sm:mb-4"
           >
-            <div className="relative w-20 h-20">
-              <svg className="w-20 h-20 transform -rotate-90 relative z-10" viewBox="0 0 100 100">
+            <div className="relative w-16 h-16 sm:w-20 sm:h-20">
+              <svg className="w-16 h-16 sm:w-20 sm:h-20 transform -rotate-90 relative z-10" viewBox="0 0 100 100">
                 <circle cx="50" cy="50" r="46" stroke="rgba(255,255,255,0.08)" strokeWidth="5" fill="none" />
                 <circle cx="50" cy="50" r="46"
                   stroke="url(#actionGrad)" strokeWidth="5" fill="none" strokeLinecap="round"
@@ -226,31 +226,31 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
                 </defs>
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
-                <span className="text-2xl font-black text-white">{score}</span>
-                <span className="text-[8px] font-medium text-white/50">{t('result_points', lang)}</span>
+                <span className="text-xl sm:text-2xl font-black text-white">{score}</span>
+                <span className="text-[7px] sm:text-[8px] font-medium text-white/50">{t('result_points', lang)}</span>
               </div>
             </div>
 
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-1 sm:gap-1.5">
               <div
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+                className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full"
                 style={{
                   background: `linear-gradient(135deg, ${classification.color}18, ${classification.color}08)`,
                   border: `1px solid ${classification.color}30`,
                 }}
               >
-                <span className="text-sm">{classification.emoji}</span>
-                <span className="font-bold text-[11px]" style={{ color: classification.color }}>{classification.label}</span>
+                <span className="text-xs sm:text-sm">{classification.emoji}</span>
+                <span className="font-bold text-[10px] sm:text-[11px]" style={{ color: classification.color }}>{classification.label}</span>
               </div>
               <div
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full"
+                className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full"
                 style={{
                   background: 'linear-gradient(135deg, rgba(255,215,0,0.12), rgba(255,215,0,0.04))',
                   border: '1px solid rgba(255,215,0,0.2)',
                 }}
               >
                 <Trophy className="w-3 h-3 text-amber-400" />
-                <span className="font-bold text-[11px] text-amber-300">{ranking.label}</span>
+                <span className="font-bold text-[10px] sm:text-[11px] text-amber-300">{ranking.label}</span>
               </div>
             </div>
           </motion.div>
@@ -259,7 +259,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="text-white/45 text-[11px] italic"
+            className="text-white/45 text-[10px] sm:text-[11px] italic"
           >
             {socialComparison}
           </motion.p>
@@ -267,7 +267,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
       </motion.div>
 
       {/* === POOL CARD === */}
-      <div className="px-4 sm:px-6 max-w-md mx-auto -mt-3 relative z-20">
+      <div className="px-3 sm:px-6 max-w-md mx-auto -mt-3 relative z-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

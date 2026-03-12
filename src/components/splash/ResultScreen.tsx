@@ -88,7 +88,7 @@ export function ResultScreen({ score, onContinue, lang = 'pt' }: ResultScreenPro
         initial={{ scale: 0.8, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ delay: 0.15, type: 'spring', damping: 18 }}
-        className="text-center max-w-md w-full px-6 py-12 relative z-10"
+        className="text-center max-w-md w-full px-4 sm:px-6 py-8 sm:py-12 relative z-10"
       >
         <motion.img
           src={logoSplash}
@@ -114,16 +114,16 @@ export function ResultScreen({ score, onContinue, lang = 'pt' }: ResultScreenPro
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ delay: 0.2, type: 'spring', damping: 12 }}
-          className="relative mx-auto w-56 h-56 mb-8"
+          className="relative mx-auto w-40 h-40 sm:w-56 sm:h-56 mb-6 sm:mb-8"
         >
           <motion.div
             animate={{ opacity: [0.3, 0.6, 0.3] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="absolute inset-[-20px] rounded-full"
+            className="absolute inset-[-15px] sm:inset-[-20px] rounded-full"
             style={{ background: 'radial-gradient(circle, rgba(30,136,229,0.2), transparent 70%)' }}
           />
 
-          <svg className="w-56 h-56 transform -rotate-90 relative z-10" viewBox="0 0 130 130">
+          <svg className="w-40 h-40 sm:w-56 sm:h-56 transform -rotate-90 relative z-10" viewBox="0 0 130 130">
             <circle cx="65" cy="65" r="58" stroke="rgba(255,255,255,0.06)" strokeWidth="4" fill="none" />
             <circle
               cx="65" cy="65" r="58"
@@ -144,10 +144,10 @@ export function ResultScreen({ score, onContinue, lang = 'pt' }: ResultScreenPro
             </defs>
           </svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
-            <span className="text-6xl font-black text-white tracking-tighter" style={{ textShadow: '0 0 40px rgba(30,136,229,0.4)' }}>
+            <span className="text-4xl sm:text-6xl font-black text-white tracking-tighter" style={{ textShadow: '0 0 40px rgba(30,136,229,0.4)' }}>
               {displayScore}
             </span>
-            <span className="text-sm font-medium text-white/40 mt-1">{t('result_points', lang)}</span>
+            <span className="text-xs sm:text-sm font-medium text-white/40 mt-1">{t('result_points', lang)}</span>
           </div>
         </motion.div>
 
@@ -155,7 +155,7 @@ export function ResultScreen({ score, onContinue, lang = 'pt' }: ResultScreenPro
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="text-2xl md:text-3xl font-extrabold mb-3 tracking-tight text-white"
+          className="text-xl sm:text-2xl md:text-3xl font-extrabold mb-3 tracking-tight text-white"
         >
           {t('result_title_1', lang)}{' '}
           <span className="bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-transparent">{score}%</span>

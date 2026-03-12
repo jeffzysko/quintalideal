@@ -31,25 +31,25 @@ export function ValorizationSimulator({ score: _score, lang = 'pt' }: Valorizati
 
   return (
     <div className="rounded-3xl border border-border bg-card shadow-sm overflow-hidden mt-8">
-      <div className="px-6 pt-6 pb-4">
+      <div className="px-4 sm:px-6 pt-5 sm:pt-6 pb-3 sm:pb-4">
         <div className="flex items-center gap-3 mb-1">
-          <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
-            <TrendingUp className="w-5 h-5 text-emerald-600" />
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
+            <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
           </div>
-          <div>
+          <div className="min-w-0">
             <h3 className="font-bold text-sm text-foreground">{t('valor_title', lang)}</h3>
-            <p className="text-xs text-muted-foreground">{t('valor_subtitle', lang)}</p>
+            <p className="text-[11px] sm:text-xs text-muted-foreground">{t('valor_subtitle', lang)}</p>
           </div>
         </div>
       </div>
 
-      <div className="px-6 pb-6">
-        <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-50 border border-emerald-100 mb-4">
-          <ArrowUpRight className="w-4 h-4 text-emerald-600 shrink-0" />
-          <p className="text-xs text-emerald-700 font-medium" dangerouslySetInnerHTML={{ __html: t('valor_info', lang) }} />
+      <div className="px-4 sm:px-6 pb-5 sm:pb-6">
+        <div className="flex items-start gap-2 p-2.5 sm:p-3 rounded-xl bg-emerald-50 border border-emerald-100 mb-4">
+          <ArrowUpRight className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+          <p className="text-[11px] sm:text-xs text-emerald-700 font-medium" dangerouslySetInnerHTML={{ __html: t('valor_info', lang) }} />
         </div>
 
-        <div className="flex gap-2 mb-4">
+        <div className="flex flex-col sm:flex-row gap-2 mb-4">
           <div className="relative flex-1">
             <Home className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
             <Input
@@ -63,7 +63,7 @@ export function ValorizationSimulator({ score: _score, lang = 'pt' }: Valorizati
           <Button
             onClick={() => numericValue > 0 && setShowResult(true)}
             disabled={numericValue === 0}
-            className="shrink-0 rounded-xl px-5 gradient-blue hover:opacity-90"
+            className="shrink-0 rounded-xl px-5 py-3 sm:py-0 gradient-blue hover:opacity-90 w-full sm:w-auto"
           >
             <Calculator className="w-4 h-4 mr-1.5" />
             {t('valor_btn', lang)}
