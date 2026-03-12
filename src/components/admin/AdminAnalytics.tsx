@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis } from 'recharts';
-import { Activity, TrendingDown, Zap, Smartphone, Monitor, Tablet, AlertCircle, RefreshCw } from 'lucide-react';
+import { Activity, TrendingDown, Zap, Smartphone, Monitor, Tablet, AlertCircle, RefreshCw, Building2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 
@@ -35,13 +35,16 @@ const FUNNEL_COLORS = ['#1e88e5', '#42a5f5', '#64b5f6', '#90caf9', '#bbdefb', '#
 
 interface AdminAnalyticsProps {
   franchiseMap: Record<string, string>;
+  role?: string | null;
 }
 
-export function AdminAnalytics({ franchiseMap: _franchiseMap }: AdminAnalyticsProps) {
+export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
   const [events, setEvents] = useState<AnalyticsEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [periodDays, setPeriodDays] = useState('30');
+  const [filterFranchise, setFilterFranchise] = useState('all');
+  const isSuperAdmin = role === 'super_admin';
 
   useEffect(() => {
     loadEvents();
@@ -70,12 +73,18 @@ export function AdminAnalytics({ franchiseMap: _franchiseMap }: AdminAnalyticsPr
     }
   };
 
+  // Filter events by franchise if selected
+  const filteredEvents = useMemo(() => {
+    if (filterFranchise === 'all') return events;
+    return events.filter(e => e.franchise_id === filterFranchise);
+  }, [events, filterFranchise]);
+
   // Funnel data
   const funnelData = useMemo(() => {
     const counts: Record<string, Set<string>> = {};
     FUNNEL_STEPS.forEach(s => { counts[s.key] = new Set(); });
     
-    events.forEach(e => {
+    filteredEvents.forEach(e => {
       if (counts[e.event_name]) {
         counts[e.event_name].add(e.session_id);
       }
@@ -89,11 +98,36 @@ export function AdminAnalytics({ franchiseMap: _franchiseMap }: AdminAnalyticsPr
       const rate = Math.round((count / firstCount) * 100);
       return { ...step, count, dropoff: i > 0 ? dropoff : 0, rate, fill: FUNNEL_COLORS[i] };
     });
-  }, [events]);
+  }, [filteredEvents]);
+
+  // Per-franchise funnel comparison (super_admin only)
+  const franchiseFunnels = useMemo(() => {
+    if (!isSuperAdmin) return [];
+    const franchiseIds = [...new Set(events.filter(e => e.franchise_id).map(e => e.franchise_id!))];
+    return franchiseIds.map(fid => {
+      const fEvents = events.filter(e => e.franchise_id === fid);
+      const counts: Record<string, Set<string>> = {};
+      FUNNEL_STEPS.forEach(s => { counts[s.key] = new Set(); });
+      fEvents.forEach(e => { if (counts[e.event_name]) counts[e.event_name].add(e.session_id); });
+      const visits = counts['landing_page_viewed'].size;
+      const leads = counts['lead_created'].size;
+      const whatsapp = counts['whatsapp_clicked'].size;
+      const convRate = visits > 0 ? Math.round((leads / visits) * 100) : 0;
+      return {
+        id: fid,
+        name: franchiseMap[fid] || fid.slice(0, 8),
+        visits,
+        quizStarted: counts['quiz_started'].size,
+        leads,
+        whatsapp,
+        convRate,
+      };
+    }).sort((a, b) => b.visits - a.visits);
+  }, [events, isSuperAdmin, franchiseMap]);
 
   // Question analysis
   const questionStats = useMemo(() => {
-    const questionEvents = events.filter(e => e.event_name === 'quiz_question_answered');
+    const questionEvents = filteredEvents.filter(e => e.event_name === 'quiz_question_answered');
     const byQuestion: Record<number, Record<string, number>> = {};
     
     questionEvents.forEach(e => {
@@ -113,13 +147,13 @@ export function AdminAnalytics({ franchiseMap: _franchiseMap }: AdminAnalyticsPr
         topAnswer: Object.entries(answers).sort(([, a], [, b]) => b - a)[0]?.[0] || '-',
         answers,
       }));
-  }, [events]);
+  }, [filteredEvents]);
 
   // Device breakdown
   const deviceStats = useMemo(() => {
     const counts: Record<string, number> = { mobile: 0, tablet: 0, desktop: 0 };
     const sessions = new Set<string>();
-    events.forEach(e => {
+    filteredEvents.forEach(e => {
       if (!sessions.has(e.session_id) && e.device_type) {
         sessions.add(e.session_id);
         counts[e.device_type] = (counts[e.device_type] || 0) + 1;
@@ -131,13 +165,13 @@ export function AdminAnalytics({ franchiseMap: _franchiseMap }: AdminAnalyticsPr
       count,
       pct: Math.round((count / total) * 100),
     }));
-  }, [events]);
+  }, [filteredEvents]);
 
   // UTM breakdown
   const utmStats = useMemo(() => {
     const sources: Record<string, number> = {};
     const sessions = new Set<string>();
-    events.forEach(e => {
+    filteredEvents.forEach(e => {
       if (!sessions.has(e.session_id)) {
         sessions.add(e.session_id);
         const src = e.utm_source || 'orgânico';
@@ -148,12 +182,12 @@ export function AdminAnalytics({ franchiseMap: _franchiseMap }: AdminAnalyticsPr
       .sort(([, a], [, b]) => b - a)
       .slice(0, 10)
       .map(([source, count]) => ({ source, count }));
-  }, [events]);
+  }, [filteredEvents]);
 
   // Model stats
   const modelStats = useMemo(() => {
     const models: Record<string, number> = {};
-    events
+    filteredEvents
       .filter(e => e.event_name === 'quiz_completed')
       .forEach(e => {
         const m = (e.metadata as Record<string, unknown>)?.modelo_recomendado as string;
@@ -162,9 +196,9 @@ export function AdminAnalytics({ franchiseMap: _franchiseMap }: AdminAnalyticsPr
     return Object.entries(models)
       .sort(([, a], [, b]) => b - a)
       .map(([model, count]) => ({ model, count }));
-  }, [events]);
+  }, [filteredEvents]);
 
-  const totalSessions = useMemo(() => new Set(events.map(e => e.session_id)).size, [events]);
+  const totalSessions = useMemo(() => new Set(filteredEvents.map(e => e.session_id)).size, [filteredEvents]);
 
   const deviceIcon = (d: string) => {
     if (d === 'mobile') return <Smartphone className="w-4 h-4" />;
@@ -195,23 +229,38 @@ export function AdminAnalytics({ franchiseMap: _franchiseMap }: AdminAnalyticsPr
   return (
     <div className="space-y-6">
       {/* Period selector */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Activity className="w-5 h-5 text-primary" />
           <span className="font-semibold text-foreground">Product Analytics</span>
           <span className="text-xs text-muted-foreground">({totalSessions} sessões)</span>
         </div>
-        <Select value={periodDays} onValueChange={setPeriodDays}>
-          <SelectTrigger className="w-40 rounded-xl">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="7">Últimos 7 dias</SelectItem>
-            <SelectItem value="30">Últimos 30 dias</SelectItem>
-            <SelectItem value="90">Últimos 90 dias</SelectItem>
-            <SelectItem value="365">Último ano</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-2">
+          {isSuperAdmin && (
+            <Select value={filterFranchise} onValueChange={setFilterFranchise}>
+              <SelectTrigger className="w-48 rounded-xl">
+                <SelectValue placeholder="Todas as franquias" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as franquias</SelectItem>
+                {Object.entries(franchiseMap).map(([id, name]) => (
+                  <SelectItem key={id} value={id}>{name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          <Select value={periodDays} onValueChange={setPeriodDays}>
+            <SelectTrigger className="w-40 rounded-xl">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="7">Últimos 7 dias</SelectItem>
+              <SelectItem value="30">Últimos 30 dias</SelectItem>
+              <SelectItem value="90">Últimos 90 dias</SelectItem>
+              <SelectItem value="365">Último ano</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Funnel */}
@@ -343,6 +392,50 @@ export function AdminAnalytics({ franchiseMap: _franchiseMap }: AdminAnalyticsPr
           </CardContent>
         </Card>
       </div>
+
+      {/* Per-franchise funnel comparison (super_admin only) */}
+      {isSuperAdmin && franchiseFunnels.length > 0 && (
+        <Card className="border-border/50 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <Building2 className="w-4 h-4 text-primary" />
+              Funil por Franquia
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border/50">
+                    <th className="text-left py-2 px-2 text-xs font-semibold text-muted-foreground">Franquia</th>
+                    <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">Visitas</th>
+                    <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">Quiz Iniciado</th>
+                    <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">Leads</th>
+                    <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">WhatsApp</th>
+                    <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">Conversão</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {franchiseFunnels.map(f => (
+                    <tr key={f.id} className="border-b border-border/20 hover:bg-muted/30 transition-colors">
+                      <td className="py-2.5 px-2 font-medium text-foreground">{f.name}</td>
+                      <td className="py-2.5 px-2 text-center text-muted-foreground">{f.visits}</td>
+                      <td className="py-2.5 px-2 text-center text-muted-foreground">{f.quizStarted}</td>
+                      <td className="py-2.5 px-2 text-center font-semibold text-foreground">{f.leads}</td>
+                      <td className="py-2.5 px-2 text-center text-muted-foreground">{f.whatsapp}</td>
+                      <td className="py-2.5 px-2 text-center">
+                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${f.convRate >= 10 ? 'bg-emerald-500/10 text-emerald-600' : f.convRate >= 5 ? 'bg-amber-500/10 text-amber-600' : 'bg-muted text-muted-foreground'}`}>
+                          {f.convRate}%
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
