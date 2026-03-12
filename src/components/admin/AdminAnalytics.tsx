@@ -153,7 +153,7 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
   const deviceStats = useMemo(() => {
     const counts: Record<string, number> = { mobile: 0, tablet: 0, desktop: 0 };
     const sessions = new Set<string>();
-    events.forEach(e => {
+    filteredEvents.forEach(e => {
       if (!sessions.has(e.session_id) && e.device_type) {
         sessions.add(e.session_id);
         counts[e.device_type] = (counts[e.device_type] || 0) + 1;
