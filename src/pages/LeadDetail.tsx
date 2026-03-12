@@ -10,6 +10,8 @@ import { ArrowLeft, MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Came
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
+import { TERRITORY_LABELS, TERRITORY_COLORS } from '@/lib/lead-constants';
+
 interface Lead {
   id: string;
   nome: string | null;
@@ -26,6 +28,10 @@ interface Lead {
   status_lead: string;
   observacoes: string | null;
   created_at: string;
+  origin_franchise_id: string | null;
+  territory_match_status: string | null;
+  coverage_match_count: number | null;
+  distribution_rule_used: string | null;
 }
 
 const statusConfig: Record<string, { label: string; color: string }> = {
