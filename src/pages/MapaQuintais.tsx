@@ -90,48 +90,48 @@ export default function MapaQuintais() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b bg-card">
-        <div className="max-w-5xl mx-auto px-6 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="rounded-xl">
+        <div className="max-w-5xl mx-auto px-4 md:px-6 py-4 md:py-5 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-2 md:gap-4 min-w-0">
+            <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="rounded-xl shrink-0">
               <ArrowLeft className="w-5 h-5" />
             </Button>
-            <img src={logoSplash} alt="Splash" className="w-16" />
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-primary" />
-                Mapa dos Quintais
+            <img src={logoSplash} alt="Splash" className="w-12 md:w-16 shrink-0" />
+            <div className="min-w-0">
+              <h1 className="text-base md:text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
+                <MapPin className="w-4 h-4 md:w-5 md:h-5 text-primary shrink-0" />
+                <span className="truncate">Mapa dos Quintais</span>
               </h1>
-              <p className="text-xs text-muted-foreground mt-0.5">Rio Grande do Sul</p>
+              <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5">Rio Grande do Sul</p>
             </div>
           </div>
-          <Badge variant="outline" className="text-xs px-3 py-1.5 border-primary/30 text-primary">
-            {totalQuintais} quintais analisados
+          <Badge variant="outline" className="text-[10px] md:text-xs px-2 md:px-3 py-1 md:py-1.5 border-primary/30 text-primary shrink-0 whitespace-nowrap">
+            {totalQuintais} quintais
           </Badge>
         </div>
       </div>
 
-      <div className="p-6 max-w-5xl mx-auto">
+      <div className="px-4 md:px-6 py-4 md:py-6 max-w-5xl mx-auto">
         {/* KPI cards */}
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-3 gap-2 md:gap-3 mb-4 md:mb-6">
           <Card>
-            <CardContent className="p-4 text-center">
-              <Users className="w-6 h-6 text-primary mx-auto mb-1" />
-              <p className="text-2xl font-bold">{totalQuintais}</p>
-              <p className="text-xs text-muted-foreground">Quintais analisados</p>
+            <CardContent className="p-3 md:p-4 text-center">
+              <Users className="w-5 h-5 md:w-6 md:h-6 text-primary mx-auto mb-1" />
+              <p className="text-xl md:text-2xl font-bold">{totalQuintais}</p>
+              <p className="text-[10px] md:text-xs text-muted-foreground">Quintais</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
-              <MapPin className="w-6 h-6 text-secondary mx-auto mb-1" />
-              <p className="text-2xl font-bold">{cityData.length}</p>
-              <p className="text-xs text-muted-foreground">Cidades</p>
+            <CardContent className="p-3 md:p-4 text-center">
+              <MapPin className="w-5 h-5 md:w-6 md:h-6 text-secondary mx-auto mb-1" />
+              <p className="text-xl md:text-2xl font-bold">{cityData.length}</p>
+              <p className="text-[10px] md:text-xs text-muted-foreground">Cidades</p>
             </CardContent>
           </Card>
           <Card>
-            <CardContent className="p-4 text-center">
-              <TrendingUp className="w-6 h-6 text-green-500 mx-auto mb-1" />
-              <p className="text-2xl font-bold">{avgGeral}%</p>
-              <p className="text-xs text-muted-foreground">Média geral</p>
+            <CardContent className="p-3 md:p-4 text-center">
+              <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-emerald-600 mx-auto mb-1" />
+              <p className="text-xl md:text-2xl font-bold">{avgGeral}%</p>
+              <p className="text-[10px] md:text-xs text-muted-foreground">Média</p>
             </CardContent>
           </Card>
         </div>
