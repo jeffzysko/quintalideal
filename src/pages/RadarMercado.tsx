@@ -260,33 +260,33 @@ export default function RadarMercado() {
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b bg-card">
-        <div className="max-w-7xl mx-auto px-6 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/admin')} className="rounded-xl">
-              <ArrowLeft className="w-5 h-5" />
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-5 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+            <Button variant="ghost" size="icon" onClick={() => navigate('/admin')} className="rounded-xl shrink-0 h-8 w-8 sm:h-10 sm:w-10">
+              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
             </Button>
-            <img src={logoSplash} alt="Splash" className="w-16" />
-            <div>
-              <h1 className="text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-                <Target className="w-5 h-5 text-primary" />
-                Radar de Mercado Splash RS
+            <img src={logoSplash} alt="Splash" className="w-10 sm:w-16 shrink-0 hidden sm:block" />
+            <div className="min-w-0">
+              <h1 className="text-sm sm:text-xl font-bold tracking-tight text-foreground flex items-center gap-1.5 sm:gap-2">
+                <Target className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0" />
+                <span className="truncate">Radar de Mercado</span>
               </h1>
-              <p className="text-xs text-muted-foreground mt-0.5">Plataforma de Inteligência do Mercado de Piscinas</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 hidden sm:block">Inteligência do Mercado de Piscinas</p>
             </div>
           </div>
-          <Badge variant="outline" className="text-xs px-3 py-1.5 border-primary/30 text-primary">
-            {totalLeads} testes realizados
+          <Badge variant="outline" className="text-[10px] sm:text-xs px-2 sm:px-3 py-1 sm:py-1.5 border-primary/30 text-primary shrink-0">
+            {totalLeads} testes
           </Badge>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
         <Breadcrumbs items={[
           { label: 'Admin', href: '/admin' },
           { label: 'Radar de Mercado' },
         ]} />
         {/* KPI Row */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
           {[
             { icon: Users, label: 'Testes Realizados', value: totalLeads, color: 'text-primary' },
             { icon: MapPin, label: 'Cidades Mapeadas', value: totalCities, color: 'text-secondary' },
