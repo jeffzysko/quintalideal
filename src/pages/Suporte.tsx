@@ -433,5 +433,6 @@ export default function Suporte() {
         </motion.section>
       </div>
     </div>
+    </PageTransition>
   );
 }
