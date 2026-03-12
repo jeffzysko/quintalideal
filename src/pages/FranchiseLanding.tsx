@@ -77,7 +77,7 @@ export default function FranchiseLanding() {
       franchiseSlug={franchise.slug_url}
       franchiseName={franchise.nome_franquia}
       franchiseId={franchise.id}
-      franchiseWhatsapp={franchise.whatsapp}
+      franchiseWhatsapp={franchise.whatsapp || undefined}
     />
   );
 }
