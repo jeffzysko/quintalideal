@@ -11,9 +11,35 @@ const BRAND_BLUE = "#0369a1";
 const BRAND_BLUE_LIGHT = "#e0f2fe";
 const BRAND_GRADIENT = "linear-gradient(135deg, #0284c7, #0369a1)";
 
-function buildLeadEmailHTML(lead: Record<string, unknown>, franchiseName: string, leadDate: string): string {
+const TERRITORY_LABELS: Record<string, string> = {
+  matched_unique_franchise: "✅ Cidade exclusiva desta franquia",
+  matched_multiple_franchises: "⚠️ Cidade atendida por múltiplas franquias",
+  kept_with_origin_franchise: "🔗 Mantido com franquia de origem",
+  no_city_match_found: "❌ Cidade sem cobertura cadastrada",
+};
+
+function buildLeadEmailHTML(
+  lead: Record<string, unknown>,
+  franchiseName: string,
+  leadDate: string,
+  originFranchiseName: string | null,
+  territoryStatus: string | null,
+): string {
   const score = Number(lead.pontuacao_quintal || 0);
   const scoreColor = score >= 70 ? "#16a34a" : score >= 40 ? "#d97706" : "#dc2626";
+  const territoryLabel = territoryStatus ? (TERRITORY_LABELS[territoryStatus] || territoryStatus) : null;
+
+  const territorySection = (originFranchiseName || territoryLabel) ? `
+    <tr><td style="padding:0 32px 24px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #fde68a;border-radius:12px;overflow:hidden;background:#fffbeb;">
+        <tr><td style="padding:14px 16px;">
+          <p style="margin:0;font-size:12px;color:#92400e;text-transform:uppercase;letter-spacing:1px;font-weight:700;margin-bottom:8px;">📍 Distribuição Territorial</p>
+          ${originFranchiseName ? `<p style="margin:0 0 4px;font-size:13px;color:#78350f;"><strong>Origem:</strong> ${originFranchiseName}</p>` : ""}
+          <p style="margin:0 0 4px;font-size:13px;color:#78350f;"><strong>Atribuído a:</strong> ${franchiseName}</p>
+          ${territoryLabel ? `<p style="margin:0;font-size:12px;color:#a16207;">${territoryLabel}</p>` : ""}
+        </td></tr>
+      </table>
+    </td></tr>` : "";
 
   return `
 <!DOCTYPE html>
@@ -60,6 +86,9 @@ function buildLeadEmailHTML(lead: Record<string, unknown>, franchiseName: string
             ${lead.referred_by ? buildRow("🔗", "Indicado por", String(lead.referred_by), false) : ""}
           </table>
         </td></tr>
+
+        <!-- Territory Section -->
+        ${territorySection}
 
         <!-- CTA -->
         <tr><td style="padding:8px 32px 32px;text-align:center;">
@@ -118,7 +147,9 @@ Deno.serve(async (req) => {
     const supabaseKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    if (!lead.franquia_id) {
+    // Use franquia_id (assigned) for notification
+    const assignedFranchiseId = lead.franquia_id;
+    if (!assignedFranchiseId) {
       return new Response(JSON.stringify({ skipped: true, reason: "no_franchise" }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -128,7 +159,7 @@ Deno.serve(async (req) => {
     const { data: franchise, error: franchiseError } = await supabase
       .from("franchises")
       .select("nome_franquia, email, whatsapp")
-      .eq("id", lead.franquia_id)
+      .eq("id", assignedFranchiseId)
       .single();
 
     if (franchiseError || !franchise) {
@@ -142,6 +173,18 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Fetch origin franchise name if different
+    let originFranchiseName: string | null = null;
+    const originId = lead.origin_franchise_id;
+    if (originId && originId !== assignedFranchiseId) {
+      const { data: originFranchise } = await supabase
+        .from("franchises")
+        .select("nome_franquia")
+        .eq("id", originId)
+        .maybeSingle();
+      originFranchiseName = originFranchise?.nome_franquia || null;
+    }
+
     const leadDate = new Date(lead.created_at).toLocaleDateString("pt-BR", {
       day: "2-digit",
       month: "2-digit",
@@ -150,7 +193,13 @@ Deno.serve(async (req) => {
       minute: "2-digit",
     });
 
-    const htmlContent = buildLeadEmailHTML(lead, franchise.nome_franquia, leadDate);
+    const htmlContent = buildLeadEmailHTML(
+      lead,
+      franchise.nome_franquia,
+      leadDate,
+      originFranchiseName,
+      lead.territory_match_status || null,
+    );
 
     const resendResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",

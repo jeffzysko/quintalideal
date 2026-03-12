@@ -51,6 +51,90 @@ function generateRefCode(): string {
   return crypto.randomUUID().replace(/-/g, "").slice(0, 8).toLowerCase();
 }
 
+/** Normalize city name: lowercase, remove accents, trim, collapse spaces */
+function normalizeCityName(city: string): string {
+  const accents = "ÁÀÂÃÄáàâãäÉÈÊËéèêëÍÌÎÏíìîïÓÒÔÕÖóòôõöÚÙÛÜúùûüÇçÑñ";
+  const plain  = "AAAAAaaaaaEEEEeeeeIIIIiiiiOOOOOoooooUUUUuuuuCcNn";
+  let result = city;
+  for (let i = 0; i < accents.length; i++) {
+    result = result.replaceAll(accents[i], plain[i]);
+  }
+  return result.toLowerCase().replace(/\s+/g, " ").trim();
+}
+
+interface TerritoryResult {
+  assignedFranchiseId: string;
+  territoryMatchStatus: string;
+  coverageMatchCount: number;
+  distributionRuleUsed: string;
+}
+
+async function resolveTerritory(
+  supabase: ReturnType<typeof createClient>,
+  cityNormalized: string,
+  originFranchiseId: string | null,
+): Promise<TerritoryResult> {
+  // Default: keep with origin
+  const fallback: TerritoryResult = {
+    assignedFranchiseId: originFranchiseId || "",
+    territoryMatchStatus: "no_city_match_found",
+    coverageMatchCount: 0,
+    distributionRuleUsed: "no_match_kept_origin",
+  };
+
+  if (!cityNormalized) return fallback;
+
+  const { data: matches } = await supabase
+    .from("franchise_covered_cities")
+    .select("franchise_id, is_primary_city")
+    .eq("city_name_normalized", cityNormalized);
+
+  if (!matches || matches.length === 0) return fallback;
+
+  const count = matches.length;
+
+  if (count === 1) {
+    return {
+      assignedFranchiseId: matches[0].franchise_id,
+      territoryMatchStatus: "matched_unique_franchise",
+      coverageMatchCount: 1,
+      distributionRuleUsed: "unique_match",
+    };
+  }
+
+  // Multiple matches — Option C: prefer origin franchise if eligible
+  if (originFranchiseId) {
+    const originMatch = matches.find((m) => m.franchise_id === originFranchiseId);
+    if (originMatch) {
+      return {
+        assignedFranchiseId: originFranchiseId,
+        territoryMatchStatus: "matched_multiple_franchises",
+        coverageMatchCount: count,
+        distributionRuleUsed: "origin_franchise_eligible",
+      };
+    }
+  }
+
+  // Origin not eligible — prefer primary city franchise
+  const primary = matches.find((m) => m.is_primary_city);
+  if (primary) {
+    return {
+      assignedFranchiseId: primary.franchise_id,
+      territoryMatchStatus: "matched_multiple_franchises",
+      coverageMatchCount: count,
+      distributionRuleUsed: "primary_city_priority",
+    };
+  }
+
+  // Fallback: first match (simple round-robin placeholder)
+  return {
+    assignedFranchiseId: matches[0].franchise_id,
+    territoryMatchStatus: "matched_multiple_franchises",
+    coverageMatchCount: count,
+    distributionRuleUsed: "first_match_fallback",
+  };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -70,7 +154,7 @@ Deno.serve(async (req) => {
       ? Number(payload.pontuacao_quintal)
       : null;
 
-    const franquiaId =
+    const originFranchiseId =
       typeof payload.franquia_id === "string" && isValidUuid(payload.franquia_id)
         ? payload.franquia_id
         : null;
@@ -106,6 +190,13 @@ Deno.serve(async (req) => {
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
+    // Territory distribution logic
+    const cityNormalized = cidade ? normalizeCityName(cidade) : null;
+    const territory = await resolveTerritory(supabase, cityNormalized || "", originFranchiseId);
+
+    // assigned franchise = territory result, fallback to origin
+    const assignedFranchiseId = territory.assignedFranchiseId || originFranchiseId;
+
     let lastError: { code?: string; message?: string } | null = null;
     let insertedRefCode = "";
 
@@ -117,7 +208,12 @@ Deno.serve(async (req) => {
         telefone,
         email,
         cidade,
-        franquia_id: franquiaId,
+        franquia_id: assignedFranchiseId,
+        origin_franchise_id: originFranchiseId,
+        lead_city_normalized: cityNormalized,
+        territory_match_status: territory.territoryMatchStatus,
+        coverage_match_count: territory.coverageMatchCount,
+        distribution_rule_used: territory.distributionRuleUsed,
         pontuacao_quintal: pontuacaoQuintal,
         modelo_recomendado: modeloRecomendado,
         respostas_questionario: respostasQuestionario,
@@ -144,14 +240,41 @@ Deno.serve(async (req) => {
       throw new Error(lastError?.message || "Falha ao salvar lead");
     }
 
-    // Fire webhook if franchise has one configured
-    if (franquiaId) {
-      fireWebhook(supabase, franquiaId, {
+    // Fetch the assigned franchise info for the response
+    let assignedWhatsapp: string | null = null;
+    let assignedFranchiseName: string | null = null;
+    let assignedCidadeBase: string | null = null;
+
+    if (assignedFranchiseId) {
+      const { data: franchise } = await supabase
+        .from("franchises")
+        .select("whatsapp, nome_franquia, cidade_base")
+        .eq("id", assignedFranchiseId)
+        .maybeSingle();
+
+      if (franchise) {
+        assignedWhatsapp = franchise.whatsapp;
+        assignedFranchiseName = franchise.nome_franquia;
+        assignedCidadeBase = franchise.cidade_base;
+      }
+    }
+
+    // Fire webhook for assigned franchise
+    if (assignedFranchiseId) {
+      fireWebhook(supabase, assignedFranchiseId, {
         nome, telefone, email, cidade, pontuacaoQuintal, modeloRecomendado, referredBy,
       }).catch((err) => console.error("Webhook error:", err));
     }
 
-    return new Response(JSON.stringify({ success: true, refCode: insertedRefCode }), {
+    return new Response(JSON.stringify({
+      success: true,
+      refCode: insertedRefCode,
+      assignedFranchiseId,
+      assignedWhatsapp,
+      assignedFranchiseName,
+      assignedCidadeBase,
+      territoryMatchStatus: territory.territoryMatchStatus,
+    }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
@@ -210,7 +333,6 @@ async function fireWebhook(
     "Content-Type": "application/json",
   };
 
-  // HMAC signature if secret is configured
   if (franchise.webhook_secret) {
     const encoder = new TextEncoder();
     const key = await crypto.subtle.importKey(
