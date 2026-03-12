@@ -229,23 +229,38 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
   return (
     <div className="space-y-6">
       {/* Period selector */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <Activity className="w-5 h-5 text-primary" />
           <span className="font-semibold text-foreground">Product Analytics</span>
           <span className="text-xs text-muted-foreground">({totalSessions} sessões)</span>
         </div>
-        <Select value={periodDays} onValueChange={setPeriodDays}>
-          <SelectTrigger className="w-40 rounded-xl">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="7">Últimos 7 dias</SelectItem>
-            <SelectItem value="30">Últimos 30 dias</SelectItem>
-            <SelectItem value="90">Últimos 90 dias</SelectItem>
-            <SelectItem value="365">Último ano</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="flex items-center gap-2">
+          {isSuperAdmin && (
+            <Select value={filterFranchise} onValueChange={setFilterFranchise}>
+              <SelectTrigger className="w-48 rounded-xl">
+                <SelectValue placeholder="Todas as franquias" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as franquias</SelectItem>
+                {Object.entries(franchiseMap).map(([id, name]) => (
+                  <SelectItem key={id} value={id}>{name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+          <Select value={periodDays} onValueChange={setPeriodDays}>
+            <SelectTrigger className="w-40 rounded-xl">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="7">Últimos 7 dias</SelectItem>
+              <SelectItem value="30">Últimos 30 dias</SelectItem>
+              <SelectItem value="90">Últimos 90 dias</SelectItem>
+              <SelectItem value="365">Último ano</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
       </div>
 
       {/* Funnel */}
