@@ -495,7 +495,7 @@ export default function WebhookDocs() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: '-40px' }}
-          custom={5}
+          custom={8}
           className="rounded-2xl border border-border/50 bg-card/80 backdrop-blur-sm p-6 shadow-sm"
         >
           <div className="flex items-start gap-4">
