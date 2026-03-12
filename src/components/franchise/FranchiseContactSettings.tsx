@@ -28,7 +28,7 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
     async function load() {
       const { data } = await supabase
         .from('franchises')
-        .select('whatsapp, email, slug_url, meta_pixel_id')
+        .select('whatsapp, email, slug_url, meta_pixel_id, webhook_url, webhook_secret')
         .eq('id', franchiseId)
         .maybeSingle();
       if (data) {
@@ -36,6 +36,8 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
         setEmail(data.email || '');
         setSlug(data.slug_url || '');
         setMetaPixelId(data.meta_pixel_id || '');
+        setWebhookUrl(data.webhook_url || '');
+        setWebhookSecret(data.webhook_secret || '');
       }
       setLoading(false);
     }
