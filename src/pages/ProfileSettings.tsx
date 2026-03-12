@@ -20,6 +20,14 @@ export default function ProfileSettings() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const [fullName, setFullName] = useState('');
+  const [telefone, setTelefone] = useState('');
+  const [whatsapp, setWhatsapp] = useState('');
+  const [email, setEmail] = useState('');
+  const [franchiseName, setFranchiseName] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+
   // Scroll to hash anchor after loading
   useEffect(() => {
     if (!loading && location.hash) {
@@ -28,13 +36,6 @@ export default function ProfileSettings() {
     }
   }, [loading, location.hash]);
 
-  const [fullName, setFullName] = useState('');
-  const [telefone, setTelefone] = useState('');
-  const [whatsapp, setWhatsapp] = useState('');
-  const [email, setEmail] = useState('');
-  const [franchiseName, setFranchiseName] = useState('');
-  const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
 
   const isFranchise = role === 'franquia' && !!franchiseId;
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
