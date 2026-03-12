@@ -71,7 +71,7 @@ export default function ProfileSettings() {
       if (profile?.full_name) setFullName(profile.full_name);
       if (profile?.telefone) setTelefone(profile.telefone);
 
-      // Load franchise data if franchise user
+      // Load franchise data when user is linked to a franchise
       if (franchiseId) {
         const { data: franchise } = await supabase
           .from('franchises')
@@ -87,6 +87,21 @@ export default function ProfileSettings() {
             setFullName(franchise.responsavel);
           }
         }
+      }
+
+      // Allow admins to configure integrations for any franchise
+      if (isAdmin) {
+        const { data: adminFranchises } = await supabase
+          .from('franchises')
+          .select('id, nome_franquia')
+          .order('nome_franquia', { ascending: true });
+
+        const franchisesList = (adminFranchises ?? []) as FranchiseOption[];
+        setAvailableFranchises(franchisesList);
+        setSelectedIntegrationFranchiseId(current => current || franchisesList[0]?.id || '');
+      } else {
+        setAvailableFranchises([]);
+        setSelectedIntegrationFranchiseId('');
       }
     } finally {
       setLoading(false);
