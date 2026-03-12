@@ -88,6 +88,216 @@ Deno.serve(async (req) => {
     }
 
     const adminClient = createClient(supabaseUrl, serviceRoleKey);
+
+    const body = await req.json();
+    const { action } = body;
+
+    // Franchise-level actions (accessible by franchise users)
+    const franchiseActions = ["list_franchise_users", "create_franchise_user", "delete_franchise_user"];
+
+    if (franchiseActions.includes(action)) {
+      // Verify caller is franchise or admin
+      const { data: callerRole } = await adminClient
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", callerUser.id)
+        .in("role", ["admin_fabrica", "franquia"])
+        .maybeSingle();
+
+      if (!callerRole) {
+        return new Response(JSON.stringify({ error: "Não autorizado" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Verify caller belongs to this franchise (unless admin)
+      if (callerRole.role === "franquia") {
+        const { data: callerProfile } = await adminClient
+          .from("profiles")
+          .select("franquia_id")
+          .eq("user_id", callerUser.id)
+          .maybeSingle();
+
+        if (callerProfile?.franquia_id !== body.franchise_id) {
+          return new Response(JSON.stringify({ error: "Acesso negado a esta franquia" }), {
+            status: 403,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
+
+      // ── LIST FRANCHISE USERS ──
+      if (action === "list_franchise_users") {
+        const { franchise_id } = body;
+        if (!franchise_id) {
+          return new Response(JSON.stringify({ error: "franchise_id é obrigatório" }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const { data: profiles } = await adminClient
+          .from("profiles")
+          .select("user_id, full_name, telefone, created_at")
+          .eq("franquia_id", franchise_id);
+
+        if (!profiles || profiles.length === 0) {
+          return new Response(JSON.stringify({ users: [] }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Get emails from auth
+        const userIds = profiles.map((p: any) => p.user_id);
+        const { data: { users: authUsers } } = await adminClient.auth.admin.listUsers({ perPage: 500 });
+
+        // Determine who is the "owner" (earliest created_at)
+        const sorted = [...profiles].sort((a: any, b: any) =>
+          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+        );
+        const ownerId = sorted[0]?.user_id;
+
+        const result = profiles.map((p: any) => {
+          const authUser = authUsers.find((u: any) => u.id === p.user_id);
+          return {
+            id: p.user_id,
+            email: authUser?.email || '',
+            full_name: p.full_name,
+            telefone: p.telefone,
+            is_owner: p.user_id === ownerId,
+            created_at: p.created_at,
+          };
+        });
+
+        return new Response(JSON.stringify({ users: result }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // ── CREATE FRANCHISE USER ──
+      if (action === "create_franchise_user") {
+        const { franchise_id, email, full_name, telefone } = body;
+
+        // Check limit: max 2 additional users
+        const { data: existingProfiles } = await adminClient
+          .from("profiles")
+          .select("user_id")
+          .eq("franquia_id", franchise_id);
+
+        if ((existingProfiles?.length || 0) >= 3) {
+          return new Response(JSON.stringify({ error: "Limite de 3 usuários por franquia atingido (1 principal + 2 adicionais)." }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Create user
+        const { data: newUser, error: createError } = await adminClient.auth.admin.createUser({
+          email,
+          email_confirm: true,
+          user_metadata: { full_name: full_name || email },
+        });
+
+        if (createError) {
+          const msg = createError.message.includes("already been registered")
+            ? "Este e-mail já está cadastrado."
+            : `Erro ao criar usuário: ${createError.message}`;
+          return new Response(JSON.stringify({ error: msg }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        const userId = newUser.user.id;
+
+        // Assign role and franchise
+        await adminClient.from("user_roles").insert({ user_id: userId, role: "franquia" });
+        await adminClient.from("profiles").update({
+          franquia_id: franchise_id,
+          full_name: full_name || email,
+          telefone: telefone || null,
+        }).eq("user_id", userId);
+
+        // Send invite email
+        const resetPageLink = `https://quintalideal.com.br/forgot-password?email=${encodeURIComponent(email)}`;
+        if (RESEND_API_KEY) {
+          const html = buildInviteEmailHTML(full_name || email, "Franquia", resetPageLink);
+          await fetch("https://api.resend.com/emails", {
+            method: "POST",
+            headers: { Authorization: `Bearer ${RESEND_API_KEY}`, "Content-Type": "application/json" },
+            body: JSON.stringify({
+              from: SENDER,
+              to: [email],
+              subject: `🏊 Seu acesso ao Quintal Ideal`,
+              html,
+            }),
+          });
+        }
+
+        return new Response(JSON.stringify({ success: true, message: `Usuário criado e convite enviado para ${email}.` }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // ── DELETE FRANCHISE USER ──
+      if (action === "delete_franchise_user") {
+        const { user_id, franchise_id } = body;
+
+        // Verify user belongs to this franchise
+        const { data: targetProfile } = await adminClient
+          .from("profiles")
+          .select("user_id, franquia_id, created_at")
+          .eq("user_id", user_id)
+          .maybeSingle();
+
+        if (!targetProfile || targetProfile.franquia_id !== franchise_id) {
+          return new Response(JSON.stringify({ error: "Usuário não encontrado nesta franquia." }), {
+            status: 404,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Check if target is the owner (earliest user)
+        const { data: allFranchiseProfiles } = await adminClient
+          .from("profiles")
+          .select("user_id, created_at")
+          .eq("franquia_id", franchise_id)
+          .order("created_at", { ascending: true });
+
+        if (allFranchiseProfiles && allFranchiseProfiles[0]?.user_id === user_id) {
+          return new Response(JSON.stringify({ error: "O usuário principal da franquia não pode ser removido." }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        // Cannot delete yourself
+        if (user_id === callerUser.id) {
+          return new Response(JSON.stringify({ error: "Você não pode remover a si mesmo." }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        await adminClient.from("user_roles").delete().eq("user_id", user_id);
+        await adminClient.from("profiles").delete().eq("user_id", user_id);
+        const { error: deleteError } = await adminClient.auth.admin.deleteUser(user_id);
+
+        if (deleteError) {
+          return new Response(JSON.stringify({ error: `Erro ao excluir: ${deleteError.message}` }), {
+            status: 500,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+
+        return new Response(JSON.stringify({ success: true }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    // Admin-only actions below
     const { data: roleCheck } = await adminClient
       .from("user_roles")
       .select("role")
@@ -102,8 +312,6 @@ Deno.serve(async (req) => {
       });
     }
 
-    const body = await req.json();
-    const { action } = body;
 
     // ── LIST USERS ──
     if (action === "list") {
