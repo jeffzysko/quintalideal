@@ -47,6 +47,9 @@ export async function trackEvent(
   }
 ) {
   try {
+    // Respect cookie consent — skip tracking if user rejected
+    if (getConsentStatus() === 'rejected') return;
+
     const utm = getUtmParams();
     await supabase.from('analytics_events').insert([{
       session_id: getSessionId(),
