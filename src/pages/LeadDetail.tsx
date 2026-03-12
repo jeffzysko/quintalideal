@@ -107,6 +107,7 @@ function ScoreRing({ score }: { score: number }) {
 export default function LeadDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
   const [lead, setLead] = useState<Lead | null>(null);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState('');
