@@ -47,11 +47,16 @@ export default function ProfileSettings() {
 
   const isFranchise = role === 'franquia' && !!franchiseId;
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const integrationFranchiseId = isFranchise
+    ? franchiseId
+    : isAdmin
+      ? selectedIntegrationFranchiseId || null
+      : null;
 
   useEffect(() => {
     if (!user) return;
     loadProfile();
-  }, [user, franchiseId]);
+  }, [user, franchiseId, role]);
 
   const loadProfile = async () => {
     setLoading(true);
