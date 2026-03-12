@@ -34,6 +34,7 @@ const AdminDashboard = lazy(() => import("./pages/AdminDashboard"));
 const LeadDetail = lazy(() => import("./pages/LeadDetail"));
 const RadarMercado = lazy(() => import("./pages/RadarMercado"));
 const ProfileSettings = lazy(() => import("./pages/ProfileSettings"));
+const WebhookDocs = lazy(() => import("./pages/WebhookDocs"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
