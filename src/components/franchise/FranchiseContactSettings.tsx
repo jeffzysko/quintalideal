@@ -17,7 +17,8 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
   const [email, setEmail] = useState('');
   const [metaPixelId, setMetaPixelId] = useState('');
   const [slug, setSlug] = useState('');
-  const [saving, setSaving] = useState(false);
+  const [savingContact, setSavingContact] = useState(false);
+  const [savingPixel, setSavingPixel] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -38,19 +39,26 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
     load();
   }, [franchiseId]);
 
-  const handleSave = async () => {
-    setSaving(true);
+  const handleSaveContact = async () => {
+    setSavingContact(true);
     const { error } = await supabase
       .from('franchises')
-      .update({ whatsapp, email, meta_pixel_id: metaPixelId || null })
+      .update({ whatsapp, email })
       .eq('id', franchiseId);
+    if (error) toast.error('Erro ao salvar. Tente novamente.');
+    else toast.success('Dados de contato atualizados!');
+    setSavingContact(false);
+  };
 
-    if (error) {
-      toast.error('Erro ao salvar. Tente novamente.');
-    } else {
-      toast.success('Dados de contato atualizados!');
-    }
-    setSaving(false);
+  const handleSavePixel = async () => {
+    setSavingPixel(true);
+    const { error } = await supabase
+      .from('franchises')
+      .update({ meta_pixel_id: metaPixelId || null })
+      .eq('id', franchiseId);
+    if (error) toast.error('Erro ao salvar. Tente novamente.');
+    else toast.success('Meta Pixel atualizado!');
+    setSavingPixel(false);
   };
 
   const franchiseUrl = slug ? `${SITE_URL}/${slug}` : '';
@@ -65,89 +73,112 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
   if (loading) return null;
 
   return (
-    <Card className="border-border/50 shadow-sm">
-      <CardHeader>
-        <CardTitle className="text-sm font-semibold flex items-center gap-2">
-          <Phone className="w-4 h-4 text-primary" />
-          Dados de Contato
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-xs text-muted-foreground">
-          Esses dados serão usados automaticamente nos botões de WhatsApp e e-mail do quiz dos seus leads.
-        </p>
-
-        <div className="space-y-2">
-          <Label htmlFor="whatsapp" className="text-xs font-medium">
-            WhatsApp (com código do país, ex: 5551999999999)
-          </Label>
-          <div className="flex items-center gap-2">
-            <Phone className="w-4 h-4 text-muted-foreground shrink-0" />
-            <Input
-              id="whatsapp"
-              value={whatsapp}
-              onChange={e => setWhatsapp(e.target.value)}
-              placeholder="5551999999999"
-              className="text-sm"
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="email" className="text-xs font-medium">
-            E-mail de contato
-          </Label>
-          <div className="flex items-center gap-2">
-            <Mail className="w-4 h-4 text-muted-foreground shrink-0" />
-            <Input
-              id="email"
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="contato@suafranquia.com"
-              className="text-sm"
-            />
-          </div>
-        </div>
-
-        <div className="space-y-2 pt-2 border-t border-border">
-          <Label htmlFor="meta_pixel_id" className="text-xs font-medium">
-            <span className="flex items-center gap-1.5">
-              <BarChart3 className="w-3.5 h-3.5 text-muted-foreground" />
-              Meta Pixel ID (Facebook/Instagram Ads)
-            </span>
-          </Label>
-          <Input
-            id="meta_pixel_id"
-            value={metaPixelId}
-            onChange={e => setMetaPixelId(e.target.value.replace(/\D/g, ''))}
-            placeholder="123456789012345"
-            className="text-sm font-mono"
-            maxLength={20}
-          />
+    <div className="space-y-4">
+      {/* Dados de Contato */}
+      <Card className="border-border/50 shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-sm font-semibold flex items-center gap-2">
+            <Phone className="w-4 h-4 text-primary" />
+            Dados de Contato
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
           <p className="text-xs text-muted-foreground">
-            Encontre no <a href="https://business.facebook.com/events_manager" target="_blank" rel="noopener noreferrer" className="text-primary underline">Meta Business Suite → Gerenciador de Eventos</a>
+            Esses dados serão usados automaticamente nos botões de WhatsApp e e-mail do quiz dos seus leads.
           </p>
-        </div>
 
-        <Button onClick={handleSave} disabled={saving} className="w-full gap-2">
-          <Save className="w-4 h-4" />
-          {saving ? 'Salvando...' : 'Salvar dados de contato'}
-        </Button>
-
-        {franchiseUrl && (
-          <div className="pt-2 border-t border-border">
-            <Label className="text-xs font-medium text-muted-foreground">Seu link personalizado</Label>
-            <div className="flex items-center gap-2 mt-1">
-              <code className="text-xs bg-muted px-2 py-1.5 rounded flex-1 truncate">{franchiseUrl}</code>
-              <Button variant="outline" size="sm" onClick={handleCopyLink} className="gap-1 shrink-0">
-                <Share2 className="w-3.5 h-3.5" />
-                Copiar
-              </Button>
+          <div className="space-y-2">
+            <Label htmlFor="whatsapp" className="text-xs font-medium">
+              WhatsApp (com código do país, ex: 5551999999999)
+            </Label>
+            <div className="flex items-center gap-2">
+              <Phone className="w-4 h-4 text-muted-foreground shrink-0" />
+              <Input
+                id="whatsapp"
+                value={whatsapp}
+                onChange={e => setWhatsapp(e.target.value)}
+                placeholder="5551999999999"
+                className="text-sm"
+              />
             </div>
           </div>
-        )}
-      </CardContent>
-    </Card>
+
+          <div className="space-y-2">
+            <Label htmlFor="email" className="text-xs font-medium">
+              E-mail de contato
+            </Label>
+            <div className="flex items-center gap-2">
+              <Mail className="w-4 h-4 text-muted-foreground shrink-0" />
+              <Input
+                id="email"
+                type="email"
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+                placeholder="contato@suafranquia.com"
+                className="text-sm"
+              />
+            </div>
+          </div>
+
+          <Button onClick={handleSaveContact} disabled={savingContact} className="w-full gap-2">
+            <Save className="w-4 h-4" />
+            {savingContact ? 'Salvando...' : 'Salvar dados de contato'}
+          </Button>
+
+          {franchiseUrl && (
+            <div className="pt-2 border-t border-border">
+              <Label className="text-xs font-medium text-muted-foreground">Seu link personalizado</Label>
+              <div className="flex items-center gap-2 mt-1">
+                <code className="text-xs bg-muted px-2 py-1.5 rounded flex-1 truncate">{franchiseUrl}</code>
+                <Button variant="outline" size="sm" onClick={handleCopyLink} className="gap-1 shrink-0">
+                  <Share2 className="w-3.5 h-3.5" />
+                  Copiar
+                </Button>
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Integrações / Meta Pixel */}
+      <Card className="border-border/50 shadow-sm">
+        <CardHeader>
+          <CardTitle className="text-sm font-semibold flex items-center gap-2">
+            <BarChart3 className="w-4 h-4 text-primary" />
+            Integrações
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-xs text-muted-foreground">
+            Configure o rastreamento de anúncios para medir conversões no seu link de divulgação.
+          </p>
+
+          <div className="space-y-2">
+            <Label htmlFor="meta_pixel_id" className="text-xs font-medium">
+              Meta Pixel ID (Facebook/Instagram Ads)
+            </Label>
+            <Input
+              id="meta_pixel_id"
+              value={metaPixelId}
+              onChange={e => setMetaPixelId(e.target.value.replace(/\D/g, ''))}
+              placeholder="123456789012345"
+              className="text-sm font-mono"
+              maxLength={20}
+            />
+            <p className="text-xs text-muted-foreground">
+              Encontre no{' '}
+              <a href="https://business.facebook.com/events_manager" target="_blank" rel="noopener noreferrer" className="text-primary underline">
+                Meta Business Suite → Gerenciador de Eventos
+              </a>
+            </p>
+          </div>
+
+          <Button onClick={handleSavePixel} disabled={savingPixel} className="w-full gap-2">
+            <Save className="w-4 h-4" />
+            {savingPixel ? 'Salvando...' : 'Salvar integração'}
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
   );
 }
