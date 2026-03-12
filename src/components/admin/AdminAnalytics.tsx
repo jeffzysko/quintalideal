@@ -198,7 +198,7 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
       .map(([model, count]) => ({ model, count }));
   }, [filteredEvents]);
 
-  const totalSessions = useMemo(() => new Set(events.map(e => e.session_id)).size, [events]);
+  const totalSessions = useMemo(() => new Set(filteredEvents.map(e => e.session_id)).size, [filteredEvents]);
 
   const deviceIcon = (d: string) => {
     if (d === 'mobile') return <Smartphone className="w-4 h-4" />;
