@@ -45,6 +45,7 @@ export function AdminUserManager() {
   const [searchTerm, setSearchTerm] = useState('');
   const [resendingId, setResendingId] = useState<string | null>(null);
   const [resendingAll, setResendingAll] = useState(false);
+  const [resendAllDialogOpen, setResendAllDialogOpen] = useState(false);
 
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
