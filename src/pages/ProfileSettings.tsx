@@ -267,6 +267,13 @@ export default function ProfileSettings() {
           </motion.div>
         )}
 
+        {/* Integrations: Meta Pixel + Webhook */}
+        {isFranchise && franchiseId && (
+          <motion.div id="integracoes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+            <FranchiseContactSettings franchiseId={franchiseId} />
+          </motion.div>
+        )}
+
         {/* Franchise users management */}
         {isFranchise && franchiseId && (
           <FranchiseUsersSection franchiseId={franchiseId} />
