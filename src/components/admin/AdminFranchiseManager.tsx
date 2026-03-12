@@ -17,6 +17,7 @@ interface Franchise {
   nome_franquia: string;
   slug_url: string;
   cidade_base: string;
+  cidades_atendidas: string[];
   responsavel: string | null;
   whatsapp: string | null;
   email: string | null;
@@ -28,6 +29,7 @@ interface FranchiseFormData {
   nome_franquia: string;
   slug_url: string;
   cidade_base: string;
+  cidades_atendidas: string;
   responsavel: string;
   whatsapp: string;
   email: string;
@@ -37,6 +39,7 @@ const emptyForm: FranchiseFormData = {
   nome_franquia: '',
   slug_url: '',
   cidade_base: '',
+  cidades_atendidas: '',
   responsavel: '',
   whatsapp: '',
   email: '',
