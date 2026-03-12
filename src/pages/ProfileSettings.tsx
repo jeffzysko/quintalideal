@@ -312,10 +312,10 @@ export default function ProfileSettings() {
                   id="personalPhone"
                   placeholder="(51) 99999-9999"
                   value={formatPhoneBR(telefone)}
-                  onChange={e => setTelefone(unformatPhone(e.target.value))}
+                  onChange={e => { setTelefone(unformatPhone(e.target.value)); setFormErrors(p => ({ ...p, telefone: '' })); }}
                   maxLength={16}
                 />
-              </div>
+                {formErrors.telefone && <p className="text-xs text-destructive mt-1">{formErrors.telefone}</p>}
               <div className="space-y-2">
                 <Label htmlFor="loginEmail">E-mail de login</Label>
                 <Input
