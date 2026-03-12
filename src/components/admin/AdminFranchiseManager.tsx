@@ -91,6 +91,7 @@ export function AdminFranchiseManager() {
       nome_franquia: f.nome_franquia,
       slug_url: f.slug_url,
       cidade_base: f.cidade_base,
+      cidades_atendidas: (f.cidades_atendidas || []).join(', '),
       responsavel: f.responsavel || '',
       whatsapp: f.whatsapp || '',
       email: f.email || '',
