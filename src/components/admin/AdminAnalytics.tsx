@@ -31,7 +31,7 @@ const FUNNEL_STEPS = [
   { key: 'whatsapp_clicked', label: 'WhatsApp clicado' },
 ];
 
-const FUNNEL_COLORS = ['#1e88e5', '#42a5f5', '#64b5f6', '#90caf9', '#bbdefb', '#e3f2fd', '#f5f5f5'];
+const FUNNEL_COLORS = ['hsl(207, 90%, 42%)', 'hsl(207, 90%, 48%)', 'hsl(207, 90%, 54%)', 'hsl(207, 70%, 60%)', 'hsl(207, 50%, 68%)', 'hsl(207, 40%, 76%)', 'hsl(207, 30%, 84%)'];
 
 interface AdminAnalyticsProps {
   franchiseMap: Record<string, string>;
