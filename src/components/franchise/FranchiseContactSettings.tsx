@@ -79,6 +79,29 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
     setWebhookSecret(secret);
   };
 
+  const handleTestWebhook = async () => {
+    if (!webhookUrl) {
+      toast.error('Configure uma URL de webhook primeiro.');
+      return;
+    }
+    setTestingWebhook(true);
+    try {
+      const { data, error } = await supabaseClient.functions.invoke('test-webhook', {
+        body: { franchiseId },
+      });
+      if (error) throw error;
+      if (data?.success) {
+        toast.success(data.message || 'Webhook enviado com sucesso!');
+      } else {
+        toast.error(data?.message || 'Falha ao enviar webhook de teste.');
+      }
+    } catch {
+      toast.error('Erro ao testar webhook. Verifique a URL e tente novamente.');
+    } finally {
+      setTestingWebhook(false);
+    }
+  };
+
   const franchiseUrl = slug ? `${SITE_URL}/${slug}` : '';
 
   const handleCopyLink = () => {
