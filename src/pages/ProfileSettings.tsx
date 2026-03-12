@@ -150,13 +150,19 @@ export default function ProfileSettings() {
       if (profileError) throw profileError;
 
       if (franchiseId) {
+        const cidadesArr = cidadesAtendidas
+          .split(',')
+          .map(c => c.trim())
+          .filter(Boolean);
+
         const { error: franchiseError } = await supabase
           .from('franchises')
           .update({
             whatsapp: whatsapp.trim() ? `55${whatsapp.trim()}` : null,
             email: email.trim() || null,
             responsavel: fullName.trim() || null,
-          })
+            cidades_atendidas: cidadesArr,
+          } as any)
           .eq('id', franchiseId);
 
         if (franchiseError) throw franchiseError;
