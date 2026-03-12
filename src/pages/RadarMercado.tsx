@@ -381,7 +381,7 @@ export default function RadarMercado() {
           </Card>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {/* 2. YARD SIZES */}
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
             <Card className="border-border/50 shadow-sm h-full">
