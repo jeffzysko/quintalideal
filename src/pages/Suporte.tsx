@@ -257,6 +257,7 @@ export default function Suporte() {
   };
 
   return (
+    <PageTransition>
     <div className="min-h-screen flex flex-col gradient-hero">
       {/* Background orbs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
