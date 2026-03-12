@@ -307,9 +307,9 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Question Analysis */}
-        <Card className="border-border/50 shadow-sm">
+        <Card className="card-premium">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold">Análise por Pergunta</CardTitle>
+            <CardTitle className="text-sm font-bold">Análise por Pergunta</CardTitle>
           </CardHeader>
           <CardContent>
             {questionStats.length === 0 ? (
