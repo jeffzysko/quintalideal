@@ -188,7 +188,7 @@ export default function WebhookDocs() {
         <section className="space-y-3 rounded-xl border border-border bg-muted/30 p-6">
           <h2 className="text-sm font-semibold text-foreground">Precisa de ajuda?</h2>
           <p className="text-sm text-muted-foreground">
-            Entre em contato com o suporte técnico da Splash Piscinas para auxílio na integração do webhook com seu CRM.
+            Entre em contato com o suporte técnico da Hallow Comunicação para auxílio na integração do webhook com seu CRM.
           </p>
         </section>
       </div>
