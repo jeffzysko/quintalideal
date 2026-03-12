@@ -1,4 +1,5 @@
 import { supabase } from '@/lib/supabase';
+import { getConsentStatus } from '@/components/CookieConsentBanner';
 
 // Generate a unique session ID per browser session
 function getSessionId(): string {
