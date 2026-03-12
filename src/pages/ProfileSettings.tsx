@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ArrowLeft, Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff } from 'lucide-react';
 import { FranchiseUsersSection } from '@/components/franchise/FranchiseUsersSection';
@@ -14,6 +15,11 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import logoSplash from '@/assets/logo-splash.png';
+
+type FranchiseOption = {
+  id: string;
+  nome_franquia: string;
+};
 
 export default function ProfileSettings() {
   const { user, role, franchiseId } = useAuth();
@@ -25,6 +31,8 @@ export default function ProfileSettings() {
   const [whatsapp, setWhatsapp] = useState('');
   const [email, setEmail] = useState('');
   const [franchiseName, setFranchiseName] = useState('');
+  const [availableFranchises, setAvailableFranchises] = useState<FranchiseOption[]>([]);
+  const [selectedIntegrationFranchiseId, setSelectedIntegrationFranchiseId] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
@@ -39,11 +47,16 @@ export default function ProfileSettings() {
 
   const isFranchise = role === 'franquia' && !!franchiseId;
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const integrationFranchiseId = isFranchise
+    ? franchiseId
+    : isAdmin
+      ? selectedIntegrationFranchiseId || null
+      : null;
 
   useEffect(() => {
     if (!user) return;
     loadProfile();
-  }, [user, franchiseId]);
+  }, [user, franchiseId, role]);
 
   const loadProfile = async () => {
     setLoading(true);
@@ -58,7 +71,7 @@ export default function ProfileSettings() {
       if (profile?.full_name) setFullName(profile.full_name);
       if (profile?.telefone) setTelefone(profile.telefone);
 
-      // Load franchise data if franchise user
+      // Load franchise data when user is linked to a franchise
       if (franchiseId) {
         const { data: franchise } = await supabase
           .from('franchises')
@@ -74,6 +87,21 @@ export default function ProfileSettings() {
             setFullName(franchise.responsavel);
           }
         }
+      }
+
+      // Allow admins to configure integrations for any franchise
+      if (isAdmin) {
+        const { data: adminFranchises } = await supabase
+          .from('franchises')
+          .select('id, nome_franquia')
+          .order('nome_franquia', { ascending: true });
+
+        const franchisesList = (adminFranchises ?? []) as FranchiseOption[];
+        setAvailableFranchises(franchisesList);
+        setSelectedIntegrationFranchiseId(current => current || franchisesList[0]?.id || '');
+      } else {
+        setAvailableFranchises([]);
+        setSelectedIntegrationFranchiseId('');
       }
     } finally {
       setLoading(false);
@@ -280,9 +308,46 @@ export default function ProfileSettings() {
         )}
 
         {/* Integrations: Meta Pixel + Webhook */}
-        {isFranchise && franchiseId && (
-          <motion.div id="integracoes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-            <FranchiseContactSettings franchiseId={franchiseId} />
+        {(isFranchise || isAdmin) && (
+          <motion.div id="integracoes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="space-y-4">
+            {isAdmin && (
+              <Card className="border-border/50 shadow-sm">
+                <CardHeader>
+                  <CardTitle className="text-sm font-semibold">Integrações da Franquia</CardTitle>
+                  <CardDescription className="text-xs">
+                    Selecione a franquia para configurar Meta Pixel e Webhook CRM.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <Label htmlFor="integration-franchise">Franquia</Label>
+                  <Select value={selectedIntegrationFranchiseId} onValueChange={setSelectedIntegrationFranchiseId}>
+                    <SelectTrigger id="integration-franchise" className="rounded-xl">
+                      <SelectValue placeholder="Selecione uma franquia" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {availableFranchises.map((franchise) => (
+                        <SelectItem key={franchise.id} value={franchise.id}>
+                          {franchise.nome_franquia}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">A configuração será salva na franquia selecionada.</p>
+                </CardContent>
+              </Card>
+            )}
+
+            {integrationFranchiseId ? (
+              <FranchiseContactSettings franchiseId={integrationFranchiseId} />
+            ) : (
+              isAdmin && (
+                <Card className="border-border/50 shadow-sm">
+                  <CardContent className="pt-6">
+                    <p className="text-sm text-muted-foreground">Nenhuma franquia disponível para configurar integrações.</p>
+                  </CardContent>
+                </Card>
+              )
+            )}
           </motion.div>
         )}
 
