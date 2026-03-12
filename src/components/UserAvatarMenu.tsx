@@ -68,7 +68,7 @@ export function UserAvatarMenu() {
           <Settings className="w-4 h-4 text-muted-foreground" />
           Configurações
         </DropdownMenuItem>
-        {role === 'franquia' && (
+        {(role === 'franquia' || role === 'admin_fabrica' || role === 'super_admin') && (
           <>
             <DropdownMenuItem
               onClick={() => navigate('/perfil#integracoes')}
