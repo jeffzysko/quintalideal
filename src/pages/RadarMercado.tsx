@@ -395,10 +395,10 @@ export default function RadarMercado() {
                 {yardSizes.length === 0 ? (
                   <p className="text-muted-foreground text-center py-6 text-sm">Sem dados</p>
                 ) : (
-                  <div className="flex items-center gap-6">
-                    <ChartContainer config={{}} className="h-[180px] w-[180px] flex-shrink-0">
+                  <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+                    <ChartContainer config={{}} className="h-[140px] w-[140px] sm:h-[180px] sm:w-[180px] shrink-0">
                       <PieChart>
-                        <Pie data={yardSizes} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} innerRadius={40}>
+                        <Pie data={yardSizes} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={60} innerRadius={30}>
                           {yardSizes.map((_, i) => (
                             <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                           ))}
@@ -406,12 +406,12 @@ export default function RadarMercado() {
                         <ChartTooltip content={<ChartTooltipContent />} />
                       </PieChart>
                     </ChartContainer>
-                    <div className="space-y-2 flex-1">
+                    <div className="flex flex-wrap sm:flex-col gap-2 sm:gap-2 justify-center sm:flex-1">
                       {yardSizes.map((s, i) => (
-                        <div key={s.name} className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }} />
-                          <span className="text-xs flex-1 truncate">{s.name}</span>
-                          <span className="text-xs font-bold">{s.pct}%</span>
+                        <div key={s.name} className="flex items-center gap-1.5 sm:gap-2">
+                          <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shrink-0" style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }} />
+                          <span className="text-[10px] sm:text-xs truncate">{s.name}</span>
+                          <span className="text-[10px] sm:text-xs font-bold">{s.pct}%</span>
                         </div>
                       ))}
                     </div>
