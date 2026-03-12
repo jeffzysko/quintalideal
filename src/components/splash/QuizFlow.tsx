@@ -143,7 +143,15 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
     setSaving(true);
     setLeadName(data.nome);
     try {
-      const { data: createLeadData, error } = await supabase.functions.invoke<{ success: boolean; refCode?: string }>('create-lead', {
+      const { data: createLeadData, error } = await supabase.functions.invoke<{
+        success: boolean;
+        refCode?: string;
+        assignedFranchiseId?: string;
+        assignedWhatsapp?: string;
+        assignedFranchiseName?: string;
+        assignedCidadeBase?: string;
+        territoryMatchStatus?: string;
+      }>('create-lead', {
         body: {
           nome: data.nome,
           telefone: data.telefone,
@@ -164,6 +172,9 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       if (error) throw error;
 
       setLeadRefCode(createLeadData?.refCode || '');
+      setAssignedWhatsapp(createLeadData?.assignedWhatsapp || undefined);
+      setAssignedFranchiseName(createLeadData?.assignedFranchiseName || undefined);
+      setAssignedCidadeBase(createLeadData?.assignedCidadeBase || undefined);
 
       trackEvent('lead_created', {
         ...analyticsCtx,
