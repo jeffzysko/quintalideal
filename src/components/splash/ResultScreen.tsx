@@ -155,7 +155,7 @@ export function ResultScreen({ score, onContinue, lang = 'pt' }: ResultScreenPro
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="text-2xl md:text-3xl font-extrabold mb-3 tracking-tight text-white"
+          className="text-xl sm:text-2xl md:text-3xl font-extrabold mb-3 tracking-tight text-white"
         >
           {t('result_title_1', lang)}{' '}
           <span className="bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-transparent">{score}%</span>
