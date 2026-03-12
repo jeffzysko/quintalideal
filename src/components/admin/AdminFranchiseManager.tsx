@@ -369,6 +369,7 @@ export function AdminFranchiseManager() {
                   onChange={e => setForm(prev => ({ ...prev, slug_url: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') }))}
                   placeholder="porto-alegre"
                 />
+              </div>
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs font-medium">Cidades Atendidas</Label>
