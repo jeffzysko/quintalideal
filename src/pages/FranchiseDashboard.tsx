@@ -149,11 +149,6 @@ export default function FranchiseDashboard() {
           <FranchiseLinkBanner slug={franchiseSlug} />
         )}
 
-        {franchiseId && (
-          <div className="mb-8">
-            <FranchiseContactSettings franchiseId={franchiseId} />
-          </div>
-        )}
 
         {/* KPI Cards */}
         {loadingKpis ? (
