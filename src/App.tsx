@@ -121,6 +121,8 @@ function AppRoutes() {
                         </ProtectedRoute>
                       }
                     />
+                    {/* Public docs */}
+                    <Route path="/docs/webhook" element={<WebhookDocs />} />
                     {/* Franchise dynamic landing - must be last before catch-all */}
                     <Route path="/:slug" element={<FranchiseLanding />} />
                     <Route path="*" element={<NotFound />} />
