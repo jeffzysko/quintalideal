@@ -18,8 +18,16 @@ import logoSplash from '@/assets/logo-splash.png';
 export default function ProfileSettings() {
   const { user, role, franchiseId } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [fullName, setFullName] = useState('');
+  // Scroll to hash anchor after loading
+  useEffect(() => {
+    if (!loading && location.hash) {
+      const el = document.querySelector(location.hash);
+      el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }, [loading, location.hash]);
+
   const [telefone, setTelefone] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [email, setEmail] = useState('');
