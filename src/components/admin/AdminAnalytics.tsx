@@ -331,9 +331,9 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
         </Card>
 
         {/* Model Stats */}
-        <Card className="border-border/50 shadow-sm">
+        <Card className="card-premium">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold">Modelos Recomendados</CardTitle>
+            <CardTitle className="text-sm font-bold">Modelos Recomendados</CardTitle>
           </CardHeader>
           <CardContent>
             {modelStats.length === 0 ? (
