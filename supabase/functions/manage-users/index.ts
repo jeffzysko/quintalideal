@@ -145,7 +145,7 @@ Deno.serve(async (req) => {
 
     // ── CREATE USER ──
     if (action === "create") {
-      const { email, full_name, role, franchise_id } = body;
+      const { email, full_name, telefone, role, franchise_id } = body;
       if (!email || !role) {
         return new Response(JSON.stringify({ error: "E-mail e papel são obrigatórios" }), {
           status: 400,
@@ -181,9 +181,9 @@ Deno.serve(async (req) => {
       await adminClient.from("user_roles").insert({ user_id: userId, role });
 
       if (role === "franquia" && franchise_id) {
-        await adminClient.from("profiles").update({ franquia_id: franchise_id, full_name: full_name || email }).eq("user_id", userId);
+        await adminClient.from("profiles").update({ franquia_id: franchise_id, full_name: full_name || email, telefone: telefone || null }).eq("user_id", userId);
       } else {
-        await adminClient.from("profiles").update({ full_name: full_name || email }).eq("user_id", userId);
+        await adminClient.from("profiles").update({ full_name: full_name || email, telefone: telefone || null }).eq("user_id", userId);
       }
 
       // Build link to forgot-password page (no expiring token)

@@ -147,6 +147,7 @@ export function AdminUserManager() {
             action: 'create',
             email: formEmail,
             full_name: formName,
+            telefone: formTelefone,
             role: formRole,
             franchise_id: formRole === 'franquia' ? formFranchiseId : null,
           },
@@ -385,7 +386,6 @@ export function AdminUserManager() {
                 value={formTelefone}
                 onChange={(e) => setFormTelefone(e.target.value)}
                 placeholder="(11) 99999-0000"
-                disabled={!editingUser}
               />
             </div>
             <div>
