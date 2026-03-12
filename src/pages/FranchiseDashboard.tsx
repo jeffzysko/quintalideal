@@ -10,6 +10,10 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { SITE_URL } from '@/lib/constants';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileLeadCard } from '@/components/admin/MobileLeadCard';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { PageTransition } from '@/components/PageTransition';
 
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { FranchiseReports } from '@/components/franchise/FranchiseReports';
