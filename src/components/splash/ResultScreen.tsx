@@ -42,8 +42,9 @@ export function ResultScreen({ score, onContinue, lang = 'pt' }: ResultScreenPro
 
   useEffect(() => {
     let current = 0;
+    const step = Math.max(1, Math.round(score / 50));
     const interval = setInterval(() => {
-      current += 1;
+      current += step;
       if (current >= score) {
         current = score;
         clearInterval(interval);
@@ -59,7 +60,7 @@ export function ResultScreen({ score, onContinue, lang = 'pt' }: ResultScreenPro
   const offset = circumference - (displayScore / 100) * circumference;
 
   const confettiParticles = useMemo(() =>
-    Array.from({ length: 40 }).map((_, i) => ({
+    Array.from({ length: 20 }).map((_, i) => ({
       id: i,
       delay: Math.random() * 0.8,
       color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
