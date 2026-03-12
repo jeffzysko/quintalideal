@@ -42,7 +42,7 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
     setSaving(true);
     const { error } = await supabase
       .from('franchises')
-      .update({ whatsapp, email })
+      .update({ whatsapp, email, meta_pixel_id: metaPixelId || null })
       .eq('id', franchiseId);
 
     if (error) {
