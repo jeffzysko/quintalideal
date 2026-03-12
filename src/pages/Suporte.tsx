@@ -25,6 +25,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { PageTransition } from '@/components/PageTransition';
 
 /* ─── Animation variants ─── */
 const fadeUp = {
