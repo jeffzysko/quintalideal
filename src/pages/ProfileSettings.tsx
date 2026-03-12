@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { ArrowLeft, Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff } from 'lucide-react';
+import { FranchiseUsersSection } from '@/components/franchise/FranchiseUsersSection';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
