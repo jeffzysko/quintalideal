@@ -89,6 +89,7 @@ export default function MapaQuintais() {
   const maxCount = Math.max(...cityData.map(c => c.count), 1);
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-background">
       {/* Header */}
       <div className="border-b bg-card">
