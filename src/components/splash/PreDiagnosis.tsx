@@ -2,12 +2,14 @@ import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Search, Ruler, TreePine, Sparkles } from 'lucide-react';
 import logoSplash from '@/assets/logo-splash.png';
+import { type Lang, t } from '@/lib/i18n';
 
 interface PreDiagnosisProps {
   onContinue: () => void;
+  lang?: Lang;
 }
 
-export function PreDiagnosis({ onContinue }: PreDiagnosisProps) {
+export function PreDiagnosis({ onContinue, lang = 'pt' }: PreDiagnosisProps) {
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -16,7 +18,6 @@ export function PreDiagnosis({ onContinue }: PreDiagnosisProps) {
       className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden"
       style={{ background: 'linear-gradient(160deg, #0a1628 0%, #0d3060 40%, #0a2445 100%)' }}
     >
-      {/* Ambient glows */}
       <div className="absolute top-[-20%] right-[-10%] w-[60vw] h-[60vw] rounded-full opacity-15"
         style={{ background: 'radial-gradient(circle, hsl(207 90% 50%), transparent 65%)' }}
       />
@@ -51,11 +52,11 @@ export function PreDiagnosis({ onContinue }: PreDiagnosisProps) {
             <Search className="w-7 h-7 text-blue-400" />
           </motion.div>
           <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight mb-2">
-            Analisando seu quintal…
+            {t('prediag_title', lang)}
           </h2>
           <p className="text-white/50 text-sm leading-relaxed">
-            Com base em nossa inteligência, seu quintal pode ter entre{' '}
-            <span className="text-blue-300 font-bold">72% e 91%</span> de potencial para uma piscina.
+            {t('prediag_subtitle_1', lang)}{' '}
+            <span className="text-blue-300 font-bold">72% e 91%</span> {t('prediag_subtitle_2', lang)}
           </p>
         </motion.div>
 
@@ -67,12 +68,12 @@ export function PreDiagnosis({ onContinue }: PreDiagnosisProps) {
           style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
         >
           <p className="text-white/40 text-[10px] uppercase tracking-[0.15em] font-bold mb-3">
-            Ainda precisamos analisar:
+            {t('prediag_still_need', lang)}
           </p>
           {[
-            { icon: Ruler, text: 'Espaço real disponível' },
-            { icon: TreePine, text: 'Estilo de uso do quintal' },
-            { icon: Sparkles, text: 'Características do terreno' },
+            { icon: Ruler, text: t('prediag_item_1', lang) },
+            { icon: TreePine, text: t('prediag_item_2', lang) },
+            { icon: Sparkles, text: t('prediag_item_3', lang) },
           ].map((item, i) => (
             <motion.div
               key={i}
@@ -100,13 +101,13 @@ export function PreDiagnosis({ onContinue }: PreDiagnosisProps) {
             onClick={onContinue}
             className="w-full py-7 text-[15px] rounded-2xl font-bold gradient-blue glow-blue hover:glow-blue-strong hover:scale-[1.01] transition-all duration-300 gap-2"
           >
-            Descobrir resultado completo
+            {t('prediag_cta', lang)}
             <motion.span animate={{ x: [0, 4, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
               <ArrowRight className="w-5 h-5" />
             </motion.span>
           </Button>
           <p className="text-white/25 text-[10px] mt-2">
-            💎 Descubra qual piscina seria ideal para sua casa
+            {t('prediag_hint', lang)}
           </p>
         </motion.div>
       </motion.div>

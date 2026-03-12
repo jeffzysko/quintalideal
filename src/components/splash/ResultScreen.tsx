@@ -4,12 +4,14 @@ import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import logoSplash from '@/assets/logo-splash.png';
 import { getYardClassification } from '@/lib/ranking';
+import { type Lang, t } from '@/lib/i18n';
 
 interface ResultScreenProps {
   score: number;
   poolName: string;
   poolDescription?: string;
   onContinue: () => void;
+  lang?: Lang;
 }
 
 function ConfettiParticle({ delay, color }: { delay: number; color: string }) {
@@ -28,7 +30,7 @@ function ConfettiParticle({ delay, color }: { delay: number; color: string }) {
   );
 }
 
-export function ResultScreen({ score, onContinue }: ResultScreenProps) {
+export function ResultScreen({ score, onContinue, lang = 'pt' }: ResultScreenProps) {
   const [displayScore, setDisplayScore] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
   const classification = getYardClassification(score);
@@ -103,7 +105,7 @@ export function ResultScreen({ score, onContinue }: ResultScreenProps) {
             animate={{ opacity: 1 }}
             className="text-white/40 text-xs uppercase tracking-[0.2em] mb-6"
           >
-            Analisando seu quintal...
+            {t('result_analyzing', lang)}
           </motion.p>
         )}
 
@@ -144,7 +146,7 @@ export function ResultScreen({ score, onContinue }: ResultScreenProps) {
             <span className="text-6xl font-black text-white tracking-tighter" style={{ textShadow: '0 0 40px rgba(30,136,229,0.4)' }}>
               {displayScore}
             </span>
-            <span className="text-sm font-medium text-white/40 mt-1">pontos</span>
+            <span className="text-sm font-medium text-white/40 mt-1">{t('result_points', lang)}</span>
           </div>
         </motion.div>
 
@@ -154,9 +156,9 @@ export function ResultScreen({ score, onContinue }: ResultScreenProps) {
           transition={{ delay: 0.5 }}
           className="text-2xl md:text-3xl font-extrabold mb-3 tracking-tight text-white"
         >
-          Seu quintal tem{' '}
+          {t('result_title_1', lang)}{' '}
           <span className="bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-transparent">{score}%</span>
-          <br />de potencial!
+          <br />{t('result_title_2', lang)}
         </motion.h2>
 
         {/* Classification badge */}
@@ -187,7 +189,7 @@ export function ResultScreen({ score, onContinue }: ResultScreenProps) {
               onClick={onContinue}
               className="w-full py-7 text-[15px] rounded-2xl font-bold shadow-xl gradient-blue glow-blue hover:glow-blue-strong hover:scale-[1.01] transition-all duration-300 gap-2 group"
             >
-              Avançar
+              {t('result_cta', lang)}
               <motion.span
                 animate={{ x: [0, 4, 0] }}
                 transition={{ duration: 1.5, repeat: Infinity }}
@@ -196,7 +198,7 @@ export function ResultScreen({ score, onContinue }: ResultScreenProps) {
               </motion.span>
             </Button>
             <p className="text-white/30 text-[10px] text-center mt-2">
-              Veja sua piscina recomendada e fale com nossa equipe
+              {t('result_cta_hint', lang)}
             </p>
           </motion.div>
         )}

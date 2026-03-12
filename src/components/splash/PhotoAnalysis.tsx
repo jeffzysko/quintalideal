@@ -1,12 +1,14 @@
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ScanLine } from 'lucide-react';
+import { type Lang, t } from '@/lib/i18n';
 
 interface PhotoAnalysisProps {
   onDone: () => void;
+  lang?: Lang;
 }
 
-export function PhotoAnalysis({ onDone }: PhotoAnalysisProps) {
+export function PhotoAnalysis({ onDone, lang = 'pt' }: PhotoAnalysisProps) {
   useEffect(() => {
     const timer = setTimeout(onDone, 2500);
     return () => clearTimeout(timer);
@@ -34,8 +36,8 @@ export function PhotoAnalysis({ onDone }: PhotoAnalysisProps) {
         </motion.div>
 
         <div className="text-center">
-          <h2 className="text-xl font-bold text-foreground mb-2">Analisando suas fotos...</h2>
-          <p className="text-sm text-muted-foreground">Identificando o potencial do seu quintal</p>
+          <h2 className="text-xl font-bold text-foreground mb-2">{t('photo_analysis_title', lang)}</h2>
+          <p className="text-sm text-muted-foreground">{t('photo_analysis_subtitle', lang)}</p>
         </div>
 
         <div className="w-48 h-1.5 bg-muted rounded-full overflow-hidden">

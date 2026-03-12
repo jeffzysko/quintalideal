@@ -3,13 +3,19 @@ import { motion } from 'framer-motion';
 import logoSplash from '@/assets/logo-splash.png';
 import heroPool from '@/assets/hero-pool.jpg';
 import { ArrowRight, Droplets, Shield, Clock } from 'lucide-react';
+import { type Lang, t, UY_ENABLED_SLUGS } from '@/lib/i18n';
 
 interface HeroSectionProps {
   onStart: () => void;
   franchiseName?: string;
+  franchiseSlug?: string;
+  lang: Lang;
+  onLangChange: (lang: Lang) => void;
 }
 
-export function HeroSection({ onStart, franchiseName }: HeroSectionProps) {
+export function HeroSection({ onStart, franchiseName, franchiseSlug, lang, onLangChange }: HeroSectionProps) {
+  const showLangSwitch = franchiseSlug ? UY_ENABLED_SLUGS.has(franchiseSlug) : false;
+
   return (
     <div className="h-[100dvh] flex flex-col relative overflow-hidden">
       {/* Background */}
@@ -20,7 +26,34 @@ export function HeroSection({ onStart, franchiseName }: HeroSectionProps) {
         }} />
       </div>
 
-      {/* Floating water drops - hidden on very small screens */}
+      {/* Language toggle */}
+      {showLangSwitch && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="absolute top-4 right-4 z-20 flex items-center gap-1 bg-white/10 backdrop-blur-md rounded-full p-1 border border-white/15"
+        >
+          <button
+            onClick={() => onLangChange('pt')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+              lang === 'pt' ? 'bg-white/20 text-white shadow-sm' : 'text-white/50 hover:text-white/70'
+            }`}
+          >
+            🇧🇷 PT
+          </button>
+          <button
+            onClick={() => onLangChange('es')}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+              lang === 'es' ? 'bg-white/20 text-white shadow-sm' : 'text-white/50 hover:text-white/70'
+            }`}
+          >
+            🇺🇾 ES
+          </button>
+        </motion.div>
+      )}
+
+      {/* Floating water drops */}
       <motion.div
         animate={{ y: [-8, 8, -8] }}
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
@@ -60,11 +93,11 @@ export function HeroSection({ onStart, franchiseName }: HeroSectionProps) {
           transition={{ delay: 0.35, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           className="text-center text-[1.75rem] sm:text-[2rem] md:text-[2.75rem] font-extrabold leading-[1.08] mb-3 sm:mb-4 text-white tracking-tight"
         >
-          Descubra o <br />
+          {t('hero_title_1', lang)} <br />
           <span className="bg-gradient-to-r from-blue-300 via-blue-200 to-cyan-300 bg-clip-text text-transparent">
-            potencial escondido
+            {t('hero_title_2', lang)}
           </span>
-          <br />do seu quintal.
+          <br />{t('hero_title_3', lang)}
         </motion.h1>
 
         <motion.p
@@ -73,7 +106,7 @@ export function HeroSection({ onStart, franchiseName }: HeroSectionProps) {
           transition={{ delay: 0.55 }}
           className="text-center text-[13px] sm:text-sm md:text-base text-white/55 mb-6 sm:mb-8 max-w-xs mx-auto leading-relaxed"
         >
-          Análise inteligente em menos de 60 segundos. Descubra se seu quintal pode ter uma piscina Splash.
+          {t('hero_subtitle', lang)}
         </motion.p>
 
         {/* CTA Button */}
@@ -88,7 +121,7 @@ export function HeroSection({ onStart, franchiseName }: HeroSectionProps) {
             size="lg"
             className="text-[15px] px-8 py-7 rounded-2xl font-bold gap-3 w-full gradient-blue glow-blue hover:glow-blue-strong hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
           >
-            Explorar meu quintal
+            {t('hero_cta', lang)}
             <motion.span
               animate={{ x: [0, 4, 0] }}
               transition={{ duration: 1.5, repeat: Infinity }}
@@ -107,17 +140,17 @@ export function HeroSection({ onStart, franchiseName }: HeroSectionProps) {
         >
           <div className="flex items-center gap-1.5 text-white/35">
             <Clock className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
-            <span className="text-[9px] sm:text-[10px] font-medium">60 segundos</span>
+            <span className="text-[9px] sm:text-[10px] font-medium">{t('hero_trust_time', lang)}</span>
           </div>
           <div className="w-px h-3 bg-white/15" />
           <div className="flex items-center gap-1.5 text-white/35">
             <Shield className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
-            <span className="text-[9px] sm:text-[10px] font-medium">100% gratuito</span>
+            <span className="text-[9px] sm:text-[10px] font-medium">{t('hero_trust_free', lang)}</span>
           </div>
           <div className="w-px h-3 bg-white/15" />
           <div className="flex items-center gap-1.5 text-white/35">
             <Droplets className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
-            <span className="text-[9px] sm:text-[10px] font-medium">+2.500 análises</span>
+            <span className="text-[9px] sm:text-[10px] font-medium">{t('hero_trust_analyses', lang)}</span>
           </div>
         </motion.div>
       </div>

@@ -8,6 +8,7 @@ import { getPoolImage } from '@/lib/poolImages';
 import { ValorizationSimulator } from './ValorizationSimulator';
 import { trackEvent } from '@/lib/analytics';
 import { SITE_URL, SITE_DOMAIN } from '@/lib/constants';
+import { type Lang, t } from '@/lib/i18n';
 
 interface PoolSpecs {
   tamanho?: string;
@@ -26,9 +27,10 @@ interface ActionButtonsProps {
   leadName?: string;
   refCode?: string;
   franchiseId?: string;
+  lang?: Lang;
 }
 
-export function ActionButtons({ score, poolName, poolDescription, poolSpecs, recommendedSize, whatsappNumber, leadName, refCode: _refCode, franchiseId }: ActionButtonsProps) {
+export function ActionButtons({ score, poolName, poolDescription, poolSpecs, recommendedSize, whatsappNumber, leadName, refCode: _refCode, franchiseId, lang = 'pt' }: ActionButtonsProps) {
   const ranking = getRankingGaucho(score);
   const classification = getYardClassification(score);
   const socialComparison = getSocialComparison(score);
@@ -52,7 +54,10 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
     trackEvent('whatsapp_clicked', { franchiseId });
     const phone = whatsappNumber || '5551999999999';
     const message = encodeURIComponent(
-      `Olá! Fiz o teste do Índice do Quintal Splash e meu quintal tem ${score}% de potencial (${classification.label}). O modelo recomendado foi a ${poolName}. Gostaria de saber mais!`
+      t('wa_message', lang)
+        .replace('{score}', String(score))
+        .replace('{label}', classification.label)
+        .replace('{pool}', poolName)
     );
     window.open(`https://wa.me/${phone}?text=${message}`, '_blank');
   };
@@ -62,7 +67,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
     const phrase = getSharePhrase(score);
     const siteUrl = SITE_URL;
     const text = encodeURIComponent(
-      `${phrase}\n\n${classification.emoji} ${classification.label}\n🏊 Modelo recomendado: ${poolName}\n\nDescubra o potencial do seu quintal:\n${siteUrl}`
+      `${phrase}\n\n${classification.emoji} ${classification.label}\n🏊 ${t('action_rec_label', lang)}: ${poolName}\n\n${siteUrl}`
     );
     window.open(`https://wa.me/?text=${text}`, '_blank');
   };
@@ -143,7 +148,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
 
     ctx.font = '400 28px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.6)';
     ctx.textAlign = 'center';
-    ctx.fillText(`Modelo recomendado: ${poolName}`, 540, 1620);
+    ctx.fillText(`${t('action_rec_label', lang)}: ${poolName}`, 540, 1620);
 
     ctx.font = '400 24px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.45)';
     ctx.fillText(socialComparison, 540, 1670);
@@ -162,7 +167,6 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
 
     return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
   };
-
 
   const circumference = 2 * Math.PI * 46;
   const offset = circumference - (score / 100) * circumference;
@@ -193,8 +197,8 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
             transition={{ delay: 0.2 }}
             className="text-white text-lg md:text-xl font-extrabold tracking-tight mb-4"
           >
-            {firstName ? `${firstName}, seu quintal` : 'Seu quintal'} é{' '}
-            <span className="bg-gradient-to-r from-blue-300 via-cyan-300 to-blue-400 bg-clip-text text-transparent">incrível</span>! 🎉
+            {firstName ? `${firstName}, ${t('action_header_suffix', lang)}` : (lang === 'es' ? 'Tu patio es' : 'Seu quintal é')}{' '}
+            <span className="bg-gradient-to-r from-blue-300 via-cyan-300 to-blue-400 bg-clip-text text-transparent">{t('action_header_amazing', lang)}</span>! 🎉
           </motion.h1>
 
           {/* Score + badges row */}
@@ -221,7 +225,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center z-20">
                 <span className="text-2xl font-black text-white">{score}</span>
-                <span className="text-[8px] font-medium text-white/50">pontos</span>
+                <span className="text-[8px] font-medium text-white/50">{t('result_points', lang)}</span>
               </div>
             </div>
 
@@ -279,19 +283,18 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
           <div className="p-5">
             <div className="flex items-center gap-2 mb-2">
               <Sparkles className="w-3.5 h-3.5 text-primary" />
-              <span className="text-[9px] font-bold text-primary uppercase tracking-[0.15em]">Modelo recomendado</span>
+              <span className="text-[9px] font-bold text-primary uppercase tracking-[0.15em]">{t('action_rec_label', lang)}</span>
             </div>
             <h3 className="text-lg font-bold text-foreground mb-1">{poolName}</h3>
             {poolDescription && <p className="text-xs text-muted-foreground leading-relaxed mb-4">{poolDescription}</p>}
 
-            {/* Technical specs */}
             {poolSpecs && (
               <div className="grid grid-cols-2 gap-2">
                 {recommendedSize && (
                   <div className="flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2.5">
                     <Ruler className="w-4 h-4 text-muted-foreground shrink-0" />
                     <div>
-                      <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Tamanho ideal</p>
+                      <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{t('action_size', lang)}</p>
                       <p className="text-xs font-semibold text-foreground">{recommendedSize}</p>
                     </div>
                   </div>
@@ -300,7 +303,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
                   <div className="flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2.5">
                     <Waves className="w-4 h-4 text-muted-foreground shrink-0" />
                     <div>
-                      <p className="text-[9px] text-muted-foreground uppercase tracking-wider">Profundidade</p>
+                      <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{t('action_depth', lang)}</p>
                       <p className="text-xs font-semibold text-foreground">{poolSpecs.profundidade}m</p>
                     </div>
                   </div>
@@ -308,13 +311,13 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
                 {poolSpecs.possui_prainha && (
                   <div className="flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2.5">
                     <span className="text-sm">🏖️</span>
-                    <p className="text-xs font-semibold text-foreground">Com prainha</p>
+                    <p className="text-xs font-semibold text-foreground">{t('action_beach', lang)}</p>
                   </div>
                 )}
                 {poolSpecs.possui_spa && (
                   <div className="flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2.5">
                     <Droplets className="w-4 h-4 text-muted-foreground shrink-0" />
-                    <p className="text-xs font-semibold text-foreground">Com hidro/SPA</p>
+                    <p className="text-xs font-semibold text-foreground">{t('action_spa', lang)}</p>
                   </div>
                 )}
               </div>
@@ -334,7 +337,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
             className="w-full py-7 text-[15px] rounded-2xl font-bold shadow-xl shadow-primary/25 gradient-blue glow-blue hover:glow-blue-strong hover:scale-[1.01] transition-all duration-300 gap-2 group"
           >
             <MessageCircle className="w-5 h-5" />
-            Falar com um consultor
+            {t('action_whatsapp_cta', lang)}
             <motion.span
               animate={{ x: [0, 3, 0] }}
               transition={{ duration: 1.5, repeat: Infinity }}
@@ -343,10 +346,9 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
             </motion.span>
           </Button>
           <p className="text-center text-[10px] text-muted-foreground mt-2">
-            Tire suas dúvidas e solicite um orçamento pelo WhatsApp
+            {t('action_whatsapp_hint', lang)}
           </p>
         </motion.div>
-
 
         {/* Challenge CTA */}
         <motion.div
@@ -361,24 +363,23 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
         >
           <Users className="w-6 h-6 text-primary mx-auto mb-2" />
           <p className="text-sm font-semibold text-foreground mb-1">
-            Será que o quintal dos seus amigos tem mais potencial que o seu?
+            {t('action_challenge_title', lang)}
           </p>
-          <p className="text-xs text-muted-foreground mb-3">Desafie seus amigos e descubra!</p>
+          <p className="text-xs text-muted-foreground mb-3">{t('action_challenge_subtitle', lang)}</p>
           <Button
             variant="outline"
             onClick={handleShareWhatsApp}
             className="rounded-xl border-primary/20 text-primary hover:bg-primary/5 gap-2"
           >
             <MessageCircle className="w-4 h-4" />
-            Desafiar um amigo
+            {t('action_challenge_btn', lang)}
           </Button>
         </motion.div>
 
         {/* Valorization Simulator */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2 }}>
-          <ValorizationSimulator score={score} />
+          <ValorizationSimulator score={score} lang={lang} />
         </motion.div>
-
 
         {/* Share row */}
         <motion.div
@@ -402,7 +403,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
               className="py-5 text-xs rounded-2xl font-medium border-border hover:bg-accent gap-1.5 flex-col h-auto"
             >
               <Instagram className="w-4 h-4 text-pink-500" />
-              Instagram Stories
+              {t('action_share_insta', lang)}
             </Button>
           </div>
 
@@ -410,7 +411,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
           <div className="text-center pt-4 space-y-2">
             <img src={logoSplash} alt="Splash" className="mx-auto w-16 opacity-30" />
             <p className="text-[10px] text-muted-foreground/50">
-              © Splash Piscinas • Tecnologia para o seu quintal
+              {t('action_footer', lang)}
             </p>
           </div>
         </motion.div>
@@ -437,7 +438,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-2">
                   <Instagram className="w-5 h-5 text-pink-500" />
-                  <h3 className="font-bold text-foreground text-base">Compartilhar nos Stories</h3>
+                  <h3 className="font-bold text-foreground text-base">{t('action_insta_guide_title', lang)}</h3>
                 </div>
                 <button onClick={() => setShowInstaGuide(false)} className="p-1 rounded-full hover:bg-muted">
                   <X className="w-5 h-5 text-muted-foreground" />
@@ -445,41 +446,30 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
               </div>
 
               <p className="text-sm text-muted-foreground mb-5">
-                Sua imagem foi salva! Agora siga estes passos:
+                {t('action_insta_saved', lang)}
               </p>
 
               <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <span className="text-xs font-bold text-primary">1</span>
+                {[
+                  t('action_insta_step1', lang),
+                  t('action_insta_step2', lang),
+                  t('action_insta_step3', lang),
+                  t('action_insta_step4', lang),
+                ].map((stepText, i) => (
+                  <div key={i} className="flex items-start gap-3">
+                    <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <span className="text-xs font-bold text-primary">{i + 1}</span>
+                    </div>
+                    <p className="text-sm text-foreground" dangerouslySetInnerHTML={{ __html: stepText }} />
                   </div>
-                  <p className="text-sm text-foreground">Abra o <strong>Instagram</strong> no seu celular</p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <span className="text-xs font-bold text-primary">2</span>
-                  </div>
-                  <p className="text-sm text-foreground">Toque em <strong>"Seu story"</strong> ou deslize para a direita</p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <span className="text-xs font-bold text-primary">3</span>
-                  </div>
-                  <p className="text-sm text-foreground">Selecione a <strong>imagem salva</strong> na sua galeria</p>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="w-7 h-7 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                    <span className="text-xs font-bold text-primary">4</span>
-                  </div>
-                  <p className="text-sm text-foreground">Publique e <strong>desafie seus amigos!</strong> 🎉</p>
-                </div>
+                ))}
               </div>
 
               <Button
                 onClick={() => setShowInstaGuide(false)}
                 className="w-full mt-6 py-6 rounded-2xl font-bold gradient-blue"
               >
-                Entendi!
+                {t('action_insta_ok', lang)}
               </Button>
             </motion.div>
           </motion.div>

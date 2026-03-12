@@ -2,19 +2,21 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import logoSplash from '@/assets/logo-splash.png';
 import { CheckCircle2 } from 'lucide-react';
+import { type Lang, t } from '@/lib/i18n';
 
 interface ProcessingScreenProps {
   onDone: () => void;
+  lang?: Lang;
 }
 
-const steps = [
-  'Analisando respostas do quiz…',
-  'Comparando com +2.500 quintais do RS…',
-  'Calculando potencial do seu quintal…',
-  'Selecionando modelo ideal…',
-];
+export function ProcessingScreen({ onDone, lang = 'pt' }: ProcessingScreenProps) {
+  const steps = [
+    t('proc_step_1', lang),
+    t('proc_step_2', lang),
+    t('proc_step_3', lang),
+    t('proc_step_4', lang),
+  ];
 
-export function ProcessingScreen({ onDone }: ProcessingScreenProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
 
@@ -79,13 +81,12 @@ export function ProcessingScreen({ onDone }: ProcessingScreenProps) {
         />
 
         <h2 className="text-xl font-bold text-white mb-2">
-          Calculando o Índice do seu Quintal…
+          {t('proc_title', lang)}
         </h2>
         <p className="text-white/40 text-sm mb-8">
-          Comparando com padrões de espaço e estilo de uso no RS
+          {t('proc_subtitle', lang)}
         </p>
 
-        {/* Progress bar */}
         <div className="w-full h-1.5 rounded-full mb-8 overflow-hidden" style={{ background: 'rgba(255,255,255,0.06)' }}>
           <motion.div
             className="h-full rounded-full"
@@ -93,7 +94,6 @@ export function ProcessingScreen({ onDone }: ProcessingScreenProps) {
           />
         </div>
 
-        {/* Steps */}
         <div className="space-y-3 text-left">
           {steps.map((step, i) => (
             <motion.div
