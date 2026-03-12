@@ -22,7 +22,6 @@ interface FranchiseUser {
 
 interface FranchiseUsersSectionProps {
   franchiseId: string;
-  currentUserId: string;
 }
 
 export function FranchiseUsersSection({ franchiseId }: FranchiseUsersSectionProps) {
