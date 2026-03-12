@@ -220,6 +220,7 @@ export default function AdminDashboard() {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
+        <Breadcrumbs items={[{ label: 'Admin' }]} />
         {/* Tab switcher */}
         <div className="flex gap-1 mb-6 md:mb-8 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-full overflow-x-auto scrollbar-none border border-border/30" role="tablist">
           {([
