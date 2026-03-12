@@ -48,8 +48,14 @@ function FranchiseLinkBanner({ slug }: { slug: string }) {
   );
 }
 
-export default function FranchiseDashboard() {
-  const { franchiseId, loading: authLoading } = useAuth();
+interface FranchiseDashboardProps {
+  overrideFranchiseId?: string;
+  embedded?: boolean;
+}
+
+export default function FranchiseDashboard({ overrideFranchiseId, embedded }: FranchiseDashboardProps = {}) {
+  const { franchiseId: authFranchiseId, loading: authLoading } = useAuth();
+  const effectiveFranchiseId = overrideFranchiseId || authFranchiseId;
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState<'leads' | 'reports'>('leads');
