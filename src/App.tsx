@@ -86,6 +86,7 @@ function AppRoutes() {
               <Toaster />
               <Sonner />
               <BrowserRouter>
+                <ScrollToTop />
                 <Suspense fallback={<LazyFallback />}>
                   <Routes>
                     {/* Pages WITHOUT footer (quiz/lead flow) */}
