@@ -32,15 +32,17 @@ function FranchiseLinkBanner({ slug }: { slug: string }) {
   };
 
   return (
-    <div className="mb-6 rounded-xl border border-primary/20 bg-primary/5 p-4 flex flex-col sm:flex-row items-start sm:items-center gap-3">
-      <div className="flex items-center gap-2 min-w-0 flex-1">
-        <Link2 className="w-5 h-5 text-primary shrink-0" />
+    <div className="mb-6 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 via-primary/3 to-transparent p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 card-glow-blue">
+      <div className="flex items-center gap-3 min-w-0 flex-1">
+        <div className="w-10 h-10 rounded-xl icon-bg-blue flex items-center justify-center shrink-0">
+          <Link2 className="w-5 h-5 text-primary" />
+        </div>
         <div className="min-w-0">
-          <p className="text-xs font-semibold text-foreground mb-0.5">Seu link de divulgação</p>
+          <p className="text-xs font-bold text-foreground mb-0.5 uppercase tracking-wider">Seu link de divulgação</p>
           <p className="text-sm text-primary font-mono truncate">{url}</p>
         </div>
       </div>
-      <Button size="sm" variant="outline" onClick={handleCopy} className="gap-2 rounded-lg border-primary/30 hover:bg-primary/10 shrink-0">
+      <Button size="sm" variant="outline" onClick={handleCopy} className="gap-2 rounded-xl border-primary/30 hover:bg-primary/10 shrink-0">
         {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4" />}
         {copied ? 'Copiado!' : 'Copiar link'}
       </Button>
@@ -142,12 +144,14 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {kpis.map((kpi, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-              <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
+            <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06, type: 'spring', stiffness: 300, damping: 24 }}>
+              <Card className="card-premium group overflow-hidden">
                 <CardContent className="p-3 md:p-5">
-                  <kpi.icon className={`w-4 h-4 md:w-5 md:h-5 ${kpi.color} mb-1.5 md:mb-2`} />
-                  <p className="text-xl md:text-2xl font-bold tracking-tight text-foreground">{kpi.value}</p>
-                  <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5">{kpi.label}</p>
+                  <div className={`w-9 h-9 md:w-10 md:h-10 rounded-xl ${kpi.color === 'text-primary' ? 'icon-bg-blue' : kpi.color === 'text-secondary' ? 'icon-bg-pink' : kpi.color === 'text-violet-600' ? 'icon-bg-violet' : 'icon-bg-green'} flex items-center justify-center mb-2.5 md:mb-3 group-hover:scale-105 transition-transform`}>
+                    <kpi.icon className={`w-4 h-4 md:w-5 md:h-5 ${kpi.color}`} />
+                  </div>
+                  <p className="text-xl md:text-2xl font-extrabold tracking-tight text-foreground">{kpi.value}</p>
+                  <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5 font-medium">{kpi.label}</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -156,29 +160,29 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       )}
 
       {/* Tab switcher */}
-      <div className="flex gap-1 mb-6 bg-muted rounded-xl p-1 w-full sm:w-fit overflow-x-auto scrollbar-none" role="tablist">
+      <div className="flex gap-1 mb-6 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-full sm:w-fit overflow-x-auto scrollbar-none border border-border/30" role="tablist">
         <button
           role="tab"
           aria-selected={activeTab === 'leads'}
           onClick={() => setActiveTab('leads')}
-          className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === 'leads' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === 'leads' ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
         >
-          <Users className="w-3.5 h-3.5 sm:w-4 sm:h-4 inline mr-1" /> Leads
+          <Users className={`w-3.5 h-3.5 sm:w-4 sm:h-4 inline mr-1.5 ${activeTab === 'leads' ? 'text-primary' : ''}`} /> Leads
         </button>
         <button
           role="tab"
           aria-selected={activeTab === 'reports'}
           onClick={() => setActiveTab('reports')}
-          className={`px-4 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === 'reports' ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === 'reports' ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
         >
-          <BarChart3 className="w-3.5 h-3.5 sm:w-4 sm:h-4 inline mr-1" /> Relatórios
+          <BarChart3 className={`w-3.5 h-3.5 sm:w-4 sm:h-4 inline mr-1.5 ${activeTab === 'reports' ? 'text-primary' : ''}`} /> Relatórios
         </button>
       </div>
 
       {activeTab === 'leads' && (
-        <Card className="border-border/50 shadow-sm">
+        <Card className="card-premium">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold">Leads Recentes ({totalCount})</CardTitle>
+            <CardTitle className="text-sm font-bold">Leads Recentes ({totalCount})</CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -224,7 +228,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                     </thead>
                     <tbody>
                       {leads.map(lead => (
-                        <tr key={lead.id} className="border-b border-border/30 hover:bg-muted/30 transition-colors" role="row">
+                        <tr key={lead.id} className="border-b border-border/20 hover:bg-muted/40 transition-all cursor-pointer group" role="row" onClick={() => navigate(`${leadDetailPath}/${lead.id}`)}>
                           <td role="cell" className="py-3.5 px-3 font-medium">{lead.nome || '—'}</td>
                           <td role="cell" className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.cidade || '—'}</td>
                           <td role="cell" className="py-3.5 px-3">

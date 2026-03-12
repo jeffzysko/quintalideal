@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Share2, Users, Link2, TrendingUp } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface AdminReferralMetricsProps {
   leads: { referred_by: string | null; ref_code: string | null }[];
@@ -12,7 +13,6 @@ export function AdminReferralMetrics({ leads }: AdminReferralMetricsProps) {
     const totalReferred = leads.filter(l => l.referred_by).length;
     const referralRate = totalWithRefCode > 0 ? Math.round((totalReferred / totalWithRefCode) * 100) : 0;
 
-    // Top referrers
     const refCounts: Record<string, number> = {};
     leads.forEach(l => {
       if (l.referred_by) {
@@ -26,41 +26,56 @@ export function AdminReferralMetrics({ leads }: AdminReferralMetricsProps) {
     return { totalWithRefCode, totalReferred, referralRate, topReferrers };
   }, [leads]);
 
+  const miniKpis = [
+    { icon: Link2, label: 'Links gerados', value: metrics.totalWithRefCode, iconBg: 'icon-bg-pink', color: 'text-secondary' },
+    { icon: Users, label: 'Via convite', value: metrics.totalReferred, iconBg: 'icon-bg-blue', color: 'text-primary' },
+    { icon: TrendingUp, label: 'Taxa de convite', value: `${metrics.referralRate}%`, iconBg: 'icon-bg-green', color: 'text-emerald-600' },
+  ];
+
   return (
-    <Card className="border-border/50 shadow-sm">
-      <CardHeader>
-        <CardTitle className="text-base flex items-center gap-2">
-          <Share2 className="w-4 h-4 text-primary" /> Métricas de Viralização
+    <Card className="card-premium">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base font-bold flex items-center gap-2">
+          <div className="w-8 h-8 rounded-lg icon-bg-blue flex items-center justify-center">
+            <Share2 className="w-4 h-4 text-primary" />
+          </div>
+          Métricas de Viralização
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-3 gap-3 mb-4">
-          <div className="text-center p-3 bg-muted/30 rounded-lg">
-            <Link2 className="w-4 h-4 mx-auto mb-1 text-secondary" />
-            <p className="text-lg font-bold">{metrics.totalWithRefCode}</p>
-            <p className="text-xs text-muted-foreground">Links gerados</p>
-          </div>
-          <div className="text-center p-3 bg-muted/30 rounded-lg">
-            <Users className="w-4 h-4 mx-auto mb-1 text-primary" />
-            <p className="text-lg font-bold">{metrics.totalReferred}</p>
-            <p className="text-xs text-muted-foreground">Via convite</p>
-          </div>
-          <div className="text-center p-3 bg-muted/30 rounded-lg">
-            <TrendingUp className="w-4 h-4 mx-auto mb-1 text-green-500" />
-            <p className="text-lg font-bold">{metrics.referralRate}%</p>
-            <p className="text-xs text-muted-foreground">Taxa de convite</p>
-          </div>
+        <div className="grid grid-cols-3 gap-3 mb-5">
+          {miniKpis.map((kpi, i) => (
+            <motion.div
+              key={kpi.label}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="text-center p-3 rounded-xl bg-muted/40 hover:bg-muted/60 transition-colors"
+            >
+              <div className={`w-8 h-8 rounded-lg ${kpi.iconBg} flex items-center justify-center mx-auto mb-2`}>
+                <kpi.icon className={`w-4 h-4 ${kpi.color}`} />
+              </div>
+              <p className="text-lg font-extrabold text-foreground">{kpi.value}</p>
+              <p className="text-[10px] text-muted-foreground font-medium">{kpi.label}</p>
+            </motion.div>
+          ))}
         </div>
 
         {metrics.topReferrers.length > 0 && (
           <div>
-            <p className="text-xs font-bold text-muted-foreground mb-2">Top Referências</p>
-            <div className="space-y-1">
-              {metrics.topReferrers.map(([code, count]) => (
-                <div key={code} className="flex justify-between text-xs py-1.5 px-2 bg-muted/20 rounded">
+            <p className="text-xs font-bold text-muted-foreground mb-2 uppercase tracking-wider">Top Referências</p>
+            <div className="space-y-1.5">
+              {metrics.topReferrers.map(([code, count], i) => (
+                <motion.div
+                  key={code}
+                  initial={{ opacity: 0, x: -8 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.04 }}
+                  className="flex justify-between items-center text-xs py-2 px-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors"
+                >
                   <span className="font-mono text-muted-foreground">{code}</span>
-                  <span className="font-bold text-primary">{count} convites</span>
-                </div>
+                  <span className="font-bold text-primary bg-primary/10 px-2 py-0.5 rounded-md">{count} convites</span>
+                </motion.div>
               ))}
             </div>
           </div>

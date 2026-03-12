@@ -218,7 +218,7 @@ export default function AdminDashboard() {
 
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-6 md:py-8">
         {/* Tab switcher */}
-        <div className="flex gap-0.5 mb-6 md:mb-8 bg-muted rounded-xl p-1 w-full overflow-x-auto scrollbar-none" role="tablist">
+        <div className="flex gap-1 mb-6 md:mb-8 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-full overflow-x-auto scrollbar-none border border-border/30" role="tablist">
           {([
             { key: 'overview' as const, icon: BarChart3, label: 'Inteligência', short: 'Intel' },
             { key: 'analytics' as const, icon: Activity, label: 'Analytics', short: 'Stats' },
@@ -236,9 +236,9 @@ export default function AdminDashboard() {
               role="tab"
               aria-selected={activeTab === tab.key}
               onClick={() => setActiveTab(tab.key)}
-              className={`px-2.5 sm:px-4 md:px-5 py-2 md:py-2.5 rounded-lg text-[11px] sm:text-xs md:text-sm font-medium transition-all whitespace-nowrap flex-1 min-w-0 ${activeTab === tab.key ? 'bg-card shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`px-2.5 sm:px-4 md:px-5 py-2.5 md:py-3 rounded-xl text-[11px] sm:text-xs md:text-sm font-semibold transition-all whitespace-nowrap flex-1 min-w-0 ${activeTab === tab.key ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
             >
-              <tab.icon className="w-3.5 h-3.5 md:w-4 md:h-4 inline mr-0.5 sm:mr-1" />
+              <tab.icon className={`w-3.5 h-3.5 md:w-4 md:h-4 inline mr-0.5 sm:mr-1.5 ${activeTab === tab.key ? 'text-primary' : ''}`} />
               <span className="hidden md:inline">{tab.label}</span>
               <span className="md:hidden">{tab.short}</span>
             </button>
@@ -255,8 +255,8 @@ export default function AdminDashboard() {
             </div>
             <div className="grid md:grid-cols-2 gap-6 mb-6">
               <AdminReferralMetrics leads={allLeads} />
-              <Card className="border-border/50 shadow-sm">
-                <CardHeader><CardTitle className="text-sm font-semibold">Leads por Mês</CardTitle></CardHeader>
+              <Card className="card-premium">
+                <CardHeader><CardTitle className="text-sm font-bold">Leads por Mês</CardTitle></CardHeader>
                 <CardContent>
                   {leadsPerMonth.length > 0 ? (
                     <ChartContainer config={{}} className="h-[250px]">
