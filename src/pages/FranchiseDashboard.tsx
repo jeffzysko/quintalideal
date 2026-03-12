@@ -144,12 +144,14 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {kpis.map((kpi, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-              <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
+            <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06, type: 'spring', stiffness: 300, damping: 24 }}>
+              <Card className="card-premium group overflow-hidden">
                 <CardContent className="p-3 md:p-5">
-                  <kpi.icon className={`w-4 h-4 md:w-5 md:h-5 ${kpi.color} mb-1.5 md:mb-2`} />
-                  <p className="text-xl md:text-2xl font-bold tracking-tight text-foreground">{kpi.value}</p>
-                  <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5">{kpi.label}</p>
+                  <div className={`w-9 h-9 md:w-10 md:h-10 rounded-xl ${kpi.color === 'text-primary' ? 'icon-bg-blue' : kpi.color === 'text-secondary' ? 'icon-bg-pink' : kpi.color === 'text-violet-600' ? 'icon-bg-violet' : 'icon-bg-green'} flex items-center justify-center mb-2.5 md:mb-3 group-hover:scale-105 transition-transform`}>
+                    <kpi.icon className={`w-4 h-4 md:w-5 md:h-5 ${kpi.color}`} />
+                  </div>
+                  <p className="text-xl md:text-2xl font-extrabold tracking-tight text-foreground">{kpi.value}</p>
+                  <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5 font-medium">{kpi.label}</p>
                 </CardContent>
               </Card>
             </motion.div>
