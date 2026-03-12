@@ -196,7 +196,7 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
     return Object.entries(models)
       .sort(([, a], [, b]) => b - a)
       .map(([model, count]) => ({ model, count }));
-  }, [events]);
+  }, [filteredEvents]);
 
   const totalSessions = useMemo(() => new Set(events.map(e => e.session_id)).size, [events]);
 
