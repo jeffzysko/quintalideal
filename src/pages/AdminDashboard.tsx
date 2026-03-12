@@ -7,6 +7,8 @@ import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Acti
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import FranchiseDashboard from '@/pages/FranchiseDashboard';
 import { useNavigate } from 'react-router-dom';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { PageTransition } from '@/components/PageTransition';
 import { useAuth } from '@/hooks/useAuth';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis } from 'recharts';
