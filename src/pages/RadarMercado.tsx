@@ -295,10 +295,10 @@ export default function RadarMercado() {
           ].map((kpi, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
               <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
-                <CardContent className="p-5">
-                  <kpi.icon className={`w-6 h-6 ${kpi.color} mb-2`} />
-                  <p className="text-3xl font-bold tracking-tight text-foreground">{kpi.value}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{kpi.label}</p>
+                <CardContent className="p-3 sm:p-5">
+                  <kpi.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${kpi.color} mb-1.5 sm:mb-2`} />
+                  <p className="text-xl sm:text-3xl font-bold tracking-tight text-foreground">{kpi.value}</p>
+                  <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">{kpi.label}</p>
                 </CardContent>
               </Card>
             </motion.div>
