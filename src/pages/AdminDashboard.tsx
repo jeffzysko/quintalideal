@@ -3,7 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Share2, Target, Activity, Mail } from 'lucide-react';
+import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Share2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import FranchiseDashboard from '@/pages/FranchiseDashboard';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -29,7 +31,8 @@ const PAGE_SIZE = 25;
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const { signOut: _signOut } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'analytics' | 'franchises' | 'users' | 'emails'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'analytics' | 'franchises' | 'users' | 'emails' | 'franchise-view'>('overview');
+  const [viewFranchiseId, setViewFranchiseId] = useState<string>('');
 
   const [filterFranquia, setFilterFranquia] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -220,6 +223,7 @@ export default function AdminDashboard() {
             { key: 'franchises' as const, icon: Building2, label: 'Franquias', short: 'Franq' },
             { key: 'users' as const, icon: Users, label: 'Usuários', short: 'Users' },
             { key: 'emails' as const, icon: Mail, label: 'E-mails', short: 'Mail' },
+            { key: 'franchise-view' as const, icon: Eye, label: 'Visão Franquia', short: 'Visão' },
           ].map(tab => (
             <button
               key={tab.key}
@@ -303,6 +307,35 @@ export default function AdminDashboard() {
         {activeTab === 'franchises' && <AdminFranchiseManager />}
         {activeTab === 'users' && <AdminUserManager />}
         {activeTab === 'emails' && <AdminEmailTemplates />}
+
+        {activeTab === 'franchise-view' && (
+          <div className="space-y-6">
+            <Card className="border-border/50 shadow-sm">
+              <CardHeader>
+                <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                  <Eye className="w-4 h-4 text-primary" />
+                  Visualizar Dashboard da Franquia
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <Select value={viewFranchiseId} onValueChange={setViewFranchiseId}>
+                  <SelectTrigger className="w-full sm:w-80">
+                    <SelectValue placeholder="Selecione uma franquia para visualizar" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {franchises.map(f => (
+                      <SelectItem key={f.id} value={f.id}>{f.nome_franquia}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </CardContent>
+            </Card>
+
+            {viewFranchiseId && (
+              <FranchiseDashboard overrideFranchiseId={viewFranchiseId} embedded />
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
