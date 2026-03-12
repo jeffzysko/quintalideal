@@ -80,7 +80,8 @@ Deno.serve(async (req) => {
   }
 
   try {
-    const { email } = await req.json();
+    const body = await req.json();
+    const { email, siteOrigin } = body;
 
     if (!email) {
       return new Response(
@@ -101,11 +102,12 @@ Deno.serve(async (req) => {
       auth: { autoRefreshToken: false, persistSession: false },
     });
 
-    // Determine redirect URL - use origin from request or fallback
-    const origin = req.headers.get("origin") || req.headers.get("referer")?.replace(/\/$/, "") || "https://quintalideal.lovable.app";
-    const redirectUrl = `${origin}/reset-password`;
+    // Use the origin sent from the frontend, with fallbacks
+    const origin = siteOrigin || req.headers.get("origin") || "https://quintalideal.lovable.app";
+    const redirectUrl = `${origin.replace(/\/$/, "")}/reset-password`;
     
-    console.log("Using redirect URL:", redirectUrl);
+    console.log("Email:", email);
+    console.log("Redirect URL:", redirectUrl);
 
     // Generate a recovery link using admin API
     const { data: linkData, error: linkError } = await adminClient.auth.admin.generateLink({
@@ -125,10 +127,13 @@ Deno.serve(async (req) => {
       );
     }
 
-    // The generated link contains the token - we need to use the hashed_token from properties
+    // The generated link contains the token
     const actionLink = linkData.properties?.action_link;
+    console.log("Action link generated:", actionLink ? "yes" : "no");
+    console.log("Action link:", actionLink);
+    
     if (!actionLink) {
-      console.error("No action_link in response");
+      console.error("No action_link in response, linkData:", JSON.stringify(linkData));
       return new Response(
         JSON.stringify({ success: true }),
         { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -158,7 +163,8 @@ Deno.serve(async (req) => {
       throw new Error(`Falha ao enviar e-mail: ${resendRes.status}`);
     }
 
-    console.log("Recovery email sent to:", email);
+    const resendData = await resendRes.json();
+    console.log("Recovery email sent to:", email, "Resend ID:", resendData.id);
 
     return new Response(
       JSON.stringify({ success: true }),
