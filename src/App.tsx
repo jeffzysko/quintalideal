@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation, Outlet } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -8,7 +8,6 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { lazy, Suspense, useEffect } from "react";
-import { useLocation } from "react-router-dom";
 import Index from "./pages/Index";
 import { Footer } from "@/components/Footer";
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -37,6 +36,8 @@ const LeadDetail = lazy(() => import("./pages/LeadDetail"));
 const RadarMercado = lazy(() => import("./pages/RadarMercado"));
 const ProfileSettings = lazy(() => import("./pages/ProfileSettings"));
 const WebhookDocs = lazy(() => import("./pages/WebhookDocs"));
+const TermosDeUso = lazy(() => import("./pages/TermosDeUso"));
+const PoliticaPrivacidade = lazy(() => import("./pages/PoliticaPrivacidade"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -55,6 +56,22 @@ function LazyFallback() {
   );
 }
 
+const NO_FOOTER_PATHS = new Set(['/', '/explorar']);
+
+function LayoutWithFooter() {
+  const { pathname } = useLocation();
+  const hideFooter = NO_FOOTER_PATHS.has(pathname) || /^\/[^/]+$/.test(pathname) && !['mapa', 'login', 'forgot-password', 'reset-password', 'perfil', 'painel', 'franquia', 'admin', 'docs', 'termos', 'privacidade'].includes(pathname.slice(1).split('/')[0]);
+
+  return (
+    <div className="flex flex-col min-h-screen">
+      <div className="flex-1">
+        <Outlet />
+      </div>
+      {!hideFooter && <Footer />}
+    </div>
+  );
+}
+
 function AppRoutes() {
   usePrefetchRoutes();
   return (
@@ -68,64 +85,71 @@ function AppRoutes() {
               <BrowserRouter>
                 <Suspense fallback={<LazyFallback />}>
                   <Routes>
+                    {/* Pages WITHOUT footer (quiz/lead flow) */}
                     <Route path="/" element={<Index />} />
                     <Route path="/explorar" element={<Index />} />
-                    <Route path="/mapa" element={<MapaQuintais />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/forgot-password" element={<ForgotPassword />} />
-                    <Route path="/reset-password" element={<ResetPassword />} />
-                    <Route
-                      path="/perfil"
-                      element={
-                        <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
-                          <ProfileSettings />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route path="/painel" element={<PainelRouter />} />
-                    <Route
-                      path="/franquia"
-                      element={
-                        <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
-                          <FranchiseDashboard />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/painel/lead/:id"
-                      element={
-                        <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
-                          <LeadDetail />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/admin"
-                      element={
-                        <ProtectedRoute allowedRoles={['admin_fabrica']}>
-                          <AdminDashboard />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/admin/radar"
-                      element={
-                        <ProtectedRoute allowedRoles={['admin_fabrica']}>
-                          <RadarMercado />
-                        </ProtectedRoute>
-                      }
-                    />
-                    <Route
-                      path="/admin/lead/:id"
-                      element={
-                        <ProtectedRoute allowedRoles={['admin_fabrica']}>
-                          <LeadDetail />
-                        </ProtectedRoute>
-                      }
-                    />
-                    {/* Public docs */}
-                    <Route path="/docs/webhook" element={<WebhookDocs />} />
-                    {/* Franchise dynamic landing - must be last before catch-all */}
+
+                    {/* Pages WITH footer */}
+                    <Route element={<LayoutWithFooter />}>
+                      <Route path="/mapa" element={<MapaQuintais />} />
+                      <Route path="/login" element={<Login />} />
+                      <Route path="/forgot-password" element={<ForgotPassword />} />
+                      <Route path="/reset-password" element={<ResetPassword />} />
+                      <Route path="/termos" element={<TermosDeUso />} />
+                      <Route path="/privacidade" element={<PoliticaPrivacidade />} />
+                      <Route
+                        path="/perfil"
+                        element={
+                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
+                            <ProfileSettings />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route path="/painel" element={<PainelRouter />} />
+                      <Route
+                        path="/franquia"
+                        element={
+                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
+                            <FranchiseDashboard />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/painel/lead/:id"
+                        element={
+                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
+                            <LeadDetail />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin"
+                        element={
+                          <ProtectedRoute allowedRoles={['admin_fabrica']}>
+                            <AdminDashboard />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin/radar"
+                        element={
+                          <ProtectedRoute allowedRoles={['admin_fabrica']}>
+                            <RadarMercado />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/admin/lead/:id"
+                        element={
+                          <ProtectedRoute allowedRoles={['admin_fabrica']}>
+                            <LeadDetail />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route path="/docs/webhook" element={<WebhookDocs />} />
+                    </Route>
+
+                    {/* Franchise dynamic landing - NO footer (quiz flow) */}
                     <Route path="/:slug" element={<FranchiseLanding />} />
                     <Route path="*" element={<NotFound />} />
                   </Routes>
