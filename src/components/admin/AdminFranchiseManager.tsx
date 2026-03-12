@@ -6,7 +6,8 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
-import { Building2, Plus, Pencil, Trash2, Link2, Phone, Mail, MapPin, User, Power, PowerOff, UserPlus } from 'lucide-react';
+import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
+import { Building2, Plus, Pencil, Trash2, Link2, Phone, Mail, MapPin, User, Power, PowerOff, UserPlus, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { SITE_URL } from '@/lib/constants';
@@ -401,22 +402,23 @@ export function AdminFranchiseManager() {
       </Dialog>
 
       {/* Delete Confirmation Dialog */}
-      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-        <DialogContent className="sm:max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Excluir Franquia</DialogTitle>
-          </DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            Tem certeza que deseja excluir <strong>{deletingFranchise?.nome_franquia}</strong>? Esta ação não pode ser desfeita.
-          </p>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)} className="rounded-xl">Cancelar</Button>
-            <Button variant="destructive" onClick={handleDelete} disabled={saving} className="rounded-xl">
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir Franquia</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja excluir <strong>{deletingFranchise?.nome_franquia}</strong>? Esta ação não pode ser desfeita. Todos os dados vinculados a esta franquia poderão ser afetados.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={saving} className="rounded-xl">Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDelete} disabled={saving} className="bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-xl">
+              {saving && <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />}
               {saving ? 'Excluindo...' : 'Excluir'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
       {/* Invite Franchise User Dialog */}
       <Dialog open={inviteDialogOpen} onOpenChange={setInviteDialogOpen}>
         <DialogContent className="sm:max-w-sm">

@@ -45,6 +45,7 @@ export function AdminUserManager() {
   const [searchTerm, setSearchTerm] = useState('');
   const [resendingId, setResendingId] = useState<string | null>(null);
   const [resendingAll, setResendingAll] = useState(false);
+  const [resendAllDialogOpen, setResendAllDialogOpen] = useState(false);
 
   // Dialog state
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -272,7 +273,7 @@ export function AdminUserManager() {
                 className="pl-9 h-9 text-sm"
               />
             </div>
-            <Button size="sm" onClick={handleResendAll} variant="outline" disabled={resendingAll} className="gap-1.5 shrink-0">
+            <Button size="sm" onClick={() => setResendAllDialogOpen(true)} variant="outline" disabled={resendingAll} className="gap-1.5 shrink-0">
               {resendingAll ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               <span className="hidden sm:inline">Reenviar Todos</span>
             </Button>
@@ -442,6 +443,28 @@ export function AdminUserManager() {
             <AlertDialogAction onClick={handleDelete} disabled={saving} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               {saving && <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />}
               Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Resend All Confirmation */}
+      <AlertDialog open={resendAllDialogOpen} onOpenChange={setResendAllDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Reenviar Convites para Todos</AlertDialogTitle>
+            <AlertDialogDescription>
+              Essa ação enviará um e-mail de convite para <strong>todos os usuários não-admin</strong> ({users.filter(u => !u.roles.includes('admin_fabrica') && !u.roles.includes('super_admin')).length} usuário(s)). Deseja continuar?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={resendingAll}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => { setResendAllDialogOpen(false); handleResendAll(); }}
+              disabled={resendingAll}
+            >
+              {resendingAll && <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />}
+              Confirmar Envio
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
