@@ -15,6 +15,7 @@ interface Props {
 export function FranchiseContactSettings({ franchiseId }: Props) {
   const [whatsapp, setWhatsapp] = useState('');
   const [email, setEmail] = useState('');
+  const [metaPixelId, setMetaPixelId] = useState('');
   const [slug, setSlug] = useState('');
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
