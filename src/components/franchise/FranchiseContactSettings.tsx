@@ -16,9 +16,12 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
   const [whatsapp, setWhatsapp] = useState('');
   const [email, setEmail] = useState('');
   const [metaPixelId, setMetaPixelId] = useState('');
+  const [webhookUrl, setWebhookUrl] = useState('');
+  const [webhookSecret, setWebhookSecret] = useState('');
+  const [showSecret, setShowSecret] = useState(false);
   const [slug, setSlug] = useState('');
   const [savingContact, setSavingContact] = useState(false);
-  const [savingPixel, setSavingPixel] = useState(false);
+  const [savingIntegrations, setSavingIntegrations] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
