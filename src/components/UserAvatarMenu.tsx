@@ -17,6 +17,7 @@ export function UserAvatarMenu() {
   const { user, role, signOut } = useAuth();
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   const email = user?.email || '';
   const initials = email
@@ -25,9 +26,22 @@ export function UserAvatarMenu() {
 
   const roleLabel =
     role === 'admin_fabrica' ? 'Administrador' :
-    role === 'franquia' ? 'Franquia' : '';
+    role === 'franquia' ? 'Franquia' :
+    role === 'super_admin' ? 'Super Admin' : '';
 
   const isDark = theme === 'dark';
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from('profiles')
+      .select('avatar_url')
+      .eq('user_id', user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if ((data as any)?.avatar_url) setAvatarUrl((data as any).avatar_url);
+      });
+  }, [user]);
 
   return (
     <DropdownMenu>
