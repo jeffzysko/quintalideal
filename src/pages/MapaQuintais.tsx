@@ -245,5 +245,6 @@ export default function MapaQuintais() {
         )}
       </div>
     </div>
+    </PageTransition>
   );
 }
