@@ -180,9 +180,9 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       </div>
 
       {activeTab === 'leads' && (
-        <Card className="border-border/50 shadow-sm">
+        <Card className="card-premium">
           <CardHeader>
-            <CardTitle className="text-sm font-semibold">Leads Recentes ({totalCount})</CardTitle>
+            <CardTitle className="text-sm font-bold">Leads Recentes ({totalCount})</CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (
