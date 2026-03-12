@@ -12,6 +12,8 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/
 import { PieChart, Pie, Cell } from 'recharts';
 import logoSplash from '@/assets/logo-splash.png';
 import { useNavigate } from 'react-router-dom';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
+import { PageTransition } from '@/components/PageTransition';
 
 interface LeadData {
   cidade: string | null;

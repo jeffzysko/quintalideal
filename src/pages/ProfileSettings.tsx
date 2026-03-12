@@ -492,6 +492,7 @@ export default function ProfileSettings() {
         </motion.div>
       </div>
     </div>
+    </PageTransition>
   );
 }
 
