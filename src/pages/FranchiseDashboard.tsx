@@ -216,14 +216,15 @@ export default function FranchiseDashboard() {
                   <p className="text-sm text-muted-foreground text-center max-w-md mb-6">
                     Seus leads aparecerão aqui assim que os primeiros clientes responderem ao quiz da sua página. Compartilhe seu link para começar!
                   </p>
-                  <Button variant="outline" className="gap-2 rounded-xl" onClick={() => {
-                    const url = franchiseSlug ? `${SITE_URL}/${franchiseSlug}` : SITE_URL;
-                    navigator.clipboard.writeText(url);
-                    toast.success('Link copiado!');
-                  }}>
-                    <Share2 className="w-4 h-4" />
-                    Copiar link do quiz
-                  </Button>
+                  {franchiseSlug && (
+                    <Button variant="outline" className="gap-2 rounded-xl" onClick={() => {
+                      navigator.clipboard.writeText(`${SITE_URL}/${franchiseSlug}`);
+                      toast.success('Link copiado!');
+                    }}>
+                      <Share2 className="w-4 h-4" />
+                      Copiar link do quiz
+                    </Button>
+                  )}
                 </motion.div>
               ) : (
                 <>
