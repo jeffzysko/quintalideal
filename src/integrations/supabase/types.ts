@@ -71,6 +71,48 @@ export type Database = {
           },
         ]
       }
+      franchise_covered_cities: {
+        Row: {
+          city_name: string
+          city_name_normalized: string
+          created_at: string
+          franchise_id: string
+          id: string
+          is_primary_city: boolean
+        }
+        Insert: {
+          city_name: string
+          city_name_normalized: string
+          created_at?: string
+          franchise_id: string
+          id?: string
+          is_primary_city?: boolean
+        }
+        Update: {
+          city_name?: string
+          city_name_normalized?: string
+          created_at?: string
+          franchise_id?: string
+          id?: string
+          is_primary_city?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "franchise_covered_cities_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchises"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "franchise_covered_cities_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchises_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       franchises: {
         Row: {
           ativa: boolean
@@ -122,7 +164,9 @@ export type Database = {
       leads: {
         Row: {
           cidade: string | null
+          coverage_match_count: number | null
           created_at: string
+          distribution_rule_used: string | null
           email: string | null
           foto1: string | null
           foto2: string | null
@@ -130,20 +174,27 @@ export type Database = {
           foto4: string | null
           franquia_id: string | null
           id: string
+          lead_city_normalized: string | null
           modelo_recomendado: string | null
           nome: string | null
           observacoes: string | null
+          origin_franchise_id: string | null
           pontuacao_quintal: number | null
           ref_code: string | null
           referred_by: string | null
           respostas_questionario: Json | null
           status_lead: Database["public"]["Enums"]["lead_status"]
           telefone: string | null
+          territory_match_status:
+            | Database["public"]["Enums"]["territory_match_status"]
+            | null
           updated_at: string
         }
         Insert: {
           cidade?: string | null
+          coverage_match_count?: number | null
           created_at?: string
+          distribution_rule_used?: string | null
           email?: string | null
           foto1?: string | null
           foto2?: string | null
@@ -151,20 +202,27 @@ export type Database = {
           foto4?: string | null
           franquia_id?: string | null
           id?: string
+          lead_city_normalized?: string | null
           modelo_recomendado?: string | null
           nome?: string | null
           observacoes?: string | null
+          origin_franchise_id?: string | null
           pontuacao_quintal?: number | null
           ref_code?: string | null
           referred_by?: string | null
           respostas_questionario?: Json | null
           status_lead?: Database["public"]["Enums"]["lead_status"]
           telefone?: string | null
+          territory_match_status?:
+            | Database["public"]["Enums"]["territory_match_status"]
+            | null
           updated_at?: string
         }
         Update: {
           cidade?: string | null
+          coverage_match_count?: number | null
           created_at?: string
+          distribution_rule_used?: string | null
           email?: string | null
           foto1?: string | null
           foto2?: string | null
@@ -172,15 +230,20 @@ export type Database = {
           foto4?: string | null
           franquia_id?: string | null
           id?: string
+          lead_city_normalized?: string | null
           modelo_recomendado?: string | null
           nome?: string | null
           observacoes?: string | null
+          origin_franchise_id?: string | null
           pontuacao_quintal?: number | null
           ref_code?: string | null
           referred_by?: string | null
           respostas_questionario?: Json | null
           status_lead?: Database["public"]["Enums"]["lead_status"]
           telefone?: string | null
+          territory_match_status?:
+            | Database["public"]["Enums"]["territory_match_status"]
+            | null
           updated_at?: string
         }
         Relationships: [
@@ -194,6 +257,20 @@ export type Database = {
           {
             foreignKeyName: "leads_franquia_id_fkey"
             columns: ["franquia_id"]
+            isOneToOne: false
+            referencedRelation: "franchises_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_origin_franchise_id_fkey"
+            columns: ["origin_franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchises"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_origin_franchise_id_fkey"
+            columns: ["origin_franchise_id"]
             isOneToOne: false
             referencedRelation: "franchises_public"
             referencedColumns: ["id"]
@@ -385,6 +462,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      normalize_city_name: { Args: { _city: string }; Returns: string }
     }
     Enums: {
       app_role: "admin_fabrica" | "franquia" | "visualizador" | "super_admin"
@@ -395,6 +473,11 @@ export type Database = {
         | "em_negociacao"
         | "vendido"
         | "perdido"
+      territory_match_status:
+        | "matched_unique_franchise"
+        | "matched_multiple_franchises"
+        | "kept_with_origin_franchise"
+        | "no_city_match_found"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -525,6 +608,12 @@ export const Constants = {
       app_role: ["admin_fabrica", "franquia", "visualizador", "super_admin"],
       categoria_tamanho: ["pequena", "media", "grande"],
       lead_status: ["novo", "contatado", "em_negociacao", "vendido", "perdido"],
+      territory_match_status: [
+        "matched_unique_franchise",
+        "matched_multiple_franchises",
+        "kept_with_origin_franchise",
+        "no_city_match_found",
+      ],
     },
   },
 } as const

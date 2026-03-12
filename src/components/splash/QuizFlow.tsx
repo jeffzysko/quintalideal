@@ -52,6 +52,9 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   const [leadName, setLeadName] = useState('');
   const [leadRefCode, setLeadRefCode] = useState('');
   const [saving, setSaving] = useState(false);
+  const [assignedWhatsapp, setAssignedWhatsapp] = useState<string | undefined>(undefined);
+  const [assignedFranchiseName, setAssignedFranchiseName] = useState<string | undefined>(undefined);
+  const [assignedCidadeBase, setAssignedCidadeBase] = useState<string | undefined>(undefined);
 
   const isSubmittingRef = useRef(false);
   const analyticsCtx = { franchiseId };
@@ -140,7 +143,15 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
     setSaving(true);
     setLeadName(data.nome);
     try {
-      const { data: createLeadData, error } = await supabase.functions.invoke<{ success: boolean; refCode?: string }>('create-lead', {
+      const { data: createLeadData, error } = await supabase.functions.invoke<{
+        success: boolean;
+        refCode?: string;
+        assignedFranchiseId?: string;
+        assignedWhatsapp?: string;
+        assignedFranchiseName?: string;
+        assignedCidadeBase?: string;
+        territoryMatchStatus?: string;
+      }>('create-lead', {
         body: {
           nome: data.nome,
           telefone: data.telefone,
@@ -161,6 +172,9 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       if (error) throw error;
 
       setLeadRefCode(createLeadData?.refCode || '');
+      setAssignedWhatsapp(createLeadData?.assignedWhatsapp || undefined);
+      setAssignedFranchiseName(createLeadData?.assignedFranchiseName || undefined);
+      setAssignedCidadeBase(createLeadData?.assignedCidadeBase || undefined);
 
       trackEvent('lead_created', {
         ...analyticsCtx,
@@ -175,14 +189,18 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         currency: 'BRL',
       });
 
-      if (franchiseId) {
+      // Notify the ASSIGNED franchise (not necessarily origin)
+      const notifyFranchiseId = createLeadData?.assignedFranchiseId || franchiseId;
+      if (notifyFranchiseId) {
         supabase.functions.invoke('notify-new-lead', {
           body: {
             nome: data.nome,
             telefone: data.telefone,
             email: data.email || null,
             cidade: answers.cidade || null,
-            franquia_id: franchiseId,
+            franquia_id: notifyFranchiseId,
+            origin_franchise_id: franchiseId || null,
+            territory_match_status: createLeadData?.territoryMatchStatus || null,
             pontuacao_quintal: score,
             modelo_recomendado: poolName,
             referred_by: referredBy || null,
@@ -295,7 +313,9 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
             poolDescription={poolDesc}
             poolSpecs={poolSpecs}
             recommendedSize={recommendedSize}
-            whatsappNumber={franchiseWhatsapp}
+            whatsappNumber={assignedWhatsapp || franchiseWhatsapp}
+            assignedFranchiseName={assignedFranchiseName}
+            assignedCidadeBase={assignedCidadeBase}
             leadName={leadName}
             refCode={leadRefCode}
             franchiseId={franchiseId}

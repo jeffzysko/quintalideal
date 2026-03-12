@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Share2 } from 'lucide-react';
+import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Share2, Globe } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import FranchiseDashboard from '@/pages/FranchiseDashboard';
 import { useNavigate } from 'react-router-dom';
@@ -17,6 +17,7 @@ import { AdminAnalytics } from '@/components/admin/AdminAnalytics';
 import { AdminFranchiseManager } from '@/components/admin/AdminFranchiseManager';
 import { AdminEmailTemplates } from '@/components/admin/AdminEmailTemplates';
 import { AdminUserManager } from '@/components/admin/AdminUserManager';
+import { AdminCityManager } from '@/components/admin/AdminCityManager';
 import { AdminKPICards } from '@/components/admin/AdminKPICards';
 import { AdminLeadFilters } from '@/components/admin/AdminLeadFilters';
 import { AdminLeadsTable } from '@/components/admin/AdminLeadsTable';
@@ -31,7 +32,7 @@ const PAGE_SIZE = 25;
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const { signOut: _signOut, role } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'analytics' | 'franchises' | 'users' | 'emails' | 'franchise-view'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'analytics' | 'franchises' | 'cities' | 'users' | 'emails' | 'franchise-view'>('overview');
   const [viewFranchiseId, setViewFranchiseId] = useState<string>('');
 
   const [filterFranquia, setFilterFranquia] = useState('all');
@@ -74,7 +75,7 @@ export default function AdminDashboard() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by')
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used')
         .order('created_at', { ascending: false });
       if (error) throw error;
       return (data || []) as LeadRow[];
@@ -90,7 +91,7 @@ export default function AdminDashboard() {
 
       let query = supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by', { count: 'exact' });
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used', { count: 'exact' });
 
       if (filterFranquia !== 'all') query = query.eq('franquia_id', filterFranquia);
       if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus as any);
@@ -132,7 +133,7 @@ export default function AdminDashboard() {
     try {
       let query = supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by');
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status');
 
       if (filterFranquia !== 'all') query = query.eq('franquia_id', filterFranquia);
       if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus as any);
@@ -144,12 +145,14 @@ export default function AdminDashboard() {
       if (error) throw error;
       const exportLeads = (data || []) as LeadRow[];
 
-      const headers = ['Nome', 'Telefone', 'Email', 'Cidade', 'Franquia', 'Pontuação', 'Modelo', 'Status', 'Referência', 'Data'];
+      const headers = ['Nome', 'Telefone', 'Email', 'Cidade', 'Franquia Atribuída', 'Franquia Origem', 'Pontuação', 'Modelo', 'Status', 'Territorial', 'Referência', 'Data'];
       const rows = exportLeads.map(l => [
         l.nome || '', l.telefone || '', l.email || '', l.cidade || '',
         l.franquia_id ? (franchiseMap[l.franquia_id] || '') : '',
+        l.origin_franchise_id ? (franchiseMap[l.origin_franchise_id] || '') : '',
         String(l.pontuacao_quintal || 0), l.modelo_recomendado || '',
         STATUS_LABELS[l.status_lead] || l.status_lead,
+        l.territory_match_status || '',
         l.referred_by || '',
         new Date(l.created_at).toLocaleDateString('pt-BR'),
       ]);
@@ -221,6 +224,7 @@ export default function AdminDashboard() {
             { key: 'analytics' as const, icon: Activity, label: 'Analytics', short: 'Stats' },
             { key: 'leads' as const, icon: Users, label: 'Leads', short: 'Leads' },
             { key: 'franchises' as const, icon: Building2, label: 'Franquias', short: 'Franq' },
+            { key: 'cities' as const, icon: Globe, label: 'Cidades', short: 'Cid' },
             { key: 'users' as const, icon: Users, label: 'Usuários', short: 'Users' },
             ...(role === 'super_admin' ? [
               { key: 'emails' as const, icon: Mail, label: 'E-mails', short: 'Mail' },
@@ -307,6 +311,7 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === 'franchises' && <AdminFranchiseManager />}
+        {activeTab === 'cities' && <AdminCityManager />}
         {activeTab === 'users' && <AdminUserManager />}
         {activeTab === 'emails' && <AdminEmailTemplates />}
 
