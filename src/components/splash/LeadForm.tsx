@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { motion } from 'framer-motion';
 import { User, Phone, Mail, ArrowRight, AlertCircle, Shield } from 'lucide-react';
 import { type Lang, t } from '@/lib/i18n';
+import { isValidBRPhone, isValidEmail, formatPhoneBR } from '@/lib/validation';
 
 interface LeadFormProps {
   onSubmit: (data: { nome: string; telefone: string; email: string }) => void;
@@ -25,11 +26,8 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading, lang = 'pt' }: L
   const [duplicateMsg, setDuplicateMsg] = useState('');
   const [checking, setChecking] = useState(false);
 
-  const formatPhone = (val: string) => {
-    const digits = val.replace(/\D/g, '').slice(0, 11);
-    if (digits.length <= 2) return digits;
-    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+  const handlePhoneChange = (val: string) => {
+    setTelefone(formatPhoneBR(val));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,10 +40,10 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading, lang = 'pt' }: L
     if (cleanName.length > 100) newErrors.nome = t('lead_error_name_long', lang);
     
     const phoneDigits = telefone.replace(/\D/g, '');
-    if (phoneDigits.length < 10 || phoneDigits.length > 11) newErrors.telefone = t('lead_error_phone', lang);
+    if (!isValidBRPhone(phoneDigits)) newErrors.telefone = t('lead_error_phone', lang);
     
     const cleanEmail = email.trim().slice(0, 255);
-    if (cleanEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) newErrors.email = t('lead_error_email', lang);
+    if (cleanEmail && !isValidEmail(cleanEmail)) newErrors.email = t('lead_error_email', lang);
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -136,7 +134,7 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading, lang = 'pt' }: L
             </Label>
             <Input
               value={telefone}
-              onChange={e => { setTelefone(formatPhone(e.target.value)); setErrors(p => ({ ...p, telefone: '' })); setDuplicateMsg(''); }}
+              onChange={e => { handlePhoneChange(e.target.value); setErrors(p => ({ ...p, telefone: '' })); setDuplicateMsg(''); }}
               placeholder={t('lead_whatsapp_placeholder', lang)}
               className="py-6 rounded-2xl text-base bg-background border-border"
               type="tel"

@@ -16,30 +16,12 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import logoSplash from '@/assets/logo-splash.png';
 
+import { formatPhoneBR, unformatPhone, isValidBRPhone, isValidEmail } from '@/lib/validation';
+
 type FranchiseOption = {
   id: string;
   nome_franquia: string;
 };
-
-/** Strip country code 55 prefix if present, return only local digits */
-function stripBR(digits: string): string {
-  if (digits.startsWith('55') && digits.length >= 12) return digits.slice(2);
-  return digits;
-}
-
-/** Format digits as (XX) XXXXX-XXXX, hiding the 55 prefix */
-function formatPhone(raw: string): string {
-  const digits = stripBR(raw.replace(/\D/g, ''));
-  if (digits.length === 0) return '';
-  if (digits.length <= 2) return `(${digits}`;
-  if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
-  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
-}
-
-/** Parse masked phone back to raw digits (without 55) */
-function unformatPhone(masked: string): string {
-  return masked.replace(/\D/g, '').slice(0, 11);
-}
 
 export default function ProfileSettings() {
   const { user, role, franchiseId } = useAuth();
@@ -57,6 +39,8 @@ export default function ProfileSettings() {
   const [saving, setSaving] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+
 
   // Scroll to hash anchor after loading
   useEffect(() => {
@@ -132,9 +116,30 @@ export default function ProfileSettings() {
   };
 
   const handleSave = async () => {
+    const errors: Record<string, string> = {};
+
+    if (telefone.trim() && !isValidBRPhone(telefone)) {
+      errors.telefone = 'Telefone inválido. Use DDD + número (10 ou 11 dígitos).';
+    }
+
+    if (isFranchise) {
+      if (whatsapp.trim() && !isValidBRPhone(whatsapp)) {
+        errors.whatsapp = 'WhatsApp inválido. Use DDD + número (10 ou 11 dígitos).';
+      }
+      if (email.trim() && !isValidEmail(email)) {
+        errors.email = 'E-mail inválido.';
+      }
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
+      toast.error('Corrija os campos destacados antes de salvar.');
+      return;
+    }
+
+    setFormErrors({});
     setSaving(true);
     try {
-      // Update profile name
       const { error: profileError } = await supabase
         .from('profiles')
         .update({ full_name: fullName.trim() || null, telefone: telefone.trim() || null } as any)
@@ -142,7 +147,6 @@ export default function ProfileSettings() {
 
       if (profileError) throw profileError;
 
-      // Update franchise contact info if franchise user
       if (franchiseId) {
         const { error: franchiseError } = await supabase
           .from('franchises')
@@ -307,10 +311,11 @@ export default function ProfileSettings() {
                 <Input
                   id="personalPhone"
                   placeholder="(51) 99999-9999"
-                  value={formatPhone(telefone)}
-                  onChange={e => setTelefone(unformatPhone(e.target.value))}
+                  value={formatPhoneBR(telefone)}
+                  onChange={e => { setTelefone(unformatPhone(e.target.value)); setFormErrors(p => ({ ...p, telefone: '' })); }}
                   maxLength={16}
                 />
+                {formErrors.telefone && <p className="text-xs text-destructive mt-1">{formErrors.telefone}</p>}
               </div>
               <div className="space-y-2">
                 <Label htmlFor="loginEmail">E-mail de login</Label>
@@ -347,10 +352,11 @@ export default function ProfileSettings() {
                   <Input
                     id="franchiseWhatsapp"
                     placeholder="(51) 99999-9999"
-                    value={formatPhone(whatsapp)}
-                    onChange={e => setWhatsapp(unformatPhone(e.target.value))}
+                    value={formatPhoneBR(whatsapp)}
+                    onChange={e => { setWhatsapp(unformatPhone(e.target.value)); setFormErrors(p => ({ ...p, whatsapp: '' })); }}
                     maxLength={16}
                   />
+                  {formErrors.whatsapp && <p className="text-xs text-destructive mt-1">{formErrors.whatsapp}</p>}
                   <p className="text-xs text-muted-foreground">DDD + número. O código do Brasil (55) é adicionado automaticamente.</p>
                 </div>
                 <div className="space-y-2">
@@ -362,8 +368,9 @@ export default function ProfileSettings() {
                     type="email"
                     placeholder="franquia@splashpiscinas.com"
                     value={email}
-                    onChange={e => setEmail(e.target.value)}
+                    onChange={e => { setEmail(e.target.value); setFormErrors(p => ({ ...p, email: '' })); }}
                   />
+                  {formErrors.email && <p className="text-xs text-destructive mt-1">{formErrors.email}</p>}
                   <p className="text-xs text-muted-foreground">Os leads gerados pelo quiz serão enviados para este e-mail.</p>
                 </div>
               </CardContent>
