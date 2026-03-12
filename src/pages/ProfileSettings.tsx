@@ -235,6 +235,7 @@ export default function ProfileSettings() {
   }
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-border/40 bg-card/80 backdrop-blur-xl">
         <div className="max-w-3xl mx-auto px-4 md:px-6 h-14 md:h-16 flex items-center gap-3">
@@ -253,6 +254,10 @@ export default function ProfileSettings() {
       </header>
 
       <div className="max-w-3xl mx-auto px-4 md:px-6 py-6 md:py-8 space-y-6">
+        <Breadcrumbs items={[
+          { label: isAdmin ? 'Admin' : 'Painel', href: backPath },
+          { label: 'Configurações' },
+        ]} />
         {/* Avatar section */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-5">
           <div className="relative group">
