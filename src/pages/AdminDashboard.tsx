@@ -255,20 +255,20 @@ export default function AdminDashboard() {
 
         {activeTab === 'overview' && (
           <>
-            <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
               <AdminCityRanking leads={allLeads} />
               <AdminFranchiseRanking leads={allLeads} franchiseMap={franchiseMap} />
             </div>
-            <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
               <AdminReferralMetrics leads={allLeads} />
               <Card className="card-premium">
-                <CardHeader><CardTitle className="text-sm font-bold">Leads por Mês</CardTitle></CardHeader>
-                <CardContent>
+                <CardHeader className="px-3 sm:px-6"><CardTitle className="text-sm font-bold">Leads por Mês</CardTitle></CardHeader>
+                <CardContent className="px-2 sm:px-6">
                   {leadsPerMonth.length > 0 ? (
-                    <ChartContainer config={{}} className="h-[250px]">
-                      <BarChart data={leadsPerMonth}>
-                        <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-                        <YAxis allowDecimals={false} />
+                    <ChartContainer config={{}} className="h-[200px] sm:h-[250px] w-full">
+                      <BarChart data={leadsPerMonth} margin={{ left: -15, right: 5, top: 5, bottom: 0 }}>
+                        <XAxis dataKey="month" tick={{ fontSize: 10 }} />
+                        <YAxis allowDecimals={false} tick={{ fontSize: 10 }} width={30} />
                         <ChartTooltip content={<ChartTooltipContent />} />
                         <Bar dataKey="count" fill="hsl(207, 90%, 42%)" radius={[6, 6, 0, 0]} />
                       </BarChart>
