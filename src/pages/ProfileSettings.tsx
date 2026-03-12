@@ -368,8 +368,9 @@ export default function ProfileSettings() {
                     type="email"
                     placeholder="franquia@splashpiscinas.com"
                     value={email}
-                    onChange={e => setEmail(e.target.value)}
+                    onChange={e => { setEmail(e.target.value); setFormErrors(p => ({ ...p, email: '' })); }}
                   />
+                  {formErrors.email && <p className="text-xs text-destructive mt-1">{formErrors.email}</p>}
                   <p className="text-xs text-muted-foreground">Os leads gerados pelo quiz serão enviados para este e-mail.</p>
                 </div>
               </CardContent>
