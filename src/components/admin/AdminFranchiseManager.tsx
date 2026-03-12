@@ -271,6 +271,9 @@ export function AdminFranchiseManager() {
                         <h3 className="font-semibold text-foreground text-sm">{f.nome_franquia}</h3>
                         <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
                           <MapPin className="w-3 h-3" /> {f.cidade_base}
+                          {f.cidades_atendidas.length > 0 && (
+                            <span className="text-muted-foreground/60">+{f.cidades_atendidas.length} cidade{f.cidades_atendidas.length > 1 ? 's' : ''}</span>
+                          )}
                         </div>
                       </div>
                       {!f.ativa && (
