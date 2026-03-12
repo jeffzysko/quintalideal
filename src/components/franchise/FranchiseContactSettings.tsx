@@ -110,6 +110,26 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
           </div>
         </div>
 
+        <div className="space-y-2 pt-2 border-t border-border">
+          <Label htmlFor="meta_pixel_id" className="text-xs font-medium">
+            <span className="flex items-center gap-1.5">
+              <BarChart3 className="w-3.5 h-3.5 text-muted-foreground" />
+              Meta Pixel ID (Facebook/Instagram Ads)
+            </span>
+          </Label>
+          <Input
+            id="meta_pixel_id"
+            value={metaPixelId}
+            onChange={e => setMetaPixelId(e.target.value.replace(/\D/g, ''))}
+            placeholder="123456789012345"
+            className="text-sm font-mono"
+            maxLength={20}
+          />
+          <p className="text-xs text-muted-foreground">
+            Encontre no <a href="https://business.facebook.com/events_manager" target="_blank" rel="noopener noreferrer" className="text-primary underline">Meta Business Suite → Gerenciador de Eventos</a>
+          </p>
+        </div>
+
         <Button onClick={handleSave} disabled={saving} className="w-full gap-2">
           <Save className="w-4 h-4" />
           {saving ? 'Salvando...' : 'Salvar dados de contato'}
