@@ -359,6 +359,7 @@ export type Database = {
         Returns: {
           ativa: boolean
           id: string
+          meta_pixel_id: string
           nome_franquia: string
           slug_url: string
           whatsapp: string
