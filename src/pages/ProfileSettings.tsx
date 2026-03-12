@@ -267,6 +267,11 @@ export default function ProfileSettings() {
           </motion.div>
         )}
 
+        {/* Franchise users management */}
+        {isFranchise && franchiseId && (
+          <FranchiseUsersSection franchiseId={franchiseId} />
+        )}
+
         {/* Password change */}
         <PasswordChangeCard />
 
