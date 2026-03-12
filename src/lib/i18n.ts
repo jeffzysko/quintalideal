@@ -80,8 +80,8 @@ const translations = {
 
   quiz_q6: { pt: 'Qual o orçamento estimado para sua piscina?', es: '¿Cuál es el presupuesto estimado para tu piscina?' },
   quiz_q6_o1: { pt: 'Até R$ 18 mil', es: 'Hasta R$ 18 mil' },
-  quiz_q6_o2: { pt: 'R$ 18 a 30 mil', es: 'R$ 18 a 30 mil' },
-  quiz_q6_o3: { pt: 'R$ 30 a 50 mil', es: 'R$ 30 a 50 mil' },
+  quiz_q6_o2: { pt: 'R$ 18 mil a R$ 30 mil', es: 'R$ 18 mil a R$ 30 mil' },
+  quiz_q6_o3: { pt: 'R$ 30 mil a R$ 50 mil', es: 'R$ 30 mil a R$ 50 mil' },
 
   quiz_city: { pt: 'Cidade onde você mora', es: 'Ciudad donde vives' },
   quiz_city_placeholder: { pt: 'Digite o nome da sua cidade...', es: 'Escribe el nombre de tu ciudad...' },
