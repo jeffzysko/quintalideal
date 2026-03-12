@@ -21,6 +21,26 @@ type FranchiseOption = {
   nome_franquia: string;
 };
 
+/** Strip country code 55 prefix if present, return only local digits */
+function stripBR(digits: string): string {
+  if (digits.startsWith('55') && digits.length >= 12) return digits.slice(2);
+  return digits;
+}
+
+/** Format digits as (XX) XXXXX-XXXX, hiding the 55 prefix */
+function formatPhone(raw: string): string {
+  const digits = stripBR(raw.replace(/\D/g, ''));
+  if (digits.length === 0) return '';
+  if (digits.length <= 2) return `(${digits}`;
+  if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+  return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+}
+
+/** Parse masked phone back to raw digits (without 55) */
+function unformatPhone(masked: string): string {
+  return masked.replace(/\D/g, '').slice(0, 11);
+}
+
 export default function ProfileSettings() {
   const { user, role, franchiseId } = useAuth();
   const navigate = useNavigate();
@@ -127,7 +147,7 @@ export default function ProfileSettings() {
         const { error: franchiseError } = await supabase
           .from('franchises')
           .update({
-            whatsapp: whatsapp.trim() || null,
+            whatsapp: whatsapp.trim() ? `55${whatsapp.trim()}` : null,
             email: email.trim() || null,
             responsavel: fullName.trim() || null,
           })
@@ -287,8 +307,9 @@ export default function ProfileSettings() {
                 <Input
                   id="personalPhone"
                   placeholder="(51) 99999-9999"
-                  value={telefone}
-                  onChange={e => setTelefone(e.target.value)}
+                  value={formatPhone(telefone)}
+                  onChange={e => setTelefone(unformatPhone(e.target.value))}
+                  maxLength={16}
                 />
               </div>
               <div className="space-y-2">
@@ -325,11 +346,12 @@ export default function ProfileSettings() {
                   </Label>
                   <Input
                     id="franchiseWhatsapp"
-                    placeholder="5551999999999"
-                    value={whatsapp}
-                    onChange={e => setWhatsapp(e.target.value.replace(/\D/g, ''))}
+                    placeholder="(51) 99999-9999"
+                    value={formatPhone(whatsapp)}
+                    onChange={e => setWhatsapp(unformatPhone(e.target.value))}
+                    maxLength={16}
                   />
-                  <p className="text-xs text-muted-foreground">Número com DDD, apenas dígitos. Ex: 5551999999999</p>
+                  <p className="text-xs text-muted-foreground">DDD + número. O código do Brasil (55) é adicionado automaticamente.</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="franchiseEmail" className="flex items-center gap-1.5">
