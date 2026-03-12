@@ -73,12 +73,18 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
     }
   };
 
+  // Filter events by franchise if selected
+  const filteredEvents = useMemo(() => {
+    if (filterFranchise === 'all') return events;
+    return events.filter(e => e.franchise_id === filterFranchise);
+  }, [events, filterFranchise]);
+
   // Funnel data
   const funnelData = useMemo(() => {
     const counts: Record<string, Set<string>> = {};
     FUNNEL_STEPS.forEach(s => { counts[s.key] = new Set(); });
     
-    events.forEach(e => {
+    filteredEvents.forEach(e => {
       if (counts[e.event_name]) {
         counts[e.event_name].add(e.session_id);
       }
@@ -92,7 +98,32 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
       const rate = Math.round((count / firstCount) * 100);
       return { ...step, count, dropoff: i > 0 ? dropoff : 0, rate, fill: FUNNEL_COLORS[i] };
     });
-  }, [events]);
+  }, [filteredEvents]);
+
+  // Per-franchise funnel comparison (super_admin only)
+  const franchiseFunnels = useMemo(() => {
+    if (!isSuperAdmin) return [];
+    const franchiseIds = [...new Set(events.filter(e => e.franchise_id).map(e => e.franchise_id!))];
+    return franchiseIds.map(fid => {
+      const fEvents = events.filter(e => e.franchise_id === fid);
+      const counts: Record<string, Set<string>> = {};
+      FUNNEL_STEPS.forEach(s => { counts[s.key] = new Set(); });
+      fEvents.forEach(e => { if (counts[e.event_name]) counts[e.event_name].add(e.session_id); });
+      const visits = counts['landing_page_viewed'].size;
+      const leads = counts['lead_created'].size;
+      const whatsapp = counts['whatsapp_clicked'].size;
+      const convRate = visits > 0 ? Math.round((leads / visits) * 100) : 0;
+      return {
+        id: fid,
+        name: franchiseMap[fid] || fid.slice(0, 8),
+        visits,
+        quizStarted: counts['quiz_started'].size,
+        leads,
+        whatsapp,
+        convRate,
+      };
+    }).sort((a, b) => b.visits - a.visits);
+  }, [events, isSuperAdmin, franchiseMap]);
 
   // Question analysis
   const questionStats = useMemo(() => {
