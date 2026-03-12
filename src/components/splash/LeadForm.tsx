@@ -40,10 +40,10 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading, lang = 'pt' }: L
     if (cleanName.length > 100) newErrors.nome = t('lead_error_name_long', lang);
     
     const phoneDigits = telefone.replace(/\D/g, '');
-    if (phoneDigits.length < 10 || phoneDigits.length > 11) newErrors.telefone = t('lead_error_phone', lang);
+    if (!isValidBRPhone(phoneDigits)) newErrors.telefone = t('lead_error_phone', lang);
     
     const cleanEmail = email.trim().slice(0, 255);
-    if (cleanEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) newErrors.email = t('lead_error_email', lang);
+    if (cleanEmail && !isValidEmail(cleanEmail)) newErrors.email = t('lead_error_email', lang);
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
