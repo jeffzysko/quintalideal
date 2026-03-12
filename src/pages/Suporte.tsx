@@ -25,6 +25,7 @@ import {
   Trash2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { PageTransition } from '@/components/PageTransition';
 
 /* ─── Animation variants ─── */
 const fadeUp = {
@@ -256,6 +257,7 @@ export default function Suporte() {
   };
 
   return (
+    <PageTransition>
     <div className="min-h-screen flex flex-col gradient-hero">
       {/* Background orbs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
@@ -431,5 +433,6 @@ export default function Suporte() {
         </motion.section>
       </div>
     </div>
+    </PageTransition>
   );
 }
