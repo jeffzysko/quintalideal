@@ -298,14 +298,13 @@ Deno.serve(async (req) => {
     }
 
     // Admin-only actions below
-    const { data: roleCheck } = await adminClient
+    const { data: roleChecks } = await adminClient
       .from("user_roles")
       .select("role")
       .eq("user_id", callerUser.id)
-      .eq("role", "admin_fabrica")
-      .maybeSingle();
+      .in("role", ["admin_fabrica", "super_admin"]);
 
-    if (!roleCheck) {
+    if (!roleChecks || roleChecks.length === 0) {
       return new Response(JSON.stringify({ error: "Apenas administradores podem gerenciar usuários" }), {
         status: 403,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
