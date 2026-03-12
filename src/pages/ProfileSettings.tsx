@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ArrowLeft, Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff, Camera } from 'lucide-react';
+import { ArrowLeft, Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff, Camera, MapPin } from 'lucide-react';
 import { FranchiseUsersSection } from '@/components/franchise/FranchiseUsersSection';
 import { FranchiseContactSettings } from '@/components/franchise/FranchiseContactSettings';
 import { toast } from 'sonner';
@@ -33,6 +33,7 @@ export default function ProfileSettings() {
   const [whatsapp, setWhatsapp] = useState('');
   const [email, setEmail] = useState('');
   const [franchiseName, setFranchiseName] = useState('');
+  const [cidadesAtendidas, setCidadesAtendidas] = useState('');
   const [availableFranchises, setAvailableFranchises] = useState<FranchiseOption[]>([]);
   const [selectedIntegrationFranchiseId, setSelectedIntegrationFranchiseId] = useState('');
   const [loading, setLoading] = useState(true);
@@ -82,7 +83,7 @@ export default function ProfileSettings() {
       if (franchiseId) {
         const { data: franchise } = await supabase
           .from('franchises')
-          .select('whatsapp, email, nome_franquia, responsavel')
+          .select('whatsapp, email, nome_franquia, responsavel, cidades_atendidas')
           .eq('id', franchiseId)
           .maybeSingle();
 
@@ -90,6 +91,7 @@ export default function ProfileSettings() {
           setWhatsapp(franchise.whatsapp || '');
           setEmail(franchise.email || '');
           setFranchiseName(franchise.nome_franquia || '');
+          setCidadesAtendidas(((franchise as any).cidades_atendidas || []).join(', '));
           if (franchise.responsavel && !profile?.full_name) {
             setFullName(franchise.responsavel);
           }
@@ -148,13 +150,19 @@ export default function ProfileSettings() {
       if (profileError) throw profileError;
 
       if (franchiseId) {
+        const cidadesArr = cidadesAtendidas
+          .split(',')
+          .map(c => c.trim())
+          .filter(Boolean);
+
         const { error: franchiseError } = await supabase
           .from('franchises')
           .update({
             whatsapp: whatsapp.trim() ? `55${whatsapp.trim()}` : null,
             email: email.trim() || null,
             responsavel: fullName.trim() || null,
-          })
+            cidades_atendidas: cidadesArr,
+          } as any)
           .eq('id', franchiseId);
 
         if (franchiseError) throw franchiseError;
@@ -372,6 +380,18 @@ export default function ProfileSettings() {
                   />
                   {formErrors.email && <p className="text-xs text-destructive mt-1">{formErrors.email}</p>}
                   <p className="text-xs text-muted-foreground">Os leads gerados pelo quiz serão enviados para este e-mail.</p>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="cidadesAtendidas" className="flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5" /> Cidades Atendidas
+                  </Label>
+                  <Input
+                    id="cidadesAtendidas"
+                    placeholder="Canoas, Gravataí, Cachoeirinha"
+                    value={cidadesAtendidas}
+                    onChange={e => setCidadesAtendidas(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">Separe as cidades por vírgula. A cidade base já é incluída automaticamente.</p>
                 </div>
               </CardContent>
             </Card>

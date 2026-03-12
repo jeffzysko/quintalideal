@@ -17,6 +17,7 @@ interface Franchise {
   nome_franquia: string;
   slug_url: string;
   cidade_base: string;
+  cidades_atendidas: string[];
   responsavel: string | null;
   whatsapp: string | null;
   email: string | null;
@@ -28,6 +29,7 @@ interface FranchiseFormData {
   nome_franquia: string;
   slug_url: string;
   cidade_base: string;
+  cidades_atendidas: string;
   responsavel: string;
   whatsapp: string;
   email: string;
@@ -37,6 +39,7 @@ const emptyForm: FranchiseFormData = {
   nome_franquia: '',
   slug_url: '',
   cidade_base: '',
+  cidades_atendidas: '',
   responsavel: '',
   whatsapp: '',
   email: '',
@@ -61,8 +64,9 @@ export function AdminFranchiseManager() {
   const load = async () => {
     const { data } = await supabase
       .from('franchises')
-      .select('id, nome_franquia, slug_url, cidade_base, responsavel, whatsapp, email, ativa, created_at')
+      .select('id, nome_franquia, slug_url, cidade_base, cidades_atendidas, responsavel, whatsapp, email, ativa, created_at')
       .order('nome_franquia');
+    setFranchises((data || []).map((f: any) => ({ ...f, cidades_atendidas: f.cidades_atendidas || [] })) as Franchise[]);
     setFranchises((data || []) as Franchise[]);
     setLoading(false);
   };
@@ -87,6 +91,7 @@ export function AdminFranchiseManager() {
       nome_franquia: f.nome_franquia,
       slug_url: f.slug_url,
       cidade_base: f.cidade_base,
+      cidades_atendidas: (f.cidades_atendidas || []).join(', '),
       responsavel: f.responsavel || '',
       whatsapp: f.whatsapp || '',
       email: f.email || '',
@@ -106,6 +111,11 @@ export function AdminFranchiseManager() {
     }
 
     setSaving(true);
+    const cidadesArr = form.cidades_atendidas
+      .split(',')
+      .map(c => c.trim())
+      .filter(Boolean);
+
     try {
       if (editingId) {
         const { error } = await supabase
@@ -114,10 +124,11 @@ export function AdminFranchiseManager() {
             nome_franquia: form.nome_franquia.trim(),
             slug_url: form.slug_url.trim(),
             cidade_base: form.cidade_base.trim(),
+            cidades_atendidas: cidadesArr,
             responsavel: form.responsavel.trim() || null,
             whatsapp: form.whatsapp.trim() || null,
             email: form.email.trim() || null,
-          })
+          } as any)
           .eq('id', editingId);
         if (error) throw error;
         toast.success('Franquia atualizada!');
@@ -128,10 +139,11 @@ export function AdminFranchiseManager() {
             nome_franquia: form.nome_franquia.trim(),
             slug_url: form.slug_url.trim(),
             cidade_base: form.cidade_base.trim(),
+            cidades_atendidas: cidadesArr,
             responsavel: form.responsavel.trim() || null,
             whatsapp: form.whatsapp.trim() || null,
             email: form.email.trim() || null,
-          });
+          } as any);
         if (error) throw error;
         toast.success('Franquia criada com sucesso!');
       }
@@ -259,6 +271,9 @@ export function AdminFranchiseManager() {
                         <h3 className="font-semibold text-foreground text-sm">{f.nome_franquia}</h3>
                         <div className="flex items-center gap-1.5 text-xs text-muted-foreground mt-0.5">
                           <MapPin className="w-3 h-3" /> {f.cidade_base}
+                          {f.cidades_atendidas.length > 0 && (
+                            <span className="text-muted-foreground/60">+{f.cidades_atendidas.length} cidade{f.cidades_atendidas.length > 1 ? 's' : ''}</span>
+                          )}
                         </div>
                       </div>
                       {!f.ativa && (
@@ -355,6 +370,15 @@ export function AdminFranchiseManager() {
                   placeholder="porto-alegre"
                 />
               </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Cidades Atendidas</Label>
+              <Input
+                value={form.cidades_atendidas}
+                onChange={e => setForm(prev => ({ ...prev, cidades_atendidas: e.target.value }))}
+                placeholder="Canoas, Gravataí, Cachoeirinha"
+              />
+              <p className="text-[11px] text-muted-foreground">Separe as cidades por vírgula. A cidade base já é incluída automaticamente.</p>
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs font-medium">Cidade Base *</Label>

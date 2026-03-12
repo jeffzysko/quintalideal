@@ -1,0 +1,1 @@
+ALTER TABLE public.franchises ADD COLUMN IF NOT EXISTS cidades_atendidas text[] DEFAULT '{}'::text[];
