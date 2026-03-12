@@ -171,7 +171,7 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
   const utmStats = useMemo(() => {
     const sources: Record<string, number> = {};
     const sessions = new Set<string>();
-    events.forEach(e => {
+    filteredEvents.forEach(e => {
       if (!sessions.has(e.session_id)) {
         sessions.add(e.session_id);
         const src = e.utm_source || 'orgânico';
