@@ -83,7 +83,7 @@ export default function ProfileSettings() {
       if (franchiseId) {
         const { data: franchise } = await supabase
           .from('franchises')
-          .select('whatsapp, email, nome_franquia, responsavel')
+          .select('whatsapp, email, nome_franquia, responsavel, cidades_atendidas')
           .eq('id', franchiseId)
           .maybeSingle();
 
@@ -91,6 +91,7 @@ export default function ProfileSettings() {
           setWhatsapp(franchise.whatsapp || '');
           setEmail(franchise.email || '');
           setFranchiseName(franchise.nome_franquia || '');
+          setCidadesAtendidas(((franchise as any).cidades_atendidas || []).join(', '));
           if (franchise.responsavel && !profile?.full_name) {
             setFullName(franchise.responsavel);
           }
