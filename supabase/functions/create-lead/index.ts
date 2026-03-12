@@ -115,24 +115,40 @@ async function resolveTerritory(
     }
   }
 
-  // Origin not eligible — prefer primary city franchise
-  const primary = matches.find((m) => m.is_primary_city);
-  if (primary) {
-    return {
-      assignedFranchiseId: primary.franchise_id,
-      territoryMatchStatus: "matched_multiple_franchises",
-      coverageMatchCount: count,
-      distributionRuleUsed: "primary_city_priority",
-    };
-  }
+  // Origin not eligible — round-robin by least leads assigned for this city
+  const franchiseIds = matches.map((m) => m.franchise_id);
+  const assigned = await roundRobinByLeastLeads(supabase, cityNormalized, franchiseIds);
 
-  // Fallback: first match (simple round-robin placeholder)
   return {
-    assignedFranchiseId: matches[0].franchise_id,
+    assignedFranchiseId: assigned,
     territoryMatchStatus: "matched_multiple_franchises",
     coverageMatchCount: count,
-    distributionRuleUsed: "first_match_fallback",
+    distributionRuleUsed: "round_robin_least_leads",
   };
+}
+
+/** Pick the franchise with the fewest leads for this city (self-balancing round-robin). */
+async function roundRobinByLeastLeads(
+  supabase: ReturnType<typeof createClient>,
+  cityNormalized: string,
+  franchiseIds: string[],
+): Promise<string> {
+  // Count existing leads per franchise for this city
+  const counts: { id: string; count: number }[] = [];
+
+  for (const fid of franchiseIds) {
+    const { count } = await supabase
+      .from("leads")
+      .select("id", { count: "exact", head: true })
+      .eq("franquia_id", fid)
+      .eq("lead_city_normalized", cityNormalized);
+
+    counts.push({ id: fid, count: count ?? 0 });
+  }
+
+  // Sort ascending by count, pick the one with fewest
+  counts.sort((a, b) => a.count - b.count);
+  return counts[0].id;
 }
 
 Deno.serve(async (req) => {
