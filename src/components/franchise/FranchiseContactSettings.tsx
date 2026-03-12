@@ -23,6 +23,7 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
   const [slug, setSlug] = useState('');
   const [savingContact, setSavingContact] = useState(false);
   const [savingIntegrations, setSavingIntegrations] = useState(false);
+  const [testingWebhook, setTestingWebhook] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
