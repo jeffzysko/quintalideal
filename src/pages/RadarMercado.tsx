@@ -316,7 +316,7 @@ export default function RadarMercado() {
               <p className="text-xs text-muted-foreground">Heatmap baseado nos testes realizados por cidade</p>
             </CardHeader>
             <CardContent>
-              <div className="relative w-full aspect-[4/3] bg-muted/20 rounded-xl overflow-hidden border">
+              <div className="relative w-full aspect-square sm:aspect-[4/3] bg-muted/20 rounded-xl overflow-hidden border">
                 <svg viewBox="0 0 100 100" className="w-full h-full absolute inset-0 opacity-[0.07]">
                   <path
                     d="M 15,5 L 85,5 L 90,15 L 88,30 L 82,45 L 85,55 L 80,65 L 75,72 L 70,78 L 60,95 L 55,98 L 45,95 L 30,88 L 20,80 L 10,65 L 5,50 L 8,35 L 10,20 L 12,10 Z"
