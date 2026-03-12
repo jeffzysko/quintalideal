@@ -375,6 +375,18 @@ export default function ProfileSettings() {
                   {formErrors.email && <p className="text-xs text-destructive mt-1">{formErrors.email}</p>}
                   <p className="text-xs text-muted-foreground">Os leads gerados pelo quiz serão enviados para este e-mail.</p>
                 </div>
+                <div className="space-y-2">
+                  <Label htmlFor="cidadesAtendidas" className="flex items-center gap-1.5">
+                    <MapPin className="w-3.5 h-3.5" /> Cidades Atendidas
+                  </Label>
+                  <Input
+                    id="cidadesAtendidas"
+                    placeholder="Canoas, Gravataí, Cachoeirinha"
+                    value={cidadesAtendidas}
+                    onChange={e => setCidadesAtendidas(e.target.value)}
+                  />
+                  <p className="text-xs text-muted-foreground">Separe as cidades por vírgula. A cidade base já é incluída automaticamente.</p>
+                </div>
               </CardContent>
             </Card>
           </motion.div>
