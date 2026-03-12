@@ -4,16 +4,13 @@ import { useState, useMemo } from 'react';
 import { cidades, type CityOption } from '@/lib/cities';
 import { ExplorerProgress } from './ExplorerProgress';
 import { MapPin, Search, Check } from 'lucide-react';
+import { type Lang, t, UY_ENABLED_SLUGS } from '@/lib/i18n';
 
 interface QuizOption {
   value: string;
   label: string;
   emoji?: string;
 }
-
-const UY_ENABLED_SLUGS = new Set([
-  'santana-do-livramento', 'alegrete', 'bage', 'cassino', 'jaguarao',
-]);
 
 interface QuizStepProps {
   step: number;
@@ -25,6 +22,7 @@ interface QuizStepProps {
   onBack: () => void;
   explorerStep: number;
   franchiseSlug?: string;
+  lang?: Lang;
 }
 
 function formatCityLabel(city: CityOption): string {
@@ -32,7 +30,7 @@ function formatCityLabel(city: CityOption): string {
   return `${city.nome}, ${city.estado || 'RS'}`;
 }
 
-export function QuizStep({ step, totalSteps: _totalSteps, question, options, type = 'options', onAnswer, onBack, explorerStep, franchiseSlug }: QuizStepProps) {
+export function QuizStep({ step, totalSteps: _totalSteps, question, options, type = 'options', onAnswer, onBack, explorerStep, franchiseSlug, lang = 'pt' }: QuizStepProps) {
   const [citySearch, setCitySearch] = useState('');
   const [selectedValue, setSelectedValue] = useState<string | null>(null);
 
@@ -60,7 +58,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
       className="h-[100dvh] flex flex-col px-4 sm:px-6 py-3 sm:py-6 gradient-hero"
     >
       <div className="w-full max-w-lg mx-auto flex-1 flex flex-col">
-        <ExplorerProgress currentStep={explorerStep} onBack={onBack} />
+        <ExplorerProgress currentStep={explorerStep} onBack={onBack} lang={lang} />
 
         <div className="flex-1 flex flex-col justify-center -mt-10 sm:-mt-4">
           <motion.div
@@ -90,7 +88,6 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
                           : 'border-border bg-background hover:border-primary/40 hover:bg-accent/30'
                       }`}
                     >
-                      {/* Selection indicator */}
                       <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
                         isSelected ? 'border-primary bg-primary' : 'border-muted-foreground/30'
                       }`}>
@@ -104,7 +101,6 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
                       )}
                       <span className="font-medium text-[13px] sm:text-sm text-foreground">{opt.label}</span>
 
-                      {/* Selected glow */}
                       {isSelected && (
                         <motion.div
                           layoutId="selected-glow"
@@ -125,7 +121,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
                   <Input
                     value={citySearch}
                     onChange={e => setCitySearch(e.target.value)}
-                    placeholder="Digite o nome da sua cidade..."
+                    placeholder={t('quiz_city_placeholder', lang)}
                     className="pl-11 py-6 rounded-2xl text-base bg-background border-border"
                     autoFocus
                   />
@@ -157,7 +153,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
                 )}
                 {citySearch.length >= 2 && filteredCities.length === 0 && (
                   <p className="text-sm text-muted-foreground mt-4 text-center">
-                    Nenhuma cidade encontrada
+                    {t('quiz_city_empty', lang)}
                   </p>
                 )}
               </div>

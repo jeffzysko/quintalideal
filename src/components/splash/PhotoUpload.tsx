@@ -5,21 +5,16 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { ExplorerProgress } from './ExplorerProgress';
 import { toast } from 'sonner';
+import { type Lang, t } from '@/lib/i18n';
 
 interface PhotoUploadProps {
   onNext: (urls: string[]) => void;
   onBack: () => void;
+  lang?: Lang;
 }
 
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_FILE_SIZE = 10 * 1024 * 1024;
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
-
-const photoTips = [
-  { icon: '☀️', text: 'Prefira luz natural (durante o dia)' },
-  { icon: '📐', text: 'Fotografe de um canto para mostrar toda a área' },
-  { icon: '🌿', text: 'Inclua os limites do quintal na foto' },
-  { icon: '📏', text: 'Tire de pé, na altura dos olhos' },
-];
 
 async function compressImage(file: File, maxWidth = 1920, quality = 0.85): Promise<File> {
   return new Promise((resolve) => {
@@ -52,17 +47,17 @@ async function compressImage(file: File, maxWidth = 1920, quality = 0.85): Promi
   });
 }
 
-function validateFile(file: File): string | null {
+function validateFile(file: File, lang: Lang): string | null {
   if (!ACCEPTED_TYPES.includes(file.type)) {
-    return `Formato não suportado: ${file.type}. Use JPG, PNG ou WebP.`;
+    return `${t('photo_error_format', lang)}: ${file.type}`;
   }
   if (file.size > MAX_FILE_SIZE) {
-    return `Arquivo muito grande (${(file.size / 1024 / 1024).toFixed(1)}MB). Máximo: 10MB.`;
+    return `${t('photo_error_size', lang)} (${(file.size / 1024 / 1024).toFixed(1)}MB)`;
   }
   return null;
 }
 
-export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
+export function PhotoUpload({ onNext, onBack, lang = 'pt' }: PhotoUploadProps) {
   const [photos, setPhotos] = useState<{ file: File; preview: string }[]>([]);
   const [uploading, setUploading] = useState(false);
   const [showCamera, setShowCamera] = useState(false);
@@ -72,12 +67,19 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
   const streamRef = useRef<MediaStream | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
+  const photoTips = [
+    { icon: '☀️', text: t('photo_tip_1', lang) },
+    { icon: '📐', text: t('photo_tip_2', lang) },
+    { icon: '🌿', text: t('photo_tip_3', lang) },
+    { icon: '📏', text: t('photo_tip_4', lang) },
+  ];
+
   const addFiles = useCallback(async (files: File[]) => {
     const remaining = 4 - photos.length;
     const validFiles: File[] = [];
     
     for (const file of files.slice(0, remaining)) {
-      const error = validateFile(file);
+      const error = validateFile(file, lang);
       if (error) {
         toast.error(error);
         continue;
@@ -91,12 +93,11 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
       preview: URL.createObjectURL(file),
     }));
     setPhotos(prev => [...prev, ...toAdd]);
-  }, [photos.length]);
+  }, [photos.length, lang]);
 
   const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     addFiles(files);
-    // Reset input so same file can be selected again
     e.target.value = '';
   }, [addFiles]);
 
@@ -120,8 +121,6 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
         video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
       });
       streamRef.current = stream;
-      // Video element may not be mounted yet due to AnimatePresence,
-      // so we retry assigning the stream until it's available
       const assignStream = () => {
         if (videoRef.current) {
           videoRef.current.srcObject = stream;
@@ -131,7 +130,7 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
       };
       assignStream();
     } catch {
-      toast.error('Não foi possível acessar a câmera. Verifique as permissões.');
+      toast.error(t('photo_error_camera', lang));
       setShowCamera(false);
       setShowTips(true);
     }
@@ -200,7 +199,7 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
       }
       onNext(urls);
     } catch (_err) {
-      toast.error('Erro ao enviar fotos. Tente novamente.');
+      toast.error(t('photo_error_upload', lang));
     } finally {
       setUploading(false);
     }
@@ -215,7 +214,7 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
       className="h-[100dvh] flex flex-col px-4 sm:px-6 py-3 sm:py-8 gradient-hero"
     >
       <div className="w-full max-w-lg mx-auto flex-1 flex flex-col">
-        <ExplorerProgress currentStep={0} onBack={onBack} />
+        <ExplorerProgress currentStep={0} onBack={onBack} lang={lang} />
         <canvas ref={canvasRef} className="hidden" />
 
         <div className="flex-1 flex flex-col justify-center -mt-10 sm:-mt-4">
@@ -240,7 +239,7 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
                     <div className="absolute inset-4 border-2 border-dashed border-white/30 rounded-xl" />
                     <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-sm text-white text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5">
                       <Eye className="w-3.5 h-3.5" />
-                      Enquadre todo o quintal
+                      {t('photo_frame', lang)}
                     </div>
                   </div>
                 </div>
@@ -279,12 +278,11 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
                     <Camera className="w-5 h-5 text-primary-foreground" />
                   </div>
                   <div>
-                    <h2 className="text-lg font-bold tracking-tight text-foreground">Foto do seu quintal</h2>
-                    <p className="text-xs text-muted-foreground">Isso ajuda na análise do potencial</p>
+                    <h2 className="text-lg font-bold tracking-tight text-foreground">{t('photo_title', lang)}</h2>
+                    <p className="text-xs text-muted-foreground">{t('photo_subtitle', lang)}</p>
                   </div>
                 </div>
 
-                {/* Botões de captura lado a lado */}
                 {photos.length < 4 && (
                   <div className="flex gap-3 my-4">
                     <button
@@ -292,11 +290,11 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
                       className="flex-1 py-4 rounded-2xl border-2 border-dashed border-primary/30 flex flex-col items-center justify-center cursor-pointer hover:bg-primary/5 hover:border-primary/50 transition-all"
                     >
                       <Camera className="w-6 h-6 text-primary/50 mb-1" />
-                      <span className="text-xs text-muted-foreground font-medium">Tirar foto</span>
+                      <span className="text-xs text-muted-foreground font-medium">{t('photo_take', lang)}</span>
                     </button>
                     <label className="flex-1 py-4 rounded-2xl border-2 border-dashed border-primary/20 flex flex-col items-center justify-center cursor-pointer hover:bg-accent/30 hover:border-primary/40 transition-all">
                       <ImagePlus className="w-6 h-6 text-primary/35 mb-1" />
-                      <span className="text-xs text-muted-foreground font-medium">Da galeria</span>
+                      <span className="text-xs text-muted-foreground font-medium">{t('photo_gallery', lang)}</span>
                       <input
                         type="file"
                         accept="image/jpeg,image/png,image/webp"
@@ -308,7 +306,6 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
                   </div>
                 )}
 
-                {/* Fotos adicionadas */}
                 {photos.length > 0 && (
                   <div className="grid grid-cols-2 gap-3 my-4">
                     <AnimatePresence>
@@ -325,14 +322,12 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
                             <button
                               onClick={() => replacePhoto(i)}
                               className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-sm"
-                              title="Tirar outra foto"
                             >
                               <RotateCcw className="w-3.5 h-3.5 text-foreground" />
                             </button>
                             <button
                               onClick={() => removePhoto(i)}
                               className="w-8 h-8 bg-white/90 rounded-full flex items-center justify-center shadow-sm"
-                              title="Remover"
                             >
                               <X className="w-3.5 h-3.5 text-destructive" />
                             </button>
@@ -349,7 +344,6 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
                   </div>
                 )}
 
-                {/* Dicas */}
                 <AnimatePresence>
                   {showTips && photos.length === 0 && (
                     <motion.div
@@ -360,7 +354,7 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
                     >
                       <div className="flex items-center gap-2 mb-3">
                         <Lightbulb className="w-4 h-4 text-primary" />
-                        <span className="text-xs font-semibold text-foreground">Dicas para a melhor foto</span>
+                        <span className="text-xs font-semibold text-foreground">{t('photo_tips_title', lang)}</span>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         {photoTips.map((tip, i) => (
@@ -381,7 +375,7 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
                 </AnimatePresence>
 
                 <p className="text-[10px] text-muted-foreground text-center mb-5">
-                  {photos.length}/4 fotos • JPG, PNG ou WebP • Máx. 10MB
+                  {photos.length}/4 {t('photo_count', lang)}
                 </p>
 
                 <div className="flex gap-3">
@@ -390,14 +384,14 @@ export function PhotoUpload({ onNext, onBack }: PhotoUploadProps) {
                     variant="ghost"
                     className="flex-1 py-5 rounded-2xl text-sm text-muted-foreground"
                   >
-                    Pular esta etapa
+                    {t('photo_skip', lang)}
                   </Button>
                   <Button
                     onClick={handleUpload}
                     disabled={photos.length === 0 || uploading}
                     className="flex-1 py-5 rounded-2xl text-sm font-semibold gradient-blue hover:opacity-90 transition-all gap-1.5"
                   >
-                    {uploading ? 'Enviando...' : 'Continuar'}
+                    {uploading ? t('photo_uploading', lang) : t('photo_continue', lang)}
                     {!uploading && <ArrowRight className="w-4 h-4" />}
                   </Button>
                 </div>
