@@ -269,9 +269,16 @@ export default function PoliticaPrivacidade() {
             <div className="rounded-xl border border-border/50 bg-muted/30 p-4 mt-2">
               <p className="text-sm font-semibold text-foreground">Hallow Comunicação</p>
               <p className="text-xs text-muted-foreground mt-1">Encarregado de Proteção de Dados</p>
-              <p className="text-xs text-muted-foreground">Contato disponível através dos canais da plataforma</p>
+              <a
+                href="mailto:contato@hallow.com.br"
+                className="text-xs text-primary underline underline-offset-2 hover:text-primary/80 inline-flex items-center gap-1 mt-1"
+              >
+                <Mail className="w-3 h-3" />
+                contato@hallow.com.br
+              </a>
               <p className="text-xs text-muted-foreground mt-2">Prazo de resposta: até 15 dias úteis, conforme Art. 18, §5º da LGPD</p>
             </div>
+            <p className="mt-3">Para solicitar a <strong className="text-foreground">exclusão de seus dados pessoais</strong>, envie um e-mail para o endereço acima informando seu nome e telefone cadastrado. A exclusão será processada em até 15 dias úteis.</p>
           </Section>
 
           <Section number="13" icon={Shield} title="Alterações nesta Política" index={12}>
