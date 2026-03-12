@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ArrowLeft, Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff, Camera } from 'lucide-react';
+import { ArrowLeft, Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff, Camera, MapPin } from 'lucide-react';
 import { FranchiseUsersSection } from '@/components/franchise/FranchiseUsersSection';
 import { FranchiseContactSettings } from '@/components/franchise/FranchiseContactSettings';
 import { toast } from 'sonner';
