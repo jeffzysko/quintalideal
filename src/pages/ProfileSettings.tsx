@@ -346,11 +346,12 @@ export default function ProfileSettings() {
                   </Label>
                   <Input
                     id="franchiseWhatsapp"
-                    placeholder="5551999999999"
-                    value={whatsapp}
-                    onChange={e => setWhatsapp(e.target.value.replace(/\D/g, ''))}
+                    placeholder="(51) 99999-9999"
+                    value={formatPhone(whatsapp)}
+                    onChange={e => setWhatsapp(unformatPhone(e.target.value))}
+                    maxLength={16}
                   />
-                  <p className="text-xs text-muted-foreground">Número com DDD, apenas dígitos. Ex: 5551999999999</p>
+                  <p className="text-xs text-muted-foreground">DDD + número. O código do Brasil (55) é adicionado automaticamente.</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="franchiseEmail" className="flex items-center gap-1.5">
