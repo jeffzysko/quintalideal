@@ -68,6 +68,13 @@ export function UserAvatarMenu() {
           <Settings className="w-4 h-4 text-muted-foreground" />
           Configurações
         </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => navigate('/suporte')}
+          className="cursor-pointer rounded-lg px-3 py-2 text-sm gap-2.5"
+        >
+          <LifeBuoy className="w-4 h-4 text-muted-foreground" />
+          Suporte & Guia
+        </DropdownMenuItem>
         <DropdownMenuSeparator className="my-1" />
         <DropdownMenuItem
           onClick={() => signOut()}
