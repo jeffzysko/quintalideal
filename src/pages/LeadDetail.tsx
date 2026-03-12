@@ -312,6 +312,46 @@ export default function LeadDetail() {
           </motion.div>
         )}
 
+        {/* Territory info */}
+        {lead.territory_match_status && (
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.18 }}>
+            <Card className="glass-card">
+              <CardContent className="p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <MapPin className="w-4 h-4 text-primary" />
+                  <h2 className="text-sm font-semibold text-foreground">Distribuição Territorial</h2>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between py-2.5 px-3.5 rounded-xl bg-muted/40">
+                    <span className="text-sm text-muted-foreground">Status territorial</span>
+                    <Badge className={`${TERRITORY_COLORS[lead.territory_match_status] || ''} border text-xs font-medium`} variant="secondary">
+                      {TERRITORY_LABELS[lead.territory_match_status] || lead.territory_match_status}
+                    </Badge>
+                  </div>
+                  {lead.origin_franchise_id && lead.origin_franchise_id !== (lead as any).franquia_id && (
+                    <div className="flex items-center justify-between py-2.5 px-3.5 rounded-xl bg-muted/40">
+                      <span className="text-sm text-muted-foreground">Origem (URL)</span>
+                      <span className="text-sm font-medium text-foreground">Franquia de origem diferente</span>
+                    </div>
+                  )}
+                  {(lead.coverage_match_count || 0) > 1 && (
+                    <div className="flex items-center justify-between py-2.5 px-3.5 rounded-xl bg-muted/40">
+                      <span className="text-sm text-muted-foreground">Franquias elegíveis</span>
+                      <span className="text-sm font-semibold text-foreground">{lead.coverage_match_count}</span>
+                    </div>
+                  )}
+                  {lead.distribution_rule_used && (
+                    <div className="flex items-center justify-between py-2.5 px-3.5 rounded-xl bg-muted/40">
+                      <span className="text-sm text-muted-foreground">Regra aplicada</span>
+                      <span className="text-xs text-muted-foreground font-mono">{lead.distribution_rule_used}</span>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
         {/* Manage */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <Card className="glass-card">
