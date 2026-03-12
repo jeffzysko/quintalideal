@@ -55,15 +55,26 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
     setSavingContact(false);
   };
 
-  const handleSavePixel = async () => {
-    setSavingPixel(true);
+  const handleSaveIntegrations = async () => {
+    setSavingIntegrations(true);
     const { error } = await supabase
       .from('franchises')
-      .update({ meta_pixel_id: metaPixelId || null })
+      .update({
+        meta_pixel_id: metaPixelId || null,
+        webhook_url: webhookUrl || null,
+        webhook_secret: webhookSecret || null,
+      })
       .eq('id', franchiseId);
     if (error) toast.error('Erro ao salvar. Tente novamente.');
-    else toast.success('Meta Pixel atualizado!');
-    setSavingPixel(false);
+    else toast.success('Integrações atualizadas!');
+    setSavingIntegrations(false);
+  };
+
+  const generateSecret = () => {
+    const array = new Uint8Array(24);
+    crypto.getRandomValues(array);
+    const secret = Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
+    setWebhookSecret(secret);
   };
 
   const franchiseUrl = slug ? `${SITE_URL}/${slug}` : '';
