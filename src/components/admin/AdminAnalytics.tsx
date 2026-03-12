@@ -182,7 +182,7 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
       .sort(([, a], [, b]) => b - a)
       .slice(0, 10)
       .map(([source, count]) => ({ source, count }));
-  }, [events]);
+  }, [filteredEvents]);
 
   // Model stats
   const modelStats = useMemo(() => {
