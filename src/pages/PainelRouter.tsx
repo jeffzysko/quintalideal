@@ -13,7 +13,7 @@ export default function PainelRouter() {
   }
 
   if (!user) return <Navigate to="/login" replace />;
-  if (role === 'admin_fabrica') return <Navigate to="/admin" replace />;
+  if (role === 'super_admin' || role === 'admin_fabrica') return <Navigate to="/admin" replace />;
   if (role === 'franquia') return <Navigate to="/franquia" replace />;
   return <Navigate to="/login" replace />;
 }

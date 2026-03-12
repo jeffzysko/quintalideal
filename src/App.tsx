@@ -101,7 +101,7 @@ function AppRoutes() {
                       <Route
                         path="/suporte"
                         element={
-                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
+                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
                             <Suporte />
                           </ProtectedRoute>
                         }
@@ -109,7 +109,7 @@ function AppRoutes() {
                       <Route
                         path="/perfil"
                         element={
-                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
+                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
                             <ProfileSettings />
                           </ProtectedRoute>
                         }
@@ -118,7 +118,7 @@ function AppRoutes() {
                       <Route
                         path="/franquia"
                         element={
-                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
+                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
                             <FranchiseDashboard />
                           </ProtectedRoute>
                         }
@@ -126,7 +126,7 @@ function AppRoutes() {
                       <Route
                         path="/painel/lead/:id"
                         element={
-                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica']}>
+                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
                             <LeadDetail />
                           </ProtectedRoute>
                         }
@@ -134,7 +134,7 @@ function AppRoutes() {
                       <Route
                         path="/admin"
                         element={
-                          <ProtectedRoute allowedRoles={['admin_fabrica']}>
+                          <ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}>
                             <AdminDashboard />
                           </ProtectedRoute>
                         }
@@ -142,7 +142,7 @@ function AppRoutes() {
                       <Route
                         path="/admin/radar"
                         element={
-                          <ProtectedRoute allowedRoles={['admin_fabrica']}>
+                          <ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}>
                             <RadarMercado />
                           </ProtectedRoute>
                         }
@@ -150,7 +150,7 @@ function AppRoutes() {
                       <Route
                         path="/admin/lead/:id"
                         element={
-                          <ProtectedRoute allowedRoles={['admin_fabrica']}>
+                          <ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}>
                             <LeadDetail />
                           </ProtectedRoute>
                         }
