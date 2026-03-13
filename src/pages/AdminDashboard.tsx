@@ -215,6 +215,7 @@ export default function AdminDashboard() {
               </button>
             ))}
             <div className="h-5 w-px bg-border/60 mx-1" />
+            <NotificationBell />
             <UserAvatarMenu />
           </nav>
         </div>

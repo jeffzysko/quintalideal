@@ -318,6 +318,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
               {totalLeads} leads
             </Badge>
             <div className="h-5 w-px bg-border/60 mx-1 hidden sm:block" />
+            <NotificationBell />
             <UserAvatarMenu />
           </nav>
         </div>
