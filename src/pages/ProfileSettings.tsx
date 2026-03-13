@@ -338,7 +338,7 @@ export default function ProfileSettings() {
               {showIntegrationsTab && (
                 <TabsTrigger
                   value="integracoes"
-                  className="flex-1 gap-1.5 rounded-lg text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  className="flex-1 gap-1.5 rounded-lg text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted"
                 >
                   <Puzzle className="w-3.5 h-3.5" />
                   <span className="hidden sm:inline">Integrações</span>
