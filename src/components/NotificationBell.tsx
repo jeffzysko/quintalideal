@@ -1,6 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Bell } from 'lucide-react';
+import { Bell, History } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -24,11 +24,40 @@ interface Notification {
   franchise_id: string;
 }
 
+// Generate a short notification chime using Web Audio API
+function playNotificationSound() {
+  try {
+    const ctx = new AudioContext();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    // Pleasant two-tone chime
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(830, ctx.currentTime);
+    osc.frequency.setValueAtTime(1050, ctx.currentTime + 0.12);
+
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
+
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.4);
+
+    // Cleanup
+    osc.onended = () => ctx.close();
+  } catch {
+    // Audio not available — fail silently
+  }
+}
+
 export function NotificationBell() {
   const { user, franchiseId, role } = useAuth();
   const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
+  const initialLoadDone = useRef(false);
 
   const unreadCount = notifications.filter(n => !n.read).length;
 
@@ -49,7 +78,10 @@ export function NotificationBell() {
     }
 
     const { data } = await query;
-    if (data) setNotifications(data as Notification[]);
+    if (data) {
+      setNotifications(data as Notification[]);
+      initialLoadDone.current = true;
+    }
   }, [user, franchiseId, isAdmin]);
 
   useEffect(() => {
@@ -73,6 +105,11 @@ export function NotificationBell() {
         (payload) => {
           const newNotif = payload.new as Notification;
           setNotifications(prev => [newNotif, ...prev].slice(0, 20));
+
+          // Play sound only for new realtime notifications (not initial load)
+          if (initialLoadDone.current) {
+            playNotificationSound();
+          }
         }
       )
       .subscribe();
@@ -128,16 +165,29 @@ export function NotificationBell() {
       <PopoverContent align="end" sideOffset={8} className="w-80 sm:w-96 p-0 rounded-xl shadow-lg border-border/50">
         <div className="flex items-center justify-between px-4 py-3 border-b border-border/50">
           <h3 className="text-sm font-semibold text-foreground">Notificações</h3>
-          {unreadCount > 0 && (
+          <div className="flex items-center gap-1">
+            {unreadCount > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={markAllAsRead}
+                className="text-xs text-primary hover:text-primary/80 h-auto py-1 px-2"
+              >
+                Marcar todas como lidas
+              </Button>
+            )}
             <Button
               variant="ghost"
               size="sm"
-              onClick={markAllAsRead}
-              className="text-xs text-primary hover:text-primary/80 h-auto py-1 px-2"
+              onClick={() => {
+                setOpen(false);
+                navigate('/notificacoes');
+              }}
+              className="text-xs text-muted-foreground hover:text-foreground h-auto py-1 px-2"
             >
-              Marcar todas como lidas
+              <History className="w-3.5 h-3.5" />
             </Button>
-          )}
+          </div>
         </div>
         <ScrollArea className="max-h-80">
           {notifications.length === 0 ? (
@@ -174,6 +224,21 @@ export function NotificationBell() {
             </div>
           )}
         </ScrollArea>
+        {notifications.length > 0 && (
+          <div className="border-t border-border/30 px-4 py-2.5">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setOpen(false);
+                navigate('/notificacoes');
+              }}
+              className="w-full text-xs text-muted-foreground hover:text-foreground"
+            >
+              Ver todas as notificações
+            </Button>
+          </div>
+        )}
       </PopoverContent>
     </Popover>
   );
