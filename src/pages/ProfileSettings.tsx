@@ -388,9 +388,9 @@ export default function ProfileSettings() {
                   Essas informações serão exibidas publicamente ao final do quiz e usadas para receber leads por e-mail.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="franchiseWhatsapp" className="flex items-center gap-1.5">
+              <CardContent className="space-y-5">
+                <div className="space-y-1.5">
+                  <Label htmlFor="franchiseWhatsapp" className="text-xs font-medium flex items-center gap-1.5">
                     <Phone className="w-3.5 h-3.5" /> WhatsApp
                   </Label>
                   <Input
@@ -399,12 +399,13 @@ export default function ProfileSettings() {
                     value={formatPhoneBR(whatsapp)}
                     onChange={e => { setWhatsapp(unformatPhone(e.target.value)); setFormErrors(p => ({ ...p, whatsapp: '' })); }}
                     maxLength={16}
+                    className="rounded-xl h-11"
                   />
                   {formErrors.whatsapp && <p className="text-xs text-destructive mt-1">{formErrors.whatsapp}</p>}
-                  <p className="text-xs text-muted-foreground">DDD + número. O código do Brasil (55) é adicionado automaticamente.</p>
+                  <p className="text-[11px] text-muted-foreground">DDD + número. O código do Brasil (55) é adicionado automaticamente.</p>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="franchiseEmail" className="flex items-center gap-1.5">
+                <div className="space-y-1.5">
+                  <Label htmlFor="franchiseEmail" className="text-xs font-medium flex items-center gap-1.5">
                     <Mail className="w-3.5 h-3.5" /> E-mail para leads
                   </Label>
                   <Input
@@ -413,12 +414,13 @@ export default function ProfileSettings() {
                     placeholder="franquia@splashpiscinas.com"
                     value={email}
                     onChange={e => { setEmail(e.target.value); setFormErrors(p => ({ ...p, email: '' })); }}
+                    className="rounded-xl h-11"
                   />
                   {formErrors.email && <p className="text-xs text-destructive mt-1">{formErrors.email}</p>}
-                  <p className="text-xs text-muted-foreground">Os leads gerados pelo quiz serão enviados para este e-mail.</p>
+                  <p className="text-[11px] text-muted-foreground">Os leads gerados pelo quiz serão enviados para este e-mail.</p>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cidadesAtendidas" className="flex items-center gap-1.5">
+                <div className="space-y-1.5">
+                  <Label htmlFor="cidadesAtendidas" className="text-xs font-medium flex items-center gap-1.5">
                     <MapPin className="w-3.5 h-3.5" /> Cidades Atendidas
                   </Label>
                   <Input
@@ -426,8 +428,9 @@ export default function ProfileSettings() {
                     placeholder="Canoas, Gravataí, Cachoeirinha"
                     value={cidadesAtendidas}
                     onChange={e => setCidadesAtendidas(e.target.value)}
+                    className="rounded-xl h-11"
                   />
-                  <p className="text-xs text-muted-foreground">Separe as cidades por vírgula. A cidade base já é incluída automaticamente.</p>
+                  <p className="text-[11px] text-muted-foreground">Separe as cidades por vírgula. A cidade base já é incluída automaticamente.</p>
                 </div>
               </CardContent>
             </Card>
