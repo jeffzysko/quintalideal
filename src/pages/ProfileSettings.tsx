@@ -471,17 +471,22 @@ export default function ProfileSettings() {
         {(isFranchise || isAdmin) && (
           <motion.div id="integracoes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="space-y-4">
             {isAdmin && (
-              <Card className="border-border/50 shadow-sm">
+              <Card className="card-premium">
                 <CardHeader>
-                  <CardTitle className="text-sm font-semibold">Integrações da Franquia</CardTitle>
+                  <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Building2 className="w-4 h-4 text-primary" />
+                    </div>
+                    Integrações da Franquia
+                  </CardTitle>
                   <CardDescription className="text-xs">
                     Selecione a franquia para configurar Meta Pixel e Webhook CRM.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <Label htmlFor="integration-franchise">Franquia</Label>
+                  <Label htmlFor="integration-franchise" className="text-xs font-medium">Franquia</Label>
                   <Select value={selectedIntegrationFranchiseId} onValueChange={setSelectedIntegrationFranchiseId}>
-                    <SelectTrigger id="integration-franchise" className="rounded-xl">
+                    <SelectTrigger id="integration-franchise" className="rounded-xl h-11">
                       <SelectValue placeholder="Selecione uma franquia" />
                     </SelectTrigger>
                     <SelectContent>
@@ -492,7 +497,7 @@ export default function ProfileSettings() {
                       ))}
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-muted-foreground">A configuração será salva na franquia selecionada.</p>
+                  <p className="text-[11px] text-muted-foreground">A configuração será salva na franquia selecionada.</p>
                 </CardContent>
               </Card>
             )}
