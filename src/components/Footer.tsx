@@ -55,7 +55,7 @@ export function Footer() {
         {/* Divider + bottom */}
         <div className="mt-8 pt-5 border-t border-border/30 flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] text-muted-foreground/50">
           <p>
-            © {new Date().getFullYear()} Splash Piscinas · Plataforma por{' '}
+            © {new Date().getFullYear()} Quintal Ideal · Plataforma desenvolvida com ❤️ por{' '}
             <span className="font-semibold text-muted-foreground/70">Hallow Comunicação</span>
           </p>
           <p>Todos os direitos reservados</p>
