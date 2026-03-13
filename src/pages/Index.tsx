@@ -1,7 +1,7 @@
-import { QuizFlow } from '@/components/splash/QuizFlow';
+import HomePage from './HomePage';
 
 const Index = () => {
-  return <QuizFlow />;
+  return <HomePage />;
 };
 
 export default Index;
