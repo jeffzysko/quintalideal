@@ -8,15 +8,15 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ArrowLeft, Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff, Camera, MapPin } from 'lucide-react';
+import { ArrowLeft, Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff, Camera, MapPin, Shield } from 'lucide-react';
 import { FranchiseUsersSection } from '@/components/franchise/FranchiseUsersSection';
 import { FranchiseContactSettings } from '@/components/franchise/FranchiseContactSettings';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import logoSplash from '@/assets/logo-splash.png';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
+import { PanelHeader } from '@/components/PanelHeader';
 
 import { formatPhoneBR, unformatPhone, isValidBRPhone, isValidEmail } from '@/lib/validation';
 
@@ -237,72 +237,97 @@ export default function ProfileSettings() {
   return (
     <PageTransition>
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-30 border-b border-border/40 bg-card/80 backdrop-blur-xl">
-        <div className="max-w-3xl mx-auto px-4 md:px-6 h-14 md:h-16 flex items-center gap-3">
-          <button
-            onClick={() => navigate(backPath)}
-            className="inline-flex items-center justify-center w-8 h-8 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
-            aria-label="Voltar"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </button>
-          <div className="h-5 w-px bg-border/60" />
-          <img src={logoSplash} alt="Splash" className="h-7 md:h-9 shrink-0" />
-          <div className="h-5 w-px bg-border/60 hidden sm:block" />
-          <span className="text-sm font-semibold text-foreground tracking-tight hidden sm:block">Configurações</span>
-        </div>
-      </header>
+      <PanelHeader title="Configurações">
+        <button
+          onClick={() => navigate(backPath)}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+          aria-label="Voltar"
+        >
+          <ArrowLeft className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Voltar</span>
+        </button>
+      </PanelHeader>
 
       <div className="max-w-3xl mx-auto px-4 md:px-6 py-6 md:py-8 space-y-6">
         <Breadcrumbs items={[
           { label: isAdmin ? 'Admin' : 'Painel', href: backPath },
           { label: 'Configurações' },
         ]} />
-        {/* Avatar section */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-5">
-          <div className="relative group">
-            <Avatar className="h-20 w-20 border-4 border-primary/20">
-              {avatarUrl && <AvatarImage src={avatarUrl} alt="Avatar" />}
-              <AvatarFallback className="bg-primary/10 text-primary text-xl font-bold">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-            <label
-              htmlFor="avatar-upload"
-              className="absolute inset-0 flex items-center justify-center rounded-full bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-            >
-              {uploadingAvatar ? (
-                <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
-              ) : (
-                <Camera className="w-5 h-5 text-white" />
+
+        {/* === HERO AVATAR SECTION === */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative overflow-hidden rounded-2xl border border-border/40"
+          style={{
+            background: 'linear-gradient(160deg, #06101f 0%, #0b2a52 35%, #0d3468 60%, #081d38 100%)',
+          }}
+        >
+          {/* Ambient circles */}
+          <div className="absolute top-[-30px] right-[-20px] w-40 h-40 rounded-full bg-primary/10 blur-3xl" />
+          <div className="absolute bottom-[-20px] left-[-15px] w-32 h-32 rounded-full bg-primary/5 blur-2xl" />
+
+          <div className="relative z-10 px-5 py-6 sm:px-8 sm:py-8 flex flex-col sm:flex-row items-center gap-5">
+            {/* Avatar with upload */}
+            <div className="relative group shrink-0">
+              <Avatar className="h-24 w-24 border-4 border-white/10 ring-4 ring-primary/20 shadow-xl shadow-primary/10">
+                {avatarUrl && <AvatarImage src={avatarUrl} alt="Avatar" />}
+                <AvatarFallback className="bg-gradient-to-br from-primary/30 to-primary/10 text-white text-2xl font-bold">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
+              <label
+                htmlFor="avatar-upload"
+                className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer backdrop-blur-sm"
+              >
+                {uploadingAvatar ? (
+                  <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+                ) : (
+                  <Camera className="w-6 h-6 text-white" />
+                )}
+              </label>
+              <input
+                id="avatar-upload"
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarUpload}
+                disabled={uploadingAvatar}
+              />
+            </div>
+
+            {/* User info */}
+            <div className="text-center sm:text-left">
+              <h2 className="text-xl font-bold text-white">{fullName || user?.email}</h2>
+              <p className="text-sm text-white/50 mt-0.5">{user?.email}</p>
+              {(franchiseName || role) && (
+                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-2">
+                  {franchiseName && (
+                    <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white/10 text-white/80 border border-white/10">
+                      <Building2 className="w-3 h-3" />
+                      {franchiseName}
+                    </span>
+                  )}
+                  {role && (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-primary/20 text-primary border border-primary/20">
+                      <Shield className="w-3 h-3" />
+                      {role === 'super_admin' ? 'Super Admin' : role === 'admin_fabrica' ? 'Admin' : 'Franquia'}
+                    </span>
+                  )}
+                </div>
               )}
-            </label>
-            <input
-              id="avatar-upload"
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleAvatarUpload}
-              disabled={uploadingAvatar}
-            />
-          </div>
-          <div>
-            <p className="text-lg font-semibold text-foreground">{fullName || user?.email}</p>
-            <p className="text-sm text-muted-foreground">{user?.email}</p>
-            {franchiseName && (
-              <p className="text-xs text-primary mt-1 flex items-center gap-1">
-                <Building2 className="w-3 h-3" /> {franchiseName}
-              </p>
-            )}
+            </div>
           </div>
         </motion.div>
 
         {/* Personal info */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <Card className="border-border/50 shadow-sm">
+          <Card className="card-premium">
             <CardHeader>
               <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <User className="w-4 h-4 text-primary" />
+                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <User className="w-4 h-4 text-primary" />
+                </div>
                 Informações Pessoais
               </CardTitle>
               <CardDescription className="text-xs">
@@ -349,10 +374,12 @@ export default function ProfileSettings() {
         {/* Franchise contact info - visible for franchise users */}
         {isFranchise && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <Card className="border-border/50 shadow-sm">
+            <Card className="card-premium">
               <CardHeader>
                 <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <Building2 className="w-4 h-4 text-primary" />
+                  <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Building2 className="w-4 h-4 text-primary" />
+                  </div>
                   Dados da Franquia
                 </CardTitle>
                 <CardDescription className="text-xs">
@@ -408,10 +435,12 @@ export default function ProfileSettings() {
         {/* Admin info card */}
         {isAdmin && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <Card className="border-border/50 shadow-sm">
+            <Card className="card-premium">
               <CardHeader>
                 <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <Building2 className="w-4 h-4 text-primary" />
+                  <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Building2 className="w-4 h-4 text-primary" />
+                  </div>
                   Informações do Administrador
                 </CardTitle>
                 <CardDescription className="text-xs">
@@ -485,7 +514,7 @@ export default function ProfileSettings() {
 
         {/* Save button */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-          <Button onClick={handleSave} disabled={saving} className="gap-2 rounded-xl">
+          <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto gap-2 rounded-2xl py-6 text-sm font-bold shadow-xl shadow-primary/20 gradient-blue glow-blue hover:glow-blue-strong hover:scale-[1.01] transition-all duration-300">
             <Save className="w-4 h-4" />
             {saving ? 'Salvando...' : 'Salvar alterações'}
           </Button>
@@ -532,10 +561,12 @@ function PasswordChangeCard() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-      <Card className="border-border/50 shadow-sm">
+      <Card className="card-premium">
         <CardHeader>
           <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <Lock className="w-4 h-4 text-primary" />
+            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Lock className="w-4 h-4 text-primary" />
+            </div>
             Alterar Senha
           </CardTitle>
           <CardDescription className="text-xs">
