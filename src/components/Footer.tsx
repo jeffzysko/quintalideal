@@ -33,6 +33,8 @@ export function Footer() {
             </h4>
             <FooterLink to="/termos" icon={<FileText className="w-3.5 h-3.5" />} label="Termos de Uso" />
             <FooterLink to="/privacidade" icon={<Shield className="w-3.5 h-3.5" />} label="Privacidade" />
+            <FooterLink to="/docs/webhook" icon={<Code2 className="w-3.5 h-3.5" />} label="API Docs" />
+            <FooterLink to="/suporte" icon={<HelpCircle className="w-3.5 h-3.5" />} label="Suporte" />
           </div>
 
           {/* Redes */}
