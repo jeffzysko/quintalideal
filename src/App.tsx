@@ -99,8 +99,8 @@ function AppRoutes() {
                 <Suspense fallback={<LazyFallback />}>
                   <Routes>
                     {/* Pages WITHOUT footer (quiz/lead flow) */}
-                    <Route path="/" element={<Index />} />
-                    <Route path="/explorar" element={<Index />} />
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/explorar" element={<HomePage />} />
 
                     {/* Pages WITH footer */}
                     <Route element={<LayoutWithFooter />}>
