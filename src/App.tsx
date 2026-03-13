@@ -8,7 +8,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { lazy, Suspense, useEffect } from "react";
-import Index from "./pages/Index";
+import HomePage from "./pages/HomePage";
 import { Footer } from "@/components/Footer";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import { ScrollToTop } from "@/components/ScrollToTop";
@@ -99,8 +99,8 @@ function AppRoutes() {
                 <Suspense fallback={<LazyFallback />}>
                   <Routes>
                     {/* Pages WITHOUT footer (quiz/lead flow) */}
-                    <Route path="/" element={<Index />} />
-                    <Route path="/explorar" element={<Index />} />
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/explorar" element={<HomePage />} />
 
                     {/* Pages WITH footer */}
                     <Route element={<LayoutWithFooter />}>
