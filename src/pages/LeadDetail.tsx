@@ -132,13 +132,33 @@ export default function LeadDetail() {
   const save = async () => {
     if (!lead) return;
     setSaving(true);
+
+    // Log status change as activity
+    if (status !== lead.status_lead) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const oldLabel = statusConfig[lead.status_lead]?.label || lead.status_lead;
+        const newLabel = statusConfig[status]?.label || status;
+        await supabase.from('lead_activities').insert({
+          lead_id: lead.id,
+          user_id: user.id,
+          activity_type: 'status_change',
+          content: `Status alterado de "${oldLabel}" para "${newLabel}"`,
+        });
+      }
+    }
+
     const { error } = await supabase
       .from('leads')
       .update({ status_lead: status as any, observacoes })
       .eq('id', lead.id);
     setSaving(false);
-    if (!error) toast.success('Alterações salvas com sucesso!');
-    else toast.error('Erro ao salvar.');
+    if (!error) {
+      toast.success('Alterações salvas com sucesso!');
+      setLead({ ...lead, status_lead: status, observacoes });
+    } else {
+      toast.error('Erro ao salvar.');
+    }
   };
 
   const photos = lead ? [lead.foto1, lead.foto2, lead.foto3, lead.foto4].filter(Boolean) as string[] : [];
