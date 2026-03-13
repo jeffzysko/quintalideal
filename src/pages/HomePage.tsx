@@ -321,7 +321,7 @@ export default function HomePage() {
         >
           <div className="flex items-center gap-1.5 text-white/35">
             <Clock className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
-            <span className="text-[9px] sm:text-[10px] font-medium">3 minutos</span>
+            <span className="text-[9px] sm:text-[10px] font-medium">60 segundos</span>
           </div>
           <div className="w-px h-3 bg-white/15" />
           <div className="flex items-center gap-1.5 text-white/35">
