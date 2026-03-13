@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Users, TrendingUp, Clock, Eye, Inbox, Share2, Droplets, BarChart3, Link2, Copy, Check } from 'lucide-react';
+import { ConversionFunnel } from '@/components/franchise/ConversionFunnel';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -164,6 +165,9 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
           ))}
         </div>
       )}
+
+      {/* Conversion Funnel */}
+      {!loadingKpis && allLeads.length > 0 && <ConversionFunnel leads={allLeads} />}
 
       {/* Tab switcher */}
       <div className="flex gap-1 mb-6 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-full sm:w-fit overflow-x-auto scrollbar-none border border-border/30" role="tablist">
