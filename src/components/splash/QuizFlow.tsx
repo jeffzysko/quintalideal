@@ -64,6 +64,10 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
 
   useEffect(() => {
     trackEvent('landing_page_viewed', analyticsCtx);
+    // Fetch pool prices for budget-aware recommendations
+    supabase.from('pool_models').select('nome_modelo, preco_min, preco_max').then(({ data }) => {
+      if (data) setPoolPrices(data.map(d => ({ nome_modelo: d.nome_modelo, preco_min: d.preco_min, preco_max: d.preco_max })));
+    });
   }, []);
 
   const answerKeys: (keyof QuizAnswers)[] = ['espaco', 'moradia', 'uso', 'intencao', 'preferencia', 'orcamento', 'cidade'];
