@@ -27,6 +27,7 @@ import { KPISkeleton } from '@/components/ui/kpi-skeleton';
 import { TableSkeleton } from '@/components/ui/table-skeleton';
 import { STATUS_LABELS, LeadRow } from '@/lib/lead-constants';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
+import { NotificationBell } from '@/components/NotificationBell';
 import logoSplash from '@/assets/logo-splash.png';
 
 const PAGE_SIZE = 25;
