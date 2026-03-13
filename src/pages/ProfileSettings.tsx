@@ -8,7 +8,8 @@ import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { ArrowLeft, Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff, Camera, MapPin, Shield } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ArrowLeft, Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff, Camera, MapPin, Shield, Puzzle } from 'lucide-react';
 import { FranchiseUsersSection } from '@/components/franchise/FranchiseUsersSection';
 import { FranchiseContactSettings } from '@/components/franchise/FranchiseContactSettings';
 import { toast } from 'sonner';
@@ -44,16 +45,6 @@ export default function ProfileSettings() {
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
-
-  // Scroll to hash anchor after loading
-  useEffect(() => {
-    if (!loading && location.hash) {
-      const el = document.querySelector(location.hash);
-      el?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-  }, [loading, location.hash]);
-
-
   const isFranchise = role === 'franquia' && !!franchiseId;
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
   const integrationFranchiseId = isFranchise
@@ -61,6 +52,15 @@ export default function ProfileSettings() {
     : isAdmin
       ? selectedIntegrationFranchiseId || null
       : null;
+
+  // Determine default tab from hash
+  const getDefaultTab = () => {
+    if (location.hash === '#integracoes') return 'integracoes';
+    if (location.hash === '#franquia') return 'franquia';
+    return 'pessoal';
+  };
+
+  const [activeTab, setActiveTab] = useState(getDefaultTab());
 
   useEffect(() => {
     if (!user) return;
@@ -70,7 +70,6 @@ export default function ProfileSettings() {
   const loadProfile = async () => {
     setLoading(true);
     try {
-      // Load profile name
       const { data: profile } = await supabase
         .from('profiles')
         .select('full_name, telefone, avatar_url')
@@ -81,7 +80,6 @@ export default function ProfileSettings() {
       if (profile?.telefone) setTelefone(profile.telefone);
       if ((profile as any)?.avatar_url) setAvatarUrl((profile as any).avatar_url);
 
-      // Load franchise data when user is linked to a franchise
       if (franchiseId) {
         const { data: franchise } = await supabase
           .from('franchises')
@@ -100,7 +98,6 @@ export default function ProfileSettings() {
         }
       }
 
-      // Allow admins to configure integrations for any franchise
       if (isAdmin) {
         const { data: adminFranchises } = await supabase
           .from('franchises')
@@ -192,7 +189,6 @@ export default function ProfileSettings() {
       const ext = file.name.split('.').pop() || 'jpg';
       const filePath = `${user.id}/avatar.${ext}`;
 
-      // Upload file (upsert to replace existing)
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(filePath, file, { upsert: true });
@@ -203,7 +199,6 @@ export default function ProfileSettings() {
         .from('avatars')
         .getPublicUrl(filePath);
 
-      // Add cache-busting param
       const urlWithCacheBust = `${publicUrl}?t=${Date.now()}`;
 
       const { error: updateError } = await supabase
@@ -223,8 +218,10 @@ export default function ProfileSettings() {
   };
 
   const initials = (fullName || user?.email || 'U').substring(0, 2).toUpperCase();
-
   const backPath = isAdmin ? '/admin' : isFranchise ? '/franquia' : '/painel';
+
+  const showFranchiseTab = isFranchise || isAdmin;
+  const showIntegrationsTab = isFranchise || isAdmin;
 
   if (loading) {
     return (
@@ -263,12 +260,10 @@ export default function ProfileSettings() {
             background: 'linear-gradient(160deg, #06101f 0%, #0b2a52 35%, #0d3468 60%, #081d38 100%)',
           }}
         >
-          {/* Ambient circles */}
           <div className="absolute top-[-30px] right-[-20px] w-40 h-40 rounded-full bg-primary/10 blur-3xl" />
           <div className="absolute bottom-[-20px] left-[-15px] w-32 h-32 rounded-full bg-primary/5 blur-2xl" />
 
           <div className="relative z-10 px-5 py-6 sm:px-8 sm:py-8 flex flex-col sm:flex-row items-center gap-5">
-            {/* Avatar with upload */}
             <div className="relative group shrink-0">
               <Avatar className="h-24 w-24 border-4 border-white/10 ring-4 ring-primary/20 shadow-xl shadow-primary/10">
                 {avatarUrl && <AvatarImage src={avatarUrl} alt="Avatar" />}
@@ -296,7 +291,6 @@ export default function ProfileSettings() {
               />
             </div>
 
-            {/* User info */}
             <div className="text-center sm:text-left">
               <h2 className="text-xl font-bold text-white">{fullName || user?.email}</h2>
               <p className="text-sm text-white/50 mt-0.5">{user?.email}</p>
@@ -320,216 +314,251 @@ export default function ProfileSettings() {
           </div>
         </motion.div>
 
-        {/* Personal info */}
+        {/* === TABS === */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <Card className="card-premium">
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <User className="w-4 h-4 text-primary" />
-                </div>
-                Informações Pessoais
-              </CardTitle>
-              <CardDescription className="text-xs">
-                Esses dados são usados para identificar você no sistema.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-5">
-              <div className="space-y-1.5">
-                <Label htmlFor="fullName" className="text-xs font-medium">Nome completo</Label>
-                <Input
-                  id="fullName"
-                  placeholder="Seu nome completo"
-                  value={fullName}
-                  onChange={e => setFullName(e.target.value)}
-                  className="rounded-xl h-11"
-                />
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="personalPhone" className="text-xs font-medium flex items-center gap-1.5">
-                  <Phone className="w-3.5 h-3.5" /> Telefone pessoal
-                </Label>
-                <Input
-                  id="personalPhone"
-                  placeholder="(51) 99999-9999"
-                  value={formatPhoneBR(telefone)}
-                  onChange={e => { setTelefone(unformatPhone(e.target.value)); setFormErrors(p => ({ ...p, telefone: '' })); }}
-                  maxLength={16}
-                  className="rounded-xl h-11"
-                />
-                {formErrors.telefone && <p className="text-xs text-destructive mt-1">{formErrors.telefone}</p>}
-              </div>
-              <div className="space-y-1.5">
-                <Label htmlFor="loginEmail" className="text-xs font-medium">E-mail de login</Label>
-                <Input
-                  id="loginEmail"
-                  value={user?.email || ''}
-                  disabled
-                  className="opacity-60 rounded-xl h-11"
-                />
-                <p className="text-[11px] text-muted-foreground">O e-mail de login não pode ser alterado aqui.</p>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="w-full h-12 rounded-xl bg-muted/50 border border-border/40 p-1 gap-1">
+              <TabsTrigger
+                value="pessoal"
+                className="flex-1 gap-1.5 rounded-lg text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm"
+              >
+                <User className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Pessoal</span>
+                <span className="sm:hidden">Pessoal</span>
+              </TabsTrigger>
+              {showFranchiseTab && (
+                <TabsTrigger
+                  value="franquia"
+                  className="flex-1 gap-1.5 rounded-lg text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                >
+                  <Building2 className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Franquia</span>
+                  <span className="sm:hidden">Empresa</span>
+                </TabsTrigger>
+              )}
+              {showIntegrationsTab && (
+                <TabsTrigger
+                  value="integracoes"
+                  className="flex-1 gap-1.5 rounded-lg text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                >
+                  <Puzzle className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">Integrações</span>
+                  <span className="sm:hidden">Integr.</span>
+                </TabsTrigger>
+              )}
+            </TabsList>
 
-        {/* Franchise contact info - visible for franchise users */}
-        {isFranchise && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <Card className="card-premium">
-              <CardHeader>
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Building2 className="w-4 h-4 text-primary" />
-                  </div>
-                  Dados da Franquia
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Essas informações serão exibidas publicamente ao final do quiz e usadas para receber leads por e-mail.
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-5">
-                <div className="space-y-1.5">
-                  <Label htmlFor="franchiseWhatsapp" className="text-xs font-medium flex items-center gap-1.5">
-                    <Phone className="w-3.5 h-3.5" /> WhatsApp
-                  </Label>
-                  <Input
-                    id="franchiseWhatsapp"
-                    placeholder="(51) 99999-9999"
-                    value={formatPhoneBR(whatsapp)}
-                    onChange={e => { setWhatsapp(unformatPhone(e.target.value)); setFormErrors(p => ({ ...p, whatsapp: '' })); }}
-                    maxLength={16}
-                    className="rounded-xl h-11"
-                  />
-                  {formErrors.whatsapp && <p className="text-xs text-destructive mt-1">{formErrors.whatsapp}</p>}
-                  <p className="text-[11px] text-muted-foreground">DDD + número. O código do Brasil (55) é adicionado automaticamente.</p>
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="franchiseEmail" className="text-xs font-medium flex items-center gap-1.5">
-                    <Mail className="w-3.5 h-3.5" /> E-mail para leads
-                  </Label>
-                  <Input
-                    id="franchiseEmail"
-                    type="email"
-                    placeholder="franquia@splashpiscinas.com"
-                    value={email}
-                    onChange={e => { setEmail(e.target.value); setFormErrors(p => ({ ...p, email: '' })); }}
-                    className="rounded-xl h-11"
-                  />
-                  {formErrors.email && <p className="text-xs text-destructive mt-1">{formErrors.email}</p>}
-                  <p className="text-[11px] text-muted-foreground">Os leads gerados pelo quiz serão enviados para este e-mail.</p>
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="cidadesAtendidas" className="text-xs font-medium flex items-center gap-1.5">
-                    <MapPin className="w-3.5 h-3.5" /> Cidades Atendidas
-                  </Label>
-                  <Input
-                    id="cidadesAtendidas"
-                    placeholder="Canoas, Gravataí, Cachoeirinha"
-                    value={cidadesAtendidas}
-                    onChange={e => setCidadesAtendidas(e.target.value)}
-                    className="rounded-xl h-11"
-                  />
-                  <p className="text-[11px] text-muted-foreground">Separe as cidades por vírgula. A cidade base já é incluída automaticamente.</p>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-
-        {/* Admin info card */}
-        {isAdmin && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <Card className="card-premium">
-              <CardHeader>
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                    <Building2 className="w-4 h-4 text-primary" />
-                  </div>
-                  Informações do Administrador
-                </CardTitle>
-                <CardDescription className="text-xs">
-                  Você é administrador da fábrica. Use o painel admin para gerenciar franquias e seus dados de contato.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-xl">
-                  <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                    <Building2 className="w-4 h-4 text-primary" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-foreground">Painel da Fábrica</p>
-                    <p className="text-[11px] text-muted-foreground">Gerencie franquias, leads e configurações de e-mail no painel admin.</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
-
-        {/* Integrations: Meta Pixel + Webhook */}
-        {(isFranchise || isAdmin) && (
-          <motion.div id="integracoes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="space-y-4">
-            {isAdmin && (
+            {/* ──── TAB: PESSOAL ──── */}
+            <TabsContent value="pessoal" className="mt-5 space-y-5">
               <Card className="card-premium">
                 <CardHeader>
                   <CardTitle className="text-sm font-semibold flex items-center gap-2">
                     <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Building2 className="w-4 h-4 text-primary" />
+                      <User className="w-4 h-4 text-primary" />
                     </div>
-                    Integrações da Franquia
+                    Informações Pessoais
                   </CardTitle>
                   <CardDescription className="text-xs">
-                    Selecione a franquia para configurar Meta Pixel e Webhook CRM.
+                    Esses dados são usados para identificar você no sistema.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-2">
-                  <Label htmlFor="integration-franchise" className="text-xs font-medium">Franquia</Label>
-                  <Select value={selectedIntegrationFranchiseId} onValueChange={setSelectedIntegrationFranchiseId}>
-                    <SelectTrigger id="integration-franchise" className="rounded-xl h-11">
-                      <SelectValue placeholder="Selecione uma franquia" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableFranchises.map((franchise) => (
-                        <SelectItem key={franchise.id} value={franchise.id}>
-                          {franchise.nome_franquia}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-[11px] text-muted-foreground">A configuração será salva na franquia selecionada.</p>
+                <CardContent className="space-y-5">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="fullName" className="text-xs font-medium">Nome completo</Label>
+                    <Input
+                      id="fullName"
+                      placeholder="Seu nome completo"
+                      value={fullName}
+                      onChange={e => setFullName(e.target.value)}
+                      className="rounded-xl h-11"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="personalPhone" className="text-xs font-medium flex items-center gap-1.5">
+                      <Phone className="w-3.5 h-3.5" /> Telefone pessoal
+                    </Label>
+                    <Input
+                      id="personalPhone"
+                      placeholder="(51) 99999-9999"
+                      value={formatPhoneBR(telefone)}
+                      onChange={e => { setTelefone(unformatPhone(e.target.value)); setFormErrors(p => ({ ...p, telefone: '' })); }}
+                      maxLength={16}
+                      className="rounded-xl h-11"
+                    />
+                    {formErrors.telefone && <p className="text-xs text-destructive mt-1">{formErrors.telefone}</p>}
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="loginEmail" className="text-xs font-medium">E-mail de login</Label>
+                    <Input
+                      id="loginEmail"
+                      value={user?.email || ''}
+                      disabled
+                      className="opacity-60 rounded-xl h-11"
+                    />
+                    <p className="text-[11px] text-muted-foreground">O e-mail de login não pode ser alterado aqui.</p>
+                  </div>
                 </CardContent>
               </Card>
+
+              <PasswordChangeCard />
+
+              <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto gap-2 rounded-xl h-11 font-semibold gradient-blue glow-blue hover:glow-blue-strong hover:scale-[1.01] transition-all duration-300">
+                <Save className="w-4 h-4" />
+                {saving ? 'Salvando...' : 'Salvar alterações'}
+              </Button>
+            </TabsContent>
+
+            {/* ──── TAB: FRANQUIA ──── */}
+            {showFranchiseTab && (
+              <TabsContent value="franquia" className="mt-5 space-y-5">
+                {isFranchise && (
+                  <>
+                    <Card className="card-premium">
+                      <CardHeader>
+                        <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                            <Building2 className="w-4 h-4 text-primary" />
+                          </div>
+                          Dados da Franquia
+                        </CardTitle>
+                        <CardDescription className="text-xs">
+                          Essas informações serão exibidas publicamente ao final do quiz e usadas para receber leads por e-mail.
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="space-y-5">
+                        <div className="space-y-1.5">
+                          <Label htmlFor="franchiseWhatsapp" className="text-xs font-medium flex items-center gap-1.5">
+                            <Phone className="w-3.5 h-3.5" /> WhatsApp
+                          </Label>
+                          <Input
+                            id="franchiseWhatsapp"
+                            placeholder="(51) 99999-9999"
+                            value={formatPhoneBR(whatsapp)}
+                            onChange={e => { setWhatsapp(unformatPhone(e.target.value)); setFormErrors(p => ({ ...p, whatsapp: '' })); }}
+                            maxLength={16}
+                            className="rounded-xl h-11"
+                          />
+                          {formErrors.whatsapp && <p className="text-xs text-destructive mt-1">{formErrors.whatsapp}</p>}
+                          <p className="text-[11px] text-muted-foreground">DDD + número. O código do Brasil (55) é adicionado automaticamente.</p>
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="franchiseEmail" className="text-xs font-medium flex items-center gap-1.5">
+                            <Mail className="w-3.5 h-3.5" /> E-mail para leads
+                          </Label>
+                          <Input
+                            id="franchiseEmail"
+                            type="email"
+                            placeholder="franquia@splashpiscinas.com"
+                            value={email}
+                            onChange={e => { setEmail(e.target.value); setFormErrors(p => ({ ...p, email: '' })); }}
+                            className="rounded-xl h-11"
+                          />
+                          {formErrors.email && <p className="text-xs text-destructive mt-1">{formErrors.email}</p>}
+                          <p className="text-[11px] text-muted-foreground">Os leads gerados pelo quiz serão enviados para este e-mail.</p>
+                        </div>
+                        <div className="space-y-1.5">
+                          <Label htmlFor="cidadesAtendidas" className="text-xs font-medium flex items-center gap-1.5">
+                            <MapPin className="w-3.5 h-3.5" /> Cidades Atendidas
+                          </Label>
+                          <Input
+                            id="cidadesAtendidas"
+                            placeholder="Canoas, Gravataí, Cachoeirinha"
+                            value={cidadesAtendidas}
+                            onChange={e => setCidadesAtendidas(e.target.value)}
+                            className="rounded-xl h-11"
+                          />
+                          <p className="text-[11px] text-muted-foreground">Separe as cidades por vírgula. A cidade base já é incluída automaticamente.</p>
+                        </div>
+                      </CardContent>
+                    </Card>
+
+                    {franchiseId && <FranchiseUsersSection franchiseId={franchiseId} />}
+
+                    <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto gap-2 rounded-xl h-11 font-semibold gradient-blue glow-blue hover:glow-blue-strong hover:scale-[1.01] transition-all duration-300">
+                      <Save className="w-4 h-4" />
+                      {saving ? 'Salvando...' : 'Salvar alterações'}
+                    </Button>
+                  </>
+                )}
+
+                {isAdmin && (
+                  <Card className="card-premium">
+                    <CardHeader>
+                      <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <Building2 className="w-4 h-4 text-primary" />
+                        </div>
+                        Informações do Administrador
+                      </CardTitle>
+                      <CardDescription className="text-xs">
+                        Você é administrador da fábrica. Use o painel admin para gerenciar franquias e seus dados de contato.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-xl">
+                        <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                          <Building2 className="w-4 h-4 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-foreground">Painel da Fábrica</p>
+                          <p className="text-[11px] text-muted-foreground">Gerencie franquias, leads e configurações de e-mail no painel admin.</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </TabsContent>
             )}
 
-            {integrationFranchiseId ? (
-              <FranchiseContactSettings franchiseId={integrationFranchiseId} />
-            ) : (
-              isAdmin && (
-                <Card className="card-premium">
-                  <CardContent className="pt-6">
-                    <p className="text-sm text-muted-foreground">Nenhuma franquia disponível para configurar integrações.</p>
-                  </CardContent>
-                </Card>
-              )
+            {/* ──── TAB: INTEGRAÇÕES ──── */}
+            {showIntegrationsTab && (
+              <TabsContent value="integracoes" className="mt-5 space-y-5" id="integracoes">
+                {isAdmin && (
+                  <Card className="card-premium">
+                    <CardHeader>
+                      <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <Building2 className="w-4 h-4 text-primary" />
+                        </div>
+                        Integrações da Franquia
+                      </CardTitle>
+                      <CardDescription className="text-xs">
+                        Selecione a franquia para configurar Meta Pixel e Webhook CRM.
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="space-y-2">
+                      <Label htmlFor="integration-franchise" className="text-xs font-medium">Franquia</Label>
+                      <Select value={selectedIntegrationFranchiseId} onValueChange={setSelectedIntegrationFranchiseId}>
+                        <SelectTrigger id="integration-franchise" className="rounded-xl h-11">
+                          <SelectValue placeholder="Selecione uma franquia" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableFranchises.map((franchise) => (
+                            <SelectItem key={franchise.id} value={franchise.id}>
+                              {franchise.nome_franquia}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <p className="text-[11px] text-muted-foreground">A configuração será salva na franquia selecionada.</p>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {integrationFranchiseId ? (
+                  <FranchiseContactSettings franchiseId={integrationFranchiseId} />
+                ) : (
+                  isAdmin && (
+                    <Card className="card-premium">
+                      <CardContent className="pt-6">
+                        <p className="text-sm text-muted-foreground">Nenhuma franquia disponível para configurar integrações.</p>
+                      </CardContent>
+                    </Card>
+                  )
+                )}
+              </TabsContent>
             )}
-          </motion.div>
-        )}
-
-        {/* Franchise users management */}
-        {isFranchise && franchiseId && (
-          <FranchiseUsersSection franchiseId={franchiseId} />
-        )}
-
-        {/* Password change */}
-        <PasswordChangeCard />
-
-        {/* Save button */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-          <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto gap-2 rounded-2xl py-6 text-sm font-bold shadow-xl shadow-primary/20 gradient-blue glow-blue hover:glow-blue-strong hover:scale-[1.01] transition-all duration-300">
-            <Save className="w-4 h-4" />
-            {saving ? 'Salvando...' : 'Salvar alterações'}
-          </Button>
+          </Tabs>
         </motion.div>
       </div>
     </div>
@@ -572,59 +601,57 @@ function PasswordChangeCard() {
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-      <Card className="card-premium">
-        <CardHeader>
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Lock className="w-4 h-4 text-primary" />
-            </div>
-            Alterar Senha
-          </CardTitle>
-          <CardDescription className="text-xs">
-            Atualize sua senha de acesso ao sistema.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-5">
-          <div className="space-y-1.5">
-            <Label htmlFor="newPassword" className="text-xs font-medium">Nova senha</Label>
-            <div className="relative">
-              <Input
-                id="newPassword"
-                type={showNew ? 'text' : 'password'}
-                placeholder="Mínimo 6 caracteres"
-                value={newPassword}
-                onChange={e => setNewPassword(e.target.value)}
-                className="rounded-xl h-11"
-              />
-              <button
-                type="button"
-                onClick={() => setShowNew(!showNew)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-                aria-label={showNew ? 'Ocultar senha' : 'Mostrar senha'}
-              >
-                {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
+    <Card className="card-premium">
+      <CardHeader>
+        <CardTitle className="text-sm font-semibold flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+            <Lock className="w-4 h-4 text-primary" />
           </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="confirmPassword" className="text-xs font-medium">Confirmar nova senha</Label>
+          Alterar Senha
+        </CardTitle>
+        <CardDescription className="text-xs">
+          Atualize sua senha de acesso ao sistema.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-5">
+        <div className="space-y-1.5">
+          <Label htmlFor="newPassword" className="text-xs font-medium">Nova senha</Label>
+          <div className="relative">
             <Input
-              id="confirmPassword"
-              type="password"
-              placeholder="Repita a nova senha"
-              value={confirmPassword}
-              onChange={e => setConfirmPassword(e.target.value)}
+              id="newPassword"
+              type={showNew ? 'text' : 'password'}
+              placeholder="Mínimo 6 caracteres"
+              value={newPassword}
+              onChange={e => setNewPassword(e.target.value)}
               className="rounded-xl h-11"
             />
+            <button
+              type="button"
+              onClick={() => setShowNew(!showNew)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              aria-label={showNew ? 'Ocultar senha' : 'Mostrar senha'}
+            >
+              {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+            </button>
           </div>
-          {error && <p className="text-sm text-destructive bg-destructive/10 rounded-xl px-3 py-2.5">{error}</p>}
-          <Button onClick={handleChangePassword} disabled={saving || !newPassword} variant="outline" className="gap-2 rounded-xl h-11">
-            <Lock className="w-4 h-4" />
-            {saving ? 'Alterando...' : 'Alterar senha'}
-          </Button>
-        </CardContent>
-      </Card>
-    </motion.div>
+        </div>
+        <div className="space-y-1.5">
+          <Label htmlFor="confirmPassword" className="text-xs font-medium">Confirmar nova senha</Label>
+          <Input
+            id="confirmPassword"
+            type="password"
+            placeholder="Repita a nova senha"
+            value={confirmPassword}
+            onChange={e => setConfirmPassword(e.target.value)}
+            className="rounded-xl h-11"
+          />
+        </div>
+        {error && <p className="text-sm text-destructive bg-destructive/10 rounded-xl px-3 py-2.5">{error}</p>}
+        <Button onClick={handleChangePassword} disabled={saving || !newPassword} variant="outline" className="gap-2 rounded-xl h-11">
+          <Lock className="w-4 h-4" />
+          {saving ? 'Alterando...' : 'Alterar senha'}
+        </Button>
+      </CardContent>
+    </Card>
   );
 }
