@@ -1,12 +1,12 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, MapPin, ArrowRight, Droplets, Shield, Clock, ChevronRight } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Search, MapPin, Droplets, Shield, Clock, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/lib/supabase';
 import logoSplash from '@/assets/logo-splash.png';
 import heroPool from '@/assets/hero-pool.webp';
+import { cidades, type CityOption } from '@/lib/cities';
 
 interface FranchiseMatch {
   id: string;
@@ -17,43 +17,51 @@ interface FranchiseMatch {
 
 type SearchState = 'idle' | 'searching' | 'results' | 'no-match' | 'error';
 
+function formatCityLabel(city: CityOption): string {
+  if (city.pais === 'UY') return `${city.nome}, Uruguai 🇺🇾`;
+  return `${city.nome}, ${city.estado || 'RS'}`;
+}
+
 export default function HomePage() {
   const navigate = useNavigate();
-  const [cityInput, setCityInput] = useState('');
+  const [citySearch, setCitySearch] = useState('');
   const [searchState, setSearchState] = useState<SearchState>('idle');
   const [matches, setMatches] = useState<FranchiseMatch[]>([]);
   const [nearestFranchise, setNearestFranchise] = useState<FranchiseMatch | null>(null);
+  const [searchedCity, setSearchedCity] = useState('');
 
-  const handleSearch = useCallback(async () => {
-    const trimmed = cityInput.trim();
-    if (!trimmed || trimmed.length < 2) return;
+  // Same autocomplete logic as QuizStep city search
+  const filteredCities = useMemo(() => {
+    if (!citySearch || citySearch.length < 2) return [];
+    const search = citySearch.toLowerCase();
+    return cidades.filter(c => c.nome.toLowerCase().includes(search)).slice(0, 8);
+  }, [citySearch]);
 
+  const handleCitySelect = useCallback(async (cityName: string) => {
+    setSearchedCity(cityName);
+    setCitySearch(cityName);
     setSearchState('searching');
     setMatches([]);
     setNearestFranchise(null);
 
     try {
-      // Normalize input for comparison
-      const normalized = trimmed
+      const normalized = cityName
         .toLowerCase()
         .normalize('NFD')
         .replace(/[\u0300-\u036f]/g, '')
         .replace(/\s+/g, ' ')
         .trim();
 
-      // Search franchise_covered_cities for matching city
       const { data: cityMatches, error: cityError } = await supabase
         .from('franchise_covered_cities')
         .select('franchise_id, city_name, is_primary_city')
-        .ilike('city_name_normalized', `%${normalized}%`);
+        .eq('city_name_normalized', normalized);
 
       if (cityError) throw cityError;
 
       if (cityMatches && cityMatches.length > 0) {
-        // Get unique franchise IDs
         const franchiseIds = [...new Set(cityMatches.map(c => c.franchise_id))];
 
-        // Fetch franchise details
         const { data: franchises, error: fError } = await supabase
           .from('franchises_public')
           .select('id, nome_franquia, slug_url, cidade_base')
@@ -67,20 +75,18 @@ export default function HomePage() {
         );
 
         if (validFranchises.length === 1) {
-          // Single match → redirect directly
           navigate(`/${validFranchises[0].slug_url}`);
           return;
         }
 
         if (validFranchises.length > 1) {
-          // Multiple matches → show list
           setMatches(validFranchises);
           setSearchState('results');
           return;
         }
       }
 
-      // No match found → suggest nearest franchise (first active one alphabetically as fallback)
+      // No match → suggest nearest
       const { data: allFranchises } = await supabase
         .from('franchises_public')
         .select('id, nome_franquia, slug_url, cidade_base')
@@ -99,33 +105,19 @@ export default function HomePage() {
       console.error('City search error:', err);
       setSearchState('error');
     }
-  }, [cityInput, navigate]);
+  }, [navigate]);
 
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter') handleSearch();
-    },
-    [handleSearch]
-  );
+  const showAutocomplete = filteredCities.length > 0 && searchState !== 'searching' && searchState !== 'results' && searchState !== 'no-match';
+  const showNoResults = citySearch.length >= 2 && filteredCities.length === 0 && searchState === 'idle';
 
   return (
     <div className="h-[100dvh] flex flex-col relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0">
-        <img
-          src={heroPool}
-          alt=""
-          className="w-full h-full object-cover scale-105"
-          loading="eager"
-          fetchPriority="high"
-        />
-        <div
-          className="absolute inset-0"
-          style={{
-            background:
-              'linear-gradient(180deg, rgba(8,20,40,0.4) 0%, rgba(8,20,40,0.2) 30%, rgba(8,20,40,0.5) 60%, rgba(8,20,40,0.92) 100%)',
-          }}
-        />
+        <img src={heroPool} alt="" className="w-full h-full object-cover scale-105" loading="eager" fetchPriority="high" />
+        <div className="absolute inset-0" style={{
+          background: 'linear-gradient(180deg, rgba(8,20,40,0.4) 0%, rgba(8,20,40,0.2) 30%, rgba(8,20,40,0.5) 60%, rgba(8,20,40,0.92) 100%)',
+        }} />
       </div>
 
       {/* Floating water drops */}
@@ -133,22 +125,15 @@ export default function HomePage() {
         animate={{ y: [-8, 8, -8] }}
         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
         className="absolute top-[15%] left-[10%] text-3xl opacity-20 hidden sm:block"
-      >
-        💧
-      </motion.div>
+      >💧</motion.div>
       <motion.div
         animate={{ y: [6, -10, 6] }}
         transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
         className="absolute top-[25%] right-[12%] text-2xl opacity-15 hidden sm:block"
-      >
-        💧
-      </motion.div>
+      >💧</motion.div>
 
       {/* Content */}
-      <div
-        className="relative z-10 flex-1 flex flex-col items-center justify-center px-5 pb-10 sm:py-10 max-w-lg mx-auto w-full"
-        style={{ marginTop: '-3vh' }}
-      >
+      <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-5 pb-10 sm:py-10 max-w-lg mx-auto w-full" style={{ marginTop: '-3vh' }}>
         <motion.img
           src={logoSplash}
           alt="Splash Piscinas"
@@ -179,129 +164,153 @@ export default function HomePage() {
           Digite sua cidade para encontrar a unidade Splash mais próxima e fazer o quiz do seu quintal.
         </motion.p>
 
-        {/* City search */}
+        {/* City search — same style as quiz */}
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.7, duration: 0.5 }}
-          className="w-full max-w-xs space-y-3"
+          className="w-full max-w-xs"
         >
           <div className="relative">
-            <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4.5 h-4.5 text-white/40 pointer-events-none" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
             <Input
-              type="text"
-              placeholder="Digite sua cidade..."
-              value={cityInput}
-              onChange={(e) => {
-                setCityInput(e.target.value);
-                if (searchState !== 'idle' && searchState !== 'searching') {
+              value={citySearch}
+              onChange={e => {
+                setCitySearch(e.target.value);
+                if (searchState !== 'idle') {
                   setSearchState('idle');
+                  setMatches([]);
+                  setNearestFranchise(null);
                 }
               }}
-              onKeyDown={handleKeyDown}
-              className="pl-10 pr-4 py-6 rounded-2xl bg-white/10 backdrop-blur-md border-white/15 text-white placeholder:text-white/35 text-[15px] focus:border-blue-400/50 focus:ring-blue-400/20"
+              placeholder="Digite sua cidade..."
+              className="pl-11 py-6 rounded-2xl text-[15px] bg-white/10 backdrop-blur-md border-white/15 text-white placeholder:text-white/35 focus:border-primary/50 focus:ring-primary/20"
+              autoFocus
             />
           </div>
 
-          <Button
-            onClick={handleSearch}
-            disabled={cityInput.trim().length < 2 || searchState === 'searching'}
-            size="lg"
-            className="text-[15px] px-8 py-7 rounded-2xl font-bold gap-3 w-full gradient-blue glow-blue hover:glow-blue-strong hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 disabled:opacity-50"
-          >
-            {searchState === 'searching' ? (
-              <>
-                <div className="animate-spin w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
-                Buscando...
-              </>
-            ) : (
-              <>
-                <Search className="w-5 h-5" />
-                Encontrar minha unidade
-                <motion.span animate={{ x: [0, 4, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
-                  <ArrowRight className="w-5 h-5" />
-                </motion.span>
-              </>
+          {/* Autocomplete dropdown — like quiz city list */}
+          <AnimatePresence>
+            {showAutocomplete && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -5 }}
+                className="mt-2 space-y-1"
+              >
+                {filteredCities.map((city, i) => (
+                  <motion.button
+                    key={`${city.pais}-${city.nome}`}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: i * 0.04 }}
+                    onClick={() => handleCitySelect(city.nome)}
+                    className="w-full text-left px-4 py-3.5 rounded-xl bg-white/5 backdrop-blur-sm hover:bg-white/15 active:bg-white/20 transition-colors flex items-center gap-3 text-sm group"
+                  >
+                    <MapPin className="w-4 h-4 text-blue-300 shrink-0 group-hover:scale-110 transition-transform" />
+                    <span className="font-medium text-white/90">{formatCityLabel(city)}</span>
+                  </motion.button>
+                ))}
+              </motion.div>
             )}
-          </Button>
-        </motion.div>
 
-        {/* Results area */}
-        <AnimatePresence mode="wait">
-          {searchState === 'results' && matches.length > 1 && (
+            {showNoResults && (
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="text-sm text-white/40 mt-4 text-center"
+              >
+                Nenhuma cidade encontrada. Tente outro nome.
+              </motion.p>
+            )}
+          </AnimatePresence>
+
+          {/* Loading */}
+          {searchState === 'searching' && (
             <motion.div
-              key="multi"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="w-full max-w-xs mt-4 space-y-2"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="flex items-center justify-center gap-2 mt-4"
             >
-              <p className="text-white/60 text-xs text-center mb-2">
-                Encontramos {matches.length} unidades na sua região:
-              </p>
-              {matches.map((f) => (
-                <button
-                  key={f.id}
-                  onClick={() => navigate(`/${f.slug_url}`)}
-                  className="w-full flex items-center justify-between px-4 py-3.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 text-white hover:bg-white/20 transition-all group"
-                >
-                  <div className="text-left">
-                    <span className="block text-sm font-semibold">{f.nome_franquia}</span>
-                    <span className="block text-[11px] text-white/50">{f.cidade_base}</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 text-white/40 group-hover:text-white/70 transition-colors" />
-                </button>
-              ))}
+              <div className="animate-spin w-4 h-4 border-2 border-white/40 border-t-white rounded-full" />
+              <span className="text-white/50 text-sm">Buscando unidade...</span>
             </motion.div>
           )}
 
-          {searchState === 'no-match' && (
-            <motion.div
-              key="no-match"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="w-full max-w-xs mt-4"
-            >
-              <div className="px-4 py-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 text-center">
-                <p className="text-white/70 text-sm mb-2">
-                  Ainda não temos cobertura para "<span className="font-semibold">{cityInput.trim()}</span>".
+          {/* Multiple franchises */}
+          <AnimatePresence>
+            {searchState === 'results' && matches.length > 1 && (
+              <motion.div
+                key="multi"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="mt-4 space-y-2"
+              >
+                <p className="text-white/60 text-xs text-center mb-2">
+                  Encontramos {matches.length} unidades para {searchedCity}:
                 </p>
-                {nearestFranchise && (
-                  <>
-                    <p className="text-white/50 text-xs mb-3">
-                      A unidade mais próxima é:
-                    </p>
-                    <button
-                      onClick={() => navigate(`/${nearestFranchise.slug_url}`)}
-                      className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-white/10 border border-white/15 text-white hover:bg-white/20 transition-all group"
-                    >
-                      <div className="text-left">
-                        <span className="block text-sm font-semibold">{nearestFranchise.nome_franquia}</span>
-                        <span className="block text-[11px] text-white/50">{nearestFranchise.cidade_base}</span>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-white/40 group-hover:text-white/70 transition-colors" />
-                    </button>
-                  </>
-                )}
-              </div>
-            </motion.div>
-          )}
+                {matches.map((f) => (
+                  <button
+                    key={f.id}
+                    onClick={() => navigate(`/${f.slug_url}`)}
+                    className="w-full flex items-center justify-between px-4 py-3.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 text-white hover:bg-white/20 transition-all group"
+                  >
+                    <div className="text-left">
+                      <span className="block text-sm font-semibold">{f.nome_franquia}</span>
+                      <span className="block text-[11px] text-white/50">{f.cidade_base}</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-white/40 group-hover:text-white/70 transition-colors" />
+                  </button>
+                ))}
+              </motion.div>
+            )}
 
-          {searchState === 'error' && (
-            <motion.div
-              key="error"
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
-              className="w-full max-w-xs mt-4"
-            >
-              <p className="text-center text-red-300/80 text-sm">
+            {searchState === 'no-match' && (
+              <motion.div
+                key="no-match"
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="mt-4"
+              >
+                <div className="px-4 py-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 text-center">
+                  <p className="text-white/70 text-sm mb-2">
+                    Ainda não temos cobertura para "<span className="font-semibold">{searchedCity}</span>".
+                  </p>
+                  {nearestFranchise && (
+                    <>
+                      <p className="text-white/50 text-xs mb-3">A unidade mais próxima é:</p>
+                      <button
+                        onClick={() => navigate(`/${nearestFranchise.slug_url}`)}
+                        className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-white/10 border border-white/15 text-white hover:bg-white/20 transition-all group"
+                      >
+                        <div className="text-left">
+                          <span className="block text-sm font-semibold">{nearestFranchise.nome_franquia}</span>
+                          <span className="block text-[11px] text-white/50">{nearestFranchise.cidade_base}</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-white/40 group-hover:text-white/70 transition-colors" />
+                      </button>
+                    </>
+                  )}
+                </div>
+              </motion.div>
+            )}
+
+            {searchState === 'error' && (
+              <motion.p
+                key="error"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="text-center text-red-300/80 text-sm mt-4"
+              >
                 Erro ao buscar. Tente novamente.
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              </motion.p>
+            )}
+          </AnimatePresence>
+        </motion.div>
 
         {/* Trust indicators */}
         <motion.div
