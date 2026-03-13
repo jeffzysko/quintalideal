@@ -74,6 +74,7 @@ export function PanelHeader({ title, children }: PanelHeaderProps) {
           </div>
         </div>
       </header>
+      </div>
     </motion.div>
   );
 }
