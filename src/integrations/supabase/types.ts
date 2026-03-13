@@ -370,6 +370,8 @@ export type Database = {
           nome_modelo: string
           possui_prainha: boolean | null
           possui_spa: boolean | null
+          preco_max: number | null
+          preco_min: number | null
           profundidade: number | null
           tamanho: string | null
         }
@@ -384,6 +386,8 @@ export type Database = {
           nome_modelo: string
           possui_prainha?: boolean | null
           possui_spa?: boolean | null
+          preco_max?: number | null
+          preco_min?: number | null
           profundidade?: number | null
           tamanho?: string | null
         }
@@ -398,6 +402,8 @@ export type Database = {
           nome_modelo?: string
           possui_prainha?: boolean | null
           possui_spa?: boolean | null
+          preco_max?: number | null
+          preco_min?: number | null
           profundidade?: number | null
           tamanho?: string | null
         }
