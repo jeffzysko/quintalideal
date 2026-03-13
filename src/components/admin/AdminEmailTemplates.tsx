@@ -11,7 +11,7 @@ interface EmailTemplate {
   recipient: string;
   subject: string;
   icon: React.ReactNode;
-  category: 'convite' | 'notificacao' | 'autenticacao';
+  category: 'convite' | 'notificacao' | 'autenticacao' | 'transacional' | 'relatorio';
   html: string;
 }
 
