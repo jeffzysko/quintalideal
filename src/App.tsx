@@ -14,14 +14,20 @@ import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import { ScrollToTop } from "@/components/ScrollToTop";
 const NotFound = lazy(() => import("./pages/NotFound"));
 
-// Prefetch likely routes after initial load
+// Prefetch likely routes when browser is idle
 function usePrefetchRoutes() {
   useEffect(() => {
-    const timer = setTimeout(() => {
+    const prefetch = () => {
       import("./pages/Login");
       import("./pages/FranchiseLanding");
-    }, 3000);
-    return () => clearTimeout(timer);
+    };
+    if ('requestIdleCallback' in window) {
+      const id = requestIdleCallback(prefetch, { timeout: 5000 });
+      return () => cancelIdleCallback(id);
+    } else {
+      const timer = setTimeout(prefetch, 3000);
+      return () => clearTimeout(timer);
+    }
   }, []);
 }
 
@@ -48,6 +54,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60 * 5, // 5 minutes
+      gcTime: 1000 * 60 * 10, // 10 minutes garbage collection
       retry: 1,
     },
   },
