@@ -2,7 +2,7 @@ import { useState, useCallback, useRef, useEffect, lazy, Suspense } from 'react'
 import { AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import { HeroSection } from './HeroSection';
-import { calculateScore, recommendPool, recommendSize, type QuizAnswers } from '@/lib/scoring';
+import { calculateScore, recommendPool, recommendSize, type QuizAnswers, type PoolPriceInfo } from '@/lib/scoring';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { trackEvent } from '@/lib/analytics';
@@ -52,6 +52,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   const [leadName, setLeadName] = useState('');
   const [leadRefCode, setLeadRefCode] = useState('');
   const [saving, setSaving] = useState(false);
+  const [poolPrices, setPoolPrices] = useState<PoolPriceInfo[]>([]);
   const [assignedWhatsapp, setAssignedWhatsapp] = useState<string | undefined>(undefined);
   const [assignedFranchiseName, setAssignedFranchiseName] = useState<string | undefined>(undefined);
   const [assignedCidadeBase, setAssignedCidadeBase] = useState<string | undefined>(undefined);
@@ -63,6 +64,10 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
 
   useEffect(() => {
     trackEvent('landing_page_viewed', analyticsCtx);
+    // Fetch pool prices for budget-aware recommendations
+    supabase.from('pool_models').select('nome_modelo, preco_min, preco_max').then(({ data }) => {
+      if (data) setPoolPrices(data.map(d => ({ nome_modelo: d.nome_modelo, preco_min: d.preco_min, preco_max: d.preco_max })));
+    });
   }, []);
 
   const answerKeys: (keyof QuizAnswers)[] = ['espaco', 'moradia', 'uso', 'intencao', 'preferencia', 'orcamento', 'cidade'];
@@ -84,7 +89,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
     if (quizStep === 6) {
       const fullAnswers = newAnswers as QuizAnswers;
       const s = calculateScore(fullAnswers);
-      const pool = recommendPool(fullAnswers);
+      const pool = recommendPool(fullAnswers, poolPrices);
       const size = recommendSize(fullAnswers.espaco, pool);
       setScore(s);
       setPoolName(pool);

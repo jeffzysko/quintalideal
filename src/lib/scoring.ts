@@ -87,35 +87,70 @@ export function recommendSize(espaco: string, poolName: string): string {
   return sizes[poolName] || sizes['default'] || '';
 }
 
-export function recommendPool(answers: QuizAnswers): string {
+/** Budget range mapped to numeric values (in R$) for price validation */
+export function getBudgetRange(orcamento: string): { min: number; max: number } {
+  switch (orcamento) {
+    case 'ate-18': return { min: 0, max: 18000 };
+    case '18-30': return { min: 18000, max: 30000 };
+    case '30-50': return { min: 30000, max: 50000 };
+    default: return { min: 0, max: 50000 };
+  }
+}
+
+export interface PoolPriceInfo {
+  nome_modelo: string;
+  preco_min: number | null;
+  preco_max: number | null;
+}
+
+/**
+ * Checks if a pool model fits within the lead's budget range.
+ * If no price data is available for the model, it's considered compatible.
+ */
+export function isWithinBudget(poolName: string, orcamento: string, poolPrices: PoolPriceInfo[]): boolean {
+  const pool = poolPrices.find(p => p.nome_modelo === poolName);
+  if (!pool || pool.preco_min == null || pool.preco_max == null) return true; // No price data = compatible
+  const budget = getBudgetRange(orcamento);
+  // Pool fits if there's overlap between pool price range and budget range
+  return pool.preco_min <= budget.max && pool.preco_max >= budget.min;
+}
+
+export function recommendPool(answers: QuizAnswers, poolPrices: PoolPriceInfo[] = []): string {
   const espaco = answers.espaco;
   const pref = answers.preferencia;
   const uso = answers.uso;
   const orcamento = answers.orcamento;
 
+  const isFamilyOrFriends = uso === 'familia-grande' || uso === 'amigos';
+  const isHighBudget = orcamento === '30-50';
+
+  /** Returns the pool name if it fits the budget, otherwise the fallback */
+  const pick = (name: string, fallback?: string): string => {
+    if (isWithinBudget(name, orcamento, poolPrices)) return name;
+    if (fallback && isWithinBudget(fallback, orcamento, poolPrices)) return fallback;
+    return name; // Return original if fallback also doesn't fit
+  };
+
   // Espaço pequeno (até 5m)
   if (espaco === 'ate-3' || espaco === '3-5') {
-    if (pref === 'prainha') return 'Tortuga';
-    if (pref === 'spa') return 'Navagio';
-    return 'Italiana';
+    if (pref === 'prainha') return pick('Tortuga');
+    if (pref === 'spa') return pick('Navagio');
+    return pick('Italiana');
   }
 
   // Espaço médio (5-7m)
   if (espaco === '5-7') {
-    if (pref === 'prainha') return 'Tortuga';
-    if (pref === 'spa') return 'Bonaire';
-    // Orçamento alto com família → Bonaire (mais premium)
-    if ((uso === 'familia-grande' || uso === 'amigos') && orcamento === '30-50') return 'Bonaire';
-    if (uso === 'familia-grande' || uso === 'amigos') return 'Farol da Barra';
-    return 'Tropical';
+    if (pref === 'prainha') return pick('Tortuga');
+    if (pref === 'spa') return pick('Tradicional', 'Bonaire');
+    if (isFamilyOrFriends && isHighBudget) return pick('Bonaire', 'Tradicional');
+    if (isFamilyOrFriends) return pick('Tradicional', 'Tropical');
+    return pick('Tropical');
   }
 
   // Espaço grande (mais de 7m)
-  if (pref === 'prainha') return 'Tortuga';
-  if (pref === 'spa') return 'Atalaia';
-  // Orçamento premium → Atalaia (linha mais completa)
-  if (orcamento === '30-50' && (uso === 'familia-grande' || uso === 'amigos')) return 'Atalaia';
-  if (uso === 'familia-grande' || uso === 'amigos') return 'Cancún';
-  if (orcamento === '30-50') return 'Tradicional';
-  return 'Tradicional';
+  if (pref === 'prainha') return pick('Tortuga');
+  if (pref === 'spa') return pick('Atalaia');
+  if (isHighBudget && isFamilyOrFriends) return pick('Atalaia', 'Cancún');
+  if (isFamilyOrFriends) return pick('Cancún');
+  return pick('Tradicional');
 }
