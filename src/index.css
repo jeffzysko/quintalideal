@@ -309,4 +309,9 @@
   .progress-gradient-green {
     background: linear-gradient(90deg, hsl(152 70% 45%), hsl(152 70% 35%));
   }
+
+  @keyframes shimmer-border {
+    0%, 100% { background-position: -200% 0; }
+    50% { background-position: 200% 0; }
+  }
 }
