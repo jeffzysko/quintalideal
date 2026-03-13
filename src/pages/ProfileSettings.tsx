@@ -320,16 +320,15 @@ export default function ProfileSettings() {
             <TabsList className="w-full h-12 rounded-xl bg-muted/50 border border-border/40 p-1 gap-1">
               <TabsTrigger
                 value="pessoal"
-                className="flex-1 gap-1.5 rounded-lg text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                className="flex-1 gap-1.5 rounded-lg text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted"
               >
                 <User className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Pessoal</span>
-                <span className="sm:hidden">Pessoal</span>
+                Pessoal
               </TabsTrigger>
               {showFranchiseTab && (
                 <TabsTrigger
                   value="franquia"
-                  className="flex-1 gap-1.5 rounded-lg text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  className="flex-1 gap-1.5 rounded-lg text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted"
                 >
                   <Building2 className="w-3.5 h-3.5" />
                   <span className="hidden sm:inline">Franquia</span>
@@ -339,7 +338,7 @@ export default function ProfileSettings() {
               {showIntegrationsTab && (
                 <TabsTrigger
                   value="integracoes"
-                  className="flex-1 gap-1.5 rounded-lg text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm"
+                  className="flex-1 gap-1.5 rounded-lg text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted"
                 >
                   <Puzzle className="w-3.5 h-3.5" />
                   <span className="hidden sm:inline">Integrações</span>
