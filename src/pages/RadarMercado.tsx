@@ -10,10 +10,10 @@ import {
 } from 'lucide-react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { PieChart, Pie, Cell } from 'recharts';
-import logoSplash from '@/assets/logo-splash.png';
 import { useNavigate } from 'react-router-dom';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
+import { PageHeader } from '@/components/PageHeader';
 
 interface LeadData {
   cidade: string | null;
