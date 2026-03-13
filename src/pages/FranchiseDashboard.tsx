@@ -309,24 +309,14 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   return (
     <PageTransition>
     <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-30 border-b border-border/40 bg-card/80 backdrop-blur-xl">
-        <div className="max-w-6xl mx-auto px-4 md:px-6 h-14 md:h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3 min-w-0">
-            <img src={logoSplash} alt="Splash" className="h-7 md:h-9 shrink-0" />
-            <div className="h-5 w-px bg-border/60 hidden sm:block" />
-            <span className="text-sm font-semibold text-foreground tracking-tight truncate hidden sm:block">{franchiseName || 'Dashboard'}</span>
-          </div>
-
-          <nav className="flex items-center gap-1">
-            <Badge variant="outline" className="text-[10px] px-2 py-0.5 border-primary/20 text-primary font-medium hidden sm:flex">
-              {totalLeads} leads
-            </Badge>
-            <div className="h-5 w-px bg-border/60 mx-1 hidden sm:block" />
-            <NotificationBell />
-            <UserAvatarMenu />
-          </nav>
-        </div>
-      </header>
+      <PanelHeader title={franchiseName || 'Dashboard'}>
+        <Badge variant="outline" className="text-[10px] px-2 py-0.5 border-primary/20 text-primary font-medium hidden sm:flex">
+          {totalLeads} leads
+        </Badge>
+        <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
+        <NotificationBell />
+        <UserAvatarMenu />
+      </PanelHeader>
 
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8">
         <Breadcrumbs items={[{ label: 'Franquia' }]} />
