@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateScore, recommendPool, type QuizAnswers } from '@/lib/scoring';
+import { calculateScore, recommendPool, type QuizAnswers, type PoolPriceInfo } from '@/lib/scoring';
 
 const base = (overrides: Partial<QuizAnswers> = {}): QuizAnswers => ({
   espaco: 'mais-7',
