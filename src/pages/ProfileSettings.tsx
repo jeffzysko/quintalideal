@@ -561,10 +561,12 @@ function PasswordChangeCard() {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-      <Card className="border-border/50 shadow-sm">
+      <Card className="card-premium">
         <CardHeader>
           <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <Lock className="w-4 h-4 text-primary" />
+            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Lock className="w-4 h-4 text-primary" />
+            </div>
             Alterar Senha
           </CardTitle>
           <CardDescription className="text-xs">
