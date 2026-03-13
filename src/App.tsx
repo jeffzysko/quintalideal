@@ -27,6 +27,7 @@ function usePrefetchRoutes() {
 
 // Lazy load non-critical routes
 const MapaQuintais = lazy(() => import("./pages/MapaQuintais"));
+const RankingQuintais = lazy(() => import("./pages/RankingQuintais"));
 const FranchiseLanding = lazy(() => import("./pages/FranchiseLanding"));
 const Login = lazy(() => import("./pages/Login"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
