@@ -20,3 +20,6 @@ verify_jwt = false
 
 [functions.send-lead-result-email]
 verify_jwt = false
+
+[functions.send-monthly-report]
+verify_jwt = false
