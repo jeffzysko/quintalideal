@@ -258,27 +258,17 @@ export default function RadarMercado() {
   return (
     <PageTransition>
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b bg-card">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-3 sm:py-5 flex items-center justify-between gap-2">
-          <div className="flex items-center gap-2 sm:gap-4 min-w-0">
-            <Button variant="ghost" size="icon" onClick={() => navigate('/admin')} className="rounded-xl shrink-0 h-8 w-8 sm:h-10 sm:w-10">
-              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5" />
-            </Button>
-            <img src={logoSplash} alt="Splash" className="w-10 sm:w-16 shrink-0 hidden sm:block" />
-            <div className="min-w-0">
-              <h1 className="text-sm sm:text-xl font-bold tracking-tight text-foreground flex items-center gap-1.5 sm:gap-2">
-                <Target className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0" />
-                <span className="truncate">Radar de Mercado</span>
-              </h1>
-              <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 hidden sm:block">Inteligência do Mercado de Piscinas</p>
-            </div>
-          </div>
-          <Badge variant="outline" className="text-[10px] sm:text-xs px-2 sm:px-3 py-1 sm:py-1.5 border-primary/30 text-primary shrink-0">
+      <PageHeader
+        title="Radar de Mercado"
+        subtitle="Inteligência do Mercado de Piscinas"
+        icon={<Target className="w-4 h-4 text-primary" />}
+        onBack={() => navigate('/admin')}
+        rightSlot={
+          <Badge variant="outline" className="text-[10px] sm:text-xs px-2 sm:px-3 py-1 sm:py-1.5 border-primary/30 text-primary">
             {totalLeads} testes
           </Badge>
-        </div>
-      </div>
+        }
+      />
 
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
         <Breadcrumbs items={[

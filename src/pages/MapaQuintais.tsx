@@ -116,27 +116,17 @@ export default function MapaQuintais() {
   return (
     <PageTransition>
     <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="border-b bg-card">
-        <div className="max-w-5xl mx-auto px-4 md:px-6 py-4 md:py-5 flex items-center justify-between gap-3">
-          <div className="flex items-center gap-2 md:gap-4 min-w-0">
-            <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="rounded-xl shrink-0">
-              <ArrowLeft className="w-5 h-5" />
-            </Button>
-            <img src={logoSplash} alt="Splash" className="w-12 md:w-16 shrink-0" />
-            <div className="min-w-0">
-              <h1 className="text-base md:text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-                <Flame className="w-4 h-4 md:w-5 md:h-5 text-destructive shrink-0" />
-                <span className="truncate">Mapa de Calor</span>
-              </h1>
-              <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5">Densidade de leads por cidade</p>
-            </div>
-          </div>
-          <Badge variant="outline" className="text-[10px] md:text-xs px-2 md:px-3 py-1 md:py-1.5 border-primary/30 text-primary shrink-0 whitespace-nowrap">
+      <PageHeader
+        title="Mapa de Calor"
+        subtitle="Densidade de leads por cidade"
+        icon={<Flame className="w-4 h-4 text-destructive" />}
+        onBack={() => navigate(-1)}
+        rightSlot={
+          <Badge variant="outline" className="text-[10px] md:text-xs px-2 md:px-3 py-1 md:py-1.5 border-primary/30 text-primary whitespace-nowrap">
             {totalQuintais} quintais
           </Badge>
-        </div>
-      </div>
+        }
+      />
 
       <div className="px-4 md:px-6 py-4 md:py-6 max-w-5xl mx-auto">
         <Breadcrumbs items={[{ label: 'Mapa de Calor' }]} />
