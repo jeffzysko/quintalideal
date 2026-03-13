@@ -275,8 +275,19 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Fire webhook for assigned franchise
+    // Create notification for assigned franchise
     if (assignedFranchiseId) {
+      supabase.from("notifications").insert({
+        franchise_id: assignedFranchiseId,
+        title: "Novo lead recebido",
+        message: `${nome}${cidade ? ` de ${cidade}` : ""} — ${modeloRecomendado || "Sem modelo"}`,
+        type: "new_lead",
+        metadata: { lead_name: nome, city: cidade, model: modeloRecomendado },
+      }).then(({ error: notifError }) => {
+        if (notifError) console.error("Notification insert error:", notifError);
+      });
+
+      // Fire webhook for assigned franchise
       fireWebhook(supabase, assignedFranchiseId, {
         nome, telefone, email, cidade, pontuacaoQuintal, modeloRecomendado, referredBy,
       }).catch((err) => console.error("Webhook error:", err));

@@ -16,6 +16,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
 
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
+import { NotificationBell } from '@/components/NotificationBell';
 import { FranchiseReports } from '@/components/franchise/FranchiseReports';
 import { STATUS_LABELS, STATUS_COLORS, LeadRow } from '@/lib/lead-constants';
 import { KPISkeleton } from '@/components/ui/kpi-skeleton';
@@ -317,6 +318,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
               {totalLeads} leads
             </Badge>
             <div className="h-5 w-px bg-border/60 mx-1 hidden sm:block" />
+            <NotificationBell />
             <UserAvatarMenu />
           </nav>
         </div>
