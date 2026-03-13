@@ -334,18 +334,19 @@ export default function ProfileSettings() {
                 Esses dados são usados para identificar você no sistema.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Nome completo</Label>
+            <CardContent className="space-y-5">
+              <div className="space-y-1.5">
+                <Label htmlFor="fullName" className="text-xs font-medium">Nome completo</Label>
                 <Input
                   id="fullName"
                   placeholder="Seu nome completo"
                   value={fullName}
                   onChange={e => setFullName(e.target.value)}
+                  className="rounded-xl h-11"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="personalPhone" className="flex items-center gap-1.5">
+              <div className="space-y-1.5">
+                <Label htmlFor="personalPhone" className="text-xs font-medium flex items-center gap-1.5">
                   <Phone className="w-3.5 h-3.5" /> Telefone pessoal
                 </Label>
                 <Input
@@ -354,18 +355,19 @@ export default function ProfileSettings() {
                   value={formatPhoneBR(telefone)}
                   onChange={e => { setTelefone(unformatPhone(e.target.value)); setFormErrors(p => ({ ...p, telefone: '' })); }}
                   maxLength={16}
+                  className="rounded-xl h-11"
                 />
                 {formErrors.telefone && <p className="text-xs text-destructive mt-1">{formErrors.telefone}</p>}
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="loginEmail">E-mail de login</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="loginEmail" className="text-xs font-medium">E-mail de login</Label>
                 <Input
                   id="loginEmail"
                   value={user?.email || ''}
                   disabled
-                  className="opacity-60"
+                  className="opacity-60 rounded-xl h-11"
                 />
-                <p className="text-xs text-muted-foreground">O e-mail de login não pode ser alterado aqui.</p>
+                <p className="text-[11px] text-muted-foreground">O e-mail de login não pode ser alterado aqui.</p>
               </div>
             </CardContent>
           </Card>
