@@ -453,11 +453,13 @@ export default function ProfileSettings() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-                  <Building2 className="w-5 h-5 text-primary" />
+                <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-xl">
+                  <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                    <Building2 className="w-4 h-4 text-primary" />
+                  </div>
                   <div>
                     <p className="text-sm font-medium text-foreground">Painel da Fábrica</p>
-                    <p className="text-xs text-muted-foreground">Gerencie franquias, leads e configurações de e-mail no painel admin.</p>
+                    <p className="text-[11px] text-muted-foreground">Gerencie franquias, leads e configurações de e-mail no painel admin.</p>
                   </div>
                 </div>
               </CardContent>
