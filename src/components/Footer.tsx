@@ -11,8 +11,8 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-2 sm:col-span-1 flex flex-col items-start gap-3">
             <img src={logoSplash} alt="Splash Piscinas" className="w-10 opacity-70" />
-            <p className="text-xs text-muted-foreground leading-relaxed max-w-[200px]">
-              Descubra o potencial do seu quintal com a tecnologia Splash Piscinas.
+            <p className="text-xs text-muted-foreground leading-relaxed max-w-[220px]">
+              Essa é uma iniciativa da Hallow Comunicação juntamente com a iGUi Santo Antônio.
             </p>
           </div>
 
@@ -55,7 +55,7 @@ export function Footer() {
         {/* Divider + bottom */}
         <div className="mt-8 pt-5 border-t border-border/30 flex flex-col sm:flex-row items-center justify-between gap-2 text-[10px] text-muted-foreground/50">
           <p>
-            © {new Date().getFullYear()} Splash Piscinas · Plataforma por{' '}
+            © {new Date().getFullYear()} Quintal Ideal · Plataforma desenvolvida com ❤️ por{' '}
             <span className="font-semibold text-muted-foreground/70">Hallow Comunicação</span>
           </p>
           <p>Todos os direitos reservados</p>
