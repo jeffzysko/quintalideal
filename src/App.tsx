@@ -27,6 +27,7 @@ function usePrefetchRoutes() {
 
 // Lazy load non-critical routes
 const MapaQuintais = lazy(() => import("./pages/MapaQuintais"));
+const RankingQuintais = lazy(() => import("./pages/RankingQuintais"));
 const FranchiseLanding = lazy(() => import("./pages/FranchiseLanding"));
 const Login = lazy(() => import("./pages/Login"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
@@ -97,6 +98,7 @@ function AppRoutes() {
                     {/* Pages WITH footer */}
                     <Route element={<LayoutWithFooter />}>
                       <Route path="/mapa" element={<MapaQuintais />} />
+                      <Route path="/ranking" element={<RankingQuintais />} />
                       <Route path="/login" element={<Login />} />
                       <Route path="/forgot-password" element={<ForgotPassword />} />
                       <Route path="/reset-password" element={<ResetPassword />} />

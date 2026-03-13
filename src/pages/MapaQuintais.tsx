@@ -2,13 +2,15 @@ import { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MapPin, BarChart3, Users, TrendingUp, ArrowLeft } from 'lucide-react';
+import { MapPin, BarChart3, Users, TrendingUp, ArrowLeft, Flame, Filter } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import logoSplash from '@/assets/logo-splash.png';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface CityData {
   cidade: string;
@@ -49,10 +51,34 @@ const cityPositions: Record<string, { x: number; y: number }> = {
   'Capão da Canoa': { x: 80, y: 55 },
 };
 
+type HeatMode = 'volume' | 'score';
+
+function getHeatColor(value: number, max: number, mode: HeatMode): string {
+  const ratio = Math.min(value / max, 1);
+  if (mode === 'volume') {
+    // Blue → Cyan → Yellow → Orange → Red
+    if (ratio < 0.25) return `hsla(207, 90%, 60%, ${0.4 + ratio * 2})`;
+    if (ratio < 0.5) return `hsla(180, 80%, 45%, ${0.6 + ratio})`;
+    if (ratio < 0.75) return `hsla(45, 95%, 50%, ${0.7 + ratio * 0.3})`;
+    return `hsla(0, 85%, 55%, ${0.8 + ratio * 0.2})`;
+  }
+  // Score mode: green gradient
+  if (ratio < 0.4) return `hsla(0, 70%, 55%, 0.7)`;
+  if (ratio < 0.6) return `hsla(38, 90%, 50%, 0.75)`;
+  if (ratio < 0.8) return `hsla(80, 70%, 45%, 0.8)`;
+  return `hsla(152, 70%, 40%, 0.9)`;
+}
+
+function getGlowSize(count: number, max: number): number {
+  return Math.max(30, Math.min(80, (count / max) * 80));
+}
+
 export default function MapaQuintais() {
   const navigate = useNavigate();
   const [leads, setLeads] = useState<{ cidade: string | null; pontuacao_quintal: number | null }[]>([]);
   const [loading, setLoading] = useState(true);
+  const [heatMode, setHeatMode] = useState<HeatMode>('volume');
+  const [hoveredCity, setHoveredCity] = useState<string | null>(null);
 
   useEffect(() => {
     loadData();
@@ -84,9 +110,8 @@ export default function MapaQuintais() {
     ? Math.round(leads.reduce((s, l) => s + (l.pontuacao_quintal || 0), 0) / totalQuintais)
     : 0;
   const topCities = cityData.slice(0, 10);
-
-  // Get max count for bubble sizing
   const maxCount = Math.max(...cityData.map(c => c.count), 1);
+  const maxScore = Math.max(...cityData.map(c => c.avgScore), 1);
 
   return (
     <PageTransition>
@@ -101,10 +126,10 @@ export default function MapaQuintais() {
             <img src={logoSplash} alt="Splash" className="w-12 md:w-16 shrink-0" />
             <div className="min-w-0">
               <h1 className="text-base md:text-xl font-bold tracking-tight text-foreground flex items-center gap-2">
-                <MapPin className="w-4 h-4 md:w-5 md:h-5 text-primary shrink-0" />
-                <span className="truncate">Mapa dos Quintais</span>
+                <Flame className="w-4 h-4 md:w-5 md:h-5 text-destructive shrink-0" />
+                <span className="truncate">Mapa de Calor</span>
               </h1>
-              <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5">Rio Grande do Sul</p>
+              <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5">Densidade de leads por cidade</p>
             </div>
           </div>
           <Badge variant="outline" className="text-[10px] md:text-xs px-2 md:px-3 py-1 md:py-1.5 border-primary/30 text-primary shrink-0 whitespace-nowrap">
@@ -114,7 +139,8 @@ export default function MapaQuintais() {
       </div>
 
       <div className="px-4 md:px-6 py-4 md:py-6 max-w-5xl mx-auto">
-        <Breadcrumbs items={[{ label: 'Mapa dos Quintais' }]} />
+        <Breadcrumbs items={[{ label: 'Mapa de Calor' }]} />
+
         {/* KPI cards */}
         <div className="grid grid-cols-3 gap-2 md:gap-3 mb-4 md:mb-6">
           <Card>
@@ -146,62 +172,127 @@ export default function MapaQuintais() {
           </div>
         ) : (
           <>
-            {/* Visual Map */}
-            <Card className="mb-6">
-              <CardHeader>
+            {/* Heat Map */}
+            <Card className="mb-6 overflow-hidden">
+              <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2">
                 <CardTitle className="text-base flex items-center gap-2">
-                  <MapPin className="w-4 h-4" /> Mapa de Quintais Analisados
+                  <Flame className="w-4 h-4 text-destructive" /> Mapa de Calor
                 </CardTitle>
+                <div className="flex items-center gap-2">
+                  <Filter className="w-3.5 h-3.5 text-muted-foreground" />
+                  <Select value={heatMode} onValueChange={(v) => setHeatMode(v as HeatMode)}>
+                    <SelectTrigger className="w-32 h-8 text-xs">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="volume">Por Volume</SelectItem>
+                      <SelectItem value="score">Por Potencial</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="relative w-full aspect-[4/3] bg-accent/20 rounded-xl overflow-hidden border">
-                  {/* RS outline (simplified) */}
-                  <svg viewBox="0 0 100 100" className="w-full h-full absolute inset-0 opacity-10">
+                <div className="relative w-full aspect-[4/3] bg-muted/30 rounded-xl overflow-hidden border">
+                  {/* RS outline */}
+                  <svg viewBox="0 0 100 100" className="w-full h-full absolute inset-0 opacity-[0.07]">
                     <path
                       d="M 15,5 L 85,5 L 90,15 L 88,30 L 82,45 L 85,55 L 80,65 L 75,72 L 70,78 L 60,95 L 55,98 L 45,95 L 30,88 L 20,80 L 10,65 L 5,50 L 8,35 L 10,20 L 12,10 Z"
-                      fill="hsl(var(--secondary))"
-                      stroke="hsl(var(--secondary))"
+                      fill="hsl(var(--foreground))"
+                      stroke="hsl(var(--foreground))"
                       strokeWidth="0.5"
                     />
                   </svg>
 
-                  {/* City bubbles */}
+                  {/* Heat blobs */}
                   {cityData.map(city => {
                     const pos = cityPositions[city.cidade];
                     if (!pos) return null;
-                    const size = Math.max(12, Math.min(40, (city.count / maxCount) * 40));
+                    const heatValue = heatMode === 'volume' ? city.count : city.avgScore;
+                    const heatMax = heatMode === 'volume' ? maxCount : maxScore;
+                    const glowSize = getGlowSize(city.count, maxCount);
+                    const color = getHeatColor(heatValue, heatMax, heatMode);
+                    const isHovered = hoveredCity === city.cidade;
+
                     return (
-                      <motion.div
-                        key={city.cidade}
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        transition={{ delay: Math.random() * 0.5 }}
-                        className="absolute flex items-center justify-center"
-                        style={{
-                          left: `${pos.x}%`,
-                          top: `${pos.y}%`,
-                          transform: 'translate(-50%, -50%)',
-                          width: size,
-                          height: size,
-                        }}
-                        title={`${city.cidade}: ${city.count} quintais, média ${city.avgScore}%`}
-                      >
-                        <div
-                          className="rounded-full bg-primary/70 border-2 border-primary shadow-lg cursor-pointer hover:bg-primary transition-colors"
-                          style={{ width: '100%', height: '100%' }}
-                        />
-                        {size >= 20 && (
-                          <span className="absolute text-[8px] font-bold text-primary-foreground pointer-events-none">
-                            {city.count}
-                          </span>
-                        )}
-                      </motion.div>
+                      <Tooltip key={city.cidade}>
+                        <TooltipTrigger asChild>
+                          <motion.div
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: isHovered ? 1.3 : 1, opacity: 1 }}
+                            transition={{ delay: Math.random() * 0.4, type: 'spring', stiffness: 200 }}
+                            className="absolute cursor-pointer"
+                            style={{
+                              left: `${pos.x}%`,
+                              top: `${pos.y}%`,
+                              transform: 'translate(-50%, -50%)',
+                              width: glowSize,
+                              height: glowSize,
+                              zIndex: isHovered ? 50 : Math.round((city.count / maxCount) * 30),
+                            }}
+                            onMouseEnter={() => setHoveredCity(city.cidade)}
+                            onMouseLeave={() => setHoveredCity(null)}
+                          >
+                            {/* Glow layer */}
+                            <div
+                              className="absolute inset-0 rounded-full blur-md transition-all duration-300"
+                              style={{ backgroundColor: color, opacity: isHovered ? 0.9 : 0.5 }}
+                            />
+                            {/* Core dot */}
+                            <div
+                              className="absolute rounded-full border-2 border-background/50 shadow-lg transition-all duration-200"
+                              style={{
+                                backgroundColor: color,
+                                width: Math.max(12, glowSize * 0.45),
+                                height: Math.max(12, glowSize * 0.45),
+                                left: '50%',
+                                top: '50%',
+                                transform: 'translate(-50%, -50%)',
+                              }}
+                            />
+                            {/* Label */}
+                            {(glowSize >= 30 || isHovered) && (
+                              <span
+                                className="absolute text-[9px] font-bold pointer-events-none whitespace-nowrap transition-opacity"
+                                style={{
+                                  left: '50%',
+                                  top: `calc(50% + ${glowSize * 0.35}px)`,
+                                  transform: 'translateX(-50%)',
+                                  color: 'hsl(var(--foreground))',
+                                  opacity: isHovered ? 1 : 0.7,
+                                  textShadow: '0 1px 3px hsl(var(--background))',
+                                }}
+                              >
+                                {city.cidade.length > 12 ? city.cidade.slice(0, 11) + '…' : city.cidade}
+                              </span>
+                            )}
+                          </motion.div>
+                        </TooltipTrigger>
+                        <TooltipContent side="top" className="text-xs">
+                          <p className="font-bold">{city.cidade}</p>
+                          <p>{city.count} {city.count === 1 ? 'quintal' : 'quintais'} · Média {city.avgScore}%</p>
+                        </TooltipContent>
+                      </Tooltip>
                     );
                   })}
                 </div>
-                <p className="text-xs text-muted-foreground text-center mt-2">
-                  Cada bolha representa uma cidade — tamanho proporcional ao número de quintais analisados.
-                </p>
+
+                {/* Legend */}
+                <div className="flex items-center justify-center gap-4 mt-3">
+                  <span className="text-[10px] text-muted-foreground font-medium">
+                    {heatMode === 'volume' ? 'Menor volume' : 'Menor potencial'}
+                  </span>
+                  <div className="flex gap-0.5">
+                    {(heatMode === 'volume'
+                      ? ['hsla(207,90%,60%,0.6)', 'hsla(180,80%,45%,0.7)', 'hsla(45,95%,50%,0.8)', 'hsla(0,85%,55%,0.9)']
+                      : ['hsla(0,70%,55%,0.7)', 'hsla(38,90%,50%,0.75)', 'hsla(80,70%,45%,0.8)', 'hsla(152,70%,40%,0.9)']
+                    ).map((c, i) => (
+                      <div key={i} className="w-6 h-3 rounded-sm" style={{ backgroundColor: c }} />
+                    ))}
+                  </div>
+                  <span className="text-[10px] text-muted-foreground font-medium">
+                    {heatMode === 'volume' ? 'Maior volume' : 'Maior potencial'}
+                  </span>
+                </div>
               </CardContent>
             </Card>
 
@@ -214,28 +305,44 @@ export default function MapaQuintais() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {topCities.map((city, i) => (
-                    <div key={city.cidade} className="flex items-center gap-3 py-2 px-3 rounded-lg bg-muted/30">
-                      <span className="text-sm font-bold text-muted-foreground w-6">{i + 1}º</span>
-                      <div className="flex-1">
-                        <p className="text-sm font-medium">{city.cidade}</p>
-                        <div className="flex gap-3 text-xs text-muted-foreground">
-                          <span>{city.count} {city.count === 1 ? 'quintal' : 'quintais'}</span>
-                          <span>Média: {city.avgScore}%</span>
-                        </div>
-                      </div>
-                      <div className="w-16 bg-muted rounded-full h-2 overflow-hidden">
+                  {topCities.map((city, i) => {
+                    const barColor = getHeatColor(city.count, maxCount, 'volume');
+                    return (
+                      <motion.div
+                        key={city.cidade}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.05 }}
+                        className="flex items-center gap-3 py-2.5 px-3 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
+                      >
+                        <span className="text-sm font-bold text-muted-foreground w-6">{i + 1}º</span>
                         <div
-                          className="h-full bg-primary rounded-full transition-all"
-                          style={{ width: `${(city.count / maxCount) * 100}%` }}
+                          className="w-3 h-3 rounded-full shrink-0 shadow-sm"
+                          style={{ backgroundColor: barColor }}
                         />
-                      </div>
-                    </div>
-                  ))}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{city.cidade}</p>
+                          <div className="flex gap-3 text-xs text-muted-foreground">
+                            <span>{city.count} {city.count === 1 ? 'quintal' : 'quintais'}</span>
+                            <span>Média: {city.avgScore}%</span>
+                          </div>
+                        </div>
+                        <div className="w-20 bg-muted rounded-full h-2 overflow-hidden">
+                          <motion.div
+                            className="h-full rounded-full"
+                            style={{ backgroundColor: barColor }}
+                            initial={{ width: 0 }}
+                            animate={{ width: `${(city.count / maxCount) * 100}%` }}
+                            transition={{ delay: i * 0.05 + 0.3, duration: 0.5 }}
+                          />
+                        </div>
+                      </motion.div>
+                    );
+                  })}
 
                   {topCities.length === 0 && (
                     <p className="text-sm text-muted-foreground text-center py-6">
-                      Nenhum quintal analisado ainda. Seja o primeiro!
+                      Nenhum quintal analisado ainda.
                     </p>
                   )}
                 </div>
