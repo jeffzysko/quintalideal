@@ -514,7 +514,7 @@ export default function ProfileSettings() {
 
         {/* Save button */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-          <Button onClick={handleSave} disabled={saving} className="gap-2 rounded-xl">
+          <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto gap-2 rounded-2xl py-6 text-sm font-bold shadow-xl shadow-primary/20 gradient-blue glow-blue hover:glow-blue-strong hover:scale-[1.01] transition-all duration-300">
             <Save className="w-4 h-4" />
             {saving ? 'Salvando...' : 'Salvar alterações'}
           </Button>
