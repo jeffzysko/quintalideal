@@ -4,7 +4,7 @@ import { LazyMotion, domAnimation, m, AnimatePresence } from 'framer-motion';
 import { Search, MapPin, Droplets, Shield, Clock, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/lib/supabase';
-import logoSplash from '@/assets/logo-splash.webp';
+import logoSplash from '@/assets/logo-splash.png';
 import heroPool from '@/assets/hero-pool.webp';
 import { cidades, type CityOption } from '@/lib/cities';
 
