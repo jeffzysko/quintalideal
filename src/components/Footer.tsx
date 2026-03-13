@@ -11,8 +11,8 @@ export function Footer() {
           {/* Brand */}
           <div className="col-span-2 sm:col-span-1 flex flex-col items-start gap-3">
             <img src={logoSplash} alt="Splash Piscinas" className="w-10 opacity-70" />
-            <p className="text-xs text-muted-foreground leading-relaxed max-w-[200px]">
-              Descubra o potencial do seu quintal com a tecnologia Splash Piscinas.
+            <p className="text-xs text-muted-foreground leading-relaxed max-w-[220px]">
+              Essa é uma iniciativa da Hallow Comunicação juntamente com a iGUi Santo Antônio.
             </p>
           </div>
 
