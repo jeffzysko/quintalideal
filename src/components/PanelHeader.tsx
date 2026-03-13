@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
-import logoSplash from '@/assets/logo-splash.png';
+import logoSplash from '@/assets/logo-splash.webp';
 
 interface PanelHeaderProps {
   title?: string;

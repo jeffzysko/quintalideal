@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Trophy, MapPin, Droplets, Share2, Star, ArrowLeft, Sparkles, Crown, Flame } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import logoSplash from '@/assets/logo-splash.png';
+import logoSplash from '@/assets/logo-splash.webp';
 import { useNavigate, Link } from 'react-router-dom';
 import { PageTransition } from '@/components/PageTransition';
 import { toast } from 'sonner';

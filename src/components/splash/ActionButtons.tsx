@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, Trophy, ArrowRight, Sparkles, Ruler, Waves, Droplets, Users, Instagram, X, MapPin } from 'lucide-react';
-import logoSplash from '@/assets/logo-splash.png';
+import logoSplash from '@/assets/logo-splash.webp';
 import { getRankingGaucho, getYardClassification, getSharePhrase, getSocialComparison } from '@/lib/ranking';
 import { getPoolImage } from '@/lib/poolImages';
 import { ValorizationSimulator } from './ValorizationSimulator';

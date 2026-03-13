@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Lock, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
-import logoSplash from '@/assets/logo-splash.png';
+import logoSplash from '@/assets/logo-splash.webp';
 
 export default function ResetPassword() {
   const navigate = useNavigate();
