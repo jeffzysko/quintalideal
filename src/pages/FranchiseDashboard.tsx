@@ -166,6 +166,9 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
         </div>
       )}
 
+      {/* Conversion Funnel */}
+      {!loadingKpis && allLeads.length > 0 && <ConversionFunnel leads={allLeads} />}
+
       {/* Tab switcher */}
       <div className="flex gap-1 mb-6 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-full sm:w-fit overflow-x-auto scrollbar-none border border-border/30" role="tablist">
         <button
