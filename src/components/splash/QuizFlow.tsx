@@ -2,7 +2,7 @@ import { useState, useCallback, useRef, useEffect, lazy, Suspense } from 'react'
 import { AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import { HeroSection } from './HeroSection';
-import { calculateScore, recommendPool, recommendSize, type QuizAnswers } from '@/lib/scoring';
+import { calculateScore, recommendPool, recommendSize, type QuizAnswers, type PoolPriceInfo } from '@/lib/scoring';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { trackEvent } from '@/lib/analytics';
