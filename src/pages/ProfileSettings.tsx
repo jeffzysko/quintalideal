@@ -506,7 +506,7 @@ export default function ProfileSettings() {
               <FranchiseContactSettings franchiseId={integrationFranchiseId} />
             ) : (
               isAdmin && (
-                <Card className="border-border/50 shadow-sm">
+                <Card className="card-premium">
                   <CardContent className="pt-6">
                     <p className="text-sm text-muted-foreground">Nenhuma franquia disponível para configurar integrações.</p>
                   </CardContent>
