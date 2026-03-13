@@ -90,6 +90,72 @@ const INTENCAO_LABELS: Record<string, string> = {
 const PIE_COLORS = ['#1e88e5', '#42a5f5', '#64b5f6', '#90caf9', '#bbdefb'];
 const INTENCAO_COLORS = ['#ef4444', '#f59e0b', '#3b82f6'];
 
+/* ── Premium KPI Card ── */
+function KPICard({ icon: Icon, label, value, color, delay, accentGlow }: {
+  icon: React.ElementType; label: string; value: string | number;
+  color: string; delay: number; accentGlow: string;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24, scale: 0.95 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ delay, type: 'spring', stiffness: 180, damping: 18 }}
+    >
+      <Card className="card-premium group relative overflow-hidden border-border/40">
+        {/* Accent glow */}
+        <div
+          className="absolute -top-6 -right-6 w-20 h-20 rounded-full blur-2xl opacity-0 group-hover:opacity-40 transition-opacity duration-500"
+          style={{ background: accentGlow }}
+        />
+        <CardContent className="p-3 sm:p-5 relative">
+          <div className="flex items-center gap-2 mb-2">
+            <div
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl flex items-center justify-center"
+              style={{ background: `linear-gradient(135deg, ${accentGlow}22, ${accentGlow}44)` }}
+            >
+              <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${color}`} />
+            </div>
+          </div>
+          <motion.p
+            className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: delay + 0.2 }}
+          >
+            {value}
+          </motion.p>
+          <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1 font-medium">{label}</p>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+}
+
+/* ── Section Card wrapper ── */
+function SectionCard({ children, title, icon, subtitle, delay, className = '' }: {
+  children: React.ReactNode; title: string; icon: React.ReactNode;
+  subtitle?: string; delay: number; className?: string;
+}) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 28 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, type: 'spring', stiffness: 140, damping: 20 }}
+    >
+      <Card className={`card-premium border-border/40 overflow-hidden ${className}`}>
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-semibold flex items-center gap-2">
+            {icon}
+            {title}
+          </CardTitle>
+          {subtitle && <p className="text-[10px] text-muted-foreground">{subtitle}</p>}
+        </CardHeader>
+        <CardContent>{children}</CardContent>
+      </Card>
+    </motion.div>
+  );
+}
+
 export default function RadarMercado() {
   const navigate = useNavigate();
   const [leads, setLeads] = useState<LeadData[]>([]);
@@ -113,7 +179,6 @@ export default function RadarMercado() {
     return m;
   }, [franchises]);
 
-  // === CITY DEMAND DATA ===
   const cityDemand = useMemo(() => {
     const map: Record<string, { count: number; totalScore: number; sold: number }> = {};
     leads.forEach(l => {
@@ -134,7 +199,6 @@ export default function RadarMercado() {
       .sort((a, b) => b.count - a.count);
   }, [leads]);
 
-  // === YARD SIZE DISTRIBUTION ===
   const yardSizes = useMemo(() => {
     const counts: Record<string, number> = {};
     leads.forEach(l => {
@@ -151,7 +215,6 @@ export default function RadarMercado() {
       .sort((a, b) => b.value - a.value);
   }, [leads]);
 
-  // === MODEL RANKING ===
   const modelRanking = useMemo(() => {
     const counts: Record<string, number> = {};
     leads.forEach(l => {
@@ -162,7 +225,6 @@ export default function RadarMercado() {
       .map(([model, count], i) => ({ rank: i + 1, model, count }));
   }, [leads]);
 
-  // === CUSTOMER PROFILE ===
   const customerProfile = useMemo(() => {
     const counts: Record<string, number> = {};
     leads.forEach(l => {
@@ -179,7 +241,6 @@ export default function RadarMercado() {
       .sort((a, b) => b.value - a.value);
   }, [leads]);
 
-  // === PURCHASE INTENT ===
   const purchaseIntent = useMemo(() => {
     const counts: Record<string, number> = {};
     leads.forEach(l => {
@@ -196,7 +257,6 @@ export default function RadarMercado() {
       }));
   }, [leads]);
 
-  // === FRANCHISE RANKING ===
   const franchiseRanking = useMemo(() => {
     const map: Record<string, { leads: number; sold: number }> = {};
     leads.forEach(l => {
@@ -216,7 +276,6 @@ export default function RadarMercado() {
       .sort((a, b) => b.leads - a.leads);
   }, [leads, franchiseMap]);
 
-  // === OPPORTUNITY DETECTION ===
   const opportunities = useMemo(() => {
     return cityDemand
       .filter(c => c.count >= 3 && c.conversionRate < 20)
@@ -231,14 +290,12 @@ export default function RadarMercado() {
       }));
   }, [cityDemand]);
 
-  // Global stats
   const totalLeads = leads.length;
   const totalCities = new Set(leads.map(l => l.cidade).filter(Boolean)).size;
   const avgScore = totalLeads > 0 ? Math.round(leads.reduce((s, l) => s + (l.pontuacao_quintal || 0), 0) / totalLeads) : 0;
   const hotBuyers = leads.filter(l => l.respostas_questionario?.intencao === '2026').length;
   const maxCount = Math.max(...cityDemand.map(c => c.count), 1);
 
-  // Heatmap color function
   const getHeatColor = (count: number) => {
     const ratio = count / maxCount;
     if (ratio > 0.6) return { bg: 'rgba(239,68,68,0.7)', border: '#ef4444', shadow: '0 0 12px rgba(239,68,68,0.4)' };
@@ -249,7 +306,11 @@ export default function RadarMercado() {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+          className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full"
+        />
       </div>
     );
   }
@@ -263,7 +324,7 @@ export default function RadarMercado() {
         icon={<Target className="w-4 h-4 text-primary" />}
         onBack={() => navigate('/admin')}
         rightSlot={
-          <Badge variant="outline" className="text-[10px] sm:text-xs px-2 sm:px-3 py-1 sm:py-1.5 border-primary/30 text-primary">
+          <Badge variant="outline" className="text-[10px] sm:text-xs px-2 sm:px-3 py-1 sm:py-1.5 border-primary/30 text-primary animate-pulse-glow">
             {totalLeads} testes
           </Badge>
         }
@@ -274,373 +335,329 @@ export default function RadarMercado() {
           { label: 'Admin', href: '/admin' },
           { label: 'Radar de Mercado' },
         ]} />
-        {/* KPI Row */}
+
+        {/* KPI Row — Premium */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6 sm:mb-8">
-          {[
-            { icon: Users, label: 'Testes Realizados', value: totalLeads, color: 'text-primary' },
-            { icon: MapPin, label: 'Cidades Mapeadas', value: totalCities, color: 'text-secondary' },
-            { icon: TrendingUp, label: 'Potencial Médio', value: `${avgScore}%`, color: 'text-emerald-600' },
-            { icon: Flame, label: 'Compradores Quentes', value: hotBuyers, color: 'text-red-500' },
-          ].map((kpi, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
-              <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
-                <CardContent className="p-3 sm:p-5">
-                  <kpi.icon className={`w-5 h-5 sm:w-6 sm:h-6 ${kpi.color} mb-1.5 sm:mb-2`} />
-                  <p className="text-xl sm:text-3xl font-bold tracking-tight text-foreground">{kpi.value}</p>
-                  <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1">{kpi.label}</p>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+          <KPICard icon={Users} label="Testes Realizados" value={totalLeads} color="text-primary" delay={0.1} accentGlow="hsl(207, 90%, 54%)" />
+          <KPICard icon={MapPin} label="Cidades Mapeadas" value={totalCities} color="text-secondary" delay={0.15} accentGlow="hsl(330, 90%, 50%)" />
+          <KPICard icon={TrendingUp} label="Potencial Médio" value={`${avgScore}%`} color="text-emerald-500" delay={0.2} accentGlow="hsl(152, 70%, 40%)" />
+          <KPICard icon={Flame} label="Compradores Quentes" value={hotBuyers} color="text-red-500" delay={0.25} accentGlow="hsl(0, 85%, 55%)" />
         </div>
 
         {/* 1. DEMAND HEATMAP */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-          <Card className="mb-8 border-border/50 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-base flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-primary" />
-                Mapa de Demanda por Piscinas no RS
-              </CardTitle>
-              <p className="text-xs text-muted-foreground">Heatmap baseado nos testes realizados por cidade</p>
-            </CardHeader>
-            <CardContent>
-              <div className="relative w-full aspect-square sm:aspect-[4/3] bg-muted/20 rounded-xl overflow-hidden border">
-                <svg viewBox="0 0 100 100" className="w-full h-full absolute inset-0 opacity-[0.07]">
-                  <path
-                    d="M 15,5 L 85,5 L 90,15 L 88,30 L 82,45 L 85,55 L 80,65 L 75,72 L 70,78 L 60,95 L 55,98 L 45,95 L 30,88 L 20,80 L 10,65 L 5,50 L 8,35 L 10,20 L 12,10 Z"
-                    fill="hsl(var(--foreground))"
-                    stroke="hsl(var(--foreground))"
-                    strokeWidth="0.3"
-                  />
-                </svg>
+        <SectionCard
+          title="Mapa de Demanda por Piscinas no RS"
+          icon={<MapPin className="w-5 h-5 text-primary" />}
+          subtitle="Heatmap baseado nos testes realizados por cidade"
+          delay={0.3}
+          className="mb-8"
+        >
+          <div className="relative w-full aspect-square sm:aspect-[4/3] rounded-xl overflow-hidden border border-border/30" style={{ background: 'linear-gradient(135deg, hsl(var(--muted) / 0.3), hsl(var(--muted) / 0.1))' }}>
+            {/* Subtle grid pattern */}
+            <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'radial-gradient(circle, hsl(var(--foreground)) 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
 
-                {cityDemand.map(city => {
-                  const pos = cityPositions[city.cidade];
-                  if (!pos) return null;
-                  const size = Math.max(14, Math.min(48, (city.count / maxCount) * 48));
-                  const heat = getHeatColor(city.count);
-                  return (
+            <svg viewBox="0 0 100 100" className="w-full h-full absolute inset-0 opacity-[0.06]">
+              <path
+                d="M 15,5 L 85,5 L 90,15 L 88,30 L 82,45 L 85,55 L 80,65 L 75,72 L 70,78 L 60,95 L 55,98 L 45,95 L 30,88 L 20,80 L 10,65 L 5,50 L 8,35 L 10,20 L 12,10 Z"
+                fill="hsl(var(--foreground))"
+                stroke="hsl(var(--foreground))"
+                strokeWidth="0.3"
+              />
+            </svg>
+
+            {cityDemand.map(city => {
+              const pos = cityPositions[city.cidade];
+              if (!pos) return null;
+              const size = Math.max(14, Math.min(48, (city.count / maxCount) * 48));
+              const heat = getHeatColor(city.count);
+              return (
+                <motion.div
+                  key={city.cidade}
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ delay: Math.random() * 0.6, type: 'spring', damping: 12 }}
+                  className="absolute flex items-center justify-center group cursor-pointer"
+                  style={{
+                    left: `${pos.x}%`,
+                    top: `${pos.y}%`,
+                    transform: 'translate(-50%, -50%)',
+                    width: size,
+                    height: size,
+                  }}
+                >
+                  {/* Pulsing outer ring for high-demand cities */}
+                  {city.count / maxCount > 0.5 && (
                     <motion.div
-                      key={city.cidade}
-                      initial={{ scale: 0, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{ delay: Math.random() * 0.6, type: 'spring', damping: 12 }}
-                      className="absolute flex items-center justify-center group cursor-pointer"
-                      style={{
-                        left: `${pos.x}%`,
-                        top: `${pos.y}%`,
-                        transform: 'translate(-50%, -50%)',
-                        width: size,
-                        height: size,
-                      }}
-                    >
-                      <div
-                        className="rounded-full w-full h-full transition-transform hover:scale-125"
-                        style={{ backgroundColor: heat.bg, border: `2px solid ${heat.border}`, boxShadow: heat.shadow }}
-                      />
-                      {size >= 22 && (
-                        <span className="absolute text-[7px] font-bold text-white pointer-events-none drop-shadow-sm">
-                          {city.count}
-                        </span>
-                      )}
-                      <div className="absolute bottom-full mb-1 bg-card border rounded-lg p-2 shadow-lg text-xs hidden group-hover:block z-50 whitespace-nowrap">
-                        <p className="font-bold">{city.cidade}</p>
-                        <p className="text-muted-foreground">{city.count} leads · Média {city.avgScore}%</p>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
-
-              {/* Legend */}
-              <div className="flex items-center justify-center gap-6 mt-4">
-                {[
-                  { color: 'bg-green-500', label: 'Baixo interesse' },
-                  { color: 'bg-amber-500', label: 'Interesse médio' },
-                  { color: 'bg-red-500', label: 'Alta demanda' },
-                ].map(l => (
-                  <div key={l.label} className="flex items-center gap-1.5">
-                    <div className={`w-3 h-3 rounded-full ${l.color}`} />
-                    <span className="text-[10px] text-muted-foreground">{l.label}</span>
+                      className="absolute rounded-full"
+                      style={{ backgroundColor: heat.bg, width: size * 1.6, height: size * 1.6 }}
+                      animate={{ scale: [1, 1.4, 1], opacity: [0.3, 0, 0.3] }}
+                      transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+                    />
+                  )}
+                  <div
+                    className="rounded-full w-full h-full transition-transform duration-200 hover:scale-[1.3]"
+                    style={{ backgroundColor: heat.bg, border: `2px solid ${heat.border}`, boxShadow: heat.shadow }}
+                  />
+                  {size >= 22 && (
+                    <span className="absolute text-[7px] font-bold text-white pointer-events-none drop-shadow-sm">
+                      {city.count}
+                    </span>
+                  )}
+                  <div className="absolute bottom-full mb-1 bg-card/95 backdrop-blur-lg border border-border/50 rounded-xl p-2.5 shadow-xl text-xs hidden group-hover:block z-50 whitespace-nowrap">
+                    <p className="font-bold text-foreground">{city.cidade}</p>
+                    <p className="text-muted-foreground">{city.count} leads · Média {city.avgScore}%</p>
                   </div>
-                ))}
+                </motion.div>
+              );
+            })}
+          </div>
+
+          <div className="flex items-center justify-center gap-6 mt-4">
+            {[
+              { color: 'bg-green-500', label: 'Baixo interesse' },
+              { color: 'bg-amber-500', label: 'Interesse médio' },
+              { color: 'bg-red-500', label: 'Alta demanda' },
+            ].map(l => (
+              <div key={l.label} className="flex items-center gap-1.5">
+                <div className={`w-3 h-3 rounded-full ${l.color} shadow-sm`} />
+                <span className="text-[10px] text-muted-foreground">{l.label}</span>
               </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+            ))}
+          </div>
+        </SectionCard>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
           {/* 2. YARD SIZES */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
-            <Card className="border-border/50 shadow-sm h-full">
-              <CardHeader>
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <Home className="w-4 h-4 text-primary" />
-                  Tamanho dos Quintais
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {yardSizes.length === 0 ? (
-                  <p className="text-muted-foreground text-center py-6 text-sm">Sem dados</p>
-                ) : (
-                  <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
-                    <ChartContainer config={{}} className="h-[140px] w-[140px] sm:h-[180px] sm:w-[180px] shrink-0">
-                      <PieChart>
-                        <Pie data={yardSizes} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={60} innerRadius={30}>
-                          {yardSizes.map((_, i) => (
-                            <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
-                          ))}
-                        </Pie>
-                        <ChartTooltip content={<ChartTooltipContent />} />
-                      </PieChart>
-                    </ChartContainer>
-                    <div className="flex flex-wrap sm:flex-col gap-2 sm:gap-2 justify-center sm:flex-1">
-                      {yardSizes.map((s, i) => (
-                        <div key={s.name} className="flex items-center gap-1.5 sm:gap-2">
-                          <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shrink-0" style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }} />
-                          <span className="text-[10px] sm:text-xs truncate">{s.name}</span>
-                          <span className="text-[10px] sm:text-xs font-bold">{s.pct}%</span>
-                        </div>
+          <SectionCard title="Tamanho dos Quintais" icon={<Home className="w-4 h-4 text-primary" />} delay={0.4} className="h-full">
+            {yardSizes.length === 0 ? (
+              <p className="text-muted-foreground text-center py-6 text-sm">Sem dados</p>
+            ) : (
+              <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+                <ChartContainer config={{}} className="h-[140px] w-[140px] sm:h-[180px] sm:w-[180px] shrink-0">
+                  <PieChart>
+                    <Pie data={yardSizes} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={60} innerRadius={30}>
+                      {yardSizes.map((_, i) => (
+                        <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                       ))}
+                    </Pie>
+                    <ChartTooltip content={<ChartTooltipContent />} />
+                  </PieChart>
+                </ChartContainer>
+                <div className="flex flex-wrap sm:flex-col gap-2 sm:gap-2 justify-center sm:flex-1">
+                  {yardSizes.map((s, i) => (
+                    <div key={s.name} className="flex items-center gap-1.5 sm:gap-2">
+                      <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }} />
+                      <span className="text-[10px] sm:text-xs truncate">{s.name}</span>
+                      <span className="text-[10px] sm:text-xs font-bold">{s.pct}%</span>
                     </div>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </SectionCard>
 
           {/* 3. MODELS RANKING */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-            <Card className="border-border/50 shadow-sm h-full">
-              <CardHeader>
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <Crown className="w-4 h-4 text-amber-500" />
-                  Modelos Mais Desejados
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                {modelRanking.length === 0 ? (
-                  <p className="text-muted-foreground text-center py-6 text-sm">Sem dados</p>
-                ) : (
-                  <div className="space-y-2">
-                    {modelRanking.map((m, i) => (
-                      <div key={m.model} className="flex items-center gap-3 py-2 px-3 rounded-lg bg-muted/30">
-                        <span className="text-lg font-bold text-muted-foreground/60 w-6">
-                          {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${m.rank}º`}
-                        </span>
-                        <span className="text-sm font-medium flex-1">{m.model}</span>
-                        <span className="text-sm font-bold text-primary">{m.count}</span>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
+          <SectionCard title="Modelos Mais Desejados" icon={<Crown className="w-4 h-4 text-amber-500" />} delay={0.5} className="h-full">
+            {modelRanking.length === 0 ? (
+              <p className="text-muted-foreground text-center py-6 text-sm">Sem dados</p>
+            ) : (
+              <div className="space-y-2">
+                {modelRanking.map((m, i) => (
+                  <motion.div
+                    key={m.model}
+                    initial={{ opacity: 0, x: -16 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.5 + i * 0.05 }}
+                    className="flex items-center gap-3 py-2.5 px-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors"
+                  >
+                    <span className="text-lg font-bold text-muted-foreground/60 w-6">
+                      {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${m.rank}º`}
+                    </span>
+                    <span className="text-sm font-medium flex-1">{m.model}</span>
+                    <Badge variant="secondary" className="text-xs font-bold">{m.count}</Badge>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </SectionCard>
 
           {/* 4. CUSTOMER PROFILE */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
-            <Card className="border-border/50 shadow-sm h-full">
-              <CardHeader>
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <Users className="w-4 h-4 text-primary" />
-                  Perfil do Cliente Splash
-                </CardTitle>
-                <p className="text-[10px] text-muted-foreground">Como os gaúchos querem usar a piscina</p>
-              </CardHeader>
-              <CardContent>
-                {customerProfile.length === 0 ? (
-                  <p className="text-muted-foreground text-center py-6 text-sm">Sem dados</p>
-                ) : (
-                  <div className="space-y-3">
-                    {customerProfile.map(p => (
-                      <div key={p.name}>
-                        <div className="flex items-center justify-between text-xs mb-1">
-                          <span className="font-medium">{p.name}</span>
-                          <span className="text-muted-foreground">{p.pct}%</span>
-                        </div>
-                        <div className="w-full bg-muted rounded-full h-2.5 overflow-hidden">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${p.pct}%` }}
-                            transition={{ delay: 0.8, duration: 0.6 }}
-                            className="h-full bg-primary rounded-full"
-                          />
-                        </div>
-                      </div>
-                    ))}
+          <SectionCard title="Perfil do Cliente Splash" icon={<Users className="w-4 h-4 text-primary" />} subtitle="Como os gaúchos querem usar a piscina" delay={0.6} className="h-full">
+            {customerProfile.length === 0 ? (
+              <p className="text-muted-foreground text-center py-6 text-sm">Sem dados</p>
+            ) : (
+              <div className="space-y-3">
+                {customerProfile.map((p, i) => (
+                  <div key={p.name}>
+                    <div className="flex items-center justify-between text-xs mb-1">
+                      <span className="font-medium">{p.name}</span>
+                      <span className="text-muted-foreground font-bold">{p.pct}%</span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-2.5 overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${p.pct}%` }}
+                        transition={{ delay: 0.8 + i * 0.1, duration: 0.6, ease: 'easeOut' }}
+                        className="h-full rounded-full"
+                        style={{ background: `linear-gradient(90deg, hsl(var(--primary)), hsl(207 90% 64%))` }}
+                      />
+                    </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
+                ))}
+              </div>
+            )}
+          </SectionCard>
 
           {/* 5. PURCHASE INTENT */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.7 }}>
-            <Card className="border-border/50 shadow-sm h-full">
-              <CardHeader>
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <Flame className="w-4 h-4 text-red-500" />
-                  Momento de Compra
-                </CardTitle>
-                <p className="text-[10px] text-muted-foreground">Intenção de compra dos consumidores</p>
-              </CardHeader>
-              <CardContent>
-                {purchaseIntent.length === 0 ? (
-                  <p className="text-muted-foreground text-center py-6 text-sm">Sem dados</p>
-                ) : (
-                  <div className="space-y-3">
-                    {purchaseIntent.map((p, i) => (
-                      <div key={p.name}>
-                        <div className="flex items-center justify-between text-xs mb-1">
-                          <span className="font-medium">{p.name}</span>
-                          <span className="font-bold">{p.value} ({p.pct}%)</span>
-                        </div>
-                        <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
-                          <motion.div
-                            initial={{ width: 0 }}
-                            animate={{ width: `${p.pct}%` }}
-                            transition={{ delay: 1, duration: 0.6 }}
-                            className="h-full rounded-full"
-                            style={{ backgroundColor: INTENCAO_COLORS[i] || INTENCAO_COLORS[2] }}
-                          />
-                        </div>
-                      </div>
-                    ))}
+          <SectionCard title="Momento de Compra" icon={<Flame className="w-4 h-4 text-red-500" />} subtitle="Intenção de compra dos consumidores" delay={0.7} className="h-full">
+            {purchaseIntent.length === 0 ? (
+              <p className="text-muted-foreground text-center py-6 text-sm">Sem dados</p>
+            ) : (
+              <div className="space-y-3">
+                {purchaseIntent.map((p, i) => (
+                  <div key={p.name}>
+                    <div className="flex items-center justify-between text-xs mb-1">
+                      <span className="font-medium">{p.name}</span>
+                      <span className="font-bold">{p.value} ({p.pct}%)</span>
+                    </div>
+                    <div className="w-full bg-muted rounded-full h-3 overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${p.pct}%` }}
+                        transition={{ delay: 1 + i * 0.1, duration: 0.6 }}
+                        className="h-full rounded-full"
+                        style={{ backgroundColor: INTENCAO_COLORS[i] || INTENCAO_COLORS[2] }}
+                      />
+                    </div>
                   </div>
-                )}
-              </CardContent>
-            </Card>
-          </motion.div>
+                ))}
+              </div>
+            )}
+          </SectionCard>
         </div>
 
         {/* 7. FRANCHISE RANKING */}
         {franchiseRanking.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}>
-            <Card className="mb-8 border-border/50 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <Trophy className="w-4 h-4 text-amber-500" />
-                  Ranking de Franquias
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b border-border/50">
-                        <th className="text-left py-2 px-3 text-xs text-muted-foreground font-medium">#</th>
-                        <th className="text-left py-2 px-3 text-xs text-muted-foreground font-medium">Franquia</th>
-                        <th className="text-center py-2 px-3 text-xs text-muted-foreground font-medium">Leads</th>
-                        <th className="text-center py-2 px-3 text-xs text-muted-foreground font-medium">Vendidos</th>
-                        <th className="text-center py-2 px-3 text-xs text-muted-foreground font-medium">Conversão</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {franchiseRanking.map((f, i) => (
-                        <tr key={f.id} className="border-b border-border/30 hover:bg-muted/30 transition-colors">
-                          <td className="py-2.5 px-3 font-bold text-muted-foreground">
-                            {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}º`}
-                          </td>
-                          <td className="py-2.5 px-3 font-medium">{f.name}</td>
-                          <td className="py-2.5 px-3 text-center font-bold text-primary">{f.leads}</td>
-                          <td className="py-2.5 px-3 text-center">{f.sold}</td>
-                          <td className="py-2.5 px-3 text-center">
-                            <Badge variant="secondary" className="text-xs">
-                              {f.conversion}%
-                            </Badge>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+          <SectionCard title="Ranking de Franquias" icon={<Trophy className="w-4 h-4 text-amber-500" />} delay={0.8} className="mb-8">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-b border-border/50">
+                    <th className="text-left py-2 px-3 text-xs text-muted-foreground font-medium">#</th>
+                    <th className="text-left py-2 px-3 text-xs text-muted-foreground font-medium">Franquia</th>
+                    <th className="text-center py-2 px-3 text-xs text-muted-foreground font-medium">Leads</th>
+                    <th className="text-center py-2 px-3 text-xs text-muted-foreground font-medium">Vendidos</th>
+                    <th className="text-center py-2 px-3 text-xs text-muted-foreground font-medium">Conversão</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {franchiseRanking.map((f, i) => (
+                    <motion.tr
+                      key={f.id}
+                      initial={{ opacity: 0, x: -12 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.8 + i * 0.04 }}
+                      className="border-b border-border/30 hover:bg-muted/30 transition-colors"
+                    >
+                      <td className="py-2.5 px-3 font-bold text-muted-foreground">
+                        {i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}º`}
+                      </td>
+                      <td className="py-2.5 px-3 font-medium">{f.name}</td>
+                      <td className="py-2.5 px-3 text-center font-bold text-primary">{f.leads}</td>
+                      <td className="py-2.5 px-3 text-center">{f.sold}</td>
+                      <td className="py-2.5 px-3 text-center">
+                        <Badge variant="secondary" className="text-xs">{f.conversion}%</Badge>
+                      </td>
+                    </motion.tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </SectionCard>
         )}
 
         {/* 8. OPPORTUNITY DETECTION */}
         {opportunities.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.9 }}>
-            <Card className="mb-8 border-amber-200/50 shadow-sm bg-amber-50/30 dark:bg-amber-950/10">
-              <CardHeader>
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-amber-500" />
-                  Detecção de Oportunidades
-                </CardTitle>
-                <p className="text-[10px] text-muted-foreground">Cidades com alta intenção de compra mas poucas vendas</p>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  {opportunities.map(o => (
-                    <div key={o.cidade} className="flex items-center gap-3 py-3 px-4 rounded-xl bg-card border border-border/50">
-                      <Sparkles className="w-5 h-5 text-amber-500 flex-shrink-0" />
-                      <div className="flex-1">
-                        <p className="text-sm font-bold">{o.cidade}</p>
-                        <p className="text-[10px] text-muted-foreground">
-                          {o.leads} leads · {o.sold} vendidos · Média {o.avgScore}%
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xs font-bold text-amber-600">{o.conversionRate}% conversão</p>
-                        <p className="text-[10px] text-muted-foreground">Oportunidade</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+          <SectionCard
+            title="Detecção de Oportunidades"
+            icon={<AlertTriangle className="w-4 h-4 text-amber-500" />}
+            subtitle="Cidades com alta intenção mas poucas vendas"
+            delay={0.9}
+            className="mb-8 border-amber-500/20"
+          >
+            <div className="space-y-2">
+              {opportunities.map((o, i) => (
+                <motion.div
+                  key={o.cidade}
+                  initial={{ opacity: 0, x: -16 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.9 + i * 0.06 }}
+                  className="flex items-center gap-3 py-3 px-4 rounded-xl bg-amber-500/5 border border-amber-500/15 hover:bg-amber-500/10 transition-colors"
+                >
+                  <Sparkles className="w-5 h-5 text-amber-500 flex-shrink-0 animate-pulse-glow" />
+                  <div className="flex-1">
+                    <p className="text-sm font-bold">{o.cidade}</p>
+                    <p className="text-[10px] text-muted-foreground">
+                      {o.leads} leads · {o.sold} vendidos · Média {o.avgScore}%
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-xs font-bold text-amber-600">{o.conversionRate}% conversão</p>
+                    <p className="text-[10px] text-muted-foreground">Oportunidade</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </SectionCard>
         )}
 
         {/* Top Cities Table */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1 }}>
-          <Card className="border-border/50 shadow-sm">
-            <CardHeader>
-              <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                <BarChart3 className="w-4 h-4 text-primary" />
-                Ranking de Cidades — Top 15
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {cityDemand.slice(0, 15).map((city, i) => (
-                  <div key={city.cidade} className="flex items-center gap-3 py-2 px-3 rounded-lg bg-muted/30">
-                    <span className="text-sm font-bold text-muted-foreground w-7">{i + 1}º</span>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium">{city.cidade}</p>
-                      <p className="text-[10px] text-muted-foreground">
-                        {city.count} leads · Média {city.avgScore}% · {city.sold} vendidos
-                      </p>
-                    </div>
-                    <div className="w-20 bg-muted rounded-full h-2 overflow-hidden">
-                      <div
-                        className="h-full rounded-full transition-all"
-                        style={{
-                          width: `${(city.count / maxCount) * 100}%`,
-                          backgroundColor: getHeatColor(city.count).border,
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
-                {cityDemand.length === 0 && (
-                  <p className="text-sm text-muted-foreground text-center py-6">Nenhum dado disponível ainda.</p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
+        <SectionCard title="Ranking de Cidades — Top 15" icon={<BarChart3 className="w-4 h-4 text-primary" />} delay={1}>
+          <div className="space-y-2">
+            {cityDemand.slice(0, 15).map((city, i) => (
+              <motion.div
+                key={city.cidade}
+                initial={{ opacity: 0, x: -16 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 1 + i * 0.04 }}
+                className="flex items-center gap-3 py-2.5 px-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors"
+              >
+                <span className="text-sm font-bold text-muted-foreground w-7">{i + 1}º</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium truncate">{city.cidade}</p>
+                  <p className="text-[10px] text-muted-foreground">
+                    {city.count} leads · Média {city.avgScore}% · {city.sold} vendidos
+                  </p>
+                </div>
+                <div className="w-20 bg-muted rounded-full h-2 overflow-hidden">
+                  <motion.div
+                    className="h-full rounded-full"
+                    style={{ backgroundColor: getHeatColor(city.count).border }}
+                    initial={{ width: 0 }}
+                    animate={{ width: `${(city.count / maxCount) * 100}%` }}
+                    transition={{ delay: 1 + i * 0.04 + 0.2, duration: 0.5 }}
+                  />
+                </div>
+              </motion.div>
+            ))}
+            {cityDemand.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-6">Nenhum dado disponível ainda.</p>
+            )}
+          </div>
+        </SectionCard>
 
         {/* Footer */}
-        <div className="text-center py-8 mt-4">
-          <div className="mx-auto w-16 h-6 bg-muted-foreground/10 rounded mb-2" />
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2 }}
+          className="text-center py-8 mt-4"
+        >
+          <div className="mx-auto w-16 h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent rounded mb-3" />
           <p className="text-[10px] text-muted-foreground/50">
             Radar de Mercado Splash RS © {new Date().getFullYear()} · Dados em tempo real
           </p>
-        </div>
+        </motion.div>
       </div>
     </div>
     </PageTransition>
