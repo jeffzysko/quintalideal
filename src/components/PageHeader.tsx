@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import logoSplash from '@/assets/logo-splash.webp';
+import logoSplash from '@/assets/logo-splash.png';
 
 interface PageHeaderProps {
   title: string;
