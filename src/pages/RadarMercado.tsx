@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
   MapPin, BarChart3, Users, TrendingUp, Target, Home,
-  Crown, ArrowLeft, Sparkles, AlertTriangle, Trophy, Flame,
+  Crown, Sparkles, AlertTriangle, Trophy, Flame,
 } from 'lucide-react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { PieChart, Pie, Cell } from 'recharts';
