@@ -387,6 +387,11 @@ export default function LeadDetail() {
           </motion.div>
         )}
 
+        {/* Follow-up Timeline */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          <LeadTimeline leadId={lead.id} />
+        </motion.div>
+
         {/* Manage */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <Card className="glass-card">
