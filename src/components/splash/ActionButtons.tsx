@@ -275,12 +275,14 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
           className="rounded-2xl overflow-hidden border border-border bg-card shadow-lg"
         >
           {getPoolImage(poolName) && (
-            <img
-              src={getPoolImage(poolName)}
-              alt={`Piscina ${poolName}`}
-              className="w-full h-48 object-cover"
-              loading="eager"
-            />
+            <div className="aspect-[16/9] w-full overflow-hidden">
+              <img
+                src={getPoolImage(poolName)}
+                alt={`Piscina ${poolName}`}
+                className="w-full h-full object-cover"
+                loading="eager"
+              />
+            </div>
           )}
           <div className="p-5">
             <div className="flex items-center gap-2 mb-2">
