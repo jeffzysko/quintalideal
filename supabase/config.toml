@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.cleanup-analytics]
 verify_jwt = false
+
+[functions.send-lead-result-email]
+verify_jwt = false
