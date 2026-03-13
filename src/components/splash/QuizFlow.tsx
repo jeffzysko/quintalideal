@@ -209,6 +209,22 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         }).catch(() => { /* non-critical */ });
       }
 
+      // Send result email to the visitor
+      if (data.email) {
+        supabase.functions.invoke('send-lead-result-email', {
+          body: {
+            nome: data.nome,
+            email: data.email,
+            pontuacao_quintal: score,
+            modelo_recomendado: poolName,
+            cidade: answers.cidade || null,
+            franchise_name: createLeadData?.assignedFranchiseName || franchiseName || null,
+            franchise_whatsapp: createLeadData?.assignedWhatsapp || franchiseWhatsapp || null,
+            franchise_cidade_base: createLeadData?.assignedCidadeBase || null,
+          },
+        }).catch(() => { /* non-critical */ });
+      }
+
       setStep('actions');
     } catch (err: unknown) {
       console.error('Lead submit error:', err);
