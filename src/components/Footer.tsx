@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Waves, MapPin, Trophy, FileText, Shield, Instagram, Code2, HelpCircle } from 'lucide-react';
-import logoSplash from '@/assets/logo-splash.png';
+import logoSplash from '@/assets/logo-splash.webp';
 
 export function Footer() {
   return (

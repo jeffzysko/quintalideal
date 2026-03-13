@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import logoSplash from '@/assets/logo-splash.png';
+import logoSplash from '@/assets/logo-splash.webp';
 import { CheckCircle2 } from 'lucide-react';
 import { type Lang, t } from '@/lib/i18n';
 

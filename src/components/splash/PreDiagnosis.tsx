@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Search, Ruler, TreePine, Sparkles } from 'lucide-react';
-import logoSplash from '@/assets/logo-splash.png';
+import logoSplash from '@/assets/logo-splash.webp';
 import { type Lang, t } from '@/lib/i18n';
 
 interface PreDiagnosisProps {
