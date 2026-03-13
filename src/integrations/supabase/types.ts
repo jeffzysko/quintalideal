@@ -280,6 +280,39 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          created_at: string
+          franchise_id: string
+          id: string
+          message: string | null
+          metadata: Json | null
+          read: boolean
+          title: string
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          franchise_id: string
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          read?: boolean
+          title: string
+          type?: string
+        }
+        Update: {
+          created_at?: string
+          franchise_id?: string
+          id?: string
+          message?: string | null
+          metadata?: Json | null
+          read?: boolean
+          title?: string
+          type?: string
+        }
+        Relationships: []
+      }
       pool_models: {
         Row: {
           categoria_tamanho: Database["public"]["Enums"]["categoria_tamanho"]
