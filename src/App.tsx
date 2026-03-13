@@ -8,7 +8,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { lazy, Suspense, useEffect } from "react";
-import Index from "./pages/Index";
+import HomePage from "./pages/HomePage";
 import { Footer } from "@/components/Footer";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import { ScrollToTop } from "@/components/ScrollToTop";
