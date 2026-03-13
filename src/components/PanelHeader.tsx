@@ -13,8 +13,12 @@ export function PanelHeader({ title, children }: PanelHeaderProps) {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className="sticky top-0 z-30 px-3 pt-2.5"
+      className="sticky top-0 z-30"
     >
+      {/* Full-width blur backdrop behind rounded header */}
+      <div className="absolute inset-0 backdrop-blur-2xl bg-background/60" />
+      
+      <div className="relative px-3 pt-2.5">
       <header className="relative mx-auto max-w-7xl rounded-2xl overflow-hidden">
         {/* Animated glow border */}
         <div className="absolute inset-0 rounded-2xl p-px overflow-hidden">
