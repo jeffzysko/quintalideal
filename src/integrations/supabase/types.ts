@@ -164,6 +164,51 @@ export type Database = {
         }
         Relationships: []
       }
+      lead_activities: {
+        Row: {
+          activity_type: string
+          content: string | null
+          created_at: string
+          id: string
+          lead_id: string
+          metadata: Json | null
+          user_id: string
+        }
+        Insert: {
+          activity_type?: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          lead_id: string
+          metadata?: Json | null
+          user_id: string
+        }
+        Update: {
+          activity_type?: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          lead_id?: string
+          metadata?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_activities_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_activities_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_map"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           cidade: string | null
