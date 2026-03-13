@@ -334,18 +334,19 @@ export default function ProfileSettings() {
                 Esses dados são usados para identificar você no sistema.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="fullName">Nome completo</Label>
+            <CardContent className="space-y-5">
+              <div className="space-y-1.5">
+                <Label htmlFor="fullName" className="text-xs font-medium">Nome completo</Label>
                 <Input
                   id="fullName"
                   placeholder="Seu nome completo"
                   value={fullName}
                   onChange={e => setFullName(e.target.value)}
+                  className="rounded-xl h-11"
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="personalPhone" className="flex items-center gap-1.5">
+              <div className="space-y-1.5">
+                <Label htmlFor="personalPhone" className="text-xs font-medium flex items-center gap-1.5">
                   <Phone className="w-3.5 h-3.5" /> Telefone pessoal
                 </Label>
                 <Input
@@ -354,18 +355,19 @@ export default function ProfileSettings() {
                   value={formatPhoneBR(telefone)}
                   onChange={e => { setTelefone(unformatPhone(e.target.value)); setFormErrors(p => ({ ...p, telefone: '' })); }}
                   maxLength={16}
+                  className="rounded-xl h-11"
                 />
                 {formErrors.telefone && <p className="text-xs text-destructive mt-1">{formErrors.telefone}</p>}
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="loginEmail">E-mail de login</Label>
+              <div className="space-y-1.5">
+                <Label htmlFor="loginEmail" className="text-xs font-medium">E-mail de login</Label>
                 <Input
                   id="loginEmail"
                   value={user?.email || ''}
                   disabled
-                  className="opacity-60"
+                  className="opacity-60 rounded-xl h-11"
                 />
-                <p className="text-xs text-muted-foreground">O e-mail de login não pode ser alterado aqui.</p>
+                <p className="text-[11px] text-muted-foreground">O e-mail de login não pode ser alterado aqui.</p>
               </div>
             </CardContent>
           </Card>
@@ -386,9 +388,9 @@ export default function ProfileSettings() {
                   Essas informações serão exibidas publicamente ao final do quiz e usadas para receber leads por e-mail.
                 </CardDescription>
               </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="franchiseWhatsapp" className="flex items-center gap-1.5">
+              <CardContent className="space-y-5">
+                <div className="space-y-1.5">
+                  <Label htmlFor="franchiseWhatsapp" className="text-xs font-medium flex items-center gap-1.5">
                     <Phone className="w-3.5 h-3.5" /> WhatsApp
                   </Label>
                   <Input
@@ -397,12 +399,13 @@ export default function ProfileSettings() {
                     value={formatPhoneBR(whatsapp)}
                     onChange={e => { setWhatsapp(unformatPhone(e.target.value)); setFormErrors(p => ({ ...p, whatsapp: '' })); }}
                     maxLength={16}
+                    className="rounded-xl h-11"
                   />
                   {formErrors.whatsapp && <p className="text-xs text-destructive mt-1">{formErrors.whatsapp}</p>}
-                  <p className="text-xs text-muted-foreground">DDD + número. O código do Brasil (55) é adicionado automaticamente.</p>
+                  <p className="text-[11px] text-muted-foreground">DDD + número. O código do Brasil (55) é adicionado automaticamente.</p>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="franchiseEmail" className="flex items-center gap-1.5">
+                <div className="space-y-1.5">
+                  <Label htmlFor="franchiseEmail" className="text-xs font-medium flex items-center gap-1.5">
                     <Mail className="w-3.5 h-3.5" /> E-mail para leads
                   </Label>
                   <Input
@@ -411,12 +414,13 @@ export default function ProfileSettings() {
                     placeholder="franquia@splashpiscinas.com"
                     value={email}
                     onChange={e => { setEmail(e.target.value); setFormErrors(p => ({ ...p, email: '' })); }}
+                    className="rounded-xl h-11"
                   />
                   {formErrors.email && <p className="text-xs text-destructive mt-1">{formErrors.email}</p>}
-                  <p className="text-xs text-muted-foreground">Os leads gerados pelo quiz serão enviados para este e-mail.</p>
+                  <p className="text-[11px] text-muted-foreground">Os leads gerados pelo quiz serão enviados para este e-mail.</p>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="cidadesAtendidas" className="flex items-center gap-1.5">
+                <div className="space-y-1.5">
+                  <Label htmlFor="cidadesAtendidas" className="text-xs font-medium flex items-center gap-1.5">
                     <MapPin className="w-3.5 h-3.5" /> Cidades Atendidas
                   </Label>
                   <Input
@@ -424,8 +428,9 @@ export default function ProfileSettings() {
                     placeholder="Canoas, Gravataí, Cachoeirinha"
                     value={cidadesAtendidas}
                     onChange={e => setCidadesAtendidas(e.target.value)}
+                    className="rounded-xl h-11"
                   />
-                  <p className="text-xs text-muted-foreground">Separe as cidades por vírgula. A cidade base já é incluída automaticamente.</p>
+                  <p className="text-[11px] text-muted-foreground">Separe as cidades por vírgula. A cidade base já é incluída automaticamente.</p>
                 </div>
               </CardContent>
             </Card>
@@ -448,11 +453,13 @@ export default function ProfileSettings() {
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center gap-3 p-3 bg-muted/50 rounded-lg">
-                  <Building2 className="w-5 h-5 text-primary" />
+                <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-xl">
+                  <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                    <Building2 className="w-4 h-4 text-primary" />
+                  </div>
                   <div>
                     <p className="text-sm font-medium text-foreground">Painel da Fábrica</p>
-                    <p className="text-xs text-muted-foreground">Gerencie franquias, leads e configurações de e-mail no painel admin.</p>
+                    <p className="text-[11px] text-muted-foreground">Gerencie franquias, leads e configurações de e-mail no painel admin.</p>
                   </div>
                 </div>
               </CardContent>
@@ -464,17 +471,22 @@ export default function ProfileSettings() {
         {(isFranchise || isAdmin) && (
           <motion.div id="integracoes" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="space-y-4">
             {isAdmin && (
-              <Card className="border-border/50 shadow-sm">
+              <Card className="card-premium">
                 <CardHeader>
-                  <CardTitle className="text-sm font-semibold">Integrações da Franquia</CardTitle>
+                  <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Building2 className="w-4 h-4 text-primary" />
+                    </div>
+                    Integrações da Franquia
+                  </CardTitle>
                   <CardDescription className="text-xs">
                     Selecione a franquia para configurar Meta Pixel e Webhook CRM.
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <Label htmlFor="integration-franchise">Franquia</Label>
+                  <Label htmlFor="integration-franchise" className="text-xs font-medium">Franquia</Label>
                   <Select value={selectedIntegrationFranchiseId} onValueChange={setSelectedIntegrationFranchiseId}>
-                    <SelectTrigger id="integration-franchise" className="rounded-xl">
+                    <SelectTrigger id="integration-franchise" className="rounded-xl h-11">
                       <SelectValue placeholder="Selecione uma franquia" />
                     </SelectTrigger>
                     <SelectContent>
@@ -485,7 +497,7 @@ export default function ProfileSettings() {
                       ))}
                     </SelectContent>
                   </Select>
-                  <p className="text-xs text-muted-foreground">A configuração será salva na franquia selecionada.</p>
+                  <p className="text-[11px] text-muted-foreground">A configuração será salva na franquia selecionada.</p>
                 </CardContent>
               </Card>
             )}
@@ -494,7 +506,7 @@ export default function ProfileSettings() {
               <FranchiseContactSettings franchiseId={integrationFranchiseId} />
             ) : (
               isAdmin && (
-                <Card className="border-border/50 shadow-sm">
+                <Card className="card-premium">
                   <CardContent className="pt-6">
                     <p className="text-sm text-muted-foreground">Nenhuma franquia disponível para configurar integrações.</p>
                   </CardContent>
@@ -573,9 +585,9 @@ function PasswordChangeCard() {
             Atualize sua senha de acesso ao sistema.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="newPassword">Nova senha</Label>
+        <CardContent className="space-y-5">
+          <div className="space-y-1.5">
+            <Label htmlFor="newPassword" className="text-xs font-medium">Nova senha</Label>
             <div className="relative">
               <Input
                 id="newPassword"
@@ -583,29 +595,31 @@ function PasswordChangeCard() {
                 placeholder="Mínimo 6 caracteres"
                 value={newPassword}
                 onChange={e => setNewPassword(e.target.value)}
+                className="rounded-xl h-11"
               />
               <button
                 type="button"
                 onClick={() => setShowNew(!showNew)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 aria-label={showNew ? 'Ocultar senha' : 'Mostrar senha'}
               >
                 {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirmar nova senha</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="confirmPassword" className="text-xs font-medium">Confirmar nova senha</Label>
             <Input
               id="confirmPassword"
               type="password"
               placeholder="Repita a nova senha"
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value)}
+              className="rounded-xl h-11"
             />
           </div>
-          {error && <p className="text-sm text-destructive bg-destructive/10 rounded-lg px-3 py-2">{error}</p>}
-          <Button onClick={handleChangePassword} disabled={saving || !newPassword} variant="outline" className="gap-2 rounded-xl">
+          {error && <p className="text-sm text-destructive bg-destructive/10 rounded-xl px-3 py-2.5">{error}</p>}
+          <Button onClick={handleChangePassword} disabled={saving || !newPassword} variant="outline" className="gap-2 rounded-xl h-11">
             <Lock className="w-4 h-4" />
             {saving ? 'Alterando...' : 'Alterar senha'}
           </Button>
