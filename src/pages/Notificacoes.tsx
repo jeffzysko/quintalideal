@@ -1,20 +1,19 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Bell, ArrowLeft, Check, CheckCheck, Filter } from 'lucide-react';
+import { Bell, Check, CheckCheck, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
+import { PanelHeader } from '@/components/PanelHeader';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { NotificationBell } from '@/components/NotificationBell';
-import logoSplash from '@/assets/logo-splash.png';
 import { motion } from 'framer-motion';
 
 interface Notification {
@@ -31,14 +30,13 @@ const PAGE_SIZE = 25;
 
 export default function NotificacoesPage() {
   const { user, franchiseId, role } = useAuth();
-  const navigate = useNavigate();
+  
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
 
   const [filterRead, setFilterRead] = useState<'all' | 'unread' | 'read'>('all');
   const [filterType, setFilterType] = useState<'all' | 'new_lead'>('all');
   const [page, setPage] = useState(1);
 
-  // Reset page on filter change
   useEffect(() => { setPage(1); }, [filterRead, filterType]);
 
   const { data, isLoading, refetch } = useQuery({
@@ -90,36 +88,23 @@ export default function NotificacoesPage() {
   return (
     <PageTransition>
       <div className="min-h-screen bg-background">
-        <header className="sticky top-0 z-30 border-b border-border/40 bg-card/80 backdrop-blur-xl">
-          <div className="max-w-5xl mx-auto px-4 md:px-6 h-14 md:h-16 flex items-center justify-between">
-            <div className="flex items-center gap-3 min-w-0">
-              <img src={logoSplash} alt="Splash" className="h-7 md:h-9 shrink-0" />
-              <div className="h-5 w-px bg-border/60 hidden sm:block" />
-              <span className="text-sm font-semibold text-foreground tracking-tight truncate hidden sm:block">Notificações</span>
-            </div>
-            <nav className="flex items-center gap-1">
-              <NotificationBell />
-              <UserAvatarMenu />
-            </nav>
-          </div>
-        </header>
+        <PanelHeader title="Notificações">
+          <NotificationBell />
+          <UserAvatarMenu />
+        </PanelHeader>
 
-        <div className="max-w-5xl mx-auto px-4 md:px-6 py-6 md:py-8">
+        <div className="max-w-5xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
           <Breadcrumbs items={[
             { label: isAdmin ? 'Admin' : 'Painel', href: backPath },
             { label: 'Notificações' },
           ]} />
 
-          {/* Filters */}
-          <div className="flex flex-wrap items-center gap-3 mb-6">
-            <Button variant="ghost" size="sm" onClick={() => navigate(backPath)} className="gap-1.5">
-              <ArrowLeft className="w-4 h-4" /> Voltar
-            </Button>
-            <div className="flex-1" />
-            <div className="flex items-center gap-2 flex-wrap">
+          {/* Filters — mobile-first stacked layout */}
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4 sm:mb-6">
+            <div className="flex items-center gap-2 flex-wrap flex-1">
               <Select value={filterRead} onValueChange={(v) => setFilterRead(v as typeof filterRead)}>
-                <SelectTrigger className="w-[140px] h-9 text-xs rounded-xl">
-                  <Filter className="w-3.5 h-3.5 mr-1.5 text-muted-foreground" />
+                <SelectTrigger className="w-[130px] h-9 text-xs rounded-xl">
+                  <Filter className="w-3.5 h-3.5 mr-1 text-muted-foreground shrink-0" />
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -130,7 +115,7 @@ export default function NotificacoesPage() {
               </Select>
 
               <Select value={filterType} onValueChange={(v) => setFilterType(v as typeof filterType)}>
-                <SelectTrigger className="w-[140px] h-9 text-xs rounded-xl">
+                <SelectTrigger className="w-[130px] h-9 text-xs rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -138,20 +123,27 @@ export default function NotificacoesPage() {
                   <SelectItem value="new_lead">Novo lead</SelectItem>
                 </SelectContent>
               </Select>
-
-              <Button variant="outline" size="sm" onClick={markAllAsRead} className="gap-1.5 text-xs rounded-xl">
-                <CheckCheck className="w-3.5 h-3.5" /> Marcar todas como lidas
-              </Button>
             </div>
+
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={markAllAsRead}
+              className="gap-1.5 text-xs rounded-xl w-full sm:w-auto"
+            >
+              <CheckCheck className="w-3.5 h-3.5" />
+              <span className="sm:hidden">Marcar lidas</span>
+              <span className="hidden sm:inline">Marcar todas como lidas</span>
+            </Button>
           </div>
 
           {/* Stats */}
-          <div className="flex items-center gap-3 mb-4">
-            <Badge variant="secondary" className="text-xs">
+          <div className="flex items-center gap-2 sm:gap-3 mb-4">
+            <Badge variant="secondary" className="text-[10px] sm:text-xs">
               {total} notificação{total !== 1 ? 'ões' : ''}
             </Badge>
             {filterRead === 'all' && (
-              <Badge variant="outline" className="text-xs border-primary/20 text-primary">
+              <Badge variant="outline" className="text-[10px] sm:text-xs border-primary/20 text-primary">
                 {notifications.filter(n => !n.read).length} não lida{notifications.filter(n => !n.read).length !== 1 ? 's' : ''}
               </Badge>
             )}
@@ -165,7 +157,7 @@ export default function NotificacoesPage() {
               ))}
             </div>
           ) : notifications.length === 0 ? (
-            <Card className="p-12 text-center">
+            <Card className="p-8 sm:p-12 text-center">
               <Bell className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
               <p className="text-muted-foreground text-sm">Nenhuma notificação encontrada</p>
               {filterRead !== 'all' || filterType !== 'all' ? (
@@ -184,28 +176,28 @@ export default function NotificacoesPage() {
                   transition={{ delay: i * 0.03 }}
                 >
                   <Card
-                    className={`p-4 cursor-pointer hover:bg-muted/30 transition-colors flex items-start gap-3 ${
+                    className={`p-3 sm:p-4 cursor-pointer hover:bg-muted/30 transition-colors flex items-start gap-2.5 sm:gap-3 ${
                       !notif.read ? 'border-primary/20 bg-primary/[0.03]' : ''
                     }`}
                     onClick={() => markAsRead(notif.id)}
                   >
-                    <div className={`mt-1.5 w-2.5 h-2.5 rounded-full shrink-0 ${
+                    <div className={`mt-1 sm:mt-1.5 w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full shrink-0 ${
                       !notif.read ? 'bg-primary' : 'bg-border'
                     }`} />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-start justify-between gap-2">
-                        <p className={`text-sm leading-tight ${!notif.read ? 'font-semibold text-foreground' : 'text-foreground/80'}`}>
+                        <p className={`text-xs sm:text-sm leading-tight ${!notif.read ? 'font-semibold text-foreground' : 'text-foreground/80'}`}>
                           {notif.title}
                         </p>
-                        <span className="text-[10px] text-muted-foreground/60 whitespace-nowrap shrink-0">
-                          {format(new Date(notif.created_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}
+                        <span className="text-[9px] sm:text-[10px] text-muted-foreground/60 whitespace-nowrap shrink-0">
+                          {format(new Date(notif.created_at), "dd/MM 'às' HH:mm", { locale: ptBR })}
                         </span>
                       </div>
                       {notif.message && (
-                        <p className="text-xs text-muted-foreground mt-1">{notif.message}</p>
+                        <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1 line-clamp-2">{notif.message}</p>
                       )}
-                      <div className="flex items-center gap-2 mt-2">
-                        <Badge variant="outline" className="text-[10px] px-1.5 py-0">
+                      <div className="flex items-center gap-2 mt-1.5 sm:mt-2">
+                        <Badge variant="outline" className="text-[9px] sm:text-[10px] px-1.5 py-0">
                           {notif.type === 'new_lead' ? '🎯 Novo Lead' : notif.type}
                         </Badge>
                         {!notif.read && (
