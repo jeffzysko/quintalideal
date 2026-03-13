@@ -395,7 +395,7 @@ export default function LeadDetail() {
         {/* Manage */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <Card className="glass-card">
-            <CardContent className="p-5 space-y-4">
+            <CardContent className="p-3 sm:p-5 space-y-4">
               <div className="flex items-center gap-2 mb-1">
                 <Settings2 className="w-4 h-4 text-primary" />
                 <h2 className="text-sm font-semibold text-foreground">Gerenciar Lead</h2>
