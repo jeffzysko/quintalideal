@@ -2,13 +2,13 @@ import { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MapPin, BarChart3, Users, TrendingUp, ArrowLeft, Flame, Filter } from 'lucide-react';
+import { MapPin, BarChart3, Users, TrendingUp, Flame, Filter } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import logoSplash from '@/assets/logo-splash.png';
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
+import { PageHeader } from '@/components/PageHeader';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
