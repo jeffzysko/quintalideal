@@ -585,9 +585,9 @@ function PasswordChangeCard() {
             Atualize sua senha de acesso ao sistema.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="newPassword">Nova senha</Label>
+        <CardContent className="space-y-5">
+          <div className="space-y-1.5">
+            <Label htmlFor="newPassword" className="text-xs font-medium">Nova senha</Label>
             <div className="relative">
               <Input
                 id="newPassword"
@@ -595,29 +595,31 @@ function PasswordChangeCard() {
                 placeholder="Mínimo 6 caracteres"
                 value={newPassword}
                 onChange={e => setNewPassword(e.target.value)}
+                className="rounded-xl h-11"
               />
               <button
                 type="button"
                 onClick={() => setShowNew(!showNew)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 aria-label={showNew ? 'Ocultar senha' : 'Mostrar senha'}
               >
                 {showNew ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirmar nova senha</Label>
+          <div className="space-y-1.5">
+            <Label htmlFor="confirmPassword" className="text-xs font-medium">Confirmar nova senha</Label>
             <Input
               id="confirmPassword"
               type="password"
               placeholder="Repita a nova senha"
               value={confirmPassword}
               onChange={e => setConfirmPassword(e.target.value)}
+              className="rounded-xl h-11"
             />
           </div>
-          {error && <p className="text-sm text-destructive bg-destructive/10 rounded-lg px-3 py-2">{error}</p>}
-          <Button onClick={handleChangePassword} disabled={saving || !newPassword} variant="outline" className="gap-2 rounded-xl">
+          {error && <p className="text-sm text-destructive bg-destructive/10 rounded-xl px-3 py-2.5">{error}</p>}
+          <Button onClick={handleChangePassword} disabled={saving || !newPassword} variant="outline" className="gap-2 rounded-xl h-11">
             <Lock className="w-4 h-4" />
             {saving ? 'Alterando...' : 'Alterar senha'}
           </Button>
