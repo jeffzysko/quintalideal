@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Phone, Mail, Save, Share2, BarChart3, Webhook, Eye, EyeOff, RefreshCw, Send, Loader2 } from 'lucide-react';
+import { Phone, Save, Share2, BarChart3, Webhook, Eye, EyeOff, RefreshCw, Send, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase as supabaseClient } from '@/integrations/supabase/client';
 import { SITE_URL } from '@/lib/constants';
@@ -116,62 +116,57 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
   return (
     <div className="space-y-4">
       {/* Dados de Contato */}
-      <Card className="border-border/50 shadow-sm">
+      <Card className="card-premium">
         <CardHeader>
           <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <Phone className="w-4 h-4 text-primary" />
+            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Phone className="w-4 h-4 text-primary" />
+            </div>
             Dados de Contato
           </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-xs text-muted-foreground">
+          <CardDescription className="text-xs">
             Esses dados serão usados automaticamente nos botões de WhatsApp e e-mail do quiz dos seus leads.
-          </p>
-
-          <div className="space-y-2">
-            <Label htmlFor="whatsapp" className="text-xs font-medium">
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-5">
+          <div className="space-y-1.5">
+            <Label htmlFor="contact-whatsapp" className="text-xs font-medium">
               WhatsApp (com código do país, ex: 5551999999999)
             </Label>
-            <div className="flex items-center gap-2">
-              <Phone className="w-4 h-4 text-muted-foreground shrink-0" />
-              <Input
-                id="whatsapp"
-                value={whatsapp}
-                onChange={e => setWhatsapp(e.target.value)}
-                placeholder="5551999999999"
-                className="text-sm"
-              />
-            </div>
+            <Input
+              id="contact-whatsapp"
+              value={whatsapp}
+              onChange={e => setWhatsapp(e.target.value)}
+              placeholder="5551999999999"
+              className="rounded-xl h-11 font-mono text-sm"
+            />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="email" className="text-xs font-medium">
+          <div className="space-y-1.5">
+            <Label htmlFor="contact-email" className="text-xs font-medium">
               E-mail de contato
             </Label>
-            <div className="flex items-center gap-2">
-              <Mail className="w-4 h-4 text-muted-foreground shrink-0" />
-              <Input
-                id="email"
-                type="email"
-                value={email}
-                onChange={e => setEmail(e.target.value)}
-                placeholder="contato@suafranquia.com"
-                className="text-sm"
-              />
-            </div>
+            <Input
+              id="contact-email"
+              type="email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
+              placeholder="contato@suafranquia.com"
+              className="rounded-xl h-11"
+            />
           </div>
 
-          <Button onClick={handleSaveContact} disabled={savingContact} className="w-full gap-2">
+          <Button onClick={handleSaveContact} disabled={savingContact} className="w-full gap-2 rounded-xl h-11">
             <Save className="w-4 h-4" />
             {savingContact ? 'Salvando...' : 'Salvar dados de contato'}
           </Button>
 
           {franchiseUrl && (
-            <div className="pt-2 border-t border-border">
+            <div className="pt-3 border-t border-border/30">
               <Label className="text-xs font-medium text-muted-foreground">Seu link personalizado</Label>
-              <div className="flex items-center gap-2 mt-1">
-                <code className="text-xs bg-muted px-2 py-1.5 rounded flex-1 truncate">{franchiseUrl}</code>
-                <Button variant="outline" size="sm" onClick={handleCopyLink} className="gap-1 shrink-0">
+              <div className="flex items-center gap-2 mt-1.5">
+                <code className="text-xs bg-muted px-3 py-2.5 rounded-xl flex-1 truncate font-mono">{franchiseUrl}</code>
+                <Button variant="outline" size="sm" onClick={handleCopyLink} className="gap-1.5 shrink-0 rounded-xl h-11">
                   <Share2 className="w-3.5 h-3.5" />
                   Copiar
                 </Button>
@@ -182,20 +177,21 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
       </Card>
 
       {/* Integrações */}
-      <Card className="border-border/50 shadow-sm">
+      <Card className="card-premium">
         <CardHeader>
           <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <BarChart3 className="w-4 h-4 text-primary" />
+            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+              <BarChart3 className="w-4 h-4 text-primary" />
+            </div>
             Integrações
           </CardTitle>
+          <CardDescription className="text-xs">
+            Configure rastreamento de anúncios e envio automático de leads para o seu CRM.
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-5">
-          <p className="text-xs text-muted-foreground">
-            Configure rastreamento de anúncios e envio automático de leads para o seu CRM.
-          </p>
-
           {/* Meta Pixel */}
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <Label htmlFor="meta_pixel_id" className="text-xs font-medium">
               Meta Pixel ID (Facebook/Instagram Ads)
             </Label>
@@ -204,10 +200,10 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
               value={metaPixelId}
               onChange={e => setMetaPixelId(e.target.value.replace(/\D/g, ''))}
               placeholder="123456789012345"
-              className="text-sm font-mono"
+              className="rounded-xl h-11 font-mono text-sm"
               maxLength={20}
             />
-            <p className="text-xs text-muted-foreground">
+            <p className="text-[11px] text-muted-foreground">
               Encontre no{' '}
               <a href="https://business.facebook.com/events_manager" target="_blank" rel="noopener noreferrer" className="text-primary underline">
                 Meta Business Suite → Gerenciador de Eventos
@@ -216,29 +212,31 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
           </div>
 
           {/* Webhook CRM */}
-          <div className="pt-3 border-t border-border space-y-3">
+          <div className="pt-4 border-t border-border/30 space-y-4">
             <div className="flex items-center gap-2">
-              <Webhook className="w-4 h-4 text-primary" />
+              <div className="w-6 h-6 rounded-md bg-primary/10 flex items-center justify-center">
+                <Webhook className="w-3.5 h-3.5 text-primary" />
+              </div>
               <Label className="text-xs font-semibold">Webhook para CRM</Label>
             </div>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-[11px] text-muted-foreground">
               Receba os dados dos leads automaticamente no seu CRM.{' '}
               <a href="/docs/webhook" target="_blank" className="text-primary underline">Ver documentação →</a>
             </p>
 
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="webhook_url" className="text-xs font-medium">URL do Webhook</Label>
               <Input
                 id="webhook_url"
                 value={webhookUrl}
                 onChange={e => setWebhookUrl(e.target.value)}
                 placeholder="https://seu-crm.com/api/webhook"
-                className="text-sm font-mono"
+                className="rounded-xl h-11 font-mono text-sm"
                 type="url"
               />
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-1.5">
               <Label htmlFor="webhook_secret" className="text-xs font-medium">Secret (para validação HMAC)</Label>
               <div className="flex items-center gap-2">
                 <div className="relative flex-1">
@@ -247,30 +245,30 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
                     value={webhookSecret}
                     onChange={e => setWebhookSecret(e.target.value)}
                     placeholder="Gere ou cole um secret"
-                    className="text-sm font-mono pr-10"
+                    className="rounded-xl h-11 font-mono text-sm pr-10"
                     type={showSecret ? 'text' : 'password'}
                   />
                   <button
                     type="button"
                     onClick={() => setShowSecret(!showSecret)}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                   >
                     {showSecret ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-                <Button variant="outline" size="sm" onClick={generateSecret} className="gap-1 shrink-0">
+                <Button variant="outline" size="sm" onClick={generateSecret} className="gap-1.5 shrink-0 rounded-xl h-11">
                   <RefreshCw className="w-3.5 h-3.5" />
                   Gerar
                 </Button>
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-[11px] text-muted-foreground">
                 Use este secret para validar a autenticidade dos webhooks recebidos.
               </p>
             </div>
           </div>
 
           <div className="flex gap-2">
-            <Button onClick={handleSaveIntegrations} disabled={savingIntegrations} className="flex-1 gap-2">
+            <Button onClick={handleSaveIntegrations} disabled={savingIntegrations} className="flex-1 gap-2 rounded-xl h-11">
               <Save className="w-4 h-4" />
               {savingIntegrations ? 'Salvando...' : 'Salvar integrações'}
             </Button>
@@ -279,7 +277,7 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
                 variant="outline"
                 onClick={handleTestWebhook}
                 disabled={testingWebhook}
-                className="gap-2 shrink-0"
+                className="gap-2 shrink-0 rounded-xl h-11"
               >
                 {testingWebhook ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                 {testingWebhook ? 'Enviando...' : 'Testar'}
