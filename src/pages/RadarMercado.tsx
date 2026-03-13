@@ -636,7 +636,7 @@ export default function RadarMercado() {
 
         {/* Footer */}
         <div className="text-center py-8 mt-4">
-          <img src={logoSplash} alt="Splash" className="mx-auto w-16 opacity-30 mb-2" />
+          <div className="mx-auto w-16 h-6 bg-muted-foreground/10 rounded mb-2" />
           <p className="text-[10px] text-muted-foreground/50">
             Radar de Mercado Splash RS © {new Date().getFullYear()} · Dados em tempo real
           </p>
