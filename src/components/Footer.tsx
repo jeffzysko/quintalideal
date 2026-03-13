@@ -41,13 +41,13 @@ export function Footer() {
               Redes
             </h4>
             <a
-              href="https://www.instagram.com/splashpiscinas"
+              href="https://www.instagram.com/iguisantoantonio"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors group"
             >
               <Instagram className="w-3.5 h-3.5 group-hover:text-pink-500 transition-colors" />
-              Instagram
+              @iguisantoantonio
             </a>
           </div>
         </div>
