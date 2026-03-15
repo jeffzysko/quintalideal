@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
 import { CalendarClock, Check, Plus, Trash2, Phone, MessageCircle, Mail, Users, MapPin, MoreHorizontal, CalendarIcon, Clock } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
