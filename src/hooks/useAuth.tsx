@@ -116,6 +116,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setRole(meta.role);
       setFranchiseId(meta.franchiseId);
       metaResolvedUserRef.current = currentUser.id;
+
+      // Track last access for franchise inactivity alerts
+      if (meta.franchiseId && (meta.role === 'franquia' || meta.role === 'visualizador')) {
+        supabase.from('franchises')
+          .update({ last_accessed_at: new Date().toISOString() })
+          .eq('id', meta.franchiseId)
+          .then(() => {});
+      }
     } catch (_err) {
       if (!mountedRef.current) return;
       setRole(null);
