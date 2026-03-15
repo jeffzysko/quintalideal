@@ -306,6 +306,30 @@ export default function AdminDashboard() {
 
         {activeTab === 'overview' && (
           <>
+            {/* Interactive Map + Inactive Alerts */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
+              <div className="lg:col-span-2">
+                <LeafletHeatmap
+                  leads={allLeads}
+                  coveredCities={coveredCities}
+                  franchiseMap={franchiseMap}
+                />
+              </div>
+              <AdminInactiveAlerts
+                franchises={franchises as any}
+                leads={allLeads}
+              />
+            </div>
+
+            {/* Performance Comparison */}
+            <div className="mb-4 sm:mb-6">
+              <AdminPerformanceComparison
+                leads={allLeads as any}
+                activities={leadActivities}
+                franchiseMap={franchiseMap}
+              />
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
               <AdminCityRanking leads={allLeads} />
               <AdminFranchiseRanking leads={allLeads} franchiseMap={franchiseMap} />
