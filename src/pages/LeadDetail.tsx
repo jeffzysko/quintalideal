@@ -204,11 +204,7 @@ export default function LeadDetail() {
 
         {/* Back */}
         <Button variant="ghost" size="sm" onClick={() => {
-          if (window.history.length > 2) {
-            navigate(-1);
-          } else {
-            navigate(isAdminRoute ? '/admin' : '/franquia');
-          }
+          navigate(leadsUrl);
         }} className="text-muted-foreground hover:text-foreground -ml-2">
           <ArrowLeft className="w-4 h-4 mr-1" /> Voltar
         </Button>
