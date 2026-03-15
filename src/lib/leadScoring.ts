@@ -14,9 +14,9 @@ export interface LeadScoreResult {
 }
 
 const SCORING: Record<LeadTemperature, LeadScoreResult> = {
-  quente: { temperature: 'quente', label: 'Quente', emoji: '🔥', color: 'text-orange-700', bgColor: 'bg-orange-50 border-orange-200', sortOrder: 0 },
-  morno: { temperature: 'morno', label: 'Morno', emoji: '☀️', color: 'text-amber-700', bgColor: 'bg-amber-50 border-amber-200', sortOrder: 1 },
-  frio: { temperature: 'frio', label: 'Frio', emoji: '❄️', color: 'text-sky-700', bgColor: 'bg-sky-50 border-sky-200', sortOrder: 2 },
+  quente: { temperature: 'quente', label: 'Quente', emoji: '🔥', color: 'text-orange-950 dark:text-orange-200', bgColor: 'bg-orange-100 border-orange-300 dark:bg-orange-900/40 dark:border-orange-700', sortOrder: 0 },
+  morno: { temperature: 'morno', label: 'Morno', emoji: '☀️', color: 'text-amber-950 dark:text-amber-200', bgColor: 'bg-amber-100 border-amber-300 dark:bg-amber-900/40 dark:border-amber-700', sortOrder: 1 },
+  frio: { temperature: 'frio', label: 'Frio', emoji: '❄️', color: 'text-sky-950 dark:text-sky-200', bgColor: 'bg-sky-100 border-sky-300 dark:bg-sky-900/40 dark:border-sky-700', sortOrder: 2 },
 };
 
 export function classifyLead(respostas: Record<string, string> | null, pontuacao: number | null): LeadScoreResult {
