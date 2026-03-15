@@ -271,7 +271,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                       return (
                         <div key={lead.id} className="relative">
                           <div className="absolute top-2 right-2 z-10">
-                            <Badge className={`${temp.bgColor} border text-[10px] font-medium`} variant="secondary">
+                            <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
                               {temp.emoji} {temp.label}
                             </Badge>
                           </div>
