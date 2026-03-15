@@ -76,15 +76,6 @@ export default function AdminDashboard() {
     },
   });
 
-  // ── Covered cities ──
-  const { data: coveredCities = [] } = useQuery({
-    queryKey: ['covered-cities'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('franchise_covered_cities').select('city_name, franchise_id');
-      if (error) throw error;
-      return data || [];
-    },
-  });
 
   // ── Lead activities for performance comparison ──
   const { data: leadActivities = [] } = useQuery({
