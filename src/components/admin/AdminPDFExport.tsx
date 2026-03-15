@@ -175,7 +175,7 @@ export function AdminPDFExport({ leads, franchiseId, franchiseName }: AdminPDFEx
         doc.text('TOP MODELOS', 14, y);
         y += 2;
 
-        (doc as any).autoTable({
+        autoTable(doc, {
           startY: y,
           head: [['#', 'Modelo', 'Leads', '% do Total']],
           body: topModels.map(([model, count], i) => [
