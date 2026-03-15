@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button';
 import { FileDown, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import jsPDF from 'jspdf';
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import autoTable from 'jspdf-autotable';
 
 interface Lead {
