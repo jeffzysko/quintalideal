@@ -38,6 +38,7 @@ interface QuizFlowProps {
   franchiseName?: string;
   franchiseId?: string;
   franchiseWhatsapp?: string;
+  isTestMode?: boolean;
 }
 
 interface PoolAlternative {
@@ -59,7 +60,7 @@ function StepFallback() {
   );
 }
 
-export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseWhatsapp }: QuizFlowProps) {
+export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseWhatsapp, isTestMode }: QuizFlowProps) {
   const [searchParams] = useSearchParams();
   const referredBy = searchParams.get('ref') || '';
 
@@ -220,6 +221,16 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
 
     setSaving(true);
     setLeadName(data.nome);
+
+    // Test mode: skip lead creation, emails, and notifications
+    if (isTestMode) {
+      toast.success('Modo teste: lead simulado com sucesso (nada foi salvo)');
+      setStep('actions');
+      setSaving(false);
+      isSubmittingRef.current = false;
+      return;
+    }
+
     try {
       const { data: createLeadData, error } = await supabase.functions.invoke<{
         success: boolean;
@@ -425,7 +436,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
           />
         )}
         {step === 'lead-form' && (
-          <LeadForm key="lead-form" onSubmit={handleLeadSubmit} onCheckDuplicate={checkDuplicate} loading={saving} lang={lang} />
+          <LeadForm key="lead-form" onSubmit={handleLeadSubmit} onCheckDuplicate={isTestMode ? undefined : checkDuplicate} loading={saving} lang={lang} />
         )}
         {step === 'actions' && (
           <ActionButtons
