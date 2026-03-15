@@ -306,15 +306,8 @@ export default function AdminDashboard() {
 
         {activeTab === 'overview' && (
           <>
-            {/* Interactive Map + Inactive Alerts */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
-              <div className="lg:col-span-2">
-                <LeafletHeatmap
-                  leads={allLeads}
-                  coveredCities={coveredCities}
-                  franchiseMap={franchiseMap}
-                />
-              </div>
+            {/* Inactive Alerts */}
+            <div className="mb-4 sm:mb-6">
               <AdminInactiveAlerts
                 franchises={franchises as any}
                 leads={allLeads as any}
