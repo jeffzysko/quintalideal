@@ -302,7 +302,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                           <tr key={lead.id} className="border-b border-border/20 hover:bg-muted/40 transition-all cursor-pointer group" role="row" onClick={() => navigate(`${leadDetailPath}/${lead.id}`)}>
                             <td role="cell" className="py-3.5 px-3 font-medium">{lead.nome || '—'}</td>
                             <td role="cell" className="py-3.5 px-3">
-                              <Badge className={`${temp.bgColor} border text-[10px] font-medium`} variant="secondary">
+                              <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
                                 {temp.emoji} {temp.label}
                               </Badge>
                             </td>
