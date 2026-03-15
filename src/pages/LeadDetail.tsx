@@ -38,6 +38,7 @@ interface Lead {
   territory_match_status: string | null;
   coverage_match_count: number | null;
   distribution_rule_used: string | null;
+  franquia_id: string | null;
 }
 
 const statusConfig: Record<string, { label: string; color: string }> = {
@@ -124,7 +125,7 @@ export default function LeadDetail() {
   }, [id]);
 
   const loadLead = async () => {
-    const { data } = await supabase.from('leads').select('id, nome, telefone, email, cidade, pontuacao_quintal, modelo_recomendado, respostas_questionario, foto1, foto2, foto3, foto4, status_lead, observacoes, created_at, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used').eq('id', id!).maybeSingle();
+    const { data } = await supabase.from('leads').select('id, nome, telefone, email, cidade, pontuacao_quintal, modelo_recomendado, respostas_questionario, foto1, foto2, foto3, foto4, status_lead, observacoes, created_at, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, franquia_id').eq('id', id!).maybeSingle();
     if (data) {
       setLead(data as Lead);
       setStatus(data.status_lead);
@@ -405,9 +406,9 @@ export default function LeadDetail() {
         )}
 
         {/* Follow-up Scheduling */}
-        {franchiseId && (
+        {(franchiseId || lead.franquia_id) && (
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <LeadFollowups franchiseId={franchiseId} leadId={lead.id} leadName={lead.nome || undefined} />
+            <LeadFollowups franchiseId={(franchiseId || lead.franquia_id)!} leadId={lead.id} leadName={lead.nome || undefined} />
           </motion.div>
         )}
 
