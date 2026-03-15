@@ -4,10 +4,21 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { CalendarClock, Check, Plus, Trash2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { CalendarClock, Check, Plus, Trash2, Phone, MessageCircle, Mail, Users, MapPin } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { useAuth } from '@/hooks/useAuth';
+
+const FOLLOWUP_TYPES = [
+  { value: 'ligacao', label: 'Ligação', icon: Phone, color: 'text-emerald-600' },
+  { value: 'whatsapp', label: 'WhatsApp', icon: MessageCircle, color: 'text-green-600' },
+  { value: 'email', label: 'E-mail', icon: Mail, color: 'text-primary' },
+  { value: 'visita', label: 'Visita presencial', icon: MapPin, color: 'text-amber-600' },
+  { value: 'reuniao', label: 'Reunião online', icon: Users, color: 'text-violet-600' },
+] as const;
+
+type FollowupType = typeof FOLLOWUP_TYPES[number]['value'];
 
 interface Followup {
   id: string;
@@ -20,9 +31,20 @@ interface Followup {
 
 interface LeadFollowupsProps {
   franchiseId: string;
-  /** If provided, scoped to single lead (used in LeadDetail) */
   leadId?: string;
   leadName?: string;
+}
+
+function parseFollowupType(note: string | null): { type: FollowupType | null; text: string } {
+  if (!note) return { type: null, text: '' };
+  const match = note.match(/^\[(\w+)\]\s*/);
+  if (match) {
+    const t = match[1] as FollowupType;
+    if (FOLLOWUP_TYPES.some(ft => ft.value === t)) {
+      return { type: t, text: note.slice(match[0].length) };
+    }
+  }
+  return { type: null, text: note };
 }
 
 export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsProps) {
@@ -32,6 +54,7 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
   const [showForm, setShowForm] = useState(false);
   const [note, setNote] = useState('');
   const [date, setDate] = useState('');
+  const [followupType, setFollowupType] = useState<FollowupType>('ligacao');
 
   const { data: followups = [] } = useQuery({
     queryKey: ['followups', franchiseId, leadId],
@@ -48,7 +71,6 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
       const { data } = await query.limit(20);
       const rows = (data || []) as unknown as Followup[];
 
-      // If dashboard view, fetch lead names
       if (!leadId && rows.length > 0) {
         const leadIds = [...new Set(rows.map(f => f.lead_id))];
         const { data: leads } = await supabase.from('leads').select('id, nome').in('id', leadIds);
@@ -65,12 +87,13 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
   const addFollowup = useMutation({
     mutationFn: async () => {
       if (!leadId || !date || !userId) return;
+      const fullNote = `[${followupType}] ${note}`.trim();
       const { error } = await supabase.from('lead_followups' as any).insert({
         lead_id: leadId,
         franchise_id: franchiseId,
         user_id: userId,
         scheduled_at: new Date(date).toISOString(),
-        note: note || null,
+        note: fullNote,
       });
       if (error) throw error;
     },
@@ -79,6 +102,7 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
       setShowForm(false);
       setNote('');
       setDate('');
+      setFollowupType('ligacao');
       toast.success('Follow-up agendado!');
     },
     onError: () => toast.error('Erro ao agendar follow-up'),
@@ -125,7 +149,25 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
       </CardHeader>
       <CardContent className="space-y-2">
         {showForm && leadId && (
-          <div className="flex flex-col gap-2 p-3 bg-muted/40 rounded-xl mb-2">
+          <div className="flex flex-col gap-2.5 p-3 bg-muted/40 rounded-xl mb-2 border border-border/30">
+            <Select value={followupType} onValueChange={(v) => setFollowupType(v as FollowupType)}>
+              <SelectTrigger className="bg-background h-9 text-sm">
+                <SelectValue placeholder="Tipo de ação" />
+              </SelectTrigger>
+              <SelectContent>
+                {FOLLOWUP_TYPES.map(ft => {
+                  const Icon = ft.icon;
+                  return (
+                    <SelectItem key={ft.value} value={ft.value}>
+                      <span className="flex items-center gap-2">
+                        <Icon className={`w-3.5 h-3.5 ${ft.color}`} />
+                        {ft.label}
+                      </span>
+                    </SelectItem>
+                  );
+                })}
+              </SelectContent>
+            </Select>
             <Input
               type="datetime-local"
               value={date}
@@ -134,13 +176,14 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
               min={new Date().toISOString().slice(0, 16)}
             />
             <Input
-              placeholder={`Ex: Ligar para ${leadName || 'o lead'}`}
+              placeholder={`Ex: Ligar para ${leadName || 'o lead'} sobre orçamento`}
               value={note}
               onChange={e => setNote(e.target.value)}
               className="text-sm h-9"
               maxLength={200}
             />
-            <Button size="sm" onClick={() => addFollowup.mutate()} disabled={!date || addFollowup.isPending} className="text-xs">
+            <Button size="sm" onClick={() => addFollowup.mutate()} disabled={!date || addFollowup.isPending} className="text-xs gap-1.5">
+              <CalendarClock className="w-3.5 h-3.5" />
               Agendar Follow-up
             </Button>
           </div>
@@ -152,6 +195,10 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
 
         {followups.map(f => {
           const isOverdue = !f.completed && new Date(f.scheduled_at) < now;
+          const parsed = parseFollowupType(f.note);
+          const typeConfig = FOLLOWUP_TYPES.find(ft => ft.value === parsed.type);
+          const TypeIcon = typeConfig?.icon;
+
           return (
             <div key={f.id} className={`flex items-start gap-2 p-2.5 rounded-xl transition-colors ${f.completed ? 'bg-muted/20 opacity-60' : isOverdue ? 'bg-destructive/5 border border-destructive/20' : 'bg-muted/40'}`}>
               <button
@@ -164,11 +211,19 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
                 {!leadId && f.lead?.nome && (
                   <p className="text-xs font-semibold text-foreground truncate">{f.lead.nome}</p>
                 )}
+                <div className="flex items-center gap-1.5 mb-0.5">
+                  {TypeIcon && (
+                    <span className="flex items-center gap-1">
+                      <TypeIcon className={`w-3 h-3 ${typeConfig.color}`} />
+                      <span className={`text-[10px] font-semibold uppercase tracking-wider ${typeConfig.color}`}>{typeConfig.label}</span>
+                    </span>
+                  )}
+                </div>
                 <p className={`text-xs ${f.completed ? 'line-through text-muted-foreground' : 'text-foreground'}`}>
-                  {f.note || 'Follow-up agendado'}
+                  {parsed.text || 'Follow-up agendado'}
                 </p>
                 <p className={`text-[10px] mt-0.5 ${isOverdue ? 'text-destructive font-medium' : 'text-muted-foreground'}`}>
-                  {isOverdue ? '⚠️ ' : ''}
+                  {isOverdue ? '⚠️ ' : '📅 '}
                   {new Date(f.scheduled_at).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                 </p>
               </div>
