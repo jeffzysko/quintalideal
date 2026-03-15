@@ -66,11 +66,35 @@ export default function AdminDashboard() {
   // Reset page when filters change
   useEffect(() => { setPage(1); }, [filterFranquia, filterStatus, filterModelo]);
 
-  // ── Franchises ──
+  // ── Franchises (full for alerts) ──
   const { data: franchises = [] } = useQuery({
-    queryKey: ['franchises'],
+    queryKey: ['franchises-full'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('franchises').select('id, nome_franquia');
+      const { data, error } = await supabase.from('franchises').select('id, nome_franquia, ativa, last_accessed_at, last_lead_activity_at');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // ── Covered cities ──
+  const { data: coveredCities = [] } = useQuery({
+    queryKey: ['covered-cities'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('franchise_covered_cities').select('city_name, franchise_id');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // ── Lead activities for performance comparison ──
+  const { data: leadActivities = [] } = useQuery({
+    queryKey: ['lead-activities-all'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('lead_activities')
+        .select('lead_id, activity_type, created_at')
+        .eq('activity_type', 'status_change')
+        .order('created_at', { ascending: true });
       if (error) throw error;
       return data || [];
     },
