@@ -100,7 +100,7 @@ function AppRoutes() {
                   <Routes>
                     {/* Pages WITHOUT footer (quiz/lead flow) */}
                     <Route path="/" element={<HomePage />} />
-                    <Route path="/explorar" element={<HomePage />} />
+                    <Route path="/explorar" element={<ExplorarPage />} />
 
                     {/* Pages WITH footer */}
                     <Route element={<LayoutWithFooter />}>
