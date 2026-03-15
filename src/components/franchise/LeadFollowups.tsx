@@ -46,17 +46,18 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
       else query = query.eq('completed', false);
 
       const { data } = await query.limit(20);
+      const rows = (data || []) as unknown as Followup[];
 
       // If dashboard view, fetch lead names
-      if (!leadId && data && data.length > 0) {
-        const leadIds = [...new Set((data as any[]).map((f: any) => f.lead_id))];
+      if (!leadId && rows.length > 0) {
+        const leadIds = [...new Set(rows.map(f => f.lead_id))];
         const { data: leads } = await supabase.from('leads').select('id, nome').in('id', leadIds);
         const nameMap: Record<string, string | null> = {};
         (leads || []).forEach((l: any) => { nameMap[l.id] = l.nome; });
-        return (data as any[]).map((f: any) => ({ ...f, lead: { nome: nameMap[f.lead_id] || null } })) as Followup[];
+        return rows.map(f => ({ ...f, lead: { nome: nameMap[f.lead_id] || null } }));
       }
 
-      return (data || []) as Followup[];
+      return rows;
     },
     enabled: !!franchiseId,
   });

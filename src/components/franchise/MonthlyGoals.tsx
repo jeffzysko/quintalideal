@@ -32,7 +32,7 @@ export function MonthlyGoals({ franchiseId, soldThisMonth }: MonthlyGoalsProps) 
         .eq('month', month)
         .eq('year', year)
         .maybeSingle();
-      return data as { id: string; sales_goal: number } | null;
+      return data as unknown as { id: string; sales_goal: number } | null;
     },
     enabled: !!franchiseId,
   });
