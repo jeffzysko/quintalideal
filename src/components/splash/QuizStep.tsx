@@ -10,6 +10,7 @@ interface QuizOption {
   value: string;
   label: string;
   emoji?: string;
+  image?: string;
 }
 
 interface QuizStepProps {
@@ -23,6 +24,7 @@ interface QuizStepProps {
   explorerStep: number;
   franchiseSlug?: string;
   lang?: Lang;
+  useImageLayout?: boolean;
 }
 
 function formatCityLabel(city: CityOption): string {
@@ -30,7 +32,7 @@ function formatCityLabel(city: CityOption): string {
   return `${city.nome}, ${city.estado || 'RS'}`;
 }
 
-export function QuizStep({ step, totalSteps: _totalSteps, question, options, type = 'options', onAnswer, onBack, explorerStep, franchiseSlug, lang = 'pt' }: QuizStepProps) {
+export function QuizStep({ step, totalSteps: _totalSteps, question, options, type = 'options', onAnswer, onBack, explorerStep, franchiseSlug, lang = 'pt', useImageLayout = false }: QuizStepProps) {
   const [citySearch, setCitySearch] = useState('');
   const [selectedValue, setSelectedValue] = useState<string | null>(null);
 
@@ -47,6 +49,8 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
     setSelectedValue(value);
     setTimeout(() => onAnswer(value), 350);
   };
+
+  const hasImages = useImageLayout && options?.some(o => o.image);
 
   return (
     <motion.div
@@ -71,7 +75,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
               {question}
             </h2>
 
-            {type === 'options' && options && (
+            {type === 'options' && options && !hasImages && (
               <div className="space-y-2">
                 {options.map((opt, i) => {
                   const isSelected = selectedValue === opt.value;
@@ -108,6 +112,61 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
                           style={{ boxShadow: 'inset 0 0 0 2px hsl(207 90% 42%)' }}
                         />
                       )}
+                    </motion.button>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Image-based layout for preference step */}
+            {type === 'options' && options && hasImages && (
+              <div className="grid grid-cols-2 gap-2.5">
+                {options.map((opt, i) => {
+                  const isSelected = selectedValue === opt.value;
+                  return (
+                    <motion.button
+                      key={opt.value}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ delay: 0.1 + i * 0.06, type: 'spring', damping: 18 }}
+                      onClick={() => handleSelect(opt.value)}
+                      className={`relative rounded-2xl border-2 overflow-hidden transition-all duration-200 active:scale-[0.97] group ${
+                        isSelected
+                          ? 'border-primary shadow-lg ring-2 ring-primary/20 scale-[1.02]'
+                          : 'border-border hover:border-primary/40 hover:shadow-md'
+                      }`}
+                    >
+                      {opt.image && (
+                        <div className="aspect-[4/3] w-full overflow-hidden">
+                          <img
+                            src={opt.image}
+                            alt={opt.label}
+                            className={`w-full h-full object-cover transition-transform duration-300 ${
+                              isSelected ? 'scale-105' : 'group-hover:scale-105'
+                            }`}
+                            loading="eager"
+                          />
+                        </div>
+                      )}
+                      <div className={`p-2.5 sm:p-3 text-center transition-colors ${
+                        isSelected ? 'bg-primary/5' : 'bg-background'
+                      }`}>
+                        <div className="flex items-center justify-center gap-1.5">
+                          {isSelected && (
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              className="w-4 h-4 rounded-full bg-primary flex items-center justify-center"
+                            >
+                              <Check className="w-2.5 h-2.5 text-primary-foreground" />
+                            </motion.div>
+                          )}
+                          {opt.emoji && !isSelected && <span className="text-sm">{opt.emoji}</span>}
+                          <span className={`font-semibold text-xs sm:text-sm ${
+                            isSelected ? 'text-primary' : 'text-foreground'
+                          }`}>{opt.label}</span>
+                        </div>
+                      </div>
                     </motion.button>
                   );
                 })}

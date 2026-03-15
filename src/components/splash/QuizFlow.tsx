@@ -8,6 +8,12 @@ import { toast } from 'sonner';
 import { trackEvent } from '@/lib/analytics';
 import { trackMetaEvent } from '@/components/MetaPixel';
 import { type Lang, getQuizQuestions, t } from '@/lib/i18n';
+import { getPoolImage } from '@/lib/poolImages';
+
+// Pool images for preference step
+import tortugaImg from '@/assets/pools/tortuga.webp';
+import navagioImg from '@/assets/pools/navagio.webp';
+import tradicionalImg from '@/assets/pools/tradicional.webp';
 
 const PhotoUpload = lazy(() => import('./PhotoUpload').then(m => ({ default: m.PhotoUpload })));
 const PhotoAnalysis = lazy(() => import('./PhotoAnalysis').then(m => ({ default: m.PhotoAnalysis })));
@@ -20,11 +26,29 @@ const ActionButtons = lazy(() => import('./ActionButtons').then(m => ({ default:
 
 type Step = 'hero' | 'photos' | 'photo-analysis' | 'pre-diagnosis' | 'quiz' | 'processing' | 'result' | 'lead-form' | 'actions';
 
+// Preference step images
+const PREF_IMAGES: Record<string, string> = {
+  prainha: tortugaImg,
+  spa: navagioImg,
+  simples: tradicionalImg,
+};
+
 interface QuizFlowProps {
   franchiseSlug?: string;
   franchiseName?: string;
   franchiseId?: string;
   franchiseWhatsapp?: string;
+}
+
+interface PoolAlternative {
+  nome_modelo: string;
+  descricao: string | null;
+  tamanho: string | null;
+  preco_min: number | null;
+  preco_max: number | null;
+  possui_prainha: boolean | null;
+  possui_spa: boolean | null;
+  profundidade: number | null;
 }
 
 function StepFallback() {
@@ -53,6 +77,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   const [leadRefCode, setLeadRefCode] = useState('');
   const [saving, setSaving] = useState(false);
   const [poolPrices, setPoolPrices] = useState<PoolPriceInfo[]>([]);
+  const [poolAlternatives, setPoolAlternatives] = useState<PoolAlternative[]>([]);
   const [assignedWhatsapp, setAssignedWhatsapp] = useState<string | undefined>(undefined);
   const [assignedFranchiseName, setAssignedFranchiseName] = useState<string | undefined>(undefined);
   const [assignedCidadeBase, setAssignedCidadeBase] = useState<string | undefined>(undefined);
@@ -64,7 +89,6 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
 
   useEffect(() => {
     trackEvent('landing_page_viewed', analyticsCtx);
-    // Fetch pool prices for budget-aware recommendations
     supabase.from('pool_models').select('nome_modelo, preco_min, preco_max').then(({ data }) => {
       if (data) setPoolPrices(data.map(d => ({ nome_modelo: d.nome_modelo, preco_min: d.preco_min, preco_max: d.preco_max })));
     });
@@ -95,6 +119,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       setPoolName(pool);
       setRecommendedSize(size);
       fetchPoolDescription(pool);
+      fetchAlternatives(pool, fullAnswers);
 
       trackEvent('quiz_completed', {
         ...analyticsCtx,
@@ -127,6 +152,33 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
           possui_prainha: data.possui_prainha || false,
           possui_spa: data.possui_spa || false,
         });
+      }
+    } catch {
+      // Non-critical
+    }
+  };
+
+  const fetchAlternatives = async (recommended: string, fullAnswers: QuizAnswers) => {
+    try {
+      const { data } = await supabase
+        .from('pool_models')
+        .select('nome_modelo, descricao, tamanho, preco_min, preco_max, possui_prainha, possui_spa, profundidade')
+        .neq('nome_modelo', recommended)
+        .neq('nome_modelo', 'Nassau')
+        .limit(10);
+      if (data) {
+        // Pick 2 alternatives based on preference
+        const pref = fullAnswers.preferencia;
+        let alts = data as PoolAlternative[];
+        // Prioritize alternatives that match preference
+        const prefMatch = alts.filter(a => {
+          if (pref === 'prainha') return a.possui_prainha;
+          if (pref === 'spa') return a.possui_spa;
+          return true;
+        });
+        const nonMatch = alts.filter(a => !prefMatch.includes(a));
+        const sorted = [...prefMatch, ...nonMatch];
+        setPoolAlternatives(sorted.slice(0, 2));
       }
     } catch {
       // Non-critical
@@ -194,7 +246,6 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         currency: 'BRL',
       });
 
-      // Notify the ASSIGNED franchise (not necessarily origin)
       const notifyFranchiseId = createLeadData?.assignedFranchiseId || franchiseId;
       if (notifyFranchiseId) {
         supabase.functions.invoke('notify-new-lead', {
@@ -211,10 +262,9 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
             referred_by: referredBy || null,
             created_at: new Date().toISOString(),
           },
-        }).catch(() => { /* non-critical */ });
+        }).catch(() => {});
       }
 
-      // Send result email to the visitor
       if (data.email) {
         supabase.functions.invoke('send-lead-result-email', {
           body: {
@@ -227,7 +277,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
             franchise_whatsapp: createLeadData?.assignedWhatsapp || franchiseWhatsapp || null,
             franchise_cidade_base: createLeadData?.assignedCidadeBase || null,
           },
-        }).catch(() => { /* non-critical */ });
+        }).catch(() => {});
       }
 
       setStep('actions');
@@ -265,6 +315,15 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
 
   const currentQuizQuestion = quizStep < quizQuestions.length ? quizQuestions[quizStep] : null;
 
+  // Inject images into preference step (step index 4 = preferencia)
+  const enrichedQuestion = currentQuizQuestion && quizStep === 4 ? {
+    ...currentQuizQuestion,
+    options: currentQuizQuestion.options.map(opt => ({
+      ...opt,
+      image: PREF_IMAGES[opt.value],
+    })),
+  } : currentQuizQuestion;
+
   return (
     <AnimatePresence mode="wait">
       {step === 'hero' && (
@@ -287,15 +346,16 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         {step === 'pre-diagnosis' && (
           <PreDiagnosis key="pre-diagnosis" onContinue={() => setStep('quiz')} lang={lang} />
         )}
-        {step === 'quiz' && currentQuizQuestion && (
+        {step === 'quiz' && enrichedQuestion && quizStep < 6 && (
           <QuizStep
             key={`quiz-${quizStep}`}
             step={quizStep + 1}
             totalSteps={7}
-            question={currentQuizQuestion.question}
-            options={currentQuizQuestion.options}
+            question={enrichedQuestion.question}
+            options={enrichedQuestion.options}
             onAnswer={handleQuizAnswer}
             explorerStep={quizStep + 1}
+            useImageLayout={quizStep === 4}
             onBack={() => {
               if (quizStep === 0) setStep('photos');
               else setQuizStep(prev => prev - 1);
@@ -321,7 +381,26 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
           <ProcessingScreen key="processing" onDone={() => setStep('result')} lang={lang} />
         )}
         {step === 'result' && (
-          <ResultScreen key="result" score={score} poolName={poolName} poolDescription={poolDesc} onContinue={handleResultContinue} lang={lang} />
+          <ResultScreen
+            key="result"
+            score={score}
+            poolName={poolName}
+            poolDescription={poolDesc}
+            alternatives={poolAlternatives.map(a => ({
+              name: a.nome_modelo,
+              image: getPoolImage(a.nome_modelo),
+              description: a.descricao || undefined,
+              specs: {
+                tamanho: a.tamanho || undefined,
+                profundidade: a.profundidade || undefined,
+                possui_prainha: a.possui_prainha || false,
+                possui_spa: a.possui_spa || false,
+              },
+            }))}
+            cidade={answers.cidade}
+            onContinue={handleResultContinue}
+            lang={lang}
+          />
         )}
         {step === 'lead-form' && (
           <LeadForm key="lead-form" onSubmit={handleLeadSubmit} onCheckDuplicate={checkDuplicate} loading={saving} lang={lang} />
