@@ -10,8 +10,8 @@ interface ExplorerProgressProps {
   lang?: Lang;
 }
 
-const STEP_LABELS_PT = ['Espaço', 'Casa', 'Uso', 'Plano', 'Preferência', 'Orçamento', 'Cidade'];
-const STEP_LABELS_ES = ['Espacio', 'Casa', 'Uso', 'Plan', 'Preferencia', 'Presupuesto', 'Ciudad'];
+const STEP_LABELS_PT = ['📸 Foto', 'Espaço', 'Casa', 'Uso', 'Plano', 'Preferência', 'Orçamento', 'Cidade'];
+const STEP_LABELS_ES = ['📸 Foto', 'Espacio', 'Casa', 'Uso', 'Plan', 'Preferencia', 'Presupuesto', 'Ciudad'];
 
 export function ExplorerProgress({ currentStep, onBack, lang = 'pt' }: ExplorerProgressProps) {
   const steps = getExplorerSteps(lang);
@@ -20,12 +20,11 @@ export function ExplorerProgress({ currentStep, onBack, lang = 'pt' }: ExplorerP
   const stepInfo = steps[currentStep] || steps[0];
   const labels = lang === 'es' ? STEP_LABELS_ES : STEP_LABELS_PT;
 
-  // Quiz steps are 1-7 (currentStep 1 = quiz step 0)
-  const quizIndex = currentStep - 1; // 0-indexed quiz step
+  const labelIndex = currentStep; // 0 = photo, 1-7 = quiz steps
 
   return (
     <div className="mb-3 sm:mb-5">
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-3">
         <button
           onClick={onBack}
           className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
@@ -39,11 +38,11 @@ export function ExplorerProgress({ currentStep, onBack, lang = 'pt' }: ExplorerP
       </div>
 
       {/* Named step indicators */}
-      {quizIndex >= 0 && quizIndex < labels.length && (
+      {labelIndex >= 0 && labelIndex < labels.length && (
         <div className="flex items-center gap-0.5 mb-2 overflow-x-auto scrollbar-hide">
           {labels.map((label, i) => {
-            const isActive = i === quizIndex;
-            const isDone = i < quizIndex;
+            const isActive = i === labelIndex;
+            const isDone = i < labelIndex;
             return (
               <div key={i} className="flex items-center min-w-0">
                 <div className={`flex items-center gap-1 px-1.5 sm:px-2 py-1 rounded-full text-[9px] sm:text-[10px] font-semibold transition-all whitespace-nowrap ${
