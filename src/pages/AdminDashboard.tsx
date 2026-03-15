@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Share2, Globe } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import FranchiseDashboard from '@/pages/FranchiseDashboard';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
 import { useAuth } from '@/hooks/useAuth';
@@ -38,8 +38,11 @@ const PAGE_SIZE = 25;
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { signOut: _signOut, role } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'analytics' | 'franchises' | 'cities' | 'users' | 'emails' | 'franchise-view'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'analytics' | 'franchises' | 'cities' | 'users' | 'emails' | 'franchise-view'>(() =>
+    new URLSearchParams(location.search).get('tab') === 'leads' ? 'leads' : 'overview'
+  );
   const [viewFranchiseId, setViewFranchiseId] = useState<string>('');
 
   const [filterFranquia, setFilterFranquia] = useState('all');

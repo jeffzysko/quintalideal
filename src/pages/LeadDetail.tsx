@@ -499,10 +499,12 @@ export default function LeadDetail() {
                           toast.error('Erro ao excluir lead.');
                         } else {
                           toast.success('Lead de teste excluído com sucesso.');
-                          if (window.history.length > 2) {
+                          if (isAdminRoute) {
+                            navigate('/admin?tab=leads');
+                          } else if (window.history.length > 2) {
                             navigate(-1);
                           } else {
-                            navigate(isAdminRoute ? '/admin' : '/franquia');
+                            navigate('/franquia');
                           }
                         }
                       }}
