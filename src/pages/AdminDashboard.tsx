@@ -26,7 +26,7 @@ import { AdminLeadsTable } from '@/components/admin/AdminLeadsTable';
 import { AdminInactiveAlerts } from '@/components/admin/AdminInactiveAlerts';
 import { AdminPerformanceComparison } from '@/components/admin/AdminPerformanceComparison';
 import { AdminPDFExport } from '@/components/admin/AdminPDFExport';
-import { LeafletHeatmap } from '@/components/admin/LeafletHeatmap';
+
 import { KPISkeleton } from '@/components/ui/kpi-skeleton';
 import { TableSkeleton } from '@/components/ui/table-skeleton';
 import { STATUS_LABELS, LeadRow } from '@/lib/lead-constants';
@@ -76,15 +76,6 @@ export default function AdminDashboard() {
     },
   });
 
-  // ── Covered cities ──
-  const { data: coveredCities = [] } = useQuery({
-    queryKey: ['covered-cities'],
-    queryFn: async () => {
-      const { data, error } = await supabase.from('franchise_covered_cities').select('city_name, franchise_id');
-      if (error) throw error;
-      return data || [];
-    },
-  });
 
   // ── Lead activities for performance comparison ──
   const { data: leadActivities = [] } = useQuery({
@@ -306,15 +297,8 @@ export default function AdminDashboard() {
 
         {activeTab === 'overview' && (
           <>
-            {/* Interactive Map + Inactive Alerts */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
-              <div className="lg:col-span-2">
-                <LeafletHeatmap
-                  leads={allLeads}
-                  coveredCities={coveredCities}
-                  franchiseMap={franchiseMap}
-                />
-              </div>
+            {/* Inactive Alerts */}
+            <div className="mb-4 sm:mb-6">
               <AdminInactiveAlerts
                 franchises={franchises as any}
                 leads={allLeads as any}
