@@ -406,9 +406,9 @@ export default function LeadDetail() {
         )}
 
         {/* Follow-up Scheduling */}
-        {franchiseId && (
+        {(franchiseId || lead.franquia_id) && (
           <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <LeadFollowups franchiseId={franchiseId} leadId={lead.id} leadName={lead.nome || undefined} />
+            <LeadFollowups franchiseId={(franchiseId || lead.franquia_id)!} leadId={lead.id} leadName={lead.nome || undefined} />
           </motion.div>
         )}
 
