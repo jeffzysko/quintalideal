@@ -111,7 +111,7 @@ export function AdminPDFExport({ leads, franchiseId, franchiseName }: AdminPDFEx
         { label: 'Perdidos', value: lost, color: [239, 68, 68] },
       ];
 
-      funnel.forEach((step, i) => {
+      funnel.forEach((step) => {
         const barWidth = total > 0 ? Math.max(10, (step.value / total) * (pageWidth - 60)) : 10;
         doc.setFillColor(step.color[0], step.color[1], step.color[2]);
         doc.roundedRect(14, y, barWidth, 8, 2, 2, 'F');
