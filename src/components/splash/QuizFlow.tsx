@@ -436,7 +436,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
           />
         )}
         {step === 'lead-form' && (
-          <LeadForm key="lead-form" onSubmit={handleLeadSubmit} onCheckDuplicate={checkDuplicate} loading={saving} lang={lang} />
+          <LeadForm key="lead-form" onSubmit={handleLeadSubmit} onCheckDuplicate={isTestMode ? undefined : checkDuplicate} loading={saving} lang={lang} />
         )}
         {step === 'actions' && (
           <ActionButtons
