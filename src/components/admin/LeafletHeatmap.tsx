@@ -185,8 +185,8 @@ export function LeafletHeatmap({ leads, coveredCities = [], franchiseMap = {}, c
   }, [cityData, heatMode, mapLayer, coveredSet, franchiseMap]);
 
   return (
-    <Card className={`card-premium overflow-hidden border-border/40 ${className}`}>
-      <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 flex-wrap">
+    <Card className={`card-premium overflow-visible border-border/40 ${className}`}>
+      <CardHeader className="flex flex-row items-center justify-between gap-2 pb-2 flex-wrap relative z-[1000]">
         <CardTitle className="text-base flex items-center gap-2">
           <Flame className="w-4 h-4 text-destructive" /> Mapa Geográfico de Leads
         </CardTitle>
@@ -202,7 +202,7 @@ export function LeafletHeatmap({ leads, coveredCities = [], franchiseMap = {}, c
               <SelectTrigger className="w-28 h-8 text-xs rounded-xl">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="z-[1100]">
                 <SelectItem value="heat">Heatmap</SelectItem>
                 <SelectItem value="markers">Marcadores</SelectItem>
               </SelectContent>
@@ -214,7 +214,7 @@ export function LeafletHeatmap({ leads, coveredCities = [], franchiseMap = {}, c
               <SelectTrigger className="w-28 h-8 text-xs rounded-xl">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="z-[1100]">
                 <SelectItem value="volume">Volume</SelectItem>
                 <SelectItem value="score">Potencial</SelectItem>
               </SelectContent>
@@ -222,8 +222,8 @@ export function LeafletHeatmap({ leads, coveredCities = [], franchiseMap = {}, c
           </div>
         </div>
       </CardHeader>
-      <CardContent className="p-0">
-        <div ref={mapRef} className="w-full h-[400px] md:h-[500px]" />
+      <CardContent className="p-0 overflow-hidden rounded-b-xl">
+        <div ref={mapRef} className="w-full h-[400px] md:h-[500px]" style={{ zIndex: 0 }} />
         {/* Legend */}
         <div className="flex items-center justify-between px-4 py-2.5 bg-muted/30 text-[10px] text-muted-foreground border-t border-border/30">
           <div className="flex items-center gap-3">
