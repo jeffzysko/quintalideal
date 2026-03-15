@@ -188,9 +188,10 @@ export default function LeadDetail() {
   const statusInfo = statusConfig[lead.status_lead] || statusConfig.novo;
 
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const leadsUrl = isAdminRoute ? '/admin?tab=leads' : '/franquia';
   const breadcrumbItems = [
     { label: isAdminRoute ? 'Admin' : 'Painel', href: isAdminRoute ? '/admin' : '/franquia' },
-    { label: 'Leads', href: isAdminRoute ? '/admin' : '/franquia' },
+    { label: 'Leads', href: leadsUrl },
     { label: lead.nome || 'Detalhes' },
   ];
 
@@ -203,11 +204,7 @@ export default function LeadDetail() {
 
         {/* Back */}
         <Button variant="ghost" size="sm" onClick={() => {
-          if (window.history.length > 2) {
-            navigate(-1);
-          } else {
-            navigate(isAdminRoute ? '/admin' : '/franquia');
-          }
+          navigate(leadsUrl);
         }} className="text-muted-foreground hover:text-foreground -ml-2">
           <ArrowLeft className="w-4 h-4 mr-1" /> Voltar
         </Button>
