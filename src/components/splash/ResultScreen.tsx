@@ -23,6 +23,7 @@ interface ResultScreenProps {
   score: number;
   poolName: string;
   poolDescription?: string;
+  recommendedSize?: string;
   alternatives?: PoolAlternativeView[];
   cidade?: string;
   onContinue: () => void;
