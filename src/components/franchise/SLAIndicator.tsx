@@ -24,23 +24,30 @@ interface SLAIndicatorProps {
 
 export function SLAIndicator({ leads, activities }: SLAIndicatorProps) {
   const { avgHours, alertLeads } = useMemo(() => {
+    // Pre-index: first "Contatado" activity per lead → O(n) lookup
+    const firstContactMap = new Map<string, string>();
+    activities
+      .filter(a => a.activity_type === 'status_change' && a.content?.includes('Contatado'))
+      .forEach(a => {
+        if (!firstContactMap.has(a.lead_id)) {
+          firstContactMap.set(a.lead_id, a.created_at);
+        }
+      });
+
     const contactedTimes: number[] = [];
-    const now = new Date();
+    const now = Date.now();
     const overdue: Lead[] = [];
 
     leads.forEach(lead => {
-      // Find first status_change to "contatado" for this lead
-      const contactActivity = activities.find(
-        a => a.lead_id === lead.id && a.activity_type === 'status_change' && a.content?.includes('Contatado')
-      );
+      const contactTime = firstContactMap.get(lead.id);
 
-      if (contactActivity) {
+      if (contactTime) {
         const created = new Date(lead.created_at).getTime();
-        const contacted = new Date(contactActivity.created_at).getTime();
+        const contacted = new Date(contactTime).getTime();
         const hours = (contacted - created) / (1000 * 60 * 60);
-        if (hours >= 0 && hours < 720) contactedTimes.push(hours); // cap at 30 days
+        if (hours >= 0 && hours < 720) contactedTimes.push(hours);
       } else if (lead.status_lead === 'novo') {
-        const hoursWaiting = (now.getTime() - new Date(lead.created_at).getTime()) / (1000 * 60 * 60);
+        const hoursWaiting = (now - new Date(lead.created_at).getTime()) / (1000 * 60 * 60);
         if (hoursWaiting > 2) overdue.push(lead);
       }
     });
