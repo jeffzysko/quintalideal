@@ -94,16 +94,27 @@ export default function AdminDashboard() {
     },
   });
 
-  // ── All leads for KPIs/charts ──
+  // ── All leads for KPIs/charts (lightweight columns only) ──
   const { data: allLeads = [], isLoading: loadingKpis } = useQuery({
     queryKey: ['admin-leads-all'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, updated_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used')
-        .order('created_at', { ascending: false });
-      if (error) throw error;
-      return (data || []) as LeadRow[];
+      // Fetch in batches to avoid the 1000-row default limit
+      const PAGE = 1000;
+      let all: LeadRow[] = [];
+      let from = 0;
+      let hasMore = true;
+      while (hasMore) {
+        const { data, error } = await supabase
+          .from('leads')
+          .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, updated_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used')
+          .order('created_at', { ascending: false })
+          .range(from, from + PAGE - 1);
+        if (error) throw error;
+        all = all.concat((data || []) as LeadRow[]);
+        hasMore = (data?.length || 0) === PAGE;
+        from += PAGE;
+      }
+      return all;
     },
   });
 
