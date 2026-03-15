@@ -251,15 +251,20 @@ export function ResultScreen({ score, poolName, poolDescription, alternatives = 
                       <div className="p-2.5">
                         <p className="text-xs font-semibold text-white mb-0.5">{alt.name}</p>
                         <div className="flex flex-wrap gap-1">
+                          {alt.specs?.tamanho && (
+                            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/8 text-white/50">
+                              📐 {alt.specs.tamanho}
+                            </span>
+                          )}
                           {alt.specs?.possui_prainha && (
                             <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-500/15 text-blue-300">🏖️ Prainha</span>
                           )}
                           {alt.specs?.possui_spa && (
-                            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/15 text-violet-300">💆 SPA</span>
+                            <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-violet-500/15 text-violet-300">💆 Hidro</span>
                           )}
                           {alt.specs?.profundidade && (
                             <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/8 text-white/50">
-                              {alt.specs.profundidade}m
+                              ↕ {alt.specs.profundidade}m
                             </span>
                           )}
                         </div>
