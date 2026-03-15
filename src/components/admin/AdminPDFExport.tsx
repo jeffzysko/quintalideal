@@ -21,13 +21,6 @@ interface AdminPDFExportProps {
   franchiseName?: string;
 }
 
-const STATUS_LABELS: Record<string, string> = {
-  novo: 'Novo',
-  contatado: 'Contatado',
-  em_negociacao: 'Em Negociação',
-  vendido: 'Vendido',
-  perdido: 'Perdido',
-};
 
 export function AdminPDFExport({ leads, franchiseMap, franchiseId, franchiseName }: AdminPDFExportProps) {
   const [generating, setGenerating] = useState(false);
