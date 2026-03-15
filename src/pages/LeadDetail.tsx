@@ -248,6 +248,19 @@ export default function LeadDetail() {
                     <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Índice do Quintal</p>
                     <p className="text-sm text-foreground mt-0.5">Potencial de instalação de piscina</p>
                   </div>
+                  {/* Lead Temperature */}
+                  {(() => {
+                    const temp = classifyLead(lead.respostas_questionario, lead.pontuacao_quintal);
+                    return (
+                      <div className={`flex items-center gap-2 ${temp.bgColor} border rounded-lg px-3 py-2`}>
+                        <span className="text-lg">{temp.emoji}</span>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Classificação</p>
+                          <p className={`text-sm font-semibold ${temp.color}`}>Lead {temp.label}</p>
+                        </div>
+                      </div>
+                    );
+                  })()}
                   {lead.modelo_recomendado && (
                     <div className="flex items-center gap-2 bg-accent/50 rounded-lg px-3 py-2">
                       <Droplets className="w-4 h-4 text-primary shrink-0" />
