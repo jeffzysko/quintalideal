@@ -302,14 +302,15 @@ function PodiumCard({ lead, index }: { lead: RankedLead; index: number }) {
   const isFirst = index === 0;
 
   const heights = ['min-h-[180px]', 'min-h-[150px]', 'min-h-[140px]'];
-  const orderMap = [1, 0, 2]; // visual order: 2nd, 1st, 3rd
+  // Static order classes — Tailwind can't detect dynamic `order-${n}`
+  const orderClasses = ['order-1', 'order-first', 'order-last'] as const;
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.4 + orderMap[index] * 0.1 }}
-      className={`order-${orderMap[index]} ${isFirst ? '-mt-2' : 'mt-2'}`}
+      transition={{ delay: 0.4 + [1, 0, 2][index] * 0.1 }}
+      className={`${orderClasses[index]} ${isFirst ? '-mt-2' : 'mt-2'}`}
     >
       <div
         className={`rounded-2xl border border-border/60 bg-card p-3 text-center flex flex-col items-center justify-center gap-1.5 ${heights[index]} ${isFirst ? 'ring-2 ring-primary/30 shadow-lg shadow-primary/10' : 'shadow-sm'}`}

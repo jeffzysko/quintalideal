@@ -101,7 +101,7 @@ export function ConversionFunnel({ leads }: ConversionFunnelProps) {
                   </div>
 
                   {/* Conversion rate between steps */}
-                  <div className="w-16 shrink-0 text-right">
+                  <div className="w-10 sm:w-16 shrink-0 text-right">
                     {i > 0 ? (
                       <div className="flex items-center justify-end gap-1">
                         <ArrowRight className="w-3 h-3 text-muted-foreground/50" />
