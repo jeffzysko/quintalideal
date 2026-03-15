@@ -38,6 +38,7 @@ interface QuizFlowProps {
   franchiseName?: string;
   franchiseId?: string;
   franchiseWhatsapp?: string;
+  isTestMode?: boolean;
 }
 
 interface PoolAlternative {
