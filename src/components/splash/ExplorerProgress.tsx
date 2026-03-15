@@ -36,7 +36,7 @@ export function ExplorerProgress({ currentStep, onBack, lang = 'pt' }: ExplorerP
   const totalSteps = steps.length;
   const progress = ((currentStep + 1) / totalSteps) * 100;
   const stepInfo = steps[currentStep] || steps[0];
-  const labels = lang === 'es' ? STEP_LABELS_ES : STEP_LABELS_PT;
+  const stepData = lang === 'es' ? STEPS_ES : STEPS_PT;
 
   const labelIndex = currentStep; // 0 = photo, 1-7 = quiz steps
 
