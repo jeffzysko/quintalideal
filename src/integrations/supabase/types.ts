@@ -124,6 +124,8 @@ export type Database = {
           created_at: string
           email: string | null
           id: string
+          last_accessed_at: string | null
+          last_lead_activity_at: string | null
           meta_pixel_id: string | null
           nome_franquia: string
           responsavel: string | null
@@ -139,6 +141,8 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          last_accessed_at?: string | null
+          last_lead_activity_at?: string | null
           meta_pixel_id?: string | null
           nome_franquia: string
           responsavel?: string | null
@@ -154,6 +158,8 @@ export type Database = {
           created_at?: string
           email?: string | null
           id?: string
+          last_accessed_at?: string | null
+          last_lead_activity_at?: string | null
           meta_pixel_id?: string | null
           nome_franquia?: string
           responsavel?: string | null

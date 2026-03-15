@@ -23,6 +23,10 @@ import { AdminCityManager } from '@/components/admin/AdminCityManager';
 import { AdminKPICards } from '@/components/admin/AdminKPICards';
 import { AdminLeadFilters } from '@/components/admin/AdminLeadFilters';
 import { AdminLeadsTable } from '@/components/admin/AdminLeadsTable';
+import { AdminInactiveAlerts } from '@/components/admin/AdminInactiveAlerts';
+import { AdminPerformanceComparison } from '@/components/admin/AdminPerformanceComparison';
+import { AdminPDFExport } from '@/components/admin/AdminPDFExport';
+import { LeafletHeatmap } from '@/components/admin/LeafletHeatmap';
 import { KPISkeleton } from '@/components/ui/kpi-skeleton';
 import { TableSkeleton } from '@/components/ui/table-skeleton';
 import { STATUS_LABELS, LeadRow } from '@/lib/lead-constants';
@@ -62,11 +66,35 @@ export default function AdminDashboard() {
   // Reset page when filters change
   useEffect(() => { setPage(1); }, [filterFranquia, filterStatus, filterModelo]);
 
-  // ── Franchises ──
+  // ── Franchises (full for alerts) ──
   const { data: franchises = [] } = useQuery({
-    queryKey: ['franchises'],
+    queryKey: ['franchises-full'],
     queryFn: async () => {
-      const { data, error } = await supabase.from('franchises').select('id, nome_franquia');
+      const { data, error } = await supabase.from('franchises').select('id, nome_franquia, ativa, last_accessed_at, last_lead_activity_at');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // ── Covered cities ──
+  const { data: coveredCities = [] } = useQuery({
+    queryKey: ['covered-cities'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('franchise_covered_cities').select('city_name, franchise_id');
+      if (error) throw error;
+      return data || [];
+    },
+  });
+
+  // ── Lead activities for performance comparison ──
+  const { data: leadActivities = [] } = useQuery({
+    queryKey: ['lead-activities-all'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('lead_activities')
+        .select('lead_id, activity_type, created_at')
+        .eq('activity_type', 'status_change')
+        .order('created_at', { ascending: true });
       if (error) throw error;
       return data || [];
     },
@@ -78,7 +106,7 @@ export default function AdminDashboard() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used')
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, updated_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used')
         .order('created_at', { ascending: false });
       if (error) throw error;
       return (data || []) as LeadRow[];
@@ -206,6 +234,7 @@ export default function AdminDashboard() {
             <span className="hidden sm:inline">{item.label}</span>
           </button>
         ))}
+        <AdminPDFExport leads={allLeads} franchiseMap={franchiseMap} />
         <div className="h-5 w-px bg-border/40 mx-1" />
         <NotificationBell />
         <UserAvatarMenu />
@@ -277,6 +306,30 @@ export default function AdminDashboard() {
 
         {activeTab === 'overview' && (
           <>
+            {/* Interactive Map + Inactive Alerts */}
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 mb-4 sm:mb-6">
+              <div className="lg:col-span-2">
+                <LeafletHeatmap
+                  leads={allLeads}
+                  coveredCities={coveredCities}
+                  franchiseMap={franchiseMap}
+                />
+              </div>
+              <AdminInactiveAlerts
+                franchises={franchises as any}
+                leads={allLeads as any}
+              />
+            </div>
+
+            {/* Performance Comparison */}
+            <div className="mb-4 sm:mb-6">
+              <AdminPerformanceComparison
+                leads={allLeads as any}
+                activities={leadActivities}
+                franchiseMap={franchiseMap}
+              />
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
               <AdminCityRanking leads={allLeads} />
               <AdminFranchiseRanking leads={allLeads} franchiseMap={franchiseMap} />
