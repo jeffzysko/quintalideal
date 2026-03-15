@@ -160,16 +160,37 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
 
   const fetchAlternatives = async (recommended: string, fullAnswers: QuizAnswers) => {
     try {
+      // Map budget answer to max price filter
+      const budgetMax: Record<string, number> = {
+        'ate-18': 18000,
+        '18-30': 30000,
+        '30-50': 50000,
+        '50-80': 80000,
+        'mais-80': 999999,
+      };
+      const maxBudget = budgetMax[fullAnswers.orcamento] || 999999;
+
+      // Map space answer to compatible size categories
+      const spaceSizes: Record<string, ('pequena' | 'media' | 'grande')[]> = {
+        'ate-3': ['pequena'],
+        '3-5': ['pequena', 'media'],
+        '5-7': ['media', 'grande'],
+        'mais-7': ['media', 'grande'],
+      };
+      const allowedSizes = spaceSizes[fullAnswers.espaco] || (['pequena', 'media', 'grande'] as const);
+
       const { data } = await supabase
         .from('pool_models')
-        .select('nome_modelo, descricao, tamanho, preco_min, preco_max, possui_prainha, possui_spa, profundidade')
+        .select('nome_modelo, descricao, tamanho, preco_min, preco_max, possui_prainha, possui_spa, profundidade, categoria_tamanho')
         .neq('nome_modelo', recommended)
         .neq('nome_modelo', 'Nassau')
+        .in('categoria_tamanho', allowedSizes)
+        .lte('preco_min', maxBudget)
         .limit(10);
+
       if (data) {
-        // Pick 2 alternatives based on preference
         const pref = fullAnswers.preferencia;
-        let alts = data as PoolAlternative[];
+        let alts = data as (PoolAlternative & { categoria_tamanho?: string })[];
         // Prioritize alternatives that match preference
         const prefMatch = alts.filter(a => {
           if (pref === 'prainha') return a.possui_prainha;
