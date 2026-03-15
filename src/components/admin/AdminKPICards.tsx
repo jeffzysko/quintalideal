@@ -23,10 +23,17 @@ const COLOR_BG_MAP: Record<string, string> = {
   'text-amber-600': 'icon-bg-amber',
 };
 
+// Static grid classes — Tailwind can't detect dynamic `grid-cols-${n}`
+const GRID_MAP: Record<number, string> = {
+  2: 'grid-cols-2',
+  3: 'grid-cols-2 md:grid-cols-3',
+  4: 'grid-cols-2 md:grid-cols-4',
+  5: 'grid-cols-2 md:grid-cols-3 lg:grid-cols-5',
+  6: 'grid-cols-2 md:grid-cols-3 lg:grid-cols-6',
+};
+
 export function AdminKPICards({ kpis, columns }: AdminKPICardsProps) {
-  const gridCols = columns
-    ? `grid-cols-2 md:grid-cols-${Math.min(columns, 4)} lg:grid-cols-${columns}`
-    : 'grid-cols-2 md:grid-cols-3 lg:grid-cols-6';
+  const gridCols = columns ? (GRID_MAP[columns] || GRID_MAP[6]) : GRID_MAP[6];
 
   return (
     <div className={`grid ${gridCols} gap-4 mb-8`}>
