@@ -225,7 +225,7 @@ export default function AdminDashboard() {
             <span className="hidden sm:inline">{item.label}</span>
           </button>
         ))}
-        <AdminPDFExport leads={allLeads} franchiseMap={franchiseMap} />
+        
         <div className="h-5 w-px bg-border/40 mx-1" />
         <NotificationBell />
         <UserAvatarMenu />
