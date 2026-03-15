@@ -55,7 +55,7 @@ function ConfettiParticle({ delay, color }: { delay: number; color: string }) {
   );
 }
 
-export function ResultScreen({ score, poolName, poolDescription, alternatives = [], cidade, onContinue, lang = 'pt' }: ResultScreenProps) {
+export function ResultScreen({ score, poolName, poolDescription, recommendedSize, alternatives = [], cidade, onContinue, lang = 'pt' }: ResultScreenProps) {
   const [displayScore, setDisplayScore] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
   const classification = getYardClassification(score);
