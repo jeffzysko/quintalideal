@@ -23,6 +23,7 @@ interface ResultScreenProps {
   score: number;
   poolName: string;
   poolDescription?: string;
+  recommendedSize?: string;
   alternatives?: PoolAlternativeView[];
   cidade?: string;
   onContinue: () => void;
@@ -54,7 +55,7 @@ function ConfettiParticle({ delay, color }: { delay: number; color: string }) {
   );
 }
 
-export function ResultScreen({ score, poolName, poolDescription, alternatives = [], cidade, onContinue, lang = 'pt' }: ResultScreenProps) {
+export function ResultScreen({ score, poolName, poolDescription, recommendedSize, alternatives = [], cidade, onContinue, lang = 'pt' }: ResultScreenProps) {
   const [displayScore, setDisplayScore] = useState(0);
   const [showConfetti, setShowConfetti] = useState(false);
   const classification = getYardClassification(score);
@@ -224,6 +225,9 @@ export function ResultScreen({ score, poolName, poolDescription, alternatives = 
               )}
               <div className="p-4">
                 <h3 className="text-lg font-bold text-white mb-1">{poolName}</h3>
+                {recommendedSize && (
+                  <p className="text-xs font-semibold text-blue-300 mb-1">📐 {lang === 'es' ? 'Tamaño ideal' : 'Tamanho ideal'}: {recommendedSize}</p>
+                )}
                 {poolDescription && <p className="text-xs text-white/50 leading-relaxed">{poolDescription}</p>}
               </div>
             </div>
