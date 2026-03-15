@@ -221,6 +221,16 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
 
     setSaving(true);
     setLeadName(data.nome);
+
+    // Test mode: skip lead creation, emails, and notifications
+    if (isTestMode) {
+      toast.success('Modo teste: lead simulado com sucesso (nada foi salvo)');
+      setStep('actions');
+      setSaving(false);
+      isSubmittingRef.current = false;
+      return;
+    }
+
     try {
       const { data: createLeadData, error } = await supabase.functions.invoke<{
         success: boolean;
