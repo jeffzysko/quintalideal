@@ -26,7 +26,7 @@ import { AdminLeadsTable } from '@/components/admin/AdminLeadsTable';
 import { AdminInactiveAlerts } from '@/components/admin/AdminInactiveAlerts';
 import { AdminPerformanceComparison } from '@/components/admin/AdminPerformanceComparison';
 import { AdminPDFExport } from '@/components/admin/AdminPDFExport';
-import { LeafletHeatmap } from '@/components/admin/LeafletHeatmap';
+
 import { KPISkeleton } from '@/components/ui/kpi-skeleton';
 import { TableSkeleton } from '@/components/ui/table-skeleton';
 import { STATUS_LABELS, LeadRow } from '@/lib/lead-constants';
