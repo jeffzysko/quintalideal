@@ -225,6 +225,9 @@ export function ResultScreen({ score, poolName, poolDescription, recommendedSize
               )}
               <div className="p-4">
                 <h3 className="text-lg font-bold text-white mb-1">{poolName}</h3>
+                {recommendedSize && (
+                  <p className="text-xs font-semibold text-blue-300 mb-1">📐 {lang === 'es' ? 'Tamaño ideal' : 'Tamanho ideal'}: {recommendedSize}</p>
+                )}
                 {poolDescription && <p className="text-xs text-white/50 leading-relaxed">{poolDescription}</p>}
               </div>
             </div>
