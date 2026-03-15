@@ -10,15 +10,33 @@ interface ExplorerProgressProps {
   lang?: Lang;
 }
 
-const STEP_LABELS_PT = ['📸 Foto', 'Espaço', 'Casa', 'Uso', 'Plano', 'Preferência', 'Orçamento', 'Cidade'];
-const STEP_LABELS_ES = ['📸 Foto', 'Espacio', 'Casa', 'Uso', 'Plan', 'Preferencia', 'Presupuesto', 'Ciudad'];
+const STEPS_PT = [
+  { emoji: '📸', label: 'Foto' },
+  { emoji: '📏', label: 'Espaço' },
+  { emoji: '🏠', label: 'Casa' },
+  { emoji: '🌞', label: 'Uso' },
+  { emoji: '📅', label: 'Plano' },
+  { emoji: '💧', label: 'Preferência' },
+  { emoji: '💰', label: 'Orçamento' },
+  { emoji: '📍', label: 'Cidade' },
+];
+const STEPS_ES = [
+  { emoji: '📸', label: 'Foto' },
+  { emoji: '📏', label: 'Espacio' },
+  { emoji: '🏠', label: 'Casa' },
+  { emoji: '🌞', label: 'Uso' },
+  { emoji: '📅', label: 'Plan' },
+  { emoji: '💧', label: 'Preferencia' },
+  { emoji: '💰', label: 'Presupuesto' },
+  { emoji: '📍', label: 'Ciudad' },
+];
 
 export function ExplorerProgress({ currentStep, onBack, lang = 'pt' }: ExplorerProgressProps) {
   const steps = getExplorerSteps(lang);
   const totalSteps = steps.length;
   const progress = ((currentStep + 1) / totalSteps) * 100;
   const stepInfo = steps[currentStep] || steps[0];
-  const labels = lang === 'es' ? STEP_LABELS_ES : STEP_LABELS_PT;
+  const stepData = lang === 'es' ? STEPS_ES : STEPS_PT;
 
   const labelIndex = currentStep; // 0 = photo, 1-7 = quiz steps
 
@@ -38,25 +56,31 @@ export function ExplorerProgress({ currentStep, onBack, lang = 'pt' }: ExplorerP
       </div>
 
       {/* Named step indicators */}
-      {labelIndex >= 0 && labelIndex < labels.length && (
-        <div className="flex items-center gap-0.5 mb-2 overflow-x-auto scrollbar-hide">
-          {labels.map((label, i) => {
+      {labelIndex >= 0 && labelIndex < stepData.length && (
+        <div className="flex items-center justify-center gap-0.5 mb-2 flex-wrap">
+          {stepData.map((step, i) => {
             const isActive = i === labelIndex;
             const isDone = i < labelIndex;
             return (
-              <div key={i} className="flex items-center min-w-0">
-                <div className={`flex items-center gap-1 px-1.5 sm:px-2 py-1 rounded-full text-[9px] sm:text-[10px] font-semibold transition-all whitespace-nowrap ${
-                  isActive
-                    ? 'bg-primary text-primary-foreground shadow-sm'
-                    : isDone
-                      ? 'bg-primary/15 text-primary'
-                      : 'text-muted-foreground/50'
-                }`}>
-                  {isDone && <span className="text-[8px]">✓</span>}
-                  {label}
+              <div key={i} className="flex items-center">
+                <div
+                  className={`flex items-center justify-center transition-all ${
+                    isActive
+                      ? 'px-2.5 py-1 rounded-full bg-primary text-primary-foreground shadow-sm text-[10px] font-semibold gap-1'
+                      : isDone
+                        ? 'w-7 h-7 rounded-full bg-primary/15 text-sm'
+                        : 'w-7 h-7 rounded-full text-sm opacity-40'
+                  }`}
+                  title={step.label}
+                >
+                  {isActive ? (
+                    <>{step.emoji} {step.label}</>
+                  ) : (
+                    <span className={isDone ? '' : 'grayscale'}>{step.emoji}</span>
+                  )}
                 </div>
-                {i < labels.length - 1 && (
-                  <div className={`w-1.5 sm:w-2 h-px mx-0.5 ${isDone ? 'bg-primary/30' : 'bg-border'}`} />
+                {i < stepData.length - 1 && (
+                  <div className={`w-1.5 h-px mx-0.5 ${isDone ? 'bg-primary/30' : 'bg-border'}`} />
                 )}
               </div>
             );
