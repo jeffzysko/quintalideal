@@ -140,7 +140,7 @@ export function AdminPDFExport({ leads, franchiseId, franchiseName }: AdminPDFEx
         doc.text('TOP CIDADES', 14, y);
         y += 2;
 
-        (doc as any).autoTable({
+        autoTable(doc, {
           startY: y,
           head: [['#', 'Cidade', 'Leads', '% do Total']],
           body: topCities.map(([city, count], i) => [
@@ -156,7 +156,7 @@ export function AdminPDFExport({ leads, franchiseId, franchiseName }: AdminPDFEx
           tableWidth: 'auto',
         });
 
-        y = (doc as any).lastAutoTable.finalY + 8;
+        y = ((doc as any).lastAutoTable?.finalY ?? y) + 8;
       }
 
       // Top models table
