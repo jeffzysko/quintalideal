@@ -10,8 +10,26 @@ interface ExplorerProgressProps {
   lang?: Lang;
 }
 
-const STEP_LABELS_PT = ['📸 Foto', 'Espaço', 'Casa', 'Uso', 'Plano', 'Preferência', 'Orçamento', 'Cidade'];
-const STEP_LABELS_ES = ['📸 Foto', 'Espacio', 'Casa', 'Uso', 'Plan', 'Preferencia', 'Presupuesto', 'Ciudad'];
+const STEPS_PT = [
+  { emoji: '📸', label: 'Foto' },
+  { emoji: '📏', label: 'Espaço' },
+  { emoji: '🏠', label: 'Casa' },
+  { emoji: '🌞', label: 'Uso' },
+  { emoji: '📅', label: 'Plano' },
+  { emoji: '💧', label: 'Preferência' },
+  { emoji: '💰', label: 'Orçamento' },
+  { emoji: '📍', label: 'Cidade' },
+];
+const STEPS_ES = [
+  { emoji: '📸', label: 'Foto' },
+  { emoji: '📏', label: 'Espacio' },
+  { emoji: '🏠', label: 'Casa' },
+  { emoji: '🌞', label: 'Uso' },
+  { emoji: '📅', label: 'Plan' },
+  { emoji: '💧', label: 'Preferencia' },
+  { emoji: '💰', label: 'Presupuesto' },
+  { emoji: '📍', label: 'Ciudad' },
+];
 
 export function ExplorerProgress({ currentStep, onBack, lang = 'pt' }: ExplorerProgressProps) {
   const steps = getExplorerSteps(lang);
