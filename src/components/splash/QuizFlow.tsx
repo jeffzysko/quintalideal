@@ -171,13 +171,13 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       const maxBudget = budgetMax[fullAnswers.orcamento] || 999999;
 
       // Map space answer to compatible size categories
-      const spaceSizes: Record<string, string[]> = {
+      const spaceSizes: Record<string, ('pequena' | 'media' | 'grande')[]> = {
         'ate-3': ['pequena'],
         '3-5': ['pequena', 'media'],
         '5-7': ['media', 'grande'],
         'mais-7': ['media', 'grande'],
       };
-      const allowedSizes = spaceSizes[fullAnswers.espaco] || ['pequena', 'media', 'grande'];
+      const allowedSizes = spaceSizes[fullAnswers.espaco] || (['pequena', 'media', 'grande'] as const);
 
       const { data } = await supabase
         .from('pool_models')
