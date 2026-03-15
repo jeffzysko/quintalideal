@@ -10,8 +10,8 @@ interface ExplorerProgressProps {
   lang?: Lang;
 }
 
-const STEP_LABELS_PT = ['Espaço', 'Casa', 'Uso', 'Plano', 'Preferência', 'Orçamento', 'Cidade'];
-const STEP_LABELS_ES = ['Espacio', 'Casa', 'Uso', 'Plan', 'Preferencia', 'Presupuesto', 'Ciudad'];
+const STEP_LABELS_PT = ['📸 Foto', 'Espaço', 'Casa', 'Uso', 'Plano', 'Preferência', 'Orçamento', 'Cidade'];
+const STEP_LABELS_ES = ['📸 Foto', 'Espacio', 'Casa', 'Uso', 'Plan', 'Preferencia', 'Presupuesto', 'Ciudad'];
 
 export function ExplorerProgress({ currentStep, onBack, lang = 'pt' }: ExplorerProgressProps) {
   const steps = getExplorerSteps(lang);
