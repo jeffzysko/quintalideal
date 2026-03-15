@@ -76,7 +76,7 @@ const answerLabels: Record<string, string> = {
   'pesquisando': 'Só estou pesquisando',
   'prainha': 'Prainha',
   'spa': 'Spa ou Hidromassagem',
-  'simples': 'Piscina clássica e elegante',
+  'simples': 'Piscina clássica',
   'nao-sei': 'Ainda não sei',
   'ate-18': 'Até R$ 18 mil',
   '18-30': 'R$ 18 a 30 mil',

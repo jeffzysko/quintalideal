@@ -75,7 +75,7 @@ const translations = {
   quiz_q5: { pt: 'O que você gostaria na piscina?', es: '¿Qué te gustaría en la piscina?' },
   quiz_q5_o1: { pt: 'Prainha', es: 'Playa' },
   quiz_q5_o2: { pt: 'Spa ou Hidromassagem', es: 'Spa o Hidromasaje' },
-  quiz_q5_o3: { pt: 'Piscina clássica e elegante', es: 'Piscina clásica y elegante' },
+  quiz_q5_o3: { pt: 'Piscina clássica', es: 'Piscina clásica' },
   quiz_q5_o4: { pt: 'Ainda não sei', es: 'Todavía no sé' },
 
   quiz_q6: { pt: 'Qual o orçamento estimado para sua piscina?', es: '¿Cuál es el presupuesto estimado para tu piscina?' },
