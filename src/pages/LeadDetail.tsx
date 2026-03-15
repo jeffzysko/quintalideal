@@ -38,6 +38,7 @@ interface Lead {
   territory_match_status: string | null;
   coverage_match_count: number | null;
   distribution_rule_used: string | null;
+  franquia_id: string | null;
 }
 
 const statusConfig: Record<string, { label: string; color: string }> = {
