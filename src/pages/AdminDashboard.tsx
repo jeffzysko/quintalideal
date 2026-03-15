@@ -317,7 +317,7 @@ export default function AdminDashboard() {
               </div>
               <AdminInactiveAlerts
                 franchises={franchises as any}
-                leads={allLeads}
+                leads={allLeads as any}
               />
             </div>
 
