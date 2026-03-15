@@ -26,7 +26,8 @@ interface LeadFollowupsProps {
 }
 
 export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsProps) {
-  const { userId } = useAuth();
+  const { user } = useAuth();
+  const userId = user?.id;
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [note, setNote] = useState('');
