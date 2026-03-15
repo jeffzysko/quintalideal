@@ -24,7 +24,7 @@ export function ExplorerProgress({ currentStep, onBack, lang = 'pt' }: ExplorerP
 
   return (
     <div className="mb-3 sm:mb-5">
-      <div className="flex items-center justify-between mb-2">
+      <div className="flex items-center justify-between mb-3">
         <button
           onClick={onBack}
           className="flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors"
