@@ -212,7 +212,7 @@ export default function LeadDetail() {
         {/* Hero Card */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
           <Card className="glass-card overflow-hidden">
-            <div className="gradient-blue px-3 sm:px-5 py-3 sm:py-4">
+            <div className="gradient-blue px-3 sm:px-5 py-3 sm:py-4 relative">
               <div className="flex items-start sm:items-center gap-3 sm:gap-4">
                 <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 backdrop-blur flex items-center justify-center shrink-0">
                   <User className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />

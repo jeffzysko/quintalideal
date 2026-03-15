@@ -74,11 +74,11 @@ export function ConversionFunnel({ leads }: ConversionFunnelProps) {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.08 }}
               >
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3">
                   {/* Label + count */}
-                  <div className="w-28 shrink-0">
-                    <p className="text-xs font-semibold text-foreground">{step.label}</p>
-                    <p className="text-lg font-extrabold tracking-tight" style={{ color: step.color }}>
+                  <div className="w-20 sm:w-28 shrink-0">
+                    <p className="text-[11px] sm:text-xs font-semibold text-foreground">{step.label}</p>
+                    <p className="text-base sm:text-lg font-extrabold tracking-tight" style={{ color: step.color }}>
                       {step.count}
                     </p>
                   </div>
@@ -101,7 +101,7 @@ export function ConversionFunnel({ leads }: ConversionFunnelProps) {
                   </div>
 
                   {/* Conversion rate between steps */}
-                  <div className="w-16 shrink-0 text-right">
+                  <div className="w-10 sm:w-16 shrink-0 text-right">
                     {i > 0 ? (
                       <div className="flex items-center justify-end gap-1">
                         <ArrowRight className="w-3 h-3 text-muted-foreground/50" />

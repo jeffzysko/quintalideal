@@ -29,8 +29,8 @@ export function AdminLeadFilters({
   return (
     <Card className="mb-4 sm:mb-6 border-border/50 shadow-sm">
       <CardContent className="p-2.5 sm:p-3 md:p-4">
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-5 gap-2 sm:gap-3">
-          <Input placeholder="Buscar nome..." value={searchInput} onChange={e => onSearchChange(e.target.value)} className="rounded-xl text-xs sm:text-sm h-8 sm:h-9 col-span-2 sm:col-span-1" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2 sm:gap-3">
+          <Input placeholder="Buscar nome..." value={searchInput} onChange={e => onSearchChange(e.target.value)} className="rounded-xl text-xs sm:text-sm h-8 sm:h-9 sm:col-span-2 md:col-span-1" />
           <Select value={filterFranquia} onValueChange={onFranquiaChange}>
             <SelectTrigger className="rounded-xl h-8 sm:h-9 text-xs sm:text-sm"><SelectValue placeholder="Franquia" /></SelectTrigger>
             <SelectContent>
