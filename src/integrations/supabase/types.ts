@@ -116,6 +116,36 @@ export type Database = {
           },
         ]
       }
+      franchise_goals: {
+        Row: {
+          created_at: string
+          franchise_id: string
+          id: string
+          month: number
+          sales_goal: number
+          updated_at: string
+          year: number
+        }
+        Insert: {
+          created_at?: string
+          franchise_id: string
+          id?: string
+          month: number
+          sales_goal?: number
+          updated_at?: string
+          year: number
+        }
+        Update: {
+          created_at?: string
+          franchise_id?: string
+          id?: string
+          month?: number
+          sales_goal?: number
+          updated_at?: string
+          year?: number
+        }
+        Relationships: []
+      }
       franchises: {
         Row: {
           ativa: boolean
@@ -208,6 +238,54 @@ export type Database = {
           },
           {
             foreignKeyName: "lead_activities_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_map"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_followups: {
+        Row: {
+          completed: boolean
+          created_at: string
+          franchise_id: string
+          id: string
+          lead_id: string
+          note: string | null
+          scheduled_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string
+          franchise_id: string
+          id?: string
+          lead_id: string
+          note?: string | null
+          scheduled_at: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string
+          franchise_id?: string
+          id?: string
+          lead_id?: string
+          note?: string | null
+          scheduled_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_followups_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_followups_lead_id_fkey"
             columns: ["lead_id"]
             isOneToOne: false
             referencedRelation: "leads_map"

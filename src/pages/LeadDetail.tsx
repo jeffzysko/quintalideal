@@ -8,6 +8,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ArrowLeft, MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Camera, ClipboardList, Settings2, Save, User } from 'lucide-react';
 import { LeadTimeline } from '@/components/lead/LeadTimeline';
+import { LeadFollowups } from '@/components/franchise/LeadFollowups';
+import { useAuth } from '@/hooks/useAuth';
+import { classifyLead } from '@/lib/leadScoring';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -106,6 +109,7 @@ function ScoreRing({ score }: { score: number }) {
 }
 
 export default function LeadDetail() {
+  const { franchiseId } = useAuth();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
@@ -244,6 +248,19 @@ export default function LeadDetail() {
                     <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Índice do Quintal</p>
                     <p className="text-sm text-foreground mt-0.5">Potencial de instalação de piscina</p>
                   </div>
+                  {/* Lead Temperature */}
+                  {(() => {
+                    const temp = classifyLead(lead.respostas_questionario, lead.pontuacao_quintal);
+                    return (
+                      <div className={`flex items-center gap-2 ${temp.bgColor} border rounded-lg px-3 py-2`}>
+                        <span className="text-lg">{temp.emoji}</span>
+                        <div>
+                          <p className="text-xs text-muted-foreground">Classificação</p>
+                          <p className={`text-sm font-semibold ${temp.color}`}>Lead {temp.label}</p>
+                        </div>
+                      </div>
+                    );
+                  })()}
                   {lead.modelo_recomendado && (
                     <div className="flex items-center gap-2 bg-accent/50 rounded-lg px-3 py-2">
                       <Droplets className="w-4 h-4 text-primary shrink-0" />
@@ -387,8 +404,15 @@ export default function LeadDetail() {
           </motion.div>
         )}
 
-        {/* Follow-up Timeline */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+        {/* Follow-up Scheduling */}
+        {franchiseId && (
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+            <LeadFollowups franchiseId={franchiseId} leadId={lead.id} leadName={lead.nome || undefined} />
+          </motion.div>
+        )}
+
+        {/* Activity Timeline */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}>
           <LeadTimeline leadId={lead.id} />
         </motion.div>
 

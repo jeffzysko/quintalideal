@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
@@ -7,6 +7,9 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Users, TrendingUp, Clock, Eye, Inbox, Share2, Droplets, BarChart3, Link2, Copy, Check } from 'lucide-react';
 import { ConversionFunnel } from '@/components/franchise/ConversionFunnel';
+import { SLAIndicator } from '@/components/franchise/SLAIndicator';
+import { MonthlyGoals } from '@/components/franchise/MonthlyGoals';
+import { LeadFollowups } from '@/components/franchise/LeadFollowups';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -15,7 +18,6 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileLeadCard } from '@/components/admin/MobileLeadCard';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
-
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { NotificationBell } from '@/components/NotificationBell';
 import { FranchiseReports } from '@/components/franchise/FranchiseReports';
@@ -23,6 +25,7 @@ import { STATUS_LABELS, STATUS_COLORS, LeadRow } from '@/lib/lead-constants';
 import { KPISkeleton } from '@/components/ui/kpi-skeleton';
 import { TableSkeleton } from '@/components/ui/table-skeleton';
 import { PanelHeader } from '@/components/PanelHeader';
+import { classifyLead } from '@/lib/leadScoring';
 
 const PAGE_SIZE = 20;
 
@@ -89,11 +92,25 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
     queryFn: async () => {
       const { data, error } = await supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used')
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, respostas_questionario')
         .eq('franquia_id', franchiseId!)
         .order('created_at', { ascending: false });
       if (error) throw error;
-      return (data || []) as LeadRow[];
+      return (data || []) as (LeadRow & { respostas_questionario?: Record<string, string> | null })[];
+    },
+    enabled: !!franchiseId,
+  });
+
+  // ── Lead activities for SLA ──
+  const { data: leadActivities = [] } = useQuery({
+    queryKey: ['franchise-lead-activities', franchiseId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('lead_activities')
+        .select('lead_id, activity_type, created_at, content')
+        .eq('activity_type', 'status_change')
+        .order('created_at', { ascending: true });
+      return (data || []) as { lead_id: string; activity_type: string; created_at: string; content: string | null }[];
     },
     enabled: !!franchiseId,
   });
@@ -106,17 +123,26 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       const to = from + PAGE_SIZE - 1;
       const { data, count, error } = await supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used', { count: 'exact' })
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, respostas_questionario', { count: 'exact' })
         .eq('franquia_id', franchiseId!)
         .order('created_at', { ascending: false })
         .range(from, to);
       if (error) throw error;
-      return { leads: (data || []) as LeadRow[], total: count || 0 };
+      return { leads: (data || []) as (LeadRow & { respostas_questionario?: Record<string, string> | null })[], total: count || 0 };
     },
     enabled: !!franchiseId,
   });
 
-  const leads = paginatedData?.leads || [];
+  // Sort leads by temperature priority
+  const sortedLeads = useMemo(() => {
+    const leads = paginatedData?.leads || [];
+    return [...leads].sort((a, b) => {
+      const scoreA = classifyLead(a.respostas_questionario || null, a.pontuacao_quintal);
+      const scoreB = classifyLead(b.respostas_questionario || null, b.pontuacao_quintal);
+      return scoreA.sortOrder - scoreB.sortOrder;
+    });
+  }, [paginatedData?.leads]);
+
   const totalCount = paginatedData?.total || 0;
   const franchiseSlug = franchiseInfo?.slug_url || null;
   const franchiseName = franchiseInfo?.nome_franquia || '';
@@ -125,6 +151,13 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   const newLeads = allLeads.filter(l => l.status_lead === 'novo').length;
   const inNegotiation = allLeads.filter(l => l.status_lead === 'em_negociacao').length;
   const sold = allLeads.filter(l => l.status_lead === 'vendido').length;
+
+  const now = new Date();
+  const soldThisMonth = allLeads.filter(l => {
+    if (l.status_lead !== 'vendido') return false;
+    const d = new Date(l.created_at);
+    return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+  }).length;
 
   const kpis = [
     { icon: Users, label: 'Total de Leads', value: totalLeads, color: 'text-primary' },
@@ -142,14 +175,13 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
 
   const content = (
     <>
-      {/* Franchise Link Banner */}
       {franchiseSlug && <FranchiseLinkBanner slug={franchiseSlug} />}
 
       {/* KPI Cards */}
       {loadingKpis ? (
         <div className="mb-8"><KPISkeleton count={4} /></div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
           {kpis.map((kpi, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06, type: 'spring', stiffness: 300, damping: 24 }}>
               <Card className="card-premium group overflow-hidden">
@@ -163,6 +195,15 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
               </Card>
             </motion.div>
           ))}
+        </div>
+      )}
+
+      {/* SLA + Goals row */}
+      {!loadingKpis && franchiseId && (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <SLAIndicator leads={allLeads} activities={leadActivities} />
+          <MonthlyGoals franchiseId={franchiseId} soldThisMonth={soldThisMonth} />
+          <LeadFollowups franchiseId={franchiseId} />
         </div>
       )}
 
@@ -225,9 +266,19 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
               <>
                 {isMobile ? (
                   <div className="space-y-3">
-                    {leads.map((lead, i) => (
-                      <MobileLeadCard key={lead.id} lead={lead} index={i} basePath={leadDetailPath} />
-                    ))}
+                    {sortedLeads.map((lead, i) => {
+                      const temp = classifyLead(lead.respostas_questionario || null, lead.pontuacao_quintal);
+                      return (
+                        <div key={lead.id} className="relative">
+                          <div className="absolute top-2 right-2 z-10">
+                            <Badge className={`${temp.bgColor} border text-[10px] font-medium`} variant="secondary">
+                              {temp.emoji} {temp.label}
+                            </Badge>
+                          </div>
+                          <MobileLeadCard lead={lead} index={i} basePath={leadDetailPath} />
+                        </div>
+                      );
+                    })}
                   </div>
                 ) : (
                 <div className="overflow-x-auto">
@@ -235,6 +286,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                     <thead>
                       <tr className="border-b border-border/50" role="row">
                         <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Nome</th>
+                        <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Temp.</th>
                         <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Cidade</th>
                         <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Score</th>
                         <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Modelo</th>
@@ -244,29 +296,37 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                       </tr>
                     </thead>
                     <tbody>
-                      {leads.map(lead => (
-                        <tr key={lead.id} className="border-b border-border/20 hover:bg-muted/40 transition-all cursor-pointer group" role="row" onClick={() => navigate(`${leadDetailPath}/${lead.id}`)}>
-                          <td role="cell" className="py-3.5 px-3 font-medium">{lead.nome || '—'}</td>
-                          <td role="cell" className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.cidade || '—'}</td>
-                          <td role="cell" className="py-3.5 px-3">
-                            <span className="font-bold text-primary">{lead.pontuacao_quintal || 0}%</span>
-                          </td>
-                          <td role="cell" className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.modelo_recomendado || '—'}</td>
-                          <td role="cell" className="py-3.5 px-3">
-                            <Badge className={`${STATUS_COLORS[lead.status_lead] || ''} border text-xs font-medium`} variant="secondary">
-                              {STATUS_LABELS[lead.status_lead] || lead.status_lead}
-                            </Badge>
-                          </td>
-                          <td role="cell" className="py-3.5 px-3 hidden md:table-cell text-muted-foreground text-xs">
-                            {new Date(lead.created_at).toLocaleDateString('pt-BR')}
-                          </td>
-                          <td role="cell" className="py-3.5 px-3">
-                            <Button size="sm" variant="ghost" onClick={() => navigate(`${leadDetailPath}/${lead.id}`)} className="rounded-lg" aria-label="Ver detalhes do lead">
-                              <Eye className="w-4 h-4" />
-                            </Button>
-                          </td>
-                        </tr>
-                      ))}
+                      {sortedLeads.map(lead => {
+                        const temp = classifyLead(lead.respostas_questionario || null, lead.pontuacao_quintal);
+                        return (
+                          <tr key={lead.id} className="border-b border-border/20 hover:bg-muted/40 transition-all cursor-pointer group" role="row" onClick={() => navigate(`${leadDetailPath}/${lead.id}`)}>
+                            <td role="cell" className="py-3.5 px-3 font-medium">{lead.nome || '—'}</td>
+                            <td role="cell" className="py-3.5 px-3">
+                              <Badge className={`${temp.bgColor} border text-[10px] font-medium`} variant="secondary">
+                                {temp.emoji} {temp.label}
+                              </Badge>
+                            </td>
+                            <td role="cell" className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.cidade || '—'}</td>
+                            <td role="cell" className="py-3.5 px-3">
+                              <span className="font-bold text-primary">{lead.pontuacao_quintal || 0}%</span>
+                            </td>
+                            <td role="cell" className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.modelo_recomendado || '—'}</td>
+                            <td role="cell" className="py-3.5 px-3">
+                              <Badge className={`${STATUS_COLORS[lead.status_lead] || ''} border text-xs font-medium`} variant="secondary">
+                                {STATUS_LABELS[lead.status_lead] || lead.status_lead}
+                              </Badge>
+                            </td>
+                            <td role="cell" className="py-3.5 px-3 hidden md:table-cell text-muted-foreground text-xs">
+                              {new Date(lead.created_at).toLocaleDateString('pt-BR')}
+                            </td>
+                            <td role="cell" className="py-3.5 px-3">
+                              <Button size="sm" variant="ghost" onClick={() => navigate(`${leadDetailPath}/${lead.id}`)} className="rounded-lg" aria-label="Ver detalhes do lead">
+                                <Eye className="w-4 h-4" />
+                              </Button>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
