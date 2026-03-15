@@ -371,11 +371,16 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
           </p>
         </motion.div>
 
+        {/* Valorization Simulator */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1 }}>
+          <ValorizationSimulator score={score} lang={lang} />
+        </motion.div>
+
         {/* Challenge CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1 }}
+          transition={{ delay: 1.2 }}
           className="mt-5 rounded-2xl p-5 text-center"
           style={{
             background: 'linear-gradient(135deg, hsl(207 90% 54% / 0.08), hsl(180 100% 50% / 0.04))',
@@ -395,11 +400,6 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
             <MessageCircle className="w-4 h-4" />
             {t('action_challenge_btn', lang)}
           </Button>
-        </motion.div>
-
-        {/* Valorization Simulator */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2 }}>
-          <ValorizationSimulator score={score} lang={lang} />
         </motion.div>
 
         {/* Share row */}
