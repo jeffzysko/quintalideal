@@ -38,11 +38,11 @@ export function ExplorerProgress({ currentStep, onBack, lang = 'pt' }: ExplorerP
       </div>
 
       {/* Named step indicators */}
-      {quizIndex >= 0 && quizIndex < labels.length && (
+      {labelIndex >= 0 && labelIndex < labels.length && (
         <div className="flex items-center gap-0.5 mb-2 overflow-x-auto scrollbar-hide">
           {labels.map((label, i) => {
-            const isActive = i === quizIndex;
-            const isDone = i < quizIndex;
+            const isActive = i === labelIndex;
+            const isDone = i < labelIndex;
             return (
               <div key={i} className="flex items-center min-w-0">
                 <div className={`flex items-center gap-1 px-1.5 sm:px-2 py-1 rounded-full text-[9px] sm:text-[10px] font-semibold transition-all whitespace-nowrap ${
