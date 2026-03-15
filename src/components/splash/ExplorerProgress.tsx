@@ -20,8 +20,7 @@ export function ExplorerProgress({ currentStep, onBack, lang = 'pt' }: ExplorerP
   const stepInfo = steps[currentStep] || steps[0];
   const labels = lang === 'es' ? STEP_LABELS_ES : STEP_LABELS_PT;
 
-  // Quiz steps are 1-7 (currentStep 1 = quiz step 0)
-  const quizIndex = currentStep - 1; // 0-indexed quiz step
+  const labelIndex = currentStep; // 0 = photo, 1-7 = quiz steps
 
   return (
     <div className="mb-3 sm:mb-5">
