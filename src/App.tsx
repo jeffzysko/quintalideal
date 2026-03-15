@@ -13,6 +13,7 @@ import { Footer } from "@/components/Footer";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import { ScrollToTop } from "@/components/ScrollToTop";
 const NotFound = lazy(() => import("./pages/NotFound"));
+const ExplorarPage = lazy(() => import("./pages/ExplorarPage"));
 
 // Prefetch likely routes when browser is idle
 function usePrefetchRoutes() {
@@ -100,7 +101,7 @@ function AppRoutes() {
                   <Routes>
                     {/* Pages WITHOUT footer (quiz/lead flow) */}
                     <Route path="/" element={<HomePage />} />
-                    <Route path="/explorar" element={<HomePage />} />
+                    <Route path="/explorar" element={<ExplorarPage />} />
 
                     {/* Pages WITH footer */}
                     <Route element={<LayoutWithFooter />}>
