@@ -463,6 +463,51 @@ export default function LeadDetail() {
                   </>
                 )}
               </Button>
+
+              {/* Delete test lead */}
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button variant="outline" className="w-full gap-2 text-destructive border-destructive/20 hover:bg-destructive/5 hover:text-destructive">
+                    <Trash2 className="w-4 h-4" /> Excluir Lead de Teste
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                    <AlertDialogDescription className="space-y-2">
+                      <span className="block">
+                        Você está prestes a excluir o lead <strong>"{lead.nome || 'sem nome'}"</strong>.
+                      </span>
+                      <span className="block font-semibold text-destructive">
+                        ⚠️ Esta ação é irreversível. Confirme que este é um lead de teste e NÃO um lead oficial de um cliente real.
+                      </span>
+                      <span className="block text-xs">
+                        Todas as atividades, follow-ups e dados associados serão removidos permanentemente.
+                      </span>
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      onClick={async () => {
+                        // Delete related data first
+                        await supabase.from('lead_activities').delete().eq('lead_id', lead.id);
+                        await supabase.from('lead_followups').delete().eq('lead_id', lead.id);
+                        const { error } = await supabase.from('leads').delete().eq('id', lead.id);
+                        if (error) {
+                          toast.error('Erro ao excluir lead.');
+                        } else {
+                          toast.success('Lead de teste excluído com sucesso.');
+                          navigate(isAdminRoute ? '/admin' : '/franquia');
+                        }
+                      }}
+                    >
+                      Confirmo: é lead de teste, excluir
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </CardContent>
           </Card>
         </motion.div>
