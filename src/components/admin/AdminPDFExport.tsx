@@ -22,7 +22,7 @@ interface AdminPDFExportProps {
 }
 
 
-export function AdminPDFExport({ leads, franchiseMap, franchiseId, franchiseName }: AdminPDFExportProps) {
+export function AdminPDFExport({ leads, franchiseId, franchiseName }: AdminPDFExportProps) {
   const [generating, setGenerating] = useState(false);
 
   const generatePDF = async () => {
