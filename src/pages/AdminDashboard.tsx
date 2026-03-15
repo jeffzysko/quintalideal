@@ -25,7 +25,7 @@ import { AdminLeadFilters } from '@/components/admin/AdminLeadFilters';
 import { AdminLeadsTable } from '@/components/admin/AdminLeadsTable';
 import { AdminInactiveAlerts } from '@/components/admin/AdminInactiveAlerts';
 import { AdminPerformanceComparison } from '@/components/admin/AdminPerformanceComparison';
-import { AdminPDFExport } from '@/components/admin/AdminPDFExport';
+
 
 import { KPISkeleton } from '@/components/ui/kpi-skeleton';
 import { TableSkeleton } from '@/components/ui/table-skeleton';
@@ -225,7 +225,7 @@ export default function AdminDashboard() {
             <span className="hidden sm:inline">{item.label}</span>
           </button>
         ))}
-        <AdminPDFExport leads={allLeads} franchiseMap={franchiseMap} />
+        
         <div className="h-5 w-px bg-border/40 mx-1" />
         <NotificationBell />
         <UserAvatarMenu />
