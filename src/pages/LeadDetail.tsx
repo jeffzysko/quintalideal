@@ -188,9 +188,10 @@ export default function LeadDetail() {
   const statusInfo = statusConfig[lead.status_lead] || statusConfig.novo;
 
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const leadsUrl = isAdminRoute ? '/admin?tab=leads' : '/franquia';
   const breadcrumbItems = [
     { label: isAdminRoute ? 'Admin' : 'Painel', href: isAdminRoute ? '/admin' : '/franquia' },
-    { label: 'Leads', href: isAdminRoute ? '/admin' : '/franquia' },
+    { label: 'Leads', href: leadsUrl },
     { label: lead.nome || 'Detalhes' },
   ];
 
