@@ -42,9 +42,7 @@ function estimateLeadValue(respostas: Record<string, string> | null): number {
 }
 
 function formatCurrency(value: number): string {
-  if (value >= 1000000) return `R$ ${(value / 1000000).toFixed(1)}M`;
-  if (value >= 1000) return `R$ ${(value / 1000).toFixed(0)}k`;
-  return `R$ ${value}`;
+  return value.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 });
 }
 
 interface KanbanBoardProps {
