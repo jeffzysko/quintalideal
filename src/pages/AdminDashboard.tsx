@@ -370,6 +370,7 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             </div>
+            </Suspense>
           </>
         )}
 
