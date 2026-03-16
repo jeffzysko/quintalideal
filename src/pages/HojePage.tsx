@@ -529,7 +529,7 @@ export default function HojePage() {
 
               {/* ═══ NEW LEADS (24h) ═══ */}
               {newLeads.length > 0 && (
-                <Section icon={Zap} title="Novos leads" count={newLeads.length} iconBg="icon-bg-green">
+                <Section icon={Zap} title="Novos leads" count={newLeads.length} iconBg="icon-bg-green" collapsible defaultOpen={newLeads.length <= 4}>
                   <div className="space-y-2">
                     {newLeads.slice(0, 6).map((lead, i) => {
                       const temp = classifyLead((lead as any).respostas_questionario || null, lead.pontuacao_quintal);
