@@ -297,9 +297,9 @@ export default function LeadDetail() {
                     <Phone className="w-4 h-4 text-muted-foreground shrink-0" />
                     <span className="text-sm font-medium text-foreground">{lead.telefone}</span>
                   </div>
-                  <Button
+                    <Button
                     size="sm"
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-8 gap-1.5 w-full sm:w-auto"
+                    className="bg-success hover:bg-success/90 text-success-foreground text-xs h-8 gap-1.5 w-full sm:w-auto"
                     onClick={() => {
                       const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem? Vi que você fez o teste do Índice do Quintal Splash!`);
                       window.open(`https://wa.me/55${lead.telefone}?text=${msg}`, '_blank');
