@@ -2,6 +2,10 @@ import { Copy, CheckCircle2, Webhook, Shield, Zap, Code2, FileJson, Lock, Send, 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { BackButton } from '@/components/BackButton';
+import { PanelHeader } from '@/components/PanelHeader';
+import { NotificationBell } from '@/components/NotificationBell';
+import { UserAvatarMenu } from '@/components/UserAvatarMenu';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 
 const PAYLOAD_EXAMPLE = `{
   "evento": "novo_lead",
