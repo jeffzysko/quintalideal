@@ -13,8 +13,11 @@ import HomePage from "./pages/HomePage";
 import { Footer } from "@/components/Footer";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import { ScrollToTop } from "@/components/ScrollToTop";
+import { PWAUpdatePrompt } from "@/components/PWAUpdatePrompt";
+import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ExplorarPage = lazy(() => import("./pages/ExplorarPage"));
+const InstallPage = lazy(() => import("./pages/InstallPage"));
 
 // Prefetch likely routes when browser is idle
 function usePrefetchRoutes() {
