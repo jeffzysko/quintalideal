@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -134,6 +134,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   // ── Paginated leads for table ──
   const { data: paginatedData, isLoading: loadingTable } = useQuery({
     queryKey: ['franchise-leads-table', franchiseId, page],
+    placeholderData: keepPreviousData,
     queryFn: async () => {
       const from = (page - 1) * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;

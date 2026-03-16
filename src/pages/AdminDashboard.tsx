@@ -1,30 +1,20 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Share2, Globe, Kanban } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import FranchiseDashboard from '@/pages/FranchiseDashboard';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
 import { useAuth } from '@/hooks/useAuth';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis } from 'recharts';
-import { AdminCityRanking } from '@/components/admin/AdminCityRanking';
-import { AdminFranchiseRanking } from '@/components/admin/AdminFranchiseRanking';
-import { AdminReferralMetrics } from '@/components/admin/AdminReferralMetrics';
-import { AdminAnalytics } from '@/components/admin/AdminAnalytics';
-import { AdminFranchiseManager } from '@/components/admin/AdminFranchiseManager';
-import { AdminEmailTemplates } from '@/components/admin/AdminEmailTemplates';
-import { AdminUserManager } from '@/components/admin/AdminUserManager';
-import { AdminCityManager } from '@/components/admin/AdminCityManager';
 import { AdminLeadFilters } from '@/components/admin/AdminLeadFilters';
 import { AdminLeadsTable } from '@/components/admin/AdminLeadsTable';
 import { AdminInactiveAlerts } from '@/components/admin/AdminInactiveAlerts';
 import { AdminPerformanceComparison } from '@/components/admin/AdminPerformanceComparison';
-import { KanbanBoard } from '@/components/franchise/KanbanBoard';
 import { TableSkeleton } from '@/components/ui/table-skeleton';
 import { STATUS_LABELS, LeadRow } from '@/lib/lead-constants';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
@@ -34,6 +24,26 @@ import { MetricGrid } from '@/components/dashboard/MetricGrid';
 import { TimeRangeSelector, filterByTimeRange, type TimeRange } from '@/components/dashboard/TimeRangeSelector';
 import { SectionHeader } from '@/components/dashboard/SectionHeader';
 import type { MetricCardProps } from '@/components/dashboard/MetricCard';
+
+// Lazy load heavy tab components
+const AdminCityRanking = lazy(() => import('@/components/admin/AdminCityRanking').then(m => ({ default: m.AdminCityRanking })));
+const AdminFranchiseRanking = lazy(() => import('@/components/admin/AdminFranchiseRanking').then(m => ({ default: m.AdminFranchiseRanking })));
+const AdminReferralMetrics = lazy(() => import('@/components/admin/AdminReferralMetrics').then(m => ({ default: m.AdminReferralMetrics })));
+const AdminAnalytics = lazy(() => import('@/components/admin/AdminAnalytics').then(m => ({ default: m.AdminAnalytics })));
+const AdminFranchiseManager = lazy(() => import('@/components/admin/AdminFranchiseManager').then(m => ({ default: m.AdminFranchiseManager })));
+const AdminEmailTemplates = lazy(() => import('@/components/admin/AdminEmailTemplates').then(m => ({ default: m.AdminEmailTemplates })));
+const AdminUserManager = lazy(() => import('@/components/admin/AdminUserManager').then(m => ({ default: m.AdminUserManager })));
+const AdminCityManager = lazy(() => import('@/components/admin/AdminCityManager').then(m => ({ default: m.AdminCityManager })));
+const KanbanBoard = lazy(() => import('@/components/franchise/KanbanBoard').then(m => ({ default: m.KanbanBoard })));
+const FranchiseDashboard = lazy(() => import('@/pages/FranchiseDashboard'));
+
+function TabFallback() {
+  return (
+    <div className="flex items-center justify-center py-16">
+      <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" />
+    </div>
+  );
+}
 
 const PAGE_SIZE = 25;
 
@@ -119,6 +129,7 @@ export default function AdminDashboard() {
   // ── Paginated leads for table ──
   const { data: paginatedData, isLoading: loadingTable } = useQuery({
     queryKey: ['admin-leads-table', page, search, filterFranquia, filterStatus, filterModelo, filterCidade],
+    placeholderData: keepPreviousData,
     queryFn: async () => {
       const from = (page - 1) * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
@@ -334,13 +345,14 @@ export default function AdminDashboard() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
-              <AdminCityRanking leads={allLeads} />
-              <AdminFranchiseRanking leads={allLeads} franchiseMap={franchiseMap} />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
-              <AdminReferralMetrics leads={allLeads} />
-              <Card className="card-premium">
+            <Suspense fallback={<TabFallback />}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
+                <AdminCityRanking leads={allLeads} />
+                <AdminFranchiseRanking leads={allLeads} franchiseMap={franchiseMap} />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
+                <AdminReferralMetrics leads={allLeads} />
+                <Card className="card-premium">
                 <CardHeader className="px-3 sm:px-6"><CardTitle className="text-sm font-bold">Leads por Mês</CardTitle></CardHeader>
                 <CardContent className="px-2 sm:px-6">
                   {leadsPerMonth.length > 0 ? (
@@ -358,11 +370,14 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             </div>
+            </Suspense>
           </>
         )}
 
         {activeTab === 'analytics' && (
-          <AdminAnalytics franchiseMap={franchiseMap} role={role} />
+          <Suspense fallback={<TabFallback />}>
+            <AdminAnalytics franchiseMap={franchiseMap} role={role} />
+          </Suspense>
         )}
 
         {activeTab === 'leads' && (
@@ -396,46 +411,50 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === 'kanban' && (
-          <KanbanBoard
-            leads={allLeads as any}
-            franchiseId="admin"
-            basePath="/admin/lead"
-            franchiseMap={franchiseMap}
-          />
+          <Suspense fallback={<TabFallback />}>
+            <KanbanBoard
+              leads={allLeads as any}
+              franchiseId="admin"
+              basePath="/admin/lead"
+              franchiseMap={franchiseMap}
+            />
+          </Suspense>
         )}
 
-        {activeTab === 'franchises' && <AdminFranchiseManager />}
-        {activeTab === 'cities' && <AdminCityManager />}
-        {activeTab === 'users' && <AdminUserManager />}
-        {activeTab === 'emails' && <AdminEmailTemplates />}
+        {activeTab === 'franchises' && <Suspense fallback={<TabFallback />}><AdminFranchiseManager /></Suspense>}
+        {activeTab === 'cities' && <Suspense fallback={<TabFallback />}><AdminCityManager /></Suspense>}
+        {activeTab === 'users' && <Suspense fallback={<TabFallback />}><AdminUserManager /></Suspense>}
+        {activeTab === 'emails' && <Suspense fallback={<TabFallback />}><AdminEmailTemplates /></Suspense>}
 
         {activeTab === 'franchise-view' && (
-          <div className="space-y-6">
-            <Card className="border-border/50 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <Eye className="w-4 h-4 text-primary" />
-                  Visualizar Dashboard da Franquia
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Select value={viewFranchiseId} onValueChange={setViewFranchiseId}>
-                  <SelectTrigger className="w-full sm:w-80">
-                    <SelectValue placeholder="Selecione uma franquia para visualizar" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {franchises.map(f => (
-                      <SelectItem key={f.id} value={f.id}>{f.nome_franquia}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </CardContent>
-            </Card>
+          <Suspense fallback={<TabFallback />}>
+            <div className="space-y-6">
+              <Card className="border-border/50 shadow-sm">
+                <CardHeader>
+                  <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                    <Eye className="w-4 h-4 text-primary" />
+                    Visualizar Dashboard da Franquia
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Select value={viewFranchiseId} onValueChange={setViewFranchiseId}>
+                    <SelectTrigger className="w-full sm:w-80">
+                      <SelectValue placeholder="Selecione uma franquia para visualizar" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {franchises.map(f => (
+                        <SelectItem key={f.id} value={f.id}>{f.nome_franquia}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </CardContent>
+              </Card>
 
-            {viewFranchiseId && (
-              <FranchiseDashboard overrideFranchiseId={viewFranchiseId} embedded />
-            )}
-          </div>
+              {viewFranchiseId && (
+                <FranchiseDashboard overrideFranchiseId={viewFranchiseId} embedded />
+              )}
+            </div>
+          </Suspense>
         )}
       </div>
     </div>

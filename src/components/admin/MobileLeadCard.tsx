@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, ChevronRight, Phone, MessageCircle, Clock } from 'lucide-react';
@@ -21,7 +22,7 @@ interface MobileLeadCardProps {
   franchiseName?: string;
 }
 
-export function MobileLeadCard({ lead, index, basePath = '/admin/lead', franchiseName }: MobileLeadCardProps) {
+export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePath = '/admin/lead', franchiseName }: MobileLeadCardProps) {
   const navigate = useNavigate();
 
   const handleWhatsApp = (e: React.MouseEvent) => {
@@ -138,4 +139,4 @@ export function MobileLeadCard({ lead, index, basePath = '/admin/lead', franchis
       </Card>
     </motion.div>
   );
-}
+});
