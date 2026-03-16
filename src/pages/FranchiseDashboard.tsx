@@ -221,32 +221,24 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       {/* Conversion Funnel */}
       {!loadingKpis && allLeads.length > 0 && <ConversionFunnel leads={allLeads} />}
 
-      {/* Tab switcher */}
-      <div className="flex gap-1 mb-6 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-full sm:w-fit overflow-x-auto scrollbar-none border border-border/30" role="tablist">
-        <button
-          role="tab"
-          aria-selected={activeTab === 'leads'}
-          onClick={() => setActiveTab('leads')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === 'leads' ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
-        >
-          <Users className={`w-3.5 h-3.5 sm:w-4 sm:h-4 inline mr-1.5 ${activeTab === 'leads' ? 'text-primary' : ''}`} /> Leads
-        </button>
-        <button
-          role="tab"
-          aria-selected={activeTab === 'funnel'}
-          onClick={() => setActiveTab('funnel')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === 'funnel' ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
-        >
-          <Workflow className={`w-3.5 h-3.5 sm:w-4 sm:h-4 inline mr-1.5 ${activeTab === 'funnel' ? 'text-primary' : ''}`} /> Funil de Vendas
-        </button>
-        <button
-          role="tab"
-          aria-selected={activeTab === 'reports'}
-          onClick={() => setActiveTab('reports')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === 'reports' ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
-        >
-          <BarChart3 className={`w-3.5 h-3.5 sm:w-4 sm:h-4 inline mr-1.5 ${activeTab === 'reports' ? 'text-primary' : ''}`} /> Relatórios
-        </button>
+      {/* Tab switcher - mobile: horizontal scroll, desktop: flex */}
+      <div className="flex gap-1 mb-6 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-full sm:w-fit overflow-x-auto scrollbar-none border border-border/30 -mx-1 px-1 sm:mx-0" role="tablist">
+        {[
+          { key: 'leads' as const, icon: Users, label: 'Leads' },
+          { key: 'funnel' as const, icon: Workflow, label: 'Funil' },
+          { key: 'reports' as const, icon: BarChart3, label: 'Relatórios' },
+        ].map(tab => (
+          <button
+            key={tab.key}
+            role="tab"
+            aria-selected={activeTab === tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex-1 sm:flex-none whitespace-nowrap min-h-[44px] flex items-center justify-center gap-1.5 ${activeTab === tab.key ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
+          >
+            <tab.icon className={`w-4 h-4 ${activeTab === tab.key ? 'text-primary' : ''}`} />
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {activeTab === 'leads' && (
