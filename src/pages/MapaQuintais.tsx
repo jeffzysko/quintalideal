@@ -103,7 +103,7 @@ export default function MapaQuintais() {
         title="Mapa de Calor"
         subtitle="Densidade de leads por cidade"
         icon={<Flame className="w-4 h-4 text-destructive" />}
-        onBack={() => navigate(-1)}
+        fallbackPath="/admin"
         rightSlot={
           <Badge variant="outline" className="text-[10px] md:text-xs px-2 md:px-3 py-1 md:py-1.5 border-primary/30 text-primary whitespace-nowrap animate-pulse-glow">
             {totalQuintais} quintais
