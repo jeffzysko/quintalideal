@@ -392,6 +392,15 @@ export default function AdminDashboard() {
           </>
         )}
 
+        {activeTab === 'kanban' && (
+          <KanbanBoard
+            leads={allLeads as any}
+            franchiseId="admin"
+            basePath="/admin/leads"
+            franchiseMap={franchiseMap}
+          />
+        )}
+
         {activeTab === 'franchises' && <AdminFranchiseManager />}
         {activeTab === 'cities' && <AdminCityManager />}
         {activeTab === 'users' && <AdminUserManager />}
