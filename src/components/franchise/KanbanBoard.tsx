@@ -28,6 +28,25 @@ const COLUMNS = ['novo', 'contatado', 'em_negociacao', 'vendido', 'perdido'] as 
 
 type LeadWithQuiz = LeadRow & { respostas_questionario?: Record<string, string> | null };
 
+const BUDGET_RANGES: Record<string, [number, number]> = {
+  '30-50': [30000, 50000],
+  '18-30': [18000, 30000],
+  'ate-18': [5000, 18000],
+};
+
+function estimateLeadValue(respostas: Record<string, string> | null): number {
+  if (!respostas?.orcamento) return 15000; // default estimate
+  const range = BUDGET_RANGES[respostas.orcamento];
+  if (!range) return 15000;
+  return (range[0] + range[1]) / 2;
+}
+
+function formatCurrency(value: number): string {
+  if (value >= 1000000) return `R$ ${(value / 1000000).toFixed(1)}M`;
+  if (value >= 1000) return `R$ ${(value / 1000).toFixed(0)}k`;
+  return `R$ ${value}`;
+}
+
 interface KanbanBoardProps {
   leads: LeadWithQuiz[];
   franchiseId: string;
@@ -129,6 +148,10 @@ function KanbanColumn({
   const { setNodeRef, isOver } = useDroppable({ id: status });
   const color = STATUS_CHART_COLORS[status] || '#64748b';
   const highlighted = isOver || isOverColumn;
+  const totalValue = useMemo(
+    () => leads.reduce((sum, l) => sum + estimateLeadValue(l.respostas_questionario || null), 0),
+    [leads]
+  );
 
   return (
     <div
@@ -140,14 +163,21 @@ function KanbanColumn({
       }`}
     >
       {/* Column header */}
-      <div className="flex items-center gap-2 p-3 pb-2">
-        <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
-        <h3 className="text-[11px] font-bold text-foreground uppercase tracking-wider truncate">
-          {STATUS_LABELS[status]}
-        </h3>
-        <span className="ml-auto text-[10px] font-semibold text-muted-foreground bg-muted/80 rounded-full px-2 py-0.5">
-          {leads.length}
-        </span>
+      <div className="p-3 pb-2">
+        <div className="flex items-center gap-2">
+          <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
+          <h3 className="text-[11px] font-bold text-foreground uppercase tracking-wider truncate">
+            {STATUS_LABELS[status]}
+          </h3>
+          <span className="ml-auto text-[10px] font-semibold text-muted-foreground bg-muted/80 rounded-full px-2 py-0.5">
+            {leads.length}
+          </span>
+        </div>
+        {leads.length > 0 && (
+          <div className="mt-1.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+            {formatCurrency(totalValue)}
+          </div>
+        )}
       </div>
 
       {/* Cards */}
