@@ -125,7 +125,6 @@ function KanbanColumn({
   status: string;
   leads: LeadWithQuiz[];
   basePath: string;
-  activeId: string | null;
   isOverColumn: boolean;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: status });

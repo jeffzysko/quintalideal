@@ -251,26 +251,8 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
 
       {activeTab === 'leads' && (
         <Card className="card-premium">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+          <CardHeader>
             <CardTitle className="text-sm font-bold">Leads Recentes ({totalCount})</CardTitle>
-            {totalCount > 0 && (
-              <div className="flex items-center gap-1 bg-muted/60 rounded-xl p-1 border border-border/30">
-                <button
-                  onClick={() => setLeadsView('table')}
-                  className={`p-1.5 rounded-lg transition-all ${leadsView === 'table' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-                  title="Visualização em tabela"
-                >
-                  <List className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setLeadsView('kanban')}
-                  className={`p-1.5 rounded-lg transition-all ${leadsView === 'kanban' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-                  title="Visualização Kanban"
-                >
-                  <LayoutGrid className="w-4 h-4" />
-                </button>
-              </div>
-            )}
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -299,12 +281,6 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                   </Button>
                 )}
               </motion.div>
-            ) : leadsView === 'kanban' ? (
-              <KanbanBoard
-                leads={allLeads as (LeadRow & { respostas_questionario?: Record<string, string> | null })[]}
-                franchiseId={franchiseId!}
-                basePath={leadDetailPath}
-              />
             ) : (
               <>
                 {isMobile ? (
@@ -397,6 +373,14 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
             )}
           </CardContent>
         </Card>
+      )}
+
+      {activeTab === 'funnel' && (
+        <KanbanBoard
+          leads={allLeads as (LeadRow & { respostas_questionario?: Record<string, string> | null })[]}
+          franchiseId={franchiseId!}
+          basePath={leadDetailPath}
+        />
       )}
 
       {activeTab === 'reports' && (
