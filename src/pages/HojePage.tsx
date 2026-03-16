@@ -6,7 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { BackButton } from '@/components/BackButton';
+
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
 import { PanelHeader } from '@/components/PanelHeader';
@@ -343,10 +343,10 @@ export default function HojePage() {
         </PanelHeader>
 
         <div className="max-w-3xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6">
-          <div className="flex items-center gap-2 mb-2">
-            <BackButton fallback={isAdmin ? '/admin' : '/franquia'} />
-            <Breadcrumbs items={[{ label: 'Hoje' }]} />
-          </div>
+          <Breadcrumbs items={[
+            { label: isAdmin ? 'Admin' : 'Painel', href: isAdmin ? '/admin' : '/franquia' },
+            { label: 'Hoje' },
+          ]} />
 
           {isLoading ? <PageSkeleton /> : (
             <>
