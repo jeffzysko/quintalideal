@@ -384,7 +384,58 @@ export function KanbanBoard({ leads, franchiseId, basePath }: KanbanBoardProps) 
 
   return (
     <>
-      <PipelineSummary leads={leads} />
+      <PipelineSummary leads={filteredLeads} />
+
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        <div className="flex items-center gap-2">
+          <Filter className="w-4 h-4 text-muted-foreground" />
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Filtros</span>
+        </div>
+
+        <Select value={tempFilter} onValueChange={setTempFilter}>
+          <SelectTrigger className="w-[150px] h-8 text-xs">
+            <SelectValue placeholder="Temperatura" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas temperaturas</SelectItem>
+            <SelectItem value="quente">🔥 Quente</SelectItem>
+            <SelectItem value="morno">☀️ Morno</SelectItem>
+            <SelectItem value="frio">❄️ Frio</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={cityFilter} onValueChange={setCityFilter}>
+          <SelectTrigger className="w-[180px] h-8 text-xs">
+            <SelectValue placeholder="Cidade" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas cidades</SelectItem>
+            {cities.map((city) => (
+              <SelectItem key={city} value={city}>{city}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {hasActiveFilters && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 px-2 text-xs text-muted-foreground hover:text-foreground"
+            onClick={() => { setTempFilter('all'); setCityFilter('all'); }}
+          >
+            <X className="w-3 h-3 mr-1" />
+            Limpar
+          </Button>
+        )}
+
+        {hasActiveFilters && (
+          <span className="text-[11px] text-muted-foreground">
+            {filteredLeads.length} de {leads.length} leads
+          </span>
+        )}
+      </div>
+
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
