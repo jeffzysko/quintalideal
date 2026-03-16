@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { MapPin, BarChart3, Users, TrendingUp, Flame } from 'lucide-react';
+import { MapPin, BarChart3, Users, TrendingUp } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 
 import { Breadcrumbs } from '@/components/Breadcrumbs';

@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
-  MapPin, BarChart3, Users, TrendingUp, Target, Home,
+  MapPin, BarChart3, Users, TrendingUp, Home,
   Crown, Sparkles, AlertTriangle, Trophy, Flame,
 } from 'lucide-react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
