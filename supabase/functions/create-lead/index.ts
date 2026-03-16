@@ -215,6 +215,7 @@ Deno.serve(async (req) => {
 
     let lastError: { code?: string; message?: string } | null = null;
     let insertedRefCode = "";
+    let insertedLeadId = "";
 
     for (let attempt = 0; attempt < 3; attempt += 1) {
       const refCode = generateRefCode();
