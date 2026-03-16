@@ -34,7 +34,7 @@ const COLOR_BG_MAP: Record<string, string> = {
   'text-amber-600': 'icon-bg-amber',
 };
 
-export function MetricCard({ icon: Icon, label, value, previousValue, iconBg, color = 'text-primary', delay = 0, onClick }: MetricCardProps) {
+export const MetricCard = memo(function MetricCard({ icon: Icon, label, value, previousValue, iconBg, color = 'text-primary', delay = 0, onClick }: MetricCardProps) {
   const bg = iconBg || COLOR_BG_MAP[color] || 'icon-bg-blue';
   const numericValue = typeof value === 'string' ? parseFloat(value) : value;
   const hasDelta = previousValue !== undefined && !isNaN(numericValue);
