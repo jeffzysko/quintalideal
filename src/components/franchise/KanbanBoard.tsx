@@ -1043,6 +1043,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
               basePath={basePath}
               isOverColumn={overColumnId === status}
               franchiseMap={franchiseMap}
+              onMoveStage={moveLeadToStatus}
             />
           ))}
         </div>
