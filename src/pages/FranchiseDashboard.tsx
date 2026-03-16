@@ -259,7 +259,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       {!loadingKpis && allLeads.length > 0 && <ConversionFunnel leads={allLeads} />}
 
       {/* Tab switcher */}
-      <div className="flex gap-1 mb-6 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-full sm:w-fit overflow-x-auto scrollbar-none border border-border/30 -mx-1 px-1 sm:mx-0" role="tablist">
+      <div className="flex gap-1 mb-6 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-full sm:w-fit overflow-x-auto scrollbar-none border border-border/30" role="tablist">
         {[
           { key: 'leads' as const, icon: Users, label: 'Leads' },
           { key: 'funnel' as const, icon: Workflow, label: 'Funil' },
@@ -270,9 +270,9 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
             role="tab"
             aria-selected={activeTab === tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex-1 sm:flex-none whitespace-nowrap min-h-[44px] flex items-center justify-center gap-1.5 ${activeTab === tab.key ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
+            className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex-1 sm:flex-none whitespace-nowrap min-h-[44px] flex items-center justify-center gap-2 active:scale-[0.97] ${activeTab === tab.key ? 'tab-active shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
           >
-            <tab.icon className={`w-4 h-4 ${activeTab === tab.key ? 'text-primary' : ''}`} />
+            <tab.icon className={`w-[18px] h-[18px] ${activeTab === tab.key ? 'text-primary' : ''}`} />
             {tab.label}
           </button>
         ))}
