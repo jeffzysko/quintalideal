@@ -618,7 +618,7 @@ export default function HojePage() {
 
               {/* ═══ UPCOMING FOLLOW-UPS ═══ */}
               {upcomingFollowups.length > 0 && (
-                <Section icon={Target} title="Próximos follow-ups" count={upcomingFollowups.length}>
+                <Section icon={Target} title="Próximos follow-ups" count={upcomingFollowups.length} collapsible defaultOpen={false}>
                   <div className="space-y-2">
                     {upcomingFollowups.map((f, i) => {
                       const parsed = parseFollowupType(f.note);
