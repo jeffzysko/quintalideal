@@ -210,11 +210,7 @@ export default function LeadDetail() {
         <Breadcrumbs items={breadcrumbItems} />
 
         {/* Back */}
-        <Button variant="ghost" size="sm" onClick={() => {
-          navigate(leadsUrl);
-        }} className="text-muted-foreground hover:text-foreground -ml-2">
-          <ArrowLeft className="w-4 h-4 mr-1" /> Voltar
-        </Button>
+        <BackButton fallback={leadsUrl} label="Voltar" className="-ml-2" />
 
         {/* Hero Card */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>

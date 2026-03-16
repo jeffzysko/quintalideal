@@ -235,14 +235,7 @@ export default function ProfileSettings() {
     <PageTransition>
     <div className="min-h-screen bg-background">
       <PanelHeader title="Configurações">
-        <button
-          onClick={() => navigate(backPath)}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
-          aria-label="Voltar"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Voltar</span>
-        </button>
+        <BackButton fallback={backPath} label="Voltar" />
       </PanelHeader>
 
       <div className="max-w-3xl mx-auto px-4 md:px-6 py-6 md:py-8 space-y-6">
