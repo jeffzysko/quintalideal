@@ -22,6 +22,7 @@ interface Notification {
   read: boolean;
   created_at: string;
   franchise_id: string;
+  metadata: Record<string, unknown> | null;
 }
 
 // Generate a short notification chime using Web Audio API
