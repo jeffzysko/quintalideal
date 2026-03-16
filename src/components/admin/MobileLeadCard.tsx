@@ -26,6 +26,8 @@ interface MobileLeadCardProps {
 
 export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePath = '/admin/lead', franchiseName }: MobileLeadCardProps) {
   const navigate = useNavigate();
+  const temp = classifyLead(lead.respostas_questionario as Record<string, string> | null, lead.pontuacao_quintal);
+  const navigate = useNavigate();
 
   const handleWhatsApp = (e: React.MouseEvent) => {
     e.stopPropagation();
