@@ -51,6 +51,7 @@ interface KanbanBoardProps {
   leads: LeadWithQuiz[];
   franchiseId: string;
   basePath: string;
+  franchiseMap?: Record<string, string>;
 }
 
 // ── Draggable Lead Card ──
