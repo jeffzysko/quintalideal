@@ -470,7 +470,7 @@ export function KanbanBoard({ leads, franchiseId, basePath }: KanbanBoardProps) 
 
       <DragOverlay dropAnimation={{ duration: 200, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }}>
         {activeLead ? (
-          <LeadCard lead={activeLead} basePath={basePath} overlay />
+          <LeadCard lead={activeLead} basePath={basePath} overlay franchiseName={franchiseMap?.[activeLead.franquia_id || '']} />
         ) : null}
       </DragOverlay>
       </DndContext>
