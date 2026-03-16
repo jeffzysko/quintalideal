@@ -25,6 +25,7 @@ import { AdminLeadFilters } from '@/components/admin/AdminLeadFilters';
 import { AdminLeadsTable } from '@/components/admin/AdminLeadsTable';
 import { AdminInactiveAlerts } from '@/components/admin/AdminInactiveAlerts';
 import { AdminPerformanceComparison } from '@/components/admin/AdminPerformanceComparison';
+import { KanbanBoard } from '@/components/franchise/KanbanBoard';
 
 
 import { KPISkeleton } from '@/components/ui/kpi-skeleton';
