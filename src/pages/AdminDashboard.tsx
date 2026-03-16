@@ -267,7 +267,7 @@ export default function AdminDashboard() {
     { icon: Users, label: 'Quintais explorados', value: totalLeads, previousValue: prevTotal, color: 'text-primary' },
     { icon: TrendingUp, label: 'Novos leads', value: newLeads, previousValue: prevNew, color: 'text-emerald-600' },
     { icon: Target, label: 'Média potencial', value: `${avgScore}%`, previousValue: prevAvg, color: 'text-primary' },
-    { icon: Building2, label: 'Franquias', value: franchises.length, color: 'text-violet-600' },
+    { icon: Building2, label: 'Franquias', value: orgFilteredFranchises.length, color: 'text-violet-600' },
     { icon: MapPin, label: 'Cidades', value: cities, previousValue: prevCities, color: 'text-amber-600' },
     { icon: Share2, label: 'Via convite', value: referralCount, previousValue: prevRef, color: 'text-secondary' },
   ];
