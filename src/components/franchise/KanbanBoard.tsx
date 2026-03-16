@@ -386,6 +386,7 @@ export function KanbanBoard({ leads, franchiseId, basePath }: KanbanBoardProps) 
           <LeadCard lead={activeLead} basePath={basePath} overlay />
         ) : null}
       </DragOverlay>
-    </DndContext>
+      </DndContext>
+    </>
   );
 }
