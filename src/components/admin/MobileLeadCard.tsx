@@ -105,9 +105,23 @@ export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePa
                 <Badge className={`${STATUS_COLORS[lead.status_lead] || ''} border text-[10px] font-semibold`} variant="secondary">
                   {STATUS_LABELS[lead.status_lead] || lead.status_lead}
                 </Badge>
-                <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
-                  {temp.emoji} {temp.label}
-                </Badge>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold cursor-help`} variant="outline">
+                      {temp.emoji} {temp.label}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent side="left" className="max-w-[220px] text-xs">
+                    <p className="font-semibold mb-0.5">Nível de interesse</p>
+                    <p className="text-muted-foreground">
+                      {temp.temperature === 'quente'
+                        ? 'Lead com alto interesse: bom orçamento, quer comprar em breve e tem espaço adequado.'
+                        : temp.temperature === 'morno'
+                        ? 'Lead com interesse moderado: pode precisar de mais informações ou tempo.'
+                        : 'Lead no início da jornada: ainda explorando opções.'}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
                 <ScorePill score={lead.pontuacao_quintal || 0} />
               </div>
             </div>

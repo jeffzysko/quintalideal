@@ -55,7 +55,7 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
     <Card className="card-premium mb-6">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-bold flex items-center gap-2">
-          Funil de Conversão
+          Progresso dos Leads
           {lostCount > 0 && (
             <span className="text-[10px] font-medium text-destructive/70 flex items-center gap-1">
               <TrendingDown className="w-3 h-3" /> {lostCount} perdido{lostCount !== 1 ? 's' : ''}
