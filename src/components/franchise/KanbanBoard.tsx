@@ -305,7 +305,9 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
 
   // Apply filters
   const filteredLeads = useMemo(() => {
+    const search = nameSearch.trim().toLowerCase();
     return leads.filter((lead) => {
+      if (search && !(lead.nome || '').toLowerCase().includes(search)) return false;
       if (tempFilter !== 'all') {
         const t = classifyLead(lead.respostas_questionario || null, lead.pontuacao_quintal);
         if (t.temperature !== tempFilter) return false;
@@ -313,11 +315,19 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       if (cityFilter !== 'all') {
         if (lead.cidade !== cityFilter) return false;
       }
+      if (dateFrom) {
+        if (new Date(lead.created_at) < dateFrom) return false;
+      }
+      if (dateTo) {
+        const end = new Date(dateTo);
+        end.setHours(23, 59, 59, 999);
+        if (new Date(lead.created_at) > end) return false;
+      }
       return true;
     });
-  }, [leads, tempFilter, cityFilter]);
+  }, [leads, tempFilter, cityFilter, nameSearch, dateFrom, dateTo]);
 
-  const hasActiveFilters = tempFilter !== 'all' || cityFilter !== 'all';
+  const hasActiveFilters = tempFilter !== 'all' || cityFilter !== 'all' || nameSearch.trim() !== '' || !!dateFrom || !!dateTo;
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
