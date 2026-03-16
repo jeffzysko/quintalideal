@@ -22,7 +22,7 @@ interface MobileLeadCardProps {
   franchiseName?: string;
 }
 
-export function MobileLeadCard({ lead, index, basePath = '/admin/lead', franchiseName }: MobileLeadCardProps) {
+export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePath = '/admin/lead', franchiseName }: MobileLeadCardProps) {
   const navigate = useNavigate();
 
   const handleWhatsApp = (e: React.MouseEvent) => {
