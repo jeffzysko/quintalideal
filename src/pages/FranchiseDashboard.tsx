@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Users, TrendingUp, Clock, Eye, Inbox, Share2, Droplets, BarChart3, Link2, Copy, Check, LayoutGrid, List } from 'lucide-react';
+import { Users, TrendingUp, Clock, Eye, Inbox, Share2, Droplets, BarChart3, Link2, Copy, Check, Workflow } from 'lucide-react';
 import { ConversionFunnel } from '@/components/franchise/ConversionFunnel';
 import { SLAIndicator } from '@/components/franchise/SLAIndicator';
 import { MonthlyGoals } from '@/components/franchise/MonthlyGoals';
@@ -71,8 +71,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [page, setPage] = useState(1);
-  const [activeTab, setActiveTab] = useState<'leads' | 'reports'>('leads');
-  const [leadsView, setLeadsView] = useState<'table' | 'kanban'>('table');
+  const [activeTab, setActiveTab] = useState<'leads' | 'funnel' | 'reports'>('leads');
 
   // ── Franchise info ──
   const { data: franchiseInfo } = useQuery({
@@ -234,6 +233,14 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
         </button>
         <button
           role="tab"
+          aria-selected={activeTab === 'funnel'}
+          onClick={() => setActiveTab('funnel')}
+          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === 'funnel' ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
+        >
+          <Workflow className={`w-3.5 h-3.5 sm:w-4 sm:h-4 inline mr-1.5 ${activeTab === 'funnel' ? 'text-primary' : ''}`} /> Funil de Vendas
+        </button>
+        <button
+          role="tab"
           aria-selected={activeTab === 'reports'}
           onClick={() => setActiveTab('reports')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === 'reports' ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
@@ -244,26 +251,8 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
 
       {activeTab === 'leads' && (
         <Card className="card-premium">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0">
+          <CardHeader>
             <CardTitle className="text-sm font-bold">Leads Recentes ({totalCount})</CardTitle>
-            {totalCount > 0 && (
-              <div className="flex items-center gap-1 bg-muted/60 rounded-xl p-1 border border-border/30">
-                <button
-                  onClick={() => setLeadsView('table')}
-                  className={`p-1.5 rounded-lg transition-all ${leadsView === 'table' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-                  title="Visualização em tabela"
-                >
-                  <List className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => setLeadsView('kanban')}
-                  className={`p-1.5 rounded-lg transition-all ${leadsView === 'kanban' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
-                  title="Visualização Kanban"
-                >
-                  <LayoutGrid className="w-4 h-4" />
-                </button>
-              </div>
-            )}
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -292,12 +281,6 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                   </Button>
                 )}
               </motion.div>
-            ) : leadsView === 'kanban' ? (
-              <KanbanBoard
-                leads={allLeads as (LeadRow & { respostas_questionario?: Record<string, string> | null })[]}
-                franchiseId={franchiseId!}
-                basePath={leadDetailPath}
-              />
             ) : (
               <>
                 {isMobile ? (
@@ -390,6 +373,14 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
             )}
           </CardContent>
         </Card>
+      )}
+
+      {activeTab === 'funnel' && (
+        <KanbanBoard
+          leads={allLeads as (LeadRow & { respostas_questionario?: Record<string, string> | null })[]}
+          franchiseId={franchiseId!}
+          basePath={leadDetailPath}
+        />
       )}
 
       {activeTab === 'reports' && (
