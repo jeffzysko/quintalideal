@@ -25,6 +25,7 @@ import { TimeRangeSelector, filterByTimeRange, type TimeRange } from '@/componen
 import { SectionHeader } from '@/components/dashboard/SectionHeader';
 import type { MetricCardProps } from '@/components/dashboard/MetricCard';
 import { InsightCards } from '@/components/dashboard/InsightCards';
+import { OrganizationSwitcher } from '@/components/OrganizationSwitcher';
 
 // Lazy load heavy tab components
 const AdminCityRanking = lazy(() => import('@/components/admin/AdminCityRanking').then(m => ({ default: m.AdminCityRanking })));
@@ -283,8 +284,17 @@ export default function AdminDashboard() {
       </PanelHeader>
 
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
-        <Breadcrumbs items={[{ label: 'Admin' }]} />
-
+        <div className="flex items-center justify-between gap-3 mb-2">
+          <Breadcrumbs items={[{ label: 'Admin' }]} />
+          <OrganizationSwitcher
+            activeFranchiseId={filterFranquia === 'all' ? null : filterFranquia}
+            onSwitch={(id) => {
+              setFilterFranquia(id || 'all');
+              setPage(1);
+            }}
+            compact
+          />
+        </div>
         {/* Mobile: Select dropdown */}
         <div className="md:hidden mb-4">
           <Select value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
