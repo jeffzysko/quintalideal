@@ -192,6 +192,7 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <BarChart3 className="w-4 h-4 text-primary" /> Status dos Leads
             </CardTitle>
+            <p className="text-[11px] text-muted-foreground mt-0.5">Como seus leads estão distribuídos entre as etapas de venda.</p>
           </CardHeader>
           <CardContent className="px-2 sm:px-6">
             <div className="flex flex-col sm:flex-row items-center gap-4">
