@@ -148,11 +148,13 @@ function KanbanColumn({
   leads,
   basePath,
   isOverColumn,
+  franchiseMap,
 }: {
   status: string;
   leads: LeadWithQuiz[];
   basePath: string;
   isOverColumn: boolean;
+  franchiseMap?: Record<string, string>;
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: status });
   const color = STATUS_CHART_COLORS[status] || '#64748b';
