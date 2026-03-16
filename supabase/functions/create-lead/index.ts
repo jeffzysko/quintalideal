@@ -284,7 +284,7 @@ Deno.serve(async (req) => {
         title: "Novo lead recebido",
         message: `${nome}${cidade ? ` de ${cidade}` : ""} — ${modeloRecomendado || "Sem modelo"}`,
         type: "new_lead",
-        metadata: { lead_name: nome, city: cidade, model: modeloRecomendado },
+        metadata: { lead_id: insertedLeadId, lead_name: nome, city: cidade, model: modeloRecomendado },
       }).then(({ error: notifError }) => {
         if (notifError) console.error("Notification insert error:", notifError);
       });
