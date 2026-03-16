@@ -7,7 +7,7 @@ interface PageHeaderProps {
   title: string;
   subtitle?: string;
   icon?: ReactNode;
-  onBack: () => void;
+  fallbackPath: string;
   rightSlot?: ReactNode;
 }
 
