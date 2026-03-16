@@ -22,11 +22,15 @@ import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { NotificationBell } from '@/components/NotificationBell';
 import { FranchiseReports } from '@/components/franchise/FranchiseReports';
 import { STATUS_LABELS, STATUS_COLORS, LeadRow } from '@/lib/lead-constants';
-import { KPISkeleton } from '@/components/ui/kpi-skeleton';
 import { TableSkeleton } from '@/components/ui/table-skeleton';
 import { PanelHeader } from '@/components/PanelHeader';
 import { classifyLead } from '@/lib/leadScoring';
 import { KanbanBoard } from '@/components/franchise/KanbanBoard';
+import { MetricGrid } from '@/components/dashboard/MetricGrid';
+import { TimeRangeSelector, filterByTimeRange, type TimeRange } from '@/components/dashboard/TimeRangeSelector';
+import { SectionHeader } from '@/components/dashboard/SectionHeader';
+import { AlertBanner } from '@/components/dashboard/AlertBanner';
+import type { MetricCardProps } from '@/components/dashboard/MetricCard';
 
 const PAGE_SIZE = 20;
 
@@ -72,6 +76,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   const isMobile = useIsMobile();
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState<'leads' | 'funnel' | 'reports'>('leads');
+  const [timeRange, setTimeRange] = useState<TimeRange>('30');
 
   // ── Franchise info ──
   const { data: franchiseInfo } = useQuery({
@@ -87,7 +92,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
     enabled: !!franchiseId,
   });
 
-  // ── All leads for KPIs (lightweight: no respostas_questionario) ──
+  // ── All leads ──
   const { data: allLeads = [], isLoading: loadingKpis } = useQuery({
     queryKey: ['franchise-leads-all', franchiseId],
     queryFn: async () => {
@@ -158,10 +163,21 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   const franchiseSlug = franchiseInfo?.slug_url || null;
   const franchiseName = franchiseInfo?.nome_franquia || '';
 
-  const totalLeads = allLeads.length;
-  const newLeads = allLeads.filter(l => l.status_lead === 'novo').length;
-  const inNegotiation = allLeads.filter(l => l.status_lead === 'em_negociacao').length;
-  const sold = allLeads.filter(l => l.status_lead === 'vendido').length;
+  // ── Time-filtered KPIs with comparison ──
+  const { current: currentLeads, previous: previousLeads } = useMemo(
+    () => filterByTimeRange(allLeads, timeRange),
+    [allLeads, timeRange],
+  );
+
+  const totalLeads = currentLeads.length;
+  const newLeads = currentLeads.filter(l => l.status_lead === 'novo').length;
+  const inNegotiation = currentLeads.filter(l => l.status_lead === 'em_negociacao').length;
+  const sold = currentLeads.filter(l => l.status_lead === 'vendido').length;
+
+  const prevTotal = previousLeads.length || undefined;
+  const prevNew = previousLeads.length > 0 ? previousLeads.filter(l => l.status_lead === 'novo').length : undefined;
+  const prevNeg = previousLeads.length > 0 ? previousLeads.filter(l => l.status_lead === 'em_negociacao').length : undefined;
+  const prevSold = previousLeads.length > 0 ? previousLeads.filter(l => l.status_lead === 'vendido').length : undefined;
 
   const now = new Date();
   const soldThisMonth = allLeads.filter(l => {
@@ -170,11 +186,20 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   }).length;
 
-  const kpis = [
-    { icon: Users, label: 'Total de Leads', value: totalLeads, color: 'text-primary' },
-    { icon: Clock, label: 'Novos', value: newLeads, color: 'text-secondary' },
-    { icon: TrendingUp, label: 'Em Negociação', value: inNegotiation, color: 'text-violet-600' },
-    { icon: Droplets, label: 'Vendidos', value: sold, color: 'text-emerald-600' },
+  // Overdue leads alert
+  const overdueLeads = useMemo(() => {
+    const nowMs = Date.now();
+    return allLeads.filter(l => {
+      if (l.status_lead !== 'novo') return false;
+      return (nowMs - new Date(l.created_at).getTime()) > 48 * 60 * 60 * 1000;
+    });
+  }, [allLeads]);
+
+  const metrics: MetricCardProps[] = [
+    { icon: Users, label: 'Total de Leads', value: totalLeads, previousValue: prevTotal, color: 'text-primary' },
+    { icon: Clock, label: 'Novos', value: newLeads, previousValue: prevNew, color: 'text-secondary' },
+    { icon: TrendingUp, label: 'Em Negociação', value: inNegotiation, previousValue: prevNeg, color: 'text-violet-600' },
+    { icon: Droplets, label: 'Vendidos', value: sold, previousValue: prevSold, color: 'text-emerald-600' },
   ];
 
   const from = (page - 1) * PAGE_SIZE;
@@ -188,24 +213,27 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
     <>
       {franchiseSlug && <FranchiseLinkBanner slug={franchiseSlug} />}
 
-      {/* KPI Cards */}
-      {loadingKpis ? (
-        <div className="mb-8"><KPISkeleton count={4} /></div>
-      ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6">
-          {kpis.map((kpi, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06, type: 'spring', stiffness: 300, damping: 24 }}>
-              <Card className="card-premium group overflow-hidden">
-                <CardContent className="p-3.5 sm:p-5">
-                  <div className={`w-10 h-10 rounded-xl ${kpi.color === 'text-primary' ? 'icon-bg-blue' : kpi.color === 'text-secondary' ? 'icon-bg-pink' : kpi.color === 'text-violet-600' ? 'icon-bg-violet' : 'icon-bg-green'} flex items-center justify-center mb-2.5 sm:mb-3 group-hover:scale-105 transition-transform`}>
-                    <kpi.icon className={`w-5 h-5 ${kpi.color}`} />
-                  </div>
-                  <p className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">{kpi.value}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5 font-medium">{kpi.label}</p>
-                </CardContent>
-              </Card>
-            </motion.div>
-          ))}
+      {/* Time Range + KPIs */}
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
+        <SectionHeader icon={BarChart3} title="Visão Geral" subtitle={timeRange === 'all' ? 'Todo o período' : `Últimos ${timeRange} dias`} />
+        <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
+      </div>
+
+      <MetricGrid metrics={metrics} loading={loadingKpis} columns={4} />
+
+      {/* Alerts */}
+      {overdueLeads.length > 0 && (
+        <div className="mb-4 sm:mb-6">
+          <AlertBanner
+            level="warning"
+            title={`${overdueLeads.length} lead${overdueLeads.length > 1 ? 's' : ''} sem contato há mais de 48h`}
+            description="Leads aguardando primeiro contato. Responda rapidamente para aumentar sua taxa de conversão."
+            action={
+              <Button variant="outline" size="sm" className="rounded-xl text-xs shrink-0" onClick={() => setActiveTab('leads')}>
+                Ver leads
+              </Button>
+            }
+          />
         </div>
       )}
 
@@ -221,7 +249,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       {/* Conversion Funnel */}
       {!loadingKpis && allLeads.length > 0 && <ConversionFunnel leads={allLeads} />}
 
-      {/* Tab switcher - mobile: horizontal scroll, desktop: flex */}
+      {/* Tab switcher */}
       <div className="flex gap-1 mb-6 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-full sm:w-fit overflow-x-auto scrollbar-none border border-border/30 -mx-1 px-1 sm:mx-0" role="tablist">
         {[
           { key: 'leads' as const, icon: Users, label: 'Leads' },
@@ -244,7 +272,14 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       {activeTab === 'leads' && (
         <Card className="card-premium">
           <CardHeader>
-            <CardTitle className="text-sm font-bold">Leads Recentes ({totalCount})</CardTitle>
+            <CardTitle className="text-sm font-bold flex items-center justify-between">
+              <span>Leads Recentes ({totalCount})</span>
+              {overdueLeads.length > 0 && (
+                <Badge variant="outline" className="text-[10px] border-amber-500/30 text-amber-600 animate-pulse">
+                  ⚠️ {overdueLeads.length} aguardando
+                </Badge>
+              )}
+            </CardTitle>
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -309,9 +344,15 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                     <tbody>
                       {sortedLeads.map(lead => {
                         const temp = classifyLead(lead.respostas_questionario || null, lead.pontuacao_quintal);
+                        const isOverdue = lead.status_lead === 'novo' && (Date.now() - new Date(lead.created_at).getTime()) > 48 * 60 * 60 * 1000;
                         return (
-                          <tr key={lead.id} className="border-b border-border/20 hover:bg-muted/40 transition-all cursor-pointer group" role="row" onClick={() => navigate(`${leadDetailPath}/${lead.id}`)}>
-                            <td role="cell" className="py-3.5 px-3 font-medium">{lead.nome || '—'}</td>
+                          <tr key={lead.id} className={`border-b border-border/20 hover:bg-muted/40 transition-all cursor-pointer group ${isOverdue ? 'bg-amber-500/[0.03]' : ''}`} role="row" onClick={() => navigate(`${leadDetailPath}/${lead.id}`)}>
+                            <td role="cell" className="py-3.5 px-3 font-medium">
+                              <div className="flex items-center gap-2">
+                                {lead.nome || '—'}
+                                {isOverdue && <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shrink-0" />}
+                              </div>
+                            </td>
                             <td role="cell" className="py-3.5 px-3">
                               <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
                                 {temp.emoji} {temp.label}
@@ -390,7 +431,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
     <div className="min-h-screen bg-background">
       <PanelHeader title={franchiseName || 'Dashboard'}>
         <Badge variant="outline" className="text-[10px] px-2 py-0.5 border-primary/20 text-primary font-medium hidden sm:flex">
-          {totalLeads} leads
+          {allLeads.length} leads
         </Badge>
         <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
         <NotificationBell />
