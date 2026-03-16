@@ -292,7 +292,30 @@ function MobilePipelineCard({
   onStageChange: (leadId: string) => void;
 }) {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const temp = classifyLead(lead.respostas_questionario || null, lead.pontuacao_quintal);
+  const [noteOpen, setNoteOpen] = useState(false);
+  const [noteText, setNoteText] = useState('');
+  const [savingNote, setSavingNote] = useState(false);
+
+  const handleSaveNote = async () => {
+    if (!noteText.trim() || !user) return;
+    setSavingNote(true);
+    const { error } = await supabase.from('lead_activities').insert({
+      lead_id: lead.id,
+      user_id: user.id,
+      activity_type: 'note',
+      content: noteText.trim(),
+    });
+    setSavingNote(false);
+    if (error) {
+      toast.error('Erro ao salvar nota');
+    } else {
+      toast.success('Nota adicionada');
+      setNoteText('');
+      setNoteOpen(false);
+    }
+  };
 
   return (
     <motion.div
@@ -340,6 +363,42 @@ function MobilePipelineCard({
         )}
       </div>
 
+      {/* Note inline form */}
+      <AnimatePresence>
+        {noteOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="overflow-hidden border-t border-border/30"
+          >
+            <div className="p-3 space-y-2">
+              <Textarea
+                value={noteText}
+                onChange={(e) => setNoteText(e.target.value)}
+                placeholder="Escreva uma nota rápida..."
+                className="text-xs min-h-[50px] resize-none"
+                autoFocus
+              />
+              <div className="flex gap-2">
+                <Button
+                  size="sm"
+                  className="flex-1 h-8 text-xs gap-1"
+                  disabled={!noteText.trim() || savingNote}
+                  onClick={handleSaveNote}
+                >
+                  <Send className="w-3 h-3" />
+                  {savingNote ? 'Salvando...' : 'Salvar'}
+                </Button>
+                <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={() => { setNoteOpen(false); setNoteText(''); }}>
+                  Cancelar
+                </Button>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Quick actions */}
       <div className="flex items-center border-t border-border/30 divide-x divide-border/30">
         {lead.telefone && (
@@ -359,12 +418,22 @@ function MobilePipelineCard({
         <button
           onClick={(e) => {
             e.stopPropagation();
+            setNoteOpen(v => !v);
+          }}
+          className="flex-1 flex items-center justify-center gap-1 py-2 text-[11px] font-medium text-muted-foreground hover:bg-muted/40 transition-colors min-h-[40px]"
+        >
+          <StickyNote className="w-3.5 h-3.5" />
+          Nota
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
             onStageChange(lead.id);
           }}
           className="flex-1 flex items-center justify-center gap-1 py-2 text-[11px] font-medium text-primary hover:bg-primary/5 transition-colors min-h-[40px]"
         >
           <ChevronRight className="w-3.5 h-3.5" />
-          Mover etapa
+          Mover
         </button>
       </div>
     </motion.div>
