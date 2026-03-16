@@ -31,6 +31,7 @@ import { TimeRangeSelector, filterByTimeRange, type TimeRange } from '@/componen
 import { SectionHeader } from '@/components/dashboard/SectionHeader';
 import { AlertBanner } from '@/components/dashboard/AlertBanner';
 import type { MetricCardProps } from '@/components/dashboard/MetricCard';
+import { InsightCards } from '@/components/dashboard/InsightCards';
 
 const PAGE_SIZE = 20;
 
@@ -221,6 +222,11 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       </div>
 
       <MetricGrid metrics={metrics} loading={loadingKpis} columns={4} />
+
+      {/* Insight Surfacing */}
+      {!loadingKpis && currentLeads.length > 0 && (
+        <InsightCards leads={currentLeads} previousLeads={previousLeads} maxCards={3} />
+      )}
 
       {/* Alerts */}
       {overdueLeads.length > 0 && (
