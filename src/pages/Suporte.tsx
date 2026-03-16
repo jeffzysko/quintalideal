@@ -261,7 +261,14 @@ export default function Suporte() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen flex flex-col gradient-hero">
+    <div className="min-h-screen flex flex-col bg-background">
+      <PanelHeader title="Suporte & Guia">
+        <BackButton fallback="/franquia" />
+        <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
+        <NotificationBell />
+        <UserAvatarMenu />
+      </PanelHeader>
+
       {/* Background orbs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <motion.div
@@ -279,10 +286,6 @@ export default function Suporte() {
       </div>
 
       <div className="relative z-10 flex-1 max-w-3xl mx-auto w-full px-4 py-8 sm:py-12">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <BackButton fallback="/franquia" label="Voltar" />
-        </div>
 
         <motion.div {...fadeUp}>
           <div className="flex items-center gap-3 mb-2">
