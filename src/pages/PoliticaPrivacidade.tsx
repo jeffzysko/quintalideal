@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
-import { ArrowLeft, Shield, Database, Share2, Lock, UserCheck, Cookie, Camera, Globe, Mail, Clock, Gavel } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { Shield, Database, Share2, Lock, UserCheck, Cookie, Camera, Globe, Mail, Clock, Gavel } from 'lucide-react';
+import { BackButton } from '@/components/BackButton';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
