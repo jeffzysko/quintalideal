@@ -222,7 +222,7 @@ export default function OrganizationSettings() {
               </div>
             )}
 
-            <Tabs defaultValue="general" className="space-y-6">
+            {franchise && <Tabs defaultValue="general" className="space-y-6">
               <TabsList className="bg-muted/40 rounded-xl p-1">
                 <TabsTrigger value="general" className="rounded-lg text-xs gap-1.5">
                   <Settings2 className="w-3.5 h-3.5" />
