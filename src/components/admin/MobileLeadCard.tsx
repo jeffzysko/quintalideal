@@ -37,43 +37,43 @@ export function MobileLeadCard({ lead, index, basePath = '/admin/lead', franchis
         <CardContent className="p-4">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-center gap-3 min-w-0 flex-1">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                <span className="text-sm font-bold text-primary">
+              <div className="w-11 h-11 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                <span className="text-base font-bold text-primary">
                   {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
                 </span>
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-sm font-semibold text-foreground truncate">{lead.nome || '—'}</p>
-                <div className="flex items-center gap-2 mt-0.5">
+                <p className="text-[15px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
+                <div className="flex items-center gap-3 mt-1">
                   {lead.cidade && (
-                    <span className="text-[11px] text-muted-foreground flex items-center gap-0.5">
-                      <MapPin className="w-3 h-3" />{lead.cidade}
+                    <span className="text-xs text-muted-foreground flex items-center gap-1">
+                      <MapPin className="w-3.5 h-3.5" />{lead.cidade}
                     </span>
                   )}
-                  <span className="text-[11px] text-muted-foreground flex items-center gap-0.5">
-                    <Calendar className="w-3 h-3" />
+                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Calendar className="w-3.5 h-3.5" />
                     {new Date(lead.created_at).toLocaleDateString('pt-BR')}
                   </span>
                 </div>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-muted-foreground/50 shrink-0 mt-1" />
+            <ChevronRight className="w-5 h-5 text-muted-foreground/40 shrink-0 mt-2" />
           </div>
 
           <div className="flex items-center justify-between mt-3 pt-3 border-t border-border/30">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2.5">
               <ScorePill score={lead.pontuacao_quintal || 0} />
               {lead.modelo_recomendado && (
-                <span className="text-[11px] text-muted-foreground">{lead.modelo_recomendado}</span>
+                <span className="text-xs text-muted-foreground">{lead.modelo_recomendado}</span>
               )}
             </div>
-            <Badge className={`${STATUS_COLORS[lead.status_lead] || ''} border text-[10px] font-semibold`} variant="secondary">
+            <Badge className={`${STATUS_COLORS[lead.status_lead] || ''} border text-[11px] font-semibold`} variant="secondary">
               {STATUS_LABELS[lead.status_lead] || lead.status_lead}
             </Badge>
           </div>
 
           {franchiseName && (
-            <p className="text-[10px] text-muted-foreground mt-2 font-mono">{franchiseName}</p>
+            <p className="text-[11px] text-muted-foreground mt-2 font-mono">{franchiseName}</p>
           )}
         </CardContent>
       </Card>

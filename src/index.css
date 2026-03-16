@@ -193,9 +193,11 @@
     transition: box-shadow 0.3s ease, transform 0.2s ease;
   }
 
-  .card-premium:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 12px 40px rgba(0,0,0,0.06);
-    transform: translateY(-1px);
+  @media (hover: hover) {
+    .card-premium:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 12px 40px rgba(0,0,0,0.06);
+      transform: translateY(-1px);
+    }
   }
 
   .card-glow-blue {

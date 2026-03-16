@@ -68,7 +68,7 @@ export function PanelHeader({ title, children }: PanelHeaderProps) {
             </div>
 
             {/* Right: Actions */}
-            <nav className="flex items-center gap-1">
+            <nav className="flex items-center gap-0.5 sm:gap-1">
               {children}
             </nav>
           </div>
