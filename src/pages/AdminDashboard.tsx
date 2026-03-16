@@ -378,16 +378,16 @@ export default function AdminDashboard() {
             {/* Inactive Alerts */}
             <div className="mb-4 sm:mb-6">
               <AdminInactiveAlerts
-                franchises={franchises as any}
-                leads={allLeads as any}
+                franchises={orgFilteredFranchises as any}
+                leads={orgFilteredLeads as any}
               />
             </div>
 
             {/* Performance Comparison */}
             <div className="mb-4 sm:mb-6">
               <AdminPerformanceComparison
-                leads={allLeads as any}
-                activities={leadActivities}
+                leads={orgFilteredLeads as any}
+                activities={orgFilteredActivities}
                 franchiseMap={franchiseMap}
               />
             </div>
