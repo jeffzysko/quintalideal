@@ -22,7 +22,7 @@ import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { MapPin, Calendar, GripVertical, Filter, X, Building2, Search, CalendarIcon, MessageCircle, ChevronRight, Phone, SlidersHorizontal } from 'lucide-react';
+import { MapPin, Calendar, GripVertical, Filter, X, Building2, Search, CalendarIcon, MessageCircle, ChevronRight, SlidersHorizontal } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
