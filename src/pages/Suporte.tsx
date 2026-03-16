@@ -2,6 +2,9 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { BackButton } from '@/components/BackButton';
+import { PanelHeader } from '@/components/PanelHeader';
+import { NotificationBell } from '@/components/NotificationBell';
+import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import {
   LifeBuoy,
   BookOpen,
