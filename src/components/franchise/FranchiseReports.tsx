@@ -227,6 +227,7 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-primary" /> Tendência Semanal
             </CardTitle>
+            <p className="text-[11px] text-muted-foreground mt-0.5">Evolução do número de leads semana a semana. Suba = mais interesse!</p>
           </CardHeader>
           <CardContent className="px-2 sm:px-6">
             <ChartContainer config={{}} className="h-[200px] sm:h-[220px] w-full">
