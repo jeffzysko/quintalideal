@@ -24,6 +24,7 @@ import { MetricGrid } from '@/components/dashboard/MetricGrid';
 import { TimeRangeSelector, filterByTimeRange, type TimeRange } from '@/components/dashboard/TimeRangeSelector';
 import { SectionHeader } from '@/components/dashboard/SectionHeader';
 import type { MetricCardProps } from '@/components/dashboard/MetricCard';
+import { InsightCards } from '@/components/dashboard/InsightCards';
 
 // Lazy load heavy tab components
 const AdminCityRanking = lazy(() => import('@/components/admin/AdminCityRanking').then(m => ({ default: m.AdminCityRanking })));
