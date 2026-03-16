@@ -119,7 +119,6 @@ function KanbanColumn({
   status,
   leads,
   basePath,
-  activeId,
   isOverColumn,
 }: {
   status: string;
