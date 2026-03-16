@@ -198,18 +198,18 @@ export default function AdminDashboard() {
 
   const leadsPerMonth = useMemo(() => {
     const counts: Record<string, number> = {};
-    allLeads.forEach(l => {
+    orgFilteredLeads.forEach(l => {
       const d = new Date(l.created_at);
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
       counts[key] = (counts[key] || 0) + 1;
     });
     return Object.entries(counts).sort().map(([month, count]) => ({ month, count }));
-  }, [allLeads]);
+  }, [orgFilteredLeads]);
 
   const models = useMemo(() => {
-    const set = new Set(allLeads.map(l => l.modelo_recomendado).filter(Boolean));
+    const set = new Set(orgFilteredLeads.map(l => l.modelo_recomendado).filter(Boolean));
     return Array.from(set) as string[];
-  }, [allLeads]);
+  }, [orgFilteredLeads]);
 
   const exportCSV = async () => {
     try {
