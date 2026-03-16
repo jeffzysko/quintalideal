@@ -451,6 +451,7 @@ function KanbanColumn({
                   lead={lead}
                   basePath={basePath}
                   franchiseName={franchiseMap?.[lead.franquia_id || '']}
+                  onMoveStage={onMoveStage}
                 />
               </motion.div>
             ))
