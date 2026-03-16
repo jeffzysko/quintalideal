@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
 import { format } from 'date-fns';
@@ -24,13 +25,14 @@ interface Notification {
   read: boolean;
   created_at: string;
   franchise_id: string;
+  metadata: Record<string, unknown> | null;
 }
 
 const PAGE_SIZE = 25;
 
 export default function NotificacoesPage() {
   const { user, franchiseId, role } = useAuth();
-  
+  const navigate = useNavigate();
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
 
   const [filterRead, setFilterRead] = useState<'all' | 'unread' | 'read'>('all');
@@ -179,7 +181,14 @@ export default function NotificacoesPage() {
                     className={`p-3 sm:p-4 cursor-pointer hover:bg-muted/30 transition-colors flex items-start gap-2.5 sm:gap-3 ${
                       !notif.read ? 'border-primary/20 bg-primary/[0.03]' : ''
                     }`}
-                    onClick={() => markAsRead(notif.id)}
+                    onClick={() => {
+                      markAsRead(notif.id);
+                      const basePath = isAdmin ? '/admin' : '/painel';
+                      const leadId = (notif.metadata as Record<string, unknown>)?.lead_id as string | undefined;
+                      if (leadId && (notif.type === 'new_lead' || notif.type === 'followup')) {
+                        navigate(`${basePath}/lead/${leadId}`);
+                      }
+                    }}
                   >
                     <div className={`mt-1 sm:mt-1.5 w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full shrink-0 ${
                       !notif.read ? 'bg-primary' : 'bg-border'

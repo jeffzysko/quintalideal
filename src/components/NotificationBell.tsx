@@ -22,6 +22,7 @@ interface Notification {
   read: boolean;
   created_at: string;
   franchise_id: string;
+  metadata: Record<string, unknown> | null;
 }
 
 // Generate a short notification chime using Web Audio API
@@ -133,8 +134,12 @@ export function NotificationBell() {
 
   const handleNotificationClick = (notif: Notification) => {
     markAsRead(notif.id);
-    if (notif.type === 'new_lead') {
-      const basePath = isAdmin ? '/admin' : '/painel';
+    const basePath = isAdmin ? '/admin' : '/painel';
+    const leadId = (notif.metadata as Record<string, unknown>)?.lead_id as string | undefined;
+
+    if (leadId && (notif.type === 'new_lead' || notif.type === 'followup')) {
+      navigate(`${basePath}/lead/${leadId}`);
+    } else {
       navigate(basePath);
     }
     setOpen(false);

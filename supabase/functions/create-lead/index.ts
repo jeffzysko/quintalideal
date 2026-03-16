@@ -215,11 +215,12 @@ Deno.serve(async (req) => {
 
     let lastError: { code?: string; message?: string } | null = null;
     let insertedRefCode = "";
+    let insertedLeadId = "";
 
     for (let attempt = 0; attempt < 3; attempt += 1) {
       const refCode = generateRefCode();
 
-      const { error } = await supabase.from("leads").insert({
+      const { data: insertedLead, error } = await supabase.from("leads").insert({
         nome,
         telefone,
         email,
@@ -239,10 +240,11 @@ Deno.serve(async (req) => {
         foto4: typeof payload.foto4 === "string" ? payload.foto4 : null,
         referred_by: referredBy,
         ref_code: refCode,
-      });
+      }).select('id').single();
 
-      if (!error) {
+      if (!error && insertedLead) {
         insertedRefCode = refCode;
+        insertedLeadId = insertedLead.id;
         break;
       }
 
@@ -282,7 +284,7 @@ Deno.serve(async (req) => {
         title: "Novo lead recebido",
         message: `${nome}${cidade ? ` de ${cidade}` : ""} — ${modeloRecomendado || "Sem modelo"}`,
         type: "new_lead",
-        metadata: { lead_name: nome, city: cidade, model: modeloRecomendado },
+        metadata: { lead_id: insertedLeadId, lead_name: nome, city: cidade, model: modeloRecomendado },
       }).then(({ error: notifError }) => {
         if (notifError) console.error("Notification insert error:", notifError);
       });
