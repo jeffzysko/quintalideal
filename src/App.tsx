@@ -108,7 +108,7 @@ function AppRoutes() {
                   <Routes>
                     {/* Pages WITHOUT footer (quiz/lead flow) */}
                     <Route path="/" element={<HomePage />} />
-                    <Route path="/install" element={<InstallPage />} />
+                    <Route path="/install" element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><InstallPage /></ProtectedRoute>} />
                     <Route path="/explorar" element={<ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}><ExplorarPage /></ProtectedRoute>} />
 
                     {/* Pages WITH footer */}
