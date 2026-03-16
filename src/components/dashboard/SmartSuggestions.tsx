@@ -71,7 +71,6 @@ function generateSuggestions(
   leads: LeadWithQuiz[],
   followups: Followup[],
   activities: LeadActivity[],
-  navigate: (path: string) => void,
   handleWhatsApp: (lead: LeadRow) => void,
 ): Suggestion[] {
   const suggestions: Suggestion[] = [];
