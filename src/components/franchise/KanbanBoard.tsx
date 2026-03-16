@@ -36,6 +36,7 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/hooks/useAuth';
+import { SmartTagBadges } from '@/components/SmartTagBadges';
 
 const COLUMNS = ['novo', 'contatado', 'em_negociacao', 'vendido', 'perdido'] as const;
 

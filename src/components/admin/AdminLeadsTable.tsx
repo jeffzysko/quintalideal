@@ -122,9 +122,12 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                       </td>
                       <td role="cell" className="py-3.5 px-3 hidden md:table-cell text-muted-foreground text-xs">{lead.modelo_recomendado || '—'}</td>
                       <td role="cell" className="py-3.5 px-3">
-                        <Badge className={`${STATUS_COLORS[lead.status_lead] || ''} border text-[10px] font-semibold`} variant="secondary">
-                          {STATUS_LABELS[lead.status_lead] || lead.status_lead}
-                        </Badge>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <Badge className={`${STATUS_COLORS[lead.status_lead] || ''} border text-[10px] font-semibold`} variant="secondary">
+                            {STATUS_LABELS[lead.status_lead] || lead.status_lead}
+                          </Badge>
+                          <SmartTagBadges lead={lead} max={1} />
+                        </div>
                       </td>
                       <td role="cell" className="py-3.5 px-3 hidden lg:table-cell">
                         {lead.referred_by ? (
