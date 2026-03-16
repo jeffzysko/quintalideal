@@ -29,7 +29,7 @@ type FranchiseOption = {
 
 export default function ProfileSettings() {
   const { user, role, franchiseId } = useAuth();
-  const navigate = useNavigate();
+  
   const location = useLocation();
 
   const [fullName, setFullName] = useState('');

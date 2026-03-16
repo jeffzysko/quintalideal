@@ -59,7 +59,7 @@ const SECTIONS = [
 ];
 
 export default function TermosDeUso() {
-  const navigate = useNavigate();
+  
 
   return (
     <div className="min-h-screen flex flex-col bg-background relative overflow-hidden">

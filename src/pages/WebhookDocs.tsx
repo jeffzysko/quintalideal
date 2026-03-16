@@ -174,7 +174,6 @@ const FIELDS = [
 ];
 
 export default function WebhookDocs() {
-  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">

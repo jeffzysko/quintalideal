@@ -61,7 +61,7 @@ const SECTIONS = [
 ];
 
 export default function PoliticaPrivacidade() {
-  const navigate = useNavigate();
+  
 
   return (
     <div className="min-h-screen flex flex-col bg-background relative overflow-hidden">
