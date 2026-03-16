@@ -261,7 +261,7 @@ export function SmartSuggestions({ leads, followups, activities, basePath }: Sma
   };
 
   const suggestions = useMemo(
-    () => generateSuggestions(leads, followups, activities, navigate, handleWhatsApp),
+    () => generateSuggestions(leads, followups, activities, handleWhatsApp),
     [leads, followups, activities],
   );
 
