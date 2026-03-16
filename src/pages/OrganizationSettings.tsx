@@ -34,7 +34,7 @@ interface FranchiseSettings {
 }
 
 export default function OrganizationSettings() {
-  const { user, role, franchiseId } = useAuth();
+  const { role, franchiseId } = useAuth();
   const [franchise, setFranchise] = useState<FranchiseSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
