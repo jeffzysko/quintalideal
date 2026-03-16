@@ -345,13 +345,14 @@ export default function AdminDashboard() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
-              <AdminCityRanking leads={allLeads} />
-              <AdminFranchiseRanking leads={allLeads} franchiseMap={franchiseMap} />
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
-              <AdminReferralMetrics leads={allLeads} />
-              <Card className="card-premium">
+            <Suspense fallback={<TabFallback />}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
+                <AdminCityRanking leads={allLeads} />
+                <AdminFranchiseRanking leads={allLeads} franchiseMap={franchiseMap} />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
+                <AdminReferralMetrics leads={allLeads} />
+                <Card className="card-premium">
                 <CardHeader className="px-3 sm:px-6"><CardTitle className="text-sm font-bold">Leads por Mês</CardTitle></CardHeader>
                 <CardContent className="px-2 sm:px-6">
                   {leadsPerMonth.length > 0 ? (
