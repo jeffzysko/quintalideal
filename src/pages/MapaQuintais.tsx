@@ -60,7 +60,7 @@ function KPICard({ icon: Icon, label, value, color, delay, accentGlow }: {
 }
 
 export default function MapaQuintais() {
-  const navigate = useNavigate();
+  
   const [leads, setLeads] = useState<{ cidade: string | null; pontuacao_quintal: number | null }[]>([]);
   const [loading, setLoading] = useState(true);
 

@@ -157,7 +157,7 @@ function SectionCard({ children, title, icon, subtitle, delay, className = '' }:
 }
 
 export default function RadarMercado() {
-  const navigate = useNavigate();
+  
   const [leads, setLeads] = useState<LeadData[]>([]);
   const [franchises, setFranchises] = useState<Franchise[]>([]);
   const [loading, setLoading] = useState(true);
