@@ -50,6 +50,7 @@ const TermosDeUso = lazy(() => import("./pages/TermosDeUso"));
 const PoliticaPrivacidade = lazy(() => import("./pages/PoliticaPrivacidade"));
 const Suporte = lazy(() => import("./pages/Suporte"));
 const Notificacoes = lazy(() => import("./pages/Notificacoes"));
+const HojePage = lazy(() => import("./pages/HojePage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
