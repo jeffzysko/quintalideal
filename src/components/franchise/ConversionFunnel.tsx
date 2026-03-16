@@ -91,7 +91,7 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
                       )}
                     </div>
                   </div>
-                  <div className="h-8 rounded-lg bg-muted/40 overflow-hidden relative">
+                  <div className="h-10 rounded-xl bg-muted/40 overflow-hidden relative">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${barWidth}%` }}
