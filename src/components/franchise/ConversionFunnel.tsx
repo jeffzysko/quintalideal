@@ -96,7 +96,7 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
                       initial={{ width: 0 }}
                       animate={{ width: `${barWidth}%` }}
                       transition={{ delay: 0.2 + i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                      className="h-full rounded-lg"
+                      className="h-full rounded-xl"
                       style={{ backgroundColor: `${step.color}20`, borderLeft: `3px solid ${step.color}` }}
                     />
                     <span
