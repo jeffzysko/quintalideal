@@ -11,7 +11,7 @@ interface PageHeaderProps {
   rightSlot?: ReactNode;
 }
 
-export function PageHeader({ title, subtitle, icon, onBack, rightSlot }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, icon, fallbackPath, rightSlot }: PageHeaderProps) {
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
