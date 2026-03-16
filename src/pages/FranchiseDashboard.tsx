@@ -223,6 +223,11 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
 
       <MetricGrid metrics={metrics} loading={loadingKpis} columns={4} />
 
+      {/* Insight Surfacing */}
+      {!loadingKpis && currentLeads.length > 0 && (
+        <InsightCards leads={currentLeads} previousLeads={previousLeads} maxCards={3} />
+      )}
+
       {/* Alerts */}
       {overdueLeads.length > 0 && (
         <div className="mb-4 sm:mb-6">
