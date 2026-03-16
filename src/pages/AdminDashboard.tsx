@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, lazy, Suspense, useCallback } from 'react';
+import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
