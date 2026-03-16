@@ -9,7 +9,7 @@ export function Footer() {
         {/* Grid principal */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           {/* Brand */}
-          <div className="col-span-2 sm:col-span-1 flex flex-col items-start gap-3">
+          <div className="col-span-1 flex flex-col items-start gap-3">
             <img src={logoSplash} alt="Splash Piscinas" className="w-10 opacity-70" />
             <p className="text-xs text-muted-foreground leading-relaxed max-w-[220px]">
               Essa é uma iniciativa da Hallow Comunicação juntamente com a iGUi Santo Antônio.
