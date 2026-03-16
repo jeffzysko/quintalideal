@@ -214,7 +214,7 @@ export default function AdminDashboard() {
   const cities = new Set(currentLeads.map(l => l.cidade).filter(Boolean)).size;
   const avgScore = totalLeads > 0 ? Math.round(currentLeads.reduce((s, l) => s + (l.pontuacao_quintal || 0), 0) / totalLeads) : 0;
   const referralCount = currentLeads.filter(l => l.referred_by).length;
-  const _soldCount = currentLeads.filter(l => l.status_lead === 'vendido').length;
+  const soldCount = currentLeads.filter(l => l.status_lead === 'vendido').length; // eslint-disable-line @typescript-eslint/no-unused-vars
 
   const prevTotal = previousLeads.length || undefined;
   const prevNew = previousLeads.length > 0 ? previousLeads.filter(l => l.status_lead === 'novo').length : undefined;
