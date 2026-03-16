@@ -424,6 +424,16 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Filtros</span>
         </div>
 
+        <div className="relative">
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+          <Input
+            placeholder="Buscar por nome..."
+            value={nameSearch}
+            onChange={(e) => setNameSearch(e.target.value)}
+            className="w-[160px] h-8 text-xs pl-7"
+          />
+        </div>
+
         <Select value={tempFilter} onValueChange={setTempFilter}>
           <SelectTrigger className="w-[150px] h-8 text-xs">
             <SelectValue placeholder="Temperatura" />
@@ -448,12 +458,48 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
           </SelectContent>
         </Select>
 
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="sm" className={cn("h-8 text-xs gap-1.5", dateFrom && "text-foreground")}>
+              <CalendarIcon className="w-3.5 h-3.5" />
+              {dateFrom ? format(dateFrom, "dd/MM/yy", { locale: ptBR }) : "De"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <CalendarPicker
+              mode="single"
+              selected={dateFrom}
+              onSelect={setDateFrom}
+              initialFocus
+              className={cn("p-3 pointer-events-auto")}
+            />
+          </PopoverContent>
+        </Popover>
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="sm" className={cn("h-8 text-xs gap-1.5", dateTo && "text-foreground")}>
+              <CalendarIcon className="w-3.5 h-3.5" />
+              {dateTo ? format(dateTo, "dd/MM/yy", { locale: ptBR }) : "Até"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <CalendarPicker
+              mode="single"
+              selected={dateTo}
+              onSelect={setDateTo}
+              initialFocus
+              className={cn("p-3 pointer-events-auto")}
+            />
+          </PopoverContent>
+        </Popover>
+
         {hasActiveFilters && (
           <Button
             variant="ghost"
             size="sm"
             className="h-8 px-2 text-xs text-muted-foreground hover:text-foreground"
-            onClick={() => { setTempFilter('all'); setCityFilter('all'); }}
+            onClick={() => { setTempFilter('all'); setCityFilter('all'); setNameSearch(''); setDateFrom(undefined); setDateTo(undefined); }}
           >
             <X className="w-3 h-3 mr-1" />
             Limpar
