@@ -54,6 +54,10 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
 
   const handleWhatsApp = () => {
     trackEvent('whatsapp_clicked', { franchiseId });
+    trackMetaEvent('Contact', {
+      content_name: poolName,
+      content_category: 'whatsapp',
+    });
     const phone = whatsappNumber || '5551999999999';
     const message = encodeURIComponent(
       t('wa_message', lang)
