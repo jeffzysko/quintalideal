@@ -278,155 +278,181 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
         ))}
       </div>
 
-      {activeTab === 'leads' && (
-        <Card className="card-premium">
-          <CardHeader>
-            <CardTitle className="text-sm font-bold flex items-center justify-between">
-              <span>Leads Recentes ({totalCount})</span>
-              {overdueLeads.length > 0 && (
-                <Badge variant="outline" className="text-[10px] border-amber-500/30 text-amber-600 animate-pulse">
-                  ⚠️ {overdueLeads.length} aguardando
-                </Badge>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isLoading ? (
-              <TableSkeleton rows={8} cols={6} />
-            ) : totalCount === 0 ? (
-              <motion.div 
-                initial={{ opacity: 0, y: 20 }} 
-                animate={{ opacity: 1, y: 0 }} 
-                transition={{ duration: 0.5 }}
-                className="flex flex-col items-center justify-center py-16 px-4"
-              >
-                <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
-                  <Inbox className="w-10 h-10 text-primary/60" />
-                </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">Nenhum lead ainda</h3>
-                <p className="text-sm text-muted-foreground text-center max-w-md mb-6">
-                  Seus leads aparecerão aqui assim que os primeiros clientes responderem ao quiz da sua página. Compartilhe seu link para começar!
-                </p>
-                {franchiseSlug && (
-                  <Button variant="outline" className="gap-2 rounded-xl" onClick={() => {
-                    navigator.clipboard.writeText(`${SITE_URL}/${franchiseSlug}`);
-                    toast.success('Link copiado!');
-                  }}>
-                    <Share2 className="w-4 h-4" />
-                    Copiar link do quiz
-                  </Button>
-                )}
-              </motion.div>
-            ) : (
-              <>
-                {isMobile ? (
-                  <div className="space-y-3">
-                    {sortedLeads.map((lead, i) => (
-                      <MobileLeadCard key={lead.id} lead={lead} index={i} basePath={leadDetailPath} />
-                    ))}
-                  </div>
-                ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm" role="table">
-                    <thead>
-                      <tr className="border-b border-border/50" role="row">
-                        <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Nome</th>
-                        <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Temp.</th>
-                        <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Cidade</th>
-                        <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Quintal</th>
-                        <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Status</th>
-                        <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Data</th>
-                        <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider"></th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {sortedLeads.map(lead => {
-                        const temp = classifyLead(lead.respostas_questionario || null, lead.pontuacao_quintal);
-                        const isOverdue = lead.status_lead === 'novo' && (Date.now() - new Date(lead.created_at).getTime()) > 48 * 60 * 60 * 1000;
-                        const score = lead.pontuacao_quintal || 0;
-                        const scoreEmoji = score >= 70 ? '🟢' : score >= 40 ? '🟡' : '🔴';
-                        const scoreLabel = score >= 70 ? 'Ótimo' : score >= 40 ? 'Bom' : 'Baixo';
-                        return (
-                          <tr key={lead.id} className={`border-b border-border/20 hover:bg-muted/40 transition-all cursor-pointer group ${isOverdue ? 'bg-amber-500/[0.03]' : ''}`} role="row" onClick={() => navigate(`${leadDetailPath}/${lead.id}`)}>
-                            <td role="cell" className="py-3.5 px-3 font-medium">
-                              <div className="flex items-center gap-2">
-                                {lead.nome || '—'}
-                                {isOverdue && <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shrink-0" />}
-                              </div>
-                            </td>
-                            <td role="cell" className="py-3.5 px-3">
-                              <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
-                                {temp.emoji} {temp.label}
-                              </Badge>
-                            </td>
-                            <td role="cell" className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.cidade || '—'}</td>
-                            <td role="cell" className="py-3.5 px-3">
-                              <div className="flex items-center gap-1.5">
-                                <div className="w-16 h-2 rounded-full bg-muted overflow-hidden">
-                                  <div
-                                    className={`h-full rounded-full ${score >= 70 ? 'bg-emerald-500' : score >= 40 ? 'bg-amber-500' : 'bg-red-400'}`}
-                                    style={{ width: `${score}%` }}
-                                  />
-                                </div>
-                                <span className="text-[11px] text-muted-foreground whitespace-nowrap">{scoreEmoji} {scoreLabel}</span>
-                              </div>
-                            </td>
-                            <td role="cell" className="py-3.5 px-3">
-                              <Badge className={`${STATUS_COLORS[lead.status_lead] || ''} border text-xs font-medium`} variant="secondary">
-                                {STATUS_LABELS[lead.status_lead] || lead.status_lead}
-                              </Badge>
-                            </td>
-                            <td role="cell" className="py-3.5 px-3 hidden md:table-cell text-muted-foreground text-xs">
-                              {new Date(lead.created_at).toLocaleDateString('pt-BR')}
-                            </td>
-                            <td role="cell" className="py-3.5 px-3">
-                              <Button size="sm" variant="ghost" onClick={() => navigate(`${leadDetailPath}/${lead.id}`)} className="rounded-lg" aria-label="Ver detalhes do lead">
-                                <Eye className="w-4 h-4" />
-                              </Button>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
-                </div>
-                )}
-
-                 {totalCount > PAGE_SIZE && (
-                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4 pt-4 border-t border-border/30">
-                    <p className="text-xs sm:text-sm text-muted-foreground">
-                      {from + 1}–{Math.min(to, totalCount)} de {totalCount}
-                    </p>
-                    <div className="flex items-center gap-2 w-full sm:w-auto">
-                      <Button variant="outline" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="rounded-xl min-h-[44px] text-xs flex-1 sm:flex-none">
-                        Anterior
-                      </Button>
-                      <span className="flex items-center justify-center text-xs text-muted-foreground px-3 min-w-[48px]">
-                        {page}/{totalPages}
-                      </span>
-                      <Button variant="outline" size="sm" onClick={() => setPage(p => p + 1)} disabled={page >= totalPages} className="rounded-xl min-h-[44px] text-xs flex-1 sm:flex-none">
-                        Próximo
-                      </Button>
+      <AnimatePresence mode="wait">
+        {activeTab === 'leads' && (
+          <motion.div
+            key="leads"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+          >
+            <Card className="card-premium">
+              <CardHeader>
+                <CardTitle className="text-sm font-bold flex items-center justify-between">
+                  <span>Leads Recentes ({totalCount})</span>
+                  {overdueLeads.length > 0 && (
+                    <Badge variant="outline" className="text-[10px] border-amber-500/30 text-amber-600 animate-pulse">
+                      ⚠️ {overdueLeads.length} aguardando
+                    </Badge>
+                  )}
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                {isLoading ? (
+                  <TableSkeleton rows={8} cols={6} />
+                ) : totalCount === 0 ? (
+                  <motion.div 
+                    initial={{ opacity: 0, y: 20 }} 
+                    animate={{ opacity: 1, y: 0 }} 
+                    transition={{ duration: 0.5 }}
+                    className="flex flex-col items-center justify-center py-16 px-4"
+                  >
+                    <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+                      <Inbox className="w-10 h-10 text-primary/60" />
                     </div>
-                  </div>
+                    <h3 className="text-lg font-semibold text-foreground mb-2">Nenhum lead ainda</h3>
+                    <p className="text-sm text-muted-foreground text-center max-w-md mb-6">
+                      Seus leads aparecerão aqui assim que os primeiros clientes responderem ao quiz da sua página. Compartilhe seu link para começar!
+                    </p>
+                    {franchiseSlug && (
+                      <Button variant="outline" className="gap-2 rounded-xl" onClick={() => {
+                        navigator.clipboard.writeText(`${SITE_URL}/${franchiseSlug}`);
+                        toast.success('Link copiado!');
+                      }}>
+                        <Share2 className="w-4 h-4" />
+                        Copiar link do quiz
+                      </Button>
+                    )}
+                  </motion.div>
+                ) : (
+                  <>
+                    {isMobile ? (
+                      <div className="space-y-3">
+                        {sortedLeads.map((lead, i) => (
+                          <MobileLeadCard key={lead.id} lead={lead} index={i} basePath={leadDetailPath} />
+                        ))}
+                      </div>
+                    ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full text-sm" role="table">
+                        <thead>
+                          <tr className="border-b border-border/50" role="row">
+                            <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Nome</th>
+                            <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Temp.</th>
+                            <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Cidade</th>
+                            <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Quintal</th>
+                            <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Status</th>
+                            <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Data</th>
+                            <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider"></th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {sortedLeads.map(lead => {
+                            const temp = classifyLead(lead.respostas_questionario || null, lead.pontuacao_quintal);
+                            const isOverdue = lead.status_lead === 'novo' && (Date.now() - new Date(lead.created_at).getTime()) > 48 * 60 * 60 * 1000;
+                            const score = lead.pontuacao_quintal || 0;
+                            const scoreEmoji = score >= 70 ? '🟢' : score >= 40 ? '🟡' : '🔴';
+                            const scoreLabel = score >= 70 ? 'Ótimo' : score >= 40 ? 'Bom' : 'Baixo';
+                            return (
+                              <tr key={lead.id} className={`border-b border-border/20 hover:bg-muted/40 transition-all cursor-pointer group ${isOverdue ? 'bg-amber-500/[0.03]' : ''}`} role="row" onClick={() => navigate(`${leadDetailPath}/${lead.id}`)}>
+                                <td role="cell" className="py-3.5 px-3 font-medium">
+                                  <div className="flex items-center gap-2">
+                                    {lead.nome || '—'}
+                                    {isOverdue && <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse shrink-0" />}
+                                  </div>
+                                </td>
+                                <td role="cell" className="py-3.5 px-3">
+                                  <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
+                                    {temp.emoji} {temp.label}
+                                  </Badge>
+                                </td>
+                                <td role="cell" className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.cidade || '—'}</td>
+                                <td role="cell" className="py-3.5 px-3">
+                                  <div className="flex items-center gap-1.5">
+                                    <div className="w-16 h-2 rounded-full bg-muted overflow-hidden">
+                                      <div
+                                        className={`h-full rounded-full ${score >= 70 ? 'bg-emerald-500' : score >= 40 ? 'bg-amber-500' : 'bg-red-400'}`}
+                                        style={{ width: `${score}%` }}
+                                      />
+                                    </div>
+                                    <span className="text-[11px] text-muted-foreground whitespace-nowrap">{scoreEmoji} {scoreLabel}</span>
+                                  </div>
+                                </td>
+                                <td role="cell" className="py-3.5 px-3">
+                                  <Badge className={`${STATUS_COLORS[lead.status_lead] || ''} border text-xs font-medium`} variant="secondary">
+                                    {STATUS_LABELS[lead.status_lead] || lead.status_lead}
+                                  </Badge>
+                                </td>
+                                <td role="cell" className="py-3.5 px-3 hidden md:table-cell text-muted-foreground text-xs">
+                                  {new Date(lead.created_at).toLocaleDateString('pt-BR')}
+                                </td>
+                                <td role="cell" className="py-3.5 px-3">
+                                  <Button size="sm" variant="ghost" onClick={() => navigate(`${leadDetailPath}/${lead.id}`)} className="rounded-lg" aria-label="Ver detalhes do lead">
+                                    <Eye className="w-4 h-4" />
+                                  </Button>
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    </div>
+                    )}
+
+                     {totalCount > PAGE_SIZE && (
+                      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4 pt-4 border-t border-border/30">
+                        <p className="text-xs sm:text-sm text-muted-foreground">
+                          {from + 1}–{Math.min(to, totalCount)} de {totalCount}
+                        </p>
+                        <div className="flex items-center gap-2 w-full sm:w-auto">
+                          <Button variant="outline" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="rounded-xl min-h-[44px] text-xs flex-1 sm:flex-none">
+                            Anterior
+                          </Button>
+                          <span className="flex items-center justify-center text-xs text-muted-foreground px-3 min-w-[48px]">
+                            {page}/{totalPages}
+                          </span>
+                          <Button variant="outline" size="sm" onClick={() => setPage(p => p + 1)} disabled={page >= totalPages} className="rounded-xl min-h-[44px] text-xs flex-1 sm:flex-none">
+                            Próximo
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 )}
-              </>
-            )}
-          </CardContent>
-        </Card>
-      )}
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
 
-      {activeTab === 'funnel' && (
-        <KanbanBoard
-          leads={allLeads as (LeadRow & { respostas_questionario?: Record<string, string> | null })[]}
-          franchiseId={franchiseId!}
-          basePath={leadDetailPath}
-        />
-      )}
+        {activeTab === 'funnel' && (
+          <motion.div
+            key="funnel"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+          >
+            <KanbanBoard
+              leads={allLeads as (LeadRow & { respostas_questionario?: Record<string, string> | null })[]}
+              franchiseId={franchiseId!}
+              basePath={leadDetailPath}
+            />
+          </motion.div>
+        )}
 
-      {activeTab === 'reports' && (
-        <FranchiseReports leads={allLeads} />
-      )}
+        {activeTab === 'reports' && (
+          <motion.div
+            key="reports"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+          >
+            <FranchiseReports leads={allLeads} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 
