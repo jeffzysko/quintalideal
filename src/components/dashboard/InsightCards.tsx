@@ -46,11 +46,11 @@ function computeInsights(leads: LeadLike[], previousLeads?: LeadLike[]): Insight
         key: 'conversion_change',
         icon: diff > 0 ? TrendingUp : TrendingDown,
         title: diff > 0
-          ? `Taxa de conversão subiu ${diff.toFixed(0)}%`
-          : `Taxa de conversão caiu ${Math.abs(diff).toFixed(0)}%`,
+          ? `Suas vendas estão crescendo!`
+          : `Atenção: menos vendas neste período`,
         description: diff > 0
-          ? `Sua taxa passou de ${prevRate.toFixed(0)}% para ${currentRate.toFixed(0)}%. Continue assim!`
-          : `Sua taxa caiu de ${prevRate.toFixed(0)}% para ${currentRate.toFixed(0)}%. Revise o pipeline.`,
+          ? `Você fechou mais negócios que no período anterior. Continue assim!`
+          : `Revise seus leads abertos e retome o contato com quem está em negociação.`,
         color: diff > 0 ? 'text-emerald-600' : 'text-destructive',
         bg: diff > 0 ? 'bg-emerald-500/10' : 'bg-destructive/10',
         priority: 9,
