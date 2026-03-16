@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import {
-  MapPin, BarChart3, Users, TrendingUp, Target, Home,
+  MapPin, BarChart3, Users, TrendingUp, Home,
   Crown, Sparkles, AlertTriangle, Trophy, Flame,
 } from 'lucide-react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -12,7 +12,10 @@ import { PieChart, Pie, Cell } from 'recharts';
 
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
-import { PageHeader } from '@/components/PageHeader';
+import { PanelHeader } from '@/components/PanelHeader';
+import { BackButton } from '@/components/BackButton';
+import { NotificationBell } from '@/components/NotificationBell';
+import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 
 interface LeadData {
   cidade: string | null;
@@ -318,17 +321,15 @@ export default function RadarMercado() {
   return (
     <PageTransition>
     <div className="min-h-screen bg-background">
-      <PageHeader
-        title="Radar de Mercado"
-        subtitle="Inteligência do Mercado de Piscinas"
-        icon={<Target className="w-4 h-4 text-primary" />}
-        fallbackPath="/admin"
-        rightSlot={
-          <Badge variant="outline" className="text-[10px] sm:text-xs px-2 sm:px-3 py-1 sm:py-1.5 border-primary/30 text-primary animate-pulse-glow">
-            {totalLeads} testes
-          </Badge>
-        }
-      />
+      <PanelHeader title="Radar de Mercado">
+        <BackButton fallback="/admin" />
+        <Badge variant="outline" className="text-[10px] sm:text-xs px-2 sm:px-3 py-1 sm:py-1.5 border-primary/30 text-primary animate-pulse-glow hidden sm:flex">
+          {totalLeads} testes
+        </Badge>
+        <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
+        <NotificationBell />
+        <UserAvatarMenu />
+      </PanelHeader>
 
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
         <Breadcrumbs items={[

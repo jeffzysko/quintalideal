@@ -11,6 +11,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff, Camera, MapPin, Shield, Puzzle } from 'lucide-react';
 import { BackButton } from '@/components/BackButton';
+import { NotificationBell } from '@/components/NotificationBell';
+import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { FranchiseUsersSection } from '@/components/franchise/FranchiseUsersSection';
 import { FranchiseContactSettings } from '@/components/franchise/FranchiseContactSettings';
 import { toast } from 'sonner';
@@ -236,7 +238,10 @@ export default function ProfileSettings() {
     <PageTransition>
     <div className="min-h-screen bg-background">
       <PanelHeader title="Configurações">
-        <BackButton fallback={backPath} label="Voltar" />
+        <BackButton fallback={backPath} />
+        <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
+        <NotificationBell />
+        <UserAvatarMenu />
       </PanelHeader>
 
       <div className="max-w-3xl mx-auto px-4 md:px-6 py-6 md:py-8 space-y-6">

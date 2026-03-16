@@ -2,6 +2,10 @@ import { Copy, CheckCircle2, Webhook, Shield, Zap, Code2, FileJson, Lock, Send, 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { BackButton } from '@/components/BackButton';
+import { PanelHeader } from '@/components/PanelHeader';
+import { NotificationBell } from '@/components/NotificationBell';
+import { UserAvatarMenu } from '@/components/UserAvatarMenu';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 
 const PAYLOAD_EXAMPLE = `{
   "evento": "novo_lead",
@@ -177,6 +181,13 @@ export default function WebhookDocs() {
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
+      <PanelHeader title="Webhook Docs">
+        <BackButton fallback="/admin" />
+        <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
+        <NotificationBell />
+        <UserAvatarMenu />
+      </PanelHeader>
+
       {/* Background orbs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
         <div className="absolute -top-40 -right-40 w-96 h-96 rounded-full bg-primary/5 blur-3xl" />
@@ -184,11 +195,11 @@ export default function WebhookDocs() {
         <div className="absolute bottom-20 right-10 w-64 h-64 rounded-full bg-accent/5 blur-3xl" />
       </div>
 
-      <div className="relative max-w-3xl mx-auto px-4 py-10 md:py-16">
-        {/* Back button */}
-        <motion.div initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }} className="mb-8">
-          <BackButton fallback="/admin" label="Voltar" />
-        </motion.div>
+      <div className="relative max-w-3xl mx-auto px-4 py-6 md:py-10">
+        <Breadcrumbs items={[
+          { label: 'Admin', href: '/admin' },
+          { label: 'Webhook Docs' },
+        ]} />
 
         {/* Hero */}
         <motion.div

@@ -9,6 +9,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Camera, ClipboardList, Settings2, Save, User, Trash2 } from 'lucide-react';
 import { BackButton } from '@/components/BackButton';
+import { PanelHeader } from '@/components/PanelHeader';
+import { NotificationBell } from '@/components/NotificationBell';
+import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { LeadTimeline } from '@/components/lead/LeadTimeline';
 import { LeadFollowups } from '@/components/franchise/LeadFollowups';
@@ -205,13 +208,16 @@ export default function LeadDetail() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen gradient-hero">
-      <div className="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-5">
-        {/* Breadcrumbs */}
-        <Breadcrumbs items={breadcrumbItems} />
+    <div className="min-h-screen bg-background">
+      <PanelHeader title={lead.nome || 'Detalhes do Lead'}>
+        <BackButton fallback={leadsUrl} />
+        <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
+        <NotificationBell />
+        <UserAvatarMenu />
+      </PanelHeader>
 
-        {/* Back */}
-        <BackButton fallback={leadsUrl} label="Voltar" className="-ml-2" />
+      <div className="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-5">
+        <Breadcrumbs items={breadcrumbItems} />
 
         {/* Hero Card */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
