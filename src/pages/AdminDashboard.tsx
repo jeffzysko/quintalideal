@@ -286,6 +286,7 @@ export default function AdminDashboard() {
             { key: 'overview' as const, icon: BarChart3, label: 'Inteligência' },
             { key: 'analytics' as const, icon: Activity, label: 'Analytics' },
             { key: 'leads' as const, icon: Users, label: 'Leads' },
+            { key: 'kanban' as const, icon: Kanban, label: 'Funil Geral' },
             { key: 'franchises' as const, icon: Building2, label: 'Franquias' },
             { key: 'cities' as const, icon: Globe, label: 'Territórios' },
             { key: 'users' as const, icon: Users, label: 'Usuários' },
