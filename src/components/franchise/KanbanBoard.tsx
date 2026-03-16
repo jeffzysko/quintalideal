@@ -287,6 +287,9 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
   const [localStatusOverrides, setLocalStatusOverrides] = useState<Record<string, string>>({});
   const [tempFilter, setTempFilter] = useState<string>('all');
   const [cityFilter, setCityFilter] = useState<string>('all');
+  const [nameSearch, setNameSearch] = useState('');
+  const [dateFrom, setDateFrom] = useState<Date | undefined>();
+  const [dateTo, setDateTo] = useState<Date | undefined>();
   const queryClient = useQueryClient();
 
   useEffect(() => {
