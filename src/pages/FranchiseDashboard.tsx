@@ -31,6 +31,7 @@ import { TimeRangeSelector, filterByTimeRange, type TimeRange } from '@/componen
 import { SectionHeader } from '@/components/dashboard/SectionHeader';
 import { AlertBanner } from '@/components/dashboard/AlertBanner';
 import type { MetricCardProps } from '@/components/dashboard/MetricCard';
+import { InsightCards } from '@/components/dashboard/InsightCards';
 
 const PAGE_SIZE = 20;
 
