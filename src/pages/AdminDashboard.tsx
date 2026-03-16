@@ -41,7 +41,7 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const { signOut: _signOut, role } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'analytics' | 'franchises' | 'cities' | 'users' | 'emails' | 'franchise-view'>(() =>
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'kanban' | 'analytics' | 'franchises' | 'cities' | 'users' | 'emails' | 'franchise-view'>(() =>
     new URLSearchParams(location.search).get('tab') === 'leads' ? 'leads' : 'overview'
   );
   const [viewFranchiseId, setViewFranchiseId] = useState<string>('');
