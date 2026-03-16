@@ -59,10 +59,19 @@ export default function AdminDashboard() {
   const [viewFranchiseId, setViewFranchiseId] = useState<string>('');
   const [timeRange, setTimeRange] = useState<TimeRange>('30');
 
+  // Global org filter from Organization Switcher
+  const [orgFilter, setOrgFilter] = useState<string | null>(null);
+
   const [filterFranquia, setFilterFranquia] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterModelo, setFilterModelo] = useState('all');
   const [page, setPage] = useState(1);
+
+  // Sync leads tab franchise filter when org switcher changes
+  useEffect(() => {
+    setFilterFranquia(orgFilter || 'all');
+    setPage(1);
+  }, [orgFilter]);
 
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
@@ -161,26 +170,46 @@ export default function AdminDashboard() {
     return map;
   }, [franchises]);
 
+  // ── Org-filtered leads (global switcher) ──
+  const orgFilteredLeads = useMemo(
+    () => orgFilter ? allLeads.filter(l => l.franquia_id === orgFilter) : allLeads,
+    [allLeads, orgFilter],
+  );
+
+  const orgFilteredActivities = useMemo(
+    () => {
+      if (!orgFilter) return leadActivities;
+      const leadIds = new Set(orgFilteredLeads.map(l => l.id));
+      return leadActivities.filter(a => leadIds.has(a.lead_id));
+    },
+    [leadActivities, orgFilteredLeads, orgFilter],
+  );
+
+  const orgFilteredFranchises = useMemo(
+    () => orgFilter ? franchises.filter(f => f.id === orgFilter) : franchises,
+    [franchises, orgFilter],
+  );
+
   // ── Time-filtered KPIs with comparison ──
   const { current: currentLeads, previous: previousLeads } = useMemo(
-    () => filterByTimeRange(allLeads, timeRange),
-    [allLeads, timeRange],
+    () => filterByTimeRange(orgFilteredLeads, timeRange),
+    [orgFilteredLeads, timeRange],
   );
 
   const leadsPerMonth = useMemo(() => {
     const counts: Record<string, number> = {};
-    allLeads.forEach(l => {
+    orgFilteredLeads.forEach(l => {
       const d = new Date(l.created_at);
       const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
       counts[key] = (counts[key] || 0) + 1;
     });
     return Object.entries(counts).sort().map(([month, count]) => ({ month, count }));
-  }, [allLeads]);
+  }, [orgFilteredLeads]);
 
   const models = useMemo(() => {
-    const set = new Set(allLeads.map(l => l.modelo_recomendado).filter(Boolean));
+    const set = new Set(orgFilteredLeads.map(l => l.modelo_recomendado).filter(Boolean));
     return Array.from(set) as string[];
-  }, [allLeads]);
+  }, [orgFilteredLeads]);
 
   const exportCSV = async () => {
     try {
@@ -238,7 +267,7 @@ export default function AdminDashboard() {
     { icon: Users, label: 'Quintais explorados', value: totalLeads, previousValue: prevTotal, color: 'text-primary' },
     { icon: TrendingUp, label: 'Novos leads', value: newLeads, previousValue: prevNew, color: 'text-emerald-600' },
     { icon: Target, label: 'Média potencial', value: `${avgScore}%`, previousValue: prevAvg, color: 'text-primary' },
-    { icon: Building2, label: 'Franquias', value: franchises.length, color: 'text-violet-600' },
+    { icon: Building2, label: 'Franquias', value: orgFilteredFranchises.length, color: 'text-violet-600' },
     { icon: MapPin, label: 'Cidades', value: cities, previousValue: prevCities, color: 'text-amber-600' },
     { icon: Share2, label: 'Via convite', value: referralCount, previousValue: prevRef, color: 'text-secondary' },
   ];
@@ -287,8 +316,9 @@ export default function AdminDashboard() {
         <div className="flex items-center justify-between gap-3 mb-2">
           <Breadcrumbs items={[{ label: 'Admin' }]} />
           <OrganizationSwitcher
-            activeFranchiseId={filterFranquia === 'all' ? null : filterFranquia}
+            activeFranchiseId={orgFilter}
             onSwitch={(id) => {
+              setOrgFilter(id);
               setFilterFranquia(id || 'all');
               setPage(1);
             }}
@@ -348,27 +378,27 @@ export default function AdminDashboard() {
             {/* Inactive Alerts */}
             <div className="mb-4 sm:mb-6">
               <AdminInactiveAlerts
-                franchises={franchises as any}
-                leads={allLeads as any}
+                franchises={orgFilteredFranchises as any}
+                leads={orgFilteredLeads as any}
               />
             </div>
 
             {/* Performance Comparison */}
             <div className="mb-4 sm:mb-6">
               <AdminPerformanceComparison
-                leads={allLeads as any}
-                activities={leadActivities}
+                leads={orgFilteredLeads as any}
+                activities={orgFilteredActivities}
                 franchiseMap={franchiseMap}
               />
             </div>
 
             <Suspense fallback={<TabFallback />}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
-                <AdminCityRanking leads={allLeads} />
-                <AdminFranchiseRanking leads={allLeads} franchiseMap={franchiseMap} />
+                <AdminCityRanking leads={orgFilteredLeads} />
+                <AdminFranchiseRanking leads={orgFilteredLeads} franchiseMap={franchiseMap} />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
-                <AdminReferralMetrics leads={allLeads} />
+                <AdminReferralMetrics leads={orgFilteredLeads} />
                 <Card className="card-premium">
                 <CardHeader className="px-3 sm:px-6"><CardTitle className="text-sm font-bold">Leads por Mês</CardTitle></CardHeader>
                 <CardContent className="px-2 sm:px-6">
@@ -430,7 +460,7 @@ export default function AdminDashboard() {
         {activeTab === 'kanban' && (
           <Suspense fallback={<TabFallback />}>
             <KanbanBoard
-              leads={allLeads as any}
+              leads={orgFilteredLeads as any}
               franchiseId="admin"
               basePath="/admin/lead"
               franchiseMap={franchiseMap}
