@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
-import { format } from 'date-fns';
+import { format, isToday, isYesterday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Bell, Check, CheckCheck, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -16,6 +16,7 @@ import { PanelHeader } from '@/components/PanelHeader';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { NotificationBell } from '@/components/NotificationBell';
 import { motion } from 'framer-motion';
+import { getNotificationType, FILTERABLE_TYPES } from '@/lib/notification-types';
 
 interface Notification {
   id: string;
@@ -30,13 +31,34 @@ interface Notification {
 
 const PAGE_SIZE = 25;
 
+function getDateGroupLabel(dateStr: string): string {
+  const d = new Date(dateStr);
+  if (isToday(d)) return 'Hoje';
+  if (isYesterday(d)) return 'Ontem';
+  return format(d, "dd 'de' MMMM", { locale: ptBR });
+}
+
+function groupByDate(notifications: Notification[]): { label: string; items: Notification[] }[] {
+  const groups: { label: string; items: Notification[] }[] = [];
+  let currentLabel = '';
+  for (const notif of notifications) {
+    const label = getDateGroupLabel(notif.created_at);
+    if (label !== currentLabel) {
+      groups.push({ label, items: [] });
+      currentLabel = label;
+    }
+    groups[groups.length - 1].items.push(notif);
+  }
+  return groups;
+}
+
 export default function NotificacoesPage() {
   const { user, franchiseId, role } = useAuth();
   const navigate = useNavigate();
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
 
   const [filterRead, setFilterRead] = useState<'all' | 'unread' | 'read'>('all');
-  const [filterType, setFilterType] = useState<'all' | 'new_lead'>('all');
+  const [filterType, setFilterType] = useState('all');
   const [page, setPage] = useState(1);
 
   useEffect(() => { setPage(1); }, [filterRead, filterType]);
@@ -70,6 +92,7 @@ export default function NotificacoesPage() {
   const notifications = data?.notifications || [];
   const total = data?.total || 0;
   const totalPages = Math.ceil(total / PAGE_SIZE);
+  const groups = groupByDate(notifications);
 
   const markAsRead = async (id: string) => {
     await supabase.from('notifications').update({ read: true }).eq('id', id);
@@ -87,6 +110,15 @@ export default function NotificacoesPage() {
 
   const backPath = isAdmin ? '/admin' : '/painel';
 
+  const handleNotifClick = (notif: Notification) => {
+    markAsRead(notif.id);
+    const basePath = isAdmin ? '/admin' : '/painel';
+    const leadId = (notif.metadata as Record<string, unknown>)?.lead_id as string | undefined;
+    if (leadId && (notif.type === 'new_lead' || notif.type === 'followup')) {
+      navigate(`${basePath}/lead/${leadId}`);
+    }
+  };
+
   return (
     <PageTransition>
       <div className="min-h-screen bg-background">
@@ -101,7 +133,7 @@ export default function NotificacoesPage() {
             { label: 'Notificações' },
           ]} />
 
-          {/* Filters — mobile-first stacked layout */}
+          {/* Filters */}
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4 sm:mb-6">
             <div className="flex items-center gap-2 flex-wrap flex-1">
               <Select value={filterRead} onValueChange={(v) => setFilterRead(v as typeof filterRead)}>
@@ -116,13 +148,15 @@ export default function NotificacoesPage() {
                 </SelectContent>
               </Select>
 
-              <Select value={filterType} onValueChange={(v) => setFilterType(v as typeof filterType)}>
-                <SelectTrigger className="w-[130px] h-9 text-xs rounded-xl">
+              <Select value={filterType} onValueChange={setFilterType}>
+                <SelectTrigger className="w-[160px] h-9 text-xs rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Todos os tipos</SelectItem>
-                  <SelectItem value="new_lead">Novo lead</SelectItem>
+                  {FILTERABLE_TYPES.map(t => (
+                    <SelectItem key={t.value} value={t.value}>{t.label}</SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -169,58 +203,74 @@ export default function NotificacoesPage() {
               ) : null}
             </Card>
           ) : (
-            <div className="space-y-2">
-              {notifications.map((notif, i) => (
-                <motion.div
-                  key={notif.id}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.03 }}
-                >
-                  <Card
-                    className={`p-3 sm:p-4 cursor-pointer hover:bg-muted/30 transition-colors flex items-start gap-2.5 sm:gap-3 ${
-                      !notif.read ? 'border-primary/20 bg-primary/[0.03]' : ''
-                    }`}
-                    onClick={() => {
-                      markAsRead(notif.id);
-                      const basePath = isAdmin ? '/admin' : '/painel';
-                      const leadId = (notif.metadata as Record<string, unknown>)?.lead_id as string | undefined;
-                      if (leadId && (notif.type === 'new_lead' || notif.type === 'followup')) {
-                        navigate(`${basePath}/lead/${leadId}`);
-                      }
-                    }}
-                  >
-                    <div className={`mt-1 sm:mt-1.5 w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full shrink-0 ${
-                      !notif.read ? 'bg-primary' : 'bg-border'
-                    }`} />
-                    <div className="min-w-0 flex-1">
-                      <div className="flex items-start justify-between gap-2">
-                        <p className={`text-xs sm:text-sm leading-tight ${!notif.read ? 'font-semibold text-foreground' : 'text-foreground/80'}`}>
-                          {notif.title}
-                        </p>
-                        <span className="text-[9px] sm:text-[10px] text-muted-foreground/60 whitespace-nowrap shrink-0">
-                          {format(new Date(notif.created_at), "dd/MM 'às' HH:mm", { locale: ptBR })}
-                        </span>
-                      </div>
-                      {notif.message && (
-                        <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1 line-clamp-2">{notif.message}</p>
-                      )}
-                      <div className="flex items-center gap-2 mt-1.5 sm:mt-2">
-                        <Badge variant="outline" className="text-[9px] sm:text-[10px] px-1.5 py-0">
-                          {notif.type === 'new_lead' ? '🎯 Novo Lead' : notif.type}
-                        </Badge>
-                        {!notif.read && (
-                          <button
-                            onClick={(e) => { e.stopPropagation(); markAsRead(notif.id); }}
-                            className="text-[10px] text-primary hover:underline flex items-center gap-1"
+            <div className="space-y-5">
+              {groups.map((group) => (
+                <div key={group.label}>
+                  {/* Date group header */}
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                      {group.label}
+                    </span>
+                    <div className="flex-1 h-px bg-border/40" />
+                  </div>
+
+                  <div className="space-y-2">
+                    {group.items.map((notif, i) => {
+                      const cfg = getNotificationType(notif.type);
+                      const Icon = cfg.icon;
+                      return (
+                        <motion.div
+                          key={notif.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: i * 0.03 }}
+                        >
+                          <Card
+                            className={`p-3 sm:p-4 cursor-pointer hover:bg-muted/30 transition-colors flex items-start gap-2.5 sm:gap-3 ${
+                              !notif.read ? 'border-primary/20 bg-primary/[0.03]' : ''
+                            }`}
+                            onClick={() => handleNotifClick(notif)}
                           >
-                            <Check className="w-3 h-3" /> Marcar como lida
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  </Card>
-                </motion.div>
+                            {/* Category icon */}
+                            <div className={`mt-0.5 w-8 h-8 sm:w-9 sm:h-9 rounded-lg flex items-center justify-center shrink-0 ${cfg.dotColor}/10`}>
+                              <Icon className={`w-4 h-4 ${cfg.color}`} />
+                            </div>
+
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-start justify-between gap-2">
+                                <p className={`text-xs sm:text-sm leading-tight ${!notif.read ? 'font-semibold text-foreground' : 'text-foreground/80'}`}>
+                                  {notif.title}
+                                </p>
+                                <span className="text-[9px] sm:text-[10px] text-muted-foreground/60 whitespace-nowrap shrink-0">
+                                  {format(new Date(notif.created_at), "HH:mm", { locale: ptBR })}
+                                </span>
+                              </div>
+                              {notif.message && (
+                                <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1 line-clamp-2">{notif.message}</p>
+                              )}
+                              <div className="flex items-center gap-2 mt-1.5 sm:mt-2">
+                                <Badge
+                                  variant="outline"
+                                  className={`text-[9px] sm:text-[10px] px-1.5 py-0 border-current/20 ${cfg.color}`}
+                                >
+                                  {cfg.emoji} {cfg.label}
+                                </Badge>
+                                {!notif.read && (
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); markAsRead(notif.id); }}
+                                    className="text-[10px] text-primary hover:underline flex items-center gap-1"
+                                  >
+                                    <Check className="w-3 h-3" /> Marcar como lida
+                                  </button>
+                                )}
+                              </div>
+                            </div>
+                          </Card>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </div>
               ))}
             </div>
           )}
