@@ -32,7 +32,7 @@ const PAGE_SIZE = 25;
 
 export default function NotificacoesPage() {
   const { user, franchiseId, role } = useAuth();
-  
+  const navigate = useNavigate();
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
 
   const [filterRead, setFilterRead] = useState<'all' | 'unread' | 'read'>('all');
