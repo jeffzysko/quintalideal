@@ -196,6 +196,7 @@ function AppRoutes() {
                   </Routes>
                 </Suspense>
                 <CookieConsentBanner />
+                <CommandPalette />
               </BrowserRouter>
             </TooltipProvider>
           </AuthProvider>
