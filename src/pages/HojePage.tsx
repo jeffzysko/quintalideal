@@ -82,21 +82,28 @@ const URGENCY_STYLES = {
 };
 
 // ── Section wrapper ──
-function Section({ icon: Icon, title, count, iconBg = 'icon-bg-blue', children, action }: {
+function Section({ icon: Icon, title, count, iconBg = 'icon-bg-blue', children, action, collapsible = false, defaultOpen = true }: {
   icon: typeof CalendarClock;
   title: string;
   count?: number;
   iconBg?: string;
   children: React.ReactNode;
   action?: React.ReactNode;
+  collapsible?: boolean;
+  defaultOpen?: boolean;
 }) {
+  const [open, setOpen] = useState(defaultOpen);
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       className="mb-6"
     >
-      <div className="flex items-center justify-between mb-3">
+      <div
+        className={cn("flex items-center justify-between mb-3", collapsible && "cursor-pointer")}
+        onClick={collapsible ? () => setOpen(v => !v) : undefined}
+      >
         <div className="flex items-center gap-2.5">
           <div className={`w-8 h-8 rounded-lg ${iconBg} flex items-center justify-center shrink-0`}>
             <Icon className="w-4 h-4 text-primary" />
@@ -105,10 +112,13 @@ function Section({ icon: Icon, title, count, iconBg = 'icon-bg-blue', children, 
           {count !== undefined && count > 0 && (
             <Badge variant="secondary" className="text-[10px] font-bold px-1.5 py-0">{count}</Badge>
           )}
+          {collapsible && (
+            <ChevronRight className={cn("w-4 h-4 text-muted-foreground transition-transform", open && "rotate-90")} />
+          )}
         </div>
         {action}
       </div>
-      {children}
+      {(!collapsible || open) && children}
     </motion.section>
   );
 }
