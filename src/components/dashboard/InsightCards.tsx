@@ -116,8 +116,8 @@ function computeInsights(leads: LeadLike[], previousLeads?: LeadLike[]): Insight
     insights.push({
       key: 'lost_spike',
       icon: TrendingDown,
-      title: `Aumento de leads perdidos`,
-      description: `${currentLost} perdidos neste período vs. ${prevLost} no anterior. Analise as causas.`,
+      title: `Você está perdendo mais leads que o normal`,
+      description: `Foram ${currentLost} perdidos neste período. Revise o que pode estar acontecendo.`,
       color: 'text-destructive',
       bg: 'bg-destructive/10',
       priority: 8,
