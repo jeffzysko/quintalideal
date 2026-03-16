@@ -1,6 +1,6 @@
 import { usePWA } from '@/hooks/usePWA';
 import { motion } from 'framer-motion';
-import { Download, Smartphone, Check, Share, Plus, MoreVertical } from 'lucide-react';
+import { Download, Check, Share, Plus, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { PageTransition } from '@/components/PageTransition';
