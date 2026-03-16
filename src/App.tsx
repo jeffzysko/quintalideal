@@ -137,6 +137,14 @@ function AppRoutes() {
                           </ProtectedRoute>
                         }
                       />
+                      <Route
+                        path="/hoje"
+                        element={
+                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
+                            <HojePage />
+                          </ProtectedRoute>
+                        }
+                      />
                       <Route path="/painel" element={<PainelRouter />} />
                       <Route
                         path="/franquia"
