@@ -17,7 +17,7 @@ import { format, isToday, isTomorrow, isPast, differenceInHours, differenceInDay
 import { ptBR } from 'date-fns/locale';
 import {
   CalendarClock, AlertTriangle, Inbox, Phone, MessageCircle,
-  ChevronRight, ChevronLeft, Clock, Flame, Zap, CheckCircle2, Users,
+  ChevronRight, Clock, Flame, Zap, CheckCircle2, Users,
   TrendingUp, ArrowRight, Sparkles, Target, MapPin,
 } from 'lucide-react';
 import { STATUS_LABELS, STATUS_COLORS, type LeadRow } from '@/lib/lead-constants';
