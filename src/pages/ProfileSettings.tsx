@@ -236,7 +236,10 @@ export default function ProfileSettings() {
     <PageTransition>
     <div className="min-h-screen bg-background">
       <PanelHeader title="Configurações">
-        <BackButton fallback={backPath} label="Voltar" />
+        <BackButton fallback={backPath} />
+        <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
+        <NotificationBell />
+        <UserAvatarMenu />
       </PanelHeader>
 
       <div className="max-w-3xl mx-auto px-4 md:px-6 py-6 md:py-8 space-y-6">
