@@ -26,6 +26,7 @@ import { KPISkeleton } from '@/components/ui/kpi-skeleton';
 import { TableSkeleton } from '@/components/ui/table-skeleton';
 import { PanelHeader } from '@/components/PanelHeader';
 import { classifyLead } from '@/lib/leadScoring';
+import { KanbanBoard } from '@/components/franchise/KanbanBoard';
 
 const PAGE_SIZE = 20;
 
