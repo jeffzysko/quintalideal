@@ -217,8 +217,8 @@
     }
   }
 
-  /* Prevent horizontal overflow globally */
-  html, body {
+  /* Prevent horizontal overflow — only on body to preserve html scroll */
+  body {
     overflow-x: hidden;
   }
 }
