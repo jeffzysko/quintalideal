@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
-import { ArrowLeft, FileText, Scale, Users, Camera, Globe, ShieldCheck, AlertTriangle, Ban, RefreshCw, Gavel, Clock } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { FileText, Scale, Users, Camera, Globe, ShieldCheck, AlertTriangle, Ban, RefreshCw, Gavel, Clock } from 'lucide-react';
+import { BackButton } from '@/components/BackButton';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
