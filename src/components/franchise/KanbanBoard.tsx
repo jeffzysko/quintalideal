@@ -360,14 +360,16 @@ export function KanbanBoard({ leads, franchiseId, basePath }: KanbanBoardProps) 
   }, []);
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCorners}
-      onDragStart={handleDragStart}
-      onDragOver={handleDragOver}
-      onDragEnd={handleDragEnd}
-    >
-      <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-none -mx-2 px-2">
+    <>
+      <PipelineSummary leads={leads} />
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCorners}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-none -mx-2 px-2">
         {COLUMNS.map((status) => (
           <KanbanColumn
             key={status}
