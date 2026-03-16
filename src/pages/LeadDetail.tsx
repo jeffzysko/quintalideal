@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent } from '@/components/ui/card';
@@ -115,6 +116,7 @@ export default function LeadDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
   const [lead, setLead] = useState<Lead | null>(null);
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState('');
@@ -162,6 +164,9 @@ export default function LeadDetail() {
     if (!error) {
       toast.success('Alterações salvas com sucesso!');
       setLead({ ...lead, status_lead: status, observacoes });
+      // Invalidate Kanban/table queries so they reflect the change
+      queryClient.invalidateQueries({ queryKey: ['franchise-leads-all'] });
+      queryClient.invalidateQueries({ queryKey: ['franchise-leads-table'] });
     } else {
       toast.error('Erro ao salvar.');
     }
