@@ -23,7 +23,7 @@ export function PWAInstallBanner() {
     }
     const timer = setTimeout(() => setShowBanner(true), 5000);
     return () => clearTimeout(timer);
-  }, [canInstall, isStandalone, dismissed]);
+  }, [canInstall, isStandalone, dismissed, isLoggedIn]);
 
   const handleDismiss = () => {
     setDismissed(true);
