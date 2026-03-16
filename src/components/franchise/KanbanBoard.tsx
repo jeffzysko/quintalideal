@@ -218,6 +218,48 @@ function KanbanColumn({
   );
 }
 
+// ── Pipeline Summary ──
+function PipelineSummary({ leads }: { leads: LeadWithQuiz[] }) {
+  const stats = useMemo(() => {
+    let total = 0;
+    const temps = { quente: 0, morno: 0, frio: 0 };
+    for (const lead of leads) {
+      total += estimateLeadValue(lead.respostas_questionario || null);
+      const t = classifyLead(lead.respostas_questionario || null, lead.pontuacao_quintal);
+      temps[t.temperature]++;
+    }
+    return { total, temps, count: leads.length };
+  }, [leads]);
+
+  return (
+    <div className="flex flex-wrap items-center gap-4 mb-4 p-3 rounded-xl border border-border/40 bg-muted/20">
+      <div className="flex flex-col">
+        <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Pipeline Total</span>
+        <span className="text-lg font-bold text-foreground">{formatCurrency(stats.total)}</span>
+        <span className="text-[11px] text-muted-foreground">{stats.count} leads</span>
+      </div>
+      <div className="h-10 w-px bg-border/50 hidden sm:block" />
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm">🔥</span>
+          <span className="text-sm font-bold text-orange-600 dark:text-orange-400">{stats.temps.quente}</span>
+          <span className="text-[11px] text-muted-foreground">Quentes</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm">☀️</span>
+          <span className="text-sm font-bold text-amber-600 dark:text-amber-400">{stats.temps.morno}</span>
+          <span className="text-[11px] text-muted-foreground">Mornos</span>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <span className="text-sm">❄️</span>
+          <span className="text-sm font-bold text-sky-600 dark:text-sky-400">{stats.temps.frio}</span>
+          <span className="text-[11px] text-muted-foreground">Frios</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Main Board ──
 export function KanbanBoard({ leads, franchiseId, basePath }: KanbanBoardProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
@@ -318,14 +360,16 @@ export function KanbanBoard({ leads, franchiseId, basePath }: KanbanBoardProps) 
   }, []);
 
   return (
-    <DndContext
-      sensors={sensors}
-      collisionDetection={closestCorners}
-      onDragStart={handleDragStart}
-      onDragOver={handleDragOver}
-      onDragEnd={handleDragEnd}
-    >
-      <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-none -mx-2 px-2">
+    <>
+      <PipelineSummary leads={leads} />
+      <DndContext
+        sensors={sensors}
+        collisionDetection={closestCorners}
+        onDragStart={handleDragStart}
+        onDragOver={handleDragOver}
+        onDragEnd={handleDragEnd}
+      >
+        <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-none -mx-2 px-2">
         {COLUMNS.map((status) => (
           <KanbanColumn
             key={status}
@@ -342,6 +386,7 @@ export function KanbanBoard({ leads, franchiseId, basePath }: KanbanBoardProps) 
           <LeadCard lead={activeLead} basePath={basePath} overlay />
         ) : null}
       </DragOverlay>
-    </DndContext>
+      </DndContext>
+    </>
   );
 }
