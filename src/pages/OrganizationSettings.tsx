@@ -441,7 +441,7 @@ export default function OrganizationSettings() {
                   </CardContent>
                 </Card>
               </TabsContent>
-            </Tabs>
+            </Tabs>}
           </motion.div>
         </div>
       </div>
