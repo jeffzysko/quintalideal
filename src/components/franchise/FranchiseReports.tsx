@@ -265,10 +265,11 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {topCities.length > 0 && (
           <Card className="border-border/50 shadow-sm">
-            <CardHeader className="pb-2 px-3 sm:px-6">
+          <CardHeader className="pb-2 px-3 sm:px-6">
               <CardTitle className="text-sm font-semibold flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-primary" /> Top Cidades
               </CardTitle>
+              <p className="text-[11px] text-muted-foreground mt-0.5">Cidades que mais geraram leads para sua franquia.</p>
             </CardHeader>
             <CardContent className="px-3 sm:px-6">
               <div className="space-y-2">
