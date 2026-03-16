@@ -25,6 +25,7 @@ interface Notification {
   read: boolean;
   created_at: string;
   franchise_id: string;
+  metadata: Record<string, unknown> | null;
 }
 
 const PAGE_SIZE = 25;
