@@ -129,8 +129,8 @@ function computeInsights(leads: LeadLike[], previousLeads?: LeadLike[]): Insight
     insights.push({
       key: 'good_conversion',
       icon: BarChart3,
-      title: `Taxa de conversão em ${currentRate.toFixed(0)}%`,
-      description: 'Excelente performance! Sua taxa está acima da média do mercado.',
+      title: `Parabéns! Você está vendendo bem`,
+      description: 'Sua performance está acima da média. Continue acompanhando seus leads de perto!',
       color: 'text-emerald-600',
       bg: 'bg-emerald-500/10',
       priority: 3,
