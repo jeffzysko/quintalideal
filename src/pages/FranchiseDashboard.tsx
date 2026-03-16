@@ -214,6 +214,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
 
   const content = (
     <>
+      <WelcomeWizard franchiseName={franchiseName || undefined} />
       {franchiseSlug && <FranchiseLinkBanner slug={franchiseSlug} />}
 
       {/* Time Range + KPIs */}
