@@ -193,8 +193,11 @@ const faqs: FAQ[] = [
   { q: 'Posso ter mais de um usuário na minha franquia?', a: 'Sim! Entre em contato com o suporte da Hallow Comunicação para solicitar a criação de usuários adicionais para sua franquia.' },
   { q: 'O que fazer quando um lead está duplicado?', a: 'A plataforma detecta automaticamente leads duplicados por telefone ou e-mail. Se o lead já existe, uma mensagem é exibida informando a franquia responsável.' },
   { q: 'Meus leads não estão aparecendo, o que fazer?', a: 'Verifique se seu link está correto e ativo. Se o problema persistir, entre em contato com o suporte técnico.' },
-  { q: 'Como funciona a pontuação do quintal?', a: 'A pontuação é calculada automaticamente com base nas respostas do questionário do lead, considerando espaço disponível, tipo de terreno, uso pretendido e prazo de compra.' },
+  { q: 'Como funciona a pontuação do quintal?', a: 'A pontuação é calculada automaticamente com base nas respostas do questionário do lead, considerando espaço disponível, tipo de terreno, uso pretendido e prazo de compra. Na tabela de leads, o score aparece como uma barra visual colorida.' },
   { q: 'Posso personalizar a página de captação?', a: 'A página de captação é padronizada para garantir a melhor experiência. Porém, cada franquia pode configurar seu Pixel do Meta para rastreamento de anúncios.' },
+  { q: 'O que é o Kanban no painel?', a: 'O Kanban é uma visualização em colunas do seu funil de vendas. No desktop, arraste os cards entre as colunas para mudar o status. No mobile, toque no card para acessar as opções.' },
+  { q: 'Como defino minha meta mensal?', a: 'No painel da franquia, clique em "Definir meta" ou "Editar meta" para abrir o modal de configuração. Insira o número de vendas desejado e acompanhe o progresso em tempo real.' },
+  { q: 'O que é a página "Hoje"?', a: 'É uma visão resumida das suas prioridades do dia: follow-ups atrasados, leads novos, leads quentes e atividade recente. Acesse pelo botão "Hoje" no menu superior.' },
 ];
 
 /* ─── Sub-components ─── */
