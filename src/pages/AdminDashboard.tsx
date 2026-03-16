@@ -67,24 +67,11 @@ export default function AdminDashboard() {
   const [filterModelo, setFilterModelo] = useState('all');
   const [page, setPage] = useState(1);
 
-  const [searchInput, setSearchInput] = useState('');
-  const [search, setSearch] = useState('');
-  const [cidadeInput, setCidadeInput] = useState('');
-  const [filterCidade, setFilterCidade] = useState('');
-
+  // Sync leads tab franchise filter when org switcher changes
   useEffect(() => {
-    const timer = setTimeout(() => { setSearch(searchInput); setPage(1); }, 400);
-    return () => clearTimeout(timer);
-  }, [searchInput]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => { setFilterCidade(cidadeInput); setPage(1); }, 400);
-    return () => clearTimeout(timer);
-  }, [cidadeInput]);
-
-  useEffect(() => { setPage(1); }, [filterFranquia, filterStatus, filterModelo]);
-
-  // ── Franchises ──
+    setFilterFranquia(orgFilter || 'all');
+    setPage(1);
+  }, [orgFilter]);
   const { data: franchises = [] } = useQuery({
     queryKey: ['franchises-full'],
     queryFn: async () => {
