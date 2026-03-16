@@ -1,7 +1,6 @@
 import { Copy, CheckCircle2, Webhook, Shield, Zap, Code2, FileJson, Lock, Send, HelpCircle, AlertTriangle, List, MailOpen, MessageCircleQuestion } from 'lucide-react';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Button } from '@/components/ui/button';
 import { BackButton } from '@/components/BackButton';
 
 const PAYLOAD_EXAMPLE = `{
