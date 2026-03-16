@@ -23,7 +23,6 @@ interface MobileLeadCardProps {
 
 export function MobileLeadCard({ lead, index, basePath = '/admin/lead', franchiseName }: MobileLeadCardProps) {
   const navigate = useNavigate();
-  const [showActions, setShowActions] = useState(false);
 
   const handleWhatsApp = (e: React.MouseEvent) => {
     e.stopPropagation();
