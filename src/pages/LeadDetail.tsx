@@ -12,6 +12,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { LeadTimeline } from '@/components/lead/LeadTimeline';
 import { LeadFollowups } from '@/components/franchise/LeadFollowups';
 import { useAuth } from '@/hooks/useAuth';
+import { useIsMobile } from '@/hooks/use-mobile';
 import { classifyLead } from '@/lib/leadScoring';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -113,6 +114,7 @@ function ScoreRing({ score }: { score: number }) {
 
 export default function LeadDetail() {
   const { franchiseId } = useAuth();
+  const isMobile = useIsMobile();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
@@ -295,9 +297,9 @@ export default function LeadDetail() {
                     <Phone className="w-4 h-4 text-muted-foreground shrink-0" />
                     <span className="text-sm font-medium text-foreground">{lead.telefone}</span>
                   </div>
-                  <Button
+                    <Button
                     size="sm"
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-8 gap-1.5 w-full sm:w-auto"
+                    className="bg-success hover:bg-success/90 text-success-foreground text-xs h-8 gap-1.5 w-full sm:w-auto"
                     onClick={() => {
                       const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem? Vi que você fez o teste do Índice do Quintal Splash!`);
                       window.open(`https://wa.me/55${lead.telefone}?text=${msg}`, '_blank');
@@ -520,8 +522,46 @@ export default function LeadDetail() {
           </Card>
         </motion.div>
 
-        <div className="h-4" />
+        {/* Spacer for sticky bar */}
+        {isMobile && <div className="h-20" />}
       </div>
+
+      {/* Sticky bottom action bar - mobile only */}
+      {isMobile && lead.telefone && (
+        <div className="fixed bottom-0 inset-x-0 z-40 bg-card/95 backdrop-blur-xl border-t border-border/50 px-4 py-3 flex items-center gap-2 shadow-lg">
+          <Button
+            size="sm"
+            className="flex-1 bg-success hover:bg-success/90 text-success-foreground gap-1.5 h-11"
+            onClick={() => {
+              const phone = lead.telefone!.replace(/\D/g, '');
+              const fullPhone = phone.startsWith('55') ? phone : `55${phone}`;
+              const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem?`);
+              window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
+            }}
+          >
+            <MessageCircle className="w-4 h-4" />
+            WhatsApp
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-11 w-11 shrink-0"
+            onClick={() => window.open(`tel:${lead.telefone}`, '_self')}
+          >
+            <Phone className="w-4 h-4" />
+          </Button>
+          {lead.email && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-11 w-11 shrink-0"
+              onClick={() => window.open(`mailto:${lead.email}`, '_blank')}
+            >
+              <Mail className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
+      )}
     </div>
     </PageTransition>
   );

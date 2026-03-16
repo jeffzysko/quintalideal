@@ -15,22 +15,24 @@ import { useDroppable } from '@dnd-kit/core';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { classifyLead } from '@/lib/leadScoring';
 import { STATUS_LABELS, STATUS_CHART_COLORS, type LeadRow } from '@/lib/lead-constants';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { MapPin, Calendar, GripVertical, Filter, X, Building2, Search, CalendarIcon, MessageCircle } from 'lucide-react';
+import { MapPin, Calendar, GripVertical, Filter, X, Building2, Search, CalendarIcon, MessageCircle, ChevronRight, SlidersHorizontal } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarPicker } from '@/components/ui/calendar';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@/components/ui/drawer';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const COLUMNS = ['novo', 'contatado', 'em_negociacao', 'vendido', 'perdido'] as const;
 
@@ -43,7 +45,7 @@ const BUDGET_RANGES: Record<string, [number, number]> = {
 };
 
 function estimateLeadValue(respostas: Record<string, string> | null): number {
-  if (!respostas?.orcamento) return 15000; // default estimate
+  if (!respostas?.orcamento) return 15000;
   const range = BUDGET_RANGES[respostas.orcamento];
   if (!range) return 15000;
   return (range[0] + range[1]) / 2;
@@ -152,7 +154,7 @@ function LeadCard({
                 const fullPhone = phone.startsWith('55') ? phone : `55${phone}`;
                 window.open(`https://wa.me/${fullPhone}`, '_blank');
               }}
-              className="flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-medium bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20 transition-colors"
+              className="flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-medium bg-success/10 text-success hover:bg-success/20 transition-colors"
               title="Enviar WhatsApp"
             >
               <MessageCircle className="w-3 h-3" />
@@ -164,7 +166,99 @@ function LeadCard({
   );
 }
 
-// ── Droppable Column ──
+// ── Mobile Lead Card for pipeline ──
+function MobilePipelineCard({
+  lead,
+  basePath,
+  franchiseName,
+  onStageChange,
+}: {
+  lead: LeadWithQuiz;
+  basePath: string;
+  franchiseName?: string;
+  onStageChange: (leadId: string) => void;
+}) {
+  const navigate = useNavigate();
+  const temp = classifyLead(lead.respostas_questionario || null, lead.pontuacao_quintal);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -8 }}
+      className="bg-card border border-border/50 rounded-xl overflow-hidden shadow-xs"
+    >
+      <div
+        className="p-3.5 cursor-pointer"
+        onClick={() => navigate(`${basePath}/${lead.id}`)}
+      >
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex items-center gap-2.5 min-w-0 flex-1">
+            <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+              <span className="text-sm font-bold text-primary">
+                {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
+              </span>
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-semibold text-foreground truncate">{lead.nome || '—'}</p>
+              <div className="flex items-center gap-2 mt-0.5">
+                {lead.cidade && (
+                  <span className="text-[11px] text-muted-foreground flex items-center gap-0.5">
+                    <MapPin className="w-3 h-3" />{lead.cidade}
+                  </span>
+                )}
+                <span className="text-[11px] text-muted-foreground">
+                  {new Date(lead.created_at).toLocaleDateString('pt-BR')}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col items-end gap-1 shrink-0">
+            <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
+              {temp.emoji} {temp.label}
+            </Badge>
+            <span className="text-xs font-bold text-primary">{lead.pontuacao_quintal || 0}%</span>
+          </div>
+        </div>
+        {franchiseName && (
+          <div className="mt-1.5 ml-[46px]">
+            <span className="text-[11px] text-muted-foreground">{franchiseName}</span>
+          </div>
+        )}
+      </div>
+
+      {/* Quick actions */}
+      <div className="flex items-center border-t border-border/30 divide-x divide-border/30">
+        {lead.telefone && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              const phone = lead.telefone!.replace(/\D/g, '');
+              const fullPhone = phone.startsWith('55') ? phone : `55${phone}`;
+              window.open(`https://wa.me/${fullPhone}`, '_blank');
+            }}
+            className="flex-1 flex items-center justify-center gap-1 py-2 text-[11px] font-medium text-success hover:bg-success/5 transition-colors min-h-[40px]"
+          >
+            <MessageCircle className="w-3.5 h-3.5" />
+            WhatsApp
+          </button>
+        )}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onStageChange(lead.id);
+          }}
+          className="flex-1 flex items-center justify-center gap-1 py-2 text-[11px] font-medium text-primary hover:bg-primary/5 transition-colors min-h-[40px]"
+        >
+          <ChevronRight className="w-3.5 h-3.5" />
+          Mover etapa
+        </button>
+      </div>
+    </motion.div>
+  );
+}
+
+// ── Droppable Column (desktop) ──
 function KanbanColumn({
   status,
   leads,
@@ -195,7 +289,6 @@ function KanbanColumn({
           : 'border-border/40 bg-muted/20'
       }`}
     >
-      {/* Column header */}
       <div className="p-3 pb-2">
         <div className="flex items-center gap-2">
           <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
@@ -207,13 +300,12 @@ function KanbanColumn({
           </span>
         </div>
         {leads.length > 0 && (
-          <div className="mt-1.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+          <div className="mt-1.5 text-[11px] font-semibold text-success">
             {formatCurrency(totalValue)}
           </div>
         )}
       </div>
 
-      {/* Cards */}
       <div className="flex flex-col gap-2 p-2 pt-0 overflow-y-auto max-h-[calc(100vh-280px)] scrollbar-none">
         <AnimatePresence mode="popLayout">
           {leads.length === 0 ? (
@@ -243,7 +335,7 @@ function KanbanColumn({
                 <LeadCard
                   lead={lead}
                   basePath={basePath}
-                  franchiseName={franchiseMap?.[lead.franquia_id || ''] }
+                  franchiseName={franchiseMap?.[lead.franquia_id || '']}
                 />
               </motion.div>
             ))
@@ -293,17 +385,17 @@ function PipelineSummary({ leads, franchiseMap }: { leads: LeadWithQuiz[]; franc
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-1.5">
           <span className="text-sm">🔥</span>
-          <span className="text-sm font-bold text-orange-600 dark:text-orange-400">{stats.temps.quente}</span>
+          <span className="text-sm font-bold text-warning">{stats.temps.quente}</span>
           <span className="text-[11px] text-muted-foreground">Quentes</span>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="text-sm">☀️</span>
-          <span className="text-sm font-bold text-amber-600 dark:text-amber-400">{stats.temps.morno}</span>
+          <span className="text-sm font-bold text-warning">{stats.temps.morno}</span>
           <span className="text-[11px] text-muted-foreground">Mornos</span>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="text-sm">❄️</span>
-          <span className="text-sm font-bold text-sky-600 dark:text-sky-400">{stats.temps.frio}</span>
+          <span className="text-sm font-bold text-info">{stats.temps.frio}</span>
           <span className="text-[11px] text-muted-foreground">Frios</span>
         </div>
       </div>
@@ -326,8 +418,68 @@ function PipelineSummary({ leads, franchiseMap }: { leads: LeadWithQuiz[]; franc
   );
 }
 
+// ── Mobile Stage Change Drawer ──
+function StageChangeDrawer({
+  open,
+  onOpenChange,
+  leadId,
+  currentStatus,
+  onConfirm,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  leadId: string | null;
+  currentStatus: string;
+  onConfirm: (leadId: string, newStatus: string) => void;
+}) {
+  return (
+    <Drawer open={open} onOpenChange={onOpenChange}>
+      <DrawerContent>
+        <DrawerHeader>
+          <DrawerTitle className="text-base">Mover para etapa</DrawerTitle>
+        </DrawerHeader>
+        <div className="px-4 pb-6 space-y-2">
+          {COLUMNS.map((status) => {
+            const color = STATUS_CHART_COLORS[status] || '#64748b';
+            const isActive = status === currentStatus;
+            return (
+              <button
+                key={status}
+                disabled={isActive}
+                className={cn(
+                  "w-full flex items-center gap-3 p-3.5 rounded-xl border transition-all min-h-[48px]",
+                  isActive
+                    ? "border-primary/30 bg-primary/5 cursor-default"
+                    : "border-border/40 hover:border-primary/30 hover:bg-primary/5 cursor-pointer active:scale-[0.98]"
+                )}
+                onClick={() => {
+                  if (leadId && !isActive) {
+                    onConfirm(leadId, status);
+                    onOpenChange(false);
+                  }
+                }}
+              >
+                <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: color }} />
+                <span className={cn("text-sm font-semibold", isActive ? "text-primary" : "text-foreground")}>
+                  {STATUS_LABELS[status]}
+                </span>
+                {isActive && (
+                  <Badge variant="secondary" className="ml-auto text-[10px] bg-primary/10 text-primary">
+                    Atual
+                  </Badge>
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </DrawerContent>
+    </Drawer>
+  );
+}
+
 // ── Main Board ──
 export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: KanbanBoardProps) {
+  const isMobile = useIsMobile();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overColumnId, setOverColumnId] = useState<string | null>(null);
   const [localStatusOverrides, setLocalStatusOverrides] = useState<Record<string, string>>({});
@@ -337,20 +489,22 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
   const [nameSearch, setNameSearch] = useState('');
   const [dateFrom, setDateFrom] = useState<Date | undefined>();
   const [dateTo, setDateTo] = useState<Date | undefined>();
+  const [mobileStage, setMobileStage] = useState<string>('novo');
+  const [stageDrawerOpen, setStageDrawerOpen] = useState(false);
+  const [stageDrawerLeadId, setStageDrawerLeadId] = useState<string | null>(null);
+  const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
     setLocalStatusOverrides({});
   }, [leads]);
 
-  // Unique cities for filter
   const cities = useMemo(() => {
     const set = new Set<string>();
     for (const l of leads) if (l.cidade) set.add(l.cidade);
     return Array.from(set).sort();
   }, [leads]);
 
-  // Apply filters
   const filteredLeads = useMemo(() => {
     const search = nameSearch.trim().toLowerCase();
     return leads.filter((lead) => {
@@ -408,21 +562,13 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
     setOverColumnId(event.over?.id as string || null);
   }, []);
 
-  const handleDragEnd = useCallback(async (event: DragEndEvent) => {
-    const { active, over } = event;
-    setActiveId(null);
-    setOverColumnId(null);
-    if (!over) return;
-
-    const leadId = active.id as string;
-    const newStatus = over.id as string;
+  const moveLeadToStatus = useCallback(async (leadId: string, newStatus: string) => {
     const lead = leads.find((l) => l.id === leadId);
     if (!lead) return;
 
     const oldStatus = localStatusOverrides[leadId] || lead.status_lead;
     if (oldStatus === newStatus) return;
 
-    // Optimistic: update local state immediately
     setLocalStatusOverrides((prev) => ({ ...prev, [leadId]: newStatus }));
 
     const { error } = await supabase
@@ -431,7 +577,6 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       .eq('id', leadId);
 
     if (error) {
-      // Rollback
       setLocalStatusOverrides((prev) => {
         const next = { ...prev };
         delete next[leadId];
@@ -441,7 +586,6 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       return;
     }
 
-    // Log activity
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       await supabase.from('lead_activities').insert({
@@ -453,16 +597,206 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
     }
 
     toast.success(`Lead movido para ${STATUS_LABELS[newStatus]}`);
-
-    // Refetch in background
     queryClient.invalidateQueries({ queryKey: ['franchise-leads-all', franchiseId] });
     queryClient.invalidateQueries({ queryKey: ['franchise-leads-table', franchiseId] });
   }, [leads, localStatusOverrides, franchiseId, queryClient]);
+
+  const handleDragEnd = useCallback(async (event: DragEndEvent) => {
+    const { active, over } = event;
+    setActiveId(null);
+    setOverColumnId(null);
+    if (!over) return;
+    await moveLeadToStatus(active.id as string, over.id as string);
+  }, [moveLeadToStatus]);
 
   const handleDragStart = useCallback((event: DragStartEvent) => {
     setActiveId(event.active.id as string);
   }, []);
 
+  const handleMobileStageChange = useCallback((leadId: string) => {
+    setStageDrawerLeadId(leadId);
+    setStageDrawerOpen(true);
+  }, []);
+
+  const getLeadCurrentStatus = useCallback((leadId: string) => {
+    const lead = leads.find(l => l.id === leadId);
+    if (!lead) return 'novo';
+    return localStatusOverrides[leadId] || lead.status_lead;
+  }, [leads, localStatusOverrides]);
+
+  // Mobile pipeline view
+  if (isMobile) {
+    const currentStageLeads = columnData[mobileStage] || [];
+    const stageValue = currentStageLeads.reduce((sum, l) => sum + estimateLeadValue(l.respostas_questionario || null), 0);
+
+    return (
+      <>
+        <PipelineSummary leads={filteredLeads} franchiseMap={franchiseMap} />
+
+        {/* Search + filter button */}
+        <div className="flex items-center gap-2 mb-3">
+          <div className="relative flex-1">
+            <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              placeholder="Buscar lead..."
+              value={nameSearch}
+              onChange={(e) => setNameSearch(e.target.value)}
+              className="pl-8 h-10"
+            />
+          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-10 w-10 shrink-0 relative"
+            onClick={() => setMobileFiltersOpen(true)}
+          >
+            <SlidersHorizontal className="w-4 h-4" />
+            {hasActiveFilters && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">!</span>
+            )}
+          </Button>
+        </div>
+
+        {/* Stage tabs - scrollable */}
+        <div className="flex gap-1 mb-4 overflow-x-auto scrollbar-none -mx-3 px-3 pb-1">
+          {COLUMNS.map((status) => {
+            const color = STATUS_CHART_COLORS[status] || '#64748b';
+            const count = (columnData[status] || []).length;
+            const isActive = mobileStage === status;
+            return (
+              <button
+                key={status}
+                onClick={() => setMobileStage(status)}
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-all min-h-[40px] shrink-0",
+                  isActive
+                    ? "bg-card shadow-sm border border-border/50 text-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
+                {STATUS_LABELS[status]}
+                <span className={cn(
+                  "text-[10px] rounded-full px-1.5 py-0.5",
+                  isActive ? "bg-primary/10 text-primary font-bold" : "bg-muted/80 text-muted-foreground"
+                )}>
+                  {count}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Stage value */}
+        {currentStageLeads.length > 0 && (
+          <div className="text-xs text-muted-foreground mb-3">
+            <span className="font-semibold text-foreground">{formatCurrency(stageValue)}</span> em {currentStageLeads.length} leads
+          </div>
+        )}
+
+        {/* Cards for current stage */}
+        <div className="space-y-2.5">
+          <AnimatePresence mode="popLayout">
+            {currentStageLeads.length === 0 ? (
+              <motion.div
+                key="empty"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="rounded-xl border-2 border-dashed border-border/30 p-12 text-center"
+              >
+                <p className="text-sm text-muted-foreground">Nenhum lead nesta etapa</p>
+              </motion.div>
+            ) : (
+              currentStageLeads.map((lead) => (
+                <MobilePipelineCard
+                  key={lead.id}
+                  lead={lead}
+                  basePath={basePath}
+                  franchiseName={franchiseMap?.[lead.franquia_id || '']}
+                  onStageChange={handleMobileStageChange}
+                />
+              ))
+            )}
+          </AnimatePresence>
+        </div>
+
+        <StageChangeDrawer
+          open={stageDrawerOpen}
+          onOpenChange={setStageDrawerOpen}
+          leadId={stageDrawerLeadId}
+          currentStatus={stageDrawerLeadId ? getLeadCurrentStatus(stageDrawerLeadId) : 'novo'}
+          onConfirm={moveLeadToStatus}
+        />
+
+        {/* Mobile filter drawer */}
+        <Drawer open={mobileFiltersOpen} onOpenChange={setMobileFiltersOpen}>
+          <DrawerContent className="max-h-[85vh]">
+            <DrawerHeader>
+              <DrawerTitle className="text-base flex items-center gap-2">
+                <SlidersHorizontal className="w-4 h-4 text-primary" />
+                Filtros do Pipeline
+              </DrawerTitle>
+            </DrawerHeader>
+            <div className="px-4 pb-6 space-y-4 overflow-y-auto">
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Temperatura</label>
+                <Select value={tempFilter} onValueChange={setTempFilter}>
+                  <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas temperaturas</SelectItem>
+                    <SelectItem value="quente">🔥 Quente</SelectItem>
+                    <SelectItem value="morno">☀️ Morno</SelectItem>
+                    <SelectItem value="frio">❄️ Frio</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Cidade</label>
+                <Select value={cityFilter} onValueChange={setCityFilter}>
+                  <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas cidades</SelectItem>
+                    {cities.map((city) => (
+                      <SelectItem key={city} value={city}>{city}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {franchiseMap && Object.keys(franchiseMap).length > 0 && (
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Franquia</label>
+                  <Select value={franchiseFilter} onValueChange={setFranchiseFilter}>
+                    <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas franquias</SelectItem>
+                      {Object.entries(franchiseMap).sort((a, b) => a[1].localeCompare(b[1])).map(([id, name]) => (
+                        <SelectItem key={id} value={id}>{name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              {hasActiveFilters && (
+                <Button
+                  variant="ghost"
+                  className="w-full text-sm text-muted-foreground"
+                  onClick={() => { setTempFilter('all'); setCityFilter('all'); setFranchiseFilter('all'); setNameSearch(''); setDateFrom(undefined); setDateTo(undefined); }}
+                >
+                  <X className="w-3.5 h-3.5 mr-1.5" />
+                  Limpar filtros
+                </Button>
+              )}
+              <DrawerClose asChild>
+                <Button className="w-full" size="lg">Aplicar</Button>
+              </DrawerClose>
+            </div>
+          </DrawerContent>
+        </Drawer>
+      </>
+    );
+  }
+
+  // Desktop Kanban
   return (
     <>
       <PipelineSummary leads={filteredLeads} franchiseMap={franchiseMap} />
@@ -585,23 +919,23 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
         onDragEnd={handleDragEnd}
       >
         <div className="flex gap-3 overflow-x-auto pb-4 scrollbar-none -mx-2 px-2">
-        {COLUMNS.map((status) => (
-          <KanbanColumn
-            key={status}
-            status={status}
-            leads={columnData[status]}
-            basePath={basePath}
-            isOverColumn={overColumnId === status}
-            franchiseMap={franchiseMap}
-          />
-        ))}
-      </div>
+          {COLUMNS.map((status) => (
+            <KanbanColumn
+              key={status}
+              status={status}
+              leads={columnData[status]}
+              basePath={basePath}
+              isOverColumn={overColumnId === status}
+              franchiseMap={franchiseMap}
+            />
+          ))}
+        </div>
 
-      <DragOverlay dropAnimation={{ duration: 200, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }}>
-        {activeLead ? (
-          <LeadCard lead={activeLead} basePath={basePath} overlay franchiseName={franchiseMap?.[activeLead.franquia_id || '']} />
-        ) : null}
-      </DragOverlay>
+        <DragOverlay dropAnimation={{ duration: 200, easing: 'cubic-bezier(0.22, 1, 0.36, 1)' }}>
+          {activeLead ? (
+            <LeadCard lead={activeLead} basePath={basePath} overlay franchiseName={franchiseMap?.[activeLead.franquia_id || '']} />
+          ) : null}
+        </DragOverlay>
       </DndContext>
     </>
   );
