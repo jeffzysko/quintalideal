@@ -1,4 +1,5 @@
 import { usePWA } from '@/hooks/usePWA';
+import { useAuth } from '@/hooks/useAuth';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, X, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -6,12 +7,15 @@ import { useState, useEffect } from 'react';
 
 export function PWAInstallBanner() {
   const { canInstall, promptInstall, isStandalone } = usePWA();
+  const { user, role } = useAuth();
   const [dismissed, setDismissed] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
 
+  // Only show for authenticated users (admins/franchises)
+  const isLoggedIn = !!user && !!role;
+
   useEffect(() => {
-    // Only show after a delay and if not previously dismissed this session
-    if (!canInstall || isStandalone || dismissed) return;
+    if (!canInstall || isStandalone || dismissed || !isLoggedIn) return;
     const alreadyDismissed = sessionStorage.getItem('pwa_banner_dismissed');
     if (alreadyDismissed) {
       setDismissed(true);
@@ -19,7 +23,7 @@ export function PWAInstallBanner() {
     }
     const timer = setTimeout(() => setShowBanner(true), 5000);
     return () => clearTimeout(timer);
-  }, [canInstall, isStandalone, dismissed]);
+  }, [canInstall, isStandalone, dismissed, isLoggedIn]);
 
   const handleDismiss = () => {
     setDismissed(true);
