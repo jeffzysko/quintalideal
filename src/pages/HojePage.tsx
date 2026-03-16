@@ -186,7 +186,7 @@ function PageSkeleton() {
 export default function HojePage() {
   const navigate = useNavigate();
   const { user, role, franchiseId, loading: authLoading } = useAuth();
-  const isMobile = useIsMobile();
+  const _isMobile = useIsMobile();
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
   const basePath = isAdmin ? '/admin/lead' : '/painel/lead';
 
