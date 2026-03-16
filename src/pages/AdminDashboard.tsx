@@ -260,6 +260,7 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-background">
       <PanelHeader title="Fábrica">
         {[
+          { icon: CalendarClock, label: 'Hoje', action: () => navigate('/hoje') },
           { icon: Target, label: 'Radar', action: () => navigate('/admin/radar') },
           { icon: MapPin, label: 'Mapa', action: () => navigate('/mapa') },
           { icon: Download, label: 'CSV', action: exportCSV },
