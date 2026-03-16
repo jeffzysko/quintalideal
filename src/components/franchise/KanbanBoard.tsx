@@ -375,10 +375,32 @@ function MobilePipelineCard({
             </div>
           </div>
           <div className="flex flex-col items-end gap-1 shrink-0">
-            <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
-              {temp.emoji} {temp.label}
-            </Badge>
-            <span className="text-xs font-bold text-primary">{lead.pontuacao_quintal || 0}%</span>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold cursor-help`} variant="outline">
+                  {temp.emoji} {temp.label}
+                </Badge>
+              </TooltipTrigger>
+              <TooltipContent side="left" className="max-w-[220px] text-xs">
+                <p className="font-semibold mb-0.5">Nível de interesse</p>
+                <p className="text-muted-foreground">
+                  {temp.temperature === 'quente'
+                    ? 'Alto interesse: bom orçamento, quer comprar em breve e tem espaço.'
+                    : temp.temperature === 'morno'
+                    ? 'Interesse moderado: pode precisar de mais informações.'
+                    : 'Início da jornada: ainda explorando opções.'}
+                </p>
+              </TooltipContent>
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <span className="text-xs font-bold text-primary cursor-help">{lead.pontuacao_quintal || 0}%</span>
+              </TooltipTrigger>
+              <TooltipContent side="left" className="max-w-[200px] text-xs">
+                <p className="font-semibold mb-0.5">Compatibilidade do quintal</p>
+                <p className="text-muted-foreground">Quanto maior, mais adequado o espaço.</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
         </div>
         {franchiseName && (

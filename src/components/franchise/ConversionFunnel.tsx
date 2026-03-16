@@ -135,16 +135,11 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
 
                   <div className="w-16 shrink-0 text-right">
                     {i > 0 ? (
-                      <div className="flex items-center justify-end gap-1">
-                        <ArrowRight className="w-3 h-3 text-muted-foreground/50" />
-                        <span className={`text-xs font-bold ${
-                          step.conversionRate >= 50 ? 'text-emerald-600' :
-                          step.conversionRate >= 25 ? 'text-amber-600' :
-                          'text-destructive/70'
-                        }`}>
-                          {step.conversionRate}%
-                        </span>
-                      </div>
+                      step.conversionRate < 50 ? (
+                        <span className="text-xs font-bold text-amber-600">atenção</span>
+                      ) : (
+                        <span className="text-xs font-bold text-emerald-600">✓</span>
+                      )
                     ) : (
                       <span className="text-[10px] text-muted-foreground">total</span>
                     )}
