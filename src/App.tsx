@@ -52,6 +52,7 @@ const PoliticaPrivacidade = lazy(() => import("./pages/PoliticaPrivacidade"));
 const Suporte = lazy(() => import("./pages/Suporte"));
 const Notificacoes = lazy(() => import("./pages/Notificacoes"));
 const HojePage = lazy(() => import("./pages/HojePage"));
+const OrganizationSettings = lazy(() => import("./pages/OrganizationSettings"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
