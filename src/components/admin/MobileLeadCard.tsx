@@ -101,7 +101,7 @@ export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePa
                   {lead.modelo_recomendado}
                 </span>
               )}
-            )}
+            </div>
 
             {franchiseName && (
               <div className="mt-1.5 ml-14">
