@@ -22,17 +22,20 @@ import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { MapPin, Calendar, GripVertical, Filter, X, Building2, Search, CalendarIcon, MessageCircle, ChevronRight, SlidersHorizontal } from 'lucide-react';
+import { MapPin, Calendar, GripVertical, Filter, X, Building2, Search, CalendarIcon, MessageCircle, ChevronRight, SlidersHorizontal, StickyNote, ArrowRightLeft, Phone, Send } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarPicker } from '@/components/ui/calendar';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@/components/ui/drawer';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { useAuth } from '@/hooks/useAuth';
 
 const COLUMNS = ['novo', 'contatado', 'em_negociacao', 'vendido', 'perdido'] as const;
 
