@@ -522,8 +522,46 @@ export default function LeadDetail() {
           </Card>
         </motion.div>
 
-        <div className="h-4" />
+        {/* Spacer for sticky bar */}
+        {isMobile && <div className="h-20" />}
       </div>
+
+      {/* Sticky bottom action bar - mobile only */}
+      {isMobile && lead.telefone && (
+        <div className="fixed bottom-0 inset-x-0 z-40 bg-card/95 backdrop-blur-xl border-t border-border/50 px-4 py-3 flex items-center gap-2 shadow-lg">
+          <Button
+            size="sm"
+            className="flex-1 bg-success hover:bg-success/90 text-success-foreground gap-1.5 h-11"
+            onClick={() => {
+              const phone = lead.telefone!.replace(/\D/g, '');
+              const fullPhone = phone.startsWith('55') ? phone : `55${phone}`;
+              const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem?`);
+              window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
+            }}
+          >
+            <MessageCircle className="w-4 h-4" />
+            WhatsApp
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-11 w-11 shrink-0"
+            onClick={() => window.open(`tel:${lead.telefone}`, '_self')}
+          >
+            <Phone className="w-4 h-4" />
+          </Button>
+          {lead.email && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-11 w-11 shrink-0"
+              onClick={() => window.open(`mailto:${lead.email}`, '_blank')}
+            >
+              <Mail className="w-4 h-4" />
+            </Button>
+          )}
+        </div>
+      )}
     </div>
     </PageTransition>
   );
