@@ -208,13 +208,16 @@ export default function LeadDetail() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen gradient-hero">
-      <div className="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-5">
-        {/* Breadcrumbs */}
-        <Breadcrumbs items={breadcrumbItems} />
+    <div className="min-h-screen bg-background">
+      <PanelHeader title={lead.nome || 'Detalhes do Lead'}>
+        <BackButton fallback={leadsUrl} />
+        <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
+        <NotificationBell />
+        <UserAvatarMenu />
+      </PanelHeader>
 
-        {/* Back */}
-        <BackButton fallback={leadsUrl} label="Voltar" className="-ml-2" />
+      <div className="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-5">
+        <Breadcrumbs items={breadcrumbItems} />
 
         {/* Hero Card */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>

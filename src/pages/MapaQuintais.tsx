@@ -102,20 +102,21 @@ export default function MapaQuintais() {
   return (
     <PageTransition>
     <div className="min-h-screen bg-background">
-      <PageHeader
-        title="Mapa de Calor"
-        subtitle="Densidade de leads por cidade"
-        icon={<Flame className="w-4 h-4 text-destructive" />}
-        fallbackPath="/admin"
-        rightSlot={
-          <Badge variant="outline" className="text-[10px] md:text-xs px-2 md:px-3 py-1 md:py-1.5 border-primary/30 text-primary whitespace-nowrap animate-pulse-glow">
-            {totalQuintais} quintais
-          </Badge>
-        }
-      />
+      <PanelHeader title="Mapa de Calor">
+        <BackButton fallback="/admin" />
+        <Badge variant="outline" className="text-[10px] md:text-xs px-2 md:px-3 py-1 md:py-1.5 border-primary/30 text-primary whitespace-nowrap animate-pulse-glow hidden sm:flex">
+          {totalQuintais} quintais
+        </Badge>
+        <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
+        <NotificationBell />
+        <UserAvatarMenu />
+      </PanelHeader>
 
       <div className="px-4 md:px-6 py-4 md:py-6 max-w-5xl mx-auto">
-        <Breadcrumbs items={[{ label: 'Mapa de Calor' }]} />
+        <Breadcrumbs items={[
+          { label: 'Admin', href: '/admin' },
+          { label: 'Mapa de Calor' },
+        ]} />
 
         {/* KPI cards */}
         <div className="grid grid-cols-3 gap-2 md:gap-3 mb-4 md:mb-6">

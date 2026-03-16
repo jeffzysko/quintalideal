@@ -321,17 +321,15 @@ export default function RadarMercado() {
   return (
     <PageTransition>
     <div className="min-h-screen bg-background">
-      <PageHeader
-        title="Radar de Mercado"
-        subtitle="Inteligência do Mercado de Piscinas"
-        icon={<Target className="w-4 h-4 text-primary" />}
-        fallbackPath="/admin"
-        rightSlot={
-          <Badge variant="outline" className="text-[10px] sm:text-xs px-2 sm:px-3 py-1 sm:py-1.5 border-primary/30 text-primary animate-pulse-glow">
-            {totalLeads} testes
-          </Badge>
-        }
-      />
+      <PanelHeader title="Radar de Mercado">
+        <BackButton fallback="/admin" />
+        <Badge variant="outline" className="text-[10px] sm:text-xs px-2 sm:px-3 py-1 sm:py-1.5 border-primary/30 text-primary animate-pulse-glow hidden sm:flex">
+          {totalLeads} testes
+        </Badge>
+        <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
+        <NotificationBell />
+        <UserAvatarMenu />
+      </PanelHeader>
 
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
         <Breadcrumbs items={[
