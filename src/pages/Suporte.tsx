@@ -329,6 +329,10 @@ export default function Suporte() {
       </div>
 
       <div className="relative z-10 flex-1 max-w-3xl mx-auto w-full px-4 py-8 sm:py-12">
+        <Breadcrumbs items={[
+          { label: 'Painel', href: '/franquia' },
+          { label: 'Suporte & Guia' },
+        ]} />
 
         <motion.div {...fadeUp}>
           <div className="flex items-center gap-3 mb-2">
