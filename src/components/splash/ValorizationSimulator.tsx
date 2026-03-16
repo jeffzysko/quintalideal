@@ -33,8 +33,8 @@ export function ValorizationSimulator({ score: _score, lang = 'pt' }: Valorizati
     <div className="rounded-3xl border border-border bg-card shadow-sm overflow-hidden mt-8">
       <div className="px-4 sm:px-6 pt-5 sm:pt-6 pb-3 sm:pb-4">
         <div className="flex items-center gap-3 mb-1">
-          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0">
-            <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600" />
+          <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center shrink-0">
+            <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 text-emerald-600 dark:text-emerald-400" />
           </div>
           <div className="min-w-0">
             <h3 className="font-bold text-sm text-foreground">{t('valor_title', lang)}</h3>
