@@ -70,7 +70,7 @@ export function SLAIndicator({ leads, activities }: SLAIndicatorProps) {
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
       <Card className={`card-premium overflow-hidden ${isOverSLA ? 'border-destructive/30' : ''}`}>
-        <CardContent className="p-3 md:p-5">
+        <CardContent className="p-4 sm:p-5">
           <div className="flex items-start gap-3">
             <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isOverSLA ? 'bg-destructive/10' : 'icon-bg-blue'}`}>
               {isOverSLA ? <AlertTriangle className="w-5 h-5 text-destructive" /> : <Clock className="w-5 h-5 text-primary" />}
