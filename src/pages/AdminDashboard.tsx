@@ -59,6 +59,9 @@ export default function AdminDashboard() {
   const [viewFranchiseId, setViewFranchiseId] = useState<string>('');
   const [timeRange, setTimeRange] = useState<TimeRange>('30');
 
+  // Global org filter from Organization Switcher
+  const [orgFilter, setOrgFilter] = useState<string | null>(null);
+
   const [filterFranquia, setFilterFranquia] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterModelo, setFilterModelo] = useState('all');
