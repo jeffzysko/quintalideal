@@ -89,6 +89,9 @@ export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePa
                 <Badge className={`${STATUS_COLORS[lead.status_lead] || ''} border text-[10px] font-semibold`} variant="secondary">
                   {STATUS_LABELS[lead.status_lead] || lead.status_lead}
                 </Badge>
+                <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
+                  {temp.emoji} {temp.label}
+                </Badge>
                 <ScorePill score={lead.pontuacao_quintal || 0} />
               </div>
             </div>
