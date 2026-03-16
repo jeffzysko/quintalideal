@@ -148,6 +148,10 @@ function KanbanColumn({
   const { setNodeRef, isOver } = useDroppable({ id: status });
   const color = STATUS_CHART_COLORS[status] || '#64748b';
   const highlighted = isOver || isOverColumn;
+  const totalValue = useMemo(
+    () => leads.reduce((sum, l) => sum + estimateLeadValue(l.respostas_questionario || null), 0),
+    [leads]
+  );
 
   return (
     <div
@@ -159,14 +163,21 @@ function KanbanColumn({
       }`}
     >
       {/* Column header */}
-      <div className="flex items-center gap-2 p-3 pb-2">
-        <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
-        <h3 className="text-[11px] font-bold text-foreground uppercase tracking-wider truncate">
-          {STATUS_LABELS[status]}
-        </h3>
-        <span className="ml-auto text-[10px] font-semibold text-muted-foreground bg-muted/80 rounded-full px-2 py-0.5">
-          {leads.length}
-        </span>
+      <div className="p-3 pb-2">
+        <div className="flex items-center gap-2">
+          <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
+          <h3 className="text-[11px] font-bold text-foreground uppercase tracking-wider truncate">
+            {STATUS_LABELS[status]}
+          </h3>
+          <span className="ml-auto text-[10px] font-semibold text-muted-foreground bg-muted/80 rounded-full px-2 py-0.5">
+            {leads.length}
+          </span>
+        </div>
+        {leads.length > 0 && (
+          <div className="mt-1.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+            {formatCurrency(totalValue)}
+          </div>
+        )}
       </div>
 
       {/* Cards */}
