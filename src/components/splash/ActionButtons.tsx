@@ -7,6 +7,7 @@ import { getRankingGaucho, getYardClassification, getSharePhrase, getSocialCompa
 import { getPoolImage } from '@/lib/poolImages';
 import { ValorizationSimulator } from './ValorizationSimulator';
 import { trackEvent } from '@/lib/analytics';
+import { trackMetaEvent } from '@/components/MetaPixel';
 import { SITE_URL, SITE_DOMAIN } from '@/lib/constants';
 import { type Lang, t } from '@/lib/i18n';
 
@@ -54,6 +55,10 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
 
   const handleWhatsApp = () => {
     trackEvent('whatsapp_clicked', { franchiseId });
+    trackMetaEvent('Contact', {
+      content_name: poolName,
+      content_category: 'whatsapp',
+    });
     const phone = whatsappNumber || '5551999999999';
     const message = encodeURIComponent(
       t('wa_message', lang)

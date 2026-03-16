@@ -342,6 +342,14 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       city: answers.cidade,
       metadata: { modelo_recomendado: poolName, indice_quintal: score },
     });
+
+    trackMetaEvent('ViewContent', {
+      content_name: poolName,
+      content_category: answers.cidade || '',
+      value: score,
+      currency: 'BRL',
+    });
+
     setStep('lead-form');
   };
 
