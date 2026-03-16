@@ -214,13 +214,11 @@ export default function AdminDashboard() {
   const cities = new Set(currentLeads.map(l => l.cidade).filter(Boolean)).size;
   const avgScore = totalLeads > 0 ? Math.round(currentLeads.reduce((s, l) => s + (l.pontuacao_quintal || 0), 0) / totalLeads) : 0;
   const referralCount = currentLeads.filter(l => l.referred_by).length;
-  const soldCount = currentLeads.filter(l => l.status_lead === 'vendido').length; // eslint-disable-line @typescript-eslint/no-unused-vars
 
   const prevTotal = previousLeads.length || undefined;
   const prevNew = previousLeads.length > 0 ? previousLeads.filter(l => l.status_lead === 'novo').length : undefined;
   const prevCities = previousLeads.length > 0 ? new Set(previousLeads.map(l => l.cidade).filter(Boolean)).size : undefined;
   const prevAvg = previousLeads.length > 0 ? Math.round(previousLeads.reduce((s, l) => s + (l.pontuacao_quintal || 0), 0) / previousLeads.length) : undefined;
-  const prevSold = previousLeads.length > 0 ? previousLeads.filter(l => l.status_lead === 'vendido').length : undefined; // eslint-disable-line @typescript-eslint/no-unused-vars
   const prevRef = previousLeads.length > 0 ? previousLeads.filter(l => l.referred_by).length : undefined;
 
   const kpis: MetricCardProps[] = [
