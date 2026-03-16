@@ -277,17 +277,17 @@ export default function NotificacoesPage() {
 
           {/* Pagination */}
           {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-6">
+            <div className="flex items-center justify-center gap-3 mt-6">
               <Button
                 variant="outline"
                 size="sm"
                 disabled={page === 1}
                 onClick={() => setPage(p => p - 1)}
-                className="text-xs rounded-xl"
+                className="text-xs rounded-xl min-h-[44px] min-w-[44px]"
               >
                 Anterior
               </Button>
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs text-muted-foreground font-medium">
                 {page} de {totalPages}
               </span>
               <Button
@@ -295,7 +295,7 @@ export default function NotificacoesPage() {
                 size="sm"
                 disabled={page === totalPages}
                 onClick={() => setPage(p => p + 1)}
-                className="text-xs rounded-xl"
+                className="text-xs rounded-xl min-h-[44px] min-w-[44px]"
               >
                 Próxima
               </Button>

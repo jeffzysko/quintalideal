@@ -164,15 +164,15 @@ export function InsightCards({ leads, previousLeads, maxCards = 3 }: InsightCard
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.08 }}
-            className={`rounded-xl border border-border/40 p-4 ${insight.bg} backdrop-blur-sm`}
+            className={`rounded-2xl border border-border/30 p-4 ${insight.bg} backdrop-blur-sm`}
           >
             <div className="flex items-start gap-3">
-              <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${insight.bg}`}>
-                <Icon className={`w-4 h-4 ${insight.color}`} />
+              <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${insight.bg}`}>
+                <Icon className={`w-[18px] h-[18px] ${insight.color}`} />
               </div>
-              <div className="min-w-0">
-                <p className={`text-sm font-semibold ${insight.color}`}>{insight.title}</p>
-                <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{insight.description}</p>
+              <div className="min-w-0 flex-1">
+                <p className={`text-sm font-semibold leading-snug ${insight.color}`}>{insight.title}</p>
+                <p className="text-[13px] text-muted-foreground mt-1 leading-relaxed">{insight.description}</p>
               </div>
             </div>
           </motion.div>

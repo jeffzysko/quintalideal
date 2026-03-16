@@ -54,8 +54,10 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
   return (
     <Card className="card-premium mb-6">
       <CardHeader className="pb-2">
-        <CardTitle className="text-sm font-bold flex items-center gap-2">
-          Progresso dos Leads
+        <CardTitle className="text-sm font-bold flex items-center justify-between">
+          <span className="flex items-center gap-2">
+            Progresso dos Leads
+          </span>
           {lostCount > 0 && (
             <span className="text-[10px] font-medium text-destructive/70 flex items-center gap-1">
               <TrendingDown className="w-3 h-3" /> {lostCount} perdido{lostCount !== 1 ? 's' : ''}
@@ -89,12 +91,12 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
                       )}
                     </div>
                   </div>
-                  <div className="h-8 rounded-lg bg-muted/40 overflow-hidden relative">
+                  <div className="h-10 rounded-xl bg-muted/40 overflow-hidden relative">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${barWidth}%` }}
                       transition={{ delay: 0.2 + i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                      className="h-full rounded-lg"
+                      className="h-full rounded-xl"
                       style={{ backgroundColor: `${step.color}20`, borderLeft: `3px solid ${step.color}` }}
                     />
                     <span
@@ -116,12 +118,12 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
                   </div>
 
                   <div className="flex-1 relative">
-                    <div className="h-8 rounded-lg bg-muted/40 overflow-hidden relative">
+                    <div className="h-10 rounded-xl bg-muted/40 overflow-hidden relative">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${barWidth}%` }}
                         transition={{ delay: 0.2 + i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                        className="h-full rounded-lg"
+                        className="h-full rounded-xl"
                         style={{ backgroundColor: `${step.color}20`, borderLeft: `3px solid ${step.color}` }}
                       />
                       <span
