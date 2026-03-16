@@ -16,7 +16,7 @@ function ScorePill({ score }: { score: number }) {
 }
 
 interface MobileLeadCardProps {
-  lead: LeadRow;
+  lead: LeadRow & { respostas_questionario?: Record<string, string> | null };
   index: number;
   basePath?: string;
   franchiseName?: string;
@@ -24,6 +24,7 @@ interface MobileLeadCardProps {
 
 export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePath = '/admin/lead', franchiseName }: MobileLeadCardProps) {
   const navigate = useNavigate();
+  const temp = classifyLead(lead.respostas_questionario || null, lead.pontuacao_quintal);
 
   const handleWhatsApp = (e: React.MouseEvent) => {
     e.stopPropagation();
