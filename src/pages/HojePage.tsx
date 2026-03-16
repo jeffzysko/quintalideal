@@ -581,7 +581,7 @@ export default function HojePage() {
 
               {/* ═══ HOT LEADS ═══ */}
               {hotLeads.length > 0 && (
-                <Section icon={Flame} title="Leads quentes" count={hotLeads.length} iconBg="icon-bg-amber">
+                <Section icon={Flame} title="Leads quentes" count={hotLeads.length} iconBg="icon-bg-amber" collapsible defaultOpen={hotLeads.length <= 3}>
                   <Card className="card-premium overflow-hidden">
                     <CardContent className="p-0 divide-y divide-border/30">
                       {hotLeads.map((lead, i) => (
