@@ -164,6 +164,9 @@ export default function LeadDetail() {
     if (!error) {
       toast.success('Alterações salvas com sucesso!');
       setLead({ ...lead, status_lead: status, observacoes });
+      // Invalidate Kanban/table queries so they reflect the change
+      queryClient.invalidateQueries({ queryKey: ['franchise-leads-all'] });
+      queryClient.invalidateQueries({ queryKey: ['franchise-leads-table'] });
     } else {
       toast.error('Erro ao salvar.');
     }
