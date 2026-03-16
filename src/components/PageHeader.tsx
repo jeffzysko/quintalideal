@@ -47,14 +47,7 @@ export function PageHeader({ title, subtitle, icon, fallbackPath, rightSlot }: P
             <div className="h-14 md:h-16 flex items-center justify-between px-3 md:px-6 gap-2">
               {/* Left: Back + Logo + Title */}
               <div className="flex items-center gap-2 md:gap-3 min-w-0">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={onBack}
-                  className="rounded-xl shrink-0 h-8 w-8 text-muted-foreground hover:text-foreground"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                </Button>
+                <BackButton fallback={fallbackPath} />
 
                 <motion.img
                   src={logoSplash}
