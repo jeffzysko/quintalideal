@@ -287,6 +287,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
   const [localStatusOverrides, setLocalStatusOverrides] = useState<Record<string, string>>({});
   const [tempFilter, setTempFilter] = useState<string>('all');
   const [cityFilter, setCityFilter] = useState<string>('all');
+  const [franchiseFilter, setFranchiseFilter] = useState<string>('all');
   const [nameSearch, setNameSearch] = useState('');
   const [dateFrom, setDateFrom] = useState<Date | undefined>();
   const [dateTo, setDateTo] = useState<Date | undefined>();
@@ -315,6 +316,9 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       if (cityFilter !== 'all') {
         if (lead.cidade !== cityFilter) return false;
       }
+      if (franchiseFilter !== 'all' && franchiseMap) {
+        if (lead.franquia_id !== franchiseFilter) return false;
+      }
       if (dateFrom) {
         if (new Date(lead.created_at) < dateFrom) return false;
       }
@@ -325,9 +329,9 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       }
       return true;
     });
-  }, [leads, tempFilter, cityFilter, nameSearch, dateFrom, dateTo]);
+  }, [leads, tempFilter, cityFilter, franchiseFilter, nameSearch, dateFrom, dateTo, franchiseMap]);
 
-  const hasActiveFilters = tempFilter !== 'all' || cityFilter !== 'all' || nameSearch.trim() !== '' || !!dateFrom || !!dateTo;
+  const hasActiveFilters = tempFilter !== 'all' || cityFilter !== 'all' || franchiseFilter !== 'all' || nameSearch.trim() !== '' || !!dateFrom || !!dateTo;
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -458,6 +462,20 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
           </SelectContent>
         </Select>
 
+        {franchiseMap && Object.keys(franchiseMap).length > 0 && (
+          <Select value={franchiseFilter} onValueChange={setFranchiseFilter}>
+            <SelectTrigger className="w-[180px] h-8 text-xs">
+              <SelectValue placeholder="Franquia" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas franquias</SelectItem>
+              {Object.entries(franchiseMap).sort((a, b) => a[1].localeCompare(b[1])).map(([id, name]) => (
+                <SelectItem key={id} value={id}>{name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+
         <Popover>
           <PopoverTrigger asChild>
             <Button variant="outline" size="sm" className={cn("h-8 text-xs gap-1.5", dateFrom && "text-foreground")}>
@@ -499,7 +517,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
             variant="ghost"
             size="sm"
             className="h-8 px-2 text-xs text-muted-foreground hover:text-foreground"
-            onClick={() => { setTempFilter('all'); setCityFilter('all'); setNameSearch(''); setDateFrom(undefined); setDateTo(undefined); }}
+            onClick={() => { setTempFilter('all'); setCityFilter('all'); setFranchiseFilter('all'); setNameSearch(''); setDateFrom(undefined); setDateTo(undefined); }}
           >
             <X className="w-3 h-3 mr-1" />
             Limpar
