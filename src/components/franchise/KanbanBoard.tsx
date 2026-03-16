@@ -157,12 +157,14 @@ function LeadCard({
         <div className="flex items-center gap-1.5 mb-2 flex-wrap">
           <Tooltip>
             <TooltipTrigger asChild>
-              <Badge
-                className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold cursor-help`}
-                variant="outline"
-              >
-                {temp.emoji} {temp.label}
-              </Badge>
+              <span className="cursor-help">
+                <Badge
+                  className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`}
+                  variant="outline"
+                >
+                  {temp.emoji} {temp.label}
+                </Badge>
+              </span>
             </TooltipTrigger>
             <TooltipContent side="top" className="max-w-[220px] text-xs">
               <p className="font-semibold mb-0.5">Nível de interesse</p>
