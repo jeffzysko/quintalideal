@@ -339,6 +339,14 @@ export default function HojePage() {
               <Greeting name={profile?.full_name || null} />
               <QuickStats stats={quickStats} />
 
+              {/* ═══ SMART SUGGESTIONS ═══ */}
+              <SmartSuggestions
+                leads={leads}
+                followups={followups}
+                activities={recentActivities}
+                basePath={basePath}
+              />
+
               {/* ═══ URGENT: Overdue Follow-ups ═══ */}
               {overdueFollowups.length > 0 && (
                 <Section icon={AlertTriangle} title="Atrasados" count={overdueFollowups.length} iconBg="bg-destructive/10">
