@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { getNotificationType } from '@/lib/notification-types';
 
 interface Notification {
   id: string;
@@ -25,31 +26,23 @@ interface Notification {
   metadata: Record<string, unknown> | null;
 }
 
-// Generate a short notification chime using Web Audio API
 function playNotificationSound() {
   try {
     const ctx = new AudioContext();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-
     osc.connect(gain);
     gain.connect(ctx.destination);
-
-    // Pleasant two-tone chime
     osc.type = 'sine';
     osc.frequency.setValueAtTime(830, ctx.currentTime);
     osc.frequency.setValueAtTime(1050, ctx.currentTime + 0.12);
-
     gain.gain.setValueAtTime(0.15, ctx.currentTime);
     gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.4);
-
     osc.start(ctx.currentTime);
     osc.stop(ctx.currentTime + 0.4);
-
-    // Cleanup
     osc.onended = () => ctx.close();
   } catch {
-    // Audio not available — fail silently
+    // Audio not available
   }
 }
 
@@ -61,23 +54,18 @@ export function NotificationBell() {
   const initialLoadDone = useRef(false);
 
   const unreadCount = notifications.filter(n => !n.read).length;
-
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
 
-  // Fetch notifications
   const fetchNotifications = useCallback(async () => {
     if (!user) return;
-
     let query = supabase
       .from('notifications')
       .select('*')
       .order('created_at', { ascending: false })
       .limit(20);
-
     if (!isAdmin && franchiseId) {
       query = query.eq('franchise_id', franchiseId);
     }
-
     const { data } = await query;
     if (data) {
       setNotifications(data as Notification[]);
@@ -85,14 +73,10 @@ export function NotificationBell() {
     }
   }, [user, franchiseId, isAdmin]);
 
-  useEffect(() => {
-    fetchNotifications();
-  }, [fetchNotifications]);
+  useEffect(() => { fetchNotifications(); }, [fetchNotifications]);
 
-  // Realtime subscription
   useEffect(() => {
     if (!user) return;
-
     const channel = supabase
       .channel('notifications-realtime')
       .on(
@@ -106,18 +90,11 @@ export function NotificationBell() {
         (payload) => {
           const newNotif = payload.new as Notification;
           setNotifications(prev => [newNotif, ...prev].slice(0, 20));
-
-          // Play sound only for new realtime notifications (not initial load)
-          if (initialLoadDone.current) {
-            playNotificationSound();
-          }
+          if (initialLoadDone.current) playNotificationSound();
         }
       )
       .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => { supabase.removeChannel(channel); };
   }, [user, franchiseId, isAdmin]);
 
   const markAsRead = async (id: string) => {
@@ -136,7 +113,6 @@ export function NotificationBell() {
     markAsRead(notif.id);
     const basePath = isAdmin ? '/admin' : '/painel';
     const leadId = (notif.metadata as Record<string, unknown>)?.lead_id as string | undefined;
-
     if (leadId && (notif.type === 'new_lead' || notif.type === 'followup')) {
       navigate(`${basePath}/lead/${leadId}`);
     } else {
@@ -184,10 +160,7 @@ export function NotificationBell() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => {
-                setOpen(false);
-                navigate('/notificacoes');
-              }}
+              onClick={() => { setOpen(false); navigate('/notificacoes'); }}
               className="text-xs text-muted-foreground hover:text-foreground h-auto py-1 px-2"
             >
               <History className="w-3.5 h-3.5" />
@@ -202,30 +175,45 @@ export function NotificationBell() {
             </div>
           ) : (
             <div className="divide-y divide-border/30">
-              {notifications.map((notif) => (
-                <button
-                  key={notif.id}
-                  onClick={() => handleNotificationClick(notif)}
-                  className={`w-full text-left px-4 py-3 hover:bg-muted/40 transition-colors flex gap-3 items-start ${
-                    !notif.read ? 'bg-primary/5' : ''
-                  }`}
-                >
-                  <div className={`mt-1 w-2 h-2 rounded-full shrink-0 ${
-                    !notif.read ? 'bg-primary' : 'bg-transparent'
-                  }`} />
-                  <div className="min-w-0 flex-1">
-                    <p className={`text-sm leading-tight ${!notif.read ? 'font-semibold text-foreground' : 'text-foreground/80'}`}>
-                      {notif.title}
-                    </p>
-                    {notif.message && (
-                      <p className="text-xs text-muted-foreground mt-0.5 truncate">{notif.message}</p>
-                    )}
-                    <p className="text-[10px] text-muted-foreground/60 mt-1">
-                      {formatDistanceToNow(new Date(notif.created_at), { addSuffix: true, locale: ptBR })}
-                    </p>
-                  </div>
-                </button>
-              ))}
+              {notifications.map((notif) => {
+                const cfg = getNotificationType(notif.type);
+                const Icon = cfg.icon;
+                return (
+                  <button
+                    key={notif.id}
+                    onClick={() => handleNotificationClick(notif)}
+                    className={`w-full text-left px-4 py-3 hover:bg-muted/40 transition-colors flex gap-3 items-start ${
+                      !notif.read ? 'bg-primary/5' : ''
+                    }`}
+                  >
+                    {/* Category icon */}
+                    <div className={`mt-0.5 w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${cfg.dotColor}/15`}>
+                      <Icon className={`w-3.5 h-3.5 ${cfg.color}`} />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-start justify-between gap-2">
+                        <p className={`text-sm leading-tight ${!notif.read ? 'font-semibold text-foreground' : 'text-foreground/80'}`}>
+                          {notif.title}
+                        </p>
+                        {!notif.read && (
+                          <span className="mt-1 w-2 h-2 rounded-full bg-primary shrink-0" />
+                        )}
+                      </div>
+                      {notif.message && (
+                        <p className="text-xs text-muted-foreground mt-0.5 truncate">{notif.message}</p>
+                      )}
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className={`text-[10px] font-medium ${cfg.color}`}>
+                          {cfg.label}
+                        </span>
+                        <span className="text-[10px] text-muted-foreground/60">
+                          {formatDistanceToNow(new Date(notif.created_at), { addSuffix: true, locale: ptBR })}
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           )}
         </ScrollArea>
@@ -234,10 +222,7 @@ export function NotificationBell() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => {
-                setOpen(false);
-                navigate('/notificacoes');
-              }}
+              onClick={() => { setOpen(false); navigate('/notificacoes'); }}
               className="w-full text-xs text-muted-foreground hover:text-foreground"
             >
               Ver todas as notificações
