@@ -47,14 +47,14 @@ export function AdminKPICards({ kpis, columns }: AdminKPICardsProps) {
             transition={{ delay: i * 0.06, type: 'spring', stiffness: 300, damping: 24 }}
           >
             <Card className="card-premium group overflow-hidden">
-              <CardContent className="p-4 md:p-5">
-                <div className={`w-10 h-10 rounded-xl ${iconBg} flex items-center justify-center mb-3 group-hover:scale-105 transition-transform`}>
+              <CardContent className="p-4 sm:p-5">
+                <div className={`w-10 h-10 sm:w-11 sm:h-11 rounded-xl ${iconBg} flex items-center justify-center mb-3 group-hover:scale-105 transition-transform`}>
                   <kpi.icon className={`w-5 h-5 ${kpi.color}`} />
                 </div>
-                <p className="text-2xl md:text-3xl font-extrabold tracking-tight text-foreground">
+                <p className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground">
                   {kpi.value}
                 </p>
-                <p className="text-xs text-muted-foreground mt-1 font-medium">{kpi.label}</p>
+                <p className="text-xs sm:text-sm text-muted-foreground mt-1 font-medium">{kpi.label}</p>
               </CardContent>
             </Card>
           </motion.div>

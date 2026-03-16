@@ -160,7 +160,7 @@ export function ConversionFunnel({ leads }: ConversionFunnelProps) {
         </div>
 
         {/* Summary line */}
-        <div className="mt-4 pt-3 border-t border-border/30 flex items-center justify-between text-[11px] text-muted-foreground">
+        <div className="mt-4 pt-3 border-t border-border/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 text-xs text-muted-foreground">
           <span>Taxa geral: <strong className="text-foreground">{funnel.length > 0 && funnel[0].count > 0 ? Math.round((funnel[funnel.length - 1].count / funnel[0].count) * 100) : 0}%</strong> (lead → venda)</span>
           <span>{leads.length} lead{leads.length !== 1 ? 's' : ''} no total</span>
         </div>
