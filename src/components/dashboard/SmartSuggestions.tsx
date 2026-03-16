@@ -6,12 +6,11 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import {
   MessageCircle, Phone, ArrowRight, Lightbulb, TrendingUp,
-  AlertCircle, Clock, Flame, Target, CalendarPlus, UserCheck,
+  AlertCircle, Clock, Flame, CalendarPlus,
   Zap, Star,
 } from 'lucide-react';
-import { differenceInHours, differenceInDays } from 'date-fns';
+import { differenceInDays } from 'date-fns';
 import type { LeadRow } from '@/lib/lead-constants';
-import { classifyLead } from '@/lib/leadScoring';
 import { cn } from '@/lib/utils';
 
 // ── Types ──
