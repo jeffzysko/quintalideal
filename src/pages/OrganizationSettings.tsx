@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Building2, Save, Settings2, Bell, Workflow, MapPin,
   Globe, Users, CheckCircle2, Clock
@@ -33,14 +34,26 @@ interface FranchiseSettings {
   meta_pixel_id: string | null;
 }
 
+interface FranchiseOption {
+  id: string;
+  nome_franquia: string;
+  cidade_base: string;
+}
+
 export default function OrganizationSettings() {
   const { role, franchiseId } = useAuth();
   const [franchise, setFranchise] = useState<FranchiseSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  // Admin franchise selector
+  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const [franchiseOptions, setFranchiseOptions] = useState<FranchiseOption[]>([]);
+  const [selectedFranchiseId, setSelectedFranchiseId] = useState<string | null>(franchiseId);
+
   // Notification preferences (stored in localStorage per franchise)
-  const storageKey = `notif_prefs_${franchiseId}`;
+  const effectiveFranchiseId = isAdmin ? selectedFranchiseId : franchiseId;
+  const storageKey = `notif_prefs_${effectiveFranchiseId}`;
   const [notifPrefs, setNotifPrefs] = useState({
     new_lead: true,
     followup_reminder: true,
@@ -49,7 +62,7 @@ export default function OrganizationSettings() {
   });
 
   // Automation settings (localStorage per franchise)
-  const autoKey = `auto_prefs_${franchiseId}`;
+  const autoKey = `auto_prefs_${effectiveFranchiseId}`;
   const [autoPrefs, setAutoPrefs] = useState({
     auto_contact_reminder: true,
     reminder_hours: 48,
@@ -57,7 +70,23 @@ export default function OrganizationSettings() {
   });
 
   const isFranchise = role === 'franquia';
-  const effectiveFranchiseId = franchiseId;
+
+  // Load franchise list for admins
+  useEffect(() => {
+    if (!isAdmin) return;
+    supabase
+      .from('franchises')
+      .select('id, nome_franquia, cidade_base')
+      .eq('ativa', true)
+      .order('nome_franquia')
+      .then(({ data }) => {
+        const options = (data ?? []) as FranchiseOption[];
+        setFranchiseOptions(options);
+        if (!selectedFranchiseId && options.length > 0) {
+          setSelectedFranchiseId(options[0].id);
+        }
+      });
+  }, [isAdmin]);
 
   useEffect(() => {
     if (!effectiveFranchiseId) {
@@ -121,7 +150,7 @@ export default function OrganizationSettings() {
     );
   }
 
-  if (!effectiveFranchiseId || !franchise) {
+  if (!effectiveFranchiseId && !isAdmin) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <p className="text-muted-foreground">Franquia não encontrada</p>
@@ -150,22 +179,50 @@ export default function OrganizationSettings() {
             animate={{ opacity: 1, y: 0 }}
             className="mt-4"
           >
-            {/* Header */}
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
-                <Building2 className="w-7 h-7 text-primary" />
+            {/* Admin franchise selector */}
+            {isAdmin && (
+              <div className="mb-6">
+                <Label className="text-xs font-semibold text-muted-foreground mb-2 block">Selecione a franquia</Label>
+                <Select
+                  value={selectedFranchiseId || ''}
+                  onValueChange={v => setSelectedFranchiseId(v)}
+                >
+                  <SelectTrigger className="w-full sm:w-80 rounded-xl">
+                    <SelectValue placeholder="Escolha uma franquia" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {franchiseOptions.map(f => (
+                      <SelectItem key={f.id} value={f.id}>
+                        {f.nome_franquia} — {f.cidade_base}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              <div>
-                <h1 className="text-xl font-bold text-foreground">{franchise.nome_franquia}</h1>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">{franchise.cidade_base}</span>
-                  <Badge variant="success" className="text-[10px]">Ativa</Badge>
+            )}
+
+            {/* Header */}
+            {franchise ? (
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
+                  <Building2 className="w-7 h-7 text-primary" />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold text-foreground">{franchise.nome_franquia}</h1>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">{franchise.cidade_base}</span>
+                    <Badge variant="success" className="text-[10px]">Ativa</Badge>
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="flex items-center justify-center py-12 text-muted-foreground text-sm">
+                {isAdmin ? 'Selecione uma franquia acima para configurar.' : 'Franquia não encontrada.'}
+              </div>
+            )}
 
-            <Tabs defaultValue="general" className="space-y-6">
+            {franchise && <Tabs defaultValue="general" className="space-y-6">
               <TabsList className="bg-muted/40 rounded-xl p-1">
                 <TabsTrigger value="general" className="rounded-lg text-xs gap-1.5">
                   <Settings2 className="w-3.5 h-3.5" />
@@ -384,7 +441,7 @@ export default function OrganizationSettings() {
                   </CardContent>
                 </Card>
               </TabsContent>
-            </Tabs>
+            </Tabs>}
           </motion.div>
         </div>
       </div>
