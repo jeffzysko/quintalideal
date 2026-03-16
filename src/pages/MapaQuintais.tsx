@@ -7,7 +7,10 @@ import { Badge } from '@/components/ui/badge';
 
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
-import { PageHeader } from '@/components/PageHeader';
+import { PanelHeader } from '@/components/PanelHeader';
+import { BackButton } from '@/components/BackButton';
+import { NotificationBell } from '@/components/NotificationBell';
+import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { LeafletHeatmap } from '@/components/admin/LeafletHeatmap';
 
 interface CityData {
