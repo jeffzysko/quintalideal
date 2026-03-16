@@ -12,7 +12,10 @@ import { PieChart, Pie, Cell } from 'recharts';
 
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
-import { PageHeader } from '@/components/PageHeader';
+import { PanelHeader } from '@/components/PanelHeader';
+import { BackButton } from '@/components/BackButton';
+import { NotificationBell } from '@/components/NotificationBell';
+import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 
 interface LeadData {
   cidade: string | null;
