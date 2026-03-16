@@ -7,7 +7,7 @@ export function Footer() {
     <footer className="w-full border-t border-border/40 bg-background/95 backdrop-blur-md">
       <div className="max-w-5xl mx-auto px-4 py-8 sm:py-10">
         {/* Grid principal */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           {/* Brand */}
           <div className="col-span-2 sm:col-span-1 flex flex-col items-start gap-3">
             <img src={logoSplash} alt="Splash Piscinas" className="w-10 opacity-70" />
