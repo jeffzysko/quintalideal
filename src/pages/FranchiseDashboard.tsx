@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Users, TrendingUp, Clock, Eye, Inbox, Share2, Droplets, BarChart3, Link2, Copy, Check, Workflow } from 'lucide-react';
+import { Users, TrendingUp, Clock, Eye, Inbox, Share2, Droplets, BarChart3, Link2, Copy, Check, Workflow, CalendarClock } from 'lucide-react';
 import { ConversionFunnel } from '@/components/franchise/ConversionFunnel';
 import { SLAIndicator } from '@/components/franchise/SLAIndicator';
 import { MonthlyGoals } from '@/components/franchise/MonthlyGoals';
