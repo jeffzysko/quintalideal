@@ -44,9 +44,9 @@ export function ValorizationSimulator({ score: _score, lang = 'pt' }: Valorizati
       </div>
 
       <div className="px-4 sm:px-6 pb-5 sm:pb-6">
-        <div className="flex items-start gap-2 p-2.5 sm:p-3 rounded-xl bg-emerald-50 border border-emerald-100 mb-4">
-          <ArrowUpRight className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-          <p className="text-[11px] sm:text-xs text-emerald-700 font-medium" dangerouslySetInnerHTML={{ __html: t('valor_info', lang) }} />
+        <div className="flex items-start gap-2 p-2.5 sm:p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 mb-4">
+          <ArrowUpRight className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
+          <p className="text-[11px] sm:text-xs text-emerald-700 dark:text-emerald-300 font-medium" dangerouslySetInnerHTML={{ __html: t('valor_info', lang) }} />
         </div>
 
         <div className="flex flex-col sm:flex-row gap-2 mb-4">
