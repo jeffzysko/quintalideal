@@ -331,8 +331,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                         <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Nome</th>
                         <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Temp.</th>
                         <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Cidade</th>
-                        <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Score</th>
-                        <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Modelo</th>
+                        <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Quintal</th>
                         <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider">Status</th>
                         <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Data</th>
                         <th role="columnheader" className="text-left py-3 px-3 font-medium text-muted-foreground text-xs uppercase tracking-wider"></th>
@@ -342,6 +341,9 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                       {sortedLeads.map(lead => {
                         const temp = classifyLead(lead.respostas_questionario || null, lead.pontuacao_quintal);
                         const isOverdue = lead.status_lead === 'novo' && (Date.now() - new Date(lead.created_at).getTime()) > 48 * 60 * 60 * 1000;
+                        const score = lead.pontuacao_quintal || 0;
+                        const scoreEmoji = score >= 70 ? '🟢' : score >= 40 ? '🟡' : '🔴';
+                        const scoreLabel = score >= 70 ? 'Ótimo' : score >= 40 ? 'Bom' : 'Baixo';
                         return (
                           <tr key={lead.id} className={`border-b border-border/20 hover:bg-muted/40 transition-all cursor-pointer group ${isOverdue ? 'bg-amber-500/[0.03]' : ''}`} role="row" onClick={() => navigate(`${leadDetailPath}/${lead.id}`)}>
                             <td role="cell" className="py-3.5 px-3 font-medium">
@@ -357,9 +359,16 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                             </td>
                             <td role="cell" className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.cidade || '—'}</td>
                             <td role="cell" className="py-3.5 px-3">
-                              <span className="font-bold text-primary">{lead.pontuacao_quintal || 0}%</span>
+                              <div className="flex items-center gap-1.5">
+                                <div className="w-16 h-2 rounded-full bg-muted overflow-hidden">
+                                  <div
+                                    className={`h-full rounded-full ${score >= 70 ? 'bg-emerald-500' : score >= 40 ? 'bg-amber-500' : 'bg-red-400'}`}
+                                    style={{ width: `${score}%` }}
+                                  />
+                                </div>
+                                <span className="text-[11px] text-muted-foreground whitespace-nowrap">{scoreEmoji} {scoreLabel}</span>
+                              </div>
                             </td>
-                            <td role="cell" className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.modelo_recomendado || '—'}</td>
                             <td role="cell" className="py-3.5 px-3">
                               <Badge className={`${STATUS_COLORS[lead.status_lead] || ''} border text-xs font-medium`} variant="secondary">
                                 {STATUS_LABELS[lead.status_lead] || lead.status_lead}

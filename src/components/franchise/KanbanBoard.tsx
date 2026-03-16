@@ -1158,6 +1158,28 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
         )}
       </div>
 
+      {/* Onboarding tip for first-time users */}
+      {!localStorage.getItem('kanban-tip-dismissed') && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-3 px-4 py-2.5 mb-4 rounded-xl border border-primary/20 bg-primary/5"
+        >
+          <span className="text-sm">💡</span>
+          <p className="text-xs text-foreground flex-1">
+            <span className="font-semibold">Dica:</span> Arraste os cards entre as colunas para mudar o status do lead.
+          </p>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 px-2 text-[10px] text-muted-foreground shrink-0"
+            onClick={() => { localStorage.setItem('kanban-tip-dismissed', 'true'); }}
+          >
+            Entendi
+          </Button>
+        </motion.div>
+      )}
+
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
