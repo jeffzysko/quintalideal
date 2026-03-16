@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPin, BarChart3, Users, TrendingUp, Flame } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { useNavigate } from 'react-router-dom';
+
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
 import { PageHeader } from '@/components/PageHeader';
@@ -60,7 +60,7 @@ function KPICard({ icon: Icon, label, value, color, delay, accentGlow }: {
 }
 
 export default function MapaQuintais() {
-  const navigate = useNavigate();
+  
   const [leads, setLeads] = useState<{ cidade: string | null; pontuacao_quintal: number | null }[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -103,7 +103,7 @@ export default function MapaQuintais() {
         title="Mapa de Calor"
         subtitle="Densidade de leads por cidade"
         icon={<Flame className="w-4 h-4 text-destructive" />}
-        onBack={() => navigate(-1)}
+        fallbackPath="/admin"
         rightSlot={
           <Badge variant="outline" className="text-[10px] md:text-xs px-2 md:px-3 py-1 md:py-1.5 border-primary/30 text-primary whitespace-nowrap animate-pulse-glow">
             {totalQuintais} quintais

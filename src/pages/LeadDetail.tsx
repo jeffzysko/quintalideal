@@ -7,7 +7,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Camera, ClipboardList, Settings2, Save, User, Trash2 } from 'lucide-react';
+import { MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Camera, ClipboardList, Settings2, Save, User, Trash2 } from 'lucide-react';
+import { BackButton } from '@/components/BackButton';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { LeadTimeline } from '@/components/lead/LeadTimeline';
 import { LeadFollowups } from '@/components/franchise/LeadFollowups';
@@ -210,11 +211,7 @@ export default function LeadDetail() {
         <Breadcrumbs items={breadcrumbItems} />
 
         {/* Back */}
-        <Button variant="ghost" size="sm" onClick={() => {
-          navigate(leadsUrl);
-        }} className="text-muted-foreground hover:text-foreground -ml-2">
-          <ArrowLeft className="w-4 h-4 mr-1" /> Voltar
-        </Button>
+        <BackButton fallback={leadsUrl} label="Voltar" className="-ml-2" />
 
         {/* Hero Card */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import { BackButton } from '@/components/BackButton';
 import {
-  ArrowLeft,
   LifeBuoy,
   BookOpen,
   Users,
@@ -278,9 +278,7 @@ export default function Suporte() {
       <div className="relative z-10 flex-1 max-w-3xl mx-auto w-full px-4 py-8 sm:py-12">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
-          <Button variant="ghost" onClick={() => navigate(-1)} className="gap-2">
-            <ArrowLeft className="w-4 h-4" /> Voltar
-          </Button>
+          <BackButton fallback="/franquia" label="Voltar" />
         </div>
 
         <motion.div {...fadeUp}>

@@ -9,7 +9,7 @@ import {
 } from 'lucide-react';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { PieChart, Pie, Cell } from 'recharts';
-import { useNavigate } from 'react-router-dom';
+
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
 import { PageHeader } from '@/components/PageHeader';
@@ -157,7 +157,7 @@ function SectionCard({ children, title, icon, subtitle, delay, className = '' }:
 }
 
 export default function RadarMercado() {
-  const navigate = useNavigate();
+  
   const [leads, setLeads] = useState<LeadData[]>([]);
   const [franchises, setFranchises] = useState<Franchise[]>([]);
   const [loading, setLoading] = useState(true);
@@ -322,7 +322,7 @@ export default function RadarMercado() {
         title="Radar de Mercado"
         subtitle="Inteligência do Mercado de Piscinas"
         icon={<Target className="w-4 h-4 text-primary" />}
-        onBack={() => navigate('/admin')}
+        fallbackPath="/admin"
         rightSlot={
           <Badge variant="outline" className="text-[10px] sm:text-xs px-2 sm:px-3 py-1 sm:py-1.5 border-primary/30 text-primary animate-pulse-glow">
             {totalLeads} testes

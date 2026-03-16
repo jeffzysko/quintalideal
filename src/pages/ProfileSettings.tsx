@@ -9,11 +9,12 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff, Camera, MapPin, Shield, Puzzle } from 'lucide-react';
+import { Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff, Camera, MapPin, Shield, Puzzle } from 'lucide-react';
+import { BackButton } from '@/components/BackButton';
 import { FranchiseUsersSection } from '@/components/franchise/FranchiseUsersSection';
 import { FranchiseContactSettings } from '@/components/franchise/FranchiseContactSettings';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
+
 import { motion } from 'framer-motion';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
@@ -28,7 +29,7 @@ type FranchiseOption = {
 
 export default function ProfileSettings() {
   const { user, role, franchiseId } = useAuth();
-  const navigate = useNavigate();
+  
   const location = useLocation();
 
   const [fullName, setFullName] = useState('');
@@ -235,14 +236,7 @@ export default function ProfileSettings() {
     <PageTransition>
     <div className="min-h-screen bg-background">
       <PanelHeader title="Configurações">
-        <button
-          onClick={() => navigate(backPath)}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
-          aria-label="Voltar"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Voltar</span>
-        </button>
+        <BackButton fallback={backPath} label="Voltar" />
       </PanelHeader>
 
       <div className="max-w-3xl mx-auto px-4 md:px-6 py-6 md:py-8 space-y-6">

@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { BackButton } from '@/components/BackButton';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
 import { PanelHeader } from '@/components/PanelHeader';
@@ -17,7 +18,7 @@ import { format, isToday, isTomorrow, isPast, differenceInHours, differenceInDay
 import { ptBR } from 'date-fns/locale';
 import {
   CalendarClock, AlertTriangle, Inbox, Phone, MessageCircle,
-  ChevronRight, ChevronLeft, Clock, Flame, Zap, CheckCircle2, Users,
+  ChevronRight, Clock, Flame, Zap, CheckCircle2, Users,
   TrendingUp, ArrowRight, Sparkles, Target, MapPin,
 } from 'lucide-react';
 import { STATUS_LABELS, STATUS_COLORS, type LeadRow } from '@/lib/lead-constants';
@@ -333,15 +334,7 @@ export default function HojePage() {
 
         <div className="max-w-3xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6">
           <div className="flex items-center gap-2 mb-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="h-8 w-8 rounded-lg shrink-0"
-              onClick={() => window.history.length > 1 ? navigate(-1) : navigate(isAdmin ? '/admin' : '/franquia')}
-              aria-label="Voltar"
-            >
-              <ChevronLeft className="w-4 h-4" />
-            </Button>
+            <BackButton fallback={isAdmin ? '/admin' : '/franquia'} />
             <Breadcrumbs items={[{ label: 'Hoje' }]} />
           </div>
 

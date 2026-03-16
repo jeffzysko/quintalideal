@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
-import { ArrowLeft, FileText, Scale, Users, Camera, Globe, ShieldCheck, AlertTriangle, Ban, RefreshCw, Gavel, Clock } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
+import { FileText, Scale, Users, Camera, Globe, ShieldCheck, AlertTriangle, Ban, RefreshCw, Gavel, Clock } from 'lucide-react';
+import { BackButton } from '@/components/BackButton';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 20 },
@@ -60,7 +59,7 @@ const SECTIONS = [
 ];
 
 export default function TermosDeUso() {
-  const navigate = useNavigate();
+  
 
   return (
     <div className="min-h-screen flex flex-col bg-background relative overflow-hidden">
@@ -71,10 +70,8 @@ export default function TermosDeUso() {
       </div>
 
       <div className="relative flex-1 max-w-3xl mx-auto px-4 py-10 md:py-16 w-full">
-        <motion.div initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }}>
-          <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="mb-8 gap-1.5 text-muted-foreground hover:text-foreground">
-            <ArrowLeft className="w-4 h-4" /> Voltar
-          </Button>
+        <motion.div initial={{ opacity: 0, x: -12 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.3 }} className="mb-8">
+          <BackButton fallback="/" label="Voltar" />
         </motion.div>
 
         {/* Hero */}
