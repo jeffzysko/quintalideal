@@ -330,6 +330,11 @@ export default function AdminDashboard() {
 
             <MetricGrid metrics={kpis} loading={loadingKpis} columns={6} />
 
+            {/* Insight Surfacing */}
+            {!loadingKpis && currentLeads.length > 0 && (
+              <InsightCards leads={currentLeads} previousLeads={previousLeads} maxCards={3} />
+            )}
+
             {/* Inactive Alerts */}
             <div className="mb-4 sm:mb-6">
               <AdminInactiveAlerts
