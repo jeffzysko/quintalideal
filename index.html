@@ -2,29 +2,41 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover" />
+
+    <!-- PWA / Mobile App -->
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <meta http-equiv="X-Content-Type-Options" content="nosniff">
-    <meta http-equiv="X-Frame-Options" content="DENY">
-    <meta name="referrer" content="strict-origin-when-cross-origin">
-    <link rel="icon" href="/favicon.png" type="image/png">
+    <meta name="apple-mobile-web-app-title" content="Quintal Ideal" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="theme-color" content="#08a1d6" />
+    <meta name="msapplication-TileColor" content="#0a1628" />
+
+    <!-- Icons -->
+    <link rel="icon" href="/favicon.png" type="image/png" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Security -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+    <meta http-equiv="X-Frame-Options" content="DENY" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+
     <title>Quintal Ideal Splash | Descubra o potencial do seu quintal</title>
-    <meta name="description" content="Descubra em 60 segundos o potencial do seu quintal para ter uma piscina Splash. Teste gratuito e resultado instantâneo.">
+    <meta name="description" content="Descubra em 60 segundos o potencial do seu quintal para ter uma piscina Splash. Teste gratuito e resultado instantâneo." />
     <meta name="author" content="Splash Piscinas" />
     <link rel="canonical" href="https://quintalideal.com.br/" />
 
-    <meta property="og:title" content="Quintal Ideal Splash | Descubra o potencial do seu quintal">
-    <meta property="og:description" content="Descubra em 60 segundos o potencial do seu quintal para ter uma piscina Splash. Teste gratuito e resultado instantâneo.">
+    <meta property="og:title" content="Quintal Ideal Splash | Descubra o potencial do seu quintal" />
+    <meta property="og:description" content="Descubra em 60 segundos o potencial do seu quintal para ter uma piscina Splash. Teste gratuito e resultado instantâneo." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://quintalideal.com.br/" />
-    <meta property="og:image" content="https://quintalideal.com.br/og-image.png">
+    <meta property="og:image" content="https://quintalideal.com.br/og-image.png" />
     <meta property="og:locale" content="pt_BR" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Quintal Ideal Splash | Descubra o potencial do seu quintal">
-    <meta name="twitter:description" content="Descubra em 60 segundos o potencial do seu quintal para ter uma piscina Splash.">
-    <meta name="twitter:image" content="https://quintalideal.com.br/og-image.png">
+    <meta name="twitter:title" content="Quintal Ideal Splash | Descubra o potencial do seu quintal" />
+    <meta name="twitter:description" content="Descubra em 60 segundos o potencial do seu quintal para ter uma piscina Splash." />
+    <meta name="twitter:image" content="https://quintalideal.com.br/og-image.png" />
 
     <link rel="dns-prefetch" href="https://bbfkorzehzoaogrnuyqp.supabase.co" />
     <link rel="preconnect" href="https://bbfkorzehzoaogrnuyqp.supabase.co" crossorigin />
@@ -49,12 +61,22 @@
       }
     }
     </script>
+
+    <style>
+      /* Safe area support for notch devices */
+      :root {
+        --sat: env(safe-area-inset-top, 0px);
+        --sar: env(safe-area-inset-right, 0px);
+        --sab: env(safe-area-inset-bottom, 0px);
+        --sal: env(safe-area-inset-left, 0px);
+      }
+    </style>
   </head>
 
   <body>
     <div id="root">
       <!-- Inline skeleton for instant FCP -->
-      <div style="height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,#0a1628 0%,#0d2847 60%,#081420 100%)">
+      <div style="height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(180deg,#0a1628 0%,#0d2847 60%,#081420 100%);padding-top:env(safe-area-inset-top,0px)">
         <img src="/src/assets/logo-splash.png" alt="" width="120" height="120" style="opacity:.6;margin-bottom:1.5rem" />
         <div style="width:28px;height:28px;border:3px solid rgba(255,255,255,.15);border-top-color:#1e88e5;border-radius:50%;animation:s .7s linear infinite"></div>
         <style>@keyframes s{to{transform:rotate(360deg)}}</style>

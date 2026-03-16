@@ -13,8 +13,11 @@ import HomePage from "./pages/HomePage";
 import { Footer } from "@/components/Footer";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import { ScrollToTop } from "@/components/ScrollToTop";
+import { PWAUpdatePrompt } from "@/components/PWAUpdatePrompt";
+import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ExplorarPage = lazy(() => import("./pages/ExplorarPage"));
+const InstallPage = lazy(() => import("./pages/InstallPage"));
 
 // Prefetch likely routes when browser is idle
 function usePrefetchRoutes() {
@@ -104,6 +107,7 @@ function AppRoutes() {
                   <Routes>
                     {/* Pages WITHOUT footer (quiz/lead flow) */}
                     <Route path="/" element={<HomePage />} />
+                    <Route path="/install" element={<InstallPage />} />
                     <Route path="/explorar" element={<ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}><ExplorarPage /></ProtectedRoute>} />
 
                     {/* Pages WITH footer */}
@@ -206,6 +210,8 @@ function AppRoutes() {
                 </Suspense>
                 <CookieConsentBanner />
                 <CommandPalette />
+                <PWAUpdatePrompt />
+                <PWAInstallBanner />
               </BrowserRouter>
             </TooltipProvider>
           </AuthProvider>
