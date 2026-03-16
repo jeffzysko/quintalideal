@@ -47,13 +47,13 @@ export const MetricCard = memo(function MetricCard({ icon: Icon, label, value, p
       transition={{ delay, type: 'spring', stiffness: 300, damping: 24 }}
     >
       <Card
-        className={`card-premium group overflow-hidden ${onClick ? 'cursor-pointer' : ''}`}
+        className={`card-premium group overflow-hidden active:scale-[0.98] transition-transform ${onClick ? 'cursor-pointer' : ''}`}
         onClick={onClick}
       >
         <CardContent className="p-4 sm:p-5">
           <div className="flex items-start justify-between mb-3">
-            <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${bg} flex items-center justify-center group-hover:scale-105 transition-transform`}>
-              <Icon className={`w-4 h-4 sm:w-5 sm:h-5 ${color}`} />
+            <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center group-hover:scale-105 transition-transform`}>
+              <Icon className={`w-[18px] h-[18px] sm:w-5 sm:h-5 ${color}`} />
             </div>
             {delta && (
               <div className={`flex items-center gap-0.5 text-[11px] sm:text-xs font-semibold rounded-lg px-1.5 py-0.5 ${

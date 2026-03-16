@@ -23,7 +23,7 @@ export function TimeRangeSelector({ value, onChange, className = '', showAll = t
 
   return (
     <Select value={value} onValueChange={(v) => onChange(v as TimeRange)}>
-      <SelectTrigger className={`w-[160px] h-9 text-xs rounded-xl gap-1.5 ${className}`}>
+      <SelectTrigger className={`w-[160px] min-h-[44px] sm:min-h-[36px] text-xs rounded-xl gap-1.5 ${className}`}>
         <Calendar className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
         <SelectValue />
       </SelectTrigger>

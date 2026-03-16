@@ -25,14 +25,16 @@ export function AlertBanner({ level, title, description, action }: AlertBannerPr
     <motion.div
       initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
-      className={`rounded-xl border ${style.border} ${style.bg} p-3 sm:p-4 flex items-start gap-3`}
+      className={`rounded-2xl border ${style.border} ${style.bg} p-4 flex items-start gap-3`}
     >
-      <Icon className={`w-5 h-5 ${style.iconColor} shrink-0 mt-0.5`} />
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-foreground">{title}</p>
-        {description && <p className="text-xs text-muted-foreground mt-0.5">{description}</p>}
+      <div className={`w-9 h-9 rounded-xl flex items-center justify-center shrink-0 ${style.bg}`}>
+        <Icon className={`w-[18px] h-[18px] ${style.iconColor}`} />
       </div>
-      {action}
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-semibold text-foreground leading-snug">{title}</p>
+        {description && <p className="text-[13px] text-muted-foreground mt-1 leading-relaxed">{description}</p>}
+      </div>
+      {action && <div className="shrink-0 mt-0.5">{action}</div>}
     </motion.div>
   );
 }

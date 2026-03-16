@@ -40,8 +40,8 @@ export function BackButton({ fallback, label, className }: BackButtonProps) {
       size={label ? 'sm' : 'icon'}
       onClick={handleBack}
       className={cn(
-        'rounded-xl shrink-0 text-muted-foreground hover:text-foreground gap-1.5',
-        !label && 'h-8 w-8',
+        'rounded-xl shrink-0 text-muted-foreground hover:text-foreground active:scale-95 transition-all gap-1.5 min-h-[44px] min-w-[44px]',
+        !label && 'h-10 w-10',
         className,
       )}
       aria-label="Voltar"

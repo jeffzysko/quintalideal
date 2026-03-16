@@ -51,8 +51,8 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
   if (crumbs.length <= 1) return null;
 
   return (
-    <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-muted-foreground mb-4">
-      <Link to="/" className="hover:text-foreground transition-colors p-0.5">
+    <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-muted-foreground mb-4 sm:mb-5 overflow-x-auto scrollbar-none">
+      <Link to="/" className="hover:text-foreground transition-colors p-1 -m-1 min-w-[28px] min-h-[28px] flex items-center justify-center">
         <Home className="w-3.5 h-3.5" />
       </Link>
       {crumbs.map((crumb, i) => (
