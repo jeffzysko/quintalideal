@@ -3,7 +3,7 @@ import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Share2, Globe, Kanban } from 'lucide-react';
+import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Share2, Globe, Kanban, CalendarClock } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -260,6 +260,7 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-background">
       <PanelHeader title="Fábrica">
         {[
+          { icon: CalendarClock, label: 'Hoje', action: () => navigate('/hoje') },
           { icon: Target, label: 'Radar', action: () => navigate('/admin/radar') },
           { icon: MapPin, label: 'Mapa', action: () => navigate('/mapa') },
           { icon: Download, label: 'CSV', action: exportCSV },

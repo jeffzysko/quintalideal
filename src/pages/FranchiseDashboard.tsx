@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Users, TrendingUp, Clock, Eye, Inbox, Share2, Droplets, BarChart3, Link2, Copy, Check, Workflow } from 'lucide-react';
+import { Users, TrendingUp, Clock, Eye, Inbox, Share2, Droplets, BarChart3, Link2, Copy, Check, Workflow, CalendarClock } from 'lucide-react';
 import { ConversionFunnel } from '@/components/franchise/ConversionFunnel';
 import { SLAIndicator } from '@/components/franchise/SLAIndicator';
 import { MonthlyGoals } from '@/components/franchise/MonthlyGoals';
@@ -431,6 +431,14 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
     <PageTransition>
     <div className="min-h-screen bg-background">
       <PanelHeader title={franchiseName || 'Dashboard'}>
+        <button
+          onClick={() => navigate('/hoje')}
+          className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors min-h-[44px] min-w-[44px]"
+          aria-label="Hoje"
+        >
+          <CalendarClock className="w-4 h-4" />
+          <span className="hidden sm:inline">Hoje</span>
+        </button>
         <Badge variant="outline" className="text-[10px] px-2 py-0.5 border-primary/20 text-primary font-medium hidden sm:flex">
           {allLeads.length} leads
         </Badge>
