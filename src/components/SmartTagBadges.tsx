@@ -1,4 +1,4 @@
-import { getTopTags, type SmartTag } from '@/lib/smart-tags';
+import { getTopTags } from '@/lib/smart-tags';
 
 interface SmartTagBadgesProps {
   lead: {
