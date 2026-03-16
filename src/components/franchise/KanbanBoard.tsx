@@ -160,6 +160,7 @@ function LeadCard({
             {temp.emoji} {temp.label}
           </Badge>
           <span className="text-xs font-bold text-primary">{lead.pontuacao_quintal || 0}%</span>
+          <SmartTagBadges lead={lead} max={1} />
         </div>
 
         <div className="space-y-1">
