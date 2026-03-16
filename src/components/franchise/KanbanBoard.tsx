@@ -21,7 +21,7 @@ import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { MapPin, Calendar, GripVertical, Filter, X, Building2, Search, CalendarIcon } from 'lucide-react';
+import { MapPin, Calendar, GripVertical, Filter, X, Building2, Search, CalendarIcon, MessageCircle } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
