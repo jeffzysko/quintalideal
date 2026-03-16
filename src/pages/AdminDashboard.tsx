@@ -20,20 +20,20 @@ import { AdminFranchiseManager } from '@/components/admin/AdminFranchiseManager'
 import { AdminEmailTemplates } from '@/components/admin/AdminEmailTemplates';
 import { AdminUserManager } from '@/components/admin/AdminUserManager';
 import { AdminCityManager } from '@/components/admin/AdminCityManager';
-import { AdminKPICards } from '@/components/admin/AdminKPICards';
 import { AdminLeadFilters } from '@/components/admin/AdminLeadFilters';
 import { AdminLeadsTable } from '@/components/admin/AdminLeadsTable';
 import { AdminInactiveAlerts } from '@/components/admin/AdminInactiveAlerts';
 import { AdminPerformanceComparison } from '@/components/admin/AdminPerformanceComparison';
 import { KanbanBoard } from '@/components/franchise/KanbanBoard';
-
-
-import { KPISkeleton } from '@/components/ui/kpi-skeleton';
 import { TableSkeleton } from '@/components/ui/table-skeleton';
 import { STATUS_LABELS, LeadRow } from '@/lib/lead-constants';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { NotificationBell } from '@/components/NotificationBell';
 import { PanelHeader } from '@/components/PanelHeader';
+import { MetricGrid } from '@/components/dashboard/MetricGrid';
+import { TimeRangeSelector, filterByTimeRange, type TimeRange } from '@/components/dashboard/TimeRangeSelector';
+import { SectionHeader } from '@/components/dashboard/SectionHeader';
+import type { MetricCardProps } from '@/components/dashboard/MetricCard';
 
 const PAGE_SIZE = 25;
 
@@ -45,13 +45,13 @@ export default function AdminDashboard() {
     new URLSearchParams(location.search).get('tab') === 'leads' ? 'leads' : 'overview'
   );
   const [viewFranchiseId, setViewFranchiseId] = useState<string>('');
+  const [timeRange, setTimeRange] = useState<TimeRange>('30');
 
   const [filterFranquia, setFilterFranquia] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterModelo, setFilterModelo] = useState('all');
   const [page, setPage] = useState(1);
 
-  // Debounced inputs
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
   const [cidadeInput, setCidadeInput] = useState('');
@@ -67,10 +67,9 @@ export default function AdminDashboard() {
     return () => clearTimeout(timer);
   }, [cidadeInput]);
 
-  // Reset page when filters change
   useEffect(() => { setPage(1); }, [filterFranquia, filterStatus, filterModelo]);
 
-  // ── Franchises (full for alerts) ──
+  // ── Franchises ──
   const { data: franchises = [] } = useQuery({
     queryKey: ['franchises-full'],
     queryFn: async () => {
@@ -80,8 +79,7 @@ export default function AdminDashboard() {
     },
   });
 
-
-  // ── Lead activities for performance comparison ──
+  // ── Lead activities ──
   const { data: leadActivities = [] } = useQuery({
     queryKey: ['lead-activities-all'],
     queryFn: async () => {
@@ -95,11 +93,10 @@ export default function AdminDashboard() {
     },
   });
 
-  // ── All leads for KPIs/charts (lightweight columns only) ──
+  // ── All leads ──
   const { data: allLeads = [], isLoading: loadingKpis } = useQuery({
     queryKey: ['admin-leads-all'],
     queryFn: async () => {
-      // Fetch in batches to avoid the 1000-row default limit
       const PAGE = 1000;
       let all: LeadRow[] = [];
       let from = 0;
@@ -150,6 +147,12 @@ export default function AdminDashboard() {
     franchises.forEach(f => { map[f.id] = f.nome_franquia; });
     return map;
   }, [franchises]);
+
+  // ── Time-filtered KPIs with comparison ──
+  const { current: currentLeads, previous: previousLeads } = useMemo(
+    () => filterByTimeRange(allLeads, timeRange),
+    [allLeads, timeRange],
+  );
 
   const leadsPerMonth = useMemo(() => {
     const counts: Record<string, number> = {};
@@ -206,19 +209,41 @@ export default function AdminDashboard() {
     }
   };
 
-  const totalLeads = allLeads.length;
-  const newLeads = allLeads.filter(l => l.status_lead === 'novo').length;
-  const cities = new Set(allLeads.map(l => l.cidade).filter(Boolean)).size;
-  const avgScore = totalLeads > 0 ? Math.round(allLeads.reduce((s, l) => s + (l.pontuacao_quintal || 0), 0) / totalLeads) : 0;
-  const referralCount = allLeads.filter(l => l.referred_by).length;
+  const totalLeads = currentLeads.length;
+  const newLeads = currentLeads.filter(l => l.status_lead === 'novo').length;
+  const cities = new Set(currentLeads.map(l => l.cidade).filter(Boolean)).size;
+  const avgScore = totalLeads > 0 ? Math.round(currentLeads.reduce((s, l) => s + (l.pontuacao_quintal || 0), 0) / totalLeads) : 0;
+  const referralCount = currentLeads.filter(l => l.referred_by).length;
+  const soldCount = currentLeads.filter(l => l.status_lead === 'vendido').length;
 
-  const kpis = [
-    { icon: Users, label: 'Quintais explorados', value: totalLeads, color: 'text-primary' },
-    { icon: TrendingUp, label: 'Novos leads', value: newLeads, color: 'text-emerald-600' },
-    { icon: Target, label: 'Média potencial', value: `${avgScore}%`, color: 'text-primary' },
+  const prevTotal = previousLeads.length || undefined;
+  const prevNew = previousLeads.length > 0 ? previousLeads.filter(l => l.status_lead === 'novo').length : undefined;
+  const prevCities = previousLeads.length > 0 ? new Set(previousLeads.map(l => l.cidade).filter(Boolean)).size : undefined;
+  const prevAvg = previousLeads.length > 0 ? Math.round(previousLeads.reduce((s, l) => s + (l.pontuacao_quintal || 0), 0) / previousLeads.length) : undefined;
+  const prevSold = previousLeads.length > 0 ? previousLeads.filter(l => l.status_lead === 'vendido').length : undefined;
+  const prevRef = previousLeads.length > 0 ? previousLeads.filter(l => l.referred_by).length : undefined;
+
+  const kpis: MetricCardProps[] = [
+    { icon: Users, label: 'Quintais explorados', value: totalLeads, previousValue: prevTotal, color: 'text-primary' },
+    { icon: TrendingUp, label: 'Novos leads', value: newLeads, previousValue: prevNew, color: 'text-emerald-600' },
+    { icon: Target, label: 'Média potencial', value: `${avgScore}%`, previousValue: prevAvg, color: 'text-primary' },
     { icon: Building2, label: 'Franquias', value: franchises.length, color: 'text-violet-600' },
-    { icon: MapPin, label: 'Cidades', value: cities, color: 'text-amber-600' },
-    { icon: Share2, label: 'Via convite', value: referralCount, color: 'text-secondary' },
+    { icon: MapPin, label: 'Cidades', value: cities, previousValue: prevCities, color: 'text-amber-600' },
+    { icon: Share2, label: 'Via convite', value: referralCount, previousValue: prevRef, color: 'text-secondary' },
+  ];
+
+  const TABS = [
+    { key: 'overview' as const, icon: BarChart3, label: 'Inteligência' },
+    { key: 'analytics' as const, icon: Activity, label: 'Analytics' },
+    { key: 'leads' as const, icon: Users, label: 'Leads' },
+    { key: 'kanban' as const, icon: Kanban, label: 'Funil Geral' },
+    { key: 'franchises' as const, icon: Building2, label: 'Franquias' },
+    { key: 'cities' as const, icon: Globe, label: 'Territórios' },
+    { key: 'users' as const, icon: Users, label: 'Usuários' },
+    ...(role === 'super_admin' ? [
+      { key: 'emails' as const, icon: Mail, label: 'E-mails' },
+      { key: 'franchise-view' as const, icon: Eye, label: 'Visão Franquia' },
+    ] : []),
   ];
 
   return (
@@ -248,7 +273,7 @@ export default function AdminDashboard() {
 
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
         <Breadcrumbs items={[{ label: 'Admin' }]} />
-        {/* Tab switcher */}
+
         {/* Mobile: Select dropdown */}
         <div className="md:hidden mb-4">
           <Select value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
@@ -256,19 +281,7 @@ export default function AdminDashboard() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {([
-                { key: 'overview' as const, icon: BarChart3, label: 'Inteligência' },
-                { key: 'analytics' as const, icon: Activity, label: 'Analytics' },
-                { key: 'leads' as const, icon: Users, label: 'Leads' },
-                { key: 'kanban' as const, icon: Kanban, label: 'Funil Geral' },
-                { key: 'franchises' as const, icon: Building2, label: 'Franquias' },
-                { key: 'cities' as const, icon: Globe, label: 'Territórios' },
-                { key: 'users' as const, icon: Users, label: 'Usuários' },
-                ...(role === 'super_admin' ? [
-                  { key: 'emails' as const, icon: Mail, label: 'E-mails' },
-                  { key: 'franchise-view' as const, icon: Eye, label: 'Visão Franquia' },
-                ] : []),
-              ]).map(tab => (
+              {TABS.map(tab => (
                 <SelectItem key={tab.key} value={tab.key}>
                   <span className="flex items-center gap-2">
                     <tab.icon className="w-4 h-4 text-muted-foreground" />
@@ -282,19 +295,7 @@ export default function AdminDashboard() {
 
         {/* Desktop: Tab bar */}
         <div className="hidden md:flex gap-1 mb-8 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-fit border border-border/30" role="tablist">
-          {([
-            { key: 'overview' as const, icon: BarChart3, label: 'Inteligência' },
-            { key: 'analytics' as const, icon: Activity, label: 'Analytics' },
-            { key: 'leads' as const, icon: Users, label: 'Leads' },
-            { key: 'kanban' as const, icon: Kanban, label: 'Funil Geral' },
-            { key: 'franchises' as const, icon: Building2, label: 'Franquias' },
-            { key: 'cities' as const, icon: Globe, label: 'Territórios' },
-            { key: 'users' as const, icon: Users, label: 'Usuários' },
-            ...(role === 'super_admin' ? [
-              { key: 'emails' as const, icon: Mail, label: 'E-mails' },
-              { key: 'franchise-view' as const, icon: Eye, label: 'Visão Franquia' },
-            ] : []),
-          ]).map(tab => (
+          {TABS.map(tab => (
             <button
               key={tab.key}
               role="tab"
@@ -309,11 +310,15 @@ export default function AdminDashboard() {
         </div>
 
         {activeTab === 'overview' && (
-          loadingKpis ? <KPISkeleton count={6} /> : <AdminKPICards kpis={kpis} />
-        )}
-
-        {activeTab === 'overview' && (
           <>
+            {/* Time range + KPIs */}
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <SectionHeader icon={BarChart3} title="Métricas" subtitle={timeRange === 'all' ? 'Todo o período' : `Últimos ${timeRange} dias vs período anterior`} />
+              <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
+            </div>
+
+            <MetricGrid metrics={kpis} loading={loadingKpis} columns={6} />
+
             {/* Inactive Alerts */}
             <div className="mb-4 sm:mb-6">
               <AdminInactiveAlerts
