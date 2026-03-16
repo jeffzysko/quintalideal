@@ -59,10 +59,12 @@ function LeadCard({
   lead,
   basePath,
   overlay,
+  franchiseName,
 }: {
   lead: LeadWithQuiz;
   basePath: string;
   overlay?: boolean;
+  franchiseName?: string;
 }) {
   const navigate = useNavigate();
   const temp = classifyLead(lead.respostas_questionario || null, lead.pontuacao_quintal);
