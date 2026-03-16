@@ -304,7 +304,6 @@ export function KanbanBoard({ leads, franchiseId, basePath }: KanbanBoardProps) 
             status={status}
             leads={columnData[status]}
             basePath={basePath}
-            activeId={activeId}
             isOverColumn={overColumnId === status}
           />
         ))}
