@@ -1,8 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { BackButton } from '@/components/BackButton';
 import {
-  ArrowLeft,
   LifeBuoy,
   BookOpen,
   Users,
