@@ -36,6 +36,7 @@ import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/hooks/useAuth';
+import { SmartTagBadges } from '@/components/SmartTagBadges';
 
 const COLUMNS = ['novo', 'contatado', 'em_negociacao', 'vendido', 'perdido'] as const;
 
@@ -160,6 +161,7 @@ function LeadCard({
             {temp.emoji} {temp.label}
           </Badge>
           <span className="text-xs font-bold text-primary">{lead.pontuacao_quintal || 0}%</span>
+          <SmartTagBadges lead={lead} max={1} />
         </div>
 
         <div className="space-y-1">

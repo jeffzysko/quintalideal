@@ -5,6 +5,7 @@ import { MapPin, ChevronRight, Phone, MessageCircle, Clock } from 'lucide-react'
 import { useNavigate } from 'react-router-dom';
 import { STATUS_LABELS, STATUS_COLORS, LeadRow } from '@/lib/lead-constants';
 import { motion } from 'framer-motion';
+import { SmartTagBadges } from '@/components/SmartTagBadges';
 
 function ScorePill({ score }: { score: number }) {
   const cls = score >= 70 ? 'score-high' : score >= 40 ? 'score-mid' : 'score-low';
@@ -92,13 +93,15 @@ export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePa
               </div>
             </div>
 
-            {lead.modelo_recomendado && (
-              <div className="mt-2 ml-14">
+            {/* Smart tags + model */}
+            <div className="mt-2 ml-14 flex items-center gap-1.5 flex-wrap">
+              <SmartTagBadges lead={lead} max={2} />
+              {lead.modelo_recomendado && (
                 <span className="text-xs text-muted-foreground bg-muted/60 px-2 py-0.5 rounded-md">
                   {lead.modelo_recomendado}
                 </span>
-              </div>
-            )}
+              )}
+            </div>
 
             {franchiseName && (
               <div className="mt-1.5 ml-14">
