@@ -1,30 +1,20 @@
-import { useState, useEffect, useMemo } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect, useMemo, lazy, Suspense, useCallback } from 'react';
+import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Share2, Globe, Kanban } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import FranchiseDashboard from '@/pages/FranchiseDashboard';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
 import { useAuth } from '@/hooks/useAuth';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis } from 'recharts';
-import { AdminCityRanking } from '@/components/admin/AdminCityRanking';
-import { AdminFranchiseRanking } from '@/components/admin/AdminFranchiseRanking';
-import { AdminReferralMetrics } from '@/components/admin/AdminReferralMetrics';
-import { AdminAnalytics } from '@/components/admin/AdminAnalytics';
-import { AdminFranchiseManager } from '@/components/admin/AdminFranchiseManager';
-import { AdminEmailTemplates } from '@/components/admin/AdminEmailTemplates';
-import { AdminUserManager } from '@/components/admin/AdminUserManager';
-import { AdminCityManager } from '@/components/admin/AdminCityManager';
 import { AdminLeadFilters } from '@/components/admin/AdminLeadFilters';
 import { AdminLeadsTable } from '@/components/admin/AdminLeadsTable';
 import { AdminInactiveAlerts } from '@/components/admin/AdminInactiveAlerts';
 import { AdminPerformanceComparison } from '@/components/admin/AdminPerformanceComparison';
-import { KanbanBoard } from '@/components/franchise/KanbanBoard';
 import { TableSkeleton } from '@/components/ui/table-skeleton';
 import { STATUS_LABELS, LeadRow } from '@/lib/lead-constants';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
@@ -34,6 +24,26 @@ import { MetricGrid } from '@/components/dashboard/MetricGrid';
 import { TimeRangeSelector, filterByTimeRange, type TimeRange } from '@/components/dashboard/TimeRangeSelector';
 import { SectionHeader } from '@/components/dashboard/SectionHeader';
 import type { MetricCardProps } from '@/components/dashboard/MetricCard';
+
+// Lazy load heavy tab components
+const AdminCityRanking = lazy(() => import('@/components/admin/AdminCityRanking').then(m => ({ default: m.AdminCityRanking })));
+const AdminFranchiseRanking = lazy(() => import('@/components/admin/AdminFranchiseRanking').then(m => ({ default: m.AdminFranchiseRanking })));
+const AdminReferralMetrics = lazy(() => import('@/components/admin/AdminReferralMetrics').then(m => ({ default: m.AdminReferralMetrics })));
+const AdminAnalytics = lazy(() => import('@/components/admin/AdminAnalytics').then(m => ({ default: m.AdminAnalytics })));
+const AdminFranchiseManager = lazy(() => import('@/components/admin/AdminFranchiseManager').then(m => ({ default: m.AdminFranchiseManager })));
+const AdminEmailTemplates = lazy(() => import('@/components/admin/AdminEmailTemplates').then(m => ({ default: m.AdminEmailTemplates })));
+const AdminUserManager = lazy(() => import('@/components/admin/AdminUserManager').then(m => ({ default: m.AdminUserManager })));
+const AdminCityManager = lazy(() => import('@/components/admin/AdminCityManager').then(m => ({ default: m.AdminCityManager })));
+const KanbanBoard = lazy(() => import('@/components/franchise/KanbanBoard').then(m => ({ default: m.KanbanBoard })));
+const FranchiseDashboard = lazy(() => import('@/pages/FranchiseDashboard'));
+
+function TabFallback() {
+  return (
+    <div className="flex items-center justify-center py-16">
+      <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" />
+    </div>
+  );
+}
 
 const PAGE_SIZE = 25;
 
