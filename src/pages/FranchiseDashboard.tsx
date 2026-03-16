@@ -393,18 +393,18 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                 )}
 
                  {totalCount > PAGE_SIZE && (
-                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mt-4 pt-4 border-t border-border/30">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-4 pt-4 border-t border-border/30">
                     <p className="text-xs sm:text-sm text-muted-foreground">
                       {from + 1}–{Math.min(to, totalCount)} de {totalCount}
                     </p>
-                    <div className="flex gap-2">
-                      <Button variant="outline" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="rounded-xl h-8 text-xs">
+                    <div className="flex items-center gap-2 w-full sm:w-auto">
+                      <Button variant="outline" size="sm" onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="rounded-xl min-h-[44px] text-xs flex-1 sm:flex-none">
                         Anterior
                       </Button>
-                      <span className="flex items-center text-xs text-muted-foreground px-2">
+                      <span className="flex items-center justify-center text-xs text-muted-foreground px-3 min-w-[48px]">
                         {page}/{totalPages}
                       </span>
-                      <Button variant="outline" size="sm" onClick={() => setPage(p => p + 1)} disabled={page >= totalPages} className="rounded-xl h-8 text-xs">
+                      <Button variant="outline" size="sm" onClick={() => setPage(p => p + 1)} disabled={page >= totalPages} className="rounded-xl min-h-[44px] text-xs flex-1 sm:flex-none">
                         Próximo
                       </Button>
                     </div>
