@@ -192,16 +192,16 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       {loadingKpis ? (
         <div className="mb-8"><KPISkeleton count={4} /></div>
       ) : (
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6">
           {kpis.map((kpi, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06, type: 'spring', stiffness: 300, damping: 24 }}>
               <Card className="card-premium group overflow-hidden">
-                <CardContent className="p-3 md:p-5">
-                  <div className={`w-9 h-9 md:w-10 md:h-10 rounded-xl ${kpi.color === 'text-primary' ? 'icon-bg-blue' : kpi.color === 'text-secondary' ? 'icon-bg-pink' : kpi.color === 'text-violet-600' ? 'icon-bg-violet' : 'icon-bg-green'} flex items-center justify-center mb-2.5 md:mb-3 group-hover:scale-105 transition-transform`}>
-                    <kpi.icon className={`w-4 h-4 md:w-5 md:h-5 ${kpi.color}`} />
+                <CardContent className="p-3.5 sm:p-5">
+                  <div className={`w-10 h-10 rounded-xl ${kpi.color === 'text-primary' ? 'icon-bg-blue' : kpi.color === 'text-secondary' ? 'icon-bg-pink' : kpi.color === 'text-violet-600' ? 'icon-bg-violet' : 'icon-bg-green'} flex items-center justify-center mb-2.5 sm:mb-3 group-hover:scale-105 transition-transform`}>
+                    <kpi.icon className={`w-5 h-5 ${kpi.color}`} />
                   </div>
-                  <p className="text-xl md:text-2xl font-extrabold tracking-tight text-foreground">{kpi.value}</p>
-                  <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5 font-medium">{kpi.label}</p>
+                  <p className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">{kpi.value}</p>
+                  <p className="text-xs text-muted-foreground mt-0.5 font-medium">{kpi.label}</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -221,32 +221,24 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       {/* Conversion Funnel */}
       {!loadingKpis && allLeads.length > 0 && <ConversionFunnel leads={allLeads} />}
 
-      {/* Tab switcher */}
-      <div className="flex gap-1 mb-6 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-full sm:w-fit overflow-x-auto scrollbar-none border border-border/30" role="tablist">
-        <button
-          role="tab"
-          aria-selected={activeTab === 'leads'}
-          onClick={() => setActiveTab('leads')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === 'leads' ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
-        >
-          <Users className={`w-3.5 h-3.5 sm:w-4 sm:h-4 inline mr-1.5 ${activeTab === 'leads' ? 'text-primary' : ''}`} /> Leads
-        </button>
-        <button
-          role="tab"
-          aria-selected={activeTab === 'funnel'}
-          onClick={() => setActiveTab('funnel')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === 'funnel' ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
-        >
-          <Workflow className={`w-3.5 h-3.5 sm:w-4 sm:h-4 inline mr-1.5 ${activeTab === 'funnel' ? 'text-primary' : ''}`} /> Funil de Vendas
-        </button>
-        <button
-          role="tab"
-          aria-selected={activeTab === 'reports'}
-          onClick={() => setActiveTab('reports')}
-          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === 'reports' ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
-        >
-          <BarChart3 className={`w-3.5 h-3.5 sm:w-4 sm:h-4 inline mr-1.5 ${activeTab === 'reports' ? 'text-primary' : ''}`} /> Relatórios
-        </button>
+      {/* Tab switcher - mobile: horizontal scroll, desktop: flex */}
+      <div className="flex gap-1 mb-6 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-full sm:w-fit overflow-x-auto scrollbar-none border border-border/30 -mx-1 px-1 sm:mx-0" role="tablist">
+        {[
+          { key: 'leads' as const, icon: Users, label: 'Leads' },
+          { key: 'funnel' as const, icon: Workflow, label: 'Funil' },
+          { key: 'reports' as const, icon: BarChart3, label: 'Relatórios' },
+        ].map(tab => (
+          <button
+            key={tab.key}
+            role="tab"
+            aria-selected={activeTab === tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex-1 sm:flex-none whitespace-nowrap min-h-[44px] flex items-center justify-center gap-1.5 ${activeTab === tab.key ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
+          >
+            <tab.icon className={`w-4 h-4 ${activeTab === tab.key ? 'text-primary' : ''}`} />
+            {tab.label}
+          </button>
+        ))}
       </div>
 
       {activeTab === 'leads' && (
@@ -405,7 +397,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
         <UserAvatarMenu />
       </PanelHeader>
 
-      <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-8">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
         <Breadcrumbs items={[{ label: 'Franquia' }]} />
         {content}
       </div>

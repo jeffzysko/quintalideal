@@ -133,9 +133,36 @@
     outline: none;
     box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--primary) / 0.3);
   }
+
+  /* Mobile-first touch targets */
+  @media (pointer: coarse) {
+    button, a, [role="button"], [role="tab"], [role="menuitem"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    input, select, textarea, [role="combobox"] {
+      min-height: 44px;
+      font-size: 16px; /* prevents iOS zoom on focus */
+    }
+  }
+
+  /* Prevent horizontal overflow globally */
+  html, body {
+    overflow-x: hidden;
+  }
 }
 
 @layer utilities {
+  /* Hide scrollbar but keep scrolling */
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+
   .glass-card {
     @apply bg-card/80 backdrop-blur-xl border border-border/50;
     box-shadow: 0 8px 32px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
@@ -175,9 +202,11 @@
     transition: box-shadow 0.3s ease, transform 0.2s ease;
   }
 
-  .card-premium:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 12px 40px rgba(0,0,0,0.06);
-    transform: translateY(-1px);
+  @media (hover: hover) {
+    .card-premium:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 12px 40px rgba(0,0,0,0.06);
+      transform: translateY(-1px);
+    }
   }
 
   .card-glow-blue {

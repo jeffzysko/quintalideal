@@ -7,9 +7,9 @@ export function Footer() {
     <footer className="w-full border-t border-border/40 bg-background/95 backdrop-blur-md">
       <div className="max-w-5xl mx-auto px-4 py-8 sm:py-10">
         {/* Grid principal */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
           {/* Brand */}
-          <div className="col-span-2 sm:col-span-1 flex flex-col items-start gap-3">
+          <div className="col-span-1 flex flex-col items-start gap-3">
             <img src={logoSplash} alt="Splash Piscinas" className="w-10 opacity-70" />
             <p className="text-xs text-muted-foreground leading-relaxed max-w-[220px]">
               Essa é uma iniciativa da Hallow Comunicação juntamente com a iGUi Santo Antônio.
@@ -71,7 +71,7 @@ function FooterLink({ to, icon, label }: { to: string; icon: React.ReactNode; la
   return (
     <Link
       to={to}
-      className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors group"
+      className="flex items-center gap-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors group py-1"
     >
       <span className="text-muted-foreground/60 group-hover:text-primary transition-colors">{icon}</span>
       {label}

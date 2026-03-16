@@ -233,15 +233,15 @@ export default function AdminDashboard() {
           <button
             key={item.label}
             onClick={item.action}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors"
+            className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors min-h-[44px] min-w-[44px]"
             aria-label={item.label}
           >
-            <item.icon className="w-3.5 h-3.5" />
+            <item.icon className="w-4 h-4" />
             <span className="hidden sm:inline">{item.label}</span>
           </button>
         ))}
         
-        <div className="h-5 w-px bg-border/40 mx-1" />
+        <div className="h-5 w-px bg-border/40 mx-0.5 sm:mx-1" />
         <NotificationBell />
         <UserAvatarMenu />
       </PanelHeader>
