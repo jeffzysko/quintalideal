@@ -167,4 +167,4 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
       </CardContent>
     </Card>
   );
-}
+});

@@ -425,32 +425,34 @@ export default function AdminDashboard() {
         {activeTab === 'emails' && <Suspense fallback={<TabFallback />}><AdminEmailTemplates /></Suspense>}
 
         {activeTab === 'franchise-view' && (
-          <div className="space-y-6">
-            <Card className="border-border/50 shadow-sm">
-              <CardHeader>
-                <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                  <Eye className="w-4 h-4 text-primary" />
-                  Visualizar Dashboard da Franquia
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <Select value={viewFranchiseId} onValueChange={setViewFranchiseId}>
-                  <SelectTrigger className="w-full sm:w-80">
-                    <SelectValue placeholder="Selecione uma franquia para visualizar" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {franchises.map(f => (
-                      <SelectItem key={f.id} value={f.id}>{f.nome_franquia}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </CardContent>
-            </Card>
+          <Suspense fallback={<TabFallback />}>
+            <div className="space-y-6">
+              <Card className="border-border/50 shadow-sm">
+                <CardHeader>
+                  <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                    <Eye className="w-4 h-4 text-primary" />
+                    Visualizar Dashboard da Franquia
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <Select value={viewFranchiseId} onValueChange={setViewFranchiseId}>
+                    <SelectTrigger className="w-full sm:w-80">
+                      <SelectValue placeholder="Selecione uma franquia para visualizar" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {franchises.map(f => (
+                        <SelectItem key={f.id} value={f.id}>{f.nome_franquia}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </CardContent>
+              </Card>
 
-            {viewFranchiseId && (
-              <FranchiseDashboard overrideFranchiseId={viewFranchiseId} embedded />
-            )}
-          </div>
+              {viewFranchiseId && (
+                <FranchiseDashboard overrideFranchiseId={viewFranchiseId} embedded />
+              )}
+            </div>
+          </Suspense>
         )}
       </div>
     </div>

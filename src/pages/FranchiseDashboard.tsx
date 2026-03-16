@@ -134,6 +134,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   // ── Paginated leads for table ──
   const { data: paginatedData, isLoading: loadingTable } = useQuery({
     queryKey: ['franchise-leads-table', franchiseId, page],
+    placeholderData: keepPreviousData,
     queryFn: async () => {
       const from = (page - 1) * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;

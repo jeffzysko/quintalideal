@@ -139,4 +139,4 @@ export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePa
       </Card>
     </motion.div>
   );
-}
+});

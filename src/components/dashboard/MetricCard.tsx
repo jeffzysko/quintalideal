@@ -76,4 +76,4 @@ export const MetricCard = memo(function MetricCard({ icon: Icon, label, value, p
       </Card>
     </motion.div>
   );
-}
+});
