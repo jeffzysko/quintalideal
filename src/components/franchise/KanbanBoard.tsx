@@ -21,9 +21,15 @@ import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { MapPin, Calendar, GripVertical, Filter, X, Building2 } from 'lucide-react';
+import { MapPin, Calendar, GripVertical, Filter, X, Building2, Search, CalendarIcon } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar as CalendarPicker } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { cn } from '@/lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const COLUMNS = ['novo', 'contatado', 'em_negociacao', 'vendido', 'perdido'] as const;
@@ -281,6 +287,9 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
   const [localStatusOverrides, setLocalStatusOverrides] = useState<Record<string, string>>({});
   const [tempFilter, setTempFilter] = useState<string>('all');
   const [cityFilter, setCityFilter] = useState<string>('all');
+  const [nameSearch, setNameSearch] = useState('');
+  const [dateFrom, setDateFrom] = useState<Date | undefined>();
+  const [dateTo, setDateTo] = useState<Date | undefined>();
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -296,7 +305,9 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
 
   // Apply filters
   const filteredLeads = useMemo(() => {
+    const search = nameSearch.trim().toLowerCase();
     return leads.filter((lead) => {
+      if (search && !(lead.nome || '').toLowerCase().includes(search)) return false;
       if (tempFilter !== 'all') {
         const t = classifyLead(lead.respostas_questionario || null, lead.pontuacao_quintal);
         if (t.temperature !== tempFilter) return false;
@@ -304,11 +315,19 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       if (cityFilter !== 'all') {
         if (lead.cidade !== cityFilter) return false;
       }
+      if (dateFrom) {
+        if (new Date(lead.created_at) < dateFrom) return false;
+      }
+      if (dateTo) {
+        const end = new Date(dateTo);
+        end.setHours(23, 59, 59, 999);
+        if (new Date(lead.created_at) > end) return false;
+      }
       return true;
     });
-  }, [leads, tempFilter, cityFilter]);
+  }, [leads, tempFilter, cityFilter, nameSearch, dateFrom, dateTo]);
 
-  const hasActiveFilters = tempFilter !== 'all' || cityFilter !== 'all';
+  const hasActiveFilters = tempFilter !== 'all' || cityFilter !== 'all' || nameSearch.trim() !== '' || !!dateFrom || !!dateTo;
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -405,6 +424,16 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Filtros</span>
         </div>
 
+        <div className="relative">
+          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+          <Input
+            placeholder="Buscar por nome..."
+            value={nameSearch}
+            onChange={(e) => setNameSearch(e.target.value)}
+            className="w-[160px] h-8 text-xs pl-7"
+          />
+        </div>
+
         <Select value={tempFilter} onValueChange={setTempFilter}>
           <SelectTrigger className="w-[150px] h-8 text-xs">
             <SelectValue placeholder="Temperatura" />
@@ -429,12 +458,48 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
           </SelectContent>
         </Select>
 
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="sm" className={cn("h-8 text-xs gap-1.5", dateFrom && "text-foreground")}>
+              <CalendarIcon className="w-3.5 h-3.5" />
+              {dateFrom ? format(dateFrom, "dd/MM/yy", { locale: ptBR }) : "De"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <CalendarPicker
+              mode="single"
+              selected={dateFrom}
+              onSelect={setDateFrom}
+              initialFocus
+              className={cn("p-3 pointer-events-auto")}
+            />
+          </PopoverContent>
+        </Popover>
+
+        <Popover>
+          <PopoverTrigger asChild>
+            <Button variant="outline" size="sm" className={cn("h-8 text-xs gap-1.5", dateTo && "text-foreground")}>
+              <CalendarIcon className="w-3.5 h-3.5" />
+              {dateTo ? format(dateTo, "dd/MM/yy", { locale: ptBR }) : "Até"}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <CalendarPicker
+              mode="single"
+              selected={dateTo}
+              onSelect={setDateTo}
+              initialFocus
+              className={cn("p-3 pointer-events-auto")}
+            />
+          </PopoverContent>
+        </Popover>
+
         {hasActiveFilters && (
           <Button
             variant="ghost"
             size="sm"
             className="h-8 px-2 text-xs text-muted-foreground hover:text-foreground"
-            onClick={() => { setTempFilter('all'); setCityFilter('all'); }}
+            onClick={() => { setTempFilter('all'); setCityFilter('all'); setNameSearch(''); setDateFrom(undefined); setDateTo(undefined); }}
           >
             <X className="w-3 h-3 mr-1" />
             Limpar
