@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
-import { ArrowLeft } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { BackButton } from '@/components/BackButton';
 import logoSplash from '@/assets/logo-splash.png';
 
 interface PageHeaderProps {
