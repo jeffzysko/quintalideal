@@ -28,6 +28,25 @@ const COLUMNS = ['novo', 'contatado', 'em_negociacao', 'vendido', 'perdido'] as 
 
 type LeadWithQuiz = LeadRow & { respostas_questionario?: Record<string, string> | null };
 
+const BUDGET_RANGES: Record<string, [number, number]> = {
+  '30-50': [30000, 50000],
+  '18-30': [18000, 30000],
+  'ate-18': [5000, 18000],
+};
+
+function estimateLeadValue(respostas: Record<string, string> | null): number {
+  if (!respostas?.orcamento) return 15000; // default estimate
+  const range = BUDGET_RANGES[respostas.orcamento];
+  if (!range) return 15000;
+  return (range[0] + range[1]) / 2;
+}
+
+function formatCurrency(value: number): string {
+  if (value >= 1000000) return `R$ ${(value / 1000000).toFixed(1)}M`;
+  if (value >= 1000) return `R$ ${(value / 1000).toFixed(0)}k`;
+  return `R$ ${value}`;
+}
+
 interface KanbanBoardProps {
   leads: LeadWithQuiz[];
   franchiseId: string;
