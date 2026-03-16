@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Share2, Globe } from 'lucide-react';
+import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Share2, Globe, Kanban } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import FranchiseDashboard from '@/pages/FranchiseDashboard';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -25,6 +25,7 @@ import { AdminLeadFilters } from '@/components/admin/AdminLeadFilters';
 import { AdminLeadsTable } from '@/components/admin/AdminLeadsTable';
 import { AdminInactiveAlerts } from '@/components/admin/AdminInactiveAlerts';
 import { AdminPerformanceComparison } from '@/components/admin/AdminPerformanceComparison';
+import { KanbanBoard } from '@/components/franchise/KanbanBoard';
 
 
 import { KPISkeleton } from '@/components/ui/kpi-skeleton';
@@ -40,7 +41,7 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const { signOut: _signOut, role } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'analytics' | 'franchises' | 'cities' | 'users' | 'emails' | 'franchise-view'>(() =>
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'kanban' | 'analytics' | 'franchises' | 'cities' | 'users' | 'emails' | 'franchise-view'>(() =>
     new URLSearchParams(location.search).get('tab') === 'leads' ? 'leads' : 'overview'
   );
   const [viewFranchiseId, setViewFranchiseId] = useState<string>('');
@@ -106,7 +107,7 @@ export default function AdminDashboard() {
       while (hasMore) {
         const { data, error } = await supabase
           .from('leads')
-          .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, updated_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used')
+          .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, updated_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, respostas_questionario')
           .order('created_at', { ascending: false })
           .range(from, from + PAGE - 1);
         if (error) throw error;
@@ -259,6 +260,7 @@ export default function AdminDashboard() {
                 { key: 'overview' as const, icon: BarChart3, label: 'Inteligência' },
                 { key: 'analytics' as const, icon: Activity, label: 'Analytics' },
                 { key: 'leads' as const, icon: Users, label: 'Leads' },
+                { key: 'kanban' as const, icon: Kanban, label: 'Funil Geral' },
                 { key: 'franchises' as const, icon: Building2, label: 'Franquias' },
                 { key: 'cities' as const, icon: Globe, label: 'Territórios' },
                 { key: 'users' as const, icon: Users, label: 'Usuários' },
@@ -284,6 +286,7 @@ export default function AdminDashboard() {
             { key: 'overview' as const, icon: BarChart3, label: 'Inteligência' },
             { key: 'analytics' as const, icon: Activity, label: 'Analytics' },
             { key: 'leads' as const, icon: Users, label: 'Leads' },
+            { key: 'kanban' as const, icon: Kanban, label: 'Funil Geral' },
             { key: 'franchises' as const, icon: Building2, label: 'Franquias' },
             { key: 'cities' as const, icon: Globe, label: 'Territórios' },
             { key: 'users' as const, icon: Users, label: 'Usuários' },
@@ -387,6 +390,15 @@ export default function AdminDashboard() {
               />
             )}
           </>
+        )}
+
+        {activeTab === 'kanban' && (
+          <KanbanBoard
+            leads={allLeads as any}
+            franchiseId="admin"
+            basePath="/admin/leads"
+            franchiseMap={franchiseMap}
+          />
         )}
 
         {activeTab === 'franchises' && <AdminFranchiseManager />}
