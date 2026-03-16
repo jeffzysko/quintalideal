@@ -18,7 +18,7 @@ import {
   Settings,
   Map,
   BarChart3,
-  Search,
+  
   UserPlus,
   Calendar,
   FileText,
