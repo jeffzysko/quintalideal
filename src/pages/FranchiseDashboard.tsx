@@ -12,7 +12,7 @@ import { MonthlyGoals } from '@/components/franchise/MonthlyGoals';
 import { LeadFollowups } from '@/components/franchise/LeadFollowups';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { SITE_URL } from '@/lib/constants';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileLeadCard } from '@/components/admin/MobileLeadCard';
