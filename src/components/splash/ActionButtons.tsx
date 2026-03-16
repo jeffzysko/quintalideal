@@ -7,6 +7,7 @@ import { getRankingGaucho, getYardClassification, getSharePhrase, getSocialCompa
 import { getPoolImage } from '@/lib/poolImages';
 import { ValorizationSimulator } from './ValorizationSimulator';
 import { trackEvent } from '@/lib/analytics';
+import { trackMetaEvent } from '@/components/MetaPixel';
 import { SITE_URL, SITE_DOMAIN } from '@/lib/constants';
 import { type Lang, t } from '@/lib/i18n';
 
