@@ -396,7 +396,7 @@ export default function AdminDashboard() {
           <KanbanBoard
             leads={allLeads as any}
             franchiseId="admin"
-            basePath="/admin/leads"
+            basePath="/admin/lead"
             franchiseMap={franchiseMap}
           />
         )}
