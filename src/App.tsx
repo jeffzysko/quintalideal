@@ -15,6 +15,7 @@ import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { PWAUpdatePrompt } from "@/components/PWAUpdatePrompt";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
+import { NetworkStatus } from "@/components/NetworkStatus";
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ExplorarPage = lazy(() => import("./pages/ExplorarPage"));
 const InstallPage = lazy(() => import("./pages/InstallPage"));
