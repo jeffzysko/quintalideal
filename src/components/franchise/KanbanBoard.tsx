@@ -221,6 +221,7 @@ function KanbanColumn({
                 <LeadCard
                   lead={lead}
                   basePath={basePath}
+                  franchiseName={franchiseMap?.[lead.franquia_id || ''] }
                 />
               </motion.div>
             ))
