@@ -64,7 +64,7 @@ export function ConversionFunnel({ leads }: ConversionFunnelProps) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3">
+        <div className="space-y-3 sm:space-y-4">
           {funnel.map((step, i) => {
             const barWidth = Math.max((step.count / maxCount) * 100, 8);
             return (
@@ -74,16 +74,51 @@ export function ConversionFunnel({ leads }: ConversionFunnelProps) {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: i * 0.08 }}
               >
-                <div className="flex items-center gap-2 sm:gap-3">
-                  {/* Label + count */}
-                  <div className="w-20 sm:w-28 shrink-0">
-                    <p className="text-[11px] sm:text-xs font-semibold text-foreground">{step.label}</p>
-                    <p className="text-base sm:text-lg font-extrabold tracking-tight" style={{ color: step.color }}>
+                {/* Mobile: stacked layout */}
+                <div className="sm:hidden">
+                  <div className="flex items-center justify-between mb-1.5">
+                    <p className="text-xs font-semibold text-foreground">{step.label}</p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-lg font-extrabold tracking-tight" style={{ color: step.color }}>
+                        {step.count}
+                      </span>
+                      {i > 0 && (
+                        <span className={`text-xs font-bold ${
+                          step.conversionRate >= 50 ? 'text-emerald-600' :
+                          step.conversionRate >= 25 ? 'text-amber-600' :
+                          'text-destructive/70'
+                        }`}>
+                          {step.conversionRate}%
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="h-8 rounded-lg bg-muted/40 overflow-hidden relative">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${barWidth}%` }}
+                      transition={{ delay: 0.2 + i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                      className="h-full rounded-lg"
+                      style={{ backgroundColor: `${step.color}20`, borderLeft: `3px solid ${step.color}` }}
+                    />
+                    <span
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold"
+                      style={{ color: step.color }}
+                    >
+                      {step.percentage}%
+                    </span>
+                  </div>
+                </div>
+
+                {/* Desktop: horizontal layout */}
+                <div className="hidden sm:flex items-center gap-3">
+                  <div className="w-28 shrink-0">
+                    <p className="text-xs font-semibold text-foreground">{step.label}</p>
+                    <p className="text-lg font-extrabold tracking-tight" style={{ color: step.color }}>
                       {step.count}
                     </p>
                   </div>
 
-                  {/* Bar */}
                   <div className="flex-1 relative">
                     <div className="h-8 rounded-lg bg-muted/40 overflow-hidden relative">
                       <motion.div
@@ -102,8 +137,7 @@ export function ConversionFunnel({ leads }: ConversionFunnelProps) {
                     </div>
                   </div>
 
-                  {/* Conversion rate between steps */}
-                  <div className="w-10 sm:w-16 shrink-0 text-right">
+                  <div className="w-16 shrink-0 text-right">
                     {i > 0 ? (
                       <div className="flex items-center justify-end gap-1">
                         <ArrowRight className="w-3 h-3 text-muted-foreground/50" />
