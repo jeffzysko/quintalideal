@@ -10,7 +10,7 @@ interface ConversionFunnelProps {
 
 const FUNNEL_STEPS = ['novo', 'contatado', 'em_negociacao', 'vendido'] as const;
 
-export function ConversionFunnel({ leads }: ConversionFunnelProps) {
+export const ConversionFunnel = memo(function ConversionFunnel({ leads }: ConversionFunnelProps) {
   const funnel = useMemo(() => {
     const total = leads.length;
     if (total === 0) return [];
