@@ -127,6 +127,12 @@ function LeadCard({
             <span className="truncate">{lead.cidade}</span>
           </div>
         )}
+        {franchiseName && (
+          <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+            <Building2 className="w-3 h-3 shrink-0" />
+            <span className="truncate">{franchiseName}</span>
+          </div>
+        )}
         <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
           <Calendar className="w-3 h-3 shrink-0" />
           <span>{new Date(lead.created_at).toLocaleDateString('pt-BR')}</span>
