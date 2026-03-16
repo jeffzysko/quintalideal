@@ -50,6 +50,18 @@ interface GuideStep {
 
 const guideSteps: GuideStep[] = [
   {
+    id: 'wizard',
+    icon: BookOpen,
+    title: 'Wizard de boas-vindas',
+    subtitle: 'Na sua primeira sessão, um tour guiado apresenta as funcionalidades principais.',
+    details: [
+      'O wizard aparece automaticamente quando você acessa o painel pela primeira vez.',
+      'Ele guia você pelas etapas essenciais: compartilhar link, acompanhar leads, usar o Kanban e mais.',
+      'Caso precise rever, limpe o histórico do navegador para reativá-lo.',
+    ],
+    tip: 'Complete o wizard para se familiarizar rapidamente com a plataforma!',
+  },
+  {
     id: 'link',
     icon: Share2,
     title: 'Compartilhe seu link exclusivo',
@@ -62,6 +74,18 @@ const guideSteps: GuideStep[] = [
     tip: 'Quanto mais você divulgar seu link, mais leads qualificados receberá!',
   },
   {
+    id: 'hoje',
+    icon: Eye,
+    title: 'Página "Hoje" — suas prioridades do dia',
+    subtitle: 'Veja em um único lugar tudo que precisa de atenção imediata.',
+    details: [
+      'Acesse pelo botão "Hoje" no menu superior do painel.',
+      'As seções mais urgentes (follow-ups atrasados, leads novos) ficam abertas por padrão.',
+      'Seções de menor prioridade podem ser expandidas clicando em "Ver mais".',
+    ],
+    tip: 'Comece o dia pela página "Hoje" para nunca perder uma oportunidade!',
+  },
+  {
     id: 'leads',
     icon: Users,
     title: 'Acompanhe seus leads',
@@ -69,20 +93,23 @@ const guideSteps: GuideStep[] = [
     details: [
       'No painel, acesse a aba "Leads" para ver todos os contatos recebidos.',
       'Cada lead contém nome, telefone, e-mail e as respostas do questionário.',
+      'A coluna "Score" mostra uma barra visual colorida indicando o potencial do quintal.',
       'Use os filtros para encontrar leads por status, modelo ou data.',
     ],
     tip: 'Leads novos aparecem com o status "Novo" — entre em contato o mais rápido possível!',
   },
   {
-    id: 'status',
+    id: 'kanban',
     icon: Target,
-    title: 'Gerencie o status dos leads',
-    subtitle: 'Atualize o progresso de cada lead no funil de vendas.',
+    title: 'Kanban — Funil de Vendas visual',
+    subtitle: 'Arraste e solte os cards para gerenciar o status dos leads.',
     details: [
-      'Clique em um lead para abrir seus detalhes completos.',
-      'Altere o status conforme o andamento: Novo → Contatado → Em Negociação → Vendido.',
-      'Adicione observações para registrar informações importantes sobre cada negociação.',
+      'Acesse a aba "Kanban" no seu painel para ver o funil de vendas.',
+      'No desktop, arraste os cards entre as colunas para mudar o status (Novo → Contatado → Em Negociação → Vendido).',
+      'No mobile, toque no card e use o drawer para alterar o status com descrições detalhadas de cada etapa.',
+      'Uma dica de onboarding aparece na primeira vez que você acessa o Kanban.',
     ],
+    tip: 'O Kanban é a forma mais visual e rápida de acompanhar seu funil!',
   },
   {
     id: 'score',
@@ -91,10 +118,21 @@ const guideSteps: GuideStep[] = [
     subtitle: 'Cada lead recebe uma pontuação que indica o potencial do quintal para piscina.',
     details: [
       'A pontuação é calculada com base nas respostas do questionário (espaço, terreno, uso, etc.).',
-      'Leads com pontuação alta têm maior probabilidade de conversão.',
+      'Na tabela de leads, o score é mostrado como uma barra colorida: verde (ótimo), amarelo (bom) ou vermelho (baixo).',
       'Use a pontuação para priorizar seus contatos e focar nos melhores leads.',
     ],
     tip: 'Leads com pontuação acima de 70% são considerados de alto potencial!',
+  },
+  {
+    id: 'meta',
+    icon: TrendingUp,
+    title: 'Meta mensal de vendas',
+    subtitle: 'Defina e acompanhe sua meta de vendas do mês.',
+    details: [
+      'No painel, clique em "Definir meta" para abrir o modal de configuração.',
+      'Insira quantas vendas você deseja realizar no mês atual.',
+      'A barra de progresso mostra em tempo real quantas vendas já foram alcançadas.',
+    ],
   },
   {
     id: 'whatsapp',
@@ -114,7 +152,8 @@ const guideSteps: GuideStep[] = [
     subtitle: 'Acompanhe métricas e resultados da sua franquia.',
     details: [
       'Acesse a aba "Relatórios" no seu painel para ver gráficos e estatísticas.',
-      'Acompanhe a evolução de leads por mês, taxa de conversão e modelos mais procurados.',
+      'Cada gráfico possui um subtítulo explicativo para facilitar a interpretação.',
+      'Acompanhe evolução de leads por mês, taxa de conversão e modelos mais procurados.',
       'Use os dados para ajustar sua estratégia de captação.',
     ],
   },
