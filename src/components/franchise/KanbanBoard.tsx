@@ -20,8 +20,7 @@ import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { User, MapPin, Calendar, GripVertical } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { MapPin, Calendar, GripVertical } from 'lucide-react';
 
 const COLUMNS = ['novo', 'contatado', 'em_negociacao', 'vendido', 'perdido'] as const;
 
