@@ -179,20 +179,48 @@ export default function OrganizationSettings() {
             animate={{ opacity: 1, y: 0 }}
             className="mt-4"
           >
-            {/* Header */}
-            <div className="flex items-center gap-4 mb-6">
-              <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
-                <Building2 className="w-7 h-7 text-primary" />
+            {/* Admin franchise selector */}
+            {isAdmin && (
+              <div className="mb-6">
+                <Label className="text-xs font-semibold text-muted-foreground mb-2 block">Selecione a franquia</Label>
+                <Select
+                  value={selectedFranchiseId || ''}
+                  onValueChange={v => setSelectedFranchiseId(v)}
+                >
+                  <SelectTrigger className="w-full sm:w-80 rounded-xl">
+                    <SelectValue placeholder="Escolha uma franquia" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {franchiseOptions.map(f => (
+                      <SelectItem key={f.id} value={f.id}>
+                        {f.nome_franquia} — {f.cidade_base}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              <div>
-                <h1 className="text-xl font-bold text-foreground">{franchise.nome_franquia}</h1>
-                <div className="flex items-center gap-2 mt-0.5">
-                  <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">{franchise.cidade_base}</span>
-                  <Badge variant="success" className="text-[10px]">Ativa</Badge>
+            )}
+
+            {/* Header */}
+            {franchise ? (
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
+                  <Building2 className="w-7 h-7 text-primary" />
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold text-foreground">{franchise.nome_franquia}</h1>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <MapPin className="w-3.5 h-3.5 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">{franchise.cidade_base}</span>
+                    <Badge variant="success" className="text-[10px]">Ativa</Badge>
+                  </div>
                 </div>
               </div>
-            </div>
+            ) : (
+              <div className="flex items-center justify-center py-12 text-muted-foreground text-sm">
+                {isAdmin ? 'Selecione uma franquia acima para configurar.' : 'Franquia não encontrada.'}
+              </div>
+            )}
 
             <Tabs defaultValue="general" className="space-y-6">
               <TabsList className="bg-muted/40 rounded-xl p-1">
