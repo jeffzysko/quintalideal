@@ -13,12 +13,21 @@ export function usePWA() {
   const [registration, setRegistration] = useState<ServiceWorkerRegistration | null>(null);
 
   useEffect(() => {
-    // Check if running in standalone mode
+    // Check if running in standalone mode (including fullscreen)
     const standalone =
       window.matchMedia('(display-mode: standalone)').matches ||
+      window.matchMedia('(display-mode: fullscreen)').matches ||
       (window.navigator as any).standalone === true;
     setIsStandalone(standalone);
     setIsInstalled(standalone);
+
+    // React to display-mode changes
+    const mql = window.matchMedia('(display-mode: standalone)');
+    const onDisplayChange = (e: MediaQueryListEvent) => {
+      setIsStandalone(e.matches);
+      if (e.matches) setIsInstalled(true);
+    };
+    mql.addEventListener('change', onDisplayChange);
 
     // Listen for install prompt
     const handler = (e: Event) => {
@@ -32,12 +41,13 @@ export function usePWA() {
     window.addEventListener('appinstalled', installedHandler);
 
     return () => {
+      mql.removeEventListener('change', onDisplayChange);
       window.removeEventListener('beforeinstallprompt', handler);
       window.removeEventListener('appinstalled', installedHandler);
     };
   }, []);
 
-  // Listen for SW updates
+  // Listen for SW updates – poll periodically for standalone apps
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return;
 
@@ -54,6 +64,13 @@ export function usePWA() {
           }
         });
       });
+
+      // Check for updates periodically (every 30 min) for standalone users
+      const interval = setInterval(() => {
+        reg.update().catch(() => {});
+      }, 30 * 60 * 1000);
+
+      return () => clearInterval(interval);
     });
   }, []);
 

@@ -75,6 +75,10 @@ export default defineConfig(({ mode }) => ({
         globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,woff,woff2}"],
         navigateFallback: "/index.html",
         navigateFallbackDenylist: [/^\/~oauth/, /^\/api/],
+        offlineGlobPatterns: ["offline.html"],
+        additionalManifestEntries: [
+          { url: "/offline.html", revision: "v2" },
+        ],
         runtimeCaching: [
           {
             urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
