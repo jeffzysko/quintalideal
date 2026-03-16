@@ -170,10 +170,30 @@ export default function AdminDashboard() {
     return map;
   }, [franchises]);
 
+  // ── Org-filtered leads (global switcher) ──
+  const orgFilteredLeads = useMemo(
+    () => orgFilter ? allLeads.filter(l => l.franquia_id === orgFilter) : allLeads,
+    [allLeads, orgFilter],
+  );
+
+  const orgFilteredActivities = useMemo(
+    () => {
+      if (!orgFilter) return leadActivities;
+      const leadIds = new Set(orgFilteredLeads.map(l => l.id));
+      return leadActivities.filter(a => leadIds.has(a.lead_id));
+    },
+    [leadActivities, orgFilteredLeads, orgFilter],
+  );
+
+  const orgFilteredFranchises = useMemo(
+    () => orgFilter ? franchises.filter(f => f.id === orgFilter) : franchises,
+    [franchises, orgFilter],
+  );
+
   // ── Time-filtered KPIs with comparison ──
   const { current: currentLeads, previous: previousLeads } = useMemo(
-    () => filterByTimeRange(allLeads, timeRange),
-    [allLeads, timeRange],
+    () => filterByTimeRange(orgFilteredLeads, timeRange),
+    [orgFilteredLeads, timeRange],
   );
 
   const leadsPerMonth = useMemo(() => {
