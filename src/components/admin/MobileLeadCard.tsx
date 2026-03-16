@@ -111,7 +111,7 @@ export function MobileLeadCard({ lead, index, basePath = '/admin/lead', franchis
             {lead.telefone && (
               <button
                 onClick={handleWhatsApp}
-                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 transition-colors min-h-[44px]"
+                className="flex-1 flex items-center justify-center gap-1.5 py-2.5 text-xs font-medium text-success hover:bg-success/5 transition-colors min-h-[44px]"
               >
                 <MessageCircle className="w-4 h-4" />
                 WhatsApp
