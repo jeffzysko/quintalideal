@@ -71,8 +71,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [page, setPage] = useState(1);
-  const [activeTab, setActiveTab] = useState<'leads' | 'reports'>('leads');
-  const [leadsView, setLeadsView] = useState<'table' | 'kanban'>('table');
+  const [activeTab, setActiveTab] = useState<'leads' | 'funnel' | 'reports'>('leads');
 
   // ── Franchise info ──
   const { data: franchiseInfo } = useQuery({
