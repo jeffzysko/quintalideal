@@ -652,7 +652,7 @@ export default function HojePage() {
 
               {/* ═══ RECENT ACTIVITY FEED ═══ */}
               {activityFeed.length > 0 && (
-                <Section icon={TrendingUp} title="Atividade recente" count={activityFeed.length}>
+                <Section icon={TrendingUp} title="Atividade recente" count={activityFeed.length} collapsible defaultOpen={false}>
                   <Card className="card-premium">
                     <CardContent className="p-3 space-y-2">
                       {activityFeed.map((a, i) => {
