@@ -1,7 +1,7 @@
 import { useMemo, memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { motion } from 'framer-motion';
-import { ArrowRight, TrendingDown } from 'lucide-react';
+import { TrendingDown } from 'lucide-react';
 import { STATUS_LABELS, STATUS_CHART_COLORS, type LeadRow } from '@/lib/lead-constants';
 
 interface ConversionFunnelProps {
