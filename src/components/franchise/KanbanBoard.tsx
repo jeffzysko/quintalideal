@@ -155,13 +155,35 @@ function LeadCard({
         </div>
 
         <div className="flex items-center gap-1.5 mb-2 flex-wrap">
-          <Badge
-            className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`}
-            variant="outline"
-          >
-            {temp.emoji} {temp.label}
-          </Badge>
-          <span className="text-xs font-bold text-primary">{lead.pontuacao_quintal || 0}%</span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Badge
+                className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold cursor-help`}
+                variant="outline"
+              >
+                {temp.emoji} {temp.label}
+              </Badge>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-[220px] text-xs">
+              <p className="font-semibold mb-0.5">Nível de interesse</p>
+              <p className="text-muted-foreground">
+                {temp.temperature === 'quente'
+                  ? 'Alto interesse: bom orçamento, quer comprar em breve e tem espaço.'
+                  : temp.temperature === 'morno'
+                  ? 'Interesse moderado: pode precisar de mais informações.'
+                  : 'Início da jornada: ainda explorando opções.'}
+              </p>
+            </TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="text-xs font-bold text-primary cursor-help">{lead.pontuacao_quintal || 0}%</span>
+            </TooltipTrigger>
+            <TooltipContent side="top" className="max-w-[200px] text-xs">
+              <p className="font-semibold mb-0.5">Compatibilidade do quintal</p>
+              <p className="text-muted-foreground">Quanto maior, mais adequado o espaço para uma piscina.</p>
+            </TooltipContent>
+          </Tooltip>
           <SmartTagBadges lead={lead} max={1} />
         </div>
 
