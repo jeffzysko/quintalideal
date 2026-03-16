@@ -69,24 +69,24 @@ export function SLAIndicator({ leads, activities }: SLAIndicatorProps) {
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-      <Card className={`card-premium overflow-hidden ${isOverSLA ? 'border-destructive/30' : ''}`}>
+      <Card className={`card-premium overflow-hidden h-full ${isOverSLA ? 'border-destructive/30' : ''}`}>
         <CardContent className="p-4 sm:p-5">
           <div className="flex items-start gap-3">
-             <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${isOverSLA ? 'bg-destructive/10' : 'icon-bg-blue'}`}>
-              {isOverSLA ? <AlertTriangle className="w-5 h-5 text-destructive" /> : <Clock className="w-5 h-5 text-primary" />}
+             <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${isOverSLA ? 'bg-destructive/10' : 'icon-bg-blue'}`}>
+              {isOverSLA ? <AlertTriangle className="w-[18px] h-[18px] text-destructive" /> : <Clock className="w-[18px] h-[18px] text-primary" />}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Velocidade de Resposta</p>
-              <p className={`text-2xl font-extrabold tracking-tight ${isOverSLA ? 'text-destructive' : 'text-foreground'}`}>
+              <p className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">Velocidade de Resposta</p>
+              <p className={`text-2xl font-extrabold tracking-tight mt-0.5 ${isOverSLA ? 'text-destructive' : 'text-foreground'}`}>
                 {avgHours === 0 ? '—' : formatTime(avgHours)}
               </p>
               {alertLeads.length > 0 && (
-                <p className="text-xs text-destructive font-medium mt-1">
-                  ⚠️ {alertLeads.length} lead{alertLeads.length > 1 ? 's' : ''} esperando seu contato há mais de 2h — entre em ação!
+                <p className="text-[13px] text-destructive font-medium mt-1.5 leading-snug">
+                  ⚠️ {alertLeads.length} lead{alertLeads.length > 1 ? 's' : ''} esperando contato há +2h
                 </p>
               )}
               {avgHours > 0 && avgHours <= 2 && (
-                <p className="text-xs text-emerald-600 font-medium mt-1">✅ Ótimo! Você está respondendo rápido</p>
+                <p className="text-[13px] text-emerald-600 font-medium mt-1.5">✅ Ótimo! Respondendo rápido</p>
               )}
             </div>
           </div>
