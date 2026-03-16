@@ -125,6 +125,20 @@ export function UserAvatarMenu() {
           </div>
         </DropdownMenuItem>
 
+        {(role === 'franquia') && (
+          <DropdownMenuItem
+            onClick={() => navigate('/organizacao/configuracoes')}
+            className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
+          >
+            <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
+              <Building2 className="w-4 h-4 text-muted-foreground" />
+            </div>
+            <div>
+              <p className="font-medium">Organização</p>
+              <p className="text-[10px] text-muted-foreground">Configurações da franquia</p>
+            </div>
+          </DropdownMenuItem>
+        )}
         {(role === 'franquia' || role === 'admin_fabrica' || role === 'super_admin') && (
           <>
             <DropdownMenuSeparator className="my-1.5 bg-border/30" />
