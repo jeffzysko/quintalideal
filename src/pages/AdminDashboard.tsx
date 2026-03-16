@@ -373,7 +373,9 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === 'analytics' && (
-          <AdminAnalytics franchiseMap={franchiseMap} role={role} />
+          <Suspense fallback={<TabFallback />}>
+            <AdminAnalytics franchiseMap={franchiseMap} role={role} />
+          </Suspense>
         )}
 
         {activeTab === 'leads' && (
