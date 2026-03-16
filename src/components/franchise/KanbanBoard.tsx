@@ -275,7 +275,7 @@ function PipelineSummary({ leads }: { leads: LeadWithQuiz[] }) {
 }
 
 // ── Main Board ──
-export function KanbanBoard({ leads, franchiseId, basePath }: KanbanBoardProps) {
+export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: KanbanBoardProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overColumnId, setOverColumnId] = useState<string | null>(null);
   const [localStatusOverrides, setLocalStatusOverrides] = useState<Record<string, string>>({});
