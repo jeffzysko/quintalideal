@@ -5,6 +5,7 @@ import { BackButton } from '@/components/BackButton';
 import { PanelHeader } from '@/components/PanelHeader';
 import { NotificationBell } from '@/components/NotificationBell';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import {
   LifeBuoy,
   BookOpen,
