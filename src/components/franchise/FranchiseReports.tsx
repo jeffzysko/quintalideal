@@ -123,8 +123,8 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
   const insights = [
     {
       icon: leadsThisMonth >= leadsLastMonth ? TrendingUp : TrendingDown,
-      color: leadsThisMonth >= leadsLastMonth ? 'text-emerald-600' : 'text-red-500',
-      bg: leadsThisMonth >= leadsLastMonth ? 'bg-emerald-50' : 'bg-red-50',
+      color: leadsThisMonth >= leadsLastMonth ? 'text-success' : 'text-destructive',
+      bg: leadsThisMonth >= leadsLastMonth ? 'bg-success/10' : 'bg-destructive/10',
       text: monthTrend >= 0
         ? `${leadsThisMonth} leads este mês (+${monthTrend}% vs mês anterior)`
         : `${leadsThisMonth} leads este mês (${monthTrend}% vs mês anterior)`,
@@ -137,8 +137,8 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
     },
     {
       icon: Zap,
-      color: 'text-violet-600',
-      bg: 'bg-violet-50',
+      color: 'text-info',
+      bg: 'bg-info/10',
       text: `Conversão: ${conversionRate}% — ${soldCount} de ${totalLeads} leads`,
     },
   ];
@@ -146,8 +146,8 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
   if (topCities.length > 0) {
     insights.push({
       icon: MapPin,
-      color: 'text-amber-600',
-      bg: 'bg-amber-50',
+      color: 'text-warning',
+      bg: 'bg-warning/10',
       text: `Top cidade: ${topCities[0].city} (${topCities[0].count} leads)`,
     });
   }
