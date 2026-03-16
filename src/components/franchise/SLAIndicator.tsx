@@ -81,12 +81,12 @@ export function SLAIndicator({ leads, activities }: SLAIndicatorProps) {
                 {avgHours === 0 ? '—' : formatTime(avgHours)}
               </p>
               {alertLeads.length > 0 && (
-                <p className="text-[10px] text-destructive font-medium mt-1">
+                <p className="text-xs text-destructive font-medium mt-1">
                   ⚠️ {alertLeads.length} lead{alertLeads.length > 1 ? 's' : ''} aguardando contato há mais de 2h
                 </p>
               )}
               {avgHours > 0 && avgHours <= 2 && (
-                <p className="text-[10px] text-emerald-600 font-medium mt-1">✅ Dentro do SLA ideal</p>
+                <p className="text-xs text-emerald-600 font-medium mt-1">✅ Dentro do SLA ideal</p>
               )}
             </div>
           </div>
