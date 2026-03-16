@@ -306,6 +306,7 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
               <CardTitle className="text-sm font-semibold flex items-center gap-2">
                 <Droplets className="w-4 h-4 text-primary" /> Modelos Mais Indicados
               </CardTitle>
+              <p className="text-[11px] text-muted-foreground mt-0.5">Quais modelos de piscina os leads mais se interessaram.</p>
             </CardHeader>
             <CardContent className="px-3 sm:px-6">
               <div className="space-y-2">
