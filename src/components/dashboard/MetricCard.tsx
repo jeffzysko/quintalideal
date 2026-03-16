@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Minus, LucideIcon } from 'lucide-react';
