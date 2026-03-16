@@ -181,7 +181,14 @@ export default function NotificacoesPage() {
                     className={`p-3 sm:p-4 cursor-pointer hover:bg-muted/30 transition-colors flex items-start gap-2.5 sm:gap-3 ${
                       !notif.read ? 'border-primary/20 bg-primary/[0.03]' : ''
                     }`}
-                    onClick={() => markAsRead(notif.id)}
+                    onClick={() => {
+                      markAsRead(notif.id);
+                      const basePath = isAdmin ? '/admin' : '/painel';
+                      const leadId = (notif.metadata as Record<string, unknown>)?.lead_id as string | undefined;
+                      if (leadId && (notif.type === 'new_lead' || notif.type === 'followup')) {
+                        navigate(`${basePath}/lead/${leadId}`);
+                      }
+                    }}
                   >
                     <div className={`mt-1 sm:mt-1.5 w-2 h-2 sm:w-2.5 sm:h-2.5 rounded-full shrink-0 ${
                       !notif.read ? 'bg-primary' : 'bg-border'
