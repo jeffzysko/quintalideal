@@ -409,18 +409,20 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === 'kanban' && (
-          <KanbanBoard
-            leads={allLeads as any}
-            franchiseId="admin"
-            basePath="/admin/lead"
-            franchiseMap={franchiseMap}
-          />
+          <Suspense fallback={<TabFallback />}>
+            <KanbanBoard
+              leads={allLeads as any}
+              franchiseId="admin"
+              basePath="/admin/lead"
+              franchiseMap={franchiseMap}
+            />
+          </Suspense>
         )}
 
-        {activeTab === 'franchises' && <AdminFranchiseManager />}
-        {activeTab === 'cities' && <AdminCityManager />}
-        {activeTab === 'users' && <AdminUserManager />}
-        {activeTab === 'emails' && <AdminEmailTemplates />}
+        {activeTab === 'franchises' && <Suspense fallback={<TabFallback />}><AdminFranchiseManager /></Suspense>}
+        {activeTab === 'cities' && <Suspense fallback={<TabFallback />}><AdminCityManager /></Suspense>}
+        {activeTab === 'users' && <Suspense fallback={<TabFallback />}><AdminUserManager /></Suspense>}
+        {activeTab === 'emails' && <Suspense fallback={<TabFallback />}><AdminEmailTemplates /></Suspense>}
 
         {activeTab === 'franchise-view' && (
           <div className="space-y-6">
