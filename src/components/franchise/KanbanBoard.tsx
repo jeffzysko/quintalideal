@@ -266,14 +266,37 @@ function PipelineSummary({ leads }: { leads: LeadWithQuiz[] }) {
 export function KanbanBoard({ leads, franchiseId, basePath }: KanbanBoardProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overColumnId, setOverColumnId] = useState<string | null>(null);
-  // Local optimistic state for immediate UI updates
   const [localStatusOverrides, setLocalStatusOverrides] = useState<Record<string, string>>({});
+  const [tempFilter, setTempFilter] = useState<string>('all');
+  const [cityFilter, setCityFilter] = useState<string>('all');
   const queryClient = useQueryClient();
 
-  // Reset overrides when props change (after refetch)
   useEffect(() => {
     setLocalStatusOverrides({});
   }, [leads]);
+
+  // Unique cities for filter
+  const cities = useMemo(() => {
+    const set = new Set<string>();
+    for (const l of leads) if (l.cidade) set.add(l.cidade);
+    return Array.from(set).sort();
+  }, [leads]);
+
+  // Apply filters
+  const filteredLeads = useMemo(() => {
+    return leads.filter((lead) => {
+      if (tempFilter !== 'all') {
+        const t = classifyLead(lead.respostas_questionario || null, lead.pontuacao_quintal);
+        if (t.temperature !== tempFilter) return false;
+      }
+      if (cityFilter !== 'all') {
+        if (lead.cidade !== cityFilter) return false;
+      }
+      return true;
+    });
+  }, [leads, tempFilter, cityFilter]);
+
+  const hasActiveFilters = tempFilter !== 'all' || cityFilter !== 'all';
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -283,13 +306,11 @@ export function KanbanBoard({ leads, franchiseId, basePath }: KanbanBoardProps) 
   const columnData = useMemo(() => {
     const map: Record<string, LeadWithQuiz[]> = {};
     for (const col of COLUMNS) map[col] = [];
-    for (const lead of leads) {
-      // Use local override if available, otherwise use lead's status
+    for (const lead of filteredLeads) {
       const effectiveStatus = localStatusOverrides[lead.id] || lead.status_lead;
       const col = COLUMNS.includes(effectiveStatus as any) ? effectiveStatus : 'novo';
       (map[col] ??= []).push(lead);
     }
-    // Sort each column by temperature
     for (const col of COLUMNS) {
       map[col].sort((a, b) => {
         const sa = classifyLead(a.respostas_questionario || null, a.pontuacao_quintal);
@@ -298,7 +319,7 @@ export function KanbanBoard({ leads, franchiseId, basePath }: KanbanBoardProps) 
       });
     }
     return map;
-  }, [leads, localStatusOverrides]);
+  }, [filteredLeads, localStatusOverrides]);
 
   const activeLead = activeId ? leads.find((l) => l.id === activeId) : null;
 
