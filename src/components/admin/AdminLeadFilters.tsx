@@ -1,7 +1,13 @@
+import { useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { SlidersHorizontal } from 'lucide-react';
 import { STATUS_LABELS, Franchise } from '@/lib/lead-constants';
+import { useIsMobile } from '@/hooks/use-mobile';
+import { MobileFilterDrawer, ActiveFilterChips } from './MobileFilterDrawer';
 
 interface AdminLeadFiltersProps {
   searchInput: string;
@@ -26,6 +32,75 @@ export function AdminLeadFilters({
   filterModelo, onModeloChange,
   franchises, models,
 }: AdminLeadFiltersProps) {
+  const isMobile = useIsMobile();
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
+  const activeCount = [
+    searchInput, cidadeInput,
+    filterFranquia !== 'all' ? filterFranquia : '',
+    filterStatus !== 'all' ? filterStatus : '',
+    filterModelo !== 'all' ? filterModelo : '',
+  ].filter(Boolean).length;
+
+  if (isMobile) {
+    return (
+      <div className="mb-4">
+        <div className="flex items-center gap-2 mb-3">
+          <Input
+            placeholder="Buscar nome..."
+            value={searchInput}
+            onChange={e => onSearchChange(e.target.value)}
+            className="flex-1 h-11"
+          />
+          <Button
+            variant="outline"
+            size="icon"
+            className="h-11 w-11 shrink-0 relative"
+            onClick={() => setDrawerOpen(true)}
+          >
+            <SlidersHorizontal className="w-4 h-4" />
+            {activeCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
+                {activeCount}
+              </span>
+            )}
+          </Button>
+        </div>
+
+        <ActiveFilterChips
+          searchInput={searchInput}
+          cidadeInput={cidadeInput}
+          filterFranquia={filterFranquia}
+          filterStatus={filterStatus}
+          filterModelo={filterModelo}
+          onSearchChange={onSearchChange}
+          onCidadeChange={onCidadeChange}
+          onFranquiaChange={onFranquiaChange}
+          onStatusChange={onStatusChange}
+          onModeloChange={onModeloChange}
+          franchises={franchises}
+        />
+
+        <MobileFilterDrawer
+          open={drawerOpen}
+          onOpenChange={setDrawerOpen}
+          searchInput={searchInput}
+          onSearchChange={onSearchChange}
+          cidadeInput={cidadeInput}
+          onCidadeChange={onCidadeChange}
+          filterFranquia={filterFranquia}
+          onFranquiaChange={onFranquiaChange}
+          filterStatus={filterStatus}
+          onStatusChange={onStatusChange}
+          filterModelo={filterModelo}
+          onModeloChange={onModeloChange}
+          franchises={franchises}
+          models={models}
+        />
+      </div>
+    );
+  }
+
   return (
     <Card className="mb-4 sm:mb-6 border-border/50 shadow-sm">
       <CardContent className="p-3 sm:p-4">
