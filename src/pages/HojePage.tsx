@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { BackButton } from '@/components/BackButton';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -338,6 +339,8 @@ export default function HojePage() {
     <PageTransition>
       <div className="min-h-screen bg-background">
         <PanelHeader title="Hoje">
+          <BackButton fallback={isAdmin ? '/admin' : '/franquia'} />
+          <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
           <NotificationBell />
           <UserAvatarMenu />
         </PanelHeader>
