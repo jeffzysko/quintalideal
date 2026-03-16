@@ -57,7 +57,6 @@ export default function OrganizationSettings() {
   });
 
   const isFranchise = role === 'franquia';
-  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
   const effectiveFranchiseId = franchiseId;
 
   useEffect(() => {
