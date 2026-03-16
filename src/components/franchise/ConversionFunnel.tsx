@@ -82,13 +82,9 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
                       <span className="text-lg font-extrabold tracking-tight" style={{ color: step.color }}>
                         {step.count}
                       </span>
-                      {i > 0 && (
-                        <span className={`text-xs font-bold ${
-                          step.conversionRate >= 50 ? 'text-emerald-600' :
-                          step.conversionRate >= 25 ? 'text-amber-600' :
-                          'text-destructive/70'
-                        }`}>
-                          {step.conversionRate}%
+                      {i > 0 && step.conversionRate < 50 && (
+                        <span className="text-xs font-bold text-amber-600">
+                          atenção
                         </span>
                       )}
                     </div>
