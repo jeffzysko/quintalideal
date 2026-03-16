@@ -460,7 +460,7 @@ export default function AdminDashboard() {
         {activeTab === 'kanban' && (
           <Suspense fallback={<TabFallback />}>
             <KanbanBoard
-              leads={allLeads as any}
+              leads={orgFilteredLeads as any}
               franchiseId="admin"
               basePath="/admin/lead"
               franchiseMap={franchiseMap}
