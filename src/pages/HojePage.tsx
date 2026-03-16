@@ -23,6 +23,7 @@ import {
 import { STATUS_LABELS, STATUS_COLORS, type LeadRow } from '@/lib/lead-constants';
 import { classifyLead } from '@/lib/leadScoring';
 import { cn } from '@/lib/utils';
+import { SmartSuggestions } from '@/components/dashboard/SmartSuggestions';
 
 // ── Types ──
 interface Followup {
@@ -337,6 +338,14 @@ export default function HojePage() {
             <>
               <Greeting name={profile?.full_name || null} />
               <QuickStats stats={quickStats} />
+
+              {/* ═══ SMART SUGGESTIONS ═══ */}
+              <SmartSuggestions
+                leads={leads}
+                followups={followups}
+                activities={recentActivities}
+                basePath={basePath}
+              />
 
               {/* ═══ URGENT: Overdue Follow-ups ═══ */}
               {overdueFollowups.length > 0 && (
