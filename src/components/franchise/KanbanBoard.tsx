@@ -449,7 +449,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
 
   return (
     <>
-      <PipelineSummary leads={filteredLeads} />
+      <PipelineSummary leads={filteredLeads} franchiseMap={franchiseMap} />
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3 mb-4">
