@@ -76,17 +76,17 @@ export function SLAIndicator({ leads, activities }: SLAIndicatorProps) {
               {isOverSLA ? <AlertTriangle className="w-5 h-5 text-destructive" /> : <Clock className="w-5 h-5 text-primary" />}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Tempo Médio de Resposta (SLA)</p>
+              <p className="text-xs text-muted-foreground font-medium uppercase tracking-wider">Velocidade de Resposta</p>
               <p className={`text-2xl font-extrabold tracking-tight ${isOverSLA ? 'text-destructive' : 'text-foreground'}`}>
                 {avgHours === 0 ? '—' : formatTime(avgHours)}
               </p>
               {alertLeads.length > 0 && (
                 <p className="text-xs text-destructive font-medium mt-1">
-                  ⚠️ {alertLeads.length} lead{alertLeads.length > 1 ? 's' : ''} aguardando contato há mais de 2h
+                  ⚠️ {alertLeads.length} lead{alertLeads.length > 1 ? 's' : ''} esperando seu contato há mais de 2h — entre em ação!
                 </p>
               )}
               {avgHours > 0 && avgHours <= 2 && (
-                <p className="text-xs text-emerald-600 font-medium mt-1">✅ Dentro do SLA ideal</p>
+                <p className="text-xs text-emerald-600 font-medium mt-1">✅ Ótimo! Você está respondendo rápido</p>
               )}
             </div>
           </div>

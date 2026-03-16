@@ -46,11 +46,11 @@ function computeInsights(leads: LeadLike[], previousLeads?: LeadLike[]): Insight
         key: 'conversion_change',
         icon: diff > 0 ? TrendingUp : TrendingDown,
         title: diff > 0
-          ? `Taxa de conversão subiu ${diff.toFixed(0)}%`
-          : `Taxa de conversão caiu ${Math.abs(diff).toFixed(0)}%`,
+          ? `Suas vendas estão crescendo!`
+          : `Atenção: menos vendas neste período`,
         description: diff > 0
-          ? `Sua taxa passou de ${prevRate.toFixed(0)}% para ${currentRate.toFixed(0)}%. Continue assim!`
-          : `Sua taxa caiu de ${prevRate.toFixed(0)}% para ${currentRate.toFixed(0)}%. Revise o pipeline.`,
+          ? `Você fechou mais negócios que no período anterior. Continue assim!`
+          : `Revise seus leads abertos e retome o contato com quem está em negociação.`,
         color: diff > 0 ? 'text-emerald-600' : 'text-destructive',
         bg: diff > 0 ? 'bg-emerald-500/10' : 'bg-destructive/10',
         priority: 9,
@@ -65,8 +65,8 @@ function computeInsights(leads: LeadLike[], previousLeads?: LeadLike[]): Insight
       insights.push({
         key: 'lead_spike',
         icon: Zap,
-        title: `Volume de leads +${growth.toFixed(0)}%`,
-        description: `Você recebeu ${currentTotal} leads neste período vs. ${prevTotal} no anterior. Aproveite o momento!`,
+        title: `Muitos leads novos chegando!`,
+        description: `Você recebeu ${currentTotal} leads neste período. Não deixe nenhum esfriar — entre em contato agora!`,
         color: 'text-primary',
         bg: 'bg-primary/10',
         priority: 7,
@@ -84,8 +84,8 @@ function computeInsights(leads: LeadLike[], previousLeads?: LeadLike[]): Insight
     insights.push({
       key: 'stalled_pipeline',
       icon: AlertTriangle,
-      title: `${stalledLeads.length} leads parados há 7+ dias`,
-      description: 'Leads sem atualização podem esfriar. Revise o funil e retome contato.',
+      title: `${stalledLeads.length} leads parados — retome o contato!`,
+      description: 'Esses leads não recebem atenção há mais de 7 dias. Ligue ou mande mensagem hoje!',
       color: 'text-amber-600',
       bg: 'bg-amber-500/10',
       priority: 8,
@@ -101,8 +101,8 @@ function computeInsights(leads: LeadLike[], previousLeads?: LeadLike[]): Insight
     insights.push({
       key: 'high_value_opportunity',
       icon: Target,
-      title: `${highValueNew.length} lead${highValueNew.length > 1 ? 's' : ''} quente${highValueNew.length > 1 ? 's' : ''} sem contato`,
-      description: 'Leads com alto potencial aguardando primeiro contato. Priorize-os!',
+      title: `${highValueNew.length} lead${highValueNew.length > 1 ? 's' : ''} quente${highValueNew.length > 1 ? 's' : ''} — ligue agora!`,
+      description: 'Esses leads têm alto interesse e ainda não foram contatados. Priorize-os!',
       color: 'text-primary',
       bg: 'bg-primary/10',
       priority: 10,
@@ -116,8 +116,8 @@ function computeInsights(leads: LeadLike[], previousLeads?: LeadLike[]): Insight
     insights.push({
       key: 'lost_spike',
       icon: TrendingDown,
-      title: `Aumento de leads perdidos`,
-      description: `${currentLost} perdidos neste período vs. ${prevLost} no anterior. Analise as causas.`,
+      title: `Você está perdendo mais leads que o normal`,
+      description: `Foram ${currentLost} perdidos neste período. Revise o que pode estar acontecendo.`,
       color: 'text-destructive',
       bg: 'bg-destructive/10',
       priority: 8,
@@ -129,8 +129,8 @@ function computeInsights(leads: LeadLike[], previousLeads?: LeadLike[]): Insight
     insights.push({
       key: 'good_conversion',
       icon: BarChart3,
-      title: `Taxa de conversão em ${currentRate.toFixed(0)}%`,
-      description: 'Excelente performance! Sua taxa está acima da média do mercado.',
+      title: `Parabéns! Você está vendendo bem`,
+      description: 'Sua performance está acima da média. Continue acompanhando seus leads de perto!',
       color: 'text-emerald-600',
       bg: 'bg-emerald-500/10',
       priority: 3,
