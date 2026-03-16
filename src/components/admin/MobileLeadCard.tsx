@@ -1,11 +1,9 @@
-import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { MapPin, Calendar, ChevronRight, Phone, MessageCircle, StickyNote, Clock } from 'lucide-react';
+import { MapPin, ChevronRight, Phone, MessageCircle, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { STATUS_LABELS, STATUS_COLORS, LeadRow } from '@/lib/lead-constants';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 function ScorePill({ score }: { score: number }) {
   const cls = score >= 70 ? 'score-high' : score >= 40 ? 'score-mid' : 'score-low';
