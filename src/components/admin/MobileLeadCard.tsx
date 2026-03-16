@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import { STATUS_LABELS, STATUS_COLORS, LeadRow } from '@/lib/lead-constants';
 import { motion } from 'framer-motion';
 import { SmartTagBadges } from '@/components/SmartTagBadges';
+import { classifyLead } from '@/lib/leadScoring';
+
 function ScorePill({ score }: { score: number }) {
   const cls = score >= 70 ? 'score-high' : score >= 40 ? 'score-mid' : 'score-low';
   return (
@@ -16,7 +18,7 @@ function ScorePill({ score }: { score: number }) {
 }
 
 interface MobileLeadCardProps {
-  lead: LeadRow;
+  lead: LeadRow & { respostas_questionario?: Record<string, string> | null };
   index: number;
   basePath?: string;
   franchiseName?: string;
@@ -24,6 +26,7 @@ interface MobileLeadCardProps {
 
 export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePath = '/admin/lead', franchiseName }: MobileLeadCardProps) {
   const navigate = useNavigate();
+  const temp = classifyLead(lead.respostas_questionario || null, lead.pontuacao_quintal);
 
   const handleWhatsApp = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -87,6 +90,9 @@ export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePa
               <div className="flex flex-col items-end gap-1.5 shrink-0">
                 <Badge className={`${STATUS_COLORS[lead.status_lead] || ''} border text-[10px] font-semibold`} variant="secondary">
                   {STATUS_LABELS[lead.status_lead] || lead.status_lead}
+                </Badge>
+                <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
+                  {temp.emoji} {temp.label}
                 </Badge>
                 <ScorePill score={lead.pontuacao_quintal || 0} />
               </div>
