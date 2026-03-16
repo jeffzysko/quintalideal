@@ -316,6 +316,9 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       if (cityFilter !== 'all') {
         if (lead.cidade !== cityFilter) return false;
       }
+      if (franchiseFilter !== 'all' && franchiseMap) {
+        if (lead.franquia_id !== franchiseFilter) return false;
+      }
       if (dateFrom) {
         if (new Date(lead.created_at) < dateFrom) return false;
       }
@@ -326,9 +329,9 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       }
       return true;
     });
-  }, [leads, tempFilter, cityFilter, nameSearch, dateFrom, dateTo]);
+  }, [leads, tempFilter, cityFilter, franchiseFilter, nameSearch, dateFrom, dateTo, franchiseMap]);
 
-  const hasActiveFilters = tempFilter !== 'all' || cityFilter !== 'all' || nameSearch.trim() !== '' || !!dateFrom || !!dateTo;
+  const hasActiveFilters = tempFilter !== 'all' || cityFilter !== 'all' || franchiseFilter !== 'all' || nameSearch.trim() !== '' || !!dateFrom || !!dateTo;
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
