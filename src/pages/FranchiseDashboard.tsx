@@ -233,6 +233,14 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
         </button>
         <button
           role="tab"
+          aria-selected={activeTab === 'funnel'}
+          onClick={() => setActiveTab('funnel')}
+          className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === 'funnel' ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
+        >
+          <Workflow className={`w-3.5 h-3.5 sm:w-4 sm:h-4 inline mr-1.5 ${activeTab === 'funnel' ? 'text-primary' : ''}`} /> Funil de Vendas
+        </button>
+        <button
+          role="tab"
           aria-selected={activeTab === 'reports'}
           onClick={() => setActiveTab('reports')}
           className={`px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all flex-1 sm:flex-none whitespace-nowrap ${activeTab === 'reports' ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
