@@ -76,7 +76,6 @@ function generateSuggestions(
 ): Suggestion[] {
   const suggestions: Suggestion[] = [];
   const now = new Date();
-  const nowMs = now.getTime();
 
   // Build lookup maps
   const leadFollowupMap = new Map<string, boolean>();
