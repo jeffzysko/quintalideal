@@ -8,6 +8,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { lazy, Suspense, useEffect } from "react";
+import { CommandPalette } from "@/components/CommandPalette";
 import HomePage from "./pages/HomePage";
 import { Footer } from "@/components/Footer";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
