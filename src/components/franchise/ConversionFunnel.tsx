@@ -1,7 +1,7 @@
 import { useMemo, memo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { motion } from 'framer-motion';
-import { ArrowRight, TrendingDown } from 'lucide-react';
+import { TrendingDown } from 'lucide-react';
 import { STATUS_LABELS, STATUS_CHART_COLORS, type LeadRow } from '@/lib/lead-constants';
 
 interface ConversionFunnelProps {
@@ -55,7 +55,7 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
     <Card className="card-premium mb-6">
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-bold flex items-center gap-2">
-          Funil de Conversão
+          Progresso dos Leads
           {lostCount > 0 && (
             <span className="text-[10px] font-medium text-destructive/70 flex items-center gap-1">
               <TrendingDown className="w-3 h-3" /> {lostCount} perdido{lostCount !== 1 ? 's' : ''}
@@ -82,13 +82,9 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
                       <span className="text-lg font-extrabold tracking-tight" style={{ color: step.color }}>
                         {step.count}
                       </span>
-                      {i > 0 && (
-                        <span className={`text-xs font-bold ${
-                          step.conversionRate >= 50 ? 'text-emerald-600' :
-                          step.conversionRate >= 25 ? 'text-amber-600' :
-                          'text-destructive/70'
-                        }`}>
-                          {step.conversionRate}%
+                      {i > 0 && step.conversionRate < 50 && (
+                        <span className="text-xs font-bold text-amber-600">
+                          atenção
                         </span>
                       )}
                     </div>
@@ -139,16 +135,11 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
 
                   <div className="w-16 shrink-0 text-right">
                     {i > 0 ? (
-                      <div className="flex items-center justify-end gap-1">
-                        <ArrowRight className="w-3 h-3 text-muted-foreground/50" />
-                        <span className={`text-xs font-bold ${
-                          step.conversionRate >= 50 ? 'text-emerald-600' :
-                          step.conversionRate >= 25 ? 'text-amber-600' :
-                          'text-destructive/70'
-                        }`}>
-                          {step.conversionRate}%
-                        </span>
-                      </div>
+                      step.conversionRate < 50 ? (
+                        <span className="text-xs font-bold text-amber-600">atenção</span>
+                      ) : (
+                        <span className="text-xs font-bold text-emerald-600">✓</span>
+                      )
                     ) : (
                       <span className="text-[10px] text-muted-foreground">total</span>
                     )}

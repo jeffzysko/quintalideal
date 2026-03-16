@@ -7,13 +7,27 @@ import { STATUS_LABELS, STATUS_COLORS, LeadRow } from '@/lib/lead-constants';
 import { motion } from 'framer-motion';
 import { SmartTagBadges } from '@/components/SmartTagBadges';
 import { classifyLead } from '@/lib/leadScoring';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 function ScorePill({ score }: { score: number }) {
   const cls = score >= 70 ? 'score-high' : score >= 40 ? 'score-mid' : 'score-low';
+  const explanation = score >= 70
+    ? 'Quintal com ótimas condições para piscina'
+    : score >= 40
+    ? 'Quintal com boas condições, com alguns ajustes possíveis'
+    : 'Quintal pode precisar de mais adaptações';
   return (
-    <span className={`text-xs font-bold px-2.5 py-1 rounded-lg ${cls}`}>
-      {score}%
-    </span>
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <span className={`text-xs font-bold px-2.5 py-1 rounded-lg ${cls} cursor-help`}>
+          {score}%
+        </span>
+      </TooltipTrigger>
+      <TooltipContent side="left" className="max-w-[200px] text-xs">
+        <p className="font-semibold mb-0.5">Compatibilidade do quintal</p>
+        <p className="text-muted-foreground">{explanation}</p>
+      </TooltipContent>
+    </Tooltip>
   );
 }
 
@@ -91,9 +105,23 @@ export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePa
                 <Badge className={`${STATUS_COLORS[lead.status_lead] || ''} border text-[10px] font-semibold`} variant="secondary">
                   {STATUS_LABELS[lead.status_lead] || lead.status_lead}
                 </Badge>
-                <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
-                  {temp.emoji} {temp.label}
-                </Badge>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold cursor-help`} variant="outline">
+                      {temp.emoji} {temp.label}
+                    </Badge>
+                  </TooltipTrigger>
+                  <TooltipContent side="left" className="max-w-[220px] text-xs">
+                    <p className="font-semibold mb-0.5">Nível de interesse</p>
+                    <p className="text-muted-foreground">
+                      {temp.temperature === 'quente'
+                        ? 'Lead com alto interesse: bom orçamento, quer comprar em breve e tem espaço adequado.'
+                        : temp.temperature === 'morno'
+                        ? 'Lead com interesse moderado: pode precisar de mais informações ou tempo.'
+                        : 'Lead no início da jornada: ainda explorando opções.'}
+                    </p>
+                  </TooltipContent>
+                </Tooltip>
                 <ScorePill score={lead.pontuacao_quintal || 0} />
               </div>
             </div>
