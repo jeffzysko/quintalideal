@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { MapPin, ChevronRight, Phone, MessageCircle, Clock } from 'lucide-react';
