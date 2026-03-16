@@ -9,6 +9,7 @@ import { Switch } from '@/components/ui/switch';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Building2, Save, Settings2, Bell, Workflow, MapPin,
   Globe, Users, CheckCircle2, Clock
@@ -33,14 +34,26 @@ interface FranchiseSettings {
   meta_pixel_id: string | null;
 }
 
+interface FranchiseOption {
+  id: string;
+  nome_franquia: string;
+  cidade_base: string;
+}
+
 export default function OrganizationSettings() {
   const { role, franchiseId } = useAuth();
   const [franchise, setFranchise] = useState<FranchiseSettings | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  // Admin franchise selector
+  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const [franchiseOptions, setFranchiseOptions] = useState<FranchiseOption[]>([]);
+  const [selectedFranchiseId, setSelectedFranchiseId] = useState<string | null>(franchiseId);
+
   // Notification preferences (stored in localStorage per franchise)
-  const storageKey = `notif_prefs_${franchiseId}`;
+  const effectiveFranchiseId = isAdmin ? selectedFranchiseId : franchiseId;
+  const storageKey = `notif_prefs_${effectiveFranchiseId}`;
   const [notifPrefs, setNotifPrefs] = useState({
     new_lead: true,
     followup_reminder: true,
@@ -49,7 +62,7 @@ export default function OrganizationSettings() {
   });
 
   // Automation settings (localStorage per franchise)
-  const autoKey = `auto_prefs_${franchiseId}`;
+  const autoKey = `auto_prefs_${effectiveFranchiseId}`;
   const [autoPrefs, setAutoPrefs] = useState({
     auto_contact_reminder: true,
     reminder_hours: 48,
@@ -57,7 +70,23 @@ export default function OrganizationSettings() {
   });
 
   const isFranchise = role === 'franquia';
-  const effectiveFranchiseId = franchiseId;
+
+  // Load franchise list for admins
+  useEffect(() => {
+    if (!isAdmin) return;
+    supabase
+      .from('franchises')
+      .select('id, nome_franquia, cidade_base')
+      .eq('ativa', true)
+      .order('nome_franquia')
+      .then(({ data }) => {
+        const options = (data ?? []) as FranchiseOption[];
+        setFranchiseOptions(options);
+        if (!selectedFranchiseId && options.length > 0) {
+          setSelectedFranchiseId(options[0].id);
+        }
+      });
+  }, [isAdmin]);
 
   useEffect(() => {
     if (!effectiveFranchiseId) {
