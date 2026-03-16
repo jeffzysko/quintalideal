@@ -71,7 +71,7 @@ function FooterLink({ to, icon, label }: { to: string; icon: React.ReactNode; la
   return (
     <Link
       to={to}
-      className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors group"
+      className="flex items-center gap-2.5 text-sm text-muted-foreground hover:text-foreground transition-colors group py-1"
     >
       <span className="text-muted-foreground/60 group-hover:text-primary transition-colors">{icon}</span>
       {label}
