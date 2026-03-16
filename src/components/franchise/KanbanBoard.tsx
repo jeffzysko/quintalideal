@@ -1160,7 +1160,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       </div>
 
       {/* Onboarding tip for first-time users */}
-      {!localStorage.getItem('kanban-tip-dismissed') && (
+      {!kanbanTipDismissed && (
         <motion.div
           initial={{ opacity: 0, y: -8 }}
           animate={{ opacity: 1, y: 0 }}
@@ -1174,7 +1174,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
             variant="ghost"
             size="sm"
             className="h-6 px-2 text-[10px] text-muted-foreground shrink-0"
-            onClick={() => { localStorage.setItem('kanban-tip-dismissed', 'true'); }}
+            onClick={() => { localStorage.setItem('kanban-tip-dismissed', 'true'); setKanbanTipDismissed(true); }}
           >
             Entendi
           </Button>
