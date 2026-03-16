@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Users, TrendingUp, Clock, Eye, Inbox, Share2, Droplets, BarChart3, Link2, Copy, Check } from 'lucide-react';
+import { Users, TrendingUp, Clock, Eye, Inbox, Share2, Droplets, BarChart3, Link2, Copy, Check, LayoutGrid, List } from 'lucide-react';
 import { ConversionFunnel } from '@/components/franchise/ConversionFunnel';
 import { SLAIndicator } from '@/components/franchise/SLAIndicator';
 import { MonthlyGoals } from '@/components/franchise/MonthlyGoals';
@@ -26,6 +26,7 @@ import { KPISkeleton } from '@/components/ui/kpi-skeleton';
 import { TableSkeleton } from '@/components/ui/table-skeleton';
 import { PanelHeader } from '@/components/PanelHeader';
 import { classifyLead } from '@/lib/leadScoring';
+import { KanbanBoard } from '@/components/franchise/KanbanBoard';
 
 const PAGE_SIZE = 20;
 
@@ -71,6 +72,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   const isMobile = useIsMobile();
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState<'leads' | 'reports'>('leads');
+  const [leadsView, setLeadsView] = useState<'table' | 'kanban'>('table');
 
   // ── Franchise info ──
   const { data: franchiseInfo } = useQuery({
@@ -242,8 +244,26 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
 
       {activeTab === 'leads' && (
         <Card className="card-premium">
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0">
             <CardTitle className="text-sm font-bold">Leads Recentes ({totalCount})</CardTitle>
+            {totalCount > 0 && (
+              <div className="flex items-center gap-1 bg-muted/60 rounded-xl p-1 border border-border/30">
+                <button
+                  onClick={() => setLeadsView('table')}
+                  className={`p-1.5 rounded-lg transition-all ${leadsView === 'table' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                  title="Visualização em tabela"
+                >
+                  <List className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setLeadsView('kanban')}
+                  className={`p-1.5 rounded-lg transition-all ${leadsView === 'kanban' ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                  title="Visualização Kanban"
+                >
+                  <LayoutGrid className="w-4 h-4" />
+                </button>
+              </div>
+            )}
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -272,6 +292,12 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                   </Button>
                 )}
               </motion.div>
+            ) : leadsView === 'kanban' ? (
+              <KanbanBoard
+                leads={allLeads as (LeadRow & { respostas_questionario?: Record<string, string> | null })[]}
+                franchiseId={franchiseId!}
+                basePath={leadDetailPath}
+              />
             ) : (
               <>
                 {isMobile ? (
