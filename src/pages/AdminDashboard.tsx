@@ -316,8 +316,9 @@ export default function AdminDashboard() {
         <div className="flex items-center justify-between gap-3 mb-2">
           <Breadcrumbs items={[{ label: 'Admin' }]} />
           <OrganizationSwitcher
-            activeFranchiseId={filterFranquia === 'all' ? null : filterFranquia}
+            activeFranchiseId={orgFilter}
             onSwitch={(id) => {
+              setOrgFilter(id);
               setFilterFranquia(id || 'all');
               setPage(1);
             }}
