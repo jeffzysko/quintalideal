@@ -210,6 +210,8 @@ function AppRoutes() {
                 </Suspense>
                 <CookieConsentBanner />
                 <CommandPalette />
+                <PWAUpdatePrompt />
+                <PWAInstallBanner />
               </BrowserRouter>
             </TooltipProvider>
           </AuthProvider>
