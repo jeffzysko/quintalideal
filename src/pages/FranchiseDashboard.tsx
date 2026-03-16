@@ -26,6 +26,7 @@ import { TableSkeleton } from '@/components/ui/table-skeleton';
 import { PanelHeader } from '@/components/PanelHeader';
 import { classifyLead } from '@/lib/leadScoring';
 import { KanbanBoard } from '@/components/franchise/KanbanBoard';
+import { WelcomeWizard } from '@/components/franchise/WelcomeWizard';
 import { MetricGrid } from '@/components/dashboard/MetricGrid';
 import { TimeRangeSelector, filterByTimeRange, type TimeRange } from '@/components/dashboard/TimeRangeSelector';
 import { SectionHeader } from '@/components/dashboard/SectionHeader';
