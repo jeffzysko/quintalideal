@@ -65,24 +65,30 @@ interface KanbanBoardProps {
   franchiseMap?: Record<string, string>;
 }
 
-// ── Draggable Lead Card ──
+// ── Draggable Lead Card with Quick Actions ──
 function LeadCard({
   lead,
   basePath,
   overlay,
   franchiseName,
+  onMoveStage,
 }: {
   lead: LeadWithQuiz;
   basePath: string;
   overlay?: boolean;
   franchiseName?: string;
+  onMoveStage?: (leadId: string, newStatus: string) => void;
 }) {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const temp = classifyLead(lead.respostas_questionario || null, lead.pontuacao_quintal);
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: lead.id,
     data: { lead },
   });
+  const [noteOpen, setNoteOpen] = useState(false);
+  const [noteText, setNoteText] = useState('');
+  const [savingNote, setSavingNote] = useState(false);
 
   const style = !overlay
     ? {
@@ -92,63 +98,93 @@ function LeadCard({
       }
     : undefined;
 
+  const handleSaveNote = async () => {
+    if (!noteText.trim() || !user) return;
+    setSavingNote(true);
+    const { error } = await supabase.from('lead_activities').insert({
+      lead_id: lead.id,
+      user_id: user.id,
+      activity_type: 'note',
+      content: noteText.trim(),
+    });
+    setSavingNote(false);
+    if (error) {
+      toast.error('Erro ao salvar nota');
+    } else {
+      toast.success('Nota adicionada');
+      setNoteText('');
+      setNoteOpen(false);
+    }
+  };
+
+  const currentStatus = lead.status_lead;
+
   return (
     <div
       ref={!overlay ? setNodeRef : undefined}
       style={style}
-      className={`bg-card border rounded-xl p-3 shadow-sm transition-all ${
+      className={`group bg-card border rounded-xl shadow-sm transition-all ${
         overlay
           ? 'shadow-xl border-primary/30 scale-105 rotate-1 ring-2 ring-primary/20'
           : isDragging
           ? 'border-primary/20'
           : 'border-border/50 hover:shadow-md hover:border-border cursor-pointer'
       }`}
-      onClick={!overlay ? () => navigate(`${basePath}/${lead.id}`) : undefined}
     >
-      <div className="flex items-start justify-between gap-1 mb-2">
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-semibold text-foreground truncate">{lead.nome || '—'}</p>
+      {/* Card body */}
+      <div
+        className="p-3"
+        onClick={!overlay ? () => navigate(`${basePath}/${lead.id}`) : undefined}
+      >
+        <div className="flex items-start justify-between gap-1 mb-2">
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-foreground truncate">{lead.nome || '—'}</p>
+          </div>
+          {!overlay && (
+            <div
+              {...listeners}
+              {...attributes}
+              className="shrink-0 cursor-grab active:cursor-grabbing p-1 -m-1 rounded-lg hover:bg-muted/80 touch-none transition-colors"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <GripVertical className="w-4 h-4 text-muted-foreground/40" />
+            </div>
+          )}
         </div>
-        {!overlay && (
-          <div
-            {...listeners}
-            {...attributes}
-            className="shrink-0 cursor-grab active:cursor-grabbing p-1 -m-1 rounded-lg hover:bg-muted/80 touch-none transition-colors"
-            onClick={(e) => e.stopPropagation()}
+
+        <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+          <Badge
+            className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`}
+            variant="outline"
           >
-            <GripVertical className="w-4 h-4 text-muted-foreground/40" />
-          </div>
-        )}
-      </div>
+            {temp.emoji} {temp.label}
+          </Badge>
+          <span className="text-xs font-bold text-primary">{lead.pontuacao_quintal || 0}%</span>
+        </div>
 
-      <div className="flex items-center gap-1.5 mb-2 flex-wrap">
-        <Badge
-          className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`}
-          variant="outline"
-        >
-          {temp.emoji} {temp.label}
-        </Badge>
-        <span className="text-xs font-bold text-primary">{lead.pontuacao_quintal || 0}%</span>
-      </div>
-
-      <div className="space-y-1">
-        {lead.cidade && (
-          <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
-            <MapPin className="w-3 h-3 shrink-0" />
-            <span className="truncate">{lead.cidade}</span>
-          </div>
-        )}
-        {franchiseName && (
-          <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
-            <Building2 className="w-3 h-3 shrink-0" />
-            <span className="truncate">{franchiseName}</span>
-          </div>
-        )}
-        <div className="flex items-center justify-between">
+        <div className="space-y-1">
+          {lead.cidade && (
+            <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+              <MapPin className="w-3 h-3 shrink-0" />
+              <span className="truncate">{lead.cidade}</span>
+            </div>
+          )}
+          {franchiseName && (
+            <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+              <Building2 className="w-3 h-3 shrink-0" />
+              <span className="truncate">{franchiseName}</span>
+            </div>
+          )}
           <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
             <Calendar className="w-3 h-3 shrink-0" />
             <span>{new Date(lead.created_at).toLocaleDateString('pt-BR')}</span>
           </div>
+        </div>
+      </div>
+
+      {/* Quick action bar — visible on hover */}
+      {!overlay && (
+        <div className="flex items-center border-t border-border/30 opacity-0 group-hover:opacity-100 transition-opacity divide-x divide-border/30">
           {lead.telefone && (
             <button
               onClick={(e) => {
@@ -157,14 +193,88 @@ function LeadCard({
                 const fullPhone = phone.startsWith('55') ? phone : `55${phone}`;
                 window.open(`https://wa.me/${fullPhone}`, '_blank');
               }}
-              className="flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-medium bg-success/10 text-success hover:bg-success/20 transition-colors"
-              title="Enviar WhatsApp"
+              className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[10px] font-medium text-success hover:bg-success/5 transition-colors"
+              title="WhatsApp"
             >
               <MessageCircle className="w-3 h-3" />
             </button>
           )}
+          {lead.telefone && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                const phone = lead.telefone!.replace(/\D/g, '');
+                window.open(`tel:+55${phone}`, '_self');
+              }}
+              className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[10px] font-medium text-primary hover:bg-primary/5 transition-colors"
+              title="Ligar"
+            >
+              <Phone className="w-3 h-3" />
+            </button>
+          )}
+          <Popover open={noteOpen} onOpenChange={setNoteOpen}>
+            <PopoverTrigger asChild>
+              <button
+                onClick={(e) => e.stopPropagation()}
+                className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[10px] font-medium text-muted-foreground hover:bg-muted/40 transition-colors"
+                title="Adicionar nota"
+              >
+                <StickyNote className="w-3 h-3" />
+              </button>
+            </PopoverTrigger>
+            <PopoverContent className="w-64 p-3" align="start" onClick={(e) => e.stopPropagation()}>
+              <p className="text-xs font-semibold text-foreground mb-2">Nota rápida</p>
+              <Textarea
+                value={noteText}
+                onChange={(e) => setNoteText(e.target.value)}
+                placeholder="Escreva uma nota..."
+                className="text-xs min-h-[60px] resize-none mb-2"
+                autoFocus
+              />
+              <Button
+                size="sm"
+                className="w-full h-7 text-xs gap-1"
+                disabled={!noteText.trim() || savingNote}
+                onClick={handleSaveNote}
+              >
+                <Send className="w-3 h-3" />
+                {savingNote ? 'Salvando...' : 'Salvar'}
+              </Button>
+            </PopoverContent>
+          </Popover>
+          {onMoveStage && (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  onClick={(e) => e.stopPropagation()}
+                  className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[10px] font-medium text-muted-foreground hover:bg-muted/40 transition-colors"
+                  title="Mover etapa"
+                >
+                  <ArrowRightLeft className="w-3 h-3" />
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-44">
+                {COLUMNS.filter(s => s !== currentStatus).map(status => {
+                  const color = STATUS_CHART_COLORS[status] || '#64748b';
+                  return (
+                    <DropdownMenuItem
+                      key={status}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onMoveStage(lead.id, status);
+                      }}
+                      className="gap-2 text-xs cursor-pointer"
+                    >
+                      <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
+                      {STATUS_LABELS[status]}
+                    </DropdownMenuItem>
+                  );
+                })}
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </div>
-      </div>
+      )}
     </div>
   );
 }
