@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { STATUS_LABELS, STATUS_COLORS, LeadRow } from '@/lib/lead-constants';
 import { motion } from 'framer-motion';
 import { SmartTagBadges } from '@/components/SmartTagBadges';
+import { classifyLead } from '@/lib/leadScoring';
 
 function ScorePill({ score }: { score: number }) {
   const cls = score >= 70 ? 'score-high' : score >= 40 ? 'score-mid' : 'score-low';

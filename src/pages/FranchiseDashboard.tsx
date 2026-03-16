@@ -319,19 +319,9 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
               <>
                 {isMobile ? (
                   <div className="space-y-3">
-                    {sortedLeads.map((lead, i) => {
-                      const temp = classifyLead(lead.respostas_questionario || null, lead.pontuacao_quintal);
-                      return (
-                        <div key={lead.id} className="relative">
-                          <div className="absolute top-2 right-2 z-10">
-                            <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
-                              {temp.emoji} {temp.label}
-                            </Badge>
-                          </div>
-                          <MobileLeadCard lead={lead} index={i} basePath={leadDetailPath} />
-                        </div>
-                      );
-                    })}
+                    {sortedLeads.map((lead, i) => (
+                      <MobileLeadCard key={lead.id} lead={lead} index={i} basePath={leadDetailPath} />
+                    ))}
                   </div>
                 ) : (
                 <div className="overflow-x-auto">
