@@ -4,7 +4,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Progress } from '@/components/ui/progress';
-import { Target, Edit2, Check } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
+import { Label } from '@/components/ui/label';
+import { Target, Edit2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -19,7 +21,7 @@ export function MonthlyGoals({ franchiseId, soldThisMonth }: MonthlyGoalsProps) 
   const month = now.getMonth() + 1;
   const year = now.getFullYear();
   const queryClient = useQueryClient();
-  const [editing, setEditing] = useState(false);
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [goalValue, setGoalValue] = useState('');
 
   const { data: goal } = useQuery({
@@ -47,7 +49,7 @@ export function MonthlyGoals({ franchiseId, soldThisMonth }: MonthlyGoalsProps) 
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['franchise-goal'] });
-      setEditing(false);
+      setDialogOpen(false);
       toast.success('Meta atualizada!');
     },
   });
@@ -55,6 +57,13 @@ export function MonthlyGoals({ franchiseId, soldThisMonth }: MonthlyGoalsProps) 
   const salesGoal = goal?.sales_goal || 5;
   const progress = salesGoal > 0 ? Math.min(Math.round((soldThisMonth / salesGoal) * 100), 100) : 0;
   const monthName = now.toLocaleDateString('pt-BR', { month: 'long' });
+
+  const handleSave = () => {
+    const v = parseInt(goalValue);
+    if (v > 0) {
+      upsertGoal.mutate(v);
+    }
+  };
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
@@ -73,30 +82,14 @@ export function MonthlyGoals({ franchiseId, soldThisMonth }: MonthlyGoalsProps) 
               </p>
               <p className="text-xs text-muted-foreground mt-0.5">vendas realizadas</p>
             </div>
-            {editing ? (
-              <div className="flex items-center gap-2">
-                <Input
-                  type="number"
-                  min={1}
-                  max={999}
-                  value={goalValue}
-                  onChange={e => setGoalValue(e.target.value)}
-                  className="w-20 h-8 text-sm"
-                  placeholder={String(salesGoal)}
-                />
-                <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => {
-                  const v = parseInt(goalValue);
-                  if (v > 0) upsertGoal.mutate(v);
-                  else setEditing(false);
-                }}>
-                  <Check className="w-4 h-4" />
-                </Button>
-              </div>
-            ) : (
-              <Button size="sm" variant="ghost" className="h-8 gap-1 text-xs text-muted-foreground" onClick={() => { setGoalValue(String(salesGoal)); setEditing(true); }}>
-                <Edit2 className="w-3 h-3" /> Editar meta
-              </Button>
-            )}
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-8 gap-1 text-xs text-muted-foreground"
+              onClick={() => { setGoalValue(String(salesGoal)); setDialogOpen(true); }}
+            >
+              <Edit2 className="w-3 h-3" /> Editar meta
+            </Button>
           </div>
 
           <Progress value={progress} className="h-3" />
@@ -106,6 +99,47 @@ export function MonthlyGoals({ franchiseId, soldThisMonth }: MonthlyGoalsProps) 
           </p>
         </CardContent>
       </Card>
+
+      {/* Goal edit dialog */}
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+        <DialogContent className="sm:max-w-[380px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Target className="w-5 h-5 text-primary" />
+              Definir meta de vendas
+            </DialogTitle>
+            <DialogDescription>
+              Quantas piscinas você quer vender em {monthName}?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Label htmlFor="goal-input" className="text-sm font-medium mb-2 block">
+              Quantidade de vendas
+            </Label>
+            <Input
+              id="goal-input"
+              type="number"
+              min={1}
+              max={999}
+              value={goalValue}
+              onChange={e => setGoalValue(e.target.value)}
+              placeholder="Ex: 10"
+              className="text-lg h-12"
+              autoFocus
+              onKeyDown={(e) => { if (e.key === 'Enter') handleSave(); }}
+            />
+            <p className="text-xs text-muted-foreground mt-2">
+              Você já vendeu <span className="font-semibold text-foreground">{soldThisMonth}</span> este mês.
+            </p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancelar</Button>
+            <Button onClick={handleSave} disabled={!goalValue || parseInt(goalValue) <= 0 || upsertGoal.isPending}>
+              {upsertGoal.isPending ? 'Salvando...' : 'Salvar meta'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }

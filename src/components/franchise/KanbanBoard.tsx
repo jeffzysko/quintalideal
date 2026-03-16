@@ -672,18 +672,26 @@ function StageChangeDrawer({
     <Drawer open={open} onOpenChange={onOpenChange}>
       <DrawerContent>
         <DrawerHeader>
-          <DrawerTitle className="text-base">Mover para etapa</DrawerTitle>
+          <DrawerTitle className="text-base">Para qual etapa deseja mover este lead?</DrawerTitle>
+          <p className="text-xs text-muted-foreground mt-1">Selecione a nova etapa do lead no processo de vendas.</p>
         </DrawerHeader>
         <div className="px-4 pb-6 space-y-2">
           {COLUMNS.map((status) => {
             const color = STATUS_CHART_COLORS[status] || '#64748b';
             const isActive = status === currentStatus;
+            const descriptions: Record<string, string> = {
+              novo: 'Lead acabou de chegar, ainda não foi contatado',
+              contatado: 'Você já entrou em contato com o lead',
+              em_negociacao: 'Lead demonstrou interesse, negociação em andamento',
+              vendido: 'Venda concluída com sucesso! 🎉',
+              perdido: 'Lead desistiu ou não tem mais interesse',
+            };
             return (
               <button
                 key={status}
                 disabled={isActive}
                 className={cn(
-                  "w-full flex items-center gap-3 p-3.5 rounded-xl border transition-all min-h-[48px]",
+                  "w-full flex items-start gap-3 p-3.5 rounded-xl border transition-all min-h-[48px]",
                   isActive
                     ? "border-primary/30 bg-primary/5 cursor-default"
                     : "border-border/40 hover:border-primary/30 hover:bg-primary/5 cursor-pointer active:scale-[0.98]"
@@ -695,12 +703,15 @@ function StageChangeDrawer({
                   }
                 }}
               >
-                <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: color }} />
-                <span className={cn("text-sm font-semibold", isActive ? "text-primary" : "text-foreground")}>
-                  {STATUS_LABELS[status]}
-                </span>
+                <div className="w-3 h-3 rounded-full shrink-0 mt-1" style={{ backgroundColor: color }} />
+                <div className="flex-1 text-left">
+                  <span className={cn("text-sm font-semibold", isActive ? "text-primary" : "text-foreground")}>
+                    {STATUS_LABELS[status]}
+                  </span>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">{descriptions[status]}</p>
+                </div>
                 {isActive && (
-                  <Badge variant="secondary" className="ml-auto text-[10px] bg-primary/10 text-primary">
+                  <Badge variant="secondary" className="text-[10px] bg-primary/10 text-primary shrink-0 mt-0.5">
                     Atual
                   </Badge>
                 )}
@@ -1146,6 +1157,28 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
           </span>
         )}
       </div>
+
+      {/* Onboarding tip for first-time users */}
+      {!localStorage.getItem('kanban-tip-dismissed') && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-3 px-4 py-2.5 mb-4 rounded-xl border border-primary/20 bg-primary/5"
+        >
+          <span className="text-sm">💡</span>
+          <p className="text-xs text-foreground flex-1">
+            <span className="font-semibold">Dica:</span> Arraste os cards entre as colunas para mudar o status do lead.
+          </p>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-6 px-2 text-[10px] text-muted-foreground shrink-0"
+            onClick={() => { localStorage.setItem('kanban-tip-dismissed', 'true'); }}
+          >
+            Entendi
+          </Button>
+        </motion.div>
+      )}
 
       <DndContext
         sensors={sensors}

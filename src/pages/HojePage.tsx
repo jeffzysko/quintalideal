@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -82,21 +82,28 @@ const URGENCY_STYLES = {
 };
 
 // ── Section wrapper ──
-function Section({ icon: Icon, title, count, iconBg = 'icon-bg-blue', children, action }: {
+function Section({ icon: Icon, title, count, iconBg = 'icon-bg-blue', children, action, collapsible = false, defaultOpen = true }: {
   icon: typeof CalendarClock;
   title: string;
   count?: number;
   iconBg?: string;
   children: React.ReactNode;
   action?: React.ReactNode;
+  collapsible?: boolean;
+  defaultOpen?: boolean;
 }) {
+  const [open, setOpen] = useState(defaultOpen);
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       className="mb-6"
     >
-      <div className="flex items-center justify-between mb-3">
+      <div
+        className={cn("flex items-center justify-between mb-3", collapsible && "cursor-pointer")}
+        onClick={collapsible ? () => setOpen(v => !v) : undefined}
+      >
         <div className="flex items-center gap-2.5">
           <div className={`w-8 h-8 rounded-lg ${iconBg} flex items-center justify-center shrink-0`}>
             <Icon className="w-4 h-4 text-primary" />
@@ -105,10 +112,13 @@ function Section({ icon: Icon, title, count, iconBg = 'icon-bg-blue', children, 
           {count !== undefined && count > 0 && (
             <Badge variant="secondary" className="text-[10px] font-bold px-1.5 py-0">{count}</Badge>
           )}
+          {collapsible && (
+            <ChevronRight className={cn("w-4 h-4 text-muted-foreground transition-transform", open && "rotate-90")} />
+          )}
         </div>
         {action}
       </div>
-      {children}
+      {(!collapsible || open) && children}
     </motion.section>
   );
 }
@@ -519,7 +529,7 @@ export default function HojePage() {
 
               {/* ═══ NEW LEADS (24h) ═══ */}
               {newLeads.length > 0 && (
-                <Section icon={Zap} title="Novos leads" count={newLeads.length} iconBg="icon-bg-green">
+                <Section icon={Zap} title="Novos leads" count={newLeads.length} iconBg="icon-bg-green" collapsible defaultOpen={newLeads.length <= 4}>
                   <div className="space-y-2">
                     {newLeads.slice(0, 6).map((lead, i) => {
                       const temp = classifyLead((lead as any).respostas_questionario || null, lead.pontuacao_quintal);
@@ -571,7 +581,7 @@ export default function HojePage() {
 
               {/* ═══ HOT LEADS ═══ */}
               {hotLeads.length > 0 && (
-                <Section icon={Flame} title="Leads quentes" count={hotLeads.length} iconBg="icon-bg-amber">
+                <Section icon={Flame} title="Leads quentes" count={hotLeads.length} iconBg="icon-bg-amber" collapsible defaultOpen={hotLeads.length <= 3}>
                   <Card className="card-premium overflow-hidden">
                     <CardContent className="p-0 divide-y divide-border/30">
                       {hotLeads.map((lead, i) => (
@@ -608,7 +618,7 @@ export default function HojePage() {
 
               {/* ═══ UPCOMING FOLLOW-UPS ═══ */}
               {upcomingFollowups.length > 0 && (
-                <Section icon={Target} title="Próximos follow-ups" count={upcomingFollowups.length}>
+                <Section icon={Target} title="Próximos follow-ups" count={upcomingFollowups.length} collapsible defaultOpen={false}>
                   <div className="space-y-2">
                     {upcomingFollowups.map((f, i) => {
                       const parsed = parseFollowupType(f.note);
@@ -642,7 +652,7 @@ export default function HojePage() {
 
               {/* ═══ RECENT ACTIVITY FEED ═══ */}
               {activityFeed.length > 0 && (
-                <Section icon={TrendingUp} title="Atividade recente" count={activityFeed.length}>
+                <Section icon={TrendingUp} title="Atividade recente" count={activityFeed.length} collapsible defaultOpen={false}>
                   <Card className="card-premium">
                     <CardContent className="p-3 space-y-2">
                       {activityFeed.map((a, i) => {
