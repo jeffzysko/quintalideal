@@ -21,7 +21,9 @@ import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { MapPin, Calendar, GripVertical } from 'lucide-react';
+import { MapPin, Calendar, GripVertical, Filter, X } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const COLUMNS = ['novo', 'contatado', 'em_negociacao', 'vendido', 'perdido'] as const;
@@ -264,14 +266,37 @@ function PipelineSummary({ leads }: { leads: LeadWithQuiz[] }) {
 export function KanbanBoard({ leads, franchiseId, basePath }: KanbanBoardProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overColumnId, setOverColumnId] = useState<string | null>(null);
-  // Local optimistic state for immediate UI updates
   const [localStatusOverrides, setLocalStatusOverrides] = useState<Record<string, string>>({});
+  const [tempFilter, setTempFilter] = useState<string>('all');
+  const [cityFilter, setCityFilter] = useState<string>('all');
   const queryClient = useQueryClient();
 
-  // Reset overrides when props change (after refetch)
   useEffect(() => {
     setLocalStatusOverrides({});
   }, [leads]);
+
+  // Unique cities for filter
+  const cities = useMemo(() => {
+    const set = new Set<string>();
+    for (const l of leads) if (l.cidade) set.add(l.cidade);
+    return Array.from(set).sort();
+  }, [leads]);
+
+  // Apply filters
+  const filteredLeads = useMemo(() => {
+    return leads.filter((lead) => {
+      if (tempFilter !== 'all') {
+        const t = classifyLead(lead.respostas_questionario || null, lead.pontuacao_quintal);
+        if (t.temperature !== tempFilter) return false;
+      }
+      if (cityFilter !== 'all') {
+        if (lead.cidade !== cityFilter) return false;
+      }
+      return true;
+    });
+  }, [leads, tempFilter, cityFilter]);
+
+  const hasActiveFilters = tempFilter !== 'all' || cityFilter !== 'all';
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -281,13 +306,11 @@ export function KanbanBoard({ leads, franchiseId, basePath }: KanbanBoardProps) 
   const columnData = useMemo(() => {
     const map: Record<string, LeadWithQuiz[]> = {};
     for (const col of COLUMNS) map[col] = [];
-    for (const lead of leads) {
-      // Use local override if available, otherwise use lead's status
+    for (const lead of filteredLeads) {
       const effectiveStatus = localStatusOverrides[lead.id] || lead.status_lead;
       const col = COLUMNS.includes(effectiveStatus as any) ? effectiveStatus : 'novo';
       (map[col] ??= []).push(lead);
     }
-    // Sort each column by temperature
     for (const col of COLUMNS) {
       map[col].sort((a, b) => {
         const sa = classifyLead(a.respostas_questionario || null, a.pontuacao_quintal);
@@ -296,7 +319,7 @@ export function KanbanBoard({ leads, franchiseId, basePath }: KanbanBoardProps) 
       });
     }
     return map;
-  }, [leads, localStatusOverrides]);
+  }, [filteredLeads, localStatusOverrides]);
 
   const activeLead = activeId ? leads.find((l) => l.id === activeId) : null;
 
@@ -361,7 +384,58 @@ export function KanbanBoard({ leads, franchiseId, basePath }: KanbanBoardProps) 
 
   return (
     <>
-      <PipelineSummary leads={leads} />
+      <PipelineSummary leads={filteredLeads} />
+
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-3 mb-4">
+        <div className="flex items-center gap-2">
+          <Filter className="w-4 h-4 text-muted-foreground" />
+          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Filtros</span>
+        </div>
+
+        <Select value={tempFilter} onValueChange={setTempFilter}>
+          <SelectTrigger className="w-[150px] h-8 text-xs">
+            <SelectValue placeholder="Temperatura" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas temperaturas</SelectItem>
+            <SelectItem value="quente">🔥 Quente</SelectItem>
+            <SelectItem value="morno">☀️ Morno</SelectItem>
+            <SelectItem value="frio">❄️ Frio</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={cityFilter} onValueChange={setCityFilter}>
+          <SelectTrigger className="w-[180px] h-8 text-xs">
+            <SelectValue placeholder="Cidade" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas cidades</SelectItem>
+            {cities.map((city) => (
+              <SelectItem key={city} value={city}>{city}</SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+
+        {hasActiveFilters && (
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 px-2 text-xs text-muted-foreground hover:text-foreground"
+            onClick={() => { setTempFilter('all'); setCityFilter('all'); }}
+          >
+            <X className="w-3 h-3 mr-1" />
+            Limpar
+          </Button>
+        )}
+
+        {hasActiveFilters && (
+          <span className="text-[11px] text-muted-foreground">
+            {filteredLeads.length} de {leads.length} leads
+          </span>
+        )}
+      </div>
+
       <DndContext
         sensors={sensors}
         collisionDetection={closestCorners}
