@@ -6,27 +6,73 @@
 
 @layer base {
   :root {
+    /* ─── Color System ─── */
     --background: 220 20% 98%;
+    --background-elevated: 220 15% 100%;
     --foreground: 220 30% 10%;
+
     --card: 0 0% 100%;
     --card-foreground: 220 30% 10%;
+
     --popover: 0 0% 100%;
     --popover-foreground: 220 30% 10%;
+
+    /* Primary: Splash Blue */
     --primary: 207 90% 42%;
     --primary-foreground: 0 0% 100%;
+    --primary-hover: 207 90% 36%;
+    --primary-active: 207 90% 30%;
+
+    /* Secondary: Splash Pink */
     --secondary: 322 85% 50%;
     --secondary-foreground: 0 0% 100%;
+
+    /* Semantic */
+    --success: 152 70% 40%;
+    --success-foreground: 0 0% 100%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 38 92% 15%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+    --info: 207 90% 54%;
+    --info-foreground: 0 0% 100%;
+
+    /* Neutral scale */
+    --gray-50: 220 20% 98%;
+    --gray-100: 220 15% 96%;
+    --gray-200: 220 15% 91%;
+    --gray-300: 220 12% 84%;
+    --gray-400: 220 10% 70%;
+    --gray-500: 220 10% 54%;
+    --gray-600: 220 10% 40%;
+    --gray-700: 220 14% 28%;
+    --gray-800: 220 18% 18%;
+    --gray-900: 220 22% 10%;
+
+    /* UI tokens */
     --muted: 220 15% 95%;
     --muted-foreground: 220 10% 46%;
     --accent: 207 50% 93%;
     --accent-foreground: 207 90% 30%;
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
     --border: 220 15% 91%;
     --input: 220 15% 89%;
     --ring: 207 90% 42%;
-    --radius: 0.75rem;
 
+    /* ─── Radius Scale ─── */
+    --radius: 0.75rem;
+    --radius-sm: 0.375rem;
+    --radius-md: 0.625rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.25rem;
+
+    /* ─── Shadow Scale ─── */
+    --shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.04);
+    --shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.06), 0 1px 2px -1px rgb(0 0 0 / 0.06);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.03);
+
+    /* ─── Splash brand tokens ─── */
     --splash-blue: 207 90% 42%;
     --splash-blue-dark: 207 90% 25%;
     --splash-blue-light: 207 60% 92%;
@@ -34,13 +80,7 @@
     --splash-gray: 220 10% 46%;
     --splash-gray-light: 220 15% 96%;
 
-    /* Premium tokens */
-    --success: 152 70% 40%;
-    --success-foreground: 0 0% 100%;
-    --warning: 38 92% 50%;
-    --warning-foreground: 38 92% 15%;
-    --info: 207 90% 54%;
-
+    /* ─── Sidebar ─── */
     --sidebar-background: 220 30% 8%;
     --sidebar-foreground: 220 15% 92%;
     --sidebar-primary: 207 90% 50%;
@@ -53,30 +93,50 @@
 
   .dark {
     --background: 220 25% 5%;
+    --background-elevated: 220 22% 8%;
     --foreground: 220 15% 92%;
+
     --card: 220 25% 8%;
     --card-foreground: 220 15% 92%;
+
     --popover: 220 25% 8%;
     --popover-foreground: 220 15% 92%;
+
     --primary: 207 90% 52%;
     --primary-foreground: 0 0% 100%;
+    --primary-hover: 207 90% 58%;
+    --primary-active: 207 90% 46%;
+
     --secondary: 322 85% 55%;
     --secondary-foreground: 0 0% 100%;
-    --muted: 220 20% 14%;
-    --muted-foreground: 220 10% 60%;
-    --accent: 207 50% 18%;
-    --accent-foreground: 207 60% 80%;
-    --destructive: 0 62% 30%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 220 20% 16%;
-    --input: 220 20% 16%;
-    --ring: 207 90% 52%;
 
     --success: 152 70% 45%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 55%;
     --warning-foreground: 38 92% 90%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
     --info: 207 90% 60%;
+    --info-foreground: 0 0% 100%;
+
+    --gray-50: 220 22% 10%;
+    --gray-100: 220 20% 14%;
+    --gray-200: 220 20% 18%;
+    --gray-300: 220 16% 26%;
+    --gray-400: 220 12% 38%;
+    --gray-500: 220 10% 50%;
+    --gray-600: 220 10% 64%;
+    --gray-700: 220 12% 76%;
+    --gray-800: 220 14% 86%;
+    --gray-900: 220 16% 94%;
+
+    --muted: 220 20% 14%;
+    --muted-foreground: 220 10% 60%;
+    --accent: 207 50% 18%;
+    --accent-foreground: 207 60% 80%;
+    --border: 220 20% 16%;
+    --input: 220 20% 16%;
+    --ring: 207 90% 52%;
 
     --sidebar-background: 220 25% 5%;
     --sidebar-foreground: 220 15% 92%;
@@ -89,6 +149,7 @@
   }
 }
 
+/* ─── Typography System ─── */
 @layer base {
   * {
     @apply border-border;
@@ -105,6 +166,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overscroll-behavior: none;
+    font-feature-settings: 'cv01', 'cv02', 'cv11';
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -112,13 +174,21 @@
     letter-spacing: -0.025em;
   }
 
+  /* ─── Typography Classes ─── */
+  .text-display { font-size: 2rem; line-height: 2.5rem; font-weight: 700; letter-spacing: -0.03em; }
+  .text-page-title { font-size: 1.5rem; line-height: 2rem; font-weight: 600; letter-spacing: -0.025em; }
+  .text-section-title { font-size: 1.25rem; line-height: 1.75rem; font-weight: 600; letter-spacing: -0.02em; }
+  .text-body { font-size: 1rem; line-height: 1.5rem; font-weight: 400; }
+  .text-small { font-size: 0.875rem; line-height: 1.25rem; font-weight: 400; }
+  .text-caption { font-size: 0.8125rem; line-height: 1.125rem; font-weight: 500; }
+
   /* Use dvh for mobile viewport */
   .min-h-screen {
     min-height: 100vh;
     min-height: 100dvh;
   }
 
-  /* Enhanced focus states */
+  /* ─── Focus States (Consistent) ─── */
   input:focus-visible,
   textarea:focus-visible,
   select:focus-visible,
@@ -134,7 +204,7 @@
     box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--primary) / 0.3);
   }
 
-  /* Mobile-first touch targets */
+  /* ─── Mobile-first touch targets ─── */
   @media (pointer: coarse) {
     button, a, [role="button"], [role="tab"], [role="menuitem"] {
       min-height: 44px;
@@ -153,8 +223,9 @@
   }
 }
 
+/* ─── Design System Utilities ─── */
 @layer utilities {
-  /* Hide scrollbar but keep scrolling */
+  /* Scrollbar */
   .scrollbar-none {
     -ms-overflow-style: none;
     scrollbar-width: none;
@@ -163,61 +234,66 @@
     display: none;
   }
 
+  /* ─── Glass Card ─── */
   .glass-card {
     @apply bg-card/80 backdrop-blur-xl border border-border/50;
-    box-shadow: 0 8px 32px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    box-shadow: var(--shadow-md);
   }
 
+  /* ─── Gradient Presets ─── */
   .gradient-blue {
     background: linear-gradient(135deg, hsl(207 90% 42%), hsl(207 90% 32%));
   }
 
   .gradient-hero {
-    background: linear-gradient(160deg, hsl(220 20% 98%) 0%, hsl(207 60% 95%) 50%, hsl(220 20% 98%) 100%);
+    background: linear-gradient(160deg, hsl(var(--gray-50)) 0%, hsl(207 60% 95%) 50%, hsl(var(--gray-50)) 100%);
   }
 
   .dark .gradient-hero {
-    background: linear-gradient(160deg, hsl(220 20% 8%) 0%, hsl(207 60% 12%) 50%, hsl(220 20% 8%) 100%);
+    background: linear-gradient(160deg, hsl(var(--gray-50)) 0%, hsl(207 60% 12%) 50%, hsl(var(--gray-50)) 100%);
   }
 
   .text-gradient {
-    background: linear-gradient(135deg, hsl(207 90% 42%), hsl(322 85% 50%));
+    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
   }
 
+  /* ─── Glow Effects ─── */
   .glow-blue {
-    box-shadow: 0 0 40px rgba(30, 136, 229, 0.2), 0 0 80px rgba(30, 136, 229, 0.1);
+    box-shadow: 0 0 40px hsl(207 90% 52% / 0.2), 0 0 80px hsl(207 90% 52% / 0.1);
   }
 
   .glow-blue-strong {
-    box-shadow: 0 0 60px rgba(30, 136, 229, 0.3), 0 0 120px rgba(30, 136, 229, 0.15);
+    box-shadow: 0 0 60px hsl(207 90% 52% / 0.3), 0 0 120px hsl(207 90% 52% / 0.15);
   }
 
-  /* Premium card styles */
+  /* ─── Card Variants ─── */
   .card-premium {
     @apply bg-card border border-border/50 rounded-xl;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 24px rgba(0,0,0,0.03);
-    transition: box-shadow 0.3s ease, transform 0.2s ease;
+    box-shadow: var(--shadow-sm);
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
   }
 
   @media (hover: hover) {
     .card-premium:hover {
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 12px 40px rgba(0,0,0,0.06);
+      box-shadow: var(--shadow-lg);
       transform: translateY(-1px);
     }
   }
 
   .card-glow-blue {
-    box-shadow: 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px hsl(207 90% 42% / 0.08), 0 8px 30px hsl(207 90% 42% / 0.06);
+    box-shadow: var(--shadow-sm), 0 0 0 1px hsl(207 90% 42% / 0.08), 0 8px 30px hsl(207 90% 42% / 0.06);
   }
 
-  .card-glow-blue:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 0 0 1px hsl(207 90% 42% / 0.15), 0 12px 40px hsl(207 90% 42% / 0.1);
+  @media (hover: hover) {
+    .card-glow-blue:hover {
+      box-shadow: var(--shadow-md), 0 0 0 1px hsl(207 90% 42% / 0.15), 0 12px 40px hsl(207 90% 42% / 0.1);
+    }
   }
 
-  /* Gradient backgrounds for KPI icons */
+  /* ─── Icon Background Gradients ─── */
   .icon-bg-blue {
     background: linear-gradient(135deg, hsl(207 90% 92%), hsl(207 90% 96%));
   }
@@ -253,50 +329,33 @@
     background: linear-gradient(135deg, hsl(38 92% 18%), hsl(38 92% 12%));
   }
 
-  /* Score pill colors */
-  .score-high {
-    @apply bg-emerald-500/10 text-emerald-600;
-  }
-  .dark .score-high {
-    @apply bg-emerald-500/20 text-emerald-400;
-  }
-  .score-mid {
-    @apply bg-amber-500/10 text-amber-600;
-  }
-  .dark .score-mid {
-    @apply bg-amber-500/20 text-amber-400;
-  }
-  .score-low {
-    @apply bg-red-500/10 text-red-600;
-  }
-  .dark .score-low {
-    @apply bg-red-500/20 text-red-400;
-  }
+  /* ─── Score Pills ─── */
+  .score-high { @apply bg-emerald-500/10 text-emerald-600; }
+  .dark .score-high { @apply bg-emerald-500/20 text-emerald-400; }
+  .score-mid { @apply bg-amber-500/10 text-amber-600; }
+  .dark .score-mid { @apply bg-amber-500/20 text-amber-400; }
+  .score-low { @apply bg-red-500/10 text-red-600; }
+  .dark .score-low { @apply bg-red-500/20 text-red-400; }
 
-  /* Ranking medal colors */
-  .medal-gold {
-    color: hsl(45, 93%, 47%);
-  }
-  .medal-silver {
-    color: hsl(220, 9%, 60%);
-  }
-  .medal-bronze {
-    color: hsl(30, 60%, 50%);
-  }
+  /* ─── Ranking Medals ─── */
+  .medal-gold { color: hsl(45, 93%, 47%); }
+  .medal-silver { color: hsl(220, 9%, 60%); }
+  .medal-bronze { color: hsl(30, 60%, 50%); }
 
-  /* Active tab indicator */
+  /* ─── Tab Active State ─── */
   .tab-active {
-    @apply bg-card shadow-sm text-foreground;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+    @apply bg-card text-foreground;
+    box-shadow: var(--shadow-sm);
   }
 
+  /* ─── Animations ─── */
   .shimmer-text {
     background: linear-gradient(
       110deg,
-      hsl(207 90% 42%) 0%,
+      hsl(var(--primary)) 0%,
       hsl(207 90% 62%) 45%,
-      hsl(207 90% 42%) 55%,
-      hsl(207 90% 42%) 100%
+      hsl(var(--primary)) 55%,
+      hsl(var(--primary)) 100%
     );
     background-size: 250% 100%;
     -webkit-background-clip: text;
@@ -320,28 +379,14 @@
     50% { opacity: 1; }
   }
 
-  .animate-float {
-    animation: float 4s ease-in-out infinite;
-  }
+  .animate-float { animation: float 4s ease-in-out infinite; }
+  .animate-float-delayed { animation: float 5s ease-in-out 1s infinite; }
+  .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
 
-  .animate-float-delayed {
-    animation: float 5s ease-in-out 1s infinite;
-  }
-
-  .animate-pulse-glow {
-    animation: pulse-glow 2s ease-in-out infinite;
-  }
-
-  /* Progress bar gradient */
-  .progress-gradient-blue {
-    background: linear-gradient(90deg, hsl(207 90% 52%), hsl(207 90% 42%));
-  }
-  .progress-gradient-pink {
-    background: linear-gradient(90deg, hsl(322 85% 55%), hsl(322 85% 45%));
-  }
-  .progress-gradient-green {
-    background: linear-gradient(90deg, hsl(152 70% 45%), hsl(152 70% 35%));
-  }
+  /* ─── Progress Bar Gradients ─── */
+  .progress-gradient-blue { background: linear-gradient(90deg, hsl(207 90% 52%), hsl(207 90% 42%)); }
+  .progress-gradient-pink { background: linear-gradient(90deg, hsl(322 85% 55%), hsl(322 85% 45%)); }
+  .progress-gradient-green { background: linear-gradient(90deg, hsl(152 70% 45%), hsl(152 70% 35%)); }
 
   @keyframes shimmer-border {
     0%, 100% { background-position: -200% 0; }
