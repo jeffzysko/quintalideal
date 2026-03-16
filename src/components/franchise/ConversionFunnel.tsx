@@ -85,18 +85,20 @@ export function ConversionFunnel({ leads }: ConversionFunnelProps) {
 
                   {/* Bar */}
                   <div className="flex-1 relative">
-                    <div className="h-8 rounded-lg bg-muted/40 overflow-hidden">
+                    <div className="h-8 rounded-lg bg-muted/40 overflow-hidden relative">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${barWidth}%` }}
                         transition={{ delay: 0.2 + i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                        className="h-full rounded-lg flex items-center justify-end pr-2"
+                        className="h-full rounded-lg"
                         style={{ backgroundColor: `${step.color}20`, borderLeft: `3px solid ${step.color}` }}
+                      />
+                      <span
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold"
+                        style={{ color: step.color }}
                       >
-                        <span className="text-[10px] font-bold" style={{ color: step.color }}>
-                          {step.percentage}%
-                        </span>
-                      </motion.div>
+                        {step.percentage}%
+                      </span>
                     </div>
                   </div>
 

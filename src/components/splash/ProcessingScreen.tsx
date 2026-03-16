@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 import logoSplash from '@/assets/logo-splash.png';
 import { CheckCircle2 } from 'lucide-react';
@@ -19,6 +19,9 @@ export function ProcessingScreen({ onDone, lang = 'pt' }: ProcessingScreenProps)
 
   const [currentStep, setCurrentStep] = useState(0);
   const [progress, setProgress] = useState(0);
+
+  const onDoneRef = useRef(onDone);
+  onDoneRef.current = onDone;
 
   useEffect(() => {
     const stepInterval = setInterval(() => {
@@ -41,13 +44,13 @@ export function ProcessingScreen({ onDone, lang = 'pt' }: ProcessingScreenProps)
       });
     }, 50);
 
-    const timer = setTimeout(onDone, 2800);
+    const timer = setTimeout(() => onDoneRef.current(), 2800);
     return () => {
       clearInterval(stepInterval);
       clearInterval(progressInterval);
       clearTimeout(timer);
     };
-  }, [onDone]);
+  }, []);
 
   return (
     <motion.div
