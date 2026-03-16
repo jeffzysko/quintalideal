@@ -292,6 +292,12 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                   </Button>
                 )}
               </motion.div>
+            ) : leadsView === 'kanban' ? (
+              <KanbanBoard
+                leads={allLeads as (LeadRow & { respostas_questionario?: Record<string, string> | null })[]}
+                franchiseId={franchiseId!}
+                basePath={leadDetailPath}
+              />
             ) : (
               <>
                 {isMobile ? (
