@@ -17,7 +17,7 @@ import { format, isToday, isTomorrow, isPast, differenceInHours, differenceInDay
 import { ptBR } from 'date-fns/locale';
 import {
   CalendarClock, AlertTriangle, Inbox, Phone, MessageCircle,
-  ChevronRight, Clock, Flame, Zap, CheckCircle2, Users,
+  ChevronRight, ChevronLeft, Clock, Flame, Zap, CheckCircle2, Users,
   TrendingUp, ArrowRight, Sparkles, Target, MapPin,
 } from 'lucide-react';
 import { STATUS_LABELS, STATUS_COLORS, type LeadRow } from '@/lib/lead-constants';
@@ -332,7 +332,18 @@ export default function HojePage() {
         </PanelHeader>
 
         <div className="max-w-3xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6">
-          <Breadcrumbs items={[{ label: 'Hoje' }]} />
+          <div className="flex items-center gap-2 mb-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8 rounded-lg shrink-0"
+              onClick={() => window.history.length > 1 ? navigate(-1) : navigate(isAdmin ? '/admin' : '/franquia')}
+              aria-label="Voltar"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </Button>
+            <Breadcrumbs items={[{ label: 'Hoje' }]} />
+          </div>
 
           {isLoading ? <PageSkeleton /> : (
             <>
