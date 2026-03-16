@@ -65,8 +65,8 @@ function computeInsights(leads: LeadLike[], previousLeads?: LeadLike[]): Insight
       insights.push({
         key: 'lead_spike',
         icon: Zap,
-        title: `Volume de leads +${growth.toFixed(0)}%`,
-        description: `Você recebeu ${currentTotal} leads neste período vs. ${prevTotal} no anterior. Aproveite o momento!`,
+        title: `Muitos leads novos chegando!`,
+        description: `Você recebeu ${currentTotal} leads neste período. Não deixe nenhum esfriar — entre em contato agora!`,
         color: 'text-primary',
         bg: 'bg-primary/10',
         priority: 7,
