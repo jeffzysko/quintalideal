@@ -107,9 +107,11 @@ export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePa
                 </Badge>
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold cursor-help`} variant="outline">
-                      {temp.emoji} {temp.label}
-                    </Badge>
+                    <span className="cursor-help">
+                      <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
+                        {temp.emoji} {temp.label}
+                      </Badge>
+                    </span>
                   </TooltipTrigger>
                   <TooltipContent side="left" className="max-w-[220px] text-xs">
                     <p className="font-semibold mb-0.5">Nível de interesse</p>
