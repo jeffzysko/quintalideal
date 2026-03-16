@@ -129,6 +129,7 @@ export default function AdminDashboard() {
   // ── Paginated leads for table ──
   const { data: paginatedData, isLoading: loadingTable } = useQuery({
     queryKey: ['admin-leads-table', page, search, filterFranquia, filterStatus, filterModelo, filterCidade],
+    placeholderData: keepPreviousData,
     queryFn: async () => {
       const from = (page - 1) * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
