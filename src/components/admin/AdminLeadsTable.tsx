@@ -7,6 +7,7 @@ import { STATUS_LABELS, STATUS_COLORS, LeadRow } from '@/lib/lead-constants';
 import { motion } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileLeadCard } from './MobileLeadCard';
+import { SmartTagBadges } from '@/components/SmartTagBadges';
 
 interface AdminLeadsTableProps {
   leads: LeadRow[];
