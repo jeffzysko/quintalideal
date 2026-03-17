@@ -15,10 +15,13 @@ export function PanelHeader({ title, children }: PanelHeaderProps) {
       transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
       className="sticky top-0 z-30 overflow-hidden"
     >
-      {/* Full-width blur backdrop behind rounded header */}
+      {/* Full-width blur backdrop — extends into safe area (Dynamic Island / notch) */}
       <div className="absolute inset-0 backdrop-blur-2xl bg-background/60" />
+
+      {/* Safe area spacer — pushes content below the Dynamic Island / notch */}
+      <div className="w-full" style={{ height: 'env(safe-area-inset-top, 0px)' }} />
       
-      <div className="relative px-3 pt-2.5">
+      <div className="relative px-3 pt-2.5 pb-0.5">
       <header className="relative mx-auto max-w-7xl rounded-2xl overflow-hidden">
         {/* Animated glow border */}
         <div className="absolute inset-0 rounded-2xl p-px overflow-hidden">
