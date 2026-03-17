@@ -30,7 +30,7 @@ export default function Login() {
   };
 
   return (
-    <div className="h-[100dvh] relative overflow-hidden flex items-center justify-center">
+    <div className="h-[100dvh] relative overflow-hidden flex items-center justify-center" style={{ paddingTop: 'env(safe-area-inset-top, 0px)' }}>
       {/* Animated background */}
       <div className="absolute inset-0 gradient-hero" />
       <div className="absolute inset-0 overflow-hidden">
