@@ -685,20 +685,22 @@ export default function ProfileSettings() {
                     { key: 'lead_inactive' as const, label: 'Leads inativos', desc: 'Alertas quando um lead ficar parado', icon: Bell },
                     { key: 'monthly_report' as const, label: 'Relatório mensal', desc: 'Resumo mensal de desempenho', icon: Globe },
                   ].map(item => (
-                    <div key={item.key} className="flex items-center justify-between gap-4 py-3 border-b border-border/20 last:border-0">
-                      <div className="flex items-start gap-3">
+                    <div key={item.key} className="flex items-center justify-between gap-3 py-3.5 border-b border-border/20 last:border-0">
+                      <div className="flex items-start gap-3 min-w-0">
                         <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
                           <item.icon className="w-4 h-4 text-primary" />
                         </div>
-                        <div>
+                        <div className="min-w-0">
                           <p className="text-sm font-semibold">{item.label}</p>
-                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                          <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
                         </div>
                       </div>
-                      <Switch
-                        checked={notifPrefs[item.key]}
-                        onCheckedChange={v => setNotifPrefs(prev => ({ ...prev, [item.key]: v }))}
-                      />
+                      <div className="shrink-0 p-1">
+                        <Switch
+                          checked={notifPrefs[item.key]}
+                          onCheckedChange={v => setNotifPrefs(prev => ({ ...prev, [item.key]: v }))}
+                        />
+                      </div>
                     </div>
                   ))}
 
