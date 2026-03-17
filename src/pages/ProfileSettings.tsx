@@ -520,7 +520,7 @@ export default function ProfileSettings() {
                       id="loginEmail"
                       value={user?.email || ''}
                       disabled
-                      className="opacity-60 rounded-xl h-11"
+                      className="opacity-60 rounded-xl h-11 text-base sm:text-sm"
                     />
                     <p className="text-[11px] text-muted-foreground">O e-mail de login não pode ser alterado aqui.</p>
                   </div>
