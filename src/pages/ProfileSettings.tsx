@@ -584,7 +584,7 @@ export default function ProfileSettings() {
                               setFormErrors(p => ({ ...p, whatsapp: '' }));
                             }}
                             maxLength={isFranchise ? 16 : 20}
-                            className="rounded-xl h-11"
+                            className="rounded-xl h-11 text-base sm:text-sm"
                           />
                           {formErrors.whatsapp && <p className="text-xs text-destructive mt-1">{formErrors.whatsapp}</p>}
                           <p className="text-[11px] text-muted-foreground">
