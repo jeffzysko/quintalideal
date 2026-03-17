@@ -1,12 +1,79 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { Lock, ArrowRight, CheckCircle2, AlertCircle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Lock, ArrowRight, CheckCircle2, AlertCircle, Check, X } from 'lucide-react';
 import logoSplash from '@/assets/logo-splash.png';
+
+/* ── Password validation rules ── */
+const PASSWORD_RULES = [
+  { key: 'length', label: 'Pelo menos 6 caracteres', test: (p: string) => p.length >= 6 },
+  { key: 'upper', label: 'Uma letra maiúscula', test: (p: string) => /[A-Z]/.test(p) },
+  { key: 'lower', label: 'Uma letra minúscula', test: (p: string) => /[a-z]/.test(p) },
+  { key: 'number', label: 'Um número', test: (p: string) => /\d/.test(p) },
+] as const;
+
+function usePasswordStrength(password: string) {
+  return useMemo(() => {
+    const results = PASSWORD_RULES.map(r => ({ ...r, pass: r.test(password) }));
+    const passed = results.filter(r => r.pass).length;
+    const allPass = passed === results.length;
+    const ratio = passed / results.length;
+    const level = ratio === 1 ? 'strong' : ratio >= 0.5 ? 'medium' : 'weak';
+    return { results, allPass, level, ratio };
+  }, [password]);
+}
+
+function PasswordChecklist({ password }: { password: string }) {
+  const { results, level, ratio } = usePasswordStrength(password);
+  if (!password) return null;
+
+  const barColor = level === 'strong' ? 'bg-emerald-500' : level === 'medium' ? 'bg-amber-500' : 'bg-destructive';
+  const levelLabel = level === 'strong' ? 'Forte' : level === 'medium' ? 'Média' : 'Fraca';
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, height: 0 }}
+      animate={{ opacity: 1, height: 'auto' }}
+      exit={{ opacity: 0, height: 0 }}
+      className="space-y-2 overflow-hidden"
+    >
+      {/* Strength bar */}
+      <div className="flex items-center gap-2">
+        <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
+          <motion.div
+            className={`h-full rounded-full ${barColor}`}
+            initial={{ width: 0 }}
+            animate={{ width: `${ratio * 100}%` }}
+            transition={{ duration: 0.3 }}
+          />
+        </div>
+        <span className={`text-[11px] font-semibold ${barColor.replace('bg-', 'text-')}`}>
+          {levelLabel}
+        </span>
+      </div>
+
+      {/* Rules checklist */}
+      <ul className="space-y-1">
+        {results.map(r => (
+          <li key={r.key} className="flex items-center gap-1.5 text-xs">
+            {r.pass ? (
+              <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+            ) : (
+              <X className="w-3.5 h-3.5 text-muted-foreground/50 shrink-0" />
+            )}
+            <span className={r.pass ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground'}>
+              {r.label}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </motion.div>
+  );
+}
 
 export default function ResetPassword() {
   const navigate = useNavigate();
