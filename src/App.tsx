@@ -215,6 +215,7 @@ function AppRoutes() {
                 <PWAUpdatePrompt />
                 <PWAInstallBanner />
                 <NetworkStatus />
+                <BottomNav />
               </BrowserRouter>
             </TooltipProvider>
           </AuthProvider>
