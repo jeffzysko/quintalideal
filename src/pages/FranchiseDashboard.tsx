@@ -462,7 +462,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-bottomnav">
       <PanelHeader title={franchiseName || 'Dashboard'}>
         <button
           onClick={() => navigate('/hoje')}
