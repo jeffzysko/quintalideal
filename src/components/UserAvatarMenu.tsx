@@ -196,7 +196,7 @@ export function UserAvatarMenu() {
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onSelect={() => void signOut()}
+          onSelect={() => { setOpen(false); void signOut(); }}
           className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 text-destructive focus:text-destructive transition-colors"
         >
           <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center shrink-0">
