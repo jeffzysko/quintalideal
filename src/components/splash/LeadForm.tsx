@@ -33,6 +33,7 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading, lang = 'pt' }: L
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
     setDuplicateMsg('');
     const newErrors: Record<string, string> = {};
     
