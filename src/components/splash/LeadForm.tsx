@@ -76,10 +76,16 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading, lang = 'pt' }: L
       setChecking(false);
     }
 
-    onSubmit({ nome: cleanName, telefone: phoneDigits, email: cleanEmail });
+    setSubmitting(true);
+    try {
+      onSubmit({ nome: cleanName, telefone: phoneDigits, email: cleanEmail });
+    } finally {
+      // Reset after a short delay to prevent double-tap
+      setTimeout(() => setSubmitting(false), 2000);
+    }
   };
 
-  const isLoading = loading || checking;
+  const isLoading = loading || checking || submitting;
 
   return (
     <motion.div
