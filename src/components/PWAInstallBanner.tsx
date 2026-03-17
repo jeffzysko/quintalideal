@@ -1,9 +1,12 @@
 import { usePWA } from '@/hooks/usePWA';
 import { useAuth } from '@/hooks/useAuth';
+import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, X, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
+
+const BANNER_BLOCKED_PATHS = new Set(['/', '/login', '/forgot-password', '/reset-password', '/termos', '/privacidade']);
 
 export function PWAInstallBanner() {
   const { canInstall, promptInstall, isStandalone } = usePWA();
