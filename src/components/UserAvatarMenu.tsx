@@ -55,7 +55,7 @@ export function UserAvatarMenu() {
   }, [user]);
 
   return (
-    <DropdownMenu modal={true}>
+    <DropdownMenu open={open} onOpenChange={setOpen} modal={true}>
       <DropdownMenuTrigger asChild>
         <button
           className="flex items-center gap-1.5 rounded-xl pl-0.5 pr-2 py-0.5 hover:bg-muted/60 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group"
