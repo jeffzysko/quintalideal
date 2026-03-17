@@ -1,16 +1,18 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import {
   MessageCircle, Phone, ArrowRight, Lightbulb, TrendingUp,
   AlertCircle, Clock, Flame, CalendarPlus,
-  Zap, Star, List,
+  Zap, Star, List, ChevronRight,
 } from 'lucide-react';
 import { differenceInDays } from 'date-fns';
 import type { LeadRow } from '@/lib/lead-constants';
+import { STATUS_LABELS, STATUS_COLORS } from '@/lib/lead-constants';
 import { cn } from '@/lib/utils';
 
 // ── Types ──
