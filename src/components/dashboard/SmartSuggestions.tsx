@@ -387,8 +387,7 @@ export function SmartSuggestions({ leads, followups, activities, basePath }: Sma
                               className="h-7 text-xs rounded-lg gap-1.5 px-3"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                // Navigate to the first lead as entry point
-                                navigate(`${basePath}/${suggestion.affectedLeadIds![0]}`);
+                                openLeadSheet(suggestion.affectedLeadIds!, suggestion.title);
                               }}
                             >
                               <List className="w-3.5 h-3.5" />
