@@ -1,16 +1,18 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import {
   MessageCircle, Phone, ArrowRight, Lightbulb, TrendingUp,
   AlertCircle, Clock, Flame, CalendarPlus,
-  Zap, Star, List,
+  Zap, Star, List, ChevronRight,
 } from 'lucide-react';
 import { differenceInDays } from 'date-fns';
 import type { LeadRow } from '@/lib/lead-constants';
+import { STATUS_LABELS, STATUS_COLORS } from '@/lib/lead-constants';
 import { cn } from '@/lib/utils';
 
 // ── Types ──
@@ -255,6 +257,8 @@ function generateSuggestions(
 // ── Component ──
 export function SmartSuggestions({ leads, followups, activities, basePath }: SmartSuggestionsProps) {
   const navigate = useNavigate();
+  const [sheetLeadIds, setSheetLeadIds] = useState<string[] | null>(null);
+  const [sheetTitle, setSheetTitle] = useState('');
 
   const handleWhatsApp = (lead: LeadRow) => {
     if (!lead.telefone) return;
@@ -269,13 +273,29 @@ export function SmartSuggestions({ leads, followups, activities, basePath }: Sma
     [leads, followups, activities],
   );
 
+  // Build a lookup for sheet display
+  const leadsById = useMemo(() => {
+    const map = new Map<string, LeadRow>();
+    leads.forEach(l => map.set(l.id, l));
+    return map;
+  }, [leads]);
+
+  const sheetLeads = useMemo(() => {
+    if (!sheetLeadIds) return [];
+    return sheetLeadIds.map(id => leadsById.get(id)).filter(Boolean) as LeadRow[];
+  }, [sheetLeadIds, leadsById]);
+
   if (suggestions.length === 0) return null;
 
   const handleCardClick = (suggestion: Suggestion) => {
     if (suggestion.leadId) {
       navigate(`${basePath}/${suggestion.leadId}`);
     }
-    // multi-lead: no card-level click, user uses the "Ver leads" button
+  };
+
+  const openLeadSheet = (ids: string[], title: string) => {
+    setSheetLeadIds(ids);
+    setSheetTitle(title);
   };
 
   return (
@@ -367,8 +387,7 @@ export function SmartSuggestions({ leads, followups, activities, basePath }: Sma
                               className="h-7 text-xs rounded-lg gap-1.5 px-3"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                // Navigate to the first lead as entry point
-                                navigate(`${basePath}/${suggestion.affectedLeadIds![0]}`);
+                                openLeadSheet(suggestion.affectedLeadIds!, suggestion.title);
                               }}
                             >
                               <List className="w-3.5 h-3.5" />
@@ -399,6 +418,53 @@ export function SmartSuggestions({ leads, followups, activities, basePath }: Sma
           })}
         </AnimatePresence>
       </div>
+
+      {/* ── Lead list sheet ── */}
+      <Sheet open={!!sheetLeadIds} onOpenChange={(open) => !open && setSheetLeadIds(null)}>
+        <SheetContent side="bottom" className="max-h-[80vh] rounded-t-2xl pb-safe">
+          <SheetHeader className="pb-3">
+            <SheetTitle className="text-base font-bold">{sheetTitle}</SheetTitle>
+          </SheetHeader>
+          <div className="overflow-y-auto space-y-2 pb-4">
+            {sheetLeads.map((lead) => (
+              <div
+                key={lead.id}
+                className="flex items-center gap-3 p-3 rounded-xl border border-border/40 bg-card cursor-pointer transition-all hover:shadow-sm active:scale-[0.98]"
+                onClick={() => {
+                  setSheetLeadIds(null);
+                  navigate(`${basePath}/${lead.id}`);
+                }}
+              >
+                <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <span className="text-xs font-bold text-primary">
+                    {(lead.nome || '?')[0].toUpperCase()}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground truncate">{lead.nome || 'Sem nome'}</p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    {lead.cidade && (
+                      <span className="text-[11px] text-muted-foreground truncate">{lead.cidade}</span>
+                    )}
+                    {lead.pontuacao_quintal != null && (
+                      <Badge variant="secondary" className="text-[9px] px-1.5 py-0 font-bold">
+                        {lead.pontuacao_quintal}%
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+                <Badge variant="outline" className={cn('text-[9px] px-1.5 py-0 shrink-0', STATUS_COLORS[lead.status_lead])}>
+                  {STATUS_LABELS[lead.status_lead] || lead.status_lead}
+                </Badge>
+                <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+              </div>
+            ))}
+            {sheetLeads.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-8">Nenhum lead encontrado.</p>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
     </motion.section>
   );
 }
