@@ -34,7 +34,7 @@ export function usePushNotifications() {
   }, [supported, user]);
 
   const subscribe = useCallback(async () => {
-    if (!supported || !user || !franchiseId) return false;
+    if (!supported || !user) return false;
     setLoading(true);
 
     try {
