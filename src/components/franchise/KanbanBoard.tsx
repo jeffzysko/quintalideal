@@ -460,7 +460,7 @@ function MobilePipelineCard({
               const fullPhone = phone.startsWith('55') ? phone : `55${phone}`;
               window.open(`https://wa.me/${fullPhone}`, '_blank');
             }}
-            className="flex-1 flex items-center justify-center gap-1 py-2 text-[11px] font-medium text-success hover:bg-success/5 transition-colors min-h-[40px]"
+            className="flex-1 flex items-center justify-center gap-1 py-2 text-[11px] font-medium text-success hover:bg-success/5 transition-colors min-h-[44px]"
           >
             <MessageCircle className="w-3.5 h-3.5" />
             WhatsApp
