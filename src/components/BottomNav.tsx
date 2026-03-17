@@ -4,22 +4,6 @@ import { motion } from 'framer-motion';
 import { LayoutDashboard, Users, Workflow, CalendarClock, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-interface NavItem {
-  icon: typeof LayoutDashboard;
-  label: string;
-  path: string;
-  roles: string[];
-}
-
-const NAV_ITEMS: NavItem[] = [
-  { icon: LayoutDashboard, label: 'Painel', path: '/franquia', roles: ['franquia'] },
-  { icon: LayoutDashboard, label: 'Painel', path: '/admin', roles: ['admin_fabrica', 'super_admin'] },
-  { icon: CalendarClock, label: 'Hoje', path: '/hoje', roles: ['franquia', 'admin_fabrica', 'super_admin'] },
-  { icon: Users, label: 'Leads', path: '/franquia', roles: ['franquia'] },
-  { icon: Workflow, label: 'Funil', path: '/franquia', roles: ['franquia'] },
-  { icon: Settings, label: 'Perfil', path: '/perfil', roles: ['franquia', 'admin_fabrica', 'super_admin'] },
-];
-
 // Simplified nav for each role
 function getNavForRole(role: string | null): { icon: typeof LayoutDashboard; label: string; path: string; tabParam?: string }[] {
   if (role === 'admin_fabrica' || role === 'super_admin') {
