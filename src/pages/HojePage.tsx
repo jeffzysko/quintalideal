@@ -357,7 +357,7 @@ export default function HojePage() {
             <>
                <Greeting name={profile?.full_name || null} />
                <QuickActionBar
-                 onNavigatePipeline={() => navigate(isAdmin ? '/admin?tab=funnel' : '/franquia?tab=funnel')}
+                 onNavigatePipeline={() => navigate(isAdmin ? '/admin?tab=kanban' : '/franquia?tab=funnel')}
                  leads={leads}
                  pendingFollowups={todayFollowups.length + overdueFollowups.length}
                />
@@ -670,7 +670,7 @@ export default function HojePage() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: i * 0.03 }}
-                            className="flex items-start gap-2.5 py-2 cursor-pointer hover:bg-muted/30 rounded-lg px-2 -mx-2 transition-colors"
+                            className="flex items-start gap-2.5 py-2 cursor-pointer hover:bg-muted/30 rounded-lg px-2 transition-colors"
                             onClick={() => navigate(`${basePath}/${a.lead_id}`)}
                           >
                             <div className="w-2 h-2 rounded-full bg-primary/40 mt-1.5 shrink-0" />
