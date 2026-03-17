@@ -15,7 +15,6 @@ export function NotificationSectionCard({ section, onToggleChannel, onToggleSect
   const [expanded, setExpanded] = useState(true);
 
   const allPushEnabled = section.items.every(i => i.channels.push);
-  const somePushEnabled = section.items.some(i => i.channels.push);
 
   return (
     <Card className="overflow-hidden">

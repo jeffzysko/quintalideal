@@ -120,8 +120,8 @@ export function useNotificationPreferences() {
 
     (async () => {
       try {
-        const { data } = await supabase
-          .from('notification_preferences' as any)
+        const { data } = await (supabase as any)
+          .from('notification_preferences')
           .select('preferences')
           .eq('user_id', user.id)
           .maybeSingle();

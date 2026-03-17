@@ -2,7 +2,7 @@ import { usePushNotifications } from '@/hooks/usePushNotifications';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Smartphone, BellRing, BellOff, ExternalLink } from 'lucide-react';
+import { Smartphone, BellRing, BellOff } from 'lucide-react';
 
 function isIOS(): boolean {
   return /iPad|iPhone|iPod/.test(navigator.userAgent);
