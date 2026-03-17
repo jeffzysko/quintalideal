@@ -157,14 +157,6 @@ function AppRoutes() {
                         }
                       />
                       <Route
-                        path="/organizacao/configuracoes"
-                        element={
-                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
-                            <OrganizationSettings />
-                          </ProtectedRoute>
-                        }
-                      />
-                      <Route
                         path="/notificacoes/preferencias"
                         element={
                           <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>

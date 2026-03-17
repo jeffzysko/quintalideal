@@ -136,7 +136,7 @@ export function UserAvatarMenu() {
 
         {role === 'franquia' && (
           <DropdownMenuItem
-            onSelect={() => navigate('/organizacao/configuracoes')}
+            onSelect={() => navigate('/perfil#franquia')}
             className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
           >
             <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
