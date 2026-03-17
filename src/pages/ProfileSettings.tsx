@@ -563,7 +563,7 @@ export default function ProfileSettings() {
                               value={responsavel}
                               onChange={e => setResponsavel(e.target.value)}
                               placeholder="Nome do responsável"
-                              className="rounded-xl h-11"
+                              className="rounded-xl h-11 text-base sm:text-sm"
                             />
                           </div>
                         )}
