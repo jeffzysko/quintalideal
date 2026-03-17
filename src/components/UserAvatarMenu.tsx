@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from 'next-themes';
 import { supabase } from '@/lib/supabase';
@@ -18,6 +18,7 @@ export function UserAvatarMenu() {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [open, setOpen] = useState(false);
 
   const email = user?.email || '';
   const initials = email
@@ -49,8 +50,23 @@ export function UserAvatarMenu() {
       });
   }, [user]);
 
+  const handleNavigate = useCallback((path: string) => {
+    setOpen(false);
+    // Small delay to let dropdown close animation start
+    requestAnimationFrame(() => {
+      navigate(path);
+    });
+  }, [navigate]);
+
+  const handleSignOut = useCallback(() => {
+    setOpen(false);
+    requestAnimationFrame(() => {
+      signOut();
+    });
+  }, [signOut]);
+
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger asChild>
         <button
           className="flex items-center gap-1.5 rounded-xl pl-0.5 pr-2 py-0.5 hover:bg-muted/60 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group"
@@ -96,7 +112,7 @@ export function UserAvatarMenu() {
 
         {/* Menu items */}
         <DropdownMenuItem
-          onClick={() => setTheme(isDark ? 'light' : 'dark')}
+          onClick={() => { setOpen(false); setTheme(isDark ? 'light' : 'dark'); }}
           className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
         >
           <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -113,7 +129,7 @@ export function UserAvatarMenu() {
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onClick={() => navigate('/perfil')}
+          onClick={() => handleNavigate('/perfil')}
           className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
         >
           <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -126,7 +142,7 @@ export function UserAvatarMenu() {
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onClick={() => navigate('/notificacoes/preferencias')}
+          onClick={() => handleNavigate('/notificacoes/preferencias')}
           className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
         >
           <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -140,7 +156,7 @@ export function UserAvatarMenu() {
 
         {(role === 'franquia') && (
           <DropdownMenuItem
-            onClick={() => navigate('/organizacao/configuracoes')}
+            onClick={() => handleNavigate('/organizacao/configuracoes')}
             className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
           >
             <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -159,7 +175,7 @@ export function UserAvatarMenu() {
               Integrações
             </p>
             <DropdownMenuItem
-              onClick={() => navigate('/perfil#integracoes')}
+              onClick={() => handleNavigate('/perfil#integracoes')}
               className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
             >
               <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -168,7 +184,7 @@ export function UserAvatarMenu() {
               Meta Pixel
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => navigate('/perfil#integracoes')}
+              onClick={() => handleNavigate('/perfil#integracoes')}
               className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
             >
               <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -182,7 +198,7 @@ export function UserAvatarMenu() {
         <DropdownMenuSeparator className="my-1.5 bg-border/30" />
 
         <DropdownMenuItem
-          onClick={() => navigate('/suporte')}
+          onClick={() => handleNavigate('/suporte')}
           className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
         >
           <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -192,7 +208,7 @@ export function UserAvatarMenu() {
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onClick={() => signOut()}
+          onClick={handleSignOut}
           className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 text-destructive focus:text-destructive transition-colors"
         >
           <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center shrink-0">

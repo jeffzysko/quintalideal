@@ -34,7 +34,7 @@ export function usePushNotifications() {
   }, [supported, user]);
 
   const subscribe = useCallback(async () => {
-    if (!supported || !user || !franchiseId) return false;
+    if (!supported || !user) return false;
     setLoading(true);
 
     try {
@@ -59,11 +59,13 @@ export function usePushNotifications() {
       const json = subscription.toJSON();
       const keys = json.keys!;
 
-      // Save to database
+      // Save to database — admins may not have a franchiseId, use a sentinel
+      const effectiveFranchiseId = franchiseId || '00000000-0000-0000-0000-000000000000';
+
       await supabase.from('push_subscriptions' as any).upsert(
         {
           user_id: user.id,
-          franchise_id: franchiseId,
+          franchise_id: effectiveFranchiseId,
           endpoint: json.endpoint!,
           p256dh: keys.p256dh!,
           auth_key: keys.auth!,
