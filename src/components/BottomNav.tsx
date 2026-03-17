@@ -41,9 +41,11 @@ export function BottomNav() {
 
   const navItems = getNavForRole(role);
 
-  const isActive = (item: typeof navItems[0]) => {
-    if (item.tabParam) return false; // Tab params are secondary nav
-    return location.pathname === item.path || location.pathname.startsWith(item.path + '/');
+  const isActive = (item: NavItem) => {
+    const basePath = item.path.split('?')[0];
+    if (location.pathname === basePath) return true;
+    if (item.matchPaths) return item.matchPaths.some(p => location.pathname.startsWith(p));
+    return false;
   };
 
   return (
