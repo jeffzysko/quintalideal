@@ -107,7 +107,7 @@ export function AdminLeadFilters({
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2.5 sm:gap-3">
           <Input placeholder="Buscar nome..." value={searchInput} onChange={e => onSearchChange(e.target.value)} className="rounded-xl h-11 sm:h-10 sm:col-span-2 md:col-span-1" />
           <Select value={filterFranquia} onValueChange={onFranquiaChange}>
-            <SelectTrigger className="rounded-xl h-11 sm:h-10 text-sm"><SelectValue placeholder="Franquia" /></SelectTrigger>
+            <SelectTrigger className="rounded-xl h-11 sm:h-10"><SelectValue placeholder="Franquia" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todas Franquias</SelectItem>
               {franchises.map(f => (
@@ -116,7 +116,7 @@ export function AdminLeadFilters({
             </SelectContent>
           </Select>
           <Select value={filterStatus} onValueChange={onStatusChange}>
-            <SelectTrigger className="rounded-xl h-11 sm:h-10 text-sm"><SelectValue placeholder="Status" /></SelectTrigger>
+            <SelectTrigger className="rounded-xl h-11 sm:h-10"><SelectValue placeholder="Status" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos Status</SelectItem>
               {Object.entries(STATUS_LABELS).map(([v, l]) => (
@@ -125,7 +125,7 @@ export function AdminLeadFilters({
             </SelectContent>
           </Select>
           <Select value={filterModelo} onValueChange={onModeloChange}>
-            <SelectTrigger className="rounded-xl h-11 sm:h-10 text-sm"><SelectValue placeholder="Modelo" /></SelectTrigger>
+            <SelectTrigger className="rounded-xl h-11 sm:h-10"><SelectValue placeholder="Modelo" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos Modelos</SelectItem>
               {models.map(m => (

@@ -137,7 +137,7 @@ export default function NotificacoesPage() {
           <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4 sm:mb-6">
             <div className="flex items-center gap-2 flex-wrap flex-1">
               <Select value={filterRead} onValueChange={(v) => setFilterRead(v as typeof filterRead)}>
-                <SelectTrigger className="w-[130px] h-9 text-xs rounded-xl">
+                <SelectTrigger className="w-[130px] h-9 text-base md:text-xs rounded-xl">
                   <Filter className="w-3.5 h-3.5 mr-1 text-muted-foreground shrink-0" />
                   <SelectValue />
                 </SelectTrigger>
@@ -149,7 +149,7 @@ export default function NotificacoesPage() {
               </Select>
 
               <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-[160px] h-9 text-xs rounded-xl">
+                <SelectTrigger className="w-[160px] h-9 text-base md:text-xs rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>

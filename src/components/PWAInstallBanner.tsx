@@ -44,7 +44,7 @@ export function PWAInstallBanner() {
         initial={{ opacity: 0, y: 60 }}
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: 60 }}
-        className="fixed bottom-4 left-4 right-4 z-[100] sm:left-auto sm:right-4 sm:max-w-sm"
+        className="fixed bottom-20 left-4 right-4 z-[100] sm:bottom-4 sm:left-auto sm:right-4 sm:max-w-sm"
         style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       >
         <div className="rounded-2xl border border-primary/20 bg-card shadow-xl p-4 flex items-start gap-3">
