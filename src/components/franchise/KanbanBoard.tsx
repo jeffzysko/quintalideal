@@ -471,7 +471,7 @@ function MobilePipelineCard({
             e.stopPropagation();
             setNoteOpen(v => !v);
           }}
-          className="flex-1 flex items-center justify-center gap-1 py-2 text-[11px] font-medium text-muted-foreground hover:bg-muted/40 transition-colors min-h-[40px]"
+          className="flex-1 flex items-center justify-center gap-1 py-2 text-[11px] font-medium text-muted-foreground hover:bg-muted/40 transition-colors min-h-[44px]"
         >
           <StickyNote className="w-3.5 h-3.5" />
           Nota
