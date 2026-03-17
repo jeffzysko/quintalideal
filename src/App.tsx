@@ -107,6 +107,7 @@ function AppRoutes() {
               <Sonner />
               <BrowserRouter>
                 <ScrollToTop />
+                <PullToRefresh>
                 <Suspense fallback={<LazyFallback />}>
                   <Routes>
                     {/* Pages WITHOUT footer (quiz/lead flow) */}
@@ -226,6 +227,7 @@ function AppRoutes() {
                 <PWAInstallBanner />
                 <NetworkStatus />
                 <BottomNav />
+                </PullToRefresh>
               </BrowserRouter>
             </TooltipProvider>
           </AuthProvider>
