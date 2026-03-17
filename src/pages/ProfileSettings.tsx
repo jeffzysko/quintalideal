@@ -873,7 +873,7 @@ function PasswordChangeCard() {
               placeholder="Mínimo 6 caracteres"
               value={newPassword}
               onChange={e => setNewPassword(e.target.value)}
-              className="rounded-xl h-11"
+              className="rounded-xl h-11 text-base sm:text-sm"
             />
             <button
               type="button"
