@@ -357,7 +357,7 @@ export default function HojePage() {
             <>
                <Greeting name={profile?.full_name || null} />
                <QuickActionBar
-                 onNavigatePipeline={() => navigate(isAdmin ? '/admin?tab=funnel' : '/franquia?tab=funnel')}
+                 onNavigatePipeline={() => navigate(isAdmin ? '/admin?tab=kanban' : '/franquia?tab=funnel')}
                  leads={leads}
                  pendingFollowups={todayFollowups.length + overdueFollowups.length}
                />
