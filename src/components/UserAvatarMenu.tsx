@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { useTheme } from 'next-themes';
 import { supabase } from '@/lib/supabase';
@@ -18,12 +18,9 @@ export function UserAvatarMenu() {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [open, setOpen] = useState(false);
 
   const email = user?.email || '';
-  const initials = email
-    ? email.substring(0, 2).toUpperCase()
-    : 'U';
+  const initials = email ? email.substring(0, 2).toUpperCase() : 'U';
 
   const roleLabel =
     role === 'admin_fabrica' ? 'Administrador' :
@@ -50,23 +47,8 @@ export function UserAvatarMenu() {
       });
   }, [user]);
 
-  const handleNavigate = useCallback((path: string) => {
-    setOpen(false);
-    // Small delay to let dropdown close animation start
-    requestAnimationFrame(() => {
-      navigate(path);
-    });
-  }, [navigate]);
-
-  const handleSignOut = useCallback(() => {
-    setOpen(false);
-    requestAnimationFrame(() => {
-      signOut();
-    });
-  }, [signOut]);
-
   return (
-    <DropdownMenu open={open} onOpenChange={setOpen}>
+    <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <button
           className="flex items-center gap-1.5 rounded-xl pl-0.5 pr-2 py-0.5 hover:bg-muted/60 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group"
@@ -84,13 +66,12 @@ export function UserAvatarMenu() {
       <DropdownMenuContent
         align="end"
         sideOffset={12}
-        className="w-64 rounded-2xl p-2 border-border/40 backdrop-blur-xl"
+        className="w-64 rounded-2xl p-2 border-border/40 backdrop-blur-xl data-[state=closed]:duration-0"
         style={{
           background: 'linear-gradient(135deg, hsl(var(--card) / 0.95), hsl(var(--card) / 0.85))',
           boxShadow: '0 16px 48px -12px hsl(var(--primary) / 0.1), 0 8px 24px -8px rgba(0,0,0,0.15)',
         }}
       >
-        {/* User info header */}
         <div className="px-3 py-3 rounded-xl bg-muted/40 mb-1.5">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10 border-2 border-primary/20">
@@ -110,9 +91,8 @@ export function UserAvatarMenu() {
           </div>
         </div>
 
-        {/* Menu items */}
         <DropdownMenuItem
-          onClick={() => { setOpen(false); setTheme(isDark ? 'light' : 'dark'); }}
+          onSelect={() => setTheme(isDark ? 'light' : 'dark')}
           className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
         >
           <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -129,7 +109,7 @@ export function UserAvatarMenu() {
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onClick={() => handleNavigate('/perfil')}
+          onSelect={() => navigate('/perfil')}
           className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
         >
           <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -142,7 +122,7 @@ export function UserAvatarMenu() {
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onClick={() => handleNavigate('/notificacoes/preferencias')}
+          onSelect={() => navigate('/notificacoes/preferencias')}
           className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
         >
           <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -154,9 +134,9 @@ export function UserAvatarMenu() {
           </div>
         </DropdownMenuItem>
 
-        {(role === 'franquia') && (
+        {role === 'franquia' && (
           <DropdownMenuItem
-            onClick={() => handleNavigate('/organizacao/configuracoes')}
+            onSelect={() => navigate('/organizacao/configuracoes')}
             className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
           >
             <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -168,6 +148,7 @@ export function UserAvatarMenu() {
             </div>
           </DropdownMenuItem>
         )}
+
         {(role === 'franquia' || role === 'admin_fabrica' || role === 'super_admin') && (
           <>
             <DropdownMenuSeparator className="my-1.5 bg-border/30" />
@@ -175,7 +156,7 @@ export function UserAvatarMenu() {
               Integrações
             </p>
             <DropdownMenuItem
-              onClick={() => handleNavigate('/perfil#integracoes')}
+              onSelect={() => navigate('/perfil#integracoes')}
               className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
             >
               <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -184,7 +165,7 @@ export function UserAvatarMenu() {
               Meta Pixel
             </DropdownMenuItem>
             <DropdownMenuItem
-              onClick={() => handleNavigate('/perfil#integracoes')}
+              onSelect={() => navigate('/perfil#integracoes')}
               className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
             >
               <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -198,7 +179,7 @@ export function UserAvatarMenu() {
         <DropdownMenuSeparator className="my-1.5 bg-border/30" />
 
         <DropdownMenuItem
-          onClick={() => handleNavigate('/suporte')}
+          onSelect={() => navigate('/suporte')}
           className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
         >
           <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -208,7 +189,7 @@ export function UserAvatarMenu() {
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onClick={handleSignOut}
+          onSelect={() => void signOut()}
           className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 text-destructive focus:text-destructive transition-colors"
         >
           <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center shrink-0">
