@@ -1,18 +1,26 @@
 import { usePWA } from '@/hooks/usePWA';
 import { useAuth } from '@/hooks/useAuth';
+import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, X, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState, useEffect } from 'react';
 
+const BANNER_BLOCKED_PATHS = new Set(['/', '/login', '/forgot-password', '/reset-password', '/termos', '/privacidade']);
+
 export function PWAInstallBanner() {
   const { canInstall, promptInstall, isStandalone } = usePWA();
   const { user, role } = useAuth();
+  const { pathname } = useLocation();
   const [dismissed, setDismissed] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
 
-  // Only show for authenticated users (admins/franchises)
-  const isLoggedIn = !!user && !!role;
+  // Hide on public/franchise landing pages (/:slug routes)
+  const isBlockedPage = BANNER_BLOCKED_PATHS.has(pathname) ||
+    (/^\/[^/]+$/.test(pathname) && !['mapa', 'ranking', 'painel', 'franquia', 'admin', 'perfil', 'suporte', 'notificacoes', 'hoje', 'install', 'explorar', 'docs'].includes(pathname.slice(1)));
+
+  // Only show for authenticated users on allowed pages
+  const isLoggedIn = !!user && !!role && !isBlockedPage;
 
   useEffect(() => {
     if (!canInstall || isStandalone || dismissed || !isLoggedIn) return;
