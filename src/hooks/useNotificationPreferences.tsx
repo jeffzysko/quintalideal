@@ -73,8 +73,8 @@ function buildDefaults(role: string | null): NotificationSection[] {
         { key: 'inactive_lead_alert', label: 'Alerta de lead inativo', description: 'Quando um lead fica parado por muito tempo.', priority: 'high', channels: { ...DEFAULT_CHANNEL } },
         { key: 'monthly_report', label: 'Relatório mensal', description: 'Resumo mensal de desempenho.', priority: 'low', channels: { push: false, email: true, whatsapp: false } },
         ...(isAdmin ? [
-          { key: 'franchise_inactive', label: 'Franquia inativa', description: 'Quando uma franquia não acessa o sistema.', priority: 'high', channels: { ...DEFAULT_CHANNEL } },
-          { key: 'sla_breach', label: 'Velocidade de resposta lenta', description: 'Quando o tempo de resposta excede o esperado.', priority: 'high', channels: { ...DEFAULT_CHANNEL } },
+          { key: 'franchise_inactive', label: 'Franquia inativa', description: 'Quando uma franquia não acessa o sistema.', priority: 'high' as const, channels: { ...DEFAULT_CHANNEL } },
+          { key: 'sla_breach', label: 'Velocidade de resposta lenta', description: 'Quando o tempo de resposta excede o esperado.', priority: 'high' as const, channels: { ...DEFAULT_CHANNEL } },
         ] : []),
       ],
     },
