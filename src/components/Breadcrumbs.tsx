@@ -54,7 +54,7 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
     <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-muted-foreground mb-4 sm:mb-5 overflow-x-auto scrollbar-none">
       {crumbs.map((crumb, i) => (
         <span key={i} className="flex items-center gap-1.5">
-          <ChevronRight className="w-3 h-3 text-muted-foreground/50" />
+          {i > 0 && <ChevronRight className="w-3 h-3 text-muted-foreground/50" />}
           {crumb.href ? (
             <Link to={crumb.href} className="hover:text-foreground transition-colors font-medium">
               {crumb.label}
