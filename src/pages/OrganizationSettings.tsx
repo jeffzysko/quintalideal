@@ -22,7 +22,7 @@ import { PageTransition } from '@/components/PageTransition';
 import { PanelHeader } from '@/components/PanelHeader';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { NotificationBell } from '@/components/NotificationBell';
-import { PushNotificationCard } from '@/components/PushNotificationCard';
+import { PushPermissionCard } from '@/components/notifications/PushPermissionCard';
 
 interface FranchiseSettings {
   id: string;
