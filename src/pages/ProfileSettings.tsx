@@ -6,15 +6,17 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff, Camera, MapPin, Shield, Puzzle } from 'lucide-react';
+import { Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff, Camera, MapPin, Shield, Puzzle, Bell, Workflow, Users, Clock, Globe } from 'lucide-react';
 import { BackButton } from '@/components/BackButton';
 import { NotificationBell } from '@/components/NotificationBell';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { FranchiseUsersSection } from '@/components/franchise/FranchiseUsersSection';
 import { FranchiseContactSettings } from '@/components/franchise/FranchiseContactSettings';
+import { PushPermissionCard } from '@/components/notifications/PushPermissionCard';
 import { toast } from 'sonner';
 
 import { motion } from 'framer-motion';
@@ -27,6 +29,7 @@ import { formatPhoneBR, unformatPhone, isValidBRPhone, isValidEmail } from '@/li
 type FranchiseOption = {
   id: string;
   nome_franquia: string;
+  cidade_base?: string;
 };
 
 export default function ProfileSettings() {
@@ -40,8 +43,9 @@ export default function ProfileSettings() {
   const [email, setEmail] = useState('');
   const [franchiseName, setFranchiseName] = useState('');
   const [cidadesAtendidas, setCidadesAtendidas] = useState('');
+  const [responsavel, setResponsavel] = useState('');
   const [availableFranchises, setAvailableFranchises] = useState<FranchiseOption[]>([]);
-  const [selectedIntegrationFranchiseId, setSelectedIntegrationFranchiseId] = useState('');
+  const [selectedFranchiseId, setSelectedFranchiseId] = useState('');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -50,16 +54,34 @@ export default function ProfileSettings() {
 
   const isFranchise = role === 'franquia' && !!franchiseId;
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
-  const integrationFranchiseId = isFranchise
-    ? franchiseId
-    : isAdmin
-      ? selectedIntegrationFranchiseId || null
-      : null;
+  
+  // For admins, use selected franchise; for franchise users, use their own
+  const effectiveFranchiseId = isAdmin ? selectedFranchiseId : franchiseId;
+  const integrationFranchiseId = effectiveFranchiseId || null;
+
+  // Notification preferences (localStorage per franchise)
+  const notifStorageKey = `notif_prefs_${effectiveFranchiseId}`;
+  const [notifPrefs, setNotifPrefs] = useState({
+    new_lead: true,
+    followup_reminder: true,
+    lead_inactive: true,
+    monthly_report: true,
+  });
+
+  // Automation settings (localStorage per franchise)
+  const autoStorageKey = `auto_prefs_${effectiveFranchiseId}`;
+  const [autoPrefs, setAutoPrefs] = useState({
+    auto_contact_reminder: true,
+    reminder_hours: 48,
+    auto_lost_days: 30,
+  });
 
   // Determine default tab from hash
   const getDefaultTab = () => {
     if (location.hash === '#integracoes') return 'integracoes';
     if (location.hash === '#franquia') return 'franquia';
+    if (location.hash === '#notificacoes') return 'notificacoes';
+    if (location.hash === '#automacoes') return 'automacoes';
     return 'pessoal';
   };
 
@@ -69,6 +91,35 @@ export default function ProfileSettings() {
     if (!user) return;
     loadProfile();
   }, [user, franchiseId, role]);
+
+  // Load franchise data when admin switches franchise
+  useEffect(() => {
+    if (!isAdmin || !selectedFranchiseId) return;
+    loadFranchiseData(selectedFranchiseId);
+    // Load saved prefs
+    try {
+      const saved = localStorage.getItem(notifStorageKey);
+      if (saved) setNotifPrefs(JSON.parse(saved));
+      const savedAuto = localStorage.getItem(autoStorageKey);
+      if (savedAuto) setAutoPrefs(JSON.parse(savedAuto));
+    } catch {}
+  }, [selectedFranchiseId]);
+
+  const loadFranchiseData = async (fId: string) => {
+    const { data: franchise } = await supabase
+      .from('franchises')
+      .select('whatsapp, email, nome_franquia, responsavel, cidades_atendidas')
+      .eq('id', fId)
+      .maybeSingle();
+
+    if (franchise) {
+      setWhatsapp(franchise.whatsapp || '');
+      setEmail(franchise.email || '');
+      setFranchiseName(franchise.nome_franquia || '');
+      setResponsavel(franchise.responsavel || '');
+      setCidadesAtendidas(((franchise as any).cidades_atendidas || []).join(', '));
+    }
+  };
 
   const loadProfile = async () => {
     setLoading(true);
@@ -84,35 +135,34 @@ export default function ProfileSettings() {
       if ((profile as any)?.avatar_url) setAvatarUrl((profile as any).avatar_url);
 
       if (franchiseId) {
-        const { data: franchise } = await supabase
-          .from('franchises')
-          .select('whatsapp, email, nome_franquia, responsavel, cidades_atendidas')
-          .eq('id', franchiseId)
-          .maybeSingle();
-
-        if (franchise) {
-          setWhatsapp(franchise.whatsapp || '');
-          setEmail(franchise.email || '');
-          setFranchiseName(franchise.nome_franquia || '');
-          setCidadesAtendidas(((franchise as any).cidades_atendidas || []).join(', '));
-          if (franchise.responsavel && !profile?.full_name) {
-            setFullName(franchise.responsavel);
-          }
+        await loadFranchiseData(franchiseId);
+        if (!profile?.full_name) {
+          // fallback to responsavel
+          const { data: f } = await supabase.from('franchises').select('responsavel').eq('id', franchiseId).maybeSingle();
+          if (f?.responsavel) setFullName(f.responsavel);
         }
+        // Load saved prefs
+        try {
+          const saved = localStorage.getItem(notifStorageKey);
+          if (saved) setNotifPrefs(JSON.parse(saved));
+          const savedAuto = localStorage.getItem(autoStorageKey);
+          if (savedAuto) setAutoPrefs(JSON.parse(savedAuto));
+        } catch {}
       }
 
       if (isAdmin) {
         const { data: adminFranchises } = await supabase
           .from('franchises')
-          .select('id, nome_franquia')
+          .select('id, nome_franquia, cidade_base')
+          .eq('ativa', true)
           .order('nome_franquia', { ascending: true });
 
         const franchisesList = (adminFranchises ?? []) as FranchiseOption[];
         setAvailableFranchises(franchisesList);
-        setSelectedIntegrationFranchiseId(current => current || franchisesList[0]?.id || '');
+        setSelectedFranchiseId(current => current || franchisesList[0]?.id || '');
       } else {
         setAvailableFranchises([]);
-        setSelectedIntegrationFranchiseId('');
+        setSelectedFranchiseId('');
       }
     } finally {
       setLoading(false);
@@ -178,6 +228,27 @@ export default function ProfileSettings() {
     }
   };
 
+  const handleSaveFranchiseAdmin = async () => {
+    if (!effectiveFranchiseId) return;
+    setSaving(true);
+    try {
+      const { error } = await supabase
+        .from('franchises')
+        .update({
+          whatsapp: whatsapp.trim() || null,
+          email: email.trim() || null,
+          responsavel: responsavel.trim() || null,
+        })
+        .eq('id', effectiveFranchiseId);
+      if (error) throw error;
+      toast.success('Dados atualizados!');
+    } catch {
+      toast.error('Erro ao salvar.');
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
@@ -220,6 +291,16 @@ export default function ProfileSettings() {
     }
   };
 
+  const handleSaveNotifPrefs = () => {
+    localStorage.setItem(notifStorageKey, JSON.stringify(notifPrefs));
+    toast.success('Preferências de notificação salvas');
+  };
+
+  const handleSaveAutoPrefs = () => {
+    localStorage.setItem(autoStorageKey, JSON.stringify(autoPrefs));
+    toast.success('Preferências de automação salvas');
+  };
+
   const initials = (fullName || user?.email || 'U').substring(0, 2).toUpperCase();
   const backPath = isAdmin ? '/admin' : isFranchise ? '/franquia' : '/painel';
 
@@ -233,6 +314,37 @@ export default function ProfileSettings() {
       </div>
     );
   }
+
+  // Admin franchise selector component (reused across tabs)
+  const AdminFranchiseSelector = () => isAdmin ? (
+    <Card className="card-premium">
+      <CardHeader>
+        <CardTitle className="text-sm font-semibold flex items-center gap-2">
+          <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+            <Building2 className="w-4 h-4 text-primary" />
+          </div>
+          Selecione a Franquia
+        </CardTitle>
+        <CardDescription className="text-xs">
+          Escolha a franquia para visualizar e editar suas configurações.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <Select value={selectedFranchiseId} onValueChange={setSelectedFranchiseId}>
+          <SelectTrigger className="rounded-xl h-11">
+            <SelectValue placeholder="Escolha uma franquia" />
+          </SelectTrigger>
+          <SelectContent>
+            {availableFranchises.map(f => (
+              <SelectItem key={f.id} value={f.id}>
+                {f.nome_franquia}{f.cidade_base ? ` — ${f.cidade_base}` : ''}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </CardContent>
+    </Card>
+  ) : null;
 
   return (
     <PageTransition>
@@ -256,7 +368,7 @@ export default function ProfileSettings() {
           animate={{ opacity: 1, y: 0 }}
           className="relative overflow-hidden rounded-2xl border border-border/40"
           style={{
-            background: 'linear-gradient(160deg, #06101f 0%, #0b2a52 35%, #0d3468 60%, #081d38 100%)',
+            background: 'linear-gradient(160deg, hsl(var(--primary) / 0.9) 0%, hsl(var(--primary) / 0.6) 35%, hsl(var(--primary) / 0.4) 60%, hsl(var(--primary) / 0.8) 100%)',
           }}
         >
           <div className="absolute top-[-30px] right-[-20px] w-40 h-40 rounded-full bg-primary/10 blur-3xl" />
@@ -302,7 +414,7 @@ export default function ProfileSettings() {
                     </span>
                   )}
                   {role && (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-primary/20 text-primary border border-primary/20">
+                    <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-primary/20 text-primary-foreground border border-primary/20">
                       <Shield className="w-3 h-3" />
                       {role === 'super_admin' ? 'Super Admin' : role === 'admin_fabrica' ? 'Admin' : 'Franquia'}
                     </span>
@@ -316,20 +428,21 @@ export default function ProfileSettings() {
         {/* === TABS === */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="w-full h-12 rounded-xl bg-muted/50 border border-border/40 p-1 gap-1">
+            <TabsList className="w-full h-auto rounded-xl bg-muted/50 border border-border/40 p-1 gap-0.5 flex-wrap">
               <TabsTrigger
                 value="pessoal"
-                className="flex-1 gap-1.5 rounded-lg text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted"
+                className="flex-1 min-w-[60px] gap-1 rounded-lg text-[11px] sm:text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2 py-2"
               >
-                <User className="w-3.5 h-3.5" />
-                Pessoal
+                <User className="w-3.5 h-3.5 shrink-0" />
+                <span className="hidden sm:inline">Pessoal</span>
+                <span className="sm:hidden">Perfil</span>
               </TabsTrigger>
               {showFranchiseTab && (
                 <TabsTrigger
                   value="franquia"
-                  className="flex-1 gap-1.5 rounded-lg text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted"
+                  className="flex-1 min-w-[60px] gap-1 rounded-lg text-[11px] sm:text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2 py-2"
                 >
-                  <Building2 className="w-3.5 h-3.5" />
+                  <Building2 className="w-3.5 h-3.5 shrink-0" />
                   <span className="hidden sm:inline">Franquia</span>
                   <span className="sm:hidden">Empresa</span>
                 </TabsTrigger>
@@ -337,13 +450,29 @@ export default function ProfileSettings() {
               {showIntegrationsTab && (
                 <TabsTrigger
                   value="integracoes"
-                  className="flex-1 gap-1.5 rounded-lg text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted"
+                  className="flex-1 min-w-[60px] gap-1 rounded-lg text-[11px] sm:text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2 py-2"
                 >
-                  <Puzzle className="w-3.5 h-3.5" />
+                  <Puzzle className="w-3.5 h-3.5 shrink-0" />
                   <span className="hidden sm:inline">Integrações</span>
                   <span className="sm:hidden">Integr.</span>
                 </TabsTrigger>
               )}
+              <TabsTrigger
+                value="notificacoes"
+                className="flex-1 min-w-[60px] gap-1 rounded-lg text-[11px] sm:text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2 py-2"
+              >
+                <Bell className="w-3.5 h-3.5 shrink-0" />
+                <span className="hidden sm:inline">Notificações</span>
+                <span className="sm:hidden">Notif.</span>
+              </TabsTrigger>
+              <TabsTrigger
+                value="automacoes"
+                className="flex-1 min-w-[60px] gap-1 rounded-lg text-[11px] sm:text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2 py-2"
+              >
+                <Workflow className="w-3.5 h-3.5 shrink-0" />
+                <span className="hidden sm:inline">Automações</span>
+                <span className="sm:hidden">Auto.</span>
+              </TabsTrigger>
             </TabsList>
 
             {/* ──── TAB: PESSOAL ──── */}
@@ -400,7 +529,7 @@ export default function ProfileSettings() {
 
               <PasswordChangeCard />
 
-              <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto gap-2 rounded-xl h-11 font-semibold gradient-blue glow-blue hover:glow-blue-strong hover:scale-[1.01] transition-all duration-300">
+              <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto gap-2 rounded-xl h-11 font-semibold">
                 <Save className="w-4 h-4" />
                 {saving ? 'Salvando...' : 'Salvar alterações'}
               </Button>
@@ -409,7 +538,9 @@ export default function ProfileSettings() {
             {/* ──── TAB: FRANQUIA ──── */}
             {showFranchiseTab && (
               <TabsContent value="franquia" className="mt-5 space-y-5">
-                {isFranchise && (
+                {isAdmin && <AdminFranchiseSelector />}
+
+                {effectiveFranchiseId ? (
                   <>
                     <Card className="card-premium">
                       <CardHeader>
@@ -424,6 +555,18 @@ export default function ProfileSettings() {
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="space-y-5">
+                        {isAdmin && (
+                          <div className="space-y-1.5">
+                            <Label htmlFor="responsavel" className="text-xs font-medium">Responsável</Label>
+                            <Input
+                              id="responsavel"
+                              value={responsavel}
+                              onChange={e => setResponsavel(e.target.value)}
+                              placeholder="Nome do responsável"
+                              className="rounded-xl h-11"
+                            />
+                          </div>
+                        )}
                         <div className="space-y-1.5">
                           <Label htmlFor="franchiseWhatsapp" className="text-xs font-medium flex items-center gap-1.5">
                             <Phone className="w-3.5 h-3.5" /> WhatsApp
@@ -431,13 +574,22 @@ export default function ProfileSettings() {
                           <Input
                             id="franchiseWhatsapp"
                             placeholder="(51) 99999-9999"
-                            value={formatPhoneBR(whatsapp)}
-                            onChange={e => { setWhatsapp(unformatPhone(e.target.value)); setFormErrors(p => ({ ...p, whatsapp: '' })); }}
-                            maxLength={16}
+                            value={isFranchise ? formatPhoneBR(whatsapp) : whatsapp}
+                            onChange={e => {
+                              if (isFranchise) {
+                                setWhatsapp(unformatPhone(e.target.value));
+                              } else {
+                                setWhatsapp(e.target.value);
+                              }
+                              setFormErrors(p => ({ ...p, whatsapp: '' }));
+                            }}
+                            maxLength={isFranchise ? 16 : 20}
                             className="rounded-xl h-11"
                           />
                           {formErrors.whatsapp && <p className="text-xs text-destructive mt-1">{formErrors.whatsapp}</p>}
-                          <p className="text-[11px] text-muted-foreground">DDD + número. O código do Brasil (55) é adicionado automaticamente.</p>
+                          <p className="text-[11px] text-muted-foreground">
+                            {isFranchise ? 'DDD + número. O código do Brasil (55) é adicionado automaticamente.' : 'Com código do país, ex: 5551999999999'}
+                          </p>
                         </div>
                         <div className="space-y-1.5">
                           <Label htmlFor="franchiseEmail" className="text-xs font-medium flex items-center gap-1.5">
@@ -454,54 +606,39 @@ export default function ProfileSettings() {
                           {formErrors.email && <p className="text-xs text-destructive mt-1">{formErrors.email}</p>}
                           <p className="text-[11px] text-muted-foreground">Os leads gerados pelo quiz serão enviados para este e-mail.</p>
                         </div>
-                        <div className="space-y-1.5">
-                          <Label htmlFor="cidadesAtendidas" className="text-xs font-medium flex items-center gap-1.5">
-                            <MapPin className="w-3.5 h-3.5" /> Cidades Atendidas
-                          </Label>
-                          <Input
-                            id="cidadesAtendidas"
-                            placeholder="Canoas, Gravataí, Cachoeirinha"
-                            value={cidadesAtendidas}
-                            onChange={e => setCidadesAtendidas(e.target.value)}
-                            className="rounded-xl h-11"
-                          />
-                          <p className="text-[11px] text-muted-foreground">Separe as cidades por vírgula. A cidade base já é incluída automaticamente.</p>
-                        </div>
+                        {isFranchise && (
+                          <div className="space-y-1.5">
+                            <Label htmlFor="cidadesAtendidas" className="text-xs font-medium flex items-center gap-1.5">
+                              <MapPin className="w-3.5 h-3.5" /> Cidades Atendidas
+                            </Label>
+                            <Input
+                              id="cidadesAtendidas"
+                              placeholder="Canoas, Gravataí, Cachoeirinha"
+                              value={cidadesAtendidas}
+                              onChange={e => setCidadesAtendidas(e.target.value)}
+                              className="rounded-xl h-11"
+                            />
+                            <p className="text-[11px] text-muted-foreground">Separe as cidades por vírgula. A cidade base já é incluída automaticamente.</p>
+                          </div>
+                        )}
                       </CardContent>
                     </Card>
 
-                    {franchiseId && <FranchiseUsersSection franchiseId={franchiseId} />}
+                    {isFranchise && franchiseId && <FranchiseUsersSection franchiseId={franchiseId} />}
 
-                    <Button onClick={handleSave} disabled={saving} className="w-full sm:w-auto gap-2 rounded-xl h-11 font-semibold gradient-blue glow-blue hover:glow-blue-strong hover:scale-[1.01] transition-all duration-300">
+                    <Button
+                      onClick={isAdmin ? handleSaveFranchiseAdmin : handleSave}
+                      disabled={saving}
+                      className="w-full sm:w-auto gap-2 rounded-xl h-11 font-semibold"
+                    >
                       <Save className="w-4 h-4" />
                       {saving ? 'Salvando...' : 'Salvar alterações'}
                     </Button>
                   </>
-                )}
-
-                {isAdmin && (
+                ) : (
                   <Card className="card-premium">
-                    <CardHeader>
-                      <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                          <Building2 className="w-4 h-4 text-primary" />
-                        </div>
-                        Informações do Administrador
-                      </CardTitle>
-                      <CardDescription className="text-xs">
-                        Você é administrador da fábrica. Use o painel admin para gerenciar franquias e seus dados de contato.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center gap-3 p-4 bg-muted/50 rounded-xl">
-                        <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                          <Building2 className="w-4 h-4 text-primary" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-medium text-foreground">Painel da Fábrica</p>
-                          <p className="text-[11px] text-muted-foreground">Gerencie franquias, leads e configurações de e-mail no painel admin.</p>
-                        </div>
-                      </div>
+                    <CardContent className="pt-6">
+                      <p className="text-sm text-muted-foreground">Selecione uma franquia acima para configurar.</p>
                     </CardContent>
                   </Card>
                 )}
@@ -511,51 +648,162 @@ export default function ProfileSettings() {
             {/* ──── TAB: INTEGRAÇÕES ──── */}
             {showIntegrationsTab && (
               <TabsContent value="integracoes" className="mt-5 space-y-5" id="integracoes">
-                {isAdmin && (
-                  <Card className="card-premium">
-                    <CardHeader>
-                      <CardTitle className="text-sm font-semibold flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-                          <Building2 className="w-4 h-4 text-primary" />
-                        </div>
-                        Integrações da Franquia
-                      </CardTitle>
-                      <CardDescription className="text-xs">
-                        Selecione a franquia para configurar Meta Pixel e Webhook CRM.
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-2">
-                      <Label htmlFor="integration-franchise" className="text-xs font-medium">Franquia</Label>
-                      <Select value={selectedIntegrationFranchiseId} onValueChange={setSelectedIntegrationFranchiseId}>
-                        <SelectTrigger id="integration-franchise" className="rounded-xl h-11">
-                          <SelectValue placeholder="Selecione uma franquia" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {availableFranchises.map((franchise) => (
-                            <SelectItem key={franchise.id} value={franchise.id}>
-                              {franchise.nome_franquia}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <p className="text-[11px] text-muted-foreground">A configuração será salva na franquia selecionada.</p>
-                    </CardContent>
-                  </Card>
-                )}
+                {isAdmin && <AdminFranchiseSelector />}
 
                 {integrationFranchiseId ? (
                   <FranchiseContactSettings franchiseId={integrationFranchiseId} />
                 ) : (
-                  isAdmin && (
-                    <Card className="card-premium">
-                      <CardContent className="pt-6">
-                        <p className="text-sm text-muted-foreground">Nenhuma franquia disponível para configurar integrações.</p>
-                      </CardContent>
-                    </Card>
-                  )
+                  <Card className="card-premium">
+                    <CardContent className="pt-6">
+                      <p className="text-sm text-muted-foreground">
+                        {isAdmin ? 'Selecione uma franquia acima para configurar integrações.' : 'Nenhuma franquia disponível.'}
+                      </p>
+                    </CardContent>
+                  </Card>
                 )}
               </TabsContent>
             )}
+
+            {/* ──── TAB: NOTIFICAÇÕES ──── */}
+            <TabsContent value="notificacoes" className="mt-5 space-y-5">
+              <PushPermissionCard />
+
+              <Card className="card-premium">
+                <CardHeader>
+                  <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Bell className="w-4 h-4 text-primary" />
+                    </div>
+                    Preferências de Notificação
+                  </CardTitle>
+                  <CardDescription className="text-xs">Controle quais notificações você deseja receber</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  {[
+                    { key: 'new_lead' as const, label: 'Novo lead', desc: 'Alertas quando um novo lead for atribuído', icon: Users },
+                    { key: 'followup_reminder' as const, label: 'Lembretes de follow-up', desc: 'Lembretes para leads que precisam de contato', icon: Clock },
+                    { key: 'lead_inactive' as const, label: 'Leads inativos', desc: 'Alertas quando um lead ficar parado', icon: Bell },
+                    { key: 'monthly_report' as const, label: 'Relatório mensal', desc: 'Resumo mensal de desempenho', icon: Globe },
+                  ].map(item => (
+                    <div key={item.key} className="flex items-center justify-between gap-4 py-3 border-b border-border/20 last:border-0">
+                      <div className="flex items-start gap-3">
+                        <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
+                          <item.icon className="w-4 h-4 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-semibold">{item.label}</p>
+                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                        </div>
+                      </div>
+                      <Switch
+                        checked={notifPrefs[item.key]}
+                        onCheckedChange={v => setNotifPrefs(prev => ({ ...prev, [item.key]: v }))}
+                      />
+                    </div>
+                  ))}
+
+                  <div className="flex items-center gap-3 pt-2">
+                    <Button onClick={handleSaveNotifPrefs} className="gap-2 rounded-xl">
+                      <Save className="w-4 h-4" />
+                      Salvar
+                    </Button>
+                    <a
+                      href="/notificacoes/preferencias"
+                      className="text-xs text-primary hover:underline font-medium"
+                    >
+                      Configurações avançadas →
+                    </a>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* ──── TAB: AUTOMAÇÕES ──── */}
+            <TabsContent value="automacoes" className="mt-5 space-y-5">
+              <Card className="card-premium">
+                <CardHeader>
+                  <CardTitle className="text-sm font-semibold flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+                      <Workflow className="w-4 h-4 text-primary" />
+                    </div>
+                    Regras de Automação
+                  </CardTitle>
+                  <CardDescription className="text-xs">Configure automações para sua operação</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  {/* Auto contact reminder */}
+                  <div className="flex items-center justify-between gap-4 py-3 border-b border-border/20">
+                    <div className="flex items-start gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0 mt-0.5">
+                        <Clock className="w-4 h-4 text-amber-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">Lembrete de primeiro contato</p>
+                        <p className="text-xs text-muted-foreground">
+                          Notifica quando um lead novo não for contatado em {autoPrefs.reminder_hours}h
+                        </p>
+                      </div>
+                    </div>
+                    <Switch
+                      checked={autoPrefs.auto_contact_reminder}
+                      onCheckedChange={v => setAutoPrefs(prev => ({ ...prev, auto_contact_reminder: v }))}
+                    />
+                  </div>
+
+                  {autoPrefs.auto_contact_reminder && (
+                    <div className="pl-12 space-y-2">
+                      <Label className="text-xs font-semibold">Tempo limite (horas)</Label>
+                      <div className="flex items-center gap-3">
+                        <Input
+                          type="number"
+                          min={1}
+                          max={168}
+                          value={autoPrefs.reminder_hours}
+                          onChange={e => setAutoPrefs(prev => ({ ...prev, reminder_hours: Number(e.target.value) || 48 }))}
+                          className="w-24 rounded-xl h-11"
+                        />
+                        <span className="text-xs text-muted-foreground">horas sem contato</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Auto lost */}
+                  <div className="flex items-center justify-between gap-4 py-3 border-b border-border/20">
+                    <div className="flex items-start gap-3">
+                      <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0 mt-0.5">
+                        <Workflow className="w-4 h-4 text-destructive" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold">Marcar como perdido automaticamente</p>
+                        <p className="text-xs text-muted-foreground">
+                          Leads sem movimentação por {autoPrefs.auto_lost_days} dias serão marcados como perdidos
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pl-12 space-y-2">
+                    <Label className="text-xs font-semibold">Dias sem movimentação</Label>
+                    <div className="flex items-center gap-3">
+                      <Input
+                        type="number"
+                        min={7}
+                        max={180}
+                        value={autoPrefs.auto_lost_days}
+                        onChange={e => setAutoPrefs(prev => ({ ...prev, auto_lost_days: Number(e.target.value) || 30 }))}
+                        className="w-24 rounded-xl h-11"
+                      />
+                      <span className="text-xs text-muted-foreground">dias</span>
+                    </div>
+                  </div>
+
+                  <Button onClick={handleSaveAutoPrefs} className="gap-2 rounded-xl">
+                    <Save className="w-4 h-4" />
+                    Salvar automações
+                  </Button>
+                </CardContent>
+              </Card>
+            </TabsContent>
           </Tabs>
         </motion.div>
       </div>
