@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, ArrowRight, CheckCircle2, AlertCircle, Check, X } from 'lucide-react';
+import { Lock, ArrowRight, CheckCircle2, AlertCircle, Check, X, Eye, EyeOff } from 'lucide-react';
 import logoSplash from '@/assets/logo-splash.png';
 
 /* ── Password validation rules ── */
