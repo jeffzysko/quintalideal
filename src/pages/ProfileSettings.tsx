@@ -510,7 +510,7 @@ export default function ProfileSettings() {
                       value={formatPhoneBR(telefone)}
                       onChange={e => { setTelefone(unformatPhone(e.target.value)); setFormErrors(p => ({ ...p, telefone: '' })); }}
                       maxLength={16}
-                      className="rounded-xl h-11"
+                      className="rounded-xl h-11 text-base sm:text-sm"
                     />
                     {formErrors.telefone && <p className="text-xs text-destructive mt-1">{formErrors.telefone}</p>}
                   </div>
