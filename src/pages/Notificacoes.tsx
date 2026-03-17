@@ -149,7 +149,7 @@ export default function NotificacoesPage() {
               </Select>
 
               <Select value={filterType} onValueChange={setFilterType}>
-                <SelectTrigger className="w-[160px] h-9 text-xs rounded-xl">
+                <SelectTrigger className="w-[160px] h-9 text-base md:text-xs rounded-xl">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
