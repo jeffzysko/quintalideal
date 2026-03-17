@@ -87,7 +87,15 @@ export default function ResetPassword() {
   const [checking, setChecking] = useState(true);
   const strength = usePasswordStrength(password);
 
+  const isPreview = searchParams.get('preview') === 'true';
+
   useEffect(() => {
+    if (isPreview) {
+      setIsRecovery(true);
+      setChecking(false);
+      return;
+    }
+
     const tokenHash = searchParams.get('token_hash');
     const type = searchParams.get('type');
 
