@@ -734,22 +734,24 @@ export default function ProfileSettings() {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Auto contact reminder */}
-                  <div className="flex items-center justify-between gap-4 py-3 border-b border-border/20">
-                    <div className="flex items-start gap-3">
+                  <div className="flex items-center justify-between gap-3 py-3.5 border-b border-border/20">
+                    <div className="flex items-start gap-3 min-w-0">
                       <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0 mt-0.5">
                         <Clock className="w-4 h-4 text-amber-600" />
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <p className="text-sm font-semibold">Lembrete de primeiro contato</p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground leading-relaxed">
                           Notifica quando um lead novo não for contatado em {autoPrefs.reminder_hours}h
                         </p>
                       </div>
                     </div>
-                    <Switch
-                      checked={autoPrefs.auto_contact_reminder}
-                      onCheckedChange={v => setAutoPrefs(prev => ({ ...prev, auto_contact_reminder: v }))}
-                    />
+                    <div className="shrink-0 p-1">
+                      <Switch
+                        checked={autoPrefs.auto_contact_reminder}
+                        onCheckedChange={v => setAutoPrefs(prev => ({ ...prev, auto_contact_reminder: v }))}
+                      />
+                    </div>
                   </div>
 
                   {autoPrefs.auto_contact_reminder && (
