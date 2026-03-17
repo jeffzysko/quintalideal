@@ -257,6 +257,8 @@ function generateSuggestions(
 // ── Component ──
 export function SmartSuggestions({ leads, followups, activities, basePath }: SmartSuggestionsProps) {
   const navigate = useNavigate();
+  const [sheetLeadIds, setSheetLeadIds] = useState<string[] | null>(null);
+  const [sheetTitle, setSheetTitle] = useState('');
 
   const handleWhatsApp = (lead: LeadRow) => {
     if (!lead.telefone) return;
@@ -271,13 +273,29 @@ export function SmartSuggestions({ leads, followups, activities, basePath }: Sma
     [leads, followups, activities],
   );
 
+  // Build a lookup for sheet display
+  const leadsById = useMemo(() => {
+    const map = new Map<string, LeadRow>();
+    leads.forEach(l => map.set(l.id, l));
+    return map;
+  }, [leads]);
+
+  const sheetLeads = useMemo(() => {
+    if (!sheetLeadIds) return [];
+    return sheetLeadIds.map(id => leadsById.get(id)).filter(Boolean) as LeadRow[];
+  }, [sheetLeadIds, leadsById]);
+
   if (suggestions.length === 0) return null;
 
   const handleCardClick = (suggestion: Suggestion) => {
     if (suggestion.leadId) {
       navigate(`${basePath}/${suggestion.leadId}`);
     }
-    // multi-lead: no card-level click, user uses the "Ver leads" button
+  };
+
+  const openLeadSheet = (ids: string[], title: string) => {
+    setSheetLeadIds(ids);
+    setSheetTitle(title);
   };
 
   return (
