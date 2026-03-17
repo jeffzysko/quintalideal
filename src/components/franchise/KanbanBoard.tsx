@@ -812,12 +812,14 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
   }, []);
 
   const moveLeadToStatus = useCallback(async (leadId: string, newStatus: string) => {
+    if (movingLeads.has(leadId)) return;
     const lead = leads.find((l) => l.id === leadId);
     if (!lead) return;
 
     const oldStatus = localStatusOverrides[leadId] || lead.status_lead;
     if (oldStatus === newStatus) return;
 
+    setMovingLeads(prev => new Set(prev).add(leadId));
     setLocalStatusOverrides((prev) => ({ ...prev, [leadId]: newStatus }));
 
     const { error } = await supabase
