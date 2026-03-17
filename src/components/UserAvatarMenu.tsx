@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { LogOut, Settings, ChevronDown, Sun, Moon, LifeBuoy, BarChart3, Webhook, Building2 } from 'lucide-react';
+import { LogOut, Settings, ChevronDown, Sun, Moon, LifeBuoy, BarChart3, Webhook, Building2, Bell } from 'lucide-react';
 
 export function UserAvatarMenu() {
   const { user, role, signOut } = useAuth();
@@ -122,6 +122,19 @@ export function UserAvatarMenu() {
           <div>
             <p className="font-medium">Configurações</p>
             <p className="text-[10px] text-muted-foreground">Perfil e preferências</p>
+          </div>
+        </DropdownMenuItem>
+
+        <DropdownMenuItem
+          onClick={() => navigate('/notificacoes/preferencias')}
+          className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
+        >
+          <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
+            <Bell className="w-4 h-4 text-muted-foreground" />
+          </div>
+          <div>
+            <p className="font-medium">Notificações</p>
+            <p className="text-[10px] text-muted-foreground">Push e preferências</p>
           </div>
         </DropdownMenuItem>
 
