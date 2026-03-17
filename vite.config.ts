@@ -31,7 +31,7 @@ export default defineConfig(({ mode }) => ({
         short_name: "Quintal Ideal",
         description:
           "Descubra o potencial do seu quintal para ter uma piscina Splash. Gerencie leads e vendas.",
-        start_url: "/",
+        start_url: "/login",
         scope: "/",
         display: "standalone",
         orientation: "portrait",
