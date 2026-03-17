@@ -51,16 +51,16 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
   if (crumbs.length <= 1) return null;
 
   return (
-    <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-muted-foreground mb-4 sm:mb-5 overflow-x-auto scrollbar-none min-h-[28px]">
+    <nav aria-label="Breadcrumb" className="flex flex-row items-center gap-1 text-xs text-muted-foreground mb-4 sm:mb-5 overflow-x-auto scrollbar-none h-7">
       {crumbs.map((crumb, i) => (
-        <span key={i} className="inline-flex items-center gap-1.5 whitespace-nowrap leading-none">
-          {i > 0 && <ChevronRight className="w-3 h-3 shrink-0 text-muted-foreground/50" />}
+        <span key={i} className="flex flex-row items-center gap-1 shrink-0">
+          {i > 0 && <ChevronRight className="w-3 h-3 shrink-0 text-muted-foreground/50 block" />}
           {crumb.href ? (
-            <Link to={crumb.href} className="hover:text-foreground transition-colors font-medium leading-none">
+            <Link to={crumb.href} className="hover:text-foreground transition-colors font-medium whitespace-nowrap">
               {crumb.label}
             </Link>
           ) : (
-            <span className="text-foreground font-semibold leading-none">{crumb.label}</span>
+            <span className="text-foreground font-semibold whitespace-nowrap">{crumb.label}</span>
           )}
         </span>
       ))}
