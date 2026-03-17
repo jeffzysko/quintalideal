@@ -611,7 +611,7 @@ function PipelineSummary({ leads, franchiseMap }: { leads: LeadWithQuiz[]; franc
   }, [stats.byFranchise, franchiseMap]);
 
   return (
-    <div className="flex flex-wrap items-center gap-4 mb-4 p-3 rounded-xl border border-border/40 bg-muted/20">
+    <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-4 p-3 rounded-xl border border-border/40 bg-muted/20 overflow-hidden">
       <div className="flex flex-col">
         <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Pipeline Total</span>
         <span className="text-lg font-bold text-foreground">{formatCurrency(stats.total)}</span>
