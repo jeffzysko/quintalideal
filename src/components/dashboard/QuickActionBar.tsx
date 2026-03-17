@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
-import { MessageCircle, Phone, CalendarPlus, UserPlus, Workflow } from 'lucide-react';
+import { MessageCircle, Phone, CalendarPlus, Workflow } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface QuickAction {

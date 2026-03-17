@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
-import { STATUS_LABELS, STATUS_COLORS } from '@/lib/lead-constants';
-import { Badge } from '@/components/ui/badge';
+import { STATUS_LABELS } from '@/lib/lead-constants';
 import type { LeadRow } from '@/lib/lead-constants';
 import { cn } from '@/lib/utils';
 
