@@ -4,24 +4,19 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Phone, Save, Share2, BarChart3, Webhook, Eye, EyeOff, RefreshCw, Send, Loader2 } from 'lucide-react';
+import { Save, BarChart3, Webhook, Eye, EyeOff, RefreshCw, Send, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase as supabaseClient } from '@/integrations/supabase/client';
-import { SITE_URL } from '@/lib/constants';
 
 interface Props {
   franchiseId: string;
 }
 
 export function FranchiseContactSettings({ franchiseId }: Props) {
-  const [whatsapp, setWhatsapp] = useState('');
-  const [email, setEmail] = useState('');
   const [metaPixelId, setMetaPixelId] = useState('');
   const [webhookUrl, setWebhookUrl] = useState('');
   const [webhookSecret, setWebhookSecret] = useState('');
   const [showSecret, setShowSecret] = useState(false);
-  const [slug, setSlug] = useState('');
-  const [savingContact, setSavingContact] = useState(false);
   const [savingIntegrations, setSavingIntegrations] = useState(false);
   const [testingWebhook, setTestingWebhook] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -30,13 +25,10 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
     async function load() {
       const { data } = await supabase
         .from('franchises')
-        .select('whatsapp, email, slug_url, meta_pixel_id, webhook_url, webhook_secret')
+        .select('meta_pixel_id, webhook_url, webhook_secret')
         .eq('id', franchiseId)
         .maybeSingle();
       if (data) {
-        setWhatsapp(data.whatsapp || '');
-        setEmail(data.email || '');
-        setSlug(data.slug_url || '');
         setMetaPixelId(data.meta_pixel_id || '');
         setWebhookUrl(data.webhook_url || '');
         setWebhookSecret(data.webhook_secret || '');
@@ -45,17 +37,6 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
     }
     load();
   }, [franchiseId]);
-
-  const handleSaveContact = async () => {
-    setSavingContact(true);
-    const { error } = await supabase
-      .from('franchises')
-      .update({ whatsapp, email })
-      .eq('id', franchiseId);
-    if (error) toast.error('Erro ao salvar. Tente novamente.');
-    else toast.success('Dados de contato atualizados!');
-    setSavingContact(false);
-  };
 
   const handleSaveIntegrations = async () => {
     setSavingIntegrations(true);
