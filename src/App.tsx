@@ -58,6 +58,7 @@ const Suporte = lazy(() => import("./pages/Suporte"));
 const Notificacoes = lazy(() => import("./pages/Notificacoes"));
 const HojePage = lazy(() => import("./pages/HojePage"));
 const OrganizationSettings = lazy(() => import("./pages/OrganizationSettings"));
+const NotificationPreferences = lazy(() => import("./pages/NotificationPreferences"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -158,6 +159,14 @@ function AppRoutes() {
                         element={
                           <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
                             <OrganizationSettings />
+                          </ProtectedRoute>
+                        }
+                      />
+                      <Route
+                        path="/notificacoes/preferencias"
+                        element={
+                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
+                            <NotificationPreferences />
                           </ProtectedRoute>
                         }
                       />
