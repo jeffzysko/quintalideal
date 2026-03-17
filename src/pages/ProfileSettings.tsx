@@ -428,10 +428,10 @@ export default function ProfileSettings() {
         {/* === TABS === */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="w-full h-auto rounded-xl bg-muted/50 border border-border/40 p-1 gap-0.5 flex-wrap">
+            <TabsList className="w-full h-auto rounded-xl bg-muted/50 border border-border/40 p-1 gap-0.5 overflow-x-auto scrollbar-hide flex flex-nowrap">
               <TabsTrigger
                 value="pessoal"
-                className="flex-1 min-w-[60px] gap-1 rounded-lg text-[11px] sm:text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2 py-2"
+                className="flex-1 min-w-0 gap-1.5 rounded-lg text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2.5 py-2.5 whitespace-nowrap active:scale-95"
               >
                 <User className="w-3.5 h-3.5 shrink-0" />
                 <span className="hidden sm:inline">Pessoal</span>
@@ -440,7 +440,7 @@ export default function ProfileSettings() {
               {showFranchiseTab && (
                 <TabsTrigger
                   value="franquia"
-                  className="flex-1 min-w-[60px] gap-1 rounded-lg text-[11px] sm:text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2 py-2"
+                  className="flex-1 min-w-0 gap-1.5 rounded-lg text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2.5 py-2.5 whitespace-nowrap active:scale-95"
                 >
                   <Building2 className="w-3.5 h-3.5 shrink-0" />
                   <span className="hidden sm:inline">Franquia</span>
@@ -450,7 +450,7 @@ export default function ProfileSettings() {
               {showIntegrationsTab && (
                 <TabsTrigger
                   value="integracoes"
-                  className="flex-1 min-w-[60px] gap-1 rounded-lg text-[11px] sm:text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2 py-2"
+                  className="flex-1 min-w-0 gap-1.5 rounded-lg text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2.5 py-2.5 whitespace-nowrap active:scale-95"
                 >
                   <Puzzle className="w-3.5 h-3.5 shrink-0" />
                   <span className="hidden sm:inline">Integrações</span>
@@ -459,7 +459,7 @@ export default function ProfileSettings() {
               )}
               <TabsTrigger
                 value="notificacoes"
-                className="flex-1 min-w-[60px] gap-1 rounded-lg text-[11px] sm:text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2 py-2"
+                className="flex-1 min-w-0 gap-1.5 rounded-lg text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2.5 py-2.5 whitespace-nowrap active:scale-95"
               >
                 <Bell className="w-3.5 h-3.5 shrink-0" />
                 <span className="hidden sm:inline">Notificações</span>
@@ -467,7 +467,7 @@ export default function ProfileSettings() {
               </TabsTrigger>
               <TabsTrigger
                 value="automacoes"
-                className="flex-1 min-w-[60px] gap-1 rounded-lg text-[11px] sm:text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2 py-2"
+                className="flex-1 min-w-0 gap-1.5 rounded-lg text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2.5 py-2.5 whitespace-nowrap active:scale-95"
               >
                 <Workflow className="w-3.5 h-3.5 shrink-0" />
                 <span className="hidden sm:inline">Automações</span>
