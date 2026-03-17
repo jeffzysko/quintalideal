@@ -289,6 +289,9 @@ export default function ResetPassword() {
                       className="pl-10 h-11 bg-background/60 border-border/60 focus:border-primary/50 transition-colors"
                     />
                   </div>
+                  <AnimatePresence>
+                    <PasswordChecklist password={password} />
+                  </AnimatePresence>
                 </div>
 
                 <div className="space-y-1.5">
@@ -305,6 +308,15 @@ export default function ResetPassword() {
                       className="pl-10 h-11 bg-background/60 border-border/60 focus:border-primary/50 transition-colors"
                     />
                   </div>
+                  {confirmPassword && (
+                    <p className={`text-xs flex items-center gap-1 ${password === confirmPassword ? 'text-emerald-500' : 'text-destructive'}`}>
+                      {password === confirmPassword ? (
+                        <><Check className="w-3.5 h-3.5" /> Senhas coincidem</>
+                      ) : (
+                        <><X className="w-3.5 h-3.5" /> Senhas não coincidem</>
+                      )}
+                    </p>
+                  )}
                 </div>
 
                 {error && (
