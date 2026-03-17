@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef, ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
+import { translateAuthError } from '@/lib/auth-errors';
 import type { User } from '@supabase/supabase-js';
 import type { Enums } from '@/integrations/supabase/types';
 
