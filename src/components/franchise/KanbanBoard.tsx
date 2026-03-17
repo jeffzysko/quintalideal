@@ -833,6 +833,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
         delete next[leadId];
         return next;
       });
+      setMovingLeads(prev => { const next = new Set(prev); next.delete(leadId); return next; });
       toast.error('Erro ao atualizar status');
       return;
     }
@@ -847,10 +848,11 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       });
     }
 
+    setMovingLeads(prev => { const next = new Set(prev); next.delete(leadId); return next; });
     toast.success(`Lead movido para ${STATUS_LABELS[newStatus]}`);
     queryClient.invalidateQueries({ queryKey: ['franchise-leads-all', franchiseId] });
     queryClient.invalidateQueries({ queryKey: ['franchise-leads-table', franchiseId] });
-  }, [leads, localStatusOverrides, franchiseId, queryClient]);
+  }, [leads, localStatusOverrides, franchiseId, queryClient, movingLeads]);
 
   const handleDragEnd = useCallback(async (event: DragEndEvent) => {
     const { active, over } = event;
