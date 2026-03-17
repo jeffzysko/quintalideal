@@ -893,7 +893,7 @@ function PasswordChangeCard() {
             placeholder="Repita a nova senha"
             value={confirmPassword}
             onChange={e => setConfirmPassword(e.target.value)}
-            className="rounded-xl h-11"
+             className="rounded-xl h-11 text-base sm:text-sm"
           />
         </div>
         {error && <p className="text-sm text-destructive bg-destructive/10 rounded-xl px-3 py-2.5">{error}</p>}
