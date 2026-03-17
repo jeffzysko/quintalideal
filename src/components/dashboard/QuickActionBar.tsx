@@ -25,7 +25,6 @@ export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowup
   const navigate = useNavigate();
   const { role } = useAuth();
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
-  const dashPath = isAdmin ? '/admin' : '/franquia';
 
   // Find the hottest uncontacted lead for Ligar/WhatsApp
   const hotUncontacted = leads
