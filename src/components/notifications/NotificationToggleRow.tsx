@@ -25,61 +25,53 @@ export function NotificationToggleRow({ item, onToggleChannel }: Props) {
   const priority = PRIORITY_CONFIG[item.priority];
 
   return (
-    <div className="py-3.5 px-1 border-b border-border/15 last:border-0">
-      {/* Label and description */}
-      <div className="flex items-start justify-between gap-3 mb-2.5">
+    <div className="py-2.5 border-b border-border/10 last:border-0">
+      {/* Row: label + push toggle inline */}
+      <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2 flex-wrap">
-            <span className="text-sm font-semibold leading-tight">{item.label}</span>
-            <Badge variant="outline" className={`text-[9px] px-1.5 py-0 ${priority.class}`}>
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-xs sm:text-sm font-semibold leading-tight">{item.label}</span>
+            <Badge variant="outline" className={`text-[8px] px-1 py-0 leading-tight ${priority.class}`}>
               {priority.label}
             </Badge>
           </div>
-          <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
+          <p className="text-[10px] text-muted-foreground mt-0.5 leading-relaxed">
             {item.description}
           </p>
         </div>
+
+        {/* Push toggle — always visible inline */}
+        <div className="flex items-center gap-1 shrink-0 pt-0.5">
+          <Bell className={`w-3 h-3 ${item.channels.push ? 'text-primary' : 'text-muted-foreground/40'}`} />
+          <Switch
+            checked={item.channels.push}
+            onCheckedChange={() => onToggleChannel('push')}
+            className="scale-75"
+          />
+        </div>
       </div>
 
-      {/* Channel toggles */}
-      <div className="flex items-center gap-3 pl-0.5">
-        {(Object.entries(CHANNEL_ICONS) as [keyof NotificationChannel, typeof CHANNEL_ICONS[keyof typeof CHANNEL_ICONS]][]).map(
-          ([channel, cfg]) => {
-            const enabled = item.channels[channel];
+      {/* Future channels — compact */}
+      <div className="flex items-center gap-3 mt-1.5 pl-0.5">
+        {(Object.entries(CHANNEL_ICONS) as [keyof NotificationChannel, typeof CHANNEL_ICONS[keyof typeof CHANNEL_ICONS]][])
+          .filter(([channel]) => channel !== 'push')
+          .map(([channel, cfg]) => {
             const Icon = cfg.icon;
-
-            if (!cfg.available && channel !== 'push') {
-              return (
-                <Tooltip key={channel}>
-                  <TooltipTrigger asChild>
-                    <div className="flex items-center gap-1.5 opacity-40 cursor-not-allowed">
-                      <Icon className="w-3.5 h-3.5" />
-                      <span className="text-[10px]">{cfg.label}</span>
-                      <Badge variant="outline" className="text-[8px] px-1 py-0">Em breve</Badge>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="text-xs">
-                    {cfg.label} estará disponível em breve
-                  </TooltipContent>
-                </Tooltip>
-              );
-            }
-
             return (
-              <div key={channel} className="flex items-center gap-2">
-                <Icon className={`w-3.5 h-3.5 ${enabled ? 'text-primary' : 'text-muted-foreground/50'}`} />
-                <span className={`text-[10px] font-medium ${enabled ? 'text-foreground' : 'text-muted-foreground/60'}`}>
-                  {cfg.label}
-                </span>
-                <Switch
-                  checked={enabled}
-                  onCheckedChange={() => onToggleChannel(channel)}
-                  className="scale-[0.8]"
-                />
-              </div>
+              <Tooltip key={channel}>
+                <TooltipTrigger asChild>
+                  <div className="flex items-center gap-1 opacity-35 cursor-not-allowed">
+                    <Icon className="w-3 h-3" />
+                    <span className="text-[9px]">{cfg.label}</span>
+                    <Badge variant="outline" className="text-[7px] px-0.5 py-0">Breve</Badge>
+                  </div>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="text-xs">
+                  {cfg.label} estará disponível em breve
+                </TooltipContent>
+              </Tooltip>
             );
-          }
-        )}
+          })}
       </div>
     </div>
   );

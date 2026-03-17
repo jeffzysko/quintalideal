@@ -11,37 +11,37 @@ interface Props {
 export function GlobalNotificationControls({ onEnableAll, onDisableAll, onImportantOnly }: Props) {
   return (
     <Card>
-      <CardContent className="pt-4 pb-4">
-        <p className="text-xs font-semibold text-muted-foreground mb-3 uppercase tracking-wider">
+      <CardContent className="p-3 sm:p-4">
+        <p className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
           Ações rápidas
         </p>
-        <div className="flex flex-wrap gap-2">
+        <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
           <Button
             variant="outline"
             size="sm"
             onClick={onEnableAll}
-            className="gap-1.5 rounded-xl text-xs min-h-[40px] flex-1"
+            className="gap-1 rounded-lg text-[10px] sm:text-xs min-h-[40px] px-2"
           >
-            <BellRing className="w-3.5 h-3.5" />
-            Ativar tudo
+            <BellRing className="w-3 h-3 shrink-0" />
+            <span className="truncate">Tudo</span>
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={onImportantOnly}
-            className="gap-1.5 rounded-xl text-xs min-h-[40px] flex-1"
+            className="gap-1 rounded-lg text-[10px] sm:text-xs min-h-[40px] px-2"
           >
-            <Shield className="w-3.5 h-3.5" />
-            Só importantes
+            <Shield className="w-3 h-3 shrink-0" />
+            <span className="truncate">Importantes</span>
           </Button>
           <Button
             variant="outline"
             size="sm"
             onClick={onDisableAll}
-            className="gap-1.5 rounded-xl text-xs min-h-[40px] flex-1 text-muted-foreground"
+            className="gap-1 rounded-lg text-[10px] sm:text-xs min-h-[40px] px-2 text-muted-foreground"
           >
-            <BellOff className="w-3.5 h-3.5" />
-            Desativar tudo
+            <BellOff className="w-3 h-3 shrink-0" />
+            <span className="truncate">Nenhuma</span>
           </Button>
         </div>
       </CardContent>

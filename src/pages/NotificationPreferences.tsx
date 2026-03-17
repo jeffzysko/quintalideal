@@ -38,32 +38,29 @@ export default function NotificationPreferences() {
           <UserAvatarMenu />
         </PanelHeader>
 
-        <div className="max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
+        <div className="max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-3 sm:py-6 md:py-8">
           <Breadcrumbs items={[
             { label: isAdmin ? 'Admin' : 'Painel', href: backPath },
-            { label: 'Configurações', href: '/organizacao/configuracoes' },
-            { label: 'Preferências de Notificação' },
+            { label: 'Notificações' },
           ]} />
 
-          {/* Hero description */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-5"
+            className="mb-4"
           >
-            <h1 className="text-lg font-bold tracking-tight">
+            <h1 className="text-base sm:text-lg font-bold tracking-tight">
               Central de Notificações
             </h1>
-            <p className="text-xs text-muted-foreground mt-1 leading-relaxed max-w-md">
-              Escolha exatamente quais alertas você quer receber e como. 
-              Você tem controle total.
+            <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
+              Escolha quais alertas você quer receber e como.
             </p>
           </motion.div>
 
           {loading ? (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="h-32 rounded-xl bg-muted/40 animate-pulse" />
+                <div key={i} className="h-28 rounded-xl bg-muted/40 animate-pulse" />
               ))}
             </div>
           ) : (
@@ -71,19 +68,16 @@ export default function NotificationPreferences() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.1 }}
-              className="space-y-4"
+              className="space-y-3"
             >
-              {/* Push permission card */}
               <PushPermissionCard />
 
-              {/* Global controls */}
               <GlobalNotificationControls
                 onEnableAll={enableAll}
                 onDisableAll={disableAll}
                 onImportantOnly={enableImportantOnly}
               />
 
-              {/* Sections */}
               {sections.map((section, i) => (
                 <motion.div
                   key={section.id}
@@ -99,23 +93,23 @@ export default function NotificationPreferences() {
                 </motion.div>
               ))}
 
-              {/* Save bar */}
               {dirty && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   className="sticky bottom-20 z-30"
                 >
-                  <div className="bg-card border border-border/60 rounded-2xl shadow-lg p-3 flex items-center justify-between gap-3">
+                  <div className="bg-card border border-border/60 rounded-xl shadow-lg p-2.5 flex items-center justify-between gap-2">
                     <p className="text-xs text-muted-foreground font-medium">
                       Alterações não salvas
                     </p>
                     <Button
                       onClick={save}
                       disabled={saving}
-                      className="gap-2 rounded-xl min-h-[44px]"
+                      size="sm"
+                      className="gap-1.5 rounded-xl min-h-[40px] text-xs"
                     >
-                      <Save className="w-4 h-4" />
+                      <Save className="w-3.5 h-3.5" />
                       {saving ? 'Salvando…' : 'Salvar'}
                     </Button>
                   </div>

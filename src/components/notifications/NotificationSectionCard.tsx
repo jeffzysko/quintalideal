@@ -19,36 +19,36 @@ export function NotificationSectionCard({ section, onToggleChannel, onToggleSect
   return (
     <Card className="overflow-hidden">
       <CardHeader
-        className="pb-2 cursor-pointer select-none"
+        className="p-3 sm:p-4 pb-2 cursor-pointer select-none"
         onClick={() => setExpanded(!expanded)}
       >
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-sm flex items-center gap-2.5">
-            <span className="text-base">{section.icon}</span>
-            {section.title}
-            <span className="text-[10px] font-normal text-muted-foreground">
-              {section.items.filter(i => i.channels.push).length}/{section.items.length} ativos
+        <div className="flex items-center justify-between gap-2">
+          <CardTitle className="text-xs sm:text-sm flex items-center gap-1.5 min-w-0">
+            <span className="text-sm shrink-0">{section.icon}</span>
+            <span className="truncate">{section.title}</span>
+            <span className="text-[9px] font-normal text-muted-foreground shrink-0 tabular-nums">
+              {section.items.filter(i => i.channels.push).length}/{section.items.length}
             </span>
           </CardTitle>
-          <div className="flex items-center gap-2.5" onClick={e => e.stopPropagation()}>
+          <div className="flex items-center gap-1.5 shrink-0" onClick={e => e.stopPropagation()}>
             <Switch
               checked={allPushEnabled}
               onCheckedChange={onToggleSection}
-              className="scale-[0.85]"
-              aria-label={`Ativar todas as notificações de ${section.title}`}
+              className="scale-75 sm:scale-[0.85]"
+              aria-label={`Ativar todas de ${section.title}`}
             />
             <button
               onClick={(e) => { e.stopPropagation(); setExpanded(!expanded); }}
-              className="text-muted-foreground hover:text-foreground transition-colors p-1"
+              className="text-muted-foreground hover:text-foreground transition-colors p-0.5"
             >
-              {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             </button>
           </div>
         </div>
       </CardHeader>
 
       {expanded && (
-        <CardContent className="pt-0 pb-2">
+        <CardContent className="p-3 sm:p-4 pt-0">
           {section.items.map(item => (
             <NotificationToggleRow
               key={item.key}
