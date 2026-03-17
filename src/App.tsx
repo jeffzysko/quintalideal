@@ -17,6 +17,7 @@ import { PWAUpdatePrompt } from "@/components/PWAUpdatePrompt";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { NetworkStatus } from "@/components/NetworkStatus";
 import { BottomNav } from "@/components/BottomNav";
+import { PullToRefresh } from "@/components/PullToRefresh";
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ExplorarPage = lazy(() => import("./pages/ExplorarPage"));
 const InstallPage = lazy(() => import("./pages/InstallPage"));
