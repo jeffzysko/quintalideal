@@ -17,6 +17,13 @@ export function UserAvatarMenu() {
   const { user, role, signOut } = useAuth();
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
+  const [open, setOpen] = useState(false);
+
+  const go = (path: string) => {
+    setOpen(false);
+    // Delay navigation slightly so the menu closes first
+    requestAnimationFrame(() => navigate(path));
+  };
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   const email = user?.email || '';
