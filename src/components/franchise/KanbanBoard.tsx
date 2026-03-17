@@ -255,7 +255,7 @@ function LeadCard({
                 value={noteText}
                 onChange={(e) => setNoteText(e.target.value)}
                 placeholder="Escreva uma nota..."
-                className="text-xs min-h-[60px] resize-none mb-2"
+                className="text-base md:text-xs min-h-[60px] resize-none mb-2"
                 autoFocus
               />
               <Button
