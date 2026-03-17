@@ -236,7 +236,7 @@ export default function ProfileSettings() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-bottomnav">
       <PanelHeader title="Configurações">
         <BackButton fallback={backPath} />
         <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />

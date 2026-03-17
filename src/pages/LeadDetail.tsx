@@ -208,7 +208,7 @@ export default function LeadDetail() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-bottomnav">
       <PanelHeader title={lead.nome || 'Detalhes do Lead'}>
         <BackButton fallback={leadsUrl} />
         <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />

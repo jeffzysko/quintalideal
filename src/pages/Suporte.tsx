@@ -30,7 +30,6 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { PageTransition } from '@/components/PageTransition';
-
 /* ─── Animation variants ─── */
 const fadeUp = {
   initial: { opacity: 0, y: 20 },

@@ -320,7 +320,7 @@ export default function RadarMercado() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-bottomnav">
       <PanelHeader title="Radar de Mercado">
         <BackButton fallback="/admin" />
         <Badge variant="outline" className="text-[10px] sm:text-xs px-2 sm:px-3 py-1 sm:py-1.5 border-primary/30 text-primary animate-pulse-glow hidden sm:flex">

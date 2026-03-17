@@ -121,7 +121,7 @@ export default function NotificacoesPage() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background pb-bottomnav">
         <PanelHeader title="Notificações">
           <NotificationBell />
           <UserAvatarMenu />
