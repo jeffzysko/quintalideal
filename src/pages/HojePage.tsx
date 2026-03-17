@@ -356,7 +356,11 @@ export default function HojePage() {
           {isLoading ? <PageSkeleton /> : (
             <>
                <Greeting name={profile?.full_name || null} />
-               <QuickActionBar onNavigatePipeline={() => navigate(isAdmin ? '/admin' : '/franquia')} />
+               <QuickActionBar
+                 onNavigatePipeline={() => navigate(isAdmin ? '/admin?tab=funnel' : '/franquia?tab=funnel')}
+                 leads={leads}
+                 pendingFollowups={todayFollowups.length + overdueFollowups.length}
+               />
                <QuickStats stats={quickStats} />
 
                {/* ═══ PIPELINE SNAPSHOT ═══ */}
