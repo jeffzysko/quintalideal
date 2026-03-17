@@ -162,6 +162,14 @@ function AppRoutes() {
                           </ProtectedRoute>
                         }
                       />
+                      <Route
+                        path="/notificacoes/preferencias"
+                        element={
+                          <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
+                            <NotificationPreferences />
+                          </ProtectedRoute>
+                        }
+                      />
                       <Route path="/painel" element={<PainelRouter />} />
                       <Route
                         path="/franquia"
