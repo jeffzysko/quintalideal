@@ -25,6 +25,7 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading, lang = 'pt' }: L
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [duplicateMsg, setDuplicateMsg] = useState('');
   const [checking, setChecking] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const handlePhoneChange = (val: string) => {
     setTelefone(formatPhoneBR(val));
@@ -32,6 +33,7 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading, lang = 'pt' }: L
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
     setDuplicateMsg('');
     const newErrors: Record<string, string> = {};
     
@@ -74,10 +76,16 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading, lang = 'pt' }: L
       setChecking(false);
     }
 
-    onSubmit({ nome: cleanName, telefone: phoneDigits, email: cleanEmail });
+    setSubmitting(true);
+    try {
+      onSubmit({ nome: cleanName, telefone: phoneDigits, email: cleanEmail });
+    } finally {
+      // Reset after a short delay to prevent double-tap
+      setTimeout(() => setSubmitting(false), 2000);
+    }
   };
 
-  const isLoading = loading || checking;
+  const isLoading = loading || checking || submitting;
 
   return (
     <motion.div

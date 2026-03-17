@@ -730,6 +730,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overColumnId, setOverColumnId] = useState<string | null>(null);
   const [localStatusOverrides, setLocalStatusOverrides] = useState<Record<string, string>>({});
+  const [movingLeads, setMovingLeads] = useState<Set<string>>(new Set());
   const [kanbanTipDismissed, setKanbanTipDismissed] = useState(() => !!localStorage.getItem('kanban-tip-dismissed'));
   const [tempFilter, setTempFilter] = useState<string>('all');
   const [cityFilter, setCityFilter] = useState<string>('all');
@@ -811,12 +812,14 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
   }, []);
 
   const moveLeadToStatus = useCallback(async (leadId: string, newStatus: string) => {
+    if (movingLeads.has(leadId)) return;
     const lead = leads.find((l) => l.id === leadId);
     if (!lead) return;
 
     const oldStatus = localStatusOverrides[leadId] || lead.status_lead;
     if (oldStatus === newStatus) return;
 
+    setMovingLeads(prev => new Set(prev).add(leadId));
     setLocalStatusOverrides((prev) => ({ ...prev, [leadId]: newStatus }));
 
     const { error } = await supabase
@@ -830,6 +833,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
         delete next[leadId];
         return next;
       });
+      setMovingLeads(prev => { const next = new Set(prev); next.delete(leadId); return next; });
       toast.error('Erro ao atualizar status');
       return;
     }
@@ -844,10 +848,11 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       });
     }
 
+    setMovingLeads(prev => { const next = new Set(prev); next.delete(leadId); return next; });
     toast.success(`Lead movido para ${STATUS_LABELS[newStatus]}`);
     queryClient.invalidateQueries({ queryKey: ['franchise-leads-all', franchiseId] });
     queryClient.invalidateQueries({ queryKey: ['franchise-leads-table', franchiseId] });
-  }, [leads, localStatusOverrides, franchiseId, queryClient]);
+  }, [leads, localStatusOverrides, franchiseId, queryClient, movingLeads]);
 
   const handleDragEnd = useCallback(async (event: DragEndEvent) => {
     const { active, over } = event;
