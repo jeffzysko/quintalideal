@@ -17,6 +17,13 @@ export function UserAvatarMenu() {
   const { user, role, signOut } = useAuth();
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
+  const [open, setOpen] = useState(false);
+
+  const go = (path: string) => {
+    setOpen(false);
+    // Delay navigation slightly so the menu closes first
+    requestAnimationFrame(() => navigate(path));
+  };
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   const email = user?.email || '';
@@ -48,7 +55,7 @@ export function UserAvatarMenu() {
   }, [user]);
 
   return (
-    <DropdownMenu modal={true}>
+    <DropdownMenu open={open} onOpenChange={setOpen} modal={true}>
       <DropdownMenuTrigger asChild>
         <button
           className="flex items-center gap-1.5 rounded-xl pl-0.5 pr-2 py-0.5 hover:bg-muted/60 transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring group"
@@ -109,7 +116,7 @@ export function UserAvatarMenu() {
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onSelect={() => navigate('/perfil')}
+          onSelect={() => go('/perfil')}
           className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
         >
           <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -122,7 +129,7 @@ export function UserAvatarMenu() {
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onSelect={() => navigate('/perfil#notificacoes')}
+          onSelect={() => go('/perfil#notificacoes')}
           className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
         >
           <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -136,7 +143,7 @@ export function UserAvatarMenu() {
 
         {role === 'franquia' && (
           <DropdownMenuItem
-            onSelect={() => navigate('/perfil#franquia')}
+            onSelect={() => go('/perfil#franquia')}
             className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
           >
             <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -156,7 +163,7 @@ export function UserAvatarMenu() {
               Integrações
             </p>
             <DropdownMenuItem
-              onSelect={() => navigate('/perfil#integracoes')}
+              onSelect={() => go('/perfil#integracoes')}
               className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
             >
               <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -165,7 +172,7 @@ export function UserAvatarMenu() {
               Meta Pixel
             </DropdownMenuItem>
             <DropdownMenuItem
-              onSelect={() => navigate('/perfil#integracoes')}
+              onSelect={() => go('/perfil#integracoes')}
               className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
             >
               <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -179,7 +186,7 @@ export function UserAvatarMenu() {
         <DropdownMenuSeparator className="my-1.5 bg-border/30" />
 
         <DropdownMenuItem
-          onSelect={() => navigate('/suporte')}
+          onSelect={() => go('/suporte')}
           className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
         >
           <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -189,7 +196,7 @@ export function UserAvatarMenu() {
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onSelect={() => void signOut()}
+          onSelect={() => { setOpen(false); void signOut(); }}
           className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 text-destructive focus:text-destructive transition-colors"
         >
           <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center shrink-0">
