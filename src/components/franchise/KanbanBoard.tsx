@@ -911,7 +911,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
         </div>
 
         {/* Stage tabs - scrollable */}
-        <div className="flex gap-1 mb-4 overflow-x-auto scrollbar-none -mx-3 px-3 pb-1">
+        <div className="flex gap-1 mb-4 overflow-x-auto scrollbar-none pb-1">
           {COLUMNS.map((status) => {
             const color = STATUS_CHART_COLORS[status] || '#64748b';
             const count = (columnData[status] || []).length;
