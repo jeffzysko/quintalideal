@@ -230,6 +230,13 @@
   body {
     overflow-x: hidden;
   }
+
+  /* Bottom nav spacing for mobile authenticated views */
+  @media (max-width: 639px) {
+    .pb-bottomnav {
+      padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px) + 0.5rem);
+    }
+  }
 }
 
 /* ─── Design System Utilities ─── */

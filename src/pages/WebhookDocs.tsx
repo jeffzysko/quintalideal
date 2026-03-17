@@ -180,7 +180,7 @@ const FIELDS = [
 export default function WebhookDocs() {
 
   return (
-    <div className="min-h-screen bg-background relative overflow-hidden">
+    <div className="min-h-screen bg-background pb-bottomnav relative overflow-hidden">
       <PanelHeader title="Webhook Docs">
         <BackButton fallback="/admin" />
         <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />

@@ -288,7 +288,7 @@ export default function AdminDashboard() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background pb-bottomnav">
       <PanelHeader title="Fábrica">
         {[
           { icon: CalendarClock, label: 'Hoje', action: () => navigate('/hoje') },

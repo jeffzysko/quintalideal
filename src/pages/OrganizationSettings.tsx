@@ -165,7 +165,7 @@ export default function OrganizationSettings() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background pb-bottomnav">
         <PanelHeader title="Configurações">
           <NotificationBell />
           <UserAvatarMenu />
