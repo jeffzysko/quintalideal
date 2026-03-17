@@ -428,10 +428,10 @@ export default function ProfileSettings() {
         {/* === TABS === */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="w-full h-auto rounded-xl bg-muted/50 border border-border/40 p-1 gap-0.5 flex-wrap">
+            <TabsList className="w-full h-auto rounded-xl bg-muted/50 border border-border/40 p-1 gap-0.5 overflow-x-auto scrollbar-hide flex flex-nowrap">
               <TabsTrigger
                 value="pessoal"
-                className="flex-1 min-w-[60px] gap-1 rounded-lg text-[11px] sm:text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2 py-2"
+                className="flex-1 min-w-0 gap-1.5 rounded-lg text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2.5 py-2.5 whitespace-nowrap active:scale-95"
               >
                 <User className="w-3.5 h-3.5 shrink-0" />
                 <span className="hidden sm:inline">Pessoal</span>
@@ -440,7 +440,7 @@ export default function ProfileSettings() {
               {showFranchiseTab && (
                 <TabsTrigger
                   value="franquia"
-                  className="flex-1 min-w-[60px] gap-1 rounded-lg text-[11px] sm:text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2 py-2"
+                  className="flex-1 min-w-0 gap-1.5 rounded-lg text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2.5 py-2.5 whitespace-nowrap active:scale-95"
                 >
                   <Building2 className="w-3.5 h-3.5 shrink-0" />
                   <span className="hidden sm:inline">Franquia</span>
@@ -450,7 +450,7 @@ export default function ProfileSettings() {
               {showIntegrationsTab && (
                 <TabsTrigger
                   value="integracoes"
-                  className="flex-1 min-w-[60px] gap-1 rounded-lg text-[11px] sm:text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2 py-2"
+                  className="flex-1 min-w-0 gap-1.5 rounded-lg text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2.5 py-2.5 whitespace-nowrap active:scale-95"
                 >
                   <Puzzle className="w-3.5 h-3.5 shrink-0" />
                   <span className="hidden sm:inline">Integrações</span>
@@ -459,7 +459,7 @@ export default function ProfileSettings() {
               )}
               <TabsTrigger
                 value="notificacoes"
-                className="flex-1 min-w-[60px] gap-1 rounded-lg text-[11px] sm:text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2 py-2"
+                className="flex-1 min-w-0 gap-1.5 rounded-lg text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2.5 py-2.5 whitespace-nowrap active:scale-95"
               >
                 <Bell className="w-3.5 h-3.5 shrink-0" />
                 <span className="hidden sm:inline">Notificações</span>
@@ -467,7 +467,7 @@ export default function ProfileSettings() {
               </TabsTrigger>
               <TabsTrigger
                 value="automacoes"
-                className="flex-1 min-w-[60px] gap-1 rounded-lg text-[11px] sm:text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2 py-2"
+                className="flex-1 min-w-0 gap-1.5 rounded-lg text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2.5 py-2.5 whitespace-nowrap active:scale-95"
               >
                 <Workflow className="w-3.5 h-3.5 shrink-0" />
                 <span className="hidden sm:inline">Automações</span>
@@ -497,7 +497,7 @@ export default function ProfileSettings() {
                       placeholder="Seu nome completo"
                       value={fullName}
                       onChange={e => setFullName(e.target.value)}
-                      className="rounded-xl h-11"
+                      className="rounded-xl h-11 text-base sm:text-sm"
                     />
                   </div>
                   <div className="space-y-1.5">
@@ -510,7 +510,7 @@ export default function ProfileSettings() {
                       value={formatPhoneBR(telefone)}
                       onChange={e => { setTelefone(unformatPhone(e.target.value)); setFormErrors(p => ({ ...p, telefone: '' })); }}
                       maxLength={16}
-                      className="rounded-xl h-11"
+                      className="rounded-xl h-11 text-base sm:text-sm"
                     />
                     {formErrors.telefone && <p className="text-xs text-destructive mt-1">{formErrors.telefone}</p>}
                   </div>
@@ -520,7 +520,7 @@ export default function ProfileSettings() {
                       id="loginEmail"
                       value={user?.email || ''}
                       disabled
-                      className="opacity-60 rounded-xl h-11"
+                      className="opacity-60 rounded-xl h-11 text-base sm:text-sm"
                     />
                     <p className="text-[11px] text-muted-foreground">O e-mail de login não pode ser alterado aqui.</p>
                   </div>
@@ -563,7 +563,7 @@ export default function ProfileSettings() {
                               value={responsavel}
                               onChange={e => setResponsavel(e.target.value)}
                               placeholder="Nome do responsável"
-                              className="rounded-xl h-11"
+                              className="rounded-xl h-11 text-base sm:text-sm"
                             />
                           </div>
                         )}
@@ -584,7 +584,7 @@ export default function ProfileSettings() {
                               setFormErrors(p => ({ ...p, whatsapp: '' }));
                             }}
                             maxLength={isFranchise ? 16 : 20}
-                            className="rounded-xl h-11"
+                            className="rounded-xl h-11 text-base sm:text-sm"
                           />
                           {formErrors.whatsapp && <p className="text-xs text-destructive mt-1">{formErrors.whatsapp}</p>}
                           <p className="text-[11px] text-muted-foreground">
@@ -601,7 +601,7 @@ export default function ProfileSettings() {
                             placeholder="franquia@splashpiscinas.com"
                             value={email}
                             onChange={e => { setEmail(e.target.value); setFormErrors(p => ({ ...p, email: '' })); }}
-                            className="rounded-xl h-11"
+                            className="rounded-xl h-11 text-base sm:text-sm"
                           />
                           {formErrors.email && <p className="text-xs text-destructive mt-1">{formErrors.email}</p>}
                           <p className="text-[11px] text-muted-foreground">Os leads gerados pelo quiz serão enviados para este e-mail.</p>
@@ -616,7 +616,7 @@ export default function ProfileSettings() {
                               placeholder="Canoas, Gravataí, Cachoeirinha"
                               value={cidadesAtendidas}
                               onChange={e => setCidadesAtendidas(e.target.value)}
-                              className="rounded-xl h-11"
+                              className="rounded-xl h-11 text-base sm:text-sm"
                             />
                             <p className="text-[11px] text-muted-foreground">Separe as cidades por vírgula. A cidade base já é incluída automaticamente.</p>
                           </div>
@@ -685,20 +685,22 @@ export default function ProfileSettings() {
                     { key: 'lead_inactive' as const, label: 'Leads inativos', desc: 'Alertas quando um lead ficar parado', icon: Bell },
                     { key: 'monthly_report' as const, label: 'Relatório mensal', desc: 'Resumo mensal de desempenho', icon: Globe },
                   ].map(item => (
-                    <div key={item.key} className="flex items-center justify-between gap-4 py-3 border-b border-border/20 last:border-0">
-                      <div className="flex items-start gap-3">
+                    <div key={item.key} className="flex items-center justify-between gap-3 py-3.5 border-b border-border/20 last:border-0">
+                      <div className="flex items-start gap-3 min-w-0">
                         <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
                           <item.icon className="w-4 h-4 text-primary" />
                         </div>
-                        <div>
+                        <div className="min-w-0">
                           <p className="text-sm font-semibold">{item.label}</p>
-                          <p className="text-xs text-muted-foreground">{item.desc}</p>
+                          <p className="text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
                         </div>
                       </div>
-                      <Switch
-                        checked={notifPrefs[item.key]}
-                        onCheckedChange={v => setNotifPrefs(prev => ({ ...prev, [item.key]: v }))}
-                      />
+                      <div className="shrink-0 p-1">
+                        <Switch
+                          checked={notifPrefs[item.key]}
+                          onCheckedChange={v => setNotifPrefs(prev => ({ ...prev, [item.key]: v }))}
+                        />
+                      </div>
                     </div>
                   ))}
 
@@ -732,26 +734,28 @@ export default function ProfileSettings() {
                 </CardHeader>
                 <CardContent className="space-y-6">
                   {/* Auto contact reminder */}
-                  <div className="flex items-center justify-between gap-4 py-3 border-b border-border/20">
-                    <div className="flex items-start gap-3">
+                  <div className="flex items-center justify-between gap-3 py-3.5 border-b border-border/20">
+                    <div className="flex items-start gap-3 min-w-0">
                       <div className="w-9 h-9 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0 mt-0.5">
                         <Clock className="w-4 h-4 text-amber-600" />
                       </div>
-                      <div>
+                      <div className="min-w-0">
                         <p className="text-sm font-semibold">Lembrete de primeiro contato</p>
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-xs text-muted-foreground leading-relaxed">
                           Notifica quando um lead novo não for contatado em {autoPrefs.reminder_hours}h
                         </p>
                       </div>
                     </div>
-                    <Switch
-                      checked={autoPrefs.auto_contact_reminder}
-                      onCheckedChange={v => setAutoPrefs(prev => ({ ...prev, auto_contact_reminder: v }))}
-                    />
+                    <div className="shrink-0 p-1">
+                      <Switch
+                        checked={autoPrefs.auto_contact_reminder}
+                        onCheckedChange={v => setAutoPrefs(prev => ({ ...prev, auto_contact_reminder: v }))}
+                      />
+                    </div>
                   </div>
 
                   {autoPrefs.auto_contact_reminder && (
-                    <div className="pl-12 space-y-2">
+                    <div className="pl-4 sm:pl-12 space-y-2">
                       <Label className="text-xs font-semibold">Tempo limite (horas)</Label>
                       <div className="flex items-center gap-3">
                         <Input
@@ -760,7 +764,7 @@ export default function ProfileSettings() {
                           max={168}
                           value={autoPrefs.reminder_hours}
                           onChange={e => setAutoPrefs(prev => ({ ...prev, reminder_hours: Number(e.target.value) || 48 }))}
-                          className="w-24 rounded-xl h-11"
+                          className="w-24 rounded-xl h-11 text-base sm:text-sm"
                         />
                         <span className="text-xs text-muted-foreground">horas sem contato</span>
                       </div>
@@ -768,21 +772,21 @@ export default function ProfileSettings() {
                   )}
 
                   {/* Auto lost */}
-                  <div className="flex items-center justify-between gap-4 py-3 border-b border-border/20">
-                    <div className="flex items-start gap-3">
+                  <div className="flex items-center justify-between gap-3 py-3.5 border-b border-border/20">
+                    <div className="flex items-start gap-3 min-w-0">
                       <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0 mt-0.5">
                         <Workflow className="w-4 h-4 text-destructive" />
                       </div>
-                      <div>
-                        <p className="text-sm font-semibold">Marcar como perdido automaticamente</p>
-                        <p className="text-xs text-muted-foreground">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold">Marcar como perdido</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
                           Leads sem movimentação por {autoPrefs.auto_lost_days} dias serão marcados como perdidos
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="pl-12 space-y-2">
+                  <div className="pl-4 sm:pl-12 space-y-2">
                     <Label className="text-xs font-semibold">Dias sem movimentação</Label>
                     <div className="flex items-center gap-3">
                       <Input
@@ -791,7 +795,7 @@ export default function ProfileSettings() {
                         max={180}
                         value={autoPrefs.auto_lost_days}
                         onChange={e => setAutoPrefs(prev => ({ ...prev, auto_lost_days: Number(e.target.value) || 30 }))}
-                        className="w-24 rounded-xl h-11"
+                        className="w-24 rounded-xl h-11 text-base sm:text-sm"
                       />
                       <span className="text-xs text-muted-foreground">dias</span>
                     </div>
@@ -869,7 +873,7 @@ function PasswordChangeCard() {
               placeholder="Mínimo 6 caracteres"
               value={newPassword}
               onChange={e => setNewPassword(e.target.value)}
-              className="rounded-xl h-11"
+              className="rounded-xl h-11 text-base sm:text-sm"
             />
             <button
               type="button"
@@ -889,7 +893,7 @@ function PasswordChangeCard() {
             placeholder="Repita a nova senha"
             value={confirmPassword}
             onChange={e => setConfirmPassword(e.target.value)}
-            className="rounded-xl h-11"
+             className="rounded-xl h-11 text-base sm:text-sm"
           />
         </div>
         {error && <p className="text-sm text-destructive bg-destructive/10 rounded-xl px-3 py-2.5">{error}</p>}
