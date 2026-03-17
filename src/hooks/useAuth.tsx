@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, useCallback, useRef, ReactNode } from 'react';
 import { supabase } from '@/lib/supabase';
+import { translateAuthError } from '@/lib/auth-errors';
 import type { User } from '@supabase/supabase-js';
 import type { Enums } from '@/integrations/supabase/types';
 
@@ -162,7 +163,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (error) {
       setLoading(false);
-      return { error: error.message };
+      return { error: translateAuthError(error.message) };
     }
 
     // Immediately sync session so role is available before navigation
