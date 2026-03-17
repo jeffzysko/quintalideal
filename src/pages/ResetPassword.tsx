@@ -351,6 +351,7 @@ export default function ResetPassword() {
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
+                  </div>
                   <AnimatePresence>
                     <PasswordChecklist password={password} />
                   </AnimatePresence>
@@ -361,14 +362,23 @@ export default function ResetPassword() {
                   <div className="relative">
                     <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                     <Input
-                      type="password"
+                      type={showConfirm ? 'text' : 'password'}
                       value={confirmPassword}
                       onChange={e => setConfirmPassword(e.target.value)}
                       required
                       autoComplete="new-password"
                       placeholder="Repita a senha"
-                      className="pl-10 h-11 bg-background/60 border-border/60 focus:border-primary/50 transition-colors"
+                      className="pl-10 pr-10 h-11 bg-background/60 border-border/60 focus:border-primary/50 transition-colors"
                     />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirm(v => !v)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                      tabIndex={-1}
+                      aria-label={showConfirm ? 'Ocultar senha' : 'Mostrar senha'}
+                    >
+                      {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
                   </div>
                   {confirmPassword && (
                     <p className={`text-xs flex items-center gap-1 ${password === confirmPassword ? 'text-emerald-500' : 'text-destructive'}`}>
