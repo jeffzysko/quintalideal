@@ -129,7 +129,7 @@ export function UserAvatarMenu() {
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onSelect={() => navigate('/perfil#notificacoes')}
+          onSelect={() => go('/perfil#notificacoes')}
           className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
         >
           <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
