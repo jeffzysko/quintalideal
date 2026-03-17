@@ -12,7 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Building2, Save, Settings2, Bell, Workflow, MapPin,
-  Globe, Users, CheckCircle2, Clock, Smartphone
+  Globe, Users, CheckCircle2, Clock
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
