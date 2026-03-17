@@ -616,7 +616,7 @@ export default function ProfileSettings() {
                               placeholder="Canoas, Gravataí, Cachoeirinha"
                               value={cidadesAtendidas}
                               onChange={e => setCidadesAtendidas(e.target.value)}
-                              className="rounded-xl h-11"
+                              className="rounded-xl h-11 text-base sm:text-sm"
                             />
                             <p className="text-[11px] text-muted-foreground">Separe as cidades por vírgula. A cidade base já é incluída automaticamente.</p>
                           </div>
