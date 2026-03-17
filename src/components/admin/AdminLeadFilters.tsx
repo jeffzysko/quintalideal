@@ -125,7 +125,7 @@ export function AdminLeadFilters({
             </SelectContent>
           </Select>
           <Select value={filterModelo} onValueChange={onModeloChange}>
-            <SelectTrigger className="rounded-xl h-11 sm:h-10 text-sm"><SelectValue placeholder="Modelo" /></SelectTrigger>
+            <SelectTrigger className="rounded-xl h-11 sm:h-10"><SelectValue placeholder="Modelo" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos Modelos</SelectItem>
               {models.map(m => (
