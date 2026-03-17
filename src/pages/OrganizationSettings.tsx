@@ -22,6 +22,7 @@ import { PageTransition } from '@/components/PageTransition';
 import { PanelHeader } from '@/components/PanelHeader';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { NotificationBell } from '@/components/NotificationBell';
+import { PushNotificationCard } from '@/components/PushNotificationCard';
 
 interface FranchiseSettings {
   id: string;
@@ -362,6 +363,9 @@ export default function OrganizationSettings() {
                     </Button>
                   </CardContent>
                 </Card>
+
+                {/* Push Notifications Card */}
+                <PushNotificationCard />
               </TabsContent>
 
               {/* Automation Settings */}
