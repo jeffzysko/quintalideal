@@ -146,12 +146,22 @@ export default function ResetPassword() {
     };
   }, [searchParams]);
 
+  /** Translate common Supabase auth errors to PT-BR */
+  const translateError = (msg: string): string => {
+    const map: Record<string, string> = {
+      'New password should be different from the old password.': 'A nova senha deve ser diferente da senha anterior.',
+      'Password should be at least 6 characters.': 'A senha deve ter pelo menos 6 caracteres.',
+      'Auth session missing!': 'Sessão expirada. Solicite um novo link de recuperação.',
+    };
+    return map[msg] || msg;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
-    if (password.length < 6) {
-      setError('A senha deve ter pelo menos 6 caracteres.');
+    if (!strength.allPass) {
+      setError('A senha não atende a todos os requisitos.');
       return;
     }
 
@@ -164,7 +174,7 @@ export default function ResetPassword() {
     const { error } = await supabase.auth.updateUser({ password });
 
     if (error) {
-      setError(error.message);
+      setError(translateError(error.message));
       setLoading(false);
     } else {
       setSuccess(true);
