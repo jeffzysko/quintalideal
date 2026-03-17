@@ -221,8 +221,8 @@ export function useNotificationPreferences() {
     sections.forEach(s => s.items.forEach(i => { prefs[i.key] = i.channels; }));
 
     try {
-      const { error } = await supabase
-        .from('notification_preferences' as any)
+      const { error } = await (supabase as any)
+        .from('notification_preferences')
         .upsert(
           { user_id: user.id, preferences: prefs },
           { onConflict: 'user_id' }
