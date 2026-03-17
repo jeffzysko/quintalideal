@@ -133,7 +133,7 @@ export function AdminLeadFilters({
               ))}
             </SelectContent>
           </Select>
-          <Input placeholder="Filtrar cidade..." value={cidadeInput} onChange={e => onCidadeChange(e.target.value)} className="rounded-xl text-sm h-11 sm:h-10" />
+          <Input placeholder="Filtrar cidade..." value={cidadeInput} onChange={e => onCidadeChange(e.target.value)} className="rounded-xl h-11 sm:h-10" />
         </div>
       </CardContent>
     </Card>
