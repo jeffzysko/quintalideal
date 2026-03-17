@@ -325,20 +325,24 @@ export default function OrganizationSettings() {
 
               {/* Notification Preferences */}
               <TabsContent value="notifications" className="space-y-4">
+                {/* Push status */}
+                <PushPermissionCard />
+
+                {/* Quick preferences */}
                 <Card className="card-premium">
                   <CardHeader>
                     <CardTitle className="text-base flex items-center gap-2">
                       <Bell className="w-4 h-4 text-primary" />
-                      Preferências de Notificação
+                      Preferências rápidas
                     </CardTitle>
-                    <CardDescription>Escolha quais notificações deseja receber</CardDescription>
+                    <CardDescription>Controle básico de notificações</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     {[
-                      { key: 'new_lead' as const, label: 'Novo lead', desc: 'Receba alertas quando um novo lead for atribuído à sua franquia', icon: Users },
-                      { key: 'followup_reminder' as const, label: 'Lembretes de follow-up', desc: 'Receba lembretes automáticos para leads que precisam de acompanhamento', icon: Clock },
-                      { key: 'lead_inactive' as const, label: 'Leads inativos', desc: 'Alertas quando um lead ficar parado por muito tempo em uma etapa', icon: Bell },
-                      { key: 'monthly_report' as const, label: 'Relatório mensal', desc: 'Receba um resumo mensal de KPIs e desempenho por e-mail', icon: Globe },
+                      { key: 'new_lead' as const, label: 'Novo lead', desc: 'Alertas quando um novo lead for atribuído', icon: Users },
+                      { key: 'followup_reminder' as const, label: 'Lembretes de follow-up', desc: 'Lembretes para leads que precisam de contato', icon: Clock },
+                      { key: 'lead_inactive' as const, label: 'Leads inativos', desc: 'Alertas quando um lead ficar parado', icon: Bell },
+                      { key: 'monthly_report' as const, label: 'Relatório mensal', desc: 'Resumo mensal de desempenho', icon: Globe },
                     ].map(item => (
                       <div key={item.key} className="flex items-center justify-between gap-4 py-3 border-b border-border/20 last:border-0">
                         <div className="flex items-start gap-3">
@@ -357,15 +361,20 @@ export default function OrganizationSettings() {
                       </div>
                     ))}
 
-                    <Button onClick={handleSaveNotifPrefs} className="gap-2 rounded-xl mt-2">
-                      <Save className="w-4 h-4" />
-                      Salvar preferências
-                    </Button>
+                    <div className="flex items-center gap-3 pt-2">
+                      <Button onClick={handleSaveNotifPrefs} className="gap-2 rounded-xl">
+                        <Save className="w-4 h-4" />
+                        Salvar
+                      </Button>
+                      <a
+                        href="/notificacoes/preferencias"
+                        className="text-xs text-primary hover:underline font-medium"
+                      >
+                        Configurações avançadas →
+                      </a>
+                    </div>
                   </CardContent>
                 </Card>
-
-                {/* Push Notifications Card */}
-                <PushNotificationCard />
               </TabsContent>
 
               {/* Automation Settings */}
