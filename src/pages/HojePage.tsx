@@ -595,22 +595,22 @@ export default function HojePage() {
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           transition={{ delay: i * 0.03 }}
-                          className="flex items-center gap-3 p-3 cursor-pointer hover:bg-muted/40 transition-colors"
+                          className="flex items-center gap-2.5 p-2.5 cursor-pointer hover:bg-muted/40 transition-colors"
                           onClick={() => navigate(`${basePath}/${lead.id}`)}
                         >
-                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                            <span className="text-sm font-bold text-primary">
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                            <span className="text-xs font-bold text-primary">
                               {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
                             </span>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-foreground truncate">{lead.nome || '—'}</p>
-                            <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-0.5">
+                            <p className="text-[13px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
+                            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                               <span className="font-bold text-primary">{lead.pontuacao_quintal}%</span>
-                              <Badge className={`${STATUS_COLORS[lead.status_lead]} border text-[9px]`} variant="secondary">
+                              <Badge className={`${STATUS_COLORS[lead.status_lead]} border text-[9px] px-1 py-0`} variant="secondary">
                                 {STATUS_LABELS[lead.status_lead]}
                               </Badge>
-                              {lead.modelo_recomendado && <span>{lead.modelo_recomendado}</span>}
+                              {lead.modelo_recomendado && <span className="truncate">{lead.modelo_recomendado}</span>}
                             </div>
                           </div>
                           <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
