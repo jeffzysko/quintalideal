@@ -146,14 +146,58 @@ export default function ResetPassword() {
     };
   }, [searchParams]);
 
-  /** Translate common Supabase auth errors to PT-BR */
+  /** Translate Supabase auth errors to friendly PT-BR messages */
   const translateError = (msg: string): string => {
     const map: Record<string, string> = {
-      'New password should be different from the old password.': 'A nova senha deve ser diferente da senha anterior.',
-      'Password should be at least 6 characters.': 'A senha deve ter pelo menos 6 caracteres.',
-      'Auth session missing!': 'Sessão expirada. Solicite um novo link de recuperação.',
+      // Password rules
+      'New password should be different from the old password.':
+        'Sua nova senha precisa ser diferente da senha atual. Tente uma combinação nova.',
+      'Password should be at least 6 characters.':
+        'A senha precisa ter no mínimo 6 caracteres. Adicione mais caracteres e tente novamente.',
+      'Password should be at least 6 characters long.':
+        'A senha precisa ter no mínimo 6 caracteres. Adicione mais caracteres e tente novamente.',
+      // Session / token issues
+      'Auth session missing!':
+        'Seu link de recuperação expirou ou já foi utilizado. Volte à tela de login e solicite um novo link.',
+      'Token has expired or is invalid':
+        'Este link já expirou. Por favor, solicite um novo link de recuperação na tela de login.',
+      'Token has expired or is invalid.':
+        'Este link já expirou. Por favor, solicite um novo link de recuperação na tela de login.',
+      'Invalid token':
+        'Link inválido. Solicite um novo link de recuperação na tela de login.',
+      // Rate limiting
+      'For security purposes, you can only request this after 60 seconds.':
+        'Por segurança, aguarde 60 segundos antes de tentar novamente.',
+      'Rate limit exceeded':
+        'Muitas tentativas seguidas. Aguarde alguns instantes e tente novamente.',
+      // Network / generic
+      'Failed to fetch':
+        'Sem conexão com a internet. Verifique sua rede e tente novamente.',
+      'NetworkError when attempting to fetch resource.':
+        'Erro de conexão. Verifique se você está conectado à internet.',
+      'Unable to validate email address: invalid format':
+        'O formato do e-mail informado não é válido. Verifique e tente novamente.',
+      // User not found
+      'User not found':
+        'Não encontramos uma conta com esse e-mail. Verifique o endereço ou entre em contato com o suporte.',
     };
-    return map[msg] || msg;
+
+    // Exact match
+    if (map[msg]) return map[msg];
+
+    // Partial match fallback for variations
+    const lower = msg.toLowerCase();
+    if (lower.includes('token') && (lower.includes('expired') || lower.includes('invalid')))
+      return 'Este link já expirou ou é inválido. Solicite um novo na tela de login.';
+    if (lower.includes('rate') && lower.includes('limit'))
+      return 'Muitas tentativas seguidas. Aguarde alguns instantes e tente novamente.';
+    if (lower.includes('session') && lower.includes('missing'))
+      return 'Sessão expirada. Volte à tela de login e solicite um novo link de recuperação.';
+    if (lower.includes('network') || lower.includes('fetch'))
+      return 'Erro de conexão. Verifique sua internet e tente novamente.';
+
+    // Generic fallback — never show raw English
+    return 'Ocorreu um erro inesperado. Tente novamente ou solicite um novo link de recuperação.';
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
