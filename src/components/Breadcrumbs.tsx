@@ -83,7 +83,7 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
               </BreadcrumbItem>
 
               {!isLast && (
-                <BreadcrumbSeparator className="h-7 shrink-0 items-center text-muted-foreground/50 [&>svg]:size-3" />
+                <BreadcrumbSeparator className="flex h-7 shrink-0 items-center text-muted-foreground/50 [&>svg]:size-3" />
               )}
             </Fragment>
           );
