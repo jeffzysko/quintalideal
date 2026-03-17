@@ -53,9 +53,12 @@ export default function AdminDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
   const { signOut: _signOut, role } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'kanban' | 'analytics' | 'franchises' | 'cities' | 'users' | 'emails' | 'franchise-view'>(() =>
-    new URLSearchParams(location.search).get('tab') === 'leads' ? 'leads' : 'overview'
-  );
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'kanban' | 'analytics' | 'franchises' | 'cities' | 'users' | 'emails' | 'franchise-view'>(() => {
+    const urlTab = new URLSearchParams(location.search).get('tab');
+    if (urlTab === 'leads') return 'leads';
+    if (urlTab === 'kanban') return 'kanban';
+    return 'overview';
+  });
   const [viewFranchiseId, setViewFranchiseId] = useState<string>('');
   const [timeRange, setTimeRange] = useState<TimeRange>('30');
 

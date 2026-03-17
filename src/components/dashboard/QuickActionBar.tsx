@@ -25,7 +25,6 @@ export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowup
   const navigate = useNavigate();
   const { role } = useAuth();
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
-  const dashPath = isAdmin ? '/admin' : '/franquia';
 
   // Find the hottest uncontacted lead for Ligar/WhatsApp
   const hotUncontacted = leads
@@ -52,21 +51,23 @@ export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowup
     }
   };
 
+  const funnelPath = isAdmin ? '/admin?tab=kanban' : '/franquia?tab=funnel';
+
   const actions: QuickAction[] = [
     {
       icon: Workflow,
       label: 'Funil',
       color: 'text-violet-600',
       bgColor: 'icon-bg-violet',
-      onClick: onNavigatePipeline || (() => navigate(`${dashPath}?tab=funnel`)),
+      onClick: onNavigatePipeline || (() => navigate(funnelPath)),
     },
     {
       icon: CalendarPlus,
       label: 'Follow-up',
       color: 'text-primary',
       bgColor: 'icon-bg-blue',
-      onClick: () => navigate(`${dashPath}?tab=funnel`),
-      badge: pendingFollowups,
+      onClick: () => navigate(funnelPath),
+      badge: pendingFollowups && pendingFollowups > 0 ? pendingFollowups : undefined,
     },
     {
       icon: Phone,
