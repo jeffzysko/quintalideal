@@ -91,7 +91,7 @@ export function OrganizationSwitcher({ activeFranchiseId, onSwitch, compact }: O
               placeholder="Buscar franquia..."
               value={search}
               onChange={e => setSearch(e.target.value)}
-              className="h-8 pl-8 text-xs rounded-lg border-border/30 bg-muted/30"
+              className="h-8 pl-8 text-base md:text-xs rounded-lg border-border/30 bg-muted/30"
             />
           </div>
         </div>

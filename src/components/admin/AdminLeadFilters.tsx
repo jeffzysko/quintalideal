@@ -105,7 +105,7 @@ export function AdminLeadFilters({
     <Card className="mb-4 sm:mb-6 border-border/50 shadow-sm">
       <CardContent className="p-3 sm:p-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2.5 sm:gap-3">
-          <Input placeholder="Buscar nome..." value={searchInput} onChange={e => onSearchChange(e.target.value)} className="rounded-xl text-sm h-11 sm:h-10 sm:col-span-2 md:col-span-1" />
+          <Input placeholder="Buscar nome..." value={searchInput} onChange={e => onSearchChange(e.target.value)} className="rounded-xl h-11 sm:h-10 sm:col-span-2 md:col-span-1" />
           <Select value={filterFranquia} onValueChange={onFranquiaChange}>
             <SelectTrigger className="rounded-xl h-11 sm:h-10 text-sm"><SelectValue placeholder="Franquia" /></SelectTrigger>
             <SelectContent>
@@ -133,7 +133,7 @@ export function AdminLeadFilters({
               ))}
             </SelectContent>
           </Select>
-          <Input placeholder="Filtrar cidade..." value={cidadeInput} onChange={e => onCidadeChange(e.target.value)} className="rounded-xl text-sm h-11 sm:h-10" />
+          <Input placeholder="Filtrar cidade..." value={cidadeInput} onChange={e => onCidadeChange(e.target.value)} className="rounded-xl h-11 sm:h-10" />
         </div>
       </CardContent>
     </Card>

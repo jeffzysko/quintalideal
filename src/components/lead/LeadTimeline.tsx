@@ -147,7 +147,7 @@ export function LeadTimeline({ leadId }: LeadTimelineProps) {
             placeholder={placeholder}
             rows={2}
             maxLength={500}
-            className="w-full bg-transparent border-0 px-3 py-2 text-sm placeholder:text-muted-foreground/60 focus:outline-none resize-none"
+            className="w-full bg-transparent border-0 px-3 py-2 text-base md:text-sm placeholder:text-muted-foreground/60 focus:outline-none resize-none"
           />
 
           {/* Bottom bar */}
