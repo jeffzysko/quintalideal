@@ -1,14 +1,26 @@
 import { usePWA } from '@/hooks/usePWA';
+import { useAuth } from '@/hooks/useAuth';
+import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { RefreshCw, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useState } from 'react';
 
+const INTERNAL_SLUGS = new Set(['mapa', 'ranking', 'painel', 'franquia', 'admin', 'perfil', 'suporte', 'notificacoes', 'hoje', 'install', 'explorar', 'docs', 'login', 'forgot-password', 'reset-password', 'termos', 'privacidade']);
+
 export function PWAUpdatePrompt() {
   const { needsUpdate, applyUpdate } = usePWA();
+  const { user, role } = useAuth();
+  const { pathname } = useLocation();
   const [dismissed, setDismissed] = useState(false);
 
-  if (!needsUpdate || dismissed) return null;
+  // Only show for authenticated users on internal app pages
+  const isInternalPage = INTERNAL_SLUGS.has(pathname.split('/')[1] || '');
+  const isLoggedIn = !!user && !!role;
+
+  if (!needsUpdate || dismissed || !isLoggedIn || (!isInternalPage && pathname !== '/')) return null;
+  // Block on "/" — public home
+  if (pathname === '/') return null;
 
   return (
     <AnimatePresence>
