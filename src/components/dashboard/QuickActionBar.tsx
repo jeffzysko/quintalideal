@@ -3,6 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
 import { MessageCircle, Phone, CalendarPlus, Workflow } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { toast } from 'sonner';
 import type { LeadRow } from '@/lib/lead-constants';
 
 interface QuickAction {
@@ -38,7 +39,7 @@ export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowup
       const msg = encodeURIComponent(`Olá ${hotUncontacted.nome || ''}, tudo bem?`);
       window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
     } else {
-      navigate(dashPath);
+      toast.info('Nenhum lead novo com telefone disponível');
     }
   };
 
@@ -47,7 +48,7 @@ export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowup
       const phone = hotUncontacted.telefone.replace(/\D/g, '');
       window.open(`tel:+55${phone}`, '_self');
     } else {
-      navigate(dashPath);
+      toast.info('Nenhum lead novo com telefone disponível');
     }
   };
 
@@ -69,7 +70,7 @@ export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowup
     },
     {
       icon: Phone,
-      label: 'Ligar',
+      label: hotUncontacted ? 'Ligar' : 'Ligar',
       color: 'text-emerald-600',
       bgColor: 'icon-bg-green',
       onClick: handleCall,

@@ -418,6 +418,53 @@ export function SmartSuggestions({ leads, followups, activities, basePath }: Sma
           })}
         </AnimatePresence>
       </div>
+
+      {/* ── Lead list sheet ── */}
+      <Sheet open={!!sheetLeadIds} onOpenChange={(open) => !open && setSheetLeadIds(null)}>
+        <SheetContent side="bottom" className="max-h-[80vh] rounded-t-2xl pb-safe">
+          <SheetHeader className="pb-3">
+            <SheetTitle className="text-base font-bold">{sheetTitle}</SheetTitle>
+          </SheetHeader>
+          <div className="overflow-y-auto space-y-2 pb-4">
+            {sheetLeads.map((lead) => (
+              <div
+                key={lead.id}
+                className="flex items-center gap-3 p-3 rounded-xl border border-border/40 bg-card cursor-pointer transition-all hover:shadow-sm active:scale-[0.98]"
+                onClick={() => {
+                  setSheetLeadIds(null);
+                  navigate(`${basePath}/${lead.id}`);
+                }}
+              >
+                <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                  <span className="text-xs font-bold text-primary">
+                    {(lead.nome || '?')[0].toUpperCase()}
+                  </span>
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-foreground truncate">{lead.nome || 'Sem nome'}</p>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    {lead.cidade && (
+                      <span className="text-[11px] text-muted-foreground truncate">{lead.cidade}</span>
+                    )}
+                    {lead.pontuacao_quintal != null && (
+                      <Badge variant="secondary" className="text-[9px] px-1.5 py-0 font-bold">
+                        {lead.pontuacao_quintal}%
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+                <Badge variant="outline" className={cn('text-[9px] px-1.5 py-0 shrink-0', STATUS_COLORS[lead.status_lead])}>
+                  {STATUS_LABELS[lead.status_lead] || lead.status_lead}
+                </Badge>
+                <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+              </div>
+            ))}
+            {sheetLeads.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-8">Nenhum lead encontrado.</p>
+            )}
+          </div>
+        </SheetContent>
+      </Sheet>
     </motion.section>
   );
 }
