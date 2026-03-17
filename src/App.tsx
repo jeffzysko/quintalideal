@@ -58,6 +58,7 @@ const Suporte = lazy(() => import("./pages/Suporte"));
 const Notificacoes = lazy(() => import("./pages/Notificacoes"));
 const HojePage = lazy(() => import("./pages/HojePage"));
 const OrganizationSettings = lazy(() => import("./pages/OrganizationSettings"));
+const NotificationPreferences = lazy(() => import("./pages/NotificationPreferences"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
