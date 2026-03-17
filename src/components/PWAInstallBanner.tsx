@@ -11,11 +11,16 @@ const BANNER_BLOCKED_PATHS = new Set(['/', '/login', '/forgot-password', '/reset
 export function PWAInstallBanner() {
   const { canInstall, promptInstall, isStandalone } = usePWA();
   const { user, role } = useAuth();
+  const { pathname } = useLocation();
   const [dismissed, setDismissed] = useState(false);
   const [showBanner, setShowBanner] = useState(false);
 
-  // Only show for authenticated users (admins/franchises)
-  const isLoggedIn = !!user && !!role;
+  // Hide on public/franchise landing pages (/:slug routes)
+  const isBlockedPage = BANNER_BLOCKED_PATHS.has(pathname) ||
+    (/^\/[^/]+$/.test(pathname) && !['mapa', 'ranking', 'painel', 'franquia', 'admin', 'perfil', 'suporte', 'notificacoes', 'hoje', 'install', 'explorar', 'docs'].includes(pathname.slice(1)));
+
+  // Only show for authenticated users on allowed pages
+  const isLoggedIn = !!user && !!role && !isBlockedPage;
 
   useEffect(() => {
     if (!canInstall || isStandalone || dismissed || !isLoggedIn) return;
