@@ -337,7 +337,7 @@ export default function HojePage() {
   // ── Render ──
   return (
     <PageTransition>
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background pb-bottomnav">
         <PanelHeader title="Hoje">
           <BackButton fallback={isAdmin ? '/admin' : '/franquia'} />
           <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
