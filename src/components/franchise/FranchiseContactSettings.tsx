@@ -83,81 +83,10 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
     }
   };
 
-  const franchiseUrl = slug ? `${SITE_URL}/${slug}` : '';
-
-  const handleCopyLink = () => {
-    if (franchiseUrl) {
-      navigator.clipboard.writeText(franchiseUrl);
-      toast.success('Link copiado!');
-    }
-  };
-
   if (loading) return null;
 
   return (
     <div className="space-y-4">
-      {/* Dados de Contato */}
-      <Card className="card-premium">
-        <CardHeader>
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Phone className="w-4 h-4 text-primary" />
-            </div>
-            Dados de Contato
-          </CardTitle>
-          <CardDescription className="text-xs">
-            Esses dados serão usados automaticamente nos botões de WhatsApp e e-mail do quiz dos seus leads.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-5">
-          <div className="space-y-1.5">
-            <Label htmlFor="contact-whatsapp" className="text-xs font-medium">
-              WhatsApp (com código do país, ex: 5551999999999)
-            </Label>
-            <Input
-              id="contact-whatsapp"
-              value={whatsapp}
-              onChange={e => setWhatsapp(e.target.value)}
-              placeholder="5551999999999"
-              className="rounded-xl h-11 font-mono text-sm"
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="contact-email" className="text-xs font-medium">
-              E-mail de contato
-            </Label>
-            <Input
-              id="contact-email"
-              type="email"
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-              placeholder="contato@suafranquia.com"
-              className="rounded-xl h-11"
-            />
-          </div>
-
-          <Button onClick={handleSaveContact} disabled={savingContact} className="w-full gap-2 rounded-xl h-11">
-            <Save className="w-4 h-4" />
-            {savingContact ? 'Salvando...' : 'Salvar dados de contato'}
-          </Button>
-
-          {franchiseUrl && (
-            <div className="pt-3 border-t border-border/30">
-              <Label className="text-xs font-medium text-muted-foreground">Seu link personalizado</Label>
-              <div className="flex items-center gap-2 mt-1.5">
-                <code className="text-xs bg-muted px-3 py-2.5 rounded-xl flex-1 truncate font-mono">{franchiseUrl}</code>
-                <Button variant="outline" size="sm" onClick={handleCopyLink} className="gap-1.5 shrink-0 rounded-xl h-11">
-                  <Share2 className="w-3.5 h-3.5" />
-                  Copiar
-                </Button>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Integrações */}
       <Card className="card-premium">
         <CardHeader>
           <CardTitle className="text-sm font-semibold flex items-center gap-2">
