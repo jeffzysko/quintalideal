@@ -497,7 +497,7 @@ export default function ProfileSettings() {
                       placeholder="Seu nome completo"
                       value={fullName}
                       onChange={e => setFullName(e.target.value)}
-                      className="rounded-xl h-11"
+                      className="rounded-xl h-11 text-base sm:text-sm"
                     />
                   </div>
                   <div className="space-y-1.5">
