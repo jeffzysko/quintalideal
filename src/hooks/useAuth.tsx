@@ -163,7 +163,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     if (error) {
       setLoading(false);
-      return { error: error.message };
+      return { error: translateAuthError(error.message) };
     }
 
     // Immediately sync session so role is available before navigation
