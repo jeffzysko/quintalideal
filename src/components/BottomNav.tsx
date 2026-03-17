@@ -1,24 +1,28 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, Users, Workflow, CalendarClock, Settings } from 'lucide-react';
+import { LayoutDashboard, Workflow, Home, Settings } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// Simplified nav for each role
-function getNavForRole(role: string | null): { icon: typeof LayoutDashboard; label: string; path: string; tabParam?: string }[] {
+interface NavItem {
+  icon: typeof LayoutDashboard;
+  label: string;
+  path: string;
+  matchPaths?: string[];
+}
+
+function getNavForRole(role: string | null): NavItem[] {
   if (role === 'admin_fabrica' || role === 'super_admin') {
     return [
-      { icon: LayoutDashboard, label: 'Painel', path: '/admin' },
-      { icon: CalendarClock, label: 'Hoje', path: '/hoje' },
-      { icon: Users, label: 'Leads', path: '/admin', tabParam: 'leads' },
+      { icon: Home, label: 'Início', path: '/hoje' },
+      { icon: LayoutDashboard, label: 'Painel', path: '/admin', matchPaths: ['/admin'] },
       { icon: Settings, label: 'Perfil', path: '/perfil' },
     ];
   }
-  // franquia
   return [
-    { icon: LayoutDashboard, label: 'Painel', path: '/franquia' },
-    { icon: CalendarClock, label: 'Hoje', path: '/hoje' },
-    { icon: Workflow, label: 'Funil', path: '/franquia', tabParam: 'funnel' },
+    { icon: Home, label: 'Início', path: '/hoje' },
+    { icon: LayoutDashboard, label: 'Painel', path: '/franquia', matchPaths: ['/franquia', '/painel'] },
+    { icon: Workflow, label: 'Funil', path: '/franquia?tab=funnel' },
     { icon: Settings, label: 'Perfil', path: '/perfil' },
   ];
 }
@@ -37,9 +41,11 @@ export function BottomNav() {
 
   const navItems = getNavForRole(role);
 
-  const isActive = (item: typeof navItems[0]) => {
-    if (item.tabParam) return false; // Tab params are secondary nav
-    return location.pathname === item.path || location.pathname.startsWith(item.path + '/');
+  const isActive = (item: NavItem) => {
+    const basePath = item.path.split('?')[0];
+    if (location.pathname === basePath) return true;
+    if (item.matchPaths) return item.matchPaths.some(p => location.pathname.startsWith(p));
+    return false;
   };
 
   return (
