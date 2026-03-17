@@ -755,7 +755,7 @@ export default function ProfileSettings() {
                   </div>
 
                   {autoPrefs.auto_contact_reminder && (
-                    <div className="pl-12 space-y-2">
+                    <div className="pl-4 sm:pl-12 space-y-2">
                       <Label className="text-xs font-semibold">Tempo limite (horas)</Label>
                       <div className="flex items-center gap-3">
                         <Input
@@ -764,7 +764,7 @@ export default function ProfileSettings() {
                           max={168}
                           value={autoPrefs.reminder_hours}
                           onChange={e => setAutoPrefs(prev => ({ ...prev, reminder_hours: Number(e.target.value) || 48 }))}
-                          className="w-24 rounded-xl h-11"
+                          className="w-24 rounded-xl h-11 text-base sm:text-sm"
                         />
                         <span className="text-xs text-muted-foreground">horas sem contato</span>
                       </div>
