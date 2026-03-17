@@ -116,7 +116,7 @@ export function AdminLeadFilters({
             </SelectContent>
           </Select>
           <Select value={filterStatus} onValueChange={onStatusChange}>
-            <SelectTrigger className="rounded-xl h-11 sm:h-10 text-sm"><SelectValue placeholder="Status" /></SelectTrigger>
+            <SelectTrigger className="rounded-xl h-11 sm:h-10"><SelectValue placeholder="Status" /></SelectTrigger>
             <SelectContent>
               <SelectItem value="all">Todos Status</SelectItem>
               {Object.entries(STATUS_LABELS).map(([v, l]) => (
