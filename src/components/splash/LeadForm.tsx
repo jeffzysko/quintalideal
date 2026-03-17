@@ -25,6 +25,7 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading, lang = 'pt' }: L
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [duplicateMsg, setDuplicateMsg] = useState('');
   const [checking, setChecking] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   const handlePhoneChange = (val: string) => {
     setTelefone(formatPhoneBR(val));
