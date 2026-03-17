@@ -772,21 +772,21 @@ export default function ProfileSettings() {
                   )}
 
                   {/* Auto lost */}
-                  <div className="flex items-center justify-between gap-4 py-3 border-b border-border/20">
-                    <div className="flex items-start gap-3">
+                  <div className="flex items-center justify-between gap-3 py-3.5 border-b border-border/20">
+                    <div className="flex items-start gap-3 min-w-0">
                       <div className="w-9 h-9 rounded-xl bg-destructive/10 flex items-center justify-center shrink-0 mt-0.5">
                         <Workflow className="w-4 h-4 text-destructive" />
                       </div>
-                      <div>
-                        <p className="text-sm font-semibold">Marcar como perdido automaticamente</p>
-                        <p className="text-xs text-muted-foreground">
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold">Marcar como perdido</p>
+                        <p className="text-xs text-muted-foreground leading-relaxed">
                           Leads sem movimentação por {autoPrefs.auto_lost_days} dias serão marcados como perdidos
                         </p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="pl-12 space-y-2">
+                  <div className="pl-4 sm:pl-12 space-y-2">
                     <Label className="text-xs font-semibold">Dias sem movimentação</Label>
                     <div className="flex items-center gap-3">
                       <Input
@@ -795,7 +795,7 @@ export default function ProfileSettings() {
                         max={180}
                         value={autoPrefs.auto_lost_days}
                         onChange={e => setAutoPrefs(prev => ({ ...prev, auto_lost_days: Number(e.target.value) || 30 }))}
-                        className="w-24 rounded-xl h-11"
+                        className="w-24 rounded-xl h-11 text-base sm:text-sm"
                       />
                       <span className="text-xs text-muted-foreground">dias</span>
                     </div>
