@@ -363,6 +363,9 @@ export default function OrganizationSettings() {
                     </Button>
                   </CardContent>
                 </Card>
+
+                {/* Push Notifications Card */}
+                <PushNotificationCard />
               </TabsContent>
 
               {/* Automation Settings */}
