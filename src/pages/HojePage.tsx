@@ -355,16 +355,20 @@ export default function HojePage() {
 
           {isLoading ? <PageSkeleton /> : (
             <>
-              <Greeting name={profile?.full_name || null} />
-              <QuickStats stats={quickStats} />
+               <Greeting name={profile?.full_name || null} />
+               <QuickActionBar onNavigatePipeline={() => navigate(isAdmin ? '/admin' : '/franquia')} />
+               <QuickStats stats={quickStats} />
 
-              {/* ═══ SMART SUGGESTIONS ═══ */}
-              <SmartSuggestions
-                leads={leads}
-                followups={followups}
-                activities={recentActivities}
-                basePath={basePath}
-              />
+               {/* ═══ PIPELINE SNAPSHOT ═══ */}
+               {leads.length > 0 && <PipelineSnapshot leads={leads} />}
+
+               {/* ═══ SMART SUGGESTIONS ═══ */}
+               <SmartSuggestions
+                 leads={leads}
+                 followups={followups}
+                 activities={recentActivities}
+                 basePath={basePath}
+               />
 
               {/* ═══ URGENT: Overdue Follow-ups ═══ */}
               {overdueFollowups.length > 0 && (
