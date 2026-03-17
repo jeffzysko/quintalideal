@@ -481,7 +481,7 @@ function MobilePipelineCard({
             e.stopPropagation();
             onStageChange(lead.id);
           }}
-          className="flex-1 flex items-center justify-center gap-1 py-2 text-[11px] font-medium text-primary hover:bg-primary/5 transition-colors min-h-[40px]"
+          className="flex-1 flex items-center justify-center gap-1 py-2 text-[11px] font-medium text-primary hover:bg-primary/5 transition-colors min-h-[44px]"
         >
           <ChevronRight className="w-3.5 h-3.5" />
           Mover
