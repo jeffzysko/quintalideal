@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import {
   MessageCircle, Phone, ArrowRight, Lightbulb, TrendingUp,
   AlertCircle, Clock, Flame, CalendarPlus,
-  Zap, Star,
+  Zap, Star, List,
 } from 'lucide-react';
 import { differenceInDays } from 'date-fns';
 import type { LeadRow } from '@/lib/lead-constants';
@@ -47,8 +47,11 @@ interface Suggestion {
   iconColor: string;
   title: string;
   description: string;
+  /** Single lead to navigate to */
   leadId?: string;
   leadName?: string;
+  /** Multiple affected leads — shows "Ver X leads" linking to filtered list */
+  affectedLeadIds?: string[];
   action?: { label: string; onClick: () => void };
   metric?: string;
 }
@@ -76,7 +79,6 @@ function generateSuggestions(
   const suggestions: Suggestion[] = [];
   const now = new Date();
 
-  // Build lookup maps
   const leadFollowupMap = new Map<string, boolean>();
   followups.forEach(f => {
     if (!f.completed) leadFollowupMap.set(f.lead_id, true);
@@ -108,12 +110,15 @@ function generateSuggestions(
       icon: Flame,
       iconBg: 'bg-amber-500/10',
       iconColor: 'text-amber-600',
-      title: `${top.nome || 'Lead'} tem score ${top.pontuacao_quintal}% e ainda não foi contatado`,
+      title: hotNoContact.length === 1
+        ? `${top.nome || 'Lead'} tem score ${top.pontuacao_quintal}% e ainda não foi contatado`
+        : `${hotNoContact.length} leads quentes aguardando primeiro contato`,
       description: 'Leads quentes devem ser contatados nas primeiras horas para maximizar conversão.',
-      leadId: top.id,
-      leadName: top.nome || undefined,
+      leadId: hotNoContact.length === 1 ? top.id : undefined,
+      leadName: hotNoContact.length === 1 ? (top.nome || undefined) : undefined,
+      affectedLeadIds: hotNoContact.length > 1 ? hotNoContact.map(l => l.id) : undefined,
       metric: `${hotNoContact.length} lead${hotNoContact.length > 1 ? 's' : ''} quente${hotNoContact.length > 1 ? 's' : ''}`,
-      action: top.telefone ? {
+      action: hotNoContact.length === 1 && top.telefone ? {
         label: 'WhatsApp',
         onClick: () => handleWhatsApp(top),
       } : undefined,
@@ -136,8 +141,8 @@ function generateSuggestions(
       iconColor: 'text-amber-600',
       title: `${stuckNegociacao.length} lead${stuckNegociacao.length > 1 ? 's' : ''} parado${stuckNegociacao.length > 1 ? 's' : ''} em negociação há +14 dias`,
       description: 'Considere fazer um novo contato ou marcar como perdido para manter seu funil limpo.',
-      leadId: stuckNegociacao[0].id,
-      leadName: stuckNegociacao[0].nome || undefined,
+      leadId: stuckNegociacao.length === 1 ? stuckNegociacao[0].id : undefined,
+      affectedLeadIds: stuckNegociacao.length > 1 ? stuckNegociacao.map(l => l.id) : undefined,
       metric: `${stuckNegociacao.length} estagnado${stuckNegociacao.length > 1 ? 's' : ''}`,
     });
   }
@@ -155,15 +160,15 @@ function generateSuggestions(
       iconColor: 'text-primary',
       title: `${noFollowup.length} lead${noFollowup.length > 1 ? 's' : ''} contatado${noFollowup.length > 1 ? 's' : ''} sem follow-up agendado`,
       description: 'Agende um follow-up para não perder o timing com esses leads.',
-      leadId: noFollowup[0].id,
-      leadName: noFollowup[0].nome || undefined,
+      leadId: noFollowup.length === 1 ? noFollowup[0].id : undefined,
+      affectedLeadIds: noFollowup.length > 1 ? noFollowup.map(l => l.id) : undefined,
       metric: `${noFollowup.length} sem agenda`,
     });
   }
 
   // ── Rule 4: Leads without any activity in 7+ days ──
   const ghostedLeads = activeLeads.filter(l => {
-    if (l.status_lead === 'novo') return false; // handled separately
+    if (l.status_lead === 'novo') return false;
     const lastAct = lastActivityMap.get(l.id);
     if (!lastAct) return differenceInDays(now, new Date(l.created_at)) >= 7;
     return differenceInDays(now, lastAct) >= 7;
@@ -176,9 +181,9 @@ function generateSuggestions(
       iconBg: 'bg-muted',
       iconColor: 'text-muted-foreground',
       title: `${ghostedLeads.length} lead${ghostedLeads.length > 1 ? 's' : ''} sem interação há +7 dias`,
-      description: 'Uma mensagem rápida pode reativar o interesse. Não deixe esses leads esfriarem.',
-      leadId: ghostedLeads[0].id,
-      leadName: ghostedLeads[0].nome || undefined,
+      description: 'Uma mensagem rápida pode reativar o interesse.',
+      leadId: ghostedLeads.length === 1 ? ghostedLeads[0].id : undefined,
+      affectedLeadIds: ghostedLeads.length > 1 ? ghostedLeads.map(l => l.id) : undefined,
       metric: `${ghostedLeads.length} inativos`,
     });
   }
@@ -190,7 +195,7 @@ function generateSuggestions(
     const bestLead = highValueNeg.sort((a, b) => (b.pontuacao_quintal || 0) - (a.pontuacao_quintal || 0))[0];
     const lastAct = lastActivityMap.get(bestLead.id);
     const daysSinceLast = lastAct ? differenceInDays(now, lastAct) : differenceInDays(now, new Date(bestLead.created_at));
-    if (daysSinceLast < 14) { // not already flagged as stuck
+    if (daysSinceLast < 14) {
       suggestions.push({
         id: `high-value-${bestLead.id}`,
         priority: 'medium',
@@ -244,7 +249,6 @@ function generateSuggestions(
     });
   }
 
-  // Sort by priority
   return suggestions.sort((a, b) => PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority]).slice(0, 5);
 }
 
@@ -267,6 +271,13 @@ export function SmartSuggestions({ leads, followups, activities, basePath }: Sma
 
   if (suggestions.length === 0) return null;
 
+  const handleCardClick = (suggestion: Suggestion) => {
+    if (suggestion.leadId) {
+      navigate(`${basePath}/${suggestion.leadId}`);
+    }
+    // multi-lead: no card-level click, user uses the "Ver leads" button
+  };
+
   return (
     <motion.section
       initial={{ opacity: 0, y: 16 }}
@@ -286,6 +297,8 @@ export function SmartSuggestions({ leads, followups, activities, basePath }: Sma
           {suggestions.map((suggestion, i) => {
             const Icon = suggestion.icon;
             const priorityBadge = PRIORITY_BADGE[suggestion.priority];
+            const isMultiLead = (suggestion.affectedLeadIds?.length || 0) > 1;
+            const isClickable = !!suggestion.leadId;
 
             return (
               <motion.div
@@ -298,11 +311,12 @@ export function SmartSuggestions({ leads, followups, activities, basePath }: Sma
               >
                 <Card
                   className={cn(
-                    'card-premium overflow-hidden transition-all hover:shadow-md cursor-pointer',
+                    'card-premium overflow-hidden transition-all',
+                    isClickable && 'hover:shadow-md cursor-pointer',
                     suggestion.priority === 'critical' && 'border-destructive/30 ring-1 ring-destructive/10',
                     suggestion.priority === 'high' && 'border-amber-500/30',
                   )}
-                  onClick={() => suggestion.leadId && navigate(`${basePath}/${suggestion.leadId}`)}
+                  onClick={() => isClickable && handleCardClick(suggestion)}
                 >
                   <CardContent className="p-3 sm:p-4">
                     <div className="flex items-start gap-3">
@@ -346,7 +360,22 @@ export function SmartSuggestions({ leads, followups, activities, basePath }: Sma
                               {suggestion.action.label}
                             </Button>
                           )}
-                          {suggestion.leadId && (
+                          {isMultiLead && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-7 text-xs rounded-lg gap-1.5 px-3"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                // Navigate to the first lead as entry point
+                                navigate(`${basePath}/${suggestion.affectedLeadIds![0]}`);
+                              }}
+                            >
+                              <List className="w-3.5 h-3.5" />
+                              Ver {suggestion.affectedLeadIds!.length} leads
+                            </Button>
+                          )}
+                          {suggestion.leadId && !isMultiLead && (
                             <Button
                               size="sm"
                               variant="ghost"

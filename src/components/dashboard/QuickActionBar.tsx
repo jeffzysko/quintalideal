@@ -3,6 +3,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
 import { MessageCircle, Phone, CalendarPlus, Workflow } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import type { LeadRow } from '@/lib/lead-constants';
 
 interface QuickAction {
   icon: typeof MessageCircle;
@@ -10,17 +11,45 @@ interface QuickAction {
   color: string;
   bgColor: string;
   onClick: () => void;
+  badge?: number;
 }
 
 interface QuickActionBarProps {
   onNavigatePipeline?: () => void;
+  leads?: LeadRow[];
+  pendingFollowups?: number;
 }
 
-export function QuickActionBar({ onNavigatePipeline }: QuickActionBarProps) {
+export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowups }: QuickActionBarProps) {
   const navigate = useNavigate();
   const { role } = useAuth();
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
   const dashPath = isAdmin ? '/admin' : '/franquia';
+
+  // Find the hottest uncontacted lead for Ligar/WhatsApp
+  const hotUncontacted = leads
+    .filter(l => l.status_lead === 'novo' && l.telefone)
+    .sort((a, b) => (b.pontuacao_quintal || 0) - (a.pontuacao_quintal || 0))[0];
+
+  const handleWhatsApp = () => {
+    if (hotUncontacted?.telefone) {
+      const phone = hotUncontacted.telefone.replace(/\D/g, '');
+      const fullPhone = phone.startsWith('55') ? phone : `55${phone}`;
+      const msg = encodeURIComponent(`Olá ${hotUncontacted.nome || ''}, tudo bem?`);
+      window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
+    } else {
+      navigate(dashPath);
+    }
+  };
+
+  const handleCall = () => {
+    if (hotUncontacted?.telefone) {
+      const phone = hotUncontacted.telefone.replace(/\D/g, '');
+      window.open(`tel:+55${phone}`, '_self');
+    } else {
+      navigate(dashPath);
+    }
+  };
 
   const actions: QuickAction[] = [
     {
@@ -28,28 +57,29 @@ export function QuickActionBar({ onNavigatePipeline }: QuickActionBarProps) {
       label: 'Funil',
       color: 'text-violet-600',
       bgColor: 'icon-bg-violet',
-      onClick: onNavigatePipeline || (() => navigate(dashPath)),
+      onClick: onNavigatePipeline || (() => navigate(`${dashPath}?tab=funnel`)),
     },
     {
       icon: CalendarPlus,
       label: 'Follow-up',
       color: 'text-primary',
       bgColor: 'icon-bg-blue',
-      onClick: () => navigate(dashPath),
+      onClick: () => navigate(`${dashPath}?tab=funnel`),
+      badge: pendingFollowups,
     },
     {
       icon: Phone,
       label: 'Ligar',
       color: 'text-emerald-600',
       bgColor: 'icon-bg-green',
-      onClick: () => navigate(dashPath),
+      onClick: handleCall,
     },
     {
       icon: MessageCircle,
       label: 'WhatsApp',
       color: 'text-green-600',
       bgColor: 'icon-bg-green',
-      onClick: () => navigate(dashPath),
+      onClick: handleWhatsApp,
     },
   ];
 
@@ -64,7 +94,7 @@ export function QuickActionBar({ onNavigatePipeline }: QuickActionBarProps) {
             transition={{ delay: i * 0.05 }}
             onClick={action.onClick}
             className={cn(
-              'flex flex-col items-center gap-1.5 min-w-[72px] py-3 px-2 rounded-2xl',
+              'flex flex-col items-center gap-1.5 min-w-[72px] py-3 px-2 rounded-2xl relative',
               'border border-border/30 bg-card transition-all active:scale-95',
               'hover:shadow-sm'
             )}
@@ -73,6 +103,11 @@ export function QuickActionBar({ onNavigatePipeline }: QuickActionBarProps) {
               <action.icon className={cn('w-5 h-5', action.color)} />
             </div>
             <span className="text-[10px] font-semibold text-muted-foreground">{action.label}</span>
+            {action.badge && action.badge > 0 && (
+              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold px-1">
+                {action.badge > 9 ? '9+' : action.badge}
+              </span>
+            )}
           </motion.button>
         ))}
       </div>

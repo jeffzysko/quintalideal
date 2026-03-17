@@ -356,7 +356,11 @@ export default function HojePage() {
           {isLoading ? <PageSkeleton /> : (
             <>
                <Greeting name={profile?.full_name || null} />
-               <QuickActionBar onNavigatePipeline={() => navigate(isAdmin ? '/admin' : '/franquia')} />
+               <QuickActionBar
+                 onNavigatePipeline={() => navigate(isAdmin ? '/admin?tab=funnel' : '/franquia?tab=funnel')}
+                 leads={leads}
+                 pendingFollowups={todayFollowups.length + overdueFollowups.length}
+               />
                <QuickStats stats={quickStats} />
 
                {/* ═══ PIPELINE SNAPSHOT ═══ */}
@@ -481,41 +485,36 @@ export default function HojePage() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: i * 0.03 }}
-                            className="flex items-center gap-3 p-3 cursor-pointer hover:bg-muted/40 transition-colors"
+                            className="flex items-center gap-2.5 p-2.5 cursor-pointer hover:bg-muted/40 transition-colors"
                             onClick={() => navigate(`${basePath}/${lead.id}`)}
                           >
-                            <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center shrink-0">
-                              <span className="text-sm font-bold text-amber-600">
+                            <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center shrink-0">
+                              <span className="text-xs font-bold text-amber-600">
                                 {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
                               </span>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2">
-                                <p className="text-sm font-semibold text-foreground truncate">{lead.nome || '—'}</p>
-                                <Badge className={cn(temp.bgColor, temp.color, 'border text-[9px] font-semibold')} variant="outline">
-                                  {temp.emoji}
-                                </Badge>
-                              </div>
-                              <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-0.5">
-                                {lead.cidade && <span className="flex items-center gap-0.5"><MapPin className="w-3 h-3" />{lead.cidade}</span>}
-                                <span className="text-amber-600 font-semibold flex items-center gap-0.5">
-                                  <Clock className="w-3 h-3" />{waitLabel} sem contato
-                                </span>
+                              <p className="text-[13px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
+                              <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                                {lead.cidade && <span className="truncate max-w-[100px]">{lead.cidade}</span>}
+                                <span className="text-amber-600 font-semibold">{waitLabel}</span>
                               </div>
                             </div>
                             <div className="flex items-center gap-1 shrink-0">
+                              <Badge className={cn(temp.bgColor, temp.color, 'border text-[9px] font-semibold px-1 py-0')} variant="outline">
+                                {temp.emoji}
+                              </Badge>
                               {lead.telefone && (
                                 <Button
                                   size="icon"
                                   variant="ghost"
-                                  className="h-8 w-8 rounded-lg"
+                                  className="h-7 w-7 rounded-lg"
                                   onClick={(e) => { e.stopPropagation(); handleWhatsApp(lead); }}
                                   aria-label="WhatsApp"
                                 >
-                                  <MessageCircle className="w-4 h-4 text-green-600" />
+                                  <MessageCircle className="w-3.5 h-3.5 text-green-600" />
                                 </Button>
                               )}
-                              <ChevronRight className="w-4 h-4 text-muted-foreground" />
                             </div>
                           </motion.div>
                         );
@@ -550,36 +549,33 @@ export default function HojePage() {
                           initial={{ opacity: 0, x: -12 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: i * 0.04 }}
-                          className="flex items-center gap-3 p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 cursor-pointer hover:shadow-sm transition-all"
+                          className="flex items-center gap-2.5 p-2.5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 cursor-pointer hover:shadow-sm transition-all"
                           onClick={() => navigate(`${basePath}/${lead.id}`)}
                         >
-                          <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
-                            <span className="text-sm font-bold text-emerald-600">
+                          <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
+                            <span className="text-xs font-bold text-emerald-600">
                               {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
                             </span>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <p className="text-sm font-semibold text-foreground truncate">{lead.nome || '—'}</p>
-                              <Badge className={cn(temp.bgColor, temp.color, 'border text-[9px] font-semibold')} variant="outline">
-                                {temp.emoji} {temp.label}
-                              </Badge>
-                            </div>
-                            <p className="text-[11px] text-muted-foreground mt-0.5">{timeAgo} · {lead.cidade || 'Sem cidade'}</p>
+                            <p className="text-[13px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
+                            <p className="text-[10px] text-muted-foreground truncate">{timeAgo} · {lead.cidade || 'Sem cidade'}</p>
                           </div>
                           <div className="flex items-center gap-1 shrink-0">
+                            <Badge className={cn(temp.bgColor, temp.color, 'border text-[9px] font-semibold px-1 py-0')} variant="outline">
+                              {temp.emoji} {temp.label}
+                            </Badge>
                             {lead.telefone && (
                               <Button
                                 size="icon"
                                 variant="ghost"
-                                className="h-8 w-8 rounded-lg"
+                                className="h-7 w-7 rounded-lg"
                                 onClick={(e) => { e.stopPropagation(); handleWhatsApp(lead); }}
                                 aria-label="WhatsApp"
                               >
-                                <MessageCircle className="w-4 h-4 text-green-600" />
+                                <MessageCircle className="w-3.5 h-3.5 text-green-600" />
                               </Button>
                             )}
-                            <ChevronRight className="w-4 h-4 text-muted-foreground" />
                           </div>
                         </motion.div>
                       );
@@ -599,22 +595,22 @@ export default function HojePage() {
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           transition={{ delay: i * 0.03 }}
-                          className="flex items-center gap-3 p-3 cursor-pointer hover:bg-muted/40 transition-colors"
+                          className="flex items-center gap-2.5 p-2.5 cursor-pointer hover:bg-muted/40 transition-colors"
                           onClick={() => navigate(`${basePath}/${lead.id}`)}
                         >
-                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                            <span className="text-sm font-bold text-primary">
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                            <span className="text-xs font-bold text-primary">
                               {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
                             </span>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-foreground truncate">{lead.nome || '—'}</p>
-                            <div className="flex items-center gap-2 text-[11px] text-muted-foreground mt-0.5">
+                            <p className="text-[13px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
+                            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
                               <span className="font-bold text-primary">{lead.pontuacao_quintal}%</span>
-                              <Badge className={`${STATUS_COLORS[lead.status_lead]} border text-[9px]`} variant="secondary">
+                              <Badge className={`${STATUS_COLORS[lead.status_lead]} border text-[9px] px-1 py-0`} variant="secondary">
                                 {STATUS_LABELS[lead.status_lead]}
                               </Badge>
-                              {lead.modelo_recomendado && <span>{lead.modelo_recomendado}</span>}
+                              {lead.modelo_recomendado && <span className="truncate">{lead.modelo_recomendado}</span>}
                             </div>
                           </div>
                           <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
