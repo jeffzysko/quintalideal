@@ -128,6 +128,7 @@ export default function LeadDetail() {
   const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState('');
   const [observacoes, setObservacoes] = useState('');
+  const [tempOverride, setTempOverride] = useState<LeadTemperature | ''>('');
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
