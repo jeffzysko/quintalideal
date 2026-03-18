@@ -108,7 +108,6 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
   const checkDuplicate = useCallback(async () => {
     const digits = unformatPhone(telefone);
     if (!isValidBRPhone(digits)) return;
-    setCheckingDuplicate(true);
     try {
       const { data } = await supabase
         .from('leads')
