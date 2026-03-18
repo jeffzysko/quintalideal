@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { ManualLeadForm } from '@/components/franchise/ManualLeadForm';
+import { CSVLeadImport } from '@/components/franchise/CSVLeadImport';
 import { BackButton } from '@/components/BackButton';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
