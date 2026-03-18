@@ -51,24 +51,28 @@ export function calculateScore(answers: QuizAnswers): number {
   return score;
 }
 
-/** Returns a recommended size string based on user's available space and pool model */
+/** Returns a recommended size string based on user's available space and pool model.
+ *  Sizes are aligned with actual pool_models DB data. */
 export function recommendSize(espaco: string, poolName: string): string {
   const sizeMap: Record<string, Record<string, string>> = {
     'ate-3': {
       'Navagio': '3,25 x 2,25m',
-      'Italiana': '3,00 x 2,00m',
-      'Bonaire': '3,00 x 2,00m',
+      'Italiana': '2,50 x 1,80m',
       'Nassau': '4,00 x 3,00m',
+      'Bonaire': '3,00 x 2,00m',
+      'Cancún': '3,00 x 2,00m',
       'default': '3,00 x 2,00m',
     },
     '3-5': {
       'Navagio': '3,25 x 2,25m',
       'Italiana': '4,00 x 2,40m',
-      'Bonaire': '4,00 x 2,00m',
-      'Cancún': '4,00 x 2,00m',
+      'Bonaire': '4,00 x 2,50m',
+      'Cancún': '4,00 x 2,50m',
       'Nassau': '4,00 x 3,00m',
       'Tortuga': '5,00 x 2,30m',
-      'default': '4,00 x 2,00m',
+      'Tradicional': '3,50 x 2,00m',
+      'Tropical': '3,50 x 2,00m',
+      'default': '4,00 x 2,50m',
     },
     '5-7': {
       'Tortuga': '7,00 x 3,30m',
@@ -77,18 +81,19 @@ export function recommendSize(espaco: string, poolName: string): string {
       'Tropical': '6,00 x 2,60m',
       'Tradicional': '6,00 x 2,50m',
       'Cancún': '6,00 x 3,00m',
-      'Italiana': '6,00 x 3,00m',
+      'Italiana': '6,00 x 2,80m',
+      'Atalaia': '7,00 x 4,00m',
       'default': '6,00 x 3,00m',
     },
     'mais-7': {
-      'Tortuga': '9,00 x 3,50m',
+      'Tortuga': '9,00 x 3,30m',
       'Atalaia': '9,00 x 4,00m',
-      'Cancún': '8,00 x 4,00m',
-      'Tradicional': '8,00 x 3,00m',
-      'Farol da Barra': '8,00 x 4,00m',
-      'Bonaire': '8,00 x 4,00m',
-      'Tropical': '8,00 x 3,00m',
-      'Italiana': '8,00 x 4,00m',
+      'Cancún': '8,00 x 3,50m',
+      'Tradicional': '8,00 x 2,75m',
+      'Farol da Barra': '8,00 x 3,50m',
+      'Bonaire': '8,00 x 3,00m',
+      'Tropical': '8,00 x 2,80m',
+      'Italiana': '8,00 x 2,80m',
       'default': '8,00 x 3,00m',
     },
   };
