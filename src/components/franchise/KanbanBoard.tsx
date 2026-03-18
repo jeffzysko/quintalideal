@@ -1028,6 +1028,18 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
                     <SelectItem value="morno">☀️ Morno</SelectItem>
                     <SelectItem value="frio">❄️ Frio</SelectItem>
                   </SelectContent>
+              </Select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Origem</label>
+                <Select value={originFilter} onValueChange={setOriginFilter}>
+                  <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas origens</SelectItem>
+                    <SelectItem value="quiz">📝 Quiz</SelectItem>
+                    <SelectItem value="manual">✏️ Manual</SelectItem>
+                    <SelectItem value="csv_import">📄 CSV</SelectItem>
+                  </SelectContent>
                 </Select>
               </div>
               <div className="space-y-1.5">
