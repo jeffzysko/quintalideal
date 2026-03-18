@@ -220,7 +220,7 @@ export default function HojePage() {
     queryFn: async () => {
       let query = supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, respostas_questionario')
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, respostas_questionario, lead_origin')
         .order('created_at', { ascending: false })
         .limit(500);
 
