@@ -451,6 +451,7 @@ export default function LeadDetail() {
                 </p>
               </div>
 
+              <div>
                 <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Observações</label>
                 <Textarea
                   value={observacoes}
