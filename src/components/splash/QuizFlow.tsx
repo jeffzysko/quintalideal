@@ -20,7 +20,7 @@ const PhotoAnalysis = lazy(() => import('./PhotoAnalysis').then(m => ({ default:
 const PreDiagnosis = lazy(() => import('./PreDiagnosis').then(m => ({ default: m.PreDiagnosis })));
 const QuizStep = lazy(() => import('./QuizStep').then(m => ({ default: m.QuizStep })));
 const ProcessingScreen = lazy(() => import('./ProcessingScreen').then(m => ({ default: m.ProcessingScreen })));
-const ResultScreen = lazy(() => import('./ResultScreen').then(m => ({ default: m.ResultScreen })));
+
 const LeadForm = lazy(() => import('./LeadForm').then(m => ({ default: m.LeadForm })));
 const ActionButtons = lazy(() => import('./ActionButtons').then(m => ({ default: m.ActionButtons })));
 
