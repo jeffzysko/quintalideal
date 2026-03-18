@@ -313,7 +313,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         }).catch(() => {});
       }
 
-      setStep('actions');
+      setStep('processing');
     } catch (err: unknown) {
       console.error('Lead submit error:', err);
       toast.error(t('lead_error_submit', lang));
