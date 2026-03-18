@@ -98,9 +98,36 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
     setModelo(''); setObservacoes(''); setErrors({});
     setOrcamento(''); setIntencao(''); setEspaco('');
     setMoradia(''); setTempOverride(''); setShowClassification(false);
+    setDuplicateWarning(null); setCheckingDuplicate(false);
   }, []);
 
-  const handlePhoneChange = (val: string) => setTelefone(formatPhoneBR(val));
+  const handlePhoneChange = (val: string) => {
+    setTelefone(formatPhoneBR(val));
+    setDuplicateWarning(null);
+  };
+
+  const checkDuplicate = useCallback(async () => {
+    const digits = unformatPhone(telefone);
+    if (!isValidBRPhone(digits)) return;
+    setCheckingDuplicate(true);
+    try {
+      const { data } = await supabase
+        .from('leads')
+        .select('id, nome, franquia_id')
+        .eq('telefone', digits)
+        .limit(1)
+        .maybeSingle();
+      if (data) {
+        setDuplicateWarning(`Já existe um lead com este telefone${data.nome ? ` (${data.nome})` : ''}.`);
+      } else {
+        setDuplicateWarning(null);
+      }
+    } catch {
+      // ignore check errors
+    } finally {
+      setCheckingDuplicate(false);
+    }
+  }, [telefone]);
 
   const handleSubmit = async () => {
     const newErrors: Record<string, string> = {};
