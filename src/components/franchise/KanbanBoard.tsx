@@ -1072,7 +1072,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
                 <Button
                   variant="ghost"
                   className="w-full text-sm text-muted-foreground"
-                  onClick={() => { setTempFilter('all'); setCityFilter('all'); setFranchiseFilter('all'); setNameSearch(''); setDateFrom(undefined); setDateTo(undefined); }}
+                  onClick={() => { setTempFilter('all'); setOriginFilter('all'); setCityFilter('all'); setFranchiseFilter('all'); setNameSearch(''); setDateFrom(undefined); setDateTo(undefined); }}
                 >
                   <X className="w-3.5 h-3.5 mr-1.5" />
                   Limpar filtros
