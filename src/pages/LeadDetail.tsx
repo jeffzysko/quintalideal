@@ -422,7 +422,35 @@ export default function LeadDetail() {
                 </Select>
               </div>
 
+              {/* Temperature override */}
               <div>
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Temperatura do Lead</label>
+                <div className="flex gap-2">
+                  {([
+                    { value: '' as const, label: 'Automático', emoji: '🤖' },
+                    { value: 'quente' as LeadTemperature, label: 'Quente', emoji: '🔥' },
+                    { value: 'morno' as LeadTemperature, label: 'Morno', emoji: '☀️' },
+                    { value: 'frio' as LeadTemperature, label: 'Frio', emoji: '❄️' },
+                  ]).map(t => (
+                    <button
+                      key={t.value}
+                      type="button"
+                      onClick={() => setTempOverride(t.value)}
+                      className={`flex-1 text-xs py-2.5 px-1 rounded-lg border transition-colors font-medium ${
+                        tempOverride === t.value
+                          ? 'border-primary bg-primary/10 text-primary'
+                          : 'border-border text-muted-foreground hover:bg-muted/50'
+                      }`}
+                    >
+                      {t.emoji} {t.label}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-[11px] text-muted-foreground mt-1">
+                  {tempOverride ? `Temperatura fixada como "${tempOverride}". Clique em "Automático" para calcular pelo questionário.` : 'Calculado automaticamente com base nos dados do questionário.'}
+                </p>
+              </div>
+
                 <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Observações</label>
                 <Textarea
                   value={observacoes}
