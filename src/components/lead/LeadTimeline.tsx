@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Phone, Clock, FileText, ArrowRightLeft, MessageCircle } from 'lucide-react';
+import { Phone, Clock, FileText, ArrowRightLeft, MessageCircle, Thermometer } from 'lucide-react';
 
 interface Activity {
   id: string;
@@ -20,6 +20,7 @@ const ACTIVITY_TYPES: Record<string, { label: string; icon: typeof Phone; color:
   call: { label: 'Ligação', icon: Phone, color: 'text-emerald-600', dotColor: 'bg-emerald-500' },
   whatsapp: { label: 'WhatsApp', icon: MessageCircle, color: 'text-green-600', dotColor: 'bg-green-500' },
   status_change: { label: 'Status', icon: ArrowRightLeft, color: 'text-amber-600', dotColor: 'bg-amber-500' },
+  temperature_change: { label: 'Temperatura', icon: Thermometer, color: 'text-orange-600', dotColor: 'bg-orange-500' },
 };
 
 
