@@ -280,7 +280,10 @@ export default function LeadDetail() {
                   </div>
                   {/* Lead Temperature */}
                   {(() => {
-                    const temp = classifyLead(lead.respostas_questionario, lead.pontuacao_quintal);
+                    const liveRespostas = { ...(lead.respostas_questionario || {}) };
+                    if (tempOverride) liveRespostas.temperatura_manual = tempOverride;
+                    else delete liveRespostas.temperatura_manual;
+                    const temp = classifyLead(Object.keys(liveRespostas).length > 0 ? liveRespostas : null, lead.pontuacao_quintal);
                     return (
                       <div className={`flex items-center gap-2 ${temp.bgColor} border rounded-lg px-3 py-2`}>
                         <span className="text-lg">{temp.emoji}</span>
