@@ -80,6 +80,8 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
   const [espaco, setEspaco] = useState('');
   const [moradia, setMoradia] = useState('');
   const [tempOverride, setTempOverride] = useState<LeadTemperature | ''>('');
+  const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
+  const [checkingDuplicate, setCheckingDuplicate] = useState(false);
 
   const preview = useMemo(() => {
     const respostas: Record<string, string> = {};
