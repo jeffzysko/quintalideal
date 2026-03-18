@@ -3,7 +3,7 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Phone, Clock, FileText, ArrowRightLeft, MessageCircle } from 'lucide-react';
+import { Phone, Clock, FileText, ArrowRightLeft, MessageCircle, Thermometer } from 'lucide-react';
 
 interface Activity {
   id: string;
