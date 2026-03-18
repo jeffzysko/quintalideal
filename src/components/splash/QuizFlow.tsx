@@ -134,7 +134,8 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         currency: 'BRL',
       });
 
-      setStep('processing');
+      // Go to lead form BEFORE showing results
+      setStep('lead-form');
     }
   }, [quizStep, answers, lang]);
 
