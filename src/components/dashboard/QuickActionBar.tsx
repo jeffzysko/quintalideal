@@ -56,6 +56,13 @@ export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowup
 
   const actions: QuickAction[] = [
     {
+      icon: UserPlus,
+      label: 'Novo Lead',
+      color: 'text-primary',
+      bgColor: 'icon-bg-blue',
+      onClick: onAddManualLead || (() => {}),
+    },
+    {
       icon: Workflow,
       label: 'Funil',
       color: 'text-violet-600',

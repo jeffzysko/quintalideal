@@ -128,8 +128,13 @@ export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePa
               </div>
             </div>
 
-            {/* Smart tags + model */}
+            {/* Smart tags + model + manual badge */}
             <div className="mt-2 ml-14 flex items-center gap-1.5 flex-wrap">
+              {(lead as any).lead_origin === 'manual' && (
+                <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-[10px] font-semibold" variant="outline">
+                  ✏️ Manual
+                </Badge>
+              )}
               <SmartTagBadges lead={lead} max={2} />
               {lead.modelo_recomendado && (
                 <span className="text-xs text-muted-foreground bg-muted/60 px-2 py-0.5 rounded-md">
