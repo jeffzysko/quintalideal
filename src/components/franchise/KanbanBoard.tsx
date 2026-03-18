@@ -1080,6 +1080,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       {/* Filters + Add button */}
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <ManualLeadForm franchiseId={franchiseId} />
+        <CSVLeadImport franchiseId={franchiseId} />
         <div className="flex items-center gap-2">
           <Filter className="w-4 h-4 text-muted-foreground" />
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Filtros</span>
