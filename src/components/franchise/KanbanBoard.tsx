@@ -740,6 +740,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
   const [movingLeads, setMovingLeads] = useState<Set<string>>(new Set());
   const [kanbanTipDismissed, setKanbanTipDismissed] = useState(() => !!localStorage.getItem('kanban-tip-dismissed'));
   const [tempFilter, setTempFilter] = useState<string>('all');
+  const [originFilter, setOriginFilter] = useState<string>('all');
   const [cityFilter, setCityFilter] = useState<string>('all');
   const [franchiseFilter, setFranchiseFilter] = useState<string>('all');
   const [nameSearch, setNameSearch] = useState('');
@@ -772,6 +773,9 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       if (cityFilter !== 'all') {
         if (lead.cidade !== cityFilter) return false;
       }
+      if (originFilter !== 'all') {
+        if ((lead.lead_origin || 'quiz') !== originFilter) return false;
+      }
       if (franchiseFilter !== 'all' && franchiseMap) {
         if (lead.franquia_id !== franchiseFilter) return false;
       }
@@ -785,9 +789,9 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       }
       return true;
     });
-  }, [leads, tempFilter, cityFilter, franchiseFilter, nameSearch, dateFrom, dateTo, franchiseMap]);
+  }, [leads, tempFilter, originFilter, cityFilter, franchiseFilter, nameSearch, dateFrom, dateTo, franchiseMap]);
 
-  const hasActiveFilters = tempFilter !== 'all' || cityFilter !== 'all' || franchiseFilter !== 'all' || nameSearch.trim() !== '' || !!dateFrom || !!dateTo;
+  const hasActiveFilters = tempFilter !== 'all' || originFilter !== 'all' || cityFilter !== 'all' || franchiseFilter !== 'all' || nameSearch.trim() !== '' || !!dateFrom || !!dateTo;
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -1024,6 +1028,18 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
                     <SelectItem value="morno">☀️ Morno</SelectItem>
                     <SelectItem value="frio">❄️ Frio</SelectItem>
                   </SelectContent>
+              </Select>
+              </div>
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Origem</label>
+                <Select value={originFilter} onValueChange={setOriginFilter}>
+                  <SelectTrigger className="h-11"><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas origens</SelectItem>
+                    <SelectItem value="quiz">📝 Quiz</SelectItem>
+                    <SelectItem value="manual">✏️ Manual</SelectItem>
+                    <SelectItem value="csv_import">📄 CSV</SelectItem>
+                  </SelectContent>
                 </Select>
               </div>
               <div className="space-y-1.5">
@@ -1056,7 +1072,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
                 <Button
                   variant="ghost"
                   className="w-full text-sm text-muted-foreground"
-                  onClick={() => { setTempFilter('all'); setCityFilter('all'); setFranchiseFilter('all'); setNameSearch(''); setDateFrom(undefined); setDateTo(undefined); }}
+                  onClick={() => { setTempFilter('all'); setOriginFilter('all'); setCityFilter('all'); setFranchiseFilter('all'); setNameSearch(''); setDateFrom(undefined); setDateTo(undefined); }}
                 >
                   <X className="w-3.5 h-3.5 mr-1.5" />
                   Limpar filtros
@@ -1105,6 +1121,18 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
             <SelectItem value="quente">🔥 Quente</SelectItem>
             <SelectItem value="morno">☀️ Morno</SelectItem>
             <SelectItem value="frio">❄️ Frio</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={originFilter} onValueChange={setOriginFilter}>
+          <SelectTrigger className="w-[140px] h-8 text-xs">
+            <SelectValue placeholder="Origem" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas origens</SelectItem>
+            <SelectItem value="quiz">📝 Quiz</SelectItem>
+            <SelectItem value="manual">✏️ Manual</SelectItem>
+            <SelectItem value="csv_import">📄 CSV</SelectItem>
           </SelectContent>
         </Select>
 
@@ -1175,7 +1203,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
             variant="ghost"
             size="sm"
             className="h-8 px-2 text-xs text-muted-foreground hover:text-foreground"
-            onClick={() => { setTempFilter('all'); setCityFilter('all'); setFranchiseFilter('all'); setNameSearch(''); setDateFrom(undefined); setDateTo(undefined); }}
+            onClick={() => { setTempFilter('all'); setOriginFilter('all'); setCityFilter('all'); setFranchiseFilter('all'); setNameSearch(''); setDateFrom(undefined); setDateTo(undefined); }}
           >
             <X className="w-3 h-3 mr-1" />
             Limpar

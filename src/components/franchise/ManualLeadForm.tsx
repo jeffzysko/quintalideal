@@ -2,6 +2,7 @@ import { useState, useCallback, useMemo } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -10,7 +11,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { UserPlus, Loader2, ChevronDown, ChevronUp } from 'lucide-react';
+import { UserPlus, Loader2, ChevronDown, ChevronUp, AlertTriangle } from 'lucide-react';
 import { isValidBRPhone, isValidEmail, formatPhoneBR, unformatPhone } from '@/lib/validation';
 import { classifyLead, LeadTemperature } from '@/lib/leadScoring';
 import { cn } from '@/lib/utils';
@@ -79,6 +80,7 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
   const [espaco, setEspaco] = useState('');
   const [moradia, setMoradia] = useState('');
   const [tempOverride, setTempOverride] = useState<LeadTemperature | ''>('');
+  const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
 
   const preview = useMemo(() => {
     const respostas: Record<string, string> = {};
@@ -95,9 +97,33 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
     setModelo(''); setObservacoes(''); setErrors({});
     setOrcamento(''); setIntencao(''); setEspaco('');
     setMoradia(''); setTempOverride(''); setShowClassification(false);
+    setDuplicateWarning(null);
   }, []);
 
-  const handlePhoneChange = (val: string) => setTelefone(formatPhoneBR(val));
+  const handlePhoneChange = (val: string) => {
+    setTelefone(formatPhoneBR(val));
+    setDuplicateWarning(null);
+  };
+
+  const checkDuplicate = useCallback(async () => {
+    const digits = unformatPhone(telefone);
+    if (!isValidBRPhone(digits)) return;
+    try {
+      const { data } = await supabase
+        .from('leads')
+        .select('id, nome, franquia_id')
+        .eq('telefone', digits)
+        .limit(1)
+        .maybeSingle();
+      if (data) {
+        setDuplicateWarning(`Já existe um lead com este telefone${data.nome ? ` (${data.nome})` : ''}.`);
+      } else {
+        setDuplicateWarning(null);
+      }
+    } catch {
+      // ignore check errors
+    }
+  }, [telefone]);
 
   const handleSubmit = async () => {
     const newErrors: Record<string, string> = {};
@@ -195,8 +221,23 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
           {/* Telefone */}
           <div className="space-y-1.5">
             <Label htmlFor="ml-telefone">Telefone *</Label>
-            <Input id="ml-telefone" placeholder="(51) 99999-9999" value={telefone} onChange={(e) => handlePhoneChange(e.target.value)} className={cn(errors.telefone && 'border-destructive')} />
+            <Input
+              id="ml-telefone"
+              placeholder="(51) 99999-9999"
+              value={telefone}
+              onChange={(e) => handlePhoneChange(e.target.value)}
+              onBlur={checkDuplicate}
+              className={cn((errors.telefone || duplicateWarning) && 'border-destructive')}
+            />
             {errors.telefone && <p className="text-xs text-destructive">{errors.telefone}</p>}
+            {duplicateWarning && !errors.telefone && (
+              <Alert variant="destructive" className="py-2 px-3">
+                <AlertTriangle className="h-3.5 w-3.5" />
+                <AlertDescription className="text-xs">
+                  {duplicateWarning} Você pode continuar, mas o lead pode ser duplicado.
+                </AlertDescription>
+              </Alert>
+            )}
           </div>
 
           {/* Email */}
