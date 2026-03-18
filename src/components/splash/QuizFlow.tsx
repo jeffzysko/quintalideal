@@ -337,7 +337,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
     setStep(urls.length > 0 ? 'photo-analysis' : 'quiz');
   };
 
-  const handleResultContinue = () => {
+  const handleProcessingDone = () => {
     trackEvent('result_viewed', {
       ...analyticsCtx,
       city: answers.cidade,
@@ -351,7 +351,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       currency: 'BRL',
     });
 
-    setStep('lead-form');
+    setStep('actions');
   };
 
   const currentQuizQuestion = quizStep < quizQuestions.length ? quizQuestions[quizStep] : null;
