@@ -362,6 +362,11 @@ export default function HojePage() {
                  leads={leads}
                  pendingFollowups={todayFollowups.length + overdueFollowups.length}
                />
+               {franchiseId && (
+                 <div className="mb-4 -mt-2">
+                   <ManualLeadForm franchiseId={franchiseId} />
+                 </div>
+               )}
                <QuickStats stats={quickStats} />
 
                {/* ═══ PIPELINE SNAPSHOT ═══ */}
