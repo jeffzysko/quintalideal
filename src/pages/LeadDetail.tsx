@@ -17,7 +17,7 @@ import { LeadTimeline } from '@/components/lead/LeadTimeline';
 import { LeadFollowups } from '@/components/franchise/LeadFollowups';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { classifyLead } from '@/lib/leadScoring';
+import { classifyLead, type LeadTemperature } from '@/lib/leadScoring';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
