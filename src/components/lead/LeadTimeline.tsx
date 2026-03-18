@@ -22,7 +22,7 @@ const ACTIVITY_TYPES: Record<string, { label: string; icon: typeof Phone; color:
   status_change: { label: 'Status', icon: ArrowRightLeft, color: 'text-amber-600', dotColor: 'bg-amber-500' },
 };
 
-const QUICK_TYPES = ['note', 'call', 'whatsapp'] as const;
+
 
 interface LeadTimelineProps {
   leadId: string;
