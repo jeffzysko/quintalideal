@@ -907,8 +907,16 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
           <ManualLeadForm
             franchiseId={franchiseId}
             trigger={
-              <Button variant="outline" size="icon" className="h-10 w-10 shrink-0">
+              <Button variant="outline" size="icon" className="h-10 w-10 shrink-0" title="Novo Lead">
                 <UserPlus className="w-4 h-4" />
+              </Button>
+            }
+          />
+          <CSVLeadImport
+            franchiseId={franchiseId}
+            trigger={
+              <Button variant="outline" size="icon" className="h-10 w-10 shrink-0" title="Importar CSV">
+                <Upload className="w-4 h-4" />
               </Button>
             }
           />
