@@ -155,6 +155,11 @@ function LeadCard({
         </div>
 
         <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+          {(lead as any).lead_origin === 'manual' && (
+            <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-[10px] font-semibold" variant="outline">
+              ✏️ Manual
+            </Badge>
+          )}
           <Tooltip>
             <TooltipTrigger asChild>
               <span className="cursor-help">
