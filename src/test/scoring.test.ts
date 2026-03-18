@@ -45,9 +45,9 @@ describe('calculateScore', () => {
 });
 
 describe('recommendPool', () => {
-  // Espaço pequeno
-  it('recommends Tortuga for small space with prainha', () => {
-    expect(recommendPool(base({ espaco: 'ate-3' }))).toBe('Tortuga');
+  // Espaço pequeno (ate-3): Tortuga não cabe, recomenda Italiana para prainha
+  it('recommends Italiana for small space with prainha (Tortuga too large)', () => {
+    expect(recommendPool(base({ espaco: 'ate-3' }))).toBe('Italiana');
   });
 
   it('recommends Navagio for small space with spa', () => {
