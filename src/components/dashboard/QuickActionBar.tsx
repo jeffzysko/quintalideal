@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
-import { MessageCircle, Phone, CalendarPlus, Workflow } from 'lucide-react';
+import { MessageCircle, Phone, CalendarPlus, Workflow, UserPlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import type { LeadRow } from '@/lib/lead-constants';
@@ -19,9 +19,10 @@ interface QuickActionBarProps {
   onNavigatePipeline?: () => void;
   leads?: LeadRow[];
   pendingFollowups?: number;
+  onAddManualLead?: () => void;
 }
 
-export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowups }: QuickActionBarProps) {
+export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowups, onAddManualLead }: QuickActionBarProps) {
   const navigate = useNavigate();
   const { role } = useAuth();
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
@@ -54,6 +55,13 @@ export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowup
   const funnelPath = isAdmin ? '/admin?tab=kanban' : '/franquia?tab=funnel';
 
   const actions: QuickAction[] = [
+    {
+      icon: UserPlus,
+      label: 'Novo Lead',
+      color: 'text-primary',
+      bgColor: 'icon-bg-blue',
+      onClick: onAddManualLead || (() => {}),
+    },
     {
       icon: Workflow,
       label: 'Funil',

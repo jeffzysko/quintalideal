@@ -53,6 +53,7 @@ export interface LeadRow {
   email: string | null;
   ref_code: string | null;
   referred_by: string | null;
+  lead_origin?: string;
 }
 
 export interface Franchise {

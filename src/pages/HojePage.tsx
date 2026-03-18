@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { ManualLeadForm } from '@/components/franchise/ManualLeadForm';
 import { BackButton } from '@/components/BackButton';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -219,7 +220,7 @@ export default function HojePage() {
     queryFn: async () => {
       let query = supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, respostas_questionario')
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, respostas_questionario, lead_origin')
         .order('created_at', { ascending: false })
         .limit(500);
 
@@ -361,6 +362,11 @@ export default function HojePage() {
                  leads={leads}
                  pendingFollowups={todayFollowups.length + overdueFollowups.length}
                />
+               {franchiseId && (
+                 <div className="mb-4 -mt-2">
+                   <ManualLeadForm franchiseId={franchiseId} />
+                 </div>
+               )}
                <QuickStats stats={quickStats} />
 
                {/* ═══ PIPELINE SNAPSHOT ═══ */}

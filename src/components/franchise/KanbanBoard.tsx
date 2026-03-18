@@ -23,7 +23,8 @@ import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { MapPin, Calendar, GripVertical, Filter, X, Building2, Search, CalendarIcon, MessageCircle, ChevronRight, SlidersHorizontal, StickyNote, ArrowRightLeft, Phone, Send } from 'lucide-react';
+import { MapPin, Calendar, GripVertical, Filter, X, Building2, Search, CalendarIcon, MessageCircle, ChevronRight, SlidersHorizontal, StickyNote, ArrowRightLeft, Phone, Send, UserPlus } from 'lucide-react';
+import { ManualLeadForm } from '@/components/franchise/ManualLeadForm';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -155,6 +156,11 @@ function LeadCard({
         </div>
 
         <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+          {(lead as any).lead_origin === 'manual' && (
+            <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-[10px] font-semibold" variant="outline">
+              ✏️ Manual
+            </Badge>
+          )}
           <Tooltip>
             <TooltipTrigger asChild>
               <span className="cursor-help">
@@ -886,7 +892,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       <>
         <PipelineSummary leads={filteredLeads} franchiseMap={franchiseMap} />
 
-        {/* Search + filter button */}
+        {/* Search + filter + add button */}
         <div className="flex items-center gap-2 mb-3">
           <div className="relative flex-1">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -897,6 +903,14 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
               className="pl-8 h-10"
             />
           </div>
+          <ManualLeadForm
+            franchiseId={franchiseId}
+            trigger={
+              <Button variant="outline" size="icon" className="h-10 w-10 shrink-0">
+                <UserPlus className="w-4 h-4" />
+              </Button>
+            }
+          />
           <Button
             variant="outline"
             size="icon"
@@ -1054,8 +1068,9 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
     <>
       <PipelineSummary leads={filteredLeads} franchiseMap={franchiseMap} />
 
-      {/* Filters */}
+      {/* Filters + Add button */}
       <div className="flex flex-wrap items-center gap-3 mb-4">
+        <ManualLeadForm franchiseId={franchiseId} />
         <div className="flex items-center gap-2">
           <Filter className="w-4 h-4 text-muted-foreground" />
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Filtros</span>

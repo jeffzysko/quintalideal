@@ -46,6 +46,7 @@ interface Lead {
   coverage_match_count: number | null;
   distribution_rule_used: string | null;
   franquia_id: string | null;
+  lead_origin?: string;
 }
 
 const statusConfig: Record<string, { label: string; color: string }> = {
@@ -134,7 +135,7 @@ export default function LeadDetail() {
   }, [id]);
 
   const loadLead = async () => {
-    const { data } = await supabase.from('leads').select('id, nome, telefone, email, cidade, pontuacao_quintal, modelo_recomendado, respostas_questionario, foto1, foto2, foto3, foto4, status_lead, observacoes, created_at, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, franquia_id').eq('id', id!).maybeSingle();
+    const { data } = await supabase.from('leads').select('id, nome, telefone, email, cidade, pontuacao_quintal, modelo_recomendado, respostas_questionario, foto1, foto2, foto3, foto4, status_lead, observacoes, created_at, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, franquia_id, lead_origin').eq('id', id!).maybeSingle();
     if (data) {
       setLead(data as Lead);
       setStatus(data.status_lead);
@@ -242,7 +243,12 @@ export default function LeadDetail() {
                   </div>
                 </div>
               </div>
-              <div className="mt-2 sm:mt-0 sm:absolute sm:top-4 sm:right-5">
+              <div className="mt-2 sm:mt-0 sm:absolute sm:top-4 sm:right-5 flex items-center gap-1.5">
+                {lead.lead_origin === 'manual' && (
+                  <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-[10px] sm:text-xs font-medium" variant="outline">
+                    ✏️ Manual
+                  </Badge>
+                )}
                 <Badge className={`${statusInfo.color} border text-[10px] sm:text-xs font-medium`}>
                   {statusInfo.label}
                 </Badge>
