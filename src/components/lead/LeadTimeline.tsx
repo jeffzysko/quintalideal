@@ -36,10 +36,6 @@ export function LeadTimeline({ leadId }: LeadTimelineProps) {
   const { user } = useAuth();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
-  const [newType, setNewType] = useState<string>('note');
-  const [newContent, setNewContent] = useState('');
-  const [sending, setSending] = useState(false);
-  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     loadActivities();
