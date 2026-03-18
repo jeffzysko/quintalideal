@@ -226,7 +226,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
     // Test mode: skip lead creation, emails, and notifications
     if (isTestMode) {
       toast.success('Modo teste: lead simulado com sucesso (nada foi salvo)');
-      setStep('actions');
+      setStep('processing');
       setSaving(false);
       isSubmittingRef.current = false;
       return;
