@@ -208,7 +208,19 @@ Deno.serve(async (req) => {
 
     // Territory distribution logic
     const cityNormalized = cidade ? normalizeCityName(cidade) : null;
-    const territory = await resolveTerritory(supabase, cityNormalized || "", originFranchiseId);
+
+    // Test franchise: always keep leads with origin, skip territory distribution
+    const TEST_FRANCHISE_ID = "025e4b4e-b895-4c8f-9db5-caec623bd351";
+    const isTestFranchise = originFranchiseId === TEST_FRANCHISE_ID;
+
+    const territory = isTestFranchise
+      ? {
+          assignedFranchiseId: TEST_FRANCHISE_ID,
+          territoryMatchStatus: "matched_unique_franchise" as const,
+          coverageMatchCount: 1,
+          distributionRuleUsed: "test_franchise_locked",
+        }
+      : await resolveTerritory(supabase, cityNormalized || "", originFranchiseId);
 
     // assigned franchise = territory result, fallback to origin
     const assignedFranchiseId = territory.assignedFranchiseId || originFranchiseId;
