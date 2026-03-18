@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { trackEvent } from '@/lib/analytics';
 import { trackMetaEvent } from '@/components/MetaPixel';
 import { type Lang, getQuizQuestions, t } from '@/lib/i18n';
-
+import { getPoolImage } from '@/lib/poolImages';
 
 // Pool images for preference step
 import tortugaImg from '@/assets/pools/tortuga.webp';
