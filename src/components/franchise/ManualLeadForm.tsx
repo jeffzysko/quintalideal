@@ -97,7 +97,7 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
     setModelo(''); setObservacoes(''); setErrors({});
     setOrcamento(''); setIntencao(''); setEspaco('');
     setMoradia(''); setTempOverride(''); setShowClassification(false);
-    setDuplicateWarning(null); setCheckingDuplicate(false);
+    setDuplicateWarning(null);
   }, []);
 
   const handlePhoneChange = (val: string) => {
