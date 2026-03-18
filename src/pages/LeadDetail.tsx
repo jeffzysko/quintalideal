@@ -46,6 +46,7 @@ interface Lead {
   coverage_match_count: number | null;
   distribution_rule_used: string | null;
   franquia_id: string | null;
+  lead_origin?: string;
 }
 
 const statusConfig: Record<string, { label: string; color: string }> = {
