@@ -891,7 +891,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       <>
         <PipelineSummary leads={filteredLeads} franchiseMap={franchiseMap} />
 
-        {/* Search + filter button */}
+        {/* Search + filter + add button */}
         <div className="flex items-center gap-2 mb-3">
           <div className="relative flex-1">
             <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -902,6 +902,14 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
               className="pl-8 h-10"
             />
           </div>
+          <ManualLeadForm
+            franchiseId={franchiseId}
+            trigger={
+              <Button variant="outline" size="icon" className="h-10 w-10 shrink-0">
+                <UserPlus className="w-4 h-4" />
+              </Button>
+            }
+          />
           <Button
             variant="outline"
             size="icon"
