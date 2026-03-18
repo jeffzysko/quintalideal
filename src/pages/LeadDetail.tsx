@@ -420,11 +420,6 @@ export default function LeadDetail() {
           </motion.div>
         )}
 
-        {/* Activity Timeline */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.22 }}>
-          <LeadTimeline leadId={lead.id} />
-        </motion.div>
-
         {/* Manage */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
           <Card className="glass-card">
@@ -523,6 +518,11 @@ export default function LeadDetail() {
               </AlertDialog>
             </CardContent>
           </Card>
+        </motion.div>
+
+        {/* Activity Timeline */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+          <LeadTimeline leadId={lead.id} />
         </motion.div>
 
         {/* Spacer for sticky bar */}
