@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { trackEvent } from '@/lib/analytics';
 import { trackMetaEvent } from '@/components/MetaPixel';
 import { type Lang, getQuizQuestions, t } from '@/lib/i18n';
-import { getPoolImage } from '@/lib/poolImages';
+
 
 // Pool images for preference step
 import tortugaImg from '@/assets/pools/tortuga.webp';
@@ -20,11 +20,11 @@ const PhotoAnalysis = lazy(() => import('./PhotoAnalysis').then(m => ({ default:
 const PreDiagnosis = lazy(() => import('./PreDiagnosis').then(m => ({ default: m.PreDiagnosis })));
 const QuizStep = lazy(() => import('./QuizStep').then(m => ({ default: m.QuizStep })));
 const ProcessingScreen = lazy(() => import('./ProcessingScreen').then(m => ({ default: m.ProcessingScreen })));
-const ResultScreen = lazy(() => import('./ResultScreen').then(m => ({ default: m.ResultScreen })));
+
 const LeadForm = lazy(() => import('./LeadForm').then(m => ({ default: m.LeadForm })));
 const ActionButtons = lazy(() => import('./ActionButtons').then(m => ({ default: m.ActionButtons })));
 
-type Step = 'hero' | 'photos' | 'photo-analysis' | 'pre-diagnosis' | 'quiz' | 'processing' | 'result' | 'lead-form' | 'actions';
+type Step = 'hero' | 'photos' | 'photo-analysis' | 'pre-diagnosis' | 'quiz' | 'processing' | 'lead-form' | 'actions';
 
 // Preference step images
 const PREF_IMAGES: Record<string, string> = {
@@ -78,7 +78,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   const [leadRefCode, setLeadRefCode] = useState('');
   const [saving, setSaving] = useState(false);
   const [poolPrices, setPoolPrices] = useState<PoolPriceInfo[]>([]);
-  const [poolAlternatives, setPoolAlternatives] = useState<PoolAlternative[]>([]);
+  const [_poolAlternatives, setPoolAlternatives] = useState<PoolAlternative[]>([]);
   const [assignedWhatsapp, setAssignedWhatsapp] = useState<string | undefined>(undefined);
   const [assignedFranchiseName, setAssignedFranchiseName] = useState<string | undefined>(undefined);
   const [assignedCidadeBase, setAssignedCidadeBase] = useState<string | undefined>(undefined);
@@ -134,7 +134,8 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         currency: 'BRL',
       });
 
-      setStep('processing');
+      // Go to lead form BEFORE showing results
+      setStep('lead-form');
     }
   }, [quizStep, answers, lang]);
 
@@ -225,7 +226,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
     // Test mode: skip lead creation, emails, and notifications
     if (isTestMode) {
       toast.success('Modo teste: lead simulado com sucesso (nada foi salvo)');
-      setStep('actions');
+      setStep('processing');
       setSaving(false);
       isSubmittingRef.current = false;
       return;
@@ -312,7 +313,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         }).catch(() => {});
       }
 
-      setStep('actions');
+      setStep('processing');
     } catch (err: unknown) {
       console.error('Lead submit error:', err);
       toast.error(t('lead_error_submit', lang));
@@ -336,7 +337,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
     setStep(urls.length > 0 ? 'photo-analysis' : 'quiz');
   };
 
-  const handleResultContinue = () => {
+  const handleProcessingDone = () => {
     trackEvent('result_viewed', {
       ...analyticsCtx,
       city: answers.cidade,
@@ -350,7 +351,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       currency: 'BRL',
     });
 
-    setStep('lead-form');
+    setStep('actions');
   };
 
   const currentQuizQuestion = quizStep < quizQuestions.length ? quizQuestions[quizStep] : null;
@@ -417,34 +418,11 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
             lang={lang}
           />
         )}
-        {step === 'processing' && (
-          <ProcessingScreen key="processing" onDone={() => setStep('result')} lang={lang} />
-        )}
-        {step === 'result' && (
-          <ResultScreen
-            key="result"
-            score={score}
-            poolName={poolName}
-            poolDescription={poolDesc}
-            recommendedSize={recommendedSize}
-            alternatives={poolAlternatives.map(a => ({
-              name: a.nome_modelo,
-              image: getPoolImage(a.nome_modelo),
-              description: a.descricao || undefined,
-              specs: {
-                tamanho: recommendSize(answers.espaco || '', a.nome_modelo) || a.tamanho || undefined,
-                profundidade: a.profundidade || undefined,
-                possui_prainha: a.possui_prainha || false,
-                possui_spa: a.possui_spa || false,
-              },
-            }))}
-            cidade={answers.cidade}
-            onContinue={handleResultContinue}
-            lang={lang}
-          />
-        )}
         {step === 'lead-form' && (
           <LeadForm key="lead-form" onSubmit={handleLeadSubmit} onCheckDuplicate={isTestMode ? undefined : checkDuplicate} loading={saving} lang={lang} />
+        )}
+        {step === 'processing' && (
+          <ProcessingScreen key="processing" onDone={handleProcessingDone} lang={lang} />
         )}
         {step === 'actions' && (
           <ActionButtons
