@@ -1136,6 +1136,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
           </SelectContent>
         </Select>
 
+        <Select value={cityFilter} onValueChange={setCityFilter}>
           <SelectTrigger className="w-[180px] h-8 text-xs">
             <SelectValue placeholder="Cidade" />
           </SelectTrigger>
