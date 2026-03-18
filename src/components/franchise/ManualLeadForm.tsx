@@ -225,8 +225,23 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
           {/* Telefone */}
           <div className="space-y-1.5">
             <Label htmlFor="ml-telefone">Telefone *</Label>
-            <Input id="ml-telefone" placeholder="(51) 99999-9999" value={telefone} onChange={(e) => handlePhoneChange(e.target.value)} className={cn(errors.telefone && 'border-destructive')} />
+            <Input
+              id="ml-telefone"
+              placeholder="(51) 99999-9999"
+              value={telefone}
+              onChange={(e) => handlePhoneChange(e.target.value)}
+              onBlur={checkDuplicate}
+              className={cn((errors.telefone || duplicateWarning) && 'border-destructive')}
+            />
             {errors.telefone && <p className="text-xs text-destructive">{errors.telefone}</p>}
+            {duplicateWarning && !errors.telefone && (
+              <Alert variant="destructive" className="py-2 px-3">
+                <AlertTriangle className="h-3.5 w-3.5" />
+                <AlertDescription className="text-xs">
+                  {duplicateWarning} Você pode continuar, mas o lead pode ser duplicado.
+                </AlertDescription>
+              </Alert>
+            )}
           </div>
 
           {/* Email */}
