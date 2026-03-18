@@ -29,7 +29,6 @@ interface LeadTimelineProps {
 }
 
 export function LeadTimeline({ leadId }: LeadTimelineProps) {
-  const { user } = useAuth();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
 
