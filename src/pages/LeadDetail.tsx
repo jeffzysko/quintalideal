@@ -166,9 +166,21 @@ export default function LeadDetail() {
       }
     }
 
+    // Build updated respostas with temperature override
+    const updatedRespostas = { ...(lead.respostas_questionario || {}) };
+    if (tempOverride) {
+      updatedRespostas.temperatura_manual = tempOverride;
+    } else {
+      delete updatedRespostas.temperatura_manual;
+    }
+
     const { error } = await supabase
       .from('leads')
-      .update({ status_lead: status as any, observacoes })
+      .update({
+        status_lead: status as any,
+        observacoes,
+        respostas_questionario: Object.keys(updatedRespostas).length > 0 ? updatedRespostas : null,
+      })
       .eq('id', lead.id);
     setSaving(false);
     if (!error) {
