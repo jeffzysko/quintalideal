@@ -773,6 +773,9 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       if (cityFilter !== 'all') {
         if (lead.cidade !== cityFilter) return false;
       }
+      if (originFilter !== 'all') {
+        if ((lead.lead_origin || 'quiz') !== originFilter) return false;
+      }
       if (franchiseFilter !== 'all' && franchiseMap) {
         if (lead.franquia_id !== franchiseFilter) return false;
       }
