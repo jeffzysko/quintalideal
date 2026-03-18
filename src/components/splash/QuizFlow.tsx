@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { trackEvent } from '@/lib/analytics';
 import { trackMetaEvent } from '@/components/MetaPixel';
 import { type Lang, getQuizQuestions, t } from '@/lib/i18n';
-
+import { getPoolImage } from '@/lib/poolImages';
 
 // Pool images for preference step
 import tortugaImg from '@/assets/pools/tortuga.webp';
@@ -78,7 +78,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   const [leadRefCode, setLeadRefCode] = useState('');
   const [saving, setSaving] = useState(false);
   const [poolPrices, setPoolPrices] = useState<PoolPriceInfo[]>([]);
-  const [_poolAlternatives, setPoolAlternatives] = useState<PoolAlternative[]>([]);
+  const [poolAlternatives, setPoolAlternatives] = useState<PoolAlternative[]>([]);
   const [assignedWhatsapp, setAssignedWhatsapp] = useState<string | undefined>(undefined);
   const [assignedFranchiseName, setAssignedFranchiseName] = useState<string | undefined>(undefined);
   const [assignedCidadeBase, setAssignedCidadeBase] = useState<string | undefined>(undefined);
@@ -438,6 +438,17 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
             leadName={leadName}
             refCode={leadRefCode}
             franchiseId={franchiseId}
+            alternatives={poolAlternatives.map(a => ({
+              name: a.nome_modelo,
+              image: getPoolImage(a.nome_modelo),
+              description: a.descricao || undefined,
+              specs: {
+                tamanho: recommendSize(answers.espaco || '', a.nome_modelo) || a.tamanho || undefined,
+                profundidade: a.profundidade || undefined,
+                possui_prainha: a.possui_prainha || false,
+                possui_spa: a.possui_spa || false,
+              },
+            }))}
             lang={lang}
           />
         )}

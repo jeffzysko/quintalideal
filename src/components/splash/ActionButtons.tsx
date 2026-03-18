@@ -18,6 +18,18 @@ interface PoolSpecs {
   possui_spa?: boolean;
 }
 
+interface PoolAlternativeView {
+  name: string;
+  image?: string;
+  description?: string;
+  specs?: {
+    tamanho?: string;
+    profundidade?: number;
+    possui_prainha?: boolean;
+    possui_spa?: boolean;
+  };
+}
+
 interface ActionButtonsProps {
   score: number;
   poolName: string;
@@ -30,10 +42,11 @@ interface ActionButtonsProps {
   leadName?: string;
   refCode?: string;
   franchiseId?: string;
+  alternatives?: PoolAlternativeView[];
   lang?: Lang;
 }
 
-export function ActionButtons({ score, poolName, poolDescription, poolSpecs, recommendedSize, whatsappNumber, assignedFranchiseName, assignedCidadeBase, leadName, refCode: _refCode, franchiseId, lang = 'pt' }: ActionButtonsProps) {
+export function ActionButtons({ score, poolName, poolDescription, poolSpecs, recommendedSize, whatsappNumber, assignedFranchiseName, assignedCidadeBase, leadName, refCode: _refCode, franchiseId, alternatives = [], lang = 'pt' }: ActionButtonsProps) {
   const ranking = getRankingGaucho(score);
   const classification = getYardClassification(score);
   const socialComparison = getSocialComparison(score);
@@ -333,6 +346,58 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
             )}
           </div>
         </motion.div>
+
+        {/* Alternatives */}
+        {alternatives.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.65 }}
+            className="mt-4"
+          >
+            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">
+              {lang === 'es' ? 'También pueden gustarte' : 'Você também pode gostar'}
+            </p>
+            <div className="grid grid-cols-2 gap-2">
+              {alternatives.map((alt, i) => (
+                <motion.div
+                  key={alt.name}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.7 + i * 0.1 }}
+                  className="rounded-xl overflow-hidden border border-border bg-card"
+                >
+                  {alt.image && (
+                    <div className="aspect-[16/10] overflow-hidden">
+                      <img src={alt.image} alt={alt.name} className="w-full h-full object-cover" loading="lazy" />
+                    </div>
+                  )}
+                  <div className="p-2.5">
+                    <p className="text-xs font-semibold text-foreground mb-0.5">{alt.name}</p>
+                    <div className="flex flex-wrap gap-1">
+                      {alt.specs?.tamanho && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
+                          📐 {alt.specs.tamanho}
+                        </span>
+                      )}
+                      {alt.specs?.possui_prainha && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">🏖️ Prainha</span>
+                      )}
+                      {alt.specs?.possui_spa && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-accent text-accent-foreground">💆 Hidro</span>
+                      )}
+                      {alt.specs?.profundidade && (
+                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
+                          ↕ {alt.specs.profundidade}m
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
         {/* Assigned franchise info */}
         {assignedFranchiseName && (
