@@ -307,6 +307,7 @@ export type Database = {
           franquia_id: string | null
           id: string
           lead_city_normalized: string | null
+          lead_origin: string
           modelo_recomendado: string | null
           nome: string | null
           observacoes: string | null
@@ -335,6 +336,7 @@ export type Database = {
           franquia_id?: string | null
           id?: string
           lead_city_normalized?: string | null
+          lead_origin?: string
           modelo_recomendado?: string | null
           nome?: string | null
           observacoes?: string | null
@@ -363,6 +365,7 @@ export type Database = {
           franquia_id?: string | null
           id?: string
           lead_city_normalized?: string | null
+          lead_origin?: string
           modelo_recomendado?: string | null
           nome?: string | null
           observacoes?: string | null
