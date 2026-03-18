@@ -19,6 +19,7 @@ interface QuickActionBarProps {
   onNavigatePipeline?: () => void;
   leads?: LeadRow[];
   pendingFollowups?: number;
+  onAddManualLead?: () => void;
 }
 
 export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowups }: QuickActionBarProps) {
