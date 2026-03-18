@@ -24,7 +24,7 @@ const ProcessingScreen = lazy(() => import('./ProcessingScreen').then(m => ({ de
 const LeadForm = lazy(() => import('./LeadForm').then(m => ({ default: m.LeadForm })));
 const ActionButtons = lazy(() => import('./ActionButtons').then(m => ({ default: m.ActionButtons })));
 
-type Step = 'hero' | 'photos' | 'photo-analysis' | 'pre-diagnosis' | 'quiz' | 'processing' | 'result' | 'lead-form' | 'actions';
+type Step = 'hero' | 'photos' | 'photo-analysis' | 'pre-diagnosis' | 'quiz' | 'processing' | 'lead-form' | 'actions';
 
 // Preference step images
 const PREF_IMAGES: Record<string, string> = {
