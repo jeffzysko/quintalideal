@@ -1124,7 +1124,18 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
           </SelectContent>
         </Select>
 
-        <Select value={cityFilter} onValueChange={setCityFilter}>
+        <Select value={originFilter} onValueChange={setOriginFilter}>
+          <SelectTrigger className="w-[140px] h-8 text-xs">
+            <SelectValue placeholder="Origem" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas origens</SelectItem>
+            <SelectItem value="quiz">📝 Quiz</SelectItem>
+            <SelectItem value="manual">✏️ Manual</SelectItem>
+            <SelectItem value="csv_import">📄 CSV</SelectItem>
+          </SelectContent>
+        </Select>
+
           <SelectTrigger className="w-[180px] h-8 text-xs">
             <SelectValue placeholder="Cidade" />
           </SelectTrigger>
