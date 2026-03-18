@@ -243,7 +243,12 @@ export default function LeadDetail() {
                   </div>
                 </div>
               </div>
-              <div className="mt-2 sm:mt-0 sm:absolute sm:top-4 sm:right-5">
+              <div className="mt-2 sm:mt-0 sm:absolute sm:top-4 sm:right-5 flex items-center gap-1.5">
+                {lead.lead_origin === 'manual' && (
+                  <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-[10px] sm:text-xs font-medium" variant="outline">
+                    ✏️ Manual
+                  </Badge>
+                )}
                 <Badge className={`${statusInfo.color} border text-[10px] sm:text-xs font-medium`}>
                   {statusInfo.label}
                 </Badge>
