@@ -147,11 +147,18 @@ export function recommendPool(answers: QuizAnswers, poolPrices: PoolPriceInfo[] 
     return name; // Return original if fallback also doesn't fit
   };
 
-  // Espaço pequeno (até 5m)
-  if (espaco === 'ate-3' || espaco === '3-5') {
-    if (pref === 'prainha') return pick('Tortuga');
+  // Espaço pequeno (até 3m) — Tortuga não cabe (mín 5m)
+  if (espaco === 'ate-3') {
     if (pref === 'spa') return pick('Navagio');
+    if (pref === 'prainha') return pick('Italiana'); // Tortuga não tem tamanho para este espaço
     return pick('Italiana');
+  }
+
+  // Espaço pequeno-médio (3-5m) — Tortuga cabe a partir de 5m
+  if (espaco === '3-5') {
+    if (pref === 'prainha') return pick('Tortuga', 'Italiana');
+    if (pref === 'spa') return pick('Navagio', 'Bonaire');
+    return pick('Italiana', 'Cancún');
   }
 
   // Espaço médio (5-7m)
