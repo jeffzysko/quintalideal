@@ -22,7 +22,7 @@ interface QuickActionBarProps {
   onAddManualLead?: () => void;
 }
 
-export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowups }: QuickActionBarProps) {
+export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowups, onAddManualLead }: QuickActionBarProps) {
   const navigate = useNavigate();
   const { role } = useAuth();
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
