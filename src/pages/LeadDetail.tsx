@@ -168,10 +168,26 @@ export default function LeadDetail() {
 
     // Build updated respostas with temperature override
     const updatedRespostas = { ...(lead.respostas_questionario || {}) };
+    const oldTemp = (lead.respostas_questionario as Record<string, string> | null)?.temperatura_manual || '';
     if (tempOverride) {
       updatedRespostas.temperatura_manual = tempOverride;
     } else {
       delete updatedRespostas.temperatura_manual;
+    }
+
+    // Log temperature change
+    const tempChanged = tempOverride !== oldTemp;
+    if (tempChanged) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const TEMP_LABELS: Record<string, string> = { quente: '🔥 Quente', morno: '☀️ Morno', frio: '❄️ Frio', '': '🤖 Automático' };
+        await supabase.from('lead_activities').insert({
+          lead_id: lead.id,
+          user_id: user.id,
+          activity_type: 'temperature_change',
+          content: `Temperatura alterada de "${TEMP_LABELS[oldTemp] || '🤖 Automático'}" para "${TEMP_LABELS[tempOverride] || '🤖 Automático'}"`,
+        });
+      }
     }
 
     const { error } = await supabase
