@@ -122,8 +122,6 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
       }
     } catch {
       // ignore check errors
-    } finally {
-      setCheckingDuplicate(false);
     }
   }, [telefone]);
 
