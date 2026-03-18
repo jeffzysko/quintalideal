@@ -23,8 +23,9 @@ import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
-import { MapPin, Calendar, GripVertical, Filter, X, Building2, Search, CalendarIcon, MessageCircle, ChevronRight, SlidersHorizontal, StickyNote, ArrowRightLeft, Phone, Send, UserPlus } from 'lucide-react';
+import { MapPin, Calendar, GripVertical, Filter, X, Building2, Search, CalendarIcon, MessageCircle, ChevronRight, SlidersHorizontal, StickyNote, ArrowRightLeft, Phone, Send, UserPlus, Upload } from 'lucide-react';
 import { ManualLeadForm } from '@/components/franchise/ManualLeadForm';
+import { CSVLeadImport } from '@/components/franchise/CSVLeadImport';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -906,8 +907,16 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
           <ManualLeadForm
             franchiseId={franchiseId}
             trigger={
-              <Button variant="outline" size="icon" className="h-10 w-10 shrink-0">
+              <Button variant="outline" size="icon" className="h-10 w-10 shrink-0" title="Novo Lead">
                 <UserPlus className="w-4 h-4" />
+              </Button>
+            }
+          />
+          <CSVLeadImport
+            franchiseId={franchiseId}
+            trigger={
+              <Button variant="outline" size="icon" className="h-10 w-10 shrink-0" title="Importar CSV">
+                <Upload className="w-4 h-4" />
               </Button>
             }
           />
@@ -1071,6 +1080,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       {/* Filters + Add button */}
       <div className="flex flex-wrap items-center gap-3 mb-4">
         <ManualLeadForm franchiseId={franchiseId} />
+        <CSVLeadImport franchiseId={franchiseId} />
         <div className="flex items-center gap-2">
           <Filter className="w-4 h-4 text-muted-foreground" />
           <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Filtros</span>

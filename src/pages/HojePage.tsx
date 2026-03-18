@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { ManualLeadForm } from '@/components/franchise/ManualLeadForm';
+import { CSVLeadImport } from '@/components/franchise/CSVLeadImport';
 import { BackButton } from '@/components/BackButton';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -363,8 +364,9 @@ export default function HojePage() {
                  pendingFollowups={todayFollowups.length + overdueFollowups.length}
                />
                {franchiseId && (
-                 <div className="mb-4 -mt-2">
+                 <div className="mb-4 -mt-2 flex items-center gap-2">
                    <ManualLeadForm franchiseId={franchiseId} />
+                   <CSVLeadImport franchiseId={franchiseId} />
                  </div>
                )}
                <QuickStats stats={quickStats} />
