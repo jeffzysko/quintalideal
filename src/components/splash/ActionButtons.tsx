@@ -18,6 +18,18 @@ interface PoolSpecs {
   possui_spa?: boolean;
 }
 
+interface PoolAlternativeView {
+  name: string;
+  image?: string;
+  description?: string;
+  specs?: {
+    tamanho?: string;
+    profundidade?: number;
+    possui_prainha?: boolean;
+    possui_spa?: boolean;
+  };
+}
+
 interface ActionButtonsProps {
   score: number;
   poolName: string;
@@ -30,6 +42,7 @@ interface ActionButtonsProps {
   leadName?: string;
   refCode?: string;
   franchiseId?: string;
+  alternatives?: PoolAlternativeView[];
   lang?: Lang;
 }
 
