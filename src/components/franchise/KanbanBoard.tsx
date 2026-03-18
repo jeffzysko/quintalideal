@@ -1202,7 +1202,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
             variant="ghost"
             size="sm"
             className="h-8 px-2 text-xs text-muted-foreground hover:text-foreground"
-            onClick={() => { setTempFilter('all'); setCityFilter('all'); setFranchiseFilter('all'); setNameSearch(''); setDateFrom(undefined); setDateTo(undefined); }}
+            onClick={() => { setTempFilter('all'); setOriginFilter('all'); setCityFilter('all'); setFranchiseFilter('all'); setNameSearch(''); setDateFrom(undefined); setDateTo(undefined); }}
           >
             <X className="w-3 h-3 mr-1" />
             Limpar
