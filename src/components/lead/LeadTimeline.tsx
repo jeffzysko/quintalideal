@@ -51,33 +51,6 @@ export function LeadTimeline({ leadId }: LeadTimelineProps) {
     setLoading(false);
   };
 
-  const addActivity = useCallback(async () => {
-    if (!newContent.trim() || !user) return;
-    setSending(true);
-    const { error } = await supabase.from('lead_activities').insert({
-      lead_id: leadId,
-      user_id: user.id,
-      activity_type: newType,
-      content: newContent.trim(),
-    });
-    setSending(false);
-    if (error) {
-      toast.error('Erro ao registrar atividade.');
-      return;
-    }
-    toast.success('Atividade registrada!');
-    setNewContent('');
-    loadActivities();
-    // Re-focus the textarea for rapid note-taking
-    setTimeout(() => textareaRef.current?.focus(), 100);
-  }, [newContent, newType, user, leadId]);
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
-      e.preventDefault();
-      addActivity();
-    }
-  };
 
   const formatDate = (iso: string) => {
     const d = new Date(iso);
