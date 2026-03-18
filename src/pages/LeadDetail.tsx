@@ -23,7 +23,7 @@ import { motion } from 'framer-motion';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
 
-import { TERRITORY_LABELS, TERRITORY_COLORS } from '@/lib/lead-constants';
+
 
 interface Lead {
   id: string;
