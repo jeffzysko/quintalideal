@@ -58,12 +58,6 @@ export function LeadTimeline({ leadId }: LeadTimelineProps) {
       ' · ' + d.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
   };
 
-  const placeholder = newType === 'note'
-    ? 'Adicionar uma nota rápida…'
-    : newType === 'call'
-    ? 'Resumo da ligação…'
-    : 'Resumo da conversa no WhatsApp…';
-
   return (
     <Card className="glass-card">
       <CardContent className="p-3 sm:p-5">
@@ -75,69 +69,6 @@ export function LeadTimeline({ leadId }: LeadTimelineProps) {
               {activities.length}
             </span>
           )}
-        </div>
-
-        {/* Always-visible inline note input */}
-        <div className="mb-4 rounded-xl border border-border/50 bg-muted/30 overflow-hidden focus-within:border-primary/40 focus-within:ring-1 focus-within:ring-primary/20 transition-all">
-          {/* Type quick-select tabs */}
-          <div className="flex items-center gap-0.5 px-2 pt-2 pb-1">
-            {QUICK_TYPES.map((type) => {
-              const cfg = ACTIVITY_TYPES[type];
-              const Icon = cfg.icon;
-              const active = newType === type;
-              return (
-                <button
-                  key={type}
-                  type="button"
-                  onClick={() => {
-                    setNewType(type);
-                    textareaRef.current?.focus();
-                  }}
-                  className={cn(
-                    'flex items-center gap-1 px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all',
-                    active
-                      ? `${cfg.color} bg-background shadow-sm border border-border/50`
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'
-                  )}
-                >
-                  <Icon className="w-3 h-3" />
-                  {cfg.label}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Textarea */}
-          <textarea
-            ref={textareaRef}
-            value={newContent}
-            onChange={(e) => setNewContent(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder={placeholder}
-            rows={2}
-            maxLength={500}
-            className="w-full bg-transparent border-0 px-3 py-2 text-base md:text-sm placeholder:text-muted-foreground/60 focus:outline-none resize-none"
-          />
-
-          {/* Bottom bar */}
-          <div className="flex items-center justify-between px-3 pb-2">
-            <span className="text-[10px] text-muted-foreground/50">
-              {newContent.length > 0 ? `${newContent.length}/500 · ⌘↵ para enviar` : '⌘↵ para enviar'}
-            </span>
-            <Button
-              size="sm"
-              onClick={addActivity}
-              disabled={sending || !newContent.trim()}
-              className="h-7 text-xs gap-1 px-3"
-            >
-              {sending ? (
-                <div className="animate-spin w-3 h-3 border-2 border-primary-foreground border-t-transparent rounded-full" />
-              ) : (
-                <Send className="w-3 h-3" />
-              )}
-              Registrar
-            </Button>
-          </div>
         </div>
 
         {/* Timeline */}

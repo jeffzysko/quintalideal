@@ -520,6 +520,11 @@ export default function LeadDetail() {
           </Card>
         </motion.div>
 
+        {/* Activity Timeline */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
+          <LeadTimeline leadId={lead.id} />
+        </motion.div>
+
         {/* Spacer for sticky bar */}
         {isMobile && <div className="h-20" />}
       </div>
