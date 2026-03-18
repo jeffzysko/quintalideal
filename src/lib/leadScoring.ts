@@ -20,7 +20,15 @@ const SCORING: Record<LeadTemperature, LeadScoreResult> = {
 };
 
 export function classifyLead(respostas: Record<string, string> | null, pontuacao: number | null): LeadScoreResult {
-  if (!respostas) return SCORING.frio;
+  // Check for manual temperature override first
+  if (respostas?.temperatura_manual) {
+    const manual = respostas.temperatura_manual as LeadTemperature;
+    if (SCORING[manual]) return SCORING[manual];
+  }
+
+  // If there are any scoring fields (from quiz or mini-quiz), compute score
+  const hasFields = respostas && (respostas.orcamento || respostas.intencao || respostas.espaco || respostas.moradia);
+  if (!hasFields) return SCORING.frio;
 
   let score = 0;
 
