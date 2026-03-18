@@ -438,6 +438,17 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
             leadName={leadName}
             refCode={leadRefCode}
             franchiseId={franchiseId}
+            alternatives={poolAlternatives.map(a => ({
+              name: a.nome_modelo,
+              image: getPoolImage(a.nome_modelo),
+              description: a.descricao || undefined,
+              specs: {
+                tamanho: recommendSize(answers.espaco || '', a.nome_modelo) || a.tamanho || undefined,
+                profundidade: a.profundidade || undefined,
+                possui_prainha: a.possui_prainha || false,
+                possui_spa: a.possui_spa || false,
+              },
+            }))}
             lang={lang}
           />
         )}
