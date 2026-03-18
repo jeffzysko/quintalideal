@@ -789,9 +789,9 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       }
       return true;
     });
-  }, [leads, tempFilter, cityFilter, franchiseFilter, nameSearch, dateFrom, dateTo, franchiseMap]);
+  }, [leads, tempFilter, originFilter, cityFilter, franchiseFilter, nameSearch, dateFrom, dateTo, franchiseMap]);
 
-  const hasActiveFilters = tempFilter !== 'all' || cityFilter !== 'all' || franchiseFilter !== 'all' || nameSearch.trim() !== '' || !!dateFrom || !!dateTo;
+  const hasActiveFilters = tempFilter !== 'all' || originFilter !== 'all' || cityFilter !== 'all' || franchiseFilter !== 'all' || nameSearch.trim() !== '' || !!dateFrom || !!dateTo;
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
