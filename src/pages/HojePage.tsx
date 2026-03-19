@@ -22,7 +22,7 @@ import { ptBR } from 'date-fns/locale';
 import {
   CalendarClock, AlertTriangle, Inbox, Phone, MessageCircle,
   ChevronRight, Clock, Flame, Zap, CheckCircle2, Users,
-  TrendingUp, ArrowRight, Sparkles, Target, MapPin, ThermometerSun,
+  TrendingUp, ArrowRight, Sparkles, Target, MapPin,
 } from 'lucide-react';
 import { STATUS_LABELS, STATUS_COLORS, type LeadRow } from '@/lib/lead-constants';
 import { classifyLead } from '@/lib/leadScoring';
