@@ -68,14 +68,20 @@ export function translateAuthError(msg: string): string {
     return 'Este link já expirou ou é inválido. Solicite um novo na tela de login.';
   if (lower.includes('rate') && lower.includes('limit'))
     return 'Muitas tentativas seguidas. Aguarde alguns instantes e tente novamente.';
-  if (lower.includes('session') && lower.includes('missing'))
+  if (lower.includes('session') && (lower.includes('missing') || lower.includes('not found') || lower.includes('expired')))
     return 'Sessão expirada. Volte à tela de login e solicite um novo link de recuperação.';
   if (lower.includes('network') || lower.includes('fetch'))
     return 'Erro de conexão. Verifique sua internet e tente novamente.';
   if (lower.includes('password') && lower.includes('characters'))
     return 'A senha precisa ter no mínimo 6 caracteres.';
+  if (lower.includes('password') && lower.includes('different'))
+    return 'Sua nova senha precisa ser diferente da senha atual. Tente uma combinação nova.';
+  if (lower.includes('same password') || lower.includes('same_password'))
+    return 'Sua nova senha precisa ser diferente da senha atual. Tente uma combinação nova.';
   if (lower.includes('banned') || lower.includes('suspended'))
     return 'Esta conta foi suspensa. Entre em contato com o suporte.';
+  if (lower.includes('user not allowed') || lower.includes('not authorized'))
+    return 'Sessão expirada. Volte à tela de login e solicite um novo link de recuperação.';
 
   // Generic fallback — never show raw English
   return 'Ocorreu um erro inesperado. Tente novamente ou entre em contato com o suporte.';
