@@ -409,7 +409,7 @@ export default function HojePage() {
           <UserAvatarMenu />
         </PanelHeader>
 
-        <div className="max-w-3xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6">
+        <div className="max-w-3xl mx-auto px-4 sm:px-5 md:px-6 py-5 sm:py-8">
           <Breadcrumbs items={[
             { label: isAdmin ? 'Admin' : 'Painel', href: isAdmin ? '/admin' : '/franquia' },
             { label: 'Hoje' },
