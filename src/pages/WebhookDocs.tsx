@@ -458,6 +458,11 @@ export default function WebhookDocs() {
               <strong>📋 Histórico de entregas:</strong> Todas as tentativas de envio ficam registradas em <strong>Perfil → Integrações → Histórico de Entregas</strong>, com status, código HTTP e detalhes de cada tentativa.
             </p>
           </div>
+          <div className="mt-3 rounded-xl border border-amber-200/50 bg-amber-50/30 p-4">
+            <p className="text-xs text-foreground">
+              <strong>📧 Alerta por e-mail:</strong> Se todas as 3 tentativas falharem, o franqueado recebe um <strong>e-mail de alerta automático</strong> informando a falha e orientando a verificar as configurações do webhook.
+            </p>
+          </div>
         </motion.section>
 
         {/* FAQ */}
