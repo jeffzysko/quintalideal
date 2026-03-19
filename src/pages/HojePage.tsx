@@ -695,8 +695,8 @@ export default function HojePage() {
                               <ChevronRight className="w-4 h-4 text-muted-foreground" />
                             </div>
                           </motion.div>
-                        );
-                      })}
+                        ))}
+                    </CardContent>
                     </CardContent>
                   </Card>
                 </Section>
