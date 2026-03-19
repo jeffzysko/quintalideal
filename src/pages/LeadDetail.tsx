@@ -140,10 +140,17 @@ export default function LeadDetail() {
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [lastActivityAt, setLastActivityAt] = useState<string | null>(null);
 
+  const [activitiesCount, setActivitiesCount] = useState(0);
+  const [followupsPending, setFollowupsPending] = useState(0);
+
   useEffect(() => {
     if (id) {
       loadLead();
       loadLastActivity();
+      loadActivityCounts();
+      loadFollowupCounts();
+    }
+  }, [id]);
     }
   }, [id]);
 
