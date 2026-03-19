@@ -437,21 +437,26 @@ export default function WebhookDocs() {
             <div className="rounded-xl border border-red-200/50 bg-red-50/50 p-4">
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="w-2 h-2 rounded-full bg-red-500" />
-                <span className="text-xs font-bold text-red-700">Erro (4xx/5xx)</span>
+                <span className="text-xs font-bold text-red-700">Erro (5xx / Timeout)</span>
               </div>
               <p className="text-xs text-red-600">
-                O erro é registrado nos logs mas <strong>o lead é salvo normalmente</strong>. Nenhum retry automático nesta versão.
+                O sistema faz até <strong>3 tentativas</strong> com backoff exponencial (0s, 2s, 5s). Se todas falharem, o erro é registrado nos logs mas <strong>o lead é salvo normalmente</strong>.
               </p>
             </div>
             <div className="rounded-xl border border-border/50 bg-muted/30 p-4">
               <div className="flex items-center gap-2 mb-1.5">
                 <span className="w-2 h-2 rounded-full bg-muted-foreground" />
-                <span className="text-xs font-bold text-foreground">Servidor offline</span>
+                <span className="text-xs font-bold text-foreground">Erro 4xx (cliente)</span>
               </div>
               <p className="text-xs text-muted-foreground">
-                Se a URL estiver inacessível, o envio falha silenciosamente. O lead continua salvo no painel.
+                Erros de cliente (exceto 408/429) <strong>não são reenviados</strong>. Verifique a URL e as configurações do seu CRM.
               </p>
             </div>
+          </div>
+          <div className="mt-3 rounded-xl border border-primary/20 bg-primary/5 p-4">
+            <p className="text-xs text-foreground">
+              <strong>📋 Histórico de entregas:</strong> Todas as tentativas de envio ficam registradas em <strong>Perfil → Integrações → Histórico de Entregas</strong>, com status, código HTTP e detalhes de cada tentativa.
+            </p>
           </div>
         </motion.section>
 
