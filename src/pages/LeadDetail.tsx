@@ -131,7 +131,7 @@ export default function LeadDetail() {
   const [observacoes, setObservacoes] = useState('');
   const [tempOverride, setTempOverride] = useState<LeadTemperature | ''>('');
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState('resumo');
+  const [activeTab, setActiveTab] = useState('timeline');
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [lastActivityAt, setLastActivityAt] = useState<string | null>(null);
