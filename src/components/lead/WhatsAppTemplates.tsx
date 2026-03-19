@@ -29,84 +29,75 @@ function buildTemplates(props: WhatsAppTemplatesProps): Template[] {
   const score = props.pontuacao || 0;
 
   return [
-    // === NOVO — Primeiro contato (Técnica: Pattern Interrupt + Curiosidade) ===
     {
       id: 'primeiro_contato',
       label: 'Primeiro contato',
       emoji: '👋',
       stage: ['novo'],
-      message: `Oi ${nome}! Aqui é [seu nome] da Splash Piscinas em ${cidade} 😊\n\nVi o resultado do seu Índice do Quintal — ${score > 70 ? 'seu espaço tem um potencial incrível!' : 'você tem um quintal com boas possibilidades!'}\n\nMe conta: o que te motivou a fazer o teste? É pra aproveitar mais com a família, valorizar o imóvel, ou tem outro plano? 🤔\n\nQuero entender pra te ajudar da melhor forma.`,
+      message: `Oi ${nome}! Aqui é [seu nome] da Splash Piscinas em ${cidade} 😊\n\nVi o resultado do seu Índice do Quintal${score > 70 ? ', seu espaço tem um potencial incrível!' : '!'}\n\nMe conta: o que te motivou a fazer o teste? Quero entender pra te ajudar da melhor forma 🤔`,
     },
     {
       id: 'primeiro_contato_curto',
       label: 'Contato rápido',
       emoji: '⚡',
       stage: ['novo'],
-      message: `Oi ${nome}! Sou da Splash Piscinas 😊\n\nVi que você testou seu quintal — resultado ficou ótimo! Me conta: qual é o sonho pro seu espaço? Quero te ajudar a encontrar a melhor solução.`,
+      message: `Oi ${nome}! Sou da Splash Piscinas 😊\n\nVi que você testou seu quintal e o resultado ficou ótimo! Qual é o sonho pro seu espaço?`,
     },
-
-    // === CONTATADO — Aprofundar relacionamento (Técnica: SPIN Selling - Situação/Problema) ===
     {
       id: 'aprofundar',
       label: 'Descobrir necessidade',
       emoji: '🎯',
       stage: ['contatado'],
-      message: `Oi ${nome}! Tudo bem? 😊\n\nEstive pensando na nossa conversa e queria te fazer uma pergunta: como está a rotina de lazer aí em casa hoje?\n\nPergunto porque muitos clientes nossos em ${cidade} me dizem que antes gastavam com passeios, clubes e viagens curtas, e depois da piscina tudo mudou — os finais de semana ficaram mais leves.\n\nVocê sente que falta esse espaço de descanso em casa?`,
+      message: `Oi ${nome}! Tudo bem? 😊\n\nEstive pensando na nossa conversa. Como está a rotina de lazer aí em casa hoje?\n\nMuitos clientes nossos em ${cidade} dizem que depois da piscina os finais de semana mudaram completamente.\n\nVocê sente que falta esse espaço de descanso em casa?`,
     },
     {
       id: 'prova_social',
       label: 'Caso de sucesso',
       emoji: '🌟',
       stage: ['contatado'],
-      message: `${nome}, queria te contar algo legal! 😄\n\nUm cliente nosso aqui em ${cidade} tinha uma situação parecida com a sua — quintal ocioso e sem saber por onde começar.\n\nHoje ele me diz que foi o melhor investimento que fez: as crianças amam, os amigos vivem lá, e o imóvel valorizou bastante.\n\nQuer que eu te mostre como ficou o projeto dele? Posso te enviar umas fotos do antes e depois 📸`,
+      message: `${nome}, queria te contar algo legal! 😄\n\nUm cliente nosso aqui em ${cidade} tinha uma situação parecida com a sua. Hoje ele diz que foi o melhor investimento que fez.\n\nQuer ver umas fotos do antes e depois? 📸`,
     },
-
-    // === EM NEGOCIAÇÃO — Reduzir objeções (Técnica: Feel-Felt-Found + Escassez real) ===
     {
       id: 'objecao_preco',
       label: 'Contornar preço',
       emoji: '💎',
       stage: ['em_negociacao'],
-      message: `${nome}, entendo perfeitamente sua preocupação com o investimento 🤝\n\nMuitos clientes sentiram o mesmo antes de fechar. Mas o que eles descobriram é que, quando dividem o valor no mês, custa menos que os passeios que faziam antes.\n\nAlém disso, a valorização do imóvel costuma cobrir boa parte do investimento.\n\nQue tal a gente simular juntos como ficaria no seu orçamento? Posso te mostrar em 5 minutos 📊`,
+      message: `${nome}, entendo sua preocupação com o investimento 🤝\n\nMuitos clientes sentiram o mesmo. Mas quando dividem o valor no mês, percebem que custa menos que os passeios que faziam antes. Fora a valorização do imóvel!\n\nQue tal simularmos juntos como ficaria no seu orçamento? Leva 5 minutinhos 📊`,
     },
     {
       id: 'objecao_timing',
       label: 'Contornar "agora não"',
       emoji: '⏰',
       stage: ['em_negociacao'],
-      message: `${nome}, faz todo sentido planejar com calma! 👍\n\nSó queria te passar uma informação importante: o prazo de instalação hoje está em torno de [X semanas]. Quem fecha agora já garante a piscina pronta pro próximo calor ☀️\n\nSe deixar pra depois, a fila costuma aumentar e o prazo dobra.\n\nPodemos pelo menos garantir a visita técnica essa semana? Assim você tem o projeto em mãos sem compromisso.`,
+      message: `${nome}, faz todo sentido planejar com calma! 👍\n\nSó uma info importante: o prazo de instalação hoje está em [X semanas]. Quem fecha agora garante a piscina pronta pro próximo calor ☀️\n\nPodemos pelo menos agendar a visita técnica essa semana? Assim você tem o projeto em mãos, sem compromisso.`,
     },
     {
       id: 'negociacao_avancar',
       label: 'Fechar negociação',
       emoji: '🤝',
       stage: ['em_negociacao'],
-      message: `${nome}, boa notícia! Consegui uma condição diferenciada pra você 🎉\n\nMas preciso ser honesto: só consigo manter até [data]. Depois disso, volta ao valor normal.\n\nVou te mandar os detalhes agora. Se fizer sentido pra você, já reservamos a data de instalação. Combinado?`,
+      message: `${nome}, boa notícia! Consegui uma condição especial pra você 🎉\n\nSó consigo manter até [data]. Vou te mandar os detalhes agora. Se fizer sentido, já reservamos a data de instalação. Combinado?`,
     },
-
-    // === RESGATE — Reativação inteligente (Técnica: Loop aberto + Novidade) ===
     {
       id: 'resgate_suave',
       label: 'Resgate suave',
       emoji: '💬',
       stage: ['contatado', 'em_negociacao'],
-      message: `Oi ${nome}! Tudo bem por aí? 😊\n\nLembrei de você porque tivemos uma novidade aqui na Splash que combina muito com o que conversamos.\n\nSem compromisso nenhum — posso te contar em 2 minutinhos?`,
+      message: `Oi ${nome}! Tudo bem por aí? 😊\n\nLembrei de você porque tivemos uma novidade aqui na Splash que combina com o que conversamos.\n\nPosso te contar em 2 minutinhos? Sem compromisso!`,
     },
     {
       id: 'resgate_valor',
       label: 'Resgate com valor',
       emoji: '📈',
       stage: ['contatado', 'em_negociacao'],
-      message: `${nome}, tudo bem? Aqui é [seu nome] da Splash 😊\n\nSaiu um estudo recente mostrando que imóveis com piscina em ${cidade} valorizaram em média 15-20% nos últimos anos.\n\nLembrei na hora do seu quintal! Quer que eu faça uma estimativa de valorização pro seu caso?`,
+      message: `${nome}, tudo bem? Aqui é [seu nome] da Splash 😊\n\nSaiu um estudo mostrando que imóveis com piscina em ${cidade} valorizaram 15-20% nos últimos anos. Lembrei na hora do seu quintal!\n\nQuer que eu faça uma estimativa pro seu caso?`,
     },
-
-    // === PÓS-VENDA — Indicação (Técnica: Reciprocidade + Facilidade) ===
     {
       id: 'pos_venda',
       label: 'Pedir indicação',
       emoji: '🎁',
       stage: ['vendido'],
-      message: `${nome}, como está curtindo a piscina? 😍\n\nFicamos muito felizes com o resultado! E queria te fazer um convite: se você conhece alguém que também sonha com uma piscina, temos um programa de indicação com benefícios especiais pra você.\n\nÉ só me passar o contato que eu cuido de tudo com muito carinho, do mesmo jeito que fizemos com você 🤝`,
+      message: `${nome}, como está curtindo a piscina? 😍\n\nSe você conhece alguém que também sonha com uma piscina, temos um programa de indicação com benefícios especiais pra você.\n\nÉ só me passar o contato que cuido de tudo com o mesmo carinho 🤝`,
     },
   ];
 }
