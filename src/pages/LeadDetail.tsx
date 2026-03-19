@@ -384,21 +384,25 @@ export default function LeadDetail() {
         {/* Tabbed Content */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="w-full grid grid-cols-4 h-10 bg-muted/50">
-              <TabsTrigger value="resumo" className="text-xs gap-1 data-[state=active]:bg-background">
+            <TabsList className="w-full grid grid-cols-5 h-11 bg-card border border-border/50 rounded-xl p-1 shadow-sm">
+              <TabsTrigger value="resumo" className="text-[11px] sm:text-xs gap-1.5 rounded-lg font-medium transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm">
                 <ClipboardList className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Resumo</span>
               </TabsTrigger>
-              <TabsTrigger value="timeline" className="text-xs gap-1 data-[state=active]:bg-background">
+              <TabsTrigger value="timeline" className="text-[11px] sm:text-xs gap-1.5 rounded-lg font-medium transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm">
                 <Clock className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Timeline</span>
               </TabsTrigger>
-              <TabsTrigger value="fotos" className="text-xs gap-1 data-[state=active]:bg-background" disabled={photos.length === 0}>
+              <TabsTrigger value="followups" className="text-[11px] sm:text-xs gap-1.5 rounded-lg font-medium transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm">
+                <CalendarClock className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Follow-ups</span>
+              </TabsTrigger>
+              <TabsTrigger value="fotos" className="text-[11px] sm:text-xs gap-1.5 rounded-lg font-medium transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm" disabled={photos.length === 0}>
                 <Image className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Fotos</span>
-                {photos.length > 0 && <span className="text-[10px] bg-primary/10 text-primary rounded-full px-1.5">{photos.length}</span>}
+                {photos.length > 0 && <span className="text-[9px] bg-primary/10 text-primary data-[state=active]:bg-white/20 data-[state=active]:text-primary-foreground rounded-full px-1.5 leading-tight">{photos.length}</span>}
               </TabsTrigger>
-              <TabsTrigger value="gerenciar" className="text-xs gap-1 data-[state=active]:bg-background">
+              <TabsTrigger value="gerenciar" className="text-[11px] sm:text-xs gap-1.5 rounded-lg font-medium transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm">
                 <Settings2 className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Gerenciar</span>
               </TabsTrigger>
@@ -436,12 +440,21 @@ export default function LeadDetail() {
                       </CardContent>
                     </Card>
                   )}
+                </motion.div>
+              </TabsContent>
 
-                  {/* Follow-up Scheduling */}
-                  {(franchiseId || lead.franquia_id) && (
-                    <div className="mt-4">
-                      <LeadFollowups franchiseId={(franchiseId || lead.franquia_id)!} leadId={lead.id} leadName={lead.nome || undefined} />
-                    </div>
+              {/* Follow-ups Tab */}
+              <TabsContent value="followups" className="mt-4">
+                <motion.div key="followups" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
+                  {(franchiseId || lead.franquia_id) ? (
+                    <LeadFollowups franchiseId={(franchiseId || lead.franquia_id)!} leadId={lead.id} leadName={lead.nome || undefined} />
+                  ) : (
+                    <Card className="glass-card">
+                      <CardContent className="p-6 text-center">
+                        <CalendarClock className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
+                        <p className="text-xs text-muted-foreground">Follow-ups não disponíveis para este lead.</p>
+                      </CardContent>
+                    </Card>
                   )}
                 </motion.div>
               </TabsContent>
