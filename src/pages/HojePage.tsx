@@ -30,6 +30,7 @@ import { cn } from '@/lib/utils';
 import { SmartSuggestions } from '@/components/dashboard/SmartSuggestions';
 import { QuickActionBar } from '@/components/dashboard/QuickActionBar';
 import { PipelineSnapshot } from '@/components/dashboard/PipelineSnapshot';
+import { WebhookHealthWidget } from '@/components/dashboard/WebhookHealthWidget';
 
 // ── Types ──
 interface Followup {
