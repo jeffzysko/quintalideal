@@ -479,7 +479,7 @@ export default function LeadDetail() {
 
               {/* Follow-ups Tab */}
               <TabsContent value="followups" className="mt-4">
-                <motion.div key="followups" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
+                <motion.div key="followups" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="space-y-4">
                   {(franchiseId || lead.franquia_id) ? (
                     <LeadFollowups franchiseId={(franchiseId || lead.franquia_id)!} leadId={lead.id} leadName={lead.nome || undefined} />
                   ) : (
@@ -490,6 +490,20 @@ export default function LeadDetail() {
                       </CardContent>
                     </Card>
                   )}
+                  <WhatsAppTemplates
+                    leadName={lead.nome}
+                    leadPhone={lead.telefone}
+                    modeloRecomendado={lead.modelo_recomendado}
+                    cidade={lead.cidade}
+                    pontuacao={lead.pontuacao_quintal}
+                    statusLead={lead.status_lead}
+                  />
+                  <AISuggestionCard
+                    lead={lead}
+                    activitiesCount={activitiesCount}
+                    lastActivityDays={lastActivityAt ? Math.floor((Date.now() - new Date(lastActivityAt).getTime()) / 86400000) : Math.floor((Date.now() - new Date(lead.created_at).getTime()) / 86400000)}
+                    followupsPending={followupsPending}
+                  />
                 </motion.div>
               </TabsContent>
 
