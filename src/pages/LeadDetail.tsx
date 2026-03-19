@@ -145,8 +145,6 @@ export default function LeadDetail() {
     if (id) {
       loadLead();
       loadLastActivity();
-      loadActivityCounts();
-      loadFollowupCounts();
     }
   }, [id]);
 
