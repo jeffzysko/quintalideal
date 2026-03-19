@@ -90,7 +90,7 @@ Deno.serve(async (req) => {
       evento: "teste_webhook",
       lead: {
         nome: "Lead de Teste",
-        telefone: "5551999999999",
+        telefone: "51999999999",
         email: "teste@exemplo.com",
         cidade: "Cidade Teste",
         pontuacao_quintal: 75,
