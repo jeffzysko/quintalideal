@@ -184,7 +184,7 @@ function Greeting({ name, summaryItems }: { name: string | null; summaryItems: {
 // ── Enhanced Quick Stats ──
 function QuickStats({ stats }: { stats: { icon: typeof Users; label: string; value: number; color: string; ringColor?: string; description?: string }[] }) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-8">
       {stats.map((stat, i) => (
         <motion.div
           key={stat.label}
