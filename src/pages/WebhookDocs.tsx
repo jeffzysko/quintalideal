@@ -168,7 +168,7 @@ function SectionHeader({ icon: Icon, title, badge }: { icon: React.ElementType; 
 
 const FIELDS = [
   { name: 'nome', type: 'string', desc: 'Nome completo do lead' },
-  { name: 'telefone', type: 'string', desc: 'Telefone com DDI+DDD (ex: 5551999999999)' },
+  { name: 'telefone', type: 'string', desc: 'Telefone com DDD (10 ou 11 dígitos, ex: 51999999999)' },
   { name: 'email', type: 'string | null', desc: 'E-mail (opcional)' },
   { name: 'cidade', type: 'string | null', desc: 'Cidade informada no quiz' },
   { name: 'pontuacao_quintal', type: 'number | null', desc: 'Score de 0 a 100 do Índice do Quintal' },
