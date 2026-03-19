@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
+import { classifyLead } from '@/lib/leadScoring';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
@@ -68,6 +69,7 @@ export default function AdminDashboard() {
   const [filterFranquia, setFilterFranquia] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterModelo, setFilterModelo] = useState('all');
+  const [filterTemperatura, setFilterTemperatura] = useState('all');
   const [page, setPage] = useState(1);
 
   // Sync leads tab franchise filter when org switcher changes
@@ -91,7 +93,7 @@ export default function AdminDashboard() {
     return () => clearTimeout(timer);
   }, [cidadeInput]);
 
-  useEffect(() => { setPage(1); }, [filterFranquia, filterStatus, filterModelo]);
+  useEffect(() => { setPage(1); }, [filterFranquia, filterStatus, filterModelo, filterTemperatura]);
 
   // ── Franchises ──
   const { data: franchises = [] } = useQuery({
@@ -142,15 +144,17 @@ export default function AdminDashboard() {
 
   // ── Paginated leads for table ──
   const { data: paginatedData, isLoading: loadingTable } = useQuery({
-    queryKey: ['admin-leads-table', page, search, filterFranquia, filterStatus, filterModelo, filterCidade],
+    queryKey: ['admin-leads-table', page, search, filterFranquia, filterStatus, filterModelo, filterCidade, filterTemperatura],
     placeholderData: keepPreviousData,
     queryFn: async () => {
-      const from = (page - 1) * PAGE_SIZE;
-      const to = from + PAGE_SIZE - 1;
+      // When temperature filter is active, fetch more to compensate for client-side filtering
+      const fetchSize = filterTemperatura !== 'all' ? PAGE_SIZE * 4 : PAGE_SIZE;
+      const from = filterTemperatura !== 'all' ? 0 : (page - 1) * PAGE_SIZE;
+      const to = filterTemperatura !== 'all' ? fetchSize - 1 : from + PAGE_SIZE - 1;
 
       let query = supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin', { count: 'exact' });
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin, respostas_questionario', { count: 'exact' });
 
       if (filterFranquia !== 'all') query = query.eq('franquia_id', filterFranquia);
       if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus as any);
@@ -160,7 +164,21 @@ export default function AdminDashboard() {
 
       const { data, count, error } = await query.order('created_at', { ascending: false }).range(from, to);
       if (error) throw error;
-      return { leads: (data || []) as LeadRow[], total: count || 0 };
+
+      let filteredLeads = (data || []) as (LeadRow & { respostas_questionario?: Record<string, string> | null })[];
+
+      // Client-side temperature filter
+      if (filterTemperatura !== 'all') {
+        filteredLeads = filteredLeads.filter(l => {
+          const temp = classifyLead(l.respostas_questionario || null, l.pontuacao_quintal);
+          return temp.temperature === filterTemperatura;
+        });
+        const pageStart = (page - 1) * PAGE_SIZE;
+        const pageEnd = pageStart + PAGE_SIZE;
+        return { leads: filteredLeads.slice(pageStart, pageEnd) as LeadRow[], total: filteredLeads.length };
+      }
+
+      return { leads: filteredLeads as LeadRow[], total: count || 0 };
     },
   });
 
@@ -444,6 +462,7 @@ export default function AdminDashboard() {
               filterFranquia={filterFranquia} onFranquiaChange={setFilterFranquia}
               filterStatus={filterStatus} onStatusChange={setFilterStatus}
               filterModelo={filterModelo} onModeloChange={setFilterModelo}
+              filterTemperatura={filterTemperatura} onTemperaturaChange={setFilterTemperatura}
               franchises={franchises}
               models={models}
             />

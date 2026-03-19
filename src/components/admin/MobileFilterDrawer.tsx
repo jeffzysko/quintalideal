@@ -6,6 +6,12 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@
 import { X, SlidersHorizontal } from 'lucide-react';
 import { STATUS_LABELS, Franchise } from '@/lib/lead-constants';
 
+const TEMP_LABELS: Record<string, string> = {
+  quente: '🔥 Quente',
+  morno: '☀️ Morno',
+  frio: '❄️ Frio',
+};
+
 interface MobileFilterDrawerProps {
   searchInput: string;
   onSearchChange: (v: string) => void;
@@ -17,6 +23,8 @@ interface MobileFilterDrawerProps {
   onStatusChange: (v: string) => void;
   filterModelo: string;
   onModeloChange: (v: string) => void;
+  filterTemperatura: string;
+  onTemperaturaChange: (v: string) => void;
   franchises: Franchise[];
   models: string[];
   open: boolean;
@@ -29,6 +37,7 @@ export function MobileFilterDrawer({
   filterFranquia, onFranquiaChange,
   filterStatus, onStatusChange,
   filterModelo, onModeloChange,
+  filterTemperatura, onTemperaturaChange,
   franchises, models,
   open, onOpenChange,
 }: MobileFilterDrawerProps) {
@@ -37,6 +46,7 @@ export function MobileFilterDrawer({
     filterFranquia !== 'all' ? filterFranquia : '',
     filterStatus !== 'all' ? filterStatus : '',
     filterModelo !== 'all' ? filterModelo : '',
+    filterTemperatura !== 'all' ? filterTemperatura : '',
   ].filter(Boolean).length;
 
   const clearAll = () => {
@@ -45,6 +55,7 @@ export function MobileFilterDrawer({
     onFranquiaChange('all');
     onStatusChange('all');
     onModeloChange('all');
+    onTemperaturaChange('all');
   };
 
   return (
@@ -118,6 +129,19 @@ export function MobileFilterDrawer({
           </div>
 
           <div className="space-y-1.5">
+            <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Temperatura</label>
+            <Select value={filterTemperatura} onValueChange={onTemperaturaChange}>
+              <SelectTrigger className="h-11"><SelectValue placeholder="Temperatura" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas Temperaturas</SelectItem>
+                {Object.entries(TEMP_LABELS).map(([v, l]) => (
+                  <SelectItem key={v} value={v}>{l}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Modelo</label>
             <Select value={filterModelo} onValueChange={onModeloChange}>
               <SelectTrigger className="h-11"><SelectValue placeholder="Modelo" /></SelectTrigger>
@@ -143,8 +167,8 @@ export function MobileFilterDrawer({
 
 // Active filter chips to show above the list
 export function ActiveFilterChips({
-  searchInput, cidadeInput, filterFranquia, filterStatus, filterModelo,
-  onSearchChange, onCidadeChange, onFranquiaChange, onStatusChange, onModeloChange,
+  searchInput, cidadeInput, filterFranquia, filterStatus, filterModelo, filterTemperatura,
+  onSearchChange, onCidadeChange, onFranquiaChange, onStatusChange, onModeloChange, onTemperaturaChange,
   franchises,
 }: {
   searchInput: string;
@@ -152,11 +176,13 @@ export function ActiveFilterChips({
   filterFranquia: string;
   filterStatus: string;
   filterModelo: string;
+  filterTemperatura: string;
   onSearchChange: (v: string) => void;
   onCidadeChange: (v: string) => void;
   onFranquiaChange: (v: string) => void;
   onStatusChange: (v: string) => void;
   onModeloChange: (v: string) => void;
+  onTemperaturaChange: (v: string) => void;
   franchises: Franchise[];
 }) {
   const chips: { label: string; onClear: () => void }[] = [];
@@ -167,6 +193,7 @@ export function ActiveFilterChips({
     chips.push({ label: `🏢 ${name}`, onClear: () => onFranquiaChange('all') });
   }
   if (filterStatus !== 'all') chips.push({ label: STATUS_LABELS[filterStatus] || filterStatus, onClear: () => onStatusChange('all') });
+  if (filterTemperatura !== 'all') chips.push({ label: TEMP_LABELS[filterTemperatura] || filterTemperatura, onClear: () => onTemperaturaChange('all') });
   if (filterModelo !== 'all') chips.push({ label: `🏊 ${filterModelo}`, onClear: () => onModeloChange('all') });
 
   if (chips.length === 0) return null;

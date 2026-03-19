@@ -9,6 +9,12 @@ import { STATUS_LABELS, Franchise } from '@/lib/lead-constants';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileFilterDrawer, ActiveFilterChips } from './MobileFilterDrawer';
 
+const TEMP_LABELS: Record<string, string> = {
+  quente: '🔥 Quente',
+  morno: '☀️ Morno',
+  frio: '❄️ Frio',
+};
+
 interface AdminLeadFiltersProps {
   searchInput: string;
   onSearchChange: (v: string) => void;
@@ -20,6 +26,8 @@ interface AdminLeadFiltersProps {
   onStatusChange: (v: string) => void;
   filterModelo: string;
   onModeloChange: (v: string) => void;
+  filterTemperatura: string;
+  onTemperaturaChange: (v: string) => void;
   franchises: Franchise[];
   models: string[];
 }
@@ -30,6 +38,7 @@ export function AdminLeadFilters({
   filterFranquia, onFranquiaChange,
   filterStatus, onStatusChange,
   filterModelo, onModeloChange,
+  filterTemperatura, onTemperaturaChange,
   franchises, models,
 }: AdminLeadFiltersProps) {
   const isMobile = useIsMobile();
@@ -40,6 +49,7 @@ export function AdminLeadFilters({
     filterFranquia !== 'all' ? filterFranquia : '',
     filterStatus !== 'all' ? filterStatus : '',
     filterModelo !== 'all' ? filterModelo : '',
+    filterTemperatura !== 'all' ? filterTemperatura : '',
   ].filter(Boolean).length;
 
   if (isMobile) {
@@ -73,11 +83,13 @@ export function AdminLeadFilters({
           filterFranquia={filterFranquia}
           filterStatus={filterStatus}
           filterModelo={filterModelo}
+          filterTemperatura={filterTemperatura}
           onSearchChange={onSearchChange}
           onCidadeChange={onCidadeChange}
           onFranquiaChange={onFranquiaChange}
           onStatusChange={onStatusChange}
           onModeloChange={onModeloChange}
+          onTemperaturaChange={onTemperaturaChange}
           franchises={franchises}
         />
 
@@ -94,6 +106,8 @@ export function AdminLeadFilters({
           onStatusChange={onStatusChange}
           filterModelo={filterModelo}
           onModeloChange={onModeloChange}
+          filterTemperatura={filterTemperatura}
+          onTemperaturaChange={onTemperaturaChange}
           franchises={franchises}
           models={models}
         />
@@ -104,8 +118,8 @@ export function AdminLeadFilters({
   return (
     <Card className="mb-4 sm:mb-6 border-border/50 shadow-sm">
       <CardContent className="p-3 sm:p-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-2.5 sm:gap-3">
-          <Input placeholder="Buscar nome..." value={searchInput} onChange={e => onSearchChange(e.target.value)} className="rounded-xl h-11 sm:h-10 sm:col-span-2 md:col-span-1" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-6 gap-2.5 sm:gap-3">
+          <Input placeholder="Buscar nome..." value={searchInput} onChange={e => onSearchChange(e.target.value)} className="rounded-xl h-11 sm:h-10" />
           <Select value={filterFranquia} onValueChange={onFranquiaChange}>
             <SelectTrigger className="rounded-xl h-11 sm:h-10"><SelectValue placeholder="Franquia" /></SelectTrigger>
             <SelectContent>
@@ -120,6 +134,15 @@ export function AdminLeadFilters({
             <SelectContent>
               <SelectItem value="all">Todos Status</SelectItem>
               {Object.entries(STATUS_LABELS).map(([v, l]) => (
+                <SelectItem key={v} value={v}>{l}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select value={filterTemperatura} onValueChange={onTemperaturaChange}>
+            <SelectTrigger className="rounded-xl h-11 sm:h-10"><SelectValue placeholder="Temperatura" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Todas Temperaturas</SelectItem>
+              {Object.entries(TEMP_LABELS).map(([v, l]) => (
                 <SelectItem key={v} value={v}>{l}</SelectItem>
               ))}
             </SelectContent>
@@ -139,3 +162,5 @@ export function AdminLeadFilters({
     </Card>
   );
 }
+
+export { TEMP_LABELS };
