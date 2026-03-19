@@ -119,7 +119,7 @@ function ScoreRing({ score }: { score: number }) {
 }
 
 export default function LeadDetail() {
-  const { user, franchiseId } = useAuth();
+  const { franchiseId } = useAuth();
   const isMobile = useIsMobile();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
