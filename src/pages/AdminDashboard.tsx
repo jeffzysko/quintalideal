@@ -498,9 +498,17 @@ export default function AdminDashboard() {
                       <SelectValue placeholder="Selecione uma franquia para visualizar" />
                     </SelectTrigger>
                     <SelectContent>
-                      {franchises.map(f => (
-                        <SelectItem key={f.id} value={f.id}>{f.nome_franquia}</SelectItem>
-                      ))}
+                      {[...franchises]
+                        .sort((a, b) => {
+                          const aTest = a.nome_franquia.toLowerCase().includes('teste');
+                          const bTest = b.nome_franquia.toLowerCase().includes('teste');
+                          if (aTest && !bTest) return -1;
+                          if (!aTest && bTest) return 1;
+                          return a.nome_franquia.localeCompare(b.nome_franquia, 'pt-BR');
+                        })
+                        .map(f => (
+                          <SelectItem key={f.id} value={f.id}>{f.nome_franquia}</SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                 </CardContent>
