@@ -11,7 +11,7 @@ const PAYLOAD_EXAMPLE = `{
   "evento": "novo_lead",
   "lead": {
     "nome": "João Silva",
-    "telefone": "5551999999999",
+    "telefone": "51999999999",
     "email": "joao@email.com",
     "cidade": "Porto Alegre",
     "pontuacao_quintal": 78,
@@ -29,7 +29,7 @@ const TEST_PAYLOAD_EXAMPLE = `{
   "evento": "teste_webhook",
   "lead": {
     "nome": "Lead de Teste",
-    "telefone": "5551999999999",
+    "telefone": "51999999999",
     "email": "teste@exemplo.com",
     "cidade": "Cidade Teste",
     "pontuacao_quintal": 75,
@@ -168,7 +168,7 @@ function SectionHeader({ icon: Icon, title, badge }: { icon: React.ElementType; 
 
 const FIELDS = [
   { name: 'nome', type: 'string', desc: 'Nome completo do lead' },
-  { name: 'telefone', type: 'string', desc: 'Telefone com DDI+DDD (ex: 5551999999999)' },
+  { name: 'telefone', type: 'string', desc: 'Telefone com DDD (10 ou 11 dígitos, ex: 51999999999)' },
   { name: 'email', type: 'string | null', desc: 'E-mail (opcional)' },
   { name: 'cidade', type: 'string | null', desc: 'Cidade informada no quiz' },
   { name: 'pontuacao_quintal', type: 'number | null', desc: 'Score de 0 a 100 do Índice do Quintal' },
