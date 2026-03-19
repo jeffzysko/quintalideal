@@ -7,6 +7,7 @@ import { NotificationBell } from '@/components/NotificationBell';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import {
+  CalendarClock,
   LifeBuoy,
   BookOpen,
   Users,
@@ -55,7 +56,7 @@ const guideSteps: GuideStep[] = [
     subtitle: 'Na sua primeira sessão, um tour guiado apresenta as funcionalidades principais.',
     details: [
       'O wizard aparece automaticamente quando você acessa o painel pela primeira vez.',
-      'Ele guia você pelas etapas essenciais: compartilhar link, acompanhar leads, usar o Kanban e mais.',
+      'Ele guia você pelas etapas essenciais: compartilhar link, acompanhar leads, usar o Kanban, a central "Hoje" e mais.',
       'Caso precise rever, limpe o histórico do navegador para reativá-lo.',
     ],
     tip: 'Complete o wizard para se familiarizar rapidamente com a plataforma!',
@@ -79,8 +80,10 @@ const guideSteps: GuideStep[] = [
     subtitle: 'Veja em um único lugar tudo que precisa de atenção imediata.',
     details: [
       'Acesse pelo botão "Hoje" no menu superior do painel.',
-      'As seções mais urgentes (follow-ups atrasados, leads novos) ficam abertas por padrão.',
-      'Seções de menor prioridade podem ser expandidas clicando em "Ver mais".',
+      'A barra de ações rápidas oferece 4 atalhos: Novo Lead, Funil (pipeline), WhatsApp e Ligar.',
+      'O badge no ícone "Funil" mostra quantos follow-ups estão pendentes — toque para ver detalhes.',
+      'As sugestões inteligentes analisam seus leads e recomendam ações priorizadas automaticamente.',
+      'Seções como follow-ups atrasados e leads novos ficam abertas por padrão.',
     ],
     tip: 'Comece o dia pela página "Hoje" para nunca perder uma oportunidade!',
   },
@@ -93,7 +96,7 @@ const guideSteps: GuideStep[] = [
       'No painel, acesse a aba "Leads" para ver todos os contatos recebidos.',
       'Cada lead contém nome, telefone, e-mail e as respostas do questionário.',
       'A coluna "Score" mostra uma barra visual colorida indicando o potencial do quintal.',
-      'Use os filtros para encontrar leads por status, modelo ou data.',
+      'Use os filtros para encontrar leads por status, modelo, temperatura, cidade ou data.',
     ],
     tip: 'Leads novos aparecem com o status "Novo" — entre em contato o mais rápido possível!',
   },
@@ -106,9 +109,33 @@ const guideSteps: GuideStep[] = [
       'Acesse a aba "Kanban" no seu painel para ver o funil de vendas.',
       'No desktop, arraste os cards entre as colunas para mudar o status (Novo → Contatado → Em Negociação → Vendido).',
       'No mobile, toque no card e use o drawer para alterar o status com descrições detalhadas de cada etapa.',
-      'Uma dica de onboarding aparece na primeira vez que você acessa o Kanban.',
+      'Você pode filtrar leads por temperatura, origem, cidade e período diretamente no Kanban.',
     ],
     tip: 'O Kanban é a forma mais visual e rápida de acompanhar seu funil!',
+  },
+  {
+    id: 'followup',
+    icon: CalendarClock,
+    title: 'Follow-ups e agendamentos',
+    subtitle: 'Agende lembretes de acompanhamento para não perder nenhum lead.',
+    details: [
+      'Na página de detalhes do lead ou na aba "Hoje", agende follow-ups com data, hora e tipo (ligação, WhatsApp, e-mail, visita ou reunião).',
+      'Follow-ups atrasados aparecem em destaque na página "Hoje" e no badge do ícone "Funil".',
+      'Marque como concluído ou exclua diretamente pela interface.',
+      'Você recebe notificações automáticas quando um follow-up está próximo.',
+    ],
+    tip: 'Leads contatados em menos de 48h têm uma taxa de conversão muito maior!',
+  },
+  {
+    id: 'manual-csv',
+    icon: FileText,
+    title: 'Cadastro manual e importação CSV',
+    subtitle: 'Adicione leads que chegaram por outros canais.',
+    details: [
+      'Use o botão "Novo Lead" na página "Hoje" ou no Kanban para cadastrar um lead manualmente.',
+      'Para importar vários leads de uma vez, use a opção "Importar CSV" — basta seguir o modelo de planilha.',
+      'Leads manuais recebem classificação automática de temperatura com base no mini-questionário.',
+    ],
   },
   {
     id: 'score',
@@ -140,9 +167,22 @@ const guideSteps: GuideStep[] = [
     subtitle: 'Entre em contato instantaneamente com seus leads.',
     details: [
       'Na página de detalhes do lead, clique no botão do WhatsApp para iniciar a conversa.',
+      'Na página "Hoje", use o atalho "WhatsApp" na barra de ações rápidas para contactar o lead mais recente.',
       'Uma mensagem personalizada é gerada automaticamente com o nome do lead.',
       'Configure seu número do WhatsApp nas configurações da franquia.',
     ],
+  },
+  {
+    id: 'notifications',
+    icon: Bell,
+    title: 'Notificações e Push',
+    subtitle: 'Receba alertas em tempo real sobre novos leads e follow-ups.',
+    details: [
+      'Ative as notificações push no seu navegador para receber alertas mesmo com o painel fechado.',
+      'Personalize quais notificações deseja receber em "Configurações de Notificações".',
+      'O sino de notificações no topo mostra um badge com alertas não lidos.',
+    ],
+    tip: 'Ative as notificações push para ser avisado assim que um novo lead chegar!',
   },
   {
     id: 'reports',
@@ -164,6 +204,7 @@ const guideSteps: GuideStep[] = [
     details: [
       'Acesse "Configurações" no menu do usuário para editar seus dados.',
       'Atualize WhatsApp, e-mail e informações do responsável.',
+      'Gerencie até 3 usuários (1 titular + 2 adicionais) no painel da franquia.',
       'Configure webhooks para integrar com seu CRM (veja a documentação).',
     ],
   },
@@ -189,14 +230,17 @@ interface FAQ {
 
 const faqs: FAQ[] = [
   { q: 'Como altero minha senha?', a: 'Acesse "Configurações" no menu do usuário, role até a seção "Alterar Senha" e insira sua nova senha.' },
-  { q: 'Posso ter mais de um usuário na minha franquia?', a: 'Sim! Entre em contato com o suporte da Hallow Comunicação para solicitar a criação de usuários adicionais para sua franquia.' },
+  { q: 'Posso ter mais de um usuário na minha franquia?', a: 'Sim! Acesse as configurações da franquia e adicione até 2 usuários adicionais (além do titular). Cada um terá acesso ao painel com suas próprias credenciais.' },
   { q: 'O que fazer quando um lead está duplicado?', a: 'A plataforma detecta automaticamente leads duplicados por telefone ou e-mail. Se o lead já existe, uma mensagem é exibida informando a franquia responsável.' },
   { q: 'Meus leads não estão aparecendo, o que fazer?', a: 'Verifique se seu link está correto e ativo. Se o problema persistir, entre em contato com o suporte técnico.' },
   { q: 'Como funciona a pontuação do quintal?', a: 'A pontuação é calculada automaticamente com base nas respostas do questionário do lead, considerando espaço disponível, tipo de terreno, uso pretendido e prazo de compra. Na tabela de leads, o score aparece como uma barra visual colorida.' },
   { q: 'Posso personalizar a página de captação?', a: 'A página de captação é padronizada para garantir a melhor experiência. Porém, cada franquia pode configurar seu Pixel do Meta para rastreamento de anúncios.' },
-  { q: 'O que é o Kanban no painel?', a: 'O Kanban é uma visualização em colunas do seu funil de vendas. No desktop, arraste os cards entre as colunas para mudar o status. No mobile, toque no card para acessar as opções.' },
+  { q: 'O que é o Kanban no painel?', a: 'O Kanban é uma visualização em colunas do seu funil de vendas. No desktop, arraste os cards entre as colunas para mudar o status. No mobile, toque no card para acessar as opções. Você pode filtrar por temperatura, origem, cidade e período.' },
   { q: 'Como defino minha meta mensal?', a: 'No painel da franquia, clique em "Definir meta" ou "Editar meta" para abrir o modal de configuração. Insira o número de vendas desejado e acompanhe o progresso em tempo real.' },
-  { q: 'O que é a página "Hoje"?', a: 'É uma visão resumida das suas prioridades do dia: follow-ups atrasados, leads novos, leads quentes e atividade recente. Acesse pelo botão "Hoje" no menu superior.' },
+  { q: 'O que é a página "Hoje"?', a: 'É sua central de prioridades do dia com 4 ações rápidas (Novo Lead, Funil, WhatsApp, Ligar), sugestões inteligentes, follow-ups pendentes, leads novos e um snapshot do pipeline. O badge no ícone "Funil" mostra quantos follow-ups estão pendentes.' },
+  { q: 'Como funcionam os follow-ups?', a: 'Você pode agendar follow-ups com data, hora e tipo (ligação, WhatsApp, e-mail, visita ou reunião). Follow-ups atrasados aparecem em destaque na página "Hoje" e você recebe notificações automáticas.' },
+  { q: 'Como importo leads via CSV?', a: 'Use o botão "Importar CSV" na página "Hoje" ou no Kanban. O arquivo deve seguir o modelo disponível para download na tela de importação, com colunas para nome, telefone, e-mail, cidade, modelo e observações. Limite de 500 leads por arquivo.' },
+  { q: 'Como ativo as notificações push?', a: 'Acesse "Notificações" → "Preferências" no menu do sino. Ative as notificações push e autorize no navegador. Você será avisado sobre novos leads, follow-ups e alertas importantes mesmo com o painel fechado.' },
 ];
 
 /* ─── Sub-components ─── */
