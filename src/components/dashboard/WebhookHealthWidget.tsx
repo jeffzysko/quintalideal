@@ -178,9 +178,22 @@ export function WebhookHealthWidget({ franchiseId }: Props) {
               <p className="text-[10px] text-muted-foreground font-medium">Envios</p>
             </div>
             <div className="text-center p-2 rounded-lg bg-muted/30">
-              <p className={cn('text-lg font-extrabold tabular-nums', isHealthy ? 'text-emerald-600' : isCritical ? 'text-destructive' : 'text-amber-600')}>
-                {successRate}%
-              </p>
+              <div className="flex items-center justify-center gap-1">
+                <p className={cn('text-lg font-extrabold tabular-nums', isHealthy ? 'text-emerald-600' : isCritical ? 'text-destructive' : 'text-amber-600')}>
+                  {successRate}%
+                </p>
+                {trendDiff !== null && (
+                  <span className={cn(
+                    'flex items-center gap-0.5 text-[9px] font-bold rounded-full px-1 py-0.5',
+                    trendDiff > 0 && 'text-emerald-600 bg-emerald-500/10',
+                    trendDiff < 0 && 'text-destructive bg-destructive/10',
+                    trendDiff === 0 && 'text-muted-foreground bg-muted/50',
+                  )}>
+                    {trendDiff > 0 ? <TrendingUp className="w-2.5 h-2.5" /> : trendDiff < 0 ? <TrendingDown className="w-2.5 h-2.5" /> : <Minus className="w-2.5 h-2.5" />}
+                    {trendDiff > 0 ? '+' : ''}{trendDiff}%
+                  </span>
+                )}
+              </div>
               <p className="text-[10px] text-muted-foreground font-medium">Taxa de sucesso</p>
             </div>
             <div className="text-center p-2 rounded-lg bg-muted/30">
