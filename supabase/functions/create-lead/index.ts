@@ -388,16 +388,65 @@ async function fireWebhook(
     headers["X-Webhook-Signature"] = `sha256=${hex}`;
   }
 
-  const res = await fetch(franchise.webhook_url, {
-    method: "POST",
-    headers,
-    body,
-    signal: AbortSignal.timeout(10000),
-  });
+  const MAX_ATTEMPTS = 3;
+  const BACKOFF_MS = [0, 2000, 5000];
 
-  if (!res.ok) {
-    console.error(`Webhook failed [${res.status}]: ${await res.text().catch(() => "")}`);
-  } else {
-    console.log("Webhook sent successfully to:", franchise.webhook_url);
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    if (attempt > 1) {
+      await new Promise((r) => setTimeout(r, BACKOFF_MS[attempt - 1]));
+    }
+
+    let httpStatus: number | null = null;
+    let responseText = "";
+    let success = false;
+    let errorMessage: string | null = null;
+
+    try {
+      const res = await fetch(franchise.webhook_url, {
+        method: "POST",
+        headers,
+        body,
+        signal: AbortSignal.timeout(10000),
+      });
+
+      httpStatus = res.status;
+      responseText = await res.text().catch(() => "");
+      success = res.ok;
+
+      if (!res.ok) {
+        errorMessage = `HTTP ${res.status}`;
+      }
+    } catch (err) {
+      errorMessage = err instanceof Error ? err.message : "Network error";
+    }
+
+    // Log this attempt
+    supabase.from("webhook_logs").insert({
+      franchise_id: franquiaId,
+      event_type: "novo_lead",
+      url: franchise.webhook_url,
+      http_status: httpStatus,
+      success,
+      attempt,
+      error_message: errorMessage,
+      response_body: responseText ? responseText.substring(0, 500) : null,
+    }).then(({ error: logErr }) => {
+      if (logErr) console.error("Webhook log insert error:", logErr);
+    });
+
+    if (success) {
+      console.log("Webhook sent successfully to:", franchise.webhook_url);
+      return;
+    }
+
+    console.error(`Webhook attempt ${attempt}/${MAX_ATTEMPTS} failed:`, errorMessage);
+
+    // Don't retry on 4xx client errors (except 408 timeout / 429 rate limit)
+    if (httpStatus && httpStatus >= 400 && httpStatus < 500 && httpStatus !== 408 && httpStatus !== 429) {
+      console.log("Client error, skipping retries");
+      return;
+    }
   }
+
+  console.error(`Webhook failed after ${MAX_ATTEMPTS} attempts to:`, franchise.webhook_url);
 }
