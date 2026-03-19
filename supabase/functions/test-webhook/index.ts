@@ -135,6 +135,18 @@ Deno.serve(async (req) => {
 
     const responseText = await res.text().catch(() => "");
 
+    // Log the test webhook attempt
+    await adminClient.from("webhook_logs").insert({
+      franchise_id: franchiseId,
+      event_type: "teste_webhook",
+      url: franchise.webhook_url,
+      http_status: res.status,
+      success: res.ok,
+      attempt: 1,
+      error_message: res.ok ? null : `HTTP ${res.status}`,
+      response_body: responseText ? responseText.substring(0, 500) : null,
+    });
+
     if (!res.ok) {
       return new Response(
         JSON.stringify({
