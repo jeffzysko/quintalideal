@@ -408,24 +408,10 @@ export default function LeadDetail() {
           </Card>
         </motion.div>
 
-        {/* Contact Attempts + Value Estimator + AI Suggestion */}
+        {/* Contact Attempts + Value Estimator */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="space-y-4">
           <ContactAttempts leadId={lead.id} />
           <LeadValueEstimator respostas={lead.respostas_questionario} modeloRecomendado={lead.modelo_recomendado} />
-          <AISuggestionCard
-            lead={lead}
-            activitiesCount={activitiesCount}
-            lastActivityDays={lastActivityAt ? Math.floor((Date.now() - new Date(lastActivityAt).getTime()) / 86400000) : Math.floor((Date.now() - new Date(lead.created_at).getTime()) / 86400000)}
-            followupsPending={followupsPending}
-          />
-          <WhatsAppTemplates
-            leadName={lead.nome}
-            leadPhone={lead.telefone}
-            modeloRecomendado={lead.modelo_recomendado}
-            cidade={lead.cidade}
-            pontuacao={lead.pontuacao_quintal}
-            statusLead={lead.status_lead}
-          />
         </motion.div>
 
         {/* Quiz Answers — always visible */}
