@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { MessageCircle, Copy, ExternalLink, ChevronDown, ChevronUp } from 'lucide-react';
+import { MessageCircle, Copy, Send, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -104,9 +104,9 @@ function buildTemplates(props: WhatsAppTemplatesProps): Template[] {
 
 export function WhatsAppTemplates(props: WhatsAppTemplatesProps) {
   const [expanded, setExpanded] = useState(false);
+  const [copiedId, setCopiedId] = useState<string | null>(null);
   const templates = buildTemplates(props);
 
-  // Filter relevant templates based on current status
   const relevant = templates.filter(t => t.stage.includes(props.statusLead));
   const others = templates.filter(t => !t.stage.includes(props.statusLead));
   const displayedTemplates = expanded ? [...relevant, ...others] : relevant.slice(0, 2);
@@ -121,9 +121,11 @@ export function WhatsAppTemplates(props: WhatsAppTemplatesProps) {
     window.open(`https://wa.me/${fullPhone}?text=${encoded}`, '_blank');
   };
 
-  const copyMessage = (message: string) => {
+  const copyMessage = (id: string, message: string) => {
     navigator.clipboard.writeText(message);
+    setCopiedId(id);
     toast.success('Mensagem copiada!');
+    setTimeout(() => setCopiedId(null), 2000);
   };
 
   return (
@@ -139,7 +141,7 @@ export function WhatsAppTemplates(props: WhatsAppTemplatesProps) {
           </span>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           <AnimatePresence initial={false}>
             {displayedTemplates.map((tpl, i) => (
               <motion.div
@@ -150,32 +152,43 @@ export function WhatsAppTemplates(props: WhatsAppTemplatesProps) {
                 transition={{ duration: 0.15, delay: i * 0.03 }}
                 className="overflow-hidden"
               >
-                <div className="bg-muted/30 rounded-xl p-3 hover:bg-muted/50 transition-colors group">
-                  <div className="flex items-center justify-between mb-1.5">
+                <div className="bg-muted/30 rounded-xl p-3 hover:bg-muted/50 transition-colors">
+                  <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                       {tpl.emoji} {tpl.label}
                     </span>
-                    <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                      <button
-                        onClick={() => copyMessage(tpl.message)}
-                        className="p-1 rounded-md hover:bg-muted text-muted-foreground"
-                        title="Copiar"
-                      >
-                        <Copy className="w-3 h-3" />
-                      </button>
-                    </div>
                   </div>
-                  <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2 whitespace-pre-wrap mb-2">
+                  <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-3 whitespace-pre-wrap mb-3">
                     {tpl.message}
                   </p>
-                  <Button
-                    size="sm"
-                    className="w-full h-8 text-xs bg-success hover:bg-success/90 text-success-foreground gap-1.5"
-                    onClick={() => sendWhatsApp(tpl.message)}
-                  >
-                    <ExternalLink className="w-3 h-3" />
-                    Enviar via WhatsApp
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-9 flex-1 text-xs gap-1.5 active:scale-95 transition-transform"
+                      onClick={() => copyMessage(tpl.id, tpl.message)}
+                    >
+                      {copiedId === tpl.id ? (
+                        <>
+                          <Check className="w-3.5 h-3.5 text-success" />
+                          Copiada!
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="w-3.5 h-3.5" />
+                          Copiar mensagem
+                        </>
+                      )}
+                    </Button>
+                    <Button
+                      size="sm"
+                      className="h-9 flex-1 text-xs bg-success hover:bg-success/90 text-success-foreground gap-1.5 active:scale-95 transition-transform"
+                      onClick={() => sendWhatsApp(tpl.message)}
+                    >
+                      <Send className="w-3.5 h-3.5" />
+                      Enviar WhatsApp
+                    </Button>
+                  </div>
                 </div>
               </motion.div>
             ))}
@@ -185,7 +198,7 @@ export function WhatsAppTemplates(props: WhatsAppTemplatesProps) {
         {(relevant.length > 2 || others.length > 0) && (
           <button
             onClick={() => setExpanded(!expanded)}
-            className="w-full mt-2 flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors py-1.5"
+            className="w-full mt-3 flex items-center justify-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors py-2 active:scale-95"
           >
             {expanded ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
             {expanded ? 'Ver menos' : `Ver todas (${templates.length})`}
