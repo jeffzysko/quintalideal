@@ -104,7 +104,7 @@ function Section({ icon: Icon, title, count, iconBg = 'icon-bg-blue', children, 
     <motion.section
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mb-6"
+      className="mb-8"
     >
       <div
         className={cn("flex items-center justify-between mb-3", collapsible && "cursor-pointer select-none")}
@@ -155,7 +155,7 @@ function Greeting({ name, summaryItems }: { name: string | null; summaryItems: {
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mb-6"
+      className="mb-8"
     >
       <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">
         {greeting}{firstName ? `, ${firstName}` : ''} 👋
@@ -184,7 +184,7 @@ function Greeting({ name, summaryItems }: { name: string | null; summaryItems: {
 // ── Enhanced Quick Stats ──
 function QuickStats({ stats }: { stats: { icon: typeof Users; label: string; value: number; color: string; ringColor?: string; description?: string }[] }) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-8">
       {stats.map((stat, i) => (
         <motion.div
           key={stat.label}
@@ -193,7 +193,7 @@ function QuickStats({ stats }: { stats: { icon: typeof Users; label: string; val
           transition={{ delay: i * 0.05 }}
         >
           <Card className="card-premium hover:shadow-md transition-shadow">
-            <CardContent className="p-3 sm:p-4">
+            <CardContent className="p-4">
               <div className="flex items-start justify-between mb-2">
                 <div className={cn('w-9 h-9 rounded-xl flex items-center justify-center', stat.ringColor || 'bg-muted/60')}>
                   <stat.icon className={cn('w-4.5 h-4.5', stat.color)} />
@@ -409,7 +409,7 @@ export default function HojePage() {
           <UserAvatarMenu />
         </PanelHeader>
 
-        <div className="max-w-3xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6">
+        <div className="max-w-3xl mx-auto px-4 sm:px-5 md:px-6 py-5 sm:py-8">
           <Breadcrumbs items={[
             { label: isAdmin ? 'Admin' : 'Painel', href: isAdmin ? '/admin' : '/franquia' },
             { label: 'Hoje' },
@@ -424,9 +424,9 @@ export default function HojePage() {
                  pendingFollowups={todayFollowups.length + overdueFollowups.length}
                />
                {franchiseId && (
-                 <div className="mb-4 -mt-2 flex items-center gap-2">
-                   <ManualLeadForm franchiseId={franchiseId} />
-                   <CSVLeadImport franchiseId={franchiseId} />
+                 <div className="mb-6 flex items-center gap-2.5">
+                    <ManualLeadForm franchiseId={franchiseId} />
+                    <CSVLeadImport franchiseId={franchiseId} />
                  </div>
                )}
                <QuickStats stats={quickStats} />
@@ -445,7 +445,7 @@ export default function HojePage() {
               {/* ═══ URGENT: Overdue Follow-ups ═══ */}
               {overdueFollowups.length > 0 && (
                 <Section icon={AlertTriangle} title="Atrasados" count={overdueFollowups.length} iconBg="bg-destructive/10" subtitle="Follow-ups que já passaram do prazo">
-                  <div className="space-y-2">
+                  <div className="space-y-2.5">
                     {overdueFollowups.map((f, i) => {
                       const parsed = parseFollowupType(f.note);
                       const TypeIcon = parsed.type ? FOLLOWUP_ICONS[parsed.type] || CalendarClock : CalendarClock;
@@ -504,7 +504,7 @@ export default function HojePage() {
                     </CardContent>
                   </Card>
                 ) : (
-                  <div className="space-y-2">
+                   <div className="space-y-2.5">
                     {todayFollowups.map((f, i) => {
                       const parsed = parseFollowupType(f.note);
                       const TypeIcon = parsed.type ? FOLLOWUP_ICONS[parsed.type] || CalendarClock : CalendarClock;
@@ -609,7 +609,7 @@ export default function HojePage() {
               {/* ═══ NEW LEADS (24h) ═══ */}
               {newLeads.length > 0 && (
                 <Section icon={Zap} title="Novos leads" count={newLeads.length} iconBg="icon-bg-green" subtitle="Chegaram nas últimas 24 horas" collapsible defaultOpen={newLeads.length <= 4}>
-                  <div className="space-y-2">
+                  <div className="space-y-2.5">
                     {newLeads.slice(0, 6).map((lead, i) => {
                       const temp = classifyLead((lead as any).respostas_questionario || null, lead.pontuacao_quintal);
                       const timeAgo = formatDistanceToNow(new Date(lead.created_at), { locale: ptBR, addSuffix: true });
@@ -704,7 +704,7 @@ export default function HojePage() {
               {/* ═══ UPCOMING FOLLOW-UPS ═══ */}
               {upcomingFollowups.length > 0 && (
                 <Section icon={Target} title="Próximos follow-ups" count={upcomingFollowups.length} subtitle="Agendamentos dos próximos dias" collapsible defaultOpen={false}>
-                  <div className="space-y-2">
+                  <div className="space-y-2.5">
                     {upcomingFollowups.map((f, i) => {
                       const parsed = parseFollowupType(f.note);
                       const TypeIcon = parsed.type ? FOLLOWUP_ICONS[parsed.type] || CalendarClock : CalendarClock;

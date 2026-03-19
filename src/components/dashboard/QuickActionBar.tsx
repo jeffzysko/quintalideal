@@ -88,8 +88,8 @@ export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowup
   ];
 
   return (
-    <div className="mb-6">
-      <div className="grid grid-cols-4 gap-2 pb-1">
+    <div className="mb-8">
+      <div className="grid grid-cols-4 gap-3 sm:gap-4">
         {actions.map((action, i) => (
           <motion.button
             key={action.label}
@@ -98,7 +98,7 @@ export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowup
             transition={{ delay: i * 0.05 }}
             onClick={action.onClick}
             className={cn(
-              'flex flex-col items-center gap-1.5 min-w-[72px] py-3 px-2 rounded-2xl relative',
+              'flex flex-col items-center gap-2 min-w-[72px] py-3.5 px-2 rounded-2xl relative',
               'border border-border/30 bg-card transition-all active:scale-95',
               'hover:shadow-sm'
             )}
