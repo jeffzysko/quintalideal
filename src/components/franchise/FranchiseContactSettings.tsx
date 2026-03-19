@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label';
 import { Save, BarChart3, Webhook, Eye, EyeOff, RefreshCw, Send, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase as supabaseClient } from '@/integrations/supabase/client';
+import { WebhookLogs } from './WebhookLogs';
+import { supabase as supabaseClient } from '@/integrations/supabase/client';
 
 interface Props {
   franchiseId: string;
