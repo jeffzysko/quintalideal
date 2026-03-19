@@ -19,20 +19,23 @@ interface AdminLeadsTableProps {
   franchiseMap: Record<string, string>;
 }
 
-function ScorePill({ score }: { score: number }) {
-  const cls = score >= 70 ? 'score-high' : score >= 40 ? 'score-mid' : 'score-low';
+function ScoreBar({ score }: { score: number }) {
+  const color = score >= 70 ? 'bg-emerald-500' : score >= 40 ? 'bg-amber-500' : 'bg-red-400';
   return (
-    <span className={`text-xs font-bold px-2.5 py-1 rounded-lg ${cls}`}>
-      {score}%
-    </span>
+    <div className="flex items-center gap-2 w-24">
+      <div className="flex-1 h-1.5 rounded-full bg-muted/60 overflow-hidden">
+        <div className={`h-full rounded-full ${color} transition-all`} style={{ width: `${score}%` }} />
+      </div>
+      <span className="text-xs font-bold tabular-nums w-7 text-right">{score}%</span>
+    </div>
   );
 }
 
 function AvatarInitial({ name }: { name: string | null }) {
   const initial = name ? name.charAt(0).toUpperCase() : '?';
   return (
-    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-      <span className="text-xs font-bold text-primary">{initial}</span>
+    <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
+      <span className="text-sm font-bold text-primary">{initial}</span>
     </div>
   );
 }
@@ -45,23 +48,28 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
   const totalPages = Math.ceil(totalCount / pageSize);
 
   return (
-    <Card className="card-premium">
-      <CardHeader>
-        <CardTitle className="text-sm font-bold">Todos os Leads ({totalCount})</CardTitle>
+    <Card className="card-premium overflow-hidden">
+      <CardHeader className="pb-2">
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm font-bold">Todos os Leads</CardTitle>
+          <span className="text-xs text-muted-foreground font-medium bg-muted/60 px-2.5 py-1 rounded-lg tabular-nums">
+            {totalCount} {totalCount === 1 ? 'lead' : 'leads'}
+          </span>
+        </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="px-0 pb-0">
         {isLoading ? (
-          <div className="flex justify-center py-12">
+          <div className="flex justify-center py-16">
             <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" />
           </div>
         ) : leads.length === 0 ? (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col items-center justify-center py-16"
+            className="flex flex-col items-center justify-center py-20 px-4"
           >
-            <div className="w-16 h-16 rounded-2xl icon-bg-blue flex items-center justify-center mb-4">
-              <Search className="w-8 h-8 text-primary/50" />
+            <div className="w-16 h-16 rounded-2xl bg-muted/60 flex items-center justify-center mb-4">
+              <Search className="w-8 h-8 text-muted-foreground/40" />
             </div>
             <p className="text-sm font-semibold text-foreground">Nenhum lead encontrado</p>
             <p className="text-xs text-muted-foreground mt-1">Tente ajustar os filtros de busca</p>
@@ -70,7 +78,7 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
           <>
             {/* Mobile card view */}
             {isMobile ? (
-              <div className="space-y-3">
+              <div className="space-y-3 px-4 pb-4">
                 {leads.map((lead, i) => (
                   <MobileLeadCard
                     key={lead.id}
@@ -85,44 +93,53 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
             <div className="overflow-x-auto">
               <table className="w-full text-sm" role="table">
                 <thead>
-                  <tr className="border-b border-border/50" role="row">
-                    <th role="columnheader" className="text-left py-3 px-3 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Nome</th>
-                    <th role="columnheader" className="text-left py-3 px-3 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Cidade</th>
-                    <th role="columnheader" className="text-left py-3 px-3 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden lg:table-cell">Franquia</th>
-                    <th role="columnheader" className="text-left py-3 px-3 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Score</th>
-                    <th role="columnheader" className="text-left py-3 px-3 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Modelo</th>
-                    <th role="columnheader" className="text-left py-3 px-3 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Status</th>
-                    <th role="columnheader" className="text-left py-3 px-3 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden lg:table-cell">Ref</th>
-                    <th role="columnheader" className="text-left py-3 px-3 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Data</th>
-                    <th role="columnheader" className="text-left py-3 px-3"></th>
+                  <tr className="border-y border-border/40 bg-muted/30" role="row">
+                    <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Nome</th>
+                    <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Cidade</th>
+                    <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden lg:table-cell">Franquia</th>
+                    <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Score</th>
+                    <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Modelo</th>
+                    <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Status</th>
+                    <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden lg:table-cell">Ref</th>
+                    <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Data</th>
+                    <th role="columnheader" className="w-12 py-3 px-4"></th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody className="divide-y divide-border/20">
                   {leads.map((lead, i) => (
                     <motion.tr
                       key={lead.id}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       transition={{ delay: i * 0.02 }}
-                      className="border-b border-border/20 hover:bg-muted/40 transition-all cursor-pointer group"
+                      className="hover:bg-muted/30 transition-colors cursor-pointer group"
                       role="row"
                       onClick={() => navigate(`/admin/lead/${lead.id}`)}
                     >
-                      <td role="cell" className="py-3.5 px-3">
-                        <div className="flex items-center gap-2.5">
+                      <td role="cell" className="py-3 px-4">
+                        <div className="flex items-center gap-3">
                           <AvatarInitial name={lead.nome} />
-                          <span className="font-semibold group-hover:text-primary transition-colors">{lead.nome || '—'}</span>
+                          <div className="min-w-0">
+                            <span className="font-semibold text-sm group-hover:text-primary transition-colors block truncate">{lead.nome || '—'}</span>
+                            {lead.email && (
+                              <span className="text-[11px] text-muted-foreground/60 truncate block max-w-[180px]">{lead.email}</span>
+                            )}
+                          </div>
                         </div>
                       </td>
-                      <td role="cell" className="py-3.5 px-3 hidden md:table-cell text-muted-foreground">{lead.cidade || '—'}</td>
-                      <td role="cell" className="py-3.5 px-3 hidden lg:table-cell text-muted-foreground text-xs">
-                        {lead.franquia_id ? (franchiseMap[lead.franquia_id] || '—') : '—'}
+                      <td role="cell" className="py-3 px-4 hidden md:table-cell text-muted-foreground text-sm">{lead.cidade || '—'}</td>
+                      <td role="cell" className="py-3 px-4 hidden lg:table-cell">
+                        {lead.franquia_id ? (
+                          <span className="text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-1 rounded-md">
+                            {franchiseMap[lead.franquia_id] || '—'}
+                          </span>
+                        ) : '—'}
                       </td>
-                      <td role="cell" className="py-3.5 px-3">
-                        <ScorePill score={lead.pontuacao_quintal || 0} />
+                      <td role="cell" className="py-3 px-4">
+                        <ScoreBar score={lead.pontuacao_quintal || 0} />
                       </td>
-                      <td role="cell" className="py-3.5 px-3 hidden md:table-cell text-muted-foreground text-xs">{lead.modelo_recomendado || '—'}</td>
-                      <td role="cell" className="py-3.5 px-3">
+                      <td role="cell" className="py-3 px-4 hidden md:table-cell text-muted-foreground text-xs">{lead.modelo_recomendado || '—'}</td>
+                      <td role="cell" className="py-3 px-4">
                         <div className="flex items-center gap-1.5 flex-wrap">
                           <Badge className={`${STATUS_COLORS[lead.status_lead] || ''} border text-[10px] font-semibold`} variant="secondary">
                             {STATUS_LABELS[lead.status_lead] || lead.status_lead}
@@ -130,20 +147,20 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                           <SmartTagBadges lead={lead} max={1} />
                         </div>
                       </td>
-                      <td role="cell" className="py-3.5 px-3 hidden lg:table-cell">
+                      <td role="cell" className="py-3 px-4 hidden lg:table-cell">
                         {lead.referred_by ? (
-                          <span className="text-[10px] font-mono text-muted-foreground bg-muted px-2 py-1 rounded-md">{lead.referred_by}</span>
-                        ) : '—'}
+                          <span className="text-[10px] font-mono text-muted-foreground bg-muted/50 px-2 py-1 rounded-md">{lead.referred_by}</span>
+                        ) : <span className="text-muted-foreground/40">—</span>}
                       </td>
-                      <td role="cell" className="py-3.5 px-3 hidden md:table-cell text-muted-foreground text-xs">
+                      <td role="cell" className="py-3 px-4 hidden md:table-cell text-muted-foreground text-xs tabular-nums">
                         {new Date(lead.created_at).toLocaleDateString('pt-BR')}
                       </td>
-                      <td role="cell" className="py-3.5 px-3">
+                      <td role="cell" className="py-3 px-4">
                         <Button
-                          size="sm"
+                          size="icon"
                           variant="ghost"
                           onClick={(e) => { e.stopPropagation(); navigate(`/admin/lead/${lead.id}`); }}
-                          className="rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="h-8 w-8 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
                           aria-label="Ver detalhes do lead"
                         >
                           <Eye className="w-4 h-4" />
@@ -157,7 +174,7 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
             )}
 
             {totalCount > 0 && (
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mt-4 pt-4 border-t border-border/30">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 py-4 border-t border-border/30 bg-muted/10">
                 <p className="text-xs text-muted-foreground">
                   Mostrando <span className="font-semibold text-foreground">{from + 1}–{Math.min(to, totalCount)}</span> de {totalCount}
                 </p>
@@ -179,7 +196,7 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                       </Button>
                     );
                   })}
-                  {totalPages > 5 && <span className="text-xs text-muted-foreground px-1">...</span>}
+                  {totalPages > 5 && <span className="text-xs text-muted-foreground px-1">…</span>}
                   <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg" onClick={() => onPageChange(page + 1)} disabled={page >= totalPages}>
                     <ChevronRight className="w-4 h-4" />
                   </Button>
