@@ -171,24 +171,6 @@ export default function LeadDetail() {
     if (data) setLastActivityAt(data.created_at);
   };
 
-  const loadActivityCounts = async () => {
-    const { count } = await supabase
-      .from('lead_activities')
-      .select('*', { count: 'exact', head: true })
-      .eq('lead_id', id!)
-      .in('activity_type', ['call', 'whatsapp', 'note']);
-    setActivitiesCount(count || 0);
-  };
-
-  const loadFollowupCounts = async () => {
-    const { count } = await supabase
-      .from('lead_followups')
-      .select('*', { count: 'exact', head: true })
-      .eq('lead_id', id!)
-      .eq('completed', false);
-    setFollowupsPending(count || 0);
-  };
-
   const save = async () => {
     if (!lead) return;
     setSaving(true);
