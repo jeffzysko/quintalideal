@@ -663,8 +663,7 @@ export default function HojePage() {
                   <Card className="card-premium overflow-hidden">
                     <CardContent className="p-0 divide-y divide-border/30">
                       {hotLeads.map((lead, i) => {
-                        const _temp = classifyLead((lead as any).respostas_questionario || null, lead.pontuacao_quintal);
-
+                        return (
                         return (
                           <motion.div
                             key={lead.id}
