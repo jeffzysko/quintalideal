@@ -420,8 +420,13 @@ export default function LeadDetail() {
           </motion.div>
         )}
 
-        {/* Manage */}
+        {/* Activity Timeline */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          <LeadTimeline leadId={lead.id} />
+        </motion.div>
+
+        {/* Manage */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
           <Card className="glass-card">
             <CardContent className="p-3 sm:p-5 space-y-4">
               <div className="flex items-center gap-2 mb-1">
@@ -522,7 +527,6 @@ export default function LeadDetail() {
                     <AlertDialogAction
                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                       onClick={async () => {
-                        // Delete related data first
                         await supabase.from('lead_activities').delete().eq('lead_id', lead.id);
                         await supabase.from('lead_followups').delete().eq('lead_id', lead.id);
                         const { error } = await supabase.from('leads').delete().eq('id', lead.id);
@@ -547,11 +551,6 @@ export default function LeadDetail() {
               </AlertDialog>
             </CardContent>
           </Card>
-        </motion.div>
-
-        {/* Activity Timeline */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-          <LeadTimeline leadId={lead.id} />
         </motion.div>
 
         {/* Spacer for sticky bar */}
