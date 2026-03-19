@@ -68,21 +68,7 @@ export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowup
       color: 'text-violet-600',
       bgColor: 'icon-bg-violet',
       onClick: onNavigatePipeline || (() => navigate(funnelPath)),
-    },
-    {
-      icon: CalendarPlus,
-      label: 'Follow-up',
-      color: 'text-primary',
-      bgColor: 'icon-bg-blue',
-      onClick: () => navigate(funnelPath),
       badge: pendingFollowups && pendingFollowups > 0 ? pendingFollowups : undefined,
-    },
-    {
-      icon: Phone,
-      label: hotUncontacted ? 'Ligar' : 'Ligar',
-      color: 'text-emerald-600',
-      bgColor: 'icon-bg-green',
-      onClick: handleCall,
     },
     {
       icon: MessageCircle,
@@ -90,6 +76,13 @@ export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowup
       color: 'text-green-600',
       bgColor: 'icon-bg-green',
       onClick: handleWhatsApp,
+    },
+    {
+      icon: Phone,
+      label: 'Ligar',
+      color: 'text-emerald-600',
+      bgColor: 'icon-bg-green',
+      onClick: handleCall,
     },
   ];
 
