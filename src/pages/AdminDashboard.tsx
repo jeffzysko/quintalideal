@@ -349,20 +349,24 @@ export default function AdminDashboard() {
           </Select>
         </div>
 
-        {/* Desktop: Tab bar */}
-        <div className="hidden md:flex gap-1 mb-8 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-fit border border-border/30" role="tablist">
-          {TABS.map(tab => (
-            <button
-              key={tab.key}
-              role="tab"
-              aria-selected={activeTab === tab.key}
-              onClick={() => setActiveTab(tab.key)}
-              className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all whitespace-nowrap ${activeTab === tab.key ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
-            >
-              <tab.icon className={`w-4 h-4 inline mr-1.5 ${activeTab === tab.key ? 'text-primary' : ''}`} />
-              {tab.label}
-            </button>
-          ))}
+        {/* Desktop: Scrollable tab bar */}
+        <div className="hidden md:block mb-8">
+          <div className="overflow-x-auto scrollbar-hide -mx-1 px-1">
+            <div className="flex gap-1 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-fit border border-border/30" role="tablist">
+              {TABS.map(tab => (
+                <button
+                  key={tab.key}
+                  role="tab"
+                  aria-selected={activeTab === tab.key}
+                  onClick={() => setActiveTab(tab.key)}
+                  className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all whitespace-nowrap ${activeTab === tab.key ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
+                >
+                  <tab.icon className={`w-4 h-4 shrink-0 ${activeTab === tab.key ? 'text-primary' : ''}`} />
+                  {tab.label}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
 
         {activeTab === 'overview' && (
@@ -494,9 +498,17 @@ export default function AdminDashboard() {
                       <SelectValue placeholder="Selecione uma franquia para visualizar" />
                     </SelectTrigger>
                     <SelectContent>
-                      {franchises.map(f => (
-                        <SelectItem key={f.id} value={f.id}>{f.nome_franquia}</SelectItem>
-                      ))}
+                      {[...franchises]
+                        .sort((a, b) => {
+                          const aTest = a.nome_franquia.toLowerCase().includes('teste');
+                          const bTest = b.nome_franquia.toLowerCase().includes('teste');
+                          if (aTest && !bTest) return -1;
+                          if (!aTest && bTest) return 1;
+                          return a.nome_franquia.localeCompare(b.nome_franquia, 'pt-BR');
+                        })
+                        .map(f => (
+                          <SelectItem key={f.id} value={f.id}>{f.nome_franquia}</SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                 </CardContent>
