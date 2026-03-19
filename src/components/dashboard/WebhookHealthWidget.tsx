@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent } from '@/components/ui/card';
@@ -6,8 +7,9 @@ import { Webhook, CheckCircle2, XCircle, AlertTriangle, ArrowRight } from 'lucid
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, format, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip } from 'recharts';
 
 interface Props {
   franchiseId: string;
@@ -26,7 +28,6 @@ interface WebhookLog {
 export function WebhookHealthWidget({ franchiseId }: Props) {
   const navigate = useNavigate();
 
-  // Check if franchise has webhook configured
   const { data: franchise } = useQuery({
     queryKey: ['webhook-config', franchiseId],
     queryFn: async () => {
@@ -41,18 +42,18 @@ export function WebhookHealthWidget({ franchiseId }: Props) {
     staleTime: 60_000,
   });
 
-  // Fetch last 24h webhook logs
+  // Fetch last 7 days of webhook logs
   const { data: logs = [] } = useQuery({
-    queryKey: ['webhook-health', franchiseId],
+    queryKey: ['webhook-health-7d', franchiseId],
     queryFn: async () => {
-      const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      const since = subDays(new Date(), 7).toISOString();
       const { data, error } = await supabase
         .from('webhook_logs')
         .select('id, success, http_status, error_message, created_at, attempt, event_type')
         .eq('franchise_id', franchiseId)
         .gte('created_at', since)
         .order('created_at', { ascending: false })
-        .limit(100);
+        .limit(500);
       if (error) throw error;
       return (data || []) as WebhookLog[];
     },
@@ -60,20 +61,45 @@ export function WebhookHealthWidget({ franchiseId }: Props) {
     staleTime: 30_000,
   });
 
-  // Don't render if no webhook configured
-  if (!franchise?.webhook_url) return null;
+  // Split logs into last 24h and 7-day for chart
+  const { logs24h, chartData } = useMemo(() => {
+    const now = Date.now();
+    const dayAgo = now - 24 * 60 * 60 * 1000;
+    const recent = logs.filter(l => new Date(l.created_at).getTime() >= dayAgo);
 
-  // Don't render if no logs in last 24h
+    // Build 7-day chart data
+    const days: { date: string; label: string; success: number; total: number; rate: number }[] = [];
+    for (let i = 6; i >= 0; i--) {
+      const d = subDays(new Date(), i);
+      const dateStr = format(d, 'yyyy-MM-dd');
+      const label = format(d, 'dd/MM');
+      const dayLogs = logs.filter(l => l.created_at.startsWith(dateStr));
+
+      // Deduplicate by final attempt
+      const finals = new Map<string, WebhookLog>();
+      dayLogs.forEach(log => {
+        const key = `${log.created_at.slice(0, 16)}-${log.event_type}`;
+        const existing = finals.get(key);
+        if (!existing || log.attempt > existing.attempt) finals.set(key, log);
+      });
+
+      const deliveries = Array.from(finals.values());
+      const total = deliveries.length;
+      const success = deliveries.filter(l => l.success).length;
+      days.push({ date: dateStr, label, success, total, rate: total > 0 ? Math.round((success / total) * 100) : -1 });
+    }
+
+    return { logs24h: recent, chartData: days };
+  }, [logs]);
+
+  if (!franchise?.webhook_url) return null;
   if (logs.length === 0) return null;
 
-  // Calculate stats - deduplicate by grouping attempts (only count final attempt per delivery)
-  const finalAttempts = logs.reduce((acc, log) => {
-    // Group by created_at rounded to minute + event_type to identify same delivery
+  // 24h stats
+  const finalAttempts = logs24h.reduce((acc, log) => {
     const key = `${log.created_at.slice(0, 16)}-${log.event_type}`;
     const existing = acc.get(key);
-    if (!existing || log.attempt > existing.attempt) {
-      acc.set(key, log);
-    }
+    if (!existing || log.attempt > existing.attempt) acc.set(key, log);
     return acc;
   }, new Map<string, WebhookLog>());
 
@@ -83,11 +109,12 @@ export function WebhookHealthWidget({ franchiseId }: Props) {
   const failureCount = totalDeliveries - successCount;
   const successRate = totalDeliveries > 0 ? Math.round((successCount / totalDeliveries) * 100) : 100;
 
-  const recentFailures = logs.filter(l => !l.success).slice(0, 3);
-  const lastFailure = recentFailures[0];
-
+  const lastFailure = logs24h.filter(l => !l.success)[0];
   const isHealthy = failureCount === 0;
   const isCritical = successRate < 50;
+
+  // Check if chart has any data
+  const hasChartData = chartData.some(d => d.total > 0);
 
   return (
     <motion.div
@@ -156,6 +183,48 @@ export function WebhookHealthWidget({ franchiseId }: Props) {
               <p className="text-[10px] text-muted-foreground font-medium">Falhas</p>
             </div>
           </div>
+
+          {/* 7-day trend chart */}
+          {hasChartData && (
+            <div className="mt-3">
+              <p className="text-[10px] text-muted-foreground font-semibold mb-1.5">Taxa de sucesso · 7 dias</p>
+              <div className="h-[72px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={chartData.map(d => ({ ...d, rate: d.rate === -1 ? null : d.rate }))}>
+                    <XAxis
+                      dataKey="label"
+                      tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
+                      axisLine={false}
+                      tickLine={false}
+                    />
+                    <YAxis hide domain={[0, 100]} />
+                    <Tooltip
+                      content={({ active, payload }) => {
+                        if (!active || !payload?.length) return null;
+                        const d = payload[0].payload;
+                        if (d.total === 0) return null;
+                        return (
+                          <div className="rounded-lg border bg-background px-2.5 py-1.5 text-[11px] shadow-lg">
+                            <p className="font-semibold">{d.label}</p>
+                            <p className="text-muted-foreground">{d.success}/{d.total} envios · {d.rate}%</p>
+                          </div>
+                        );
+                      }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="rate"
+                      stroke="hsl(var(--primary))"
+                      strokeWidth={2}
+                      dot={{ r: 2.5, fill: 'hsl(var(--primary))' }}
+                      activeDot={{ r: 4 }}
+                      connectNulls
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+          )}
 
           {/* Recent failures */}
           {lastFailure && (
