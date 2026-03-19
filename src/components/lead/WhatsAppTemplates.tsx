@@ -24,7 +24,7 @@ interface Template {
 
 function buildTemplates(props: WhatsAppTemplatesProps): Template[] {
   const nome = props.leadName?.split(' ')[0] || 'Cliente';
-  const modelo = props.modeloRecomendado || 'a piscina ideal';
+  
   const cidade = props.cidade || 'sua região';
   const score = props.pontuacao || 0;
 
