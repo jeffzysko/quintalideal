@@ -432,6 +432,9 @@ export default function HojePage() {
                )}
                <QuickStats stats={quickStats} />
 
+               {/* ═══ WEBHOOK HEALTH ═══ */}
+               {franchiseId && <WebhookHealthWidget franchiseId={franchiseId} />}
+
                {/* ═══ PIPELINE SNAPSHOT ═══ */}
                {leads.length > 0 && <PipelineSnapshot leads={leads} />}
 
