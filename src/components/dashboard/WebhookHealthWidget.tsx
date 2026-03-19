@@ -113,6 +113,13 @@ export function WebhookHealthWidget({ franchiseId }: Props) {
   const isHealthy = failureCount === 0;
   const isCritical = successRate < 50;
 
+  // Trend: compare today vs yesterday from chartData
+  const todayData = chartData[6];
+  const yesterdayData = chartData[5];
+  const todayRate = todayData?.total > 0 ? todayData.rate : null;
+  const yesterdayRate = yesterdayData?.total > 0 ? yesterdayData.rate : null;
+  const trendDiff = todayRate !== null && yesterdayRate !== null ? todayRate - yesterdayRate : null;
+
   // Check if chart has any data
   const hasChartData = chartData.some(d => d.total > 0);
 
