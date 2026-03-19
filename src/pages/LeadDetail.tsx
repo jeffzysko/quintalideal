@@ -498,12 +498,6 @@ export default function LeadDetail() {
                     pontuacao={lead.pontuacao_quintal}
                     statusLead={lead.status_lead}
                   />
-                  <AISuggestionCard
-                    lead={lead}
-                    activitiesCount={activitiesCount}
-                    lastActivityDays={lastActivityAt ? Math.floor((Date.now() - new Date(lastActivityAt).getTime()) / 86400000) : Math.floor((Date.now() - new Date(lead.created_at).getTime()) / 86400000)}
-                    followupsPending={followupsPending}
-                  />
                 </motion.div>
               </TabsContent>
 
