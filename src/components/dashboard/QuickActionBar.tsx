@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
-import { MessageCircle, Phone, CalendarPlus, Workflow, UserPlus } from 'lucide-react';
+import { MessageCircle, Phone, Workflow, UserPlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import type { LeadRow } from '@/lib/lead-constants';
@@ -68,21 +68,7 @@ export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowup
       color: 'text-violet-600',
       bgColor: 'icon-bg-violet',
       onClick: onNavigatePipeline || (() => navigate(funnelPath)),
-    },
-    {
-      icon: CalendarPlus,
-      label: 'Follow-up',
-      color: 'text-primary',
-      bgColor: 'icon-bg-blue',
-      onClick: () => navigate(funnelPath),
       badge: pendingFollowups && pendingFollowups > 0 ? pendingFollowups : undefined,
-    },
-    {
-      icon: Phone,
-      label: hotUncontacted ? 'Ligar' : 'Ligar',
-      color: 'text-emerald-600',
-      bgColor: 'icon-bg-green',
-      onClick: handleCall,
     },
     {
       icon: MessageCircle,
@@ -91,11 +77,18 @@ export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowup
       bgColor: 'icon-bg-green',
       onClick: handleWhatsApp,
     },
+    {
+      icon: Phone,
+      label: 'Ligar',
+      color: 'text-emerald-600',
+      bgColor: 'icon-bg-green',
+      onClick: handleCall,
+    },
   ];
 
   return (
     <div className="mb-6">
-      <div className="flex items-center gap-3 overflow-x-auto scrollbar-none pb-1">
+      <div className="grid grid-cols-4 gap-2 pb-1">
         {actions.map((action, i) => (
           <motion.button
             key={action.label}
