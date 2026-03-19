@@ -616,6 +616,60 @@ export type Database = {
         }
         Relationships: []
       }
+      webhook_logs: {
+        Row: {
+          attempt: number
+          created_at: string
+          error_message: string | null
+          event_type: string
+          franchise_id: string
+          http_status: number | null
+          id: string
+          response_body: string | null
+          success: boolean
+          url: string
+        }
+        Insert: {
+          attempt?: number
+          created_at?: string
+          error_message?: string | null
+          event_type?: string
+          franchise_id: string
+          http_status?: number | null
+          id?: string
+          response_body?: string | null
+          success?: boolean
+          url: string
+        }
+        Update: {
+          attempt?: number
+          created_at?: string
+          error_message?: string | null
+          event_type?: string
+          franchise_id?: string
+          http_status?: number | null
+          id?: string
+          response_body?: string | null
+          success?: boolean
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "webhook_logs_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchises"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "webhook_logs_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchises_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       franchises_public: {
