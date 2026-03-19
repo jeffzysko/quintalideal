@@ -504,7 +504,7 @@ export default function HojePage() {
                     </CardContent>
                   </Card>
                 ) : (
-                  <div className="space-y-2">
+                   <div className="space-y-2.5">
                     {todayFollowups.map((f, i) => {
                       const parsed = parseFollowupType(f.note);
                       const TypeIcon = parsed.type ? FOLLOWUP_ICONS[parsed.type] || CalendarClock : CalendarClock;
