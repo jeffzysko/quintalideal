@@ -48,7 +48,7 @@ function buildTemplates(props: WhatsAppTemplatesProps): Template[] {
       label: 'Descobrir necessidade',
       emoji: '🎯',
       stage: ['contatado'],
-      message: `Oi ${nome}! Tudo bem? 😊\n\nEstive pensando na nossa conversa. Como está a rotina de lazer aí em casa hoje?\n\nMuitos clientes nossos em ${cidade} dizem que depois da piscina os finais de semana mudaram completamente.\n\nVocê sente que falta esse espaço de descanso em casa?`,
+      message: `Oi ${nome}! Tudo bem? 😊\n\nEstive pensando na nossa conversa. Como está a rotina de lazer aí na sua casa hoje?\n\nMuitos clientes nossos em ${cidade} dizem que depois da piscina os finais de semana mudaram completamente.\n\nVocê sente que falta esse espaço de descanso em casa?`,
     },
     {
       id: 'prova_social',
