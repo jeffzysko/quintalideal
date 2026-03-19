@@ -5,6 +5,7 @@ import { Sparkles, RefreshCw } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
 
 interface AISuggestionCardProps {
   lead: {
