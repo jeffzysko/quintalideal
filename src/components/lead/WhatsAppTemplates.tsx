@@ -152,20 +152,20 @@ export function WhatsAppTemplates(props: WhatsAppTemplatesProps) {
                 transition={{ duration: 0.15, delay: i * 0.03 }}
                 className="overflow-hidden"
               >
-                <div className="bg-muted/30 rounded-xl p-3 hover:bg-muted/50 transition-colors">
+                <div className="bg-muted/30 rounded-xl p-3 sm:p-4 hover:bg-muted/50 transition-colors">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-semibold text-foreground flex items-center gap-1.5">
                       {tpl.emoji} {tpl.label}
                     </span>
                   </div>
-                  <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-3 whitespace-pre-wrap mb-3">
+                  <p className="text-[11px] sm:text-xs text-muted-foreground leading-relaxed line-clamp-3 whitespace-pre-wrap mb-3">
                     {tpl.message}
                   </p>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-col sm:flex-row items-stretch gap-2">
                     <Button
                       size="sm"
                       variant="outline"
-                      className="h-9 flex-1 text-xs gap-1.5 active:scale-95 transition-transform"
+                      className="h-11 sm:h-9 flex-1 text-xs gap-1.5 active:scale-[0.97] transition-transform"
                       onClick={() => copyMessage(tpl.id, tpl.message)}
                     >
                       {copiedId === tpl.id ? (
@@ -176,13 +176,13 @@ export function WhatsAppTemplates(props: WhatsAppTemplatesProps) {
                       ) : (
                         <>
                           <Copy className="w-3.5 h-3.5" />
-                          Copiar mensagem
+                          Copiar
                         </>
                       )}
                     </Button>
                     <Button
                       size="sm"
-                      className="h-9 flex-1 text-xs bg-success hover:bg-success/90 text-success-foreground gap-1.5 active:scale-95 transition-transform"
+                      className="h-11 sm:h-9 flex-1 text-xs bg-success hover:bg-success/90 text-success-foreground gap-1.5 active:scale-[0.97] transition-transform"
                       onClick={() => sendWhatsApp(tpl.message)}
                     >
                       <Send className="w-3.5 h-3.5" />
