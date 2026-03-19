@@ -424,9 +424,9 @@ export default function HojePage() {
                  pendingFollowups={todayFollowups.length + overdueFollowups.length}
                />
                {franchiseId && (
-                 <div className="mb-4 -mt-2 flex items-center gap-2">
-                   <ManualLeadForm franchiseId={franchiseId} />
-                   <CSVLeadImport franchiseId={franchiseId} />
+                 <div className="mb-6 flex items-center gap-2.5">
+                    <ManualLeadForm franchiseId={franchiseId} />
+                    <CSVLeadImport franchiseId={franchiseId} />
                  </div>
                )}
                <QuickStats stats={quickStats} />
