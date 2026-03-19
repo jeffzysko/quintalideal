@@ -88,7 +88,7 @@ export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowup
 
   return (
     <div className="mb-6">
-      <div className="flex items-center gap-3 overflow-x-auto scrollbar-none pb-1">
+      <div className="grid grid-cols-4 gap-2 pb-1">
         {actions.map((action, i) => (
           <motion.button
             key={action.label}
