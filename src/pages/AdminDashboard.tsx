@@ -68,6 +68,7 @@ export default function AdminDashboard() {
   const [filterFranquia, setFilterFranquia] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterModelo, setFilterModelo] = useState('all');
+  const [filterTemperatura, setFilterTemperatura] = useState('all');
   const [page, setPage] = useState(1);
 
   // Sync leads tab franchise filter when org switcher changes
