@@ -198,6 +198,8 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
           </div>
         </CardContent>
       </Card>
+
+      {webhookUrl && <WebhookLogs franchiseId={franchiseId} />}
     </div>
   );
 }
