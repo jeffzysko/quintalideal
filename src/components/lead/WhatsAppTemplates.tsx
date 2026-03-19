@@ -34,7 +34,7 @@ function buildTemplates(props: WhatsAppTemplatesProps): Template[] {
       label: 'Primeiro contato',
       emoji: '👋',
       stage: ['novo'],
-      message: `Oi ${nome}! Aqui é [seu nome] da Splash Piscinas em ${cidade} 😊\n\nVi o resultado do seu Índice do Quintal${score > 70 ? ', seu espaço tem um potencial incrível!' : '!'}\n\nMe conta: o que te motivou a fazer o teste? Quero entender pra te ajudar da melhor forma 🤔`,
+      message: `Oi ${nome}! Aqui é [seu nome] da Splash Piscinas em ${cidade} 😊\n\nVi o resultado do seu Quintal Ideal${score > 70 ? ', seu espaço tem um potencial incrível!' : '!'}\n\nMe conta: o que te motivou a fazer o teste? Quero entender pra te ajudar da melhor forma 🤔`,
     },
     {
       id: 'primeiro_contato_curto',
