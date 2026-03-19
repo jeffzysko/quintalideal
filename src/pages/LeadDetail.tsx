@@ -131,7 +131,7 @@ export default function LeadDetail() {
   const [observacoes, setObservacoes] = useState('');
   const [tempOverride, setTempOverride] = useState<LeadTemperature | ''>('');
   const [saving, setSaving] = useState(false);
-  const [activeTab, setActiveTab] = useState('resumo');
+  const [activeTab, setActiveTab] = useState('timeline');
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [lastActivityAt, setLastActivityAt] = useState<string | null>(null);
@@ -381,67 +381,68 @@ export default function LeadDetail() {
           </Card>
         </motion.div>
 
+        {/* Quiz Answers — always visible */}
+        {lead.respostas_questionario && (
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+            <Card className="glass-card">
+              <CardContent className="p-3 sm:p-5">
+                <div className="flex items-center gap-2 mb-3">
+                  <ClipboardList className="w-4 h-4 text-primary" />
+                  <h2 className="text-sm font-semibold text-foreground">Respostas do Questionário</h2>
+                </div>
+                <div className="space-y-1.5">
+                  {Object.entries(lead.respostas_questionario)
+                    .filter(([key]) => questionLabels[key])
+                    .map(([key, value]) => {
+                      const q = questionLabels[key];
+                      const displayValue = answerLabels[value as string] || (value as string);
+                      return (
+                        <div key={key} className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 py-2 sm:py-2.5 px-3 sm:px-3.5 rounded-xl bg-muted/40 hover:bg-muted/60 transition-colors">
+                          <span className="text-xs sm:text-sm text-muted-foreground flex items-center gap-2">
+                            <span className="text-base">{q.icon}</span>
+                            {q.label}
+                          </span>
+                          <span className="text-xs sm:text-sm font-semibold text-foreground ml-7 sm:ml-0">{displayValue}</span>
+                        </div>
+                      );
+                    })}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
         {/* Tabbed Content */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="w-full grid grid-cols-5 h-11 bg-card border border-border/50 rounded-xl p-1 shadow-sm">
-              <TabsTrigger value="resumo" className="text-[11px] sm:text-xs gap-1.5 rounded-lg font-medium transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm">
-                <ClipboardList className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Resumo</span>
-              </TabsTrigger>
-              <TabsTrigger value="timeline" className="text-[11px] sm:text-xs gap-1.5 rounded-lg font-medium transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm">
-                <Clock className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Timeline</span>
-              </TabsTrigger>
-              <TabsTrigger value="followups" className="text-[11px] sm:text-xs gap-1.5 rounded-lg font-medium transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm">
-                <CalendarClock className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Follow-ups</span>
-              </TabsTrigger>
-              <TabsTrigger value="fotos" className="text-[11px] sm:text-xs gap-1.5 rounded-lg font-medium transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm" disabled={photos.length === 0}>
-                <Image className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Fotos</span>
-                {photos.length > 0 && <span className="text-[9px] bg-primary/10 text-primary data-[state=active]:bg-white/20 data-[state=active]:text-primary-foreground rounded-full px-1.5 leading-tight">{photos.length}</span>}
-              </TabsTrigger>
-              <TabsTrigger value="gerenciar" className="text-[11px] sm:text-xs gap-1.5 rounded-lg font-medium transition-all data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm">
-                <Settings2 className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Gerenciar</span>
-              </TabsTrigger>
-            </TabsList>
+            <div className="bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl p-1.5 shadow-sm">
+              <TabsList className="w-full grid grid-cols-4 h-11 bg-transparent p-0 gap-1">
+                {[
+                  { value: 'timeline', icon: Clock, label: 'Timeline' },
+                  { value: 'followups', icon: CalendarClock, label: 'Follow-ups' },
+                  { value: 'fotos', icon: Image, label: 'Fotos', disabled: photos.length === 0, badge: photos.length > 0 ? photos.length : undefined },
+                  { value: 'gerenciar', icon: Settings2, label: 'Gerenciar' },
+                ].map(tab => {
+                  const Icon = tab.icon;
+                  return (
+                    <TabsTrigger
+                      key={tab.value}
+                      value={tab.value}
+                      disabled={tab.disabled}
+                      className="relative text-[11px] sm:text-xs gap-1.5 rounded-xl font-medium transition-all duration-200 text-muted-foreground data-[state=active]:bg-gradient-to-b data-[state=active]:from-primary data-[state=active]:to-primary/90 data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/20 hover:bg-muted/60 data-[state=active]:hover:bg-primary"
+                    >
+                      <Icon className="w-3.5 h-3.5" />
+                      <span className="hidden sm:inline">{tab.label}</span>
+                      {tab.badge && (
+                        <span className="text-[9px] bg-primary/10 text-primary data-[state=active]:bg-white/20 data-[state=active]:text-primary-foreground rounded-full px-1.5 leading-tight font-bold">{tab.badge}</span>
+                      )}
+                    </TabsTrigger>
+                  );
+                })}
+              </TabsList>
+            </div>
 
             <AnimatePresence mode="wait">
-              {/* Resumo Tab */}
-              <TabsContent value="resumo" className="mt-4 space-y-4">
-                <motion.div key="resumo" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
-                  {/* Quiz answers */}
-                  {lead.respostas_questionario && (
-                    <Card className="glass-card">
-                      <CardContent className="p-3 sm:p-5">
-                        <div className="flex items-center gap-2 mb-3">
-                          <ClipboardList className="w-4 h-4 text-primary" />
-                          <h2 className="text-sm font-semibold text-foreground">Respostas do Questionário</h2>
-                        </div>
-                        <div className="space-y-1.5">
-                          {Object.entries(lead.respostas_questionario)
-                            .filter(([key]) => questionLabels[key])
-                            .map(([key, value]) => {
-                              const q = questionLabels[key];
-                              const displayValue = answerLabels[value as string] || (value as string);
-                              return (
-                                <div key={key} className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 py-2 sm:py-2.5 px-3 sm:px-3.5 rounded-xl bg-muted/40 hover:bg-muted/60 transition-colors">
-                                  <span className="text-xs sm:text-sm text-muted-foreground flex items-center gap-2">
-                                    <span className="text-base">{q.icon}</span>
-                                    {q.label}
-                                  </span>
-                                  <span className="text-xs sm:text-sm font-semibold text-foreground ml-7 sm:ml-0">{displayValue}</span>
-                                </div>
-                              );
-                            })}
-                        </div>
-                      </CardContent>
-                    </Card>
-                  )}
-                </motion.div>
-              </TabsContent>
 
               {/* Follow-ups Tab */}
               <TabsContent value="followups" className="mt-4">
