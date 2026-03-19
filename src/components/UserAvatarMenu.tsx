@@ -21,9 +21,9 @@ export function UserAvatarMenu() {
 
   const go = (path: string) => {
     setOpen(false);
-    // Small delay ensures the menu fully closes before navigation/lazy-load kicks in
-    setTimeout(() => navigate(path), 50);
+    setTimeout(() => navigate(path), 16);
   };
+
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
   const email = user?.email || '';
@@ -116,7 +116,7 @@ export function UserAvatarMenu() {
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onSelect={() => go('/perfil')}
+          onClick={() => go('/perfil')}
           className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
         >
           <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -129,7 +129,7 @@ export function UserAvatarMenu() {
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onSelect={() => go('/perfil#notificacoes')}
+          onClick={() => go('/perfil#notificacoes')}
           className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
         >
           <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -143,7 +143,7 @@ export function UserAvatarMenu() {
 
         {role === 'franquia' && (
           <DropdownMenuItem
-            onSelect={() => go('/perfil#franquia')}
+            onClick={() => go('/perfil#franquia')}
             className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
           >
             <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -163,7 +163,7 @@ export function UserAvatarMenu() {
               Integrações
             </p>
             <DropdownMenuItem
-              onSelect={() => go('/perfil#integracoes')}
+              onClick={() => go('/perfil#integracoes')}
               className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
             >
               <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -172,7 +172,7 @@ export function UserAvatarMenu() {
               Meta Pixel
             </DropdownMenuItem>
             <DropdownMenuItem
-              onSelect={() => go('/perfil#integracoes')}
+              onClick={() => go('/perfil#integracoes')}
               className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
             >
               <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -186,7 +186,7 @@ export function UserAvatarMenu() {
         <DropdownMenuSeparator className="my-1.5 bg-border/30" />
 
         <DropdownMenuItem
-          onSelect={() => go('/suporte')}
+          onClick={() => go('/suporte')}
           className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
         >
           <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -196,7 +196,7 @@ export function UserAvatarMenu() {
         </DropdownMenuItem>
 
         <DropdownMenuItem
-          onSelect={() => { setOpen(false); void signOut(); }}
+          onClick={() => { setOpen(false); void signOut(); }}
           className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 text-destructive focus:text-destructive transition-colors"
         >
           <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center shrink-0">
