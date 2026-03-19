@@ -445,6 +445,7 @@ export default function AdminDashboard() {
               filterFranquia={filterFranquia} onFranquiaChange={setFilterFranquia}
               filterStatus={filterStatus} onStatusChange={setFilterStatus}
               filterModelo={filterModelo} onModeloChange={setFilterModelo}
+              filterTemperatura={filterTemperatura} onTemperaturaChange={setFilterTemperatura}
               franchises={franchises}
               models={models}
             />
