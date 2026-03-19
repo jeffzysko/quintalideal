@@ -88,8 +88,8 @@ export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowup
   ];
 
   return (
-    <div className="mb-6">
-      <div className="grid grid-cols-4 gap-2 pb-1">
+    <div className="mb-8">
+      <div className="grid grid-cols-4 gap-3 sm:gap-4">
         {actions.map((action, i) => (
           <motion.button
             key={action.label}
