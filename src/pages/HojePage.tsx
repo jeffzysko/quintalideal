@@ -697,7 +697,6 @@ export default function HojePage() {
                           </motion.div>
                         ))}
                     </CardContent>
-                    </CardContent>
                   </Card>
                 </Section>
               )}
