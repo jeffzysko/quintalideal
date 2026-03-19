@@ -416,12 +416,12 @@ export default function LeadDetail() {
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <div className="bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl p-1.5 shadow-sm">
-              <TabsList className="w-full grid grid-cols-4 h-11 bg-transparent p-0 gap-1">
+              <TabsList className="w-full grid grid-cols-4 h-12 bg-transparent p-0 gap-1">
                 {[
-                  { value: 'timeline', icon: Clock, label: 'Timeline' },
-                  { value: 'followups', icon: CalendarClock, label: 'Follow-ups' },
                   { value: 'fotos', icon: Image, label: 'Fotos', disabled: photos.length === 0, badge: photos.length > 0 ? photos.length : undefined },
                   { value: 'gerenciar', icon: Settings2, label: 'Gerenciar' },
+                  { value: 'followups', icon: CalendarClock, label: 'Follow-ups' },
+                  { value: 'timeline', icon: Clock, label: 'Timeline' },
                 ].map(tab => {
                   const Icon = tab.icon;
                   return (
@@ -429,7 +429,7 @@ export default function LeadDetail() {
                       key={tab.value}
                       value={tab.value}
                       disabled={tab.disabled}
-                      className="relative text-[11px] sm:text-xs gap-1.5 rounded-xl font-medium transition-all duration-200 text-muted-foreground data-[state=active]:bg-gradient-to-b data-[state=active]:from-primary data-[state=active]:to-primary/90 data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/20 hover:bg-muted/60 data-[state=active]:hover:bg-primary"
+                      className="relative h-10 text-[11px] sm:text-xs gap-1.5 rounded-xl font-medium transition-all duration-200 text-muted-foreground data-[state=active]:bg-gradient-to-b data-[state=active]:from-primary data-[state=active]:to-primary/90 data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/20 hover:bg-muted/60 data-[state=active]:hover:bg-primary"
                     >
                       <Icon className="w-3.5 h-3.5" />
                       <span className="hidden sm:inline">{tab.label}</span>
