@@ -16,7 +16,7 @@ import { PanelHeader } from '@/components/PanelHeader';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { NotificationBell } from '@/components/NotificationBell';
 import { Skeleton } from '@/components/ui/skeleton';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { format, isToday, isTomorrow, isPast, differenceInHours, differenceInDays, formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
@@ -87,7 +87,7 @@ const URGENCY_STYLES = {
 };
 
 // ── Section wrapper ──
-function Section({ icon: Icon, title, count, iconBg = 'icon-bg-blue', children, action, collapsible = false, defaultOpen = true }: {
+function Section({ icon: Icon, title, count, iconBg = 'icon-bg-blue', children, action, collapsible = false, defaultOpen = true, subtitle }: {
   icon: typeof CalendarClock;
   title: string;
   count?: number;
@@ -96,6 +96,7 @@ function Section({ icon: Icon, title, count, iconBg = 'icon-bg-blue', children, 
   action?: React.ReactNode;
   collapsible?: boolean;
   defaultOpen?: boolean;
+  subtitle?: string;
 }) {
   const [open, setOpen] = useState(defaultOpen);
 
@@ -106,30 +107,46 @@ function Section({ icon: Icon, title, count, iconBg = 'icon-bg-blue', children, 
       className="mb-6"
     >
       <div
-        className={cn("flex items-center justify-between mb-3", collapsible && "cursor-pointer")}
+        className={cn("flex items-center justify-between mb-3", collapsible && "cursor-pointer select-none")}
         onClick={collapsible ? () => setOpen(v => !v) : undefined}
       >
         <div className="flex items-center gap-2.5">
           <div className={`w-8 h-8 rounded-lg ${iconBg} flex items-center justify-center shrink-0`}>
             <Icon className="w-4 h-4 text-primary" />
           </div>
-          <h3 className="text-sm font-bold text-foreground">{title}</h3>
-          {count !== undefined && count > 0 && (
-            <Badge variant="secondary" className="text-[10px] font-bold px-1.5 py-0">{count}</Badge>
-          )}
-          {collapsible && (
-            <ChevronRight className={cn("w-4 h-4 text-muted-foreground transition-transform", open && "rotate-90")} />
-          )}
+          <div>
+            <div className="flex items-center gap-1.5">
+              <h3 className="text-sm font-bold text-foreground">{title}</h3>
+              {count !== undefined && count > 0 && (
+                <Badge variant="secondary" className="text-[10px] font-bold px-1.5 py-0">{count}</Badge>
+              )}
+              {collapsible && (
+                <ChevronRight className={cn("w-3.5 h-3.5 text-muted-foreground transition-transform", open && "rotate-90")} />
+              )}
+            </div>
+            {subtitle && <p className="text-[10px] text-muted-foreground mt-0.5">{subtitle}</p>}
+          </div>
         </div>
         {action}
       </div>
-      {(!collapsible || open) && children}
+      <AnimatePresence initial={false}>
+        {(!collapsible || open) && (
+          <motion.div
+            initial={collapsible ? { height: 0, opacity: 0 } : false}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={collapsible ? { height: 0, opacity: 0 } : undefined}
+            className={collapsible ? 'overflow-hidden' : undefined}
+          >
+            {children}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.section>
   );
 }
 
-// ── Greeting ──
-function Greeting({ name }: { name: string | null }) {
+// ── Enhanced Greeting ──
+function Greeting({ name, summaryItems }: { name: string | null; summaryItems: { emoji: string; text: string }[] }) {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
   const firstName = name?.split(' ')[0] || '';
@@ -146,12 +163,26 @@ function Greeting({ name }: { name: string | null }) {
       <p className="text-sm text-muted-foreground mt-1">
         {format(new Date(), "EEEE, dd 'de' MMMM", { locale: ptBR })}
       </p>
+      {summaryItems.length > 0 && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="mt-3 flex flex-wrap gap-2"
+        >
+          {summaryItems.map((item, i) => (
+            <span key={i} className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground bg-muted/50 px-2.5 py-1 rounded-lg border border-border/30">
+              <span>{item.emoji}</span> {item.text}
+            </span>
+          ))}
+        </motion.div>
+      )}
     </motion.div>
   );
 }
 
-// ── Quick Stats Row ──
-function QuickStats({ stats }: { stats: { icon: typeof Users; label: string; value: number; color: string }[] }) {
+// ── Enhanced Quick Stats ──
+function QuickStats({ stats }: { stats: { icon: typeof Users; label: string; value: number; color: string; ringColor?: string; description?: string }[] }) {
   return (
     <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
       {stats.map((stat, i) => (
@@ -161,17 +192,35 @@ function QuickStats({ stats }: { stats: { icon: typeof Users; label: string; val
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: i * 0.05 }}
         >
-          <Card className="card-premium">
-            <CardContent className="p-3 sm:p-4 flex items-center gap-3">
-              <stat.icon className={`w-5 h-5 ${stat.color} shrink-0`} />
-              <div>
-                <p className="text-lg sm:text-xl font-extrabold tracking-tight text-foreground leading-none">{stat.value}</p>
-                <p className="text-[10px] sm:text-[11px] text-muted-foreground font-medium mt-0.5">{stat.label}</p>
+          <Card className="card-premium hover:shadow-md transition-shadow">
+            <CardContent className="p-3 sm:p-4">
+              <div className="flex items-start justify-between mb-2">
+                <div className={cn('w-9 h-9 rounded-xl flex items-center justify-center', stat.ringColor || 'bg-muted/60')}>
+                  <stat.icon className={cn('w-4.5 h-4.5', stat.color)} />
+                </div>
+                <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground leading-none">{stat.value}</span>
               </div>
+              <p className="text-[11px] text-muted-foreground font-semibold">{stat.label}</p>
+              {stat.description && (
+                <p className="text-[9px] text-muted-foreground/60 mt-0.5">{stat.description}</p>
+              )}
             </CardContent>
           </Card>
         </motion.div>
       ))}
+    </div>
+  );
+}
+
+// ── Score bar (inline) ──
+function MiniScoreBar({ score }: { score: number }) {
+  const color = score >= 70 ? 'bg-emerald-500' : score >= 40 ? 'bg-amber-500' : 'bg-red-400';
+  return (
+    <div className="flex items-center gap-1.5 w-16">
+      <div className="flex-1 h-1 rounded-full bg-muted/60 overflow-hidden">
+        <div className={`h-full rounded-full ${color}`} style={{ width: `${score}%` }} />
+      </div>
+      <span className="text-[10px] font-bold tabular-nums">{score}%</span>
     </div>
   );
 }
@@ -185,7 +234,7 @@ function PageSkeleton() {
         <Skeleton className="h-4 w-48" />
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-        {[1,2,3,4].map(i => <Skeleton key={i} className="h-20 rounded-xl" />)}
+        {[1,2,3,4].map(i => <Skeleton key={i} className="h-24 rounded-xl" />)}
       </div>
       {[1,2,3].map(i => (
         <div key={i} className="space-y-3">
@@ -321,12 +370,23 @@ export default function HojePage() {
 
   const isLoading = authLoading || loadingLeads || loadingFollowups;
 
+  // ── Greeting summary items ──
+  const summaryItems = useMemo(() => {
+    const items: { emoji: string; text: string }[] = [];
+    const totalPending = todayFollowups.length + overdueFollowups.length;
+    if (totalPending > 0) items.push({ emoji: '📋', text: `${totalPending} follow-up${totalPending > 1 ? 's' : ''} pendente${totalPending > 1 ? 's' : ''}` });
+    if (newLeads.length > 0) items.push({ emoji: '✨', text: `${newLeads.length} lead${newLeads.length > 1 ? 's' : ''} novo${newLeads.length > 1 ? 's' : ''}` });
+    if (hotLeads.length > 0) items.push({ emoji: '🔥', text: `${hotLeads.length} lead${hotLeads.length > 1 ? 's' : ''} quente${hotLeads.length > 1 ? 's' : ''}` });
+    if (staleLeads.length > 0) items.push({ emoji: '⏰', text: `${staleLeads.length} aguardando contato` });
+    return items;
+  }, [todayFollowups, overdueFollowups, newLeads, hotLeads, staleLeads]);
+
   // Quick stats
   const quickStats = useMemo(() => [
-    { icon: CalendarClock, label: 'Follow-ups hoje', value: todayFollowups.length, color: 'text-primary' },
-    { icon: AlertTriangle, label: 'Atrasados', value: overdueFollowups.length, color: overdueFollowups.length > 0 ? 'text-destructive' : 'text-muted-foreground' },
-    { icon: Zap, label: 'Novos (24h)', value: newLeads.length, color: 'text-emerald-600' },
-    { icon: Flame, label: 'Leads quentes', value: hotLeads.length, color: 'text-amber-600' },
+    { icon: CalendarClock, label: 'Follow-ups hoje', value: todayFollowups.length, color: 'text-primary', ringColor: 'icon-bg-blue', description: todayFollowups.length === 0 ? 'Dia livre!' : undefined },
+    { icon: AlertTriangle, label: 'Atrasados', value: overdueFollowups.length, color: overdueFollowups.length > 0 ? 'text-destructive' : 'text-muted-foreground', ringColor: overdueFollowups.length > 0 ? 'bg-destructive/10' : 'bg-muted/60', description: overdueFollowups.length > 0 ? 'Precisam de atenção' : 'Tudo em dia' },
+    { icon: Zap, label: 'Novos (24h)', value: newLeads.length, color: 'text-emerald-600', ringColor: 'icon-bg-green' },
+    { icon: Flame, label: 'Leads quentes', value: hotLeads.length, color: 'text-amber-600', ringColor: 'icon-bg-amber', description: 'Score ≥ 70%' },
   ], [todayFollowups, overdueFollowups, newLeads, hotLeads]);
 
   // ── Handlers ──
@@ -357,7 +417,7 @@ export default function HojePage() {
 
           {isLoading ? <PageSkeleton /> : (
             <>
-               <Greeting name={profile?.full_name || null} />
+               <Greeting name={profile?.full_name || null} summaryItems={summaryItems} />
                <QuickActionBar
                  onNavigatePipeline={() => navigate(isAdmin ? '/admin?tab=kanban' : '/franquia?tab=funnel')}
                  leads={leads}
@@ -384,7 +444,7 @@ export default function HojePage() {
 
               {/* ═══ URGENT: Overdue Follow-ups ═══ */}
               {overdueFollowups.length > 0 && (
-                <Section icon={AlertTriangle} title="Atrasados" count={overdueFollowups.length} iconBg="bg-destructive/10">
+                <Section icon={AlertTriangle} title="Atrasados" count={overdueFollowups.length} iconBg="bg-destructive/10" subtitle="Follow-ups que já passaram do prazo">
                   <div className="space-y-2">
                     {overdueFollowups.map((f, i) => {
                       const parsed = parseFollowupType(f.note);
@@ -399,7 +459,7 @@ export default function HojePage() {
                           initial={{ opacity: 0, x: -12 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: i * 0.04 }}
-                          className={cn('flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all hover:shadow-sm', URGENCY_STYLES.overdue)}
+                          className={cn('flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all hover:shadow-sm active:scale-[0.98]', URGENCY_STYLES.overdue)}
                           onClick={() => navigate(`${basePath}/${f.lead_id}`)}
                         >
                           <div className="w-9 h-9 rounded-lg bg-destructive/10 flex items-center justify-center shrink-0">
@@ -423,6 +483,7 @@ export default function HojePage() {
                 icon={CalendarClock}
                 title="Follow-ups de hoje"
                 count={todayFollowups.length}
+                subtitle={todayFollowups.length > 0 ? 'Compromissos agendados para hoje' : undefined}
                 action={
                   todayFollowups.length === 0 ? undefined : (
                     <Badge variant="outline" className="text-[10px] border-primary/20 text-primary font-medium">
@@ -457,7 +518,7 @@ export default function HojePage() {
                           initial={{ opacity: 0, x: -12 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: i * 0.04 }}
-                          className={cn('flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all hover:shadow-sm', URGENCY_STYLES.today)}
+                          className={cn('flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all hover:shadow-sm active:scale-[0.98]', URGENCY_STYLES.today)}
                           onClick={() => navigate(`${basePath}/${f.lead_id}`)}
                         >
                           <div className="w-9 h-9 rounded-lg icon-bg-blue flex items-center justify-center shrink-0">
@@ -478,7 +539,7 @@ export default function HojePage() {
 
               {/* ═══ STALE LEADS (needs attention) ═══ */}
               {staleLeads.length > 0 && (
-                <Section icon={Clock} title="Aguardando contato" count={staleLeads.length} iconBg="icon-bg-amber">
+                <Section icon={Clock} title="Aguardando contato" count={staleLeads.length} iconBg="icon-bg-amber" subtitle="Leads novos há mais de 48h sem resposta">
                   <Card className="card-premium overflow-hidden">
                     <CardContent className="p-0 divide-y divide-border/30">
                       {staleLeads.slice(0, 8).map((lead, i) => {
@@ -486,6 +547,7 @@ export default function HojePage() {
                         const daysWaiting = differenceInDays(now, new Date(lead.created_at));
                         const waitLabel = daysWaiting > 0 ? `${daysWaiting}d` : `${hoursWaiting}h`;
                         const temp = classifyLead((lead as any).respostas_questionario || null, lead.pontuacao_quintal);
+                        const borderAccent = temp.temperature === 'quente' ? 'border-l-emerald-500' : temp.temperature === 'morno' ? 'border-l-amber-500' : 'border-l-blue-400';
 
                         return (
                           <motion.div
@@ -493,30 +555,31 @@ export default function HojePage() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: i * 0.03 }}
-                            className="flex items-center gap-2.5 p-2.5 cursor-pointer hover:bg-muted/40 transition-colors"
+                            className={cn('flex items-center gap-2.5 p-3 cursor-pointer hover:bg-muted/40 transition-colors border-l-[3px]', borderAccent)}
                             onClick={() => navigate(`${basePath}/${lead.id}`)}
                           >
-                            <div className="w-8 h-8 rounded-full bg-amber-500/10 flex items-center justify-center shrink-0">
+                            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500/15 to-amber-500/5 flex items-center justify-center shrink-0">
                               <span className="text-xs font-bold text-amber-600">
                                 {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
                               </span>
                             </div>
                             <div className="flex-1 min-w-0">
                               <p className="text-[13px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
-                              <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                              <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5">
                                 {lead.cidade && <span className="truncate max-w-[100px]">{lead.cidade}</span>}
-                                <span className="text-amber-600 font-semibold">{waitLabel}</span>
+                                <span className="text-amber-600 font-bold">⏱ {waitLabel} esperando</span>
                               </div>
                             </div>
-                            <div className="flex items-center gap-1 shrink-0">
-                              <Badge className={cn(temp.bgColor, temp.color, 'border text-[9px] font-semibold px-1 py-0')} variant="outline">
-                                {temp.emoji}
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <Badge className={cn(temp.bgColor, temp.color, 'border text-[9px] font-semibold px-1.5 py-0')} variant="outline">
+                                {temp.emoji} {temp.label}
                               </Badge>
+                              <MiniScoreBar score={lead.pontuacao_quintal || 0} />
                               {lead.telefone && (
                                 <Button
                                   size="icon"
                                   variant="ghost"
-                                  className="h-7 w-7 rounded-lg"
+                                  className="h-8 w-8 rounded-lg"
                                   onClick={(e) => { e.stopPropagation(); handleWhatsApp(lead); }}
                                   aria-label="WhatsApp"
                                 >
@@ -545,11 +608,12 @@ export default function HojePage() {
 
               {/* ═══ NEW LEADS (24h) ═══ */}
               {newLeads.length > 0 && (
-                <Section icon={Zap} title="Novos leads" count={newLeads.length} iconBg="icon-bg-green" collapsible defaultOpen={newLeads.length <= 4}>
+                <Section icon={Zap} title="Novos leads" count={newLeads.length} iconBg="icon-bg-green" subtitle="Chegaram nas últimas 24 horas" collapsible defaultOpen={newLeads.length <= 4}>
                   <div className="space-y-2">
                     {newLeads.slice(0, 6).map((lead, i) => {
                       const temp = classifyLead((lead as any).respostas_questionario || null, lead.pontuacao_quintal);
                       const timeAgo = formatDistanceToNow(new Date(lead.created_at), { locale: ptBR, addSuffix: true });
+                      const borderAccent = temp.temperature === 'quente' ? 'border-l-emerald-500' : temp.temperature === 'morno' ? 'border-l-amber-500' : 'border-l-blue-400';
 
                       return (
                         <motion.div
@@ -557,10 +621,10 @@ export default function HojePage() {
                           initial={{ opacity: 0, x: -12 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: i * 0.04 }}
-                          className="flex items-center gap-2.5 p-2.5 rounded-xl border border-emerald-500/20 bg-emerald-500/5 cursor-pointer hover:shadow-sm transition-all"
+                          className={cn('flex items-center gap-2.5 p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 cursor-pointer hover:shadow-sm transition-all active:scale-[0.98] border-l-[3px]', borderAccent)}
                           onClick={() => navigate(`${basePath}/${lead.id}`)}
                         >
-                          <div className="w-8 h-8 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
+                          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500/15 to-emerald-500/5 flex items-center justify-center shrink-0">
                             <span className="text-xs font-bold text-emerald-600">
                               {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
                             </span>
@@ -569,15 +633,16 @@ export default function HojePage() {
                             <p className="text-[13px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
                             <p className="text-[10px] text-muted-foreground truncate">{timeAgo} · {lead.cidade || 'Sem cidade'}</p>
                           </div>
-                          <div className="flex items-center gap-1 shrink-0">
-                            <Badge className={cn(temp.bgColor, temp.color, 'border text-[9px] font-semibold px-1 py-0')} variant="outline">
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <Badge className={cn(temp.bgColor, temp.color, 'border text-[9px] font-semibold px-1.5 py-0')} variant="outline">
                               {temp.emoji} {temp.label}
                             </Badge>
+                            <MiniScoreBar score={lead.pontuacao_quintal || 0} />
                             {lead.telefone && (
                               <Button
                                 size="icon"
                                 variant="ghost"
-                                className="h-7 w-7 rounded-lg"
+                                className="h-8 w-8 rounded-lg"
                                 onClick={(e) => { e.stopPropagation(); handleWhatsApp(lead); }}
                                 aria-label="WhatsApp"
                               >
@@ -594,36 +659,43 @@ export default function HojePage() {
 
               {/* ═══ HOT LEADS ═══ */}
               {hotLeads.length > 0 && (
-                <Section icon={Flame} title="Leads quentes" count={hotLeads.length} iconBg="icon-bg-amber" collapsible defaultOpen={hotLeads.length <= 3}>
+                <Section icon={Flame} title="Leads quentes" count={hotLeads.length} iconBg="icon-bg-amber" subtitle="Maior potencial de conversão" collapsible defaultOpen={hotLeads.length <= 3}>
                   <Card className="card-premium overflow-hidden">
                     <CardContent className="p-0 divide-y divide-border/30">
                       {hotLeads.map((lead, i) => (
-                        <motion.div
-                          key={lead.id}
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ delay: i * 0.03 }}
-                          className="flex items-center gap-2.5 p-2.5 cursor-pointer hover:bg-muted/40 transition-colors"
-                          onClick={() => navigate(`${basePath}/${lead.id}`)}
-                        >
-                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                            <span className="text-xs font-bold text-primary">
-                              {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
-                            </span>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-[13px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
-                            <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                              <span className="font-bold text-primary">{lead.pontuacao_quintal}%</span>
-                              <Badge className={`${STATUS_COLORS[lead.status_lead]} border text-[9px] px-1 py-0`} variant="secondary">
-                                {STATUS_LABELS[lead.status_lead]}
-                              </Badge>
-                              {lead.modelo_recomendado && <span className="truncate">{lead.modelo_recomendado}</span>}
+                          <motion.div
+                            key={lead.id}
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: i * 0.03 }}
+                            className="flex items-center gap-2.5 p-3 cursor-pointer hover:bg-muted/40 transition-colors active:scale-[0.98] border-l-[3px] border-l-emerald-500"
+                            onClick={() => navigate(`${basePath}/${lead.id}`)}
+                          >
+                            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
+                              <span className="text-xs font-bold text-primary">
+                                {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
+                              </span>
                             </div>
-                          </div>
-                          <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
-                        </motion.div>
-                      ))}
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[13px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
+                              <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mt-0.5">
+                                <Badge className={`${STATUS_COLORS[lead.status_lead]} border text-[9px] px-1 py-0`} variant="secondary">
+                                  {STATUS_LABELS[lead.status_lead]}
+                                </Badge>
+                                {lead.modelo_recomendado && <span className="truncate">{lead.modelo_recomendado}</span>}
+                                {lead.cidade && (
+                                  <span className="flex items-center gap-0.5">
+                                    <MapPin className="w-2.5 h-2.5" />{lead.cidade}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2 shrink-0">
+                              <MiniScoreBar score={lead.pontuacao_quintal || 0} />
+                              <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                            </div>
+                          </motion.div>
+                        ))}
                     </CardContent>
                   </Card>
                 </Section>
@@ -631,7 +703,7 @@ export default function HojePage() {
 
               {/* ═══ UPCOMING FOLLOW-UPS ═══ */}
               {upcomingFollowups.length > 0 && (
-                <Section icon={Target} title="Próximos follow-ups" count={upcomingFollowups.length} collapsible defaultOpen={false}>
+                <Section icon={Target} title="Próximos follow-ups" count={upcomingFollowups.length} subtitle="Agendamentos dos próximos dias" collapsible defaultOpen={false}>
                   <div className="space-y-2">
                     {upcomingFollowups.map((f, i) => {
                       const parsed = parseFollowupType(f.note);
@@ -645,7 +717,7 @@ export default function HojePage() {
                           initial={{ opacity: 0, x: -12 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: i * 0.04 }}
-                          className={cn('flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all hover:shadow-sm', URGENCY_STYLES[schedule.urgency])}
+                          className={cn('flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all hover:shadow-sm active:scale-[0.98]', URGENCY_STYLES[schedule.urgency])}
                           onClick={() => navigate(`${basePath}/${f.lead_id}`)}
                         >
                           <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
@@ -665,9 +737,9 @@ export default function HojePage() {
 
               {/* ═══ RECENT ACTIVITY FEED ═══ */}
               {activityFeed.length > 0 && (
-                <Section icon={TrendingUp} title="Atividade recente" count={activityFeed.length} collapsible defaultOpen={false}>
+                <Section icon={TrendingUp} title="Atividade recente" count={activityFeed.length} subtitle="Últimas 48 horas" collapsible defaultOpen={false}>
                   <Card className="card-premium">
-                    <CardContent className="p-3 space-y-2">
+                    <CardContent className="p-3 space-y-1">
                       {activityFeed.map((a, i) => {
                         const leadName = leadNameMap[a.lead_id] || 'Lead';
                         const timeAgo = formatDistanceToNow(new Date(a.created_at), { locale: ptBR, addSuffix: true });
@@ -678,7 +750,7 @@ export default function HojePage() {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             transition={{ delay: i * 0.03 }}
-                            className="flex items-start gap-2.5 py-2 cursor-pointer hover:bg-muted/30 rounded-lg px-2 transition-colors"
+                            className="flex items-start gap-2.5 py-2.5 cursor-pointer hover:bg-muted/30 rounded-lg px-2 transition-colors active:scale-[0.98]"
                             onClick={() => navigate(`${basePath}/${a.lead_id}`)}
                           >
                             <div className="w-2 h-2 rounded-full bg-primary/40 mt-1.5 shrink-0" />
