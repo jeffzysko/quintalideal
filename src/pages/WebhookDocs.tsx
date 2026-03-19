@@ -11,7 +11,7 @@ const PAYLOAD_EXAMPLE = `{
   "evento": "novo_lead",
   "lead": {
     "nome": "João Silva",
-    "telefone": "5551999999999",
+    "telefone": "51999999999",
     "email": "joao@email.com",
     "cidade": "Porto Alegre",
     "pontuacao_quintal": 78,
