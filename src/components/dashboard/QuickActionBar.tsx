@@ -108,9 +108,16 @@ export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowup
             </div>
             <span className="text-[10px] font-semibold text-muted-foreground">{action.label}</span>
             {action.badge && action.badge > 0 && (
-              <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold px-1">
-                {action.badge > 9 ? '9+' : action.badge}
-              </span>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold px-1 shadow-sm">
+                    {action.badge > 9 ? '9+' : action.badge}
+                  </span>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="text-xs">
+                  {action.badge} follow-up{action.badge > 1 ? 's' : ''} pendente{action.badge > 1 ? 's' : ''}
+                </TooltipContent>
+              </Tooltip>
             )}
           </motion.button>
         ))}
