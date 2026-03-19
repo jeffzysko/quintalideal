@@ -163,29 +163,27 @@ export function WhatsAppTemplates(props: WhatsAppTemplatesProps) {
                   </p>
                   <div className="flex flex-col sm:flex-row items-stretch gap-2">
                     <Button
-                      size="sm"
                       variant="outline"
-                      className="h-11 sm:h-9 flex-1 text-xs gap-1.5 active:scale-[0.97] transition-transform"
+                      className="h-11 flex-1 text-sm sm:text-xs gap-2 active:scale-[0.97] transition-transform"
                       onClick={() => copyMessage(tpl.id, tpl.message)}
                     >
                       {copiedId === tpl.id ? (
                         <>
-                          <Check className="w-3.5 h-3.5 text-success" />
+                          <Check className="w-4 h-4 text-success" />
                           Copiada!
                         </>
                       ) : (
                         <>
-                          <Copy className="w-3.5 h-3.5" />
+                          <Copy className="w-4 h-4" />
                           Copiar
                         </>
                       )}
                     </Button>
                     <Button
-                      size="sm"
-                      className="h-11 sm:h-9 flex-1 text-xs bg-success hover:bg-success/90 text-success-foreground gap-1.5 active:scale-[0.97] transition-transform"
+                      className="h-11 flex-1 text-sm sm:text-xs bg-success hover:bg-success/90 text-success-foreground gap-2 active:scale-[0.97] transition-transform"
                       onClick={() => sendWhatsApp(tpl.message)}
                     >
-                      <Send className="w-3.5 h-3.5" />
+                      <Send className="w-4 h-4" />
                       Enviar WhatsApp
                     </Button>
                   </div>
