@@ -364,12 +364,21 @@ function MobilePipelineCard({
     }
   };
 
+  const borderAccent =
+    temp.temperature === 'quente'
+      ? 'border-l-emerald-500'
+      : temp.temperature === 'morno'
+      ? 'border-l-amber-500'
+      : 'border-l-blue-400';
+
+  const scoreColor = (lead.pontuacao_quintal || 0) >= 70 ? 'bg-emerald-500' : (lead.pontuacao_quintal || 0) >= 40 ? 'bg-amber-500' : 'bg-red-400';
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 8 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
-      className="bg-card border border-border/50 rounded-xl overflow-hidden shadow-xs"
+      className={`bg-card border border-border/50 rounded-xl overflow-hidden shadow-xs border-l-[3px] ${borderAccent}`}
     >
       <div
         className="p-3.5 cursor-pointer"
@@ -377,10 +386,12 @@ function MobilePipelineCard({
       >
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-center gap-2.5 min-w-0 flex-1">
-            <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-              <span className="text-sm font-bold text-primary">
-                {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
-              </span>
+            <div className="relative">
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
+                <span className="text-sm font-bold text-primary">
+                  {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
+                </span>
+              </div>
             </div>
             <div className="min-w-0 flex-1">
               <p className="text-sm font-semibold text-foreground truncate">{lead.nome || '—'}</p>
@@ -397,36 +408,20 @@ function MobilePipelineCard({
             </div>
           </div>
           <div className="flex flex-col items-end gap-1 shrink-0">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="cursor-help">
-                  <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
-                    {temp.emoji} {temp.label}
-                  </Badge>
-                </span>
-              </TooltipTrigger>
-              <TooltipContent side="left" className="max-w-[220px] text-xs">
-                <p className="font-semibold mb-0.5">Nível de interesse</p>
-                <p className="text-muted-foreground">
-                  {temp.temperature === 'quente'
-                    ? 'Alto interesse: bom orçamento, quer comprar em breve e tem espaço.'
-                    : temp.temperature === 'morno'
-                    ? 'Interesse moderado: pode precisar de mais informações.'
-                    : 'Início da jornada: ainda explorando opções.'}
-                </p>
-              </TooltipContent>
-            </Tooltip>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <span className="text-xs font-bold text-primary cursor-help">{lead.pontuacao_quintal || 0}%</span>
-              </TooltipTrigger>
-              <TooltipContent side="left" className="max-w-[200px] text-xs">
-                <p className="font-semibold mb-0.5">Compatibilidade do quintal</p>
-                <p className="text-muted-foreground">Quanto maior, mais adequado o espaço.</p>
-              </TooltipContent>
-            </Tooltip>
+            <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
+              {temp.emoji} {temp.label}
+            </Badge>
           </div>
         </div>
+
+        {/* Score bar */}
+        <div className="flex items-center gap-2 mt-2.5">
+          <div className="flex-1 h-1.5 rounded-full bg-muted/60 overflow-hidden">
+            <div className={`h-full rounded-full ${scoreColor} transition-all`} style={{ width: `${lead.pontuacao_quintal || 0}%` }} />
+          </div>
+          <span className="text-[11px] font-bold tabular-nums w-7 text-right">{lead.pontuacao_quintal || 0}%</span>
+        </div>
+
         {franchiseName && (
           <div className="mt-1.5 ml-[46px]">
             <span className="text-[11px] text-muted-foreground">{franchiseName}</span>
