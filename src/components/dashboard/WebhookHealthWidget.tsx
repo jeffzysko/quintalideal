@@ -1,0 +1,175 @@
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Webhook, CheckCircle2, XCircle, AlertTriangle, ArrowRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { cn } from '@/lib/utils';
+import { motion } from 'framer-motion';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+
+interface Props {
+  franchiseId: string;
+}
+
+interface WebhookLog {
+  id: string;
+  success: boolean;
+  http_status: number | null;
+  error_message: string | null;
+  created_at: string;
+  attempt: number;
+  event_type: string;
+}
+
+export function WebhookHealthWidget({ franchiseId }: Props) {
+  const navigate = useNavigate();
+
+  // Check if franchise has webhook configured
+  const { data: franchise } = useQuery({
+    queryKey: ['webhook-config', franchiseId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('franchises')
+        .select('webhook_url')
+        .eq('id', franchiseId)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!franchiseId,
+    staleTime: 60_000,
+  });
+
+  // Fetch last 24h webhook logs
+  const { data: logs = [] } = useQuery({
+    queryKey: ['webhook-health', franchiseId],
+    queryFn: async () => {
+      const since = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+      const { data, error } = await supabase
+        .from('webhook_logs')
+        .select('id, success, http_status, error_message, created_at, attempt, event_type')
+        .eq('franchise_id', franchiseId)
+        .gte('created_at', since)
+        .order('created_at', { ascending: false })
+        .limit(100);
+      if (error) throw error;
+      return (data || []) as WebhookLog[];
+    },
+    enabled: !!franchiseId && !!franchise?.webhook_url,
+    staleTime: 30_000,
+  });
+
+  // Don't render if no webhook configured
+  if (!franchise?.webhook_url) return null;
+
+  // Don't render if no logs in last 24h
+  if (logs.length === 0) return null;
+
+  // Calculate stats - deduplicate by grouping attempts (only count final attempt per delivery)
+  const finalAttempts = logs.reduce((acc, log) => {
+    // Group by created_at rounded to minute + event_type to identify same delivery
+    const key = `${log.created_at.slice(0, 16)}-${log.event_type}`;
+    const existing = acc.get(key);
+    if (!existing || log.attempt > existing.attempt) {
+      acc.set(key, log);
+    }
+    return acc;
+  }, new Map<string, WebhookLog>());
+
+  const deliveries = Array.from(finalAttempts.values());
+  const totalDeliveries = deliveries.length;
+  const successCount = deliveries.filter(l => l.success).length;
+  const failureCount = totalDeliveries - successCount;
+  const successRate = totalDeliveries > 0 ? Math.round((successCount / totalDeliveries) * 100) : 100;
+
+  const recentFailures = logs.filter(l => !l.success).slice(0, 3);
+  const lastFailure = recentFailures[0];
+
+  const isHealthy = failureCount === 0;
+  const isCritical = successRate < 50;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="mb-6"
+    >
+      <Card
+        className={cn(
+          'card-premium cursor-pointer transition-all hover:shadow-md active:scale-[0.99]',
+          isCritical && 'border-destructive/30',
+          !isHealthy && !isCritical && 'border-amber-300/40',
+        )}
+        onClick={() => navigate('/perfil#integracoes')}
+      >
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2.5">
+              <div className={cn(
+                'w-8 h-8 rounded-lg flex items-center justify-center',
+                isHealthy ? 'bg-emerald-500/10' : isCritical ? 'bg-destructive/10' : 'bg-amber-500/10'
+              )}>
+                <Webhook className={cn(
+                  'w-4 h-4',
+                  isHealthy ? 'text-emerald-600' : isCritical ? 'text-destructive' : 'text-amber-600'
+                )} />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-foreground">Webhook CRM</h3>
+                <p className="text-[10px] text-muted-foreground">Últimas 24h</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge
+                variant={isHealthy ? 'default' : isCritical ? 'destructive' : 'secondary'}
+                className="text-[10px] font-bold px-2 py-0.5"
+              >
+                {isHealthy ? (
+                  <><CheckCircle2 className="w-3 h-3 mr-1" /> Saudável</>
+                ) : isCritical ? (
+                  <><XCircle className="w-3 h-3 mr-1" /> Crítico</>
+                ) : (
+                  <><AlertTriangle className="w-3 h-3 mr-1" /> Atenção</>
+                )}
+              </Badge>
+              <ArrowRight className="w-3.5 h-3.5 text-muted-foreground" />
+            </div>
+          </div>
+
+          {/* Stats row */}
+          <div className="grid grid-cols-3 gap-3">
+            <div className="text-center p-2 rounded-lg bg-muted/30">
+              <p className="text-lg font-extrabold tabular-nums text-foreground">{totalDeliveries}</p>
+              <p className="text-[10px] text-muted-foreground font-medium">Envios</p>
+            </div>
+            <div className="text-center p-2 rounded-lg bg-muted/30">
+              <p className={cn('text-lg font-extrabold tabular-nums', isHealthy ? 'text-emerald-600' : isCritical ? 'text-destructive' : 'text-amber-600')}>
+                {successRate}%
+              </p>
+              <p className="text-[10px] text-muted-foreground font-medium">Taxa de sucesso</p>
+            </div>
+            <div className="text-center p-2 rounded-lg bg-muted/30">
+              <p className={cn('text-lg font-extrabold tabular-nums', failureCount > 0 ? 'text-destructive' : 'text-muted-foreground')}>
+                {failureCount}
+              </p>
+              <p className="text-[10px] text-muted-foreground font-medium">Falhas</p>
+            </div>
+          </div>
+
+          {/* Recent failures */}
+          {lastFailure && (
+            <div className="mt-3 p-2.5 rounded-lg border border-destructive/20 bg-destructive/5">
+              <p className="text-[11px] text-destructive font-medium">
+                Última falha: {lastFailure.error_message || `HTTP ${lastFailure.http_status}`}
+                <span className="text-muted-foreground font-normal ml-1">
+                  · {formatDistanceToNow(new Date(lastFailure.created_at), { addSuffix: true, locale: ptBR })}
+                </span>
+              </p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+}
