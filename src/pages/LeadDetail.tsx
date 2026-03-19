@@ -18,6 +18,10 @@ import { LeadTimeline } from '@/components/lead/LeadTimeline';
 import { LeadFollowups } from '@/components/franchise/LeadFollowups';
 import { PhotoLightbox } from '@/components/lead/PhotoLightbox';
 import { InactivityBadge } from '@/components/lead/InactivityBadge';
+import { WhatsAppTemplates } from '@/components/lead/WhatsAppTemplates';
+import { LeadValueEstimator } from '@/components/lead/LeadValueEstimator';
+import { ContactAttempts } from '@/components/lead/ContactAttempts';
+import { AISuggestionCard } from '@/components/lead/AISuggestionCard';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { classifyLead, type LeadTemperature } from '@/lib/leadScoring';
@@ -136,10 +140,15 @@ export default function LeadDetail() {
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [lastActivityAt, setLastActivityAt] = useState<string | null>(null);
 
+  const [activitiesCount, setActivitiesCount] = useState(0);
+  const [followupsPending, setFollowupsPending] = useState(0);
+
   useEffect(() => {
     if (id) {
       loadLead();
       loadLastActivity();
+      loadActivityCounts();
+      loadFollowupCounts();
     }
   }, [id]);
 
@@ -164,6 +173,24 @@ export default function LeadDetail() {
       .limit(1)
       .maybeSingle();
     if (data) setLastActivityAt(data.created_at);
+  };
+
+  const loadActivityCounts = async () => {
+    const { count } = await supabase
+      .from('lead_activities')
+      .select('*', { count: 'exact', head: true })
+      .eq('lead_id', id!)
+      .in('activity_type', ['call', 'whatsapp', 'note']);
+    setActivitiesCount(count || 0);
+  };
+
+  const loadFollowupCounts = async () => {
+    const { count } = await supabase
+      .from('lead_followups')
+      .select('*', { count: 'exact', head: true })
+      .eq('lead_id', id!)
+      .eq('completed', false);
+    setFollowupsPending(count || 0);
   };
 
   const save = async () => {
@@ -379,6 +406,26 @@ export default function LeadDetail() {
               )}
             </CardContent>
           </Card>
+        </motion.div>
+
+        {/* Contact Attempts + Value Estimator + AI Suggestion */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="space-y-4">
+          <ContactAttempts leadId={lead.id} />
+          <LeadValueEstimator respostas={lead.respostas_questionario} modeloRecomendado={lead.modelo_recomendado} />
+          <AISuggestionCard
+            lead={lead}
+            activitiesCount={activitiesCount}
+            lastActivityDays={lastActivityAt ? Math.floor((Date.now() - new Date(lastActivityAt).getTime()) / 86400000) : Math.floor((Date.now() - new Date(lead.created_at).getTime()) / 86400000)}
+            followupsPending={followupsPending}
+          />
+          <WhatsAppTemplates
+            leadName={lead.nome}
+            leadPhone={lead.telefone}
+            modeloRecomendado={lead.modelo_recomendado}
+            cidade={lead.cidade}
+            pontuacao={lead.pontuacao_quintal}
+            statusLead={lead.status_lead}
+          />
         </motion.div>
 
         {/* Quiz Answers — always visible */}
