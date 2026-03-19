@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Button } from '@/components/ui/button';
+import { Textarea } from '@/components/ui/textarea';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Phone, Clock, FileText, ArrowRightLeft, MessageCircle, Thermometer } from 'lucide-react';
+import { Phone, Clock, FileText, ArrowRightLeft, MessageCircle, Thermometer, Send } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface Activity {
   id: string;
@@ -23,15 +28,23 @@ const ACTIVITY_TYPES: Record<string, { label: string; icon: typeof Phone; color:
   temperature_change: { label: 'Temperatura', icon: Thermometer, color: 'text-orange-600', dotColor: 'bg-orange-500' },
 };
 
-
+const ADD_TYPES = [
+  { value: 'note', label: '📝 Nota' },
+  { value: 'call', label: '📞 Ligação' },
+  { value: 'whatsapp', label: '💬 WhatsApp' },
+];
 
 interface LeadTimelineProps {
   leadId: string;
 }
 
 export function LeadTimeline({ leadId }: LeadTimelineProps) {
+  const { user } = useAuth();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
+  const [newContent, setNewContent] = useState('');
+  const [newType, setNewType] = useState('note');
+  const [saving, setSaving] = useState(false);
 
   useEffect(() => {
     loadActivities();
@@ -47,6 +60,25 @@ export function LeadTimeline({ leadId }: LeadTimelineProps) {
     setLoading(false);
   };
 
+  const handleAdd = async () => {
+    if (!newContent.trim() || !user) return;
+    setSaving(true);
+    const { error } = await supabase.from('lead_activities').insert({
+      lead_id: leadId,
+      user_id: user.id,
+      activity_type: newType,
+      content: newContent.trim(),
+    });
+    if (error) {
+      toast.error('Erro ao salvar atividade');
+    } else {
+      toast.success('Atividade registrada');
+      setNewContent('');
+      setNewType('note');
+      await loadActivities();
+    }
+    setSaving(false);
+  };
 
   const formatDate = (iso: string) => {
     const d = new Date(iso);
@@ -66,6 +98,39 @@ export function LeadTimeline({ leadId }: LeadTimelineProps) {
             </span>
           )}
         </div>
+
+        {/* Add activity form */}
+        {user && (
+          <div className="mb-4 space-y-2 bg-muted/30 rounded-lg p-3">
+            <div className="flex items-center gap-2">
+              <Select value={newType} onValueChange={setNewType}>
+                <SelectTrigger className="w-[140px] h-8 text-xs">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {ADD_TYPES.map(t => (
+                    <SelectItem key={t.value} value={t.value} className="text-xs">{t.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <Textarea
+              placeholder="Descreva a atividade..."
+              value={newContent}
+              onChange={e => setNewContent(e.target.value)}
+              className="min-h-[60px] text-xs resize-none"
+            />
+            <Button
+              size="sm"
+              onClick={handleAdd}
+              disabled={saving || !newContent.trim()}
+              className="w-full gap-1.5 h-8 text-xs"
+            >
+              <Send className="w-3 h-3" />
+              {saving ? 'Salvando...' : 'Registrar'}
+            </Button>
+          </div>
+        )}
 
         {/* Timeline */}
         {loading ? (
