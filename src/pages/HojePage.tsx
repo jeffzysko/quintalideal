@@ -30,6 +30,7 @@ import { cn } from '@/lib/utils';
 import { SmartSuggestions } from '@/components/dashboard/SmartSuggestions';
 import { QuickActionBar } from '@/components/dashboard/QuickActionBar';
 import { PipelineSnapshot } from '@/components/dashboard/PipelineSnapshot';
+import { WebhookHealthWidget } from '@/components/dashboard/WebhookHealthWidget';
 
 // ── Types ──
 interface Followup {
@@ -430,6 +431,9 @@ export default function HojePage() {
                  </div>
                )}
                <QuickStats stats={quickStats} />
+
+               {/* ═══ WEBHOOK HEALTH ═══ */}
+               {franchiseId && <WebhookHealthWidget franchiseId={franchiseId} />}
 
                {/* ═══ PIPELINE SNAPSHOT ═══ */}
                {leads.length > 0 && <PipelineSnapshot leads={leads} />}
