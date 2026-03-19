@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Webhook, CheckCircle2, XCircle, AlertTriangle, ArrowRight } from 'lucide-react';
+import { Webhook, CheckCircle2, XCircle, AlertTriangle, ArrowRight, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { motion } from 'framer-motion';
@@ -113,6 +113,13 @@ export function WebhookHealthWidget({ franchiseId }: Props) {
   const isHealthy = failureCount === 0;
   const isCritical = successRate < 50;
 
+  // Trend: compare today vs yesterday from chartData
+  const todayData = chartData[6];
+  const yesterdayData = chartData[5];
+  const todayRate = todayData?.total > 0 ? todayData.rate : null;
+  const yesterdayRate = yesterdayData?.total > 0 ? yesterdayData.rate : null;
+  const trendDiff = todayRate !== null && yesterdayRate !== null ? todayRate - yesterdayRate : null;
+
   // Check if chart has any data
   const hasChartData = chartData.some(d => d.total > 0);
 
@@ -171,9 +178,22 @@ export function WebhookHealthWidget({ franchiseId }: Props) {
               <p className="text-[10px] text-muted-foreground font-medium">Envios</p>
             </div>
             <div className="text-center p-2 rounded-lg bg-muted/30">
-              <p className={cn('text-lg font-extrabold tabular-nums', isHealthy ? 'text-emerald-600' : isCritical ? 'text-destructive' : 'text-amber-600')}>
-                {successRate}%
-              </p>
+              <div className="flex items-center justify-center gap-1">
+                <p className={cn('text-lg font-extrabold tabular-nums', isHealthy ? 'text-emerald-600' : isCritical ? 'text-destructive' : 'text-amber-600')}>
+                  {successRate}%
+                </p>
+                {trendDiff !== null && (
+                  <span className={cn(
+                    'flex items-center gap-0.5 text-[9px] font-bold rounded-full px-1 py-0.5',
+                    trendDiff > 0 && 'text-emerald-600 bg-emerald-500/10',
+                    trendDiff < 0 && 'text-destructive bg-destructive/10',
+                    trendDiff === 0 && 'text-muted-foreground bg-muted/50',
+                  )}>
+                    {trendDiff > 0 ? <TrendingUp className="w-2.5 h-2.5" /> : trendDiff < 0 ? <TrendingDown className="w-2.5 h-2.5" /> : <Minus className="w-2.5 h-2.5" />}
+                    {trendDiff > 0 ? '+' : ''}{trendDiff}%
+                  </span>
+                )}
+              </div>
               <p className="text-[10px] text-muted-foreground font-medium">Taxa de sucesso</p>
             </div>
             <div className="text-center p-2 rounded-lg bg-muted/30">
