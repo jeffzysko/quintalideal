@@ -48,6 +48,11 @@ Se status = "perdido":
 → REATIVAÇÃO CIRÚRGICA. Identifique o motivo provável da perda e sugira nova abordagem com ângulo diferente.
 → Gatilho: novidade ("Temos uma nova linha que pode atender melhor o que você buscava")
 
+INTERPRETAÇÃO DO CAMPO "INTENÇÃO DE COMPRA":
+- Se intenção = "2026": Este lead quer comprar ESTE ANO. Isso NÃO é um plano distante — é uma meta URGENTE. Trate como prioridade máxima. Use gatilhos de escassez e tempo ("O calendário de instalações para 2026 já está enchendo", "Para garantir instalação ainda este ano, precisamos iniciar o projeto agora").
+- Se intenção = "2026-2027": Lead com horizonte de médio prazo, mas que pode ser antecipado com o estímulo certo ("Quem fecha agora garante o preço atual e agenda preferencial").
+- Se intenção é vaga ou futura: Lead em fase de pesquisa — foque em educação e relacionamento.
+
 ANÁLISE COMPORTAMENTAL:
 - Muitas interações sem avanço = lead indeciso → sugira prova social ou visita a um cliente próximo
 - Poucas interações + muito tempo = lead esquecido → sugira conteúdo de valor (vídeo, antes/depois)
