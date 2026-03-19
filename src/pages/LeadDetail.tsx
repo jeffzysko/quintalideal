@@ -21,7 +21,7 @@ import { InactivityBadge } from '@/components/lead/InactivityBadge';
 import { WhatsAppTemplates } from '@/components/lead/WhatsAppTemplates';
 import { LeadValueEstimator } from '@/components/lead/LeadValueEstimator';
 import { ContactAttempts } from '@/components/lead/ContactAttempts';
-import { AISuggestionCard } from '@/components/lead/AISuggestionCard';
+
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { classifyLead, type LeadTemperature } from '@/lib/leadScoring';
