@@ -662,9 +662,7 @@ export default function HojePage() {
                 <Section icon={Flame} title="Leads quentes" count={hotLeads.length} iconBg="icon-bg-amber" subtitle="Maior potencial de conversão" collapsible defaultOpen={hotLeads.length <= 3}>
                   <Card className="card-premium overflow-hidden">
                     <CardContent className="p-0 divide-y divide-border/30">
-                      {hotLeads.map((lead, i) => {
-                        return (
-                        return (
+                      {hotLeads.map((lead, i) => (
                           <motion.div
                             key={lead.id}
                             initial={{ opacity: 0 }}
