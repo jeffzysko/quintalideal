@@ -193,6 +193,7 @@ export default function LeadDetail() {
     setFollowupsPending(count || 0);
   };
 
+  const save = async () => {
     if (!lead) return;
     setSaving(true);
 
