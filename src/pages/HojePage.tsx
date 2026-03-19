@@ -155,7 +155,7 @@ function Greeting({ name, summaryItems }: { name: string | null; summaryItems: {
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mb-6"
+      className="mb-8"
     >
       <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">
         {greeting}{firstName ? `, ${firstName}` : ''} 👋
