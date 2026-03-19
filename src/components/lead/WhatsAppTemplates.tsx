@@ -97,7 +97,7 @@ function buildTemplates(props: WhatsAppTemplatesProps): Template[] {
       label: 'Pedir indicação',
       emoji: '🎁',
       stage: ['vendido'],
-      message: `${nome}, como está curtindo a piscina? 😍\n\nSe você conhece alguém que também sonha com uma piscina, temos um programa de indicação com benefícios especiais pra você.\n\nÉ só me passar o contato que cuido de tudo com o mesmo carinho 🤝`,
+      message: `${nome}, como está sendo curtir a piscina? 😍\n\nSe você conhece alguém que também sonha com uma piscina, temos um programa de indicação com benefícios especiais pra você.\n\nÉ só me passar o contato que cuido de tudo com o mesmo carinho 🤝`,
     },
   ];
 }
