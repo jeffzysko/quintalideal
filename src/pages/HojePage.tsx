@@ -104,7 +104,7 @@ function Section({ icon: Icon, title, count, iconBg = 'icon-bg-blue', children, 
     <motion.section
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mb-6"
+      className="mb-8"
     >
       <div
         className={cn("flex items-center justify-between mb-3", collapsible && "cursor-pointer select-none")}
