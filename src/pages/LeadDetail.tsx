@@ -6,8 +6,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Camera, ClipboardList, Settings2, Save, User, Trash2 } from 'lucide-react';
+import { MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Camera, ClipboardList, Settings2, Save, User, Trash2, Clock, Image } from 'lucide-react';
 import { BackButton } from '@/components/BackButton';
 import { PanelHeader } from '@/components/PanelHeader';
 import { NotificationBell } from '@/components/NotificationBell';
@@ -15,15 +16,15 @@ import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { LeadTimeline } from '@/components/lead/LeadTimeline';
 import { LeadFollowups } from '@/components/franchise/LeadFollowups';
+import { PhotoLightbox } from '@/components/lead/PhotoLightbox';
+import { InactivityBadge } from '@/components/lead/InactivityBadge';
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { classifyLead, type LeadTemperature } from '@/lib/leadScoring';
 import { toast } from 'sonner';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
-
-
 
 interface Lead {
   id: string;
@@ -130,9 +131,16 @@ export default function LeadDetail() {
   const [observacoes, setObservacoes] = useState('');
   const [tempOverride, setTempOverride] = useState<LeadTemperature | ''>('');
   const [saving, setSaving] = useState(false);
+  const [activeTab, setActiveTab] = useState('resumo');
+  const [lightboxOpen, setLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [lastActivityAt, setLastActivityAt] = useState<string | null>(null);
 
   useEffect(() => {
-    if (id) loadLead();
+    if (id) {
+      loadLead();
+      loadLastActivity();
+    }
   }, [id]);
 
   const loadLead = async () => {
@@ -147,26 +155,35 @@ export default function LeadDetail() {
     setLoading(false);
   };
 
+  const loadLastActivity = async () => {
+    const { data } = await supabase
+      .from('lead_activities')
+      .select('created_at')
+      .eq('lead_id', id!)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (data) setLastActivityAt(data.created_at);
+  };
+
   const save = async () => {
     if (!lead) return;
     setSaving(true);
 
-    // Log status change as activity
     if (status !== lead.status_lead) {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (currentUser) {
         const oldLabel = statusConfig[lead.status_lead]?.label || lead.status_lead;
         const newLabel = statusConfig[status]?.label || status;
         await supabase.from('lead_activities').insert({
           lead_id: lead.id,
-          user_id: user.id,
+          user_id: currentUser.id,
           activity_type: 'status_change',
           content: `Status alterado de "${oldLabel}" para "${newLabel}"`,
         });
       }
     }
 
-    // Build updated respostas with temperature override
     const updatedRespostas = { ...(lead.respostas_questionario || {}) };
     const oldTemp = (lead.respostas_questionario as Record<string, string> | null)?.temperatura_manual || '';
     if (tempOverride) {
@@ -175,15 +192,14 @@ export default function LeadDetail() {
       delete updatedRespostas.temperatura_manual;
     }
 
-    // Log temperature change
     const tempChanged = tempOverride !== oldTemp;
     if (tempChanged) {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
+      const { data: { user: currentUser } } = await supabase.auth.getUser();
+      if (currentUser) {
         const TEMP_LABELS: Record<string, string> = { quente: '🔥 Quente', morno: '☀️ Morno', frio: '❄️ Frio', '': '🤖 Automático' };
         await supabase.from('lead_activities').insert({
           lead_id: lead.id,
-          user_id: user.id,
+          user_id: currentUser.id,
           activity_type: 'temperature_change',
           content: `Temperatura alterada de "${TEMP_LABELS[oldTemp] || '🤖 Automático'}" para "${TEMP_LABELS[tempOverride] || '🤖 Automático'}"`,
         });
@@ -202,7 +218,6 @@ export default function LeadDetail() {
     if (!error) {
       toast.success('Alterações salvas com sucesso!');
       setLead({ ...lead, status_lead: status, observacoes, respostas_questionario: Object.keys(updatedRespostas).length > 0 ? updatedRespostas : null });
-      // Invalidate Kanban/table queries so they reflect the change
       queryClient.invalidateQueries({ queryKey: ['franchise-leads-all'] });
       queryClient.invalidateQueries({ queryKey: ['franchise-leads-table'] });
     } else {
@@ -229,7 +244,6 @@ export default function LeadDetail() {
   }
 
   const statusInfo = statusConfig[lead.status_lead] || statusConfig.novo;
-
   const isAdminRoute = location.pathname.startsWith('/admin');
   const leadsUrl = isAdminRoute ? '/admin?tab=leads' : '/franquia';
   const breadcrumbItems = [
@@ -293,6 +307,10 @@ export default function LeadDetail() {
                   <div className="text-center sm:text-left">
                     <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Índice do Quintal</p>
                     <p className="text-sm text-foreground mt-0.5">Potencial de instalação de piscina</p>
+                  </div>
+                  {/* Inactivity Badge */}
+                  <div className="flex justify-center sm:justify-start">
+                    <InactivityBadge createdAt={lead.created_at} lastActivityAt={lastActivityAt} />
                   </div>
                   {/* Lead Temperature */}
                   {(() => {
@@ -363,194 +381,238 @@ export default function LeadDetail() {
           </Card>
         </motion.div>
 
-        {/* Photos */}
-        {photos.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-            <Card className="glass-card">
-              <CardContent className="p-3 sm:p-5">
-                <div className="flex items-center gap-2 mb-3">
-                  <Camera className="w-4 h-4 text-primary" />
-                  <h2 className="text-sm font-semibold text-foreground">Fotos do Quintal</h2>
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  {photos.map((url, i) => (
-                    <img key={i} src={url} alt={`Quintal ${i + 1}`} className="rounded-xl w-full aspect-square object-cover border border-border/50" loading="lazy" />
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
+        {/* Tabbed Content */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <TabsList className="w-full grid grid-cols-4 h-10 bg-muted/50">
+              <TabsTrigger value="resumo" className="text-xs gap-1 data-[state=active]:bg-background">
+                <ClipboardList className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Resumo</span>
+              </TabsTrigger>
+              <TabsTrigger value="timeline" className="text-xs gap-1 data-[state=active]:bg-background">
+                <Clock className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Timeline</span>
+              </TabsTrigger>
+              <TabsTrigger value="fotos" className="text-xs gap-1 data-[state=active]:bg-background" disabled={photos.length === 0}>
+                <Image className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Fotos</span>
+                {photos.length > 0 && <span className="text-[10px] bg-primary/10 text-primary rounded-full px-1.5">{photos.length}</span>}
+              </TabsTrigger>
+              <TabsTrigger value="gerenciar" className="text-xs gap-1 data-[state=active]:bg-background">
+                <Settings2 className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Gerenciar</span>
+              </TabsTrigger>
+            </TabsList>
 
-        {/* Quiz answers */}
-        {lead.respostas_questionario && (
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-            <Card className="glass-card">
-              <CardContent className="p-3 sm:p-5">
-                <div className="flex items-center gap-2 mb-3">
-                  <ClipboardList className="w-4 h-4 text-primary" />
-                  <h2 className="text-sm font-semibold text-foreground">Respostas do Questionário</h2>
-                </div>
-                <div className="space-y-1.5">
-                  {Object.entries(lead.respostas_questionario)
-                    .filter(([key]) => questionLabels[key])
-                    .map(([key, value]) => {
-                      const q = questionLabels[key];
-                      const displayValue = answerLabels[value as string] || (value as string);
-                      return (
-                        <div key={key} className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 py-2 sm:py-2.5 px-3 sm:px-3.5 rounded-xl bg-muted/40 hover:bg-muted/60 transition-colors">
-                          <span className="text-xs sm:text-sm text-muted-foreground flex items-center gap-2">
-                            <span className="text-base">{q.icon}</span>
-                            {q.label}
-                          </span>
-                          <span className="text-xs sm:text-sm font-semibold text-foreground ml-7 sm:ml-0">{displayValue}</span>
+            <AnimatePresence mode="wait">
+              {/* Resumo Tab */}
+              <TabsContent value="resumo" className="mt-4 space-y-4">
+                <motion.div key="resumo" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
+                  {/* Quiz answers */}
+                  {lead.respostas_questionario && (
+                    <Card className="glass-card">
+                      <CardContent className="p-3 sm:p-5">
+                        <div className="flex items-center gap-2 mb-3">
+                          <ClipboardList className="w-4 h-4 text-primary" />
+                          <h2 className="text-sm font-semibold text-foreground">Respostas do Questionário</h2>
                         </div>
-                      );
-                    })}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
+                        <div className="space-y-1.5">
+                          {Object.entries(lead.respostas_questionario)
+                            .filter(([key]) => questionLabels[key])
+                            .map(([key, value]) => {
+                              const q = questionLabels[key];
+                              const displayValue = answerLabels[value as string] || (value as string);
+                              return (
+                                <div key={key} className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 py-2 sm:py-2.5 px-3 sm:px-3.5 rounded-xl bg-muted/40 hover:bg-muted/60 transition-colors">
+                                  <span className="text-xs sm:text-sm text-muted-foreground flex items-center gap-2">
+                                    <span className="text-base">{q.icon}</span>
+                                    {q.label}
+                                  </span>
+                                  <span className="text-xs sm:text-sm font-semibold text-foreground ml-7 sm:ml-0">{displayValue}</span>
+                                </div>
+                              );
+                            })}
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )}
 
-        {/* Follow-up Scheduling */}
-        {(franchiseId || lead.franquia_id) && (
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-            <LeadFollowups franchiseId={(franchiseId || lead.franquia_id)!} leadId={lead.id} leadName={lead.nome || undefined} />
-          </motion.div>
-        )}
+                  {/* Follow-up Scheduling */}
+                  {(franchiseId || lead.franquia_id) && (
+                    <div className="mt-4">
+                      <LeadFollowups franchiseId={(franchiseId || lead.franquia_id)!} leadId={lead.id} leadName={lead.nome || undefined} />
+                    </div>
+                  )}
+                </motion.div>
+              </TabsContent>
 
-        {/* Activity Timeline */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-          <LeadTimeline leadId={lead.id} />
-        </motion.div>
+              {/* Timeline Tab */}
+              <TabsContent value="timeline" className="mt-4">
+                <motion.div key="timeline" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
+                  <LeadTimeline leadId={lead.id} />
+                </motion.div>
+              </TabsContent>
 
-        {/* Manage */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-          <Card className="glass-card">
-            <CardContent className="p-3 sm:p-5 space-y-4">
-              <div className="flex items-center gap-2 mb-1">
-                <Settings2 className="w-4 h-4 text-primary" />
-                <h2 className="text-sm font-semibold text-foreground">Gerenciar Lead</h2>
-              </div>
+              {/* Fotos Tab */}
+              <TabsContent value="fotos" className="mt-4">
+                <motion.div key="fotos" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
+                  <Card className="glass-card">
+                    <CardContent className="p-3 sm:p-5">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Camera className="w-4 h-4 text-primary" />
+                        <h2 className="text-sm font-semibold text-foreground">Fotos do Quintal</h2>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        {photos.map((url, i) => (
+                          <button
+                            key={i}
+                            onClick={() => { setLightboxIndex(i); setLightboxOpen(true); }}
+                            className="relative group rounded-xl overflow-hidden border border-border/50 aspect-square focus:outline-none focus:ring-2 focus:ring-primary"
+                          >
+                            <img src={url} alt={`Quintal ${i + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
+                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                              <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <PhotoLightbox photos={photos} initialIndex={lightboxIndex} open={lightboxOpen} onOpenChange={setLightboxOpen} />
+                </motion.div>
+              </TabsContent>
 
-              <div>
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Status</label>
-                <Select value={status} onValueChange={setStatus}>
-                  <SelectTrigger className="bg-muted/50"><SelectValue /></SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(statusConfig).map(([val, cfg]) => (
-                      <SelectItem key={val} value={val}>{cfg.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              {/* Gerenciar Tab */}
+              <TabsContent value="gerenciar" className="mt-4">
+                <motion.div key="gerenciar" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
+                  <Card className="glass-card">
+                    <CardContent className="p-3 sm:p-5 space-y-4">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Settings2 className="w-4 h-4 text-primary" />
+                        <h2 className="text-sm font-semibold text-foreground">Gerenciar Lead</h2>
+                      </div>
 
-              {/* Temperature override */}
-              <div>
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Temperatura do Lead</label>
-                <div className="flex gap-2">
-                  {([
-                    { value: '' as const, label: 'Automático', emoji: '🤖' },
-                    { value: 'quente' as LeadTemperature, label: 'Quente', emoji: '🔥' },
-                    { value: 'morno' as LeadTemperature, label: 'Morno', emoji: '☀️' },
-                    { value: 'frio' as LeadTemperature, label: 'Frio', emoji: '❄️' },
-                  ]).map(t => (
-                    <button
-                      key={t.value}
-                      type="button"
-                      onClick={() => setTempOverride(t.value)}
-                      className={`flex-1 text-xs py-2.5 px-1 rounded-lg border transition-colors font-medium ${
-                        tempOverride === t.value
-                          ? 'border-primary bg-primary/10 text-primary'
-                          : 'border-border text-muted-foreground hover:bg-muted/50'
-                      }`}
-                    >
-                      {t.emoji} {t.label}
-                    </button>
-                  ))}
-                </div>
-                <p className="text-[11px] text-muted-foreground mt-1">
-                  {tempOverride ? `Temperatura fixada como "${tempOverride}". Clique em "Automático" para calcular pelo questionário.` : 'Calculado automaticamente com base nos dados do questionário.'}
-                </p>
-              </div>
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Status</label>
+                        <Select value={status} onValueChange={setStatus}>
+                          <SelectTrigger className="bg-muted/50"><SelectValue /></SelectTrigger>
+                          <SelectContent>
+                            {Object.entries(statusConfig).map(([val, cfg]) => (
+                              <SelectItem key={val} value={val}>{cfg.label}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-              <div>
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Observações</label>
-                <Textarea
-                  value={observacoes}
-                  onChange={e => setObservacoes(e.target.value)}
-                  rows={3}
-                  placeholder="Adicionar observações sobre este lead..."
-                  maxLength={1000}
-                  className="bg-muted/50 resize-none"
-                />
-              </div>
+                      {/* Temperature override */}
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Temperatura do Lead</label>
+                        <div className="flex gap-2">
+                          {([
+                            { value: '' as const, label: 'Automático', emoji: '🤖' },
+                            { value: 'quente' as LeadTemperature, label: 'Quente', emoji: '🔥' },
+                            { value: 'morno' as LeadTemperature, label: 'Morno', emoji: '☀️' },
+                            { value: 'frio' as LeadTemperature, label: 'Frio', emoji: '❄️' },
+                          ]).map(t => (
+                            <button
+                              key={t.value}
+                              type="button"
+                              onClick={() => setTempOverride(t.value)}
+                              className={`flex-1 text-xs py-2.5 px-1 rounded-lg border transition-colors font-medium ${
+                                tempOverride === t.value
+                                  ? 'border-primary bg-primary/10 text-primary'
+                                  : 'border-border text-muted-foreground hover:bg-muted/50'
+                              }`}
+                            >
+                              {t.emoji} {t.label}
+                            </button>
+                          ))}
+                        </div>
+                        <p className="text-[11px] text-muted-foreground mt-1">
+                          {tempOverride ? `Temperatura fixada como "${tempOverride}". Clique em "Automático" para calcular pelo questionário.` : 'Calculado automaticamente com base nos dados do questionário.'}
+                        </p>
+                      </div>
 
-              <Button onClick={save} disabled={saving} className="w-full gap-2">
-                {saving ? (
-                  <>
-                    <div className="animate-spin w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full" />
-                    Salvando...
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-4 h-4" /> Salvar Alterações
-                  </>
-                )}
-              </Button>
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Observações</label>
+                        <Textarea
+                          value={observacoes}
+                          onChange={e => setObservacoes(e.target.value)}
+                          rows={3}
+                          placeholder="Adicionar observações sobre este lead..."
+                          maxLength={1000}
+                          className="bg-muted/50 resize-none"
+                        />
+                      </div>
 
-              {/* Delete test lead */}
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="outline" className="w-full gap-2 text-destructive border-destructive/20 hover:bg-destructive/5 hover:text-destructive">
-                    <Trash2 className="w-4 h-4" /> Excluir Lead de Teste
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
-                    <AlertDialogDescription className="space-y-2">
-                      <span className="block">
-                        Você está prestes a excluir o lead <strong>"{lead.nome || 'sem nome'}"</strong>.
-                      </span>
-                      <span className="block font-semibold text-destructive">
-                        ⚠️ Esta ação é irreversível. Confirme que este é um lead de teste e NÃO um lead oficial de um cliente real.
-                      </span>
-                      <span className="block text-xs">
-                        Todas as atividades, follow-ups e dados associados serão removidos permanentemente.
-                      </span>
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                    <AlertDialogAction
-                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                      onClick={async () => {
-                        await supabase.from('lead_activities').delete().eq('lead_id', lead.id);
-                        await supabase.from('lead_followups').delete().eq('lead_id', lead.id);
-                        const { error } = await supabase.from('leads').delete().eq('id', lead.id);
-                        if (error) {
-                          toast.error('Erro ao excluir lead.');
-                        } else {
-                          toast.success('Lead de teste excluído com sucesso.');
-                          if (isAdminRoute) {
-                            navigate('/admin?tab=leads');
-                          } else if (window.history.length > 2) {
-                            navigate(-1);
-                          } else {
-                            navigate('/franquia');
-                          }
-                        }
-                      }}
-                    >
-                      Confirmo: é lead de teste, excluir
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </CardContent>
-          </Card>
+                      <Button onClick={save} disabled={saving} className="w-full gap-2">
+                        {saving ? (
+                          <>
+                            <div className="animate-spin w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full" />
+                            Salvando...
+                          </>
+                        ) : (
+                          <>
+                            <Save className="w-4 h-4" /> Salvar Alterações
+                          </>
+                        )}
+                      </Button>
+
+                      {/* Delete test lead */}
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button variant="outline" className="w-full gap-2 text-destructive border-destructive/20 hover:bg-destructive/5 hover:text-destructive">
+                            <Trash2 className="w-4 h-4" /> Excluir Lead de Teste
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                            <AlertDialogDescription className="space-y-2">
+                              <span className="block">
+                                Você está prestes a excluir o lead <strong>"{lead.nome || 'sem nome'}"</strong>.
+                              </span>
+                              <span className="block font-semibold text-destructive">
+                                ⚠️ Esta ação é irreversível. Confirme que este é um lead de teste e NÃO um lead oficial de um cliente real.
+                              </span>
+                              <span className="block text-xs">
+                                Todas as atividades, follow-ups e dados associados serão removidos permanentemente.
+                              </span>
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              onClick={async () => {
+                                await supabase.from('lead_activities').delete().eq('lead_id', lead.id);
+                                await supabase.from('lead_followups').delete().eq('lead_id', lead.id);
+                                const { error } = await supabase.from('leads').delete().eq('id', lead.id);
+                                if (error) {
+                                  toast.error('Erro ao excluir lead.');
+                                } else {
+                                  toast.success('Lead de teste excluído com sucesso.');
+                                  if (isAdminRoute) {
+                                    navigate('/admin?tab=leads');
+                                  } else if (window.history.length > 2) {
+                                    navigate(-1);
+                                  } else {
+                                    navigate('/franquia');
+                                  }
+                                }
+                              }}
+                            >
+                              Confirmo: é lead de teste, excluir
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </TabsContent>
+            </AnimatePresence>
+          </Tabs>
         </motion.div>
 
         {/* Spacer for sticky bar */}
