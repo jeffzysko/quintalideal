@@ -5,6 +5,7 @@ import { Sparkles, RefreshCw } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import ReactMarkdown from 'react-markdown';
 
 interface AISuggestionCardProps {
   lead: {
@@ -86,9 +87,9 @@ export function AISuggestionCard({ lead, activitiesCount, lastActivityDays, foll
 
         {suggestion ? (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <p className="text-xs sm:text-sm text-foreground leading-relaxed whitespace-pre-wrap mb-3">
-              {suggestion}
-            </p>
+            <div className="text-xs sm:text-sm text-foreground leading-relaxed mb-3 prose prose-sm prose-violet max-w-none dark:prose-invert [&>p]:mb-3 [&>p:last-child]:mb-0 [&_strong]:text-violet-700 dark:[&_strong]:text-violet-300">
+              <ReactMarkdown>{suggestion}</ReactMarkdown>
+            </div>
             <Button
               variant="ghost"
               size="sm"

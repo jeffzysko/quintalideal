@@ -54,13 +54,17 @@ ANÁLISE COMPORTAMENTAL:
 - Follow-ups pendentes = vendedor sobrecarregado → sugira priorização com base no potencial
 - Lead sem telefone mas com email = prefere comunicação assíncrona → sugira email personalizado
 
-FORMATO DA RESPOSTA (máximo 4 linhas):
-- Linha 1: 🎯 Estratégia (nome curto e impactante)
-- Linha 2: Ação específica com script sugerido entre aspas
-- Linha 3: Por que funciona (justificativa psicológica em 1 frase)
-- Linha 4: ⏰ Melhor momento para executar
+FORMATO DA RESPOSTA (use exatamente este formato com linhas em branco entre cada item):
 
-IMPORTANTE: Nunca use frases genéricas como "entre em contato", "faça follow-up", "envie proposta". Seja CIRÚRGICO e CRIATIVO.`;
+**🎯 Estratégia:** [nome curto e impactante da abordagem]
+
+**📋 Ação:** [ação específica, palpável e fácil de executar agora, com script sugerido entre aspas]
+
+**💡 Por que funciona:** [justificativa psicológica em 1 frase]
+
+**⏰ Melhor momento:** [quando executar, ex: "Hoje às 18h, quando o lead está em casa"]
+
+IMPORTANTE: A ação deve ser SIMPLES e IMEDIATA — algo que o vendedor consiga fazer em menos de 2 minutos (ex: enviar uma mensagem específica, fazer uma ligação com script pronto). Nunca use frases genéricas. Seja CIRÚRGICO e CRIATIVO.`;
 
     const leadSummary = `Lead: ${lead.nome || 'Sem nome'}
 Status: ${lead.status_lead}
