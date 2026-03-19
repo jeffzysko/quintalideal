@@ -230,14 +230,17 @@ interface FAQ {
 
 const faqs: FAQ[] = [
   { q: 'Como altero minha senha?', a: 'Acesse "Configurações" no menu do usuário, role até a seção "Alterar Senha" e insira sua nova senha.' },
-  { q: 'Posso ter mais de um usuário na minha franquia?', a: 'Sim! Entre em contato com o suporte da Hallow Comunicação para solicitar a criação de usuários adicionais para sua franquia.' },
+  { q: 'Posso ter mais de um usuário na minha franquia?', a: 'Sim! Acesse as configurações da franquia e adicione até 2 usuários adicionais (além do titular). Cada um terá acesso ao painel com suas próprias credenciais.' },
   { q: 'O que fazer quando um lead está duplicado?', a: 'A plataforma detecta automaticamente leads duplicados por telefone ou e-mail. Se o lead já existe, uma mensagem é exibida informando a franquia responsável.' },
   { q: 'Meus leads não estão aparecendo, o que fazer?', a: 'Verifique se seu link está correto e ativo. Se o problema persistir, entre em contato com o suporte técnico.' },
   { q: 'Como funciona a pontuação do quintal?', a: 'A pontuação é calculada automaticamente com base nas respostas do questionário do lead, considerando espaço disponível, tipo de terreno, uso pretendido e prazo de compra. Na tabela de leads, o score aparece como uma barra visual colorida.' },
   { q: 'Posso personalizar a página de captação?', a: 'A página de captação é padronizada para garantir a melhor experiência. Porém, cada franquia pode configurar seu Pixel do Meta para rastreamento de anúncios.' },
-  { q: 'O que é o Kanban no painel?', a: 'O Kanban é uma visualização em colunas do seu funil de vendas. No desktop, arraste os cards entre as colunas para mudar o status. No mobile, toque no card para acessar as opções.' },
+  { q: 'O que é o Kanban no painel?', a: 'O Kanban é uma visualização em colunas do seu funil de vendas. No desktop, arraste os cards entre as colunas para mudar o status. No mobile, toque no card para acessar as opções. Você pode filtrar por temperatura, origem, cidade e período.' },
   { q: 'Como defino minha meta mensal?', a: 'No painel da franquia, clique em "Definir meta" ou "Editar meta" para abrir o modal de configuração. Insira o número de vendas desejado e acompanhe o progresso em tempo real.' },
-  { q: 'O que é a página "Hoje"?', a: 'É uma visão resumida das suas prioridades do dia: follow-ups atrasados, leads novos, leads quentes e atividade recente. Acesse pelo botão "Hoje" no menu superior.' },
+  { q: 'O que é a página "Hoje"?', a: 'É sua central de prioridades do dia com 4 ações rápidas (Novo Lead, Funil, WhatsApp, Ligar), sugestões inteligentes, follow-ups pendentes, leads novos e um snapshot do pipeline. O badge no ícone "Funil" mostra quantos follow-ups estão pendentes.' },
+  { q: 'Como funcionam os follow-ups?', a: 'Você pode agendar follow-ups com data, hora e tipo (ligação, WhatsApp, e-mail, visita ou reunião). Follow-ups atrasados aparecem em destaque na página "Hoje" e você recebe notificações automáticas.' },
+  { q: 'Como importo leads via CSV?', a: 'Use o botão "Importar CSV" na página "Hoje" ou no Kanban. O arquivo deve seguir o modelo disponível para download na tela de importação, com colunas para nome, telefone, e-mail, cidade, modelo e observações. Limite de 500 leads por arquivo.' },
+  { q: 'Como ativo as notificações push?', a: 'Acesse "Notificações" → "Preferências" no menu do sino. Ative as notificações push e autorize no navegador. Você será avisado sobre novos leads, follow-ups e alertas importantes mesmo com o painel fechado.' },
 ];
 
 /* ─── Sub-components ─── */

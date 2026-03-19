@@ -24,14 +24,14 @@ const steps = [
   {
     icon: Users,
     title: 'Gerencie seus leads',
-    description: 'Na aba "Leads" você vê todos os interessados. No "Funil", arraste os cards entre as colunas para atualizar o status (Ex: Novo → Contatado → Vendido).',
+    description: 'Na aba "Leads" você vê todos os interessados. No "Funil", arraste os cards entre as colunas para atualizar o status. Você também pode cadastrar leads manualmente ou importar via CSV.',
     color: 'text-violet-600',
     bg: 'bg-violet-500/10',
   },
   {
     icon: CalendarClock,
-    title: 'Central "Hoje"',
-    description: 'Use a página "Hoje" (no menu superior) para ver suas tarefas do dia: follow-ups agendados, leads novos e ações pendentes — tudo organizado por prioridade.',
+    title: 'Central "Hoje" e Follow-ups',
+    description: 'Use a página "Hoje" para ver suas prioridades: 4 ações rápidas (Novo Lead, Funil, WhatsApp, Ligar), sugestões inteligentes, follow-ups agendados e leads novos — tudo organizado por prioridade.',
     color: 'text-amber-600',
     bg: 'bg-amber-500/10',
   },
