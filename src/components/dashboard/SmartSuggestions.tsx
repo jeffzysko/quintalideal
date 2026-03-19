@@ -422,8 +422,8 @@ export function SmartSuggestions({ leads, followups, activities, basePath }: Sma
       {/* ── Lead list sheet ── */}
       <Sheet open={!!sheetLeadIds} onOpenChange={(open) => !open && setSheetLeadIds(null)}>
         <SheetContent side="bottom" className="max-h-[80vh] rounded-t-2xl pb-safe">
-          <SheetHeader className="pb-3">
-            <SheetTitle className="text-base font-bold">{sheetTitle}</SheetTitle>
+          <SheetHeader className="pb-3 pr-10">
+            <SheetTitle className="text-base font-bold text-left">{sheetTitle}</SheetTitle>
           </SheetHeader>
           <div className="overflow-y-auto space-y-2 pb-4">
             {sheetLeads.map((lead) => (
