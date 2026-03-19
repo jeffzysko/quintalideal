@@ -445,7 +445,7 @@ export default function HojePage() {
               {/* ═══ URGENT: Overdue Follow-ups ═══ */}
               {overdueFollowups.length > 0 && (
                 <Section icon={AlertTriangle} title="Atrasados" count={overdueFollowups.length} iconBg="bg-destructive/10" subtitle="Follow-ups que já passaram do prazo">
-                  <div className="space-y-2">
+                  <div className="space-y-2.5">
                     {overdueFollowups.map((f, i) => {
                       const parsed = parseFollowupType(f.note);
                       const TypeIcon = parsed.type ? FOLLOWUP_ICONS[parsed.type] || CalendarClock : CalendarClock;
