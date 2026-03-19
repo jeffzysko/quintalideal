@@ -193,7 +193,7 @@ function QuickStats({ stats }: { stats: { icon: typeof Users; label: string; val
           transition={{ delay: i * 0.05 }}
         >
           <Card className="card-premium hover:shadow-md transition-shadow">
-            <CardContent className="p-3 sm:p-4">
+            <CardContent className="p-4">
               <div className="flex items-start justify-between mb-2">
                 <div className={cn('w-9 h-9 rounded-xl flex items-center justify-center', stat.ringColor || 'bg-muted/60')}>
                   <stat.icon className={cn('w-4.5 h-4.5', stat.color)} />
