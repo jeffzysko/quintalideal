@@ -92,7 +92,7 @@ export default function AdminDashboard() {
     return () => clearTimeout(timer);
   }, [cidadeInput]);
 
-  useEffect(() => { setPage(1); }, [filterFranquia, filterStatus, filterModelo]);
+  useEffect(() => { setPage(1); }, [filterFranquia, filterStatus, filterModelo, filterTemperatura]);
 
   // ── Franchises ──
   const { data: franchises = [] } = useQuery({
