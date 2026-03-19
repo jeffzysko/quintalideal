@@ -21,8 +21,8 @@ export function UserAvatarMenu() {
 
   const go = (path: string) => {
     setOpen(false);
-    // Delay navigation slightly so the menu closes first
-    requestAnimationFrame(() => navigate(path));
+    // Small delay ensures the menu fully closes before navigation/lazy-load kicks in
+    setTimeout(() => navigate(path), 50);
   };
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
 
