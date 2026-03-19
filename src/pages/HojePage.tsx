@@ -704,7 +704,7 @@ export default function HojePage() {
               {/* ═══ UPCOMING FOLLOW-UPS ═══ */}
               {upcomingFollowups.length > 0 && (
                 <Section icon={Target} title="Próximos follow-ups" count={upcomingFollowups.length} subtitle="Agendamentos dos próximos dias" collapsible defaultOpen={false}>
-                  <div className="space-y-2">
+                  <div className="space-y-2.5">
                     {upcomingFollowups.map((f, i) => {
                       const parsed = parseFollowupType(f.note);
                       const TypeIcon = parsed.type ? FOLLOWUP_ICONS[parsed.type] || CalendarClock : CalendarClock;
