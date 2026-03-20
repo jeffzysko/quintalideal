@@ -42,6 +42,7 @@ export interface LeadRow {
   cidade: string | null;
   pontuacao_quintal: number | null;
   modelo_recomendado: string | null;
+  modelo_vendido: string | null;
   status_lead: string;
   created_at: string;
   franquia_id: string | null;
