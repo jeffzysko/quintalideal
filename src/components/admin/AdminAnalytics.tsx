@@ -7,6 +7,7 @@ import { BarChart, Bar, XAxis, YAxis } from 'recharts';
 import { Activity, TrendingDown, Zap, Smartphone, Monitor, Tablet, AlertCircle, RefreshCw, Loader2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { QuizDropoffAnalysis } from './QuizDropoffAnalysis';
 
 interface AnalyticsEvent {
   id: string;
@@ -251,6 +252,9 @@ export function AdminAnalytics({ franchiseMap }: AdminAnalyticsProps) {
           )}
         </CardContent>
       </Card>
+
+      {/* Quiz Dropoff Analysis */}
+      <QuizDropoffAnalysis events={filteredEvents} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {/* Question Analysis */}

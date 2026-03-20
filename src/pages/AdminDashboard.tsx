@@ -25,6 +25,7 @@ import { TimeRangeSelector, filterByTimeRange, type TimeRange } from '@/componen
 import { SectionHeader } from '@/components/dashboard/SectionHeader';
 import type { MetricCardProps } from '@/components/dashboard/MetricCard';
 import { InsightCards } from '@/components/dashboard/InsightCards';
+import { ExecutiveSummary } from '@/components/admin/ExecutiveSummary';
 import { OrganizationSwitcher } from '@/components/OrganizationSwitcher';
 import { useLeadsRealtime } from '@/hooks/useLeadsRealtime';
 
@@ -424,6 +425,16 @@ export default function AdminDashboard() {
             </div>
 
             <MetricGrid metrics={kpis} loading={loadingKpis} columns={6} />
+
+            {/* Executive Summary */}
+            {!loadingKpis && currentLeads.length > 0 && (
+              <ExecutiveSummary
+                currentLeads={currentLeads}
+                previousLeads={previousLeads}
+                franchiseCount={orgFilteredFranchises.length}
+                cityCount={cities}
+              />
+            )}
 
             {/* Insight Surfacing */}
             {!loadingKpis && currentLeads.length > 0 && (
