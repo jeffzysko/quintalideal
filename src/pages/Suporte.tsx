@@ -109,6 +109,7 @@ const guideSteps: GuideStep[] = [
       'Acesse a aba "Kanban" no seu painel para ver o funil de vendas.',
       'No desktop, arraste os cards entre as colunas para mudar o status (Novo → Contatado → Em Negociação → Vendido).',
       'No mobile, toque no card e use o drawer para alterar o status com descrições detalhadas de cada etapa.',
+      'Ao mover um lead para "Vendido", selecione o modelo vendido para alimentar as métricas de aderência (recomendado vs vendido).',
       'Você pode filtrar leads por temperatura, origem, cidade e período diretamente no Kanban.',
     ],
     tip: 'O Kanban é a forma mais visual e rápida de acompanhar seu funil!',
