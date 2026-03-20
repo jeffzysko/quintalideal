@@ -16,7 +16,6 @@ const PAYLOAD_EXAMPLE = `{
     "cidade": "Porto Alegre",
     "pontuacao_quintal": 78,
     "modelo_recomendado": "Atalaia",
-    "referred_by": null,
     "created_at": "2026-03-12T16:00:00.000Z"
   },
   "franquia": {
