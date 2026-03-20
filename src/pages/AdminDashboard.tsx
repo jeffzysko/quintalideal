@@ -40,6 +40,7 @@ const AdminCityManager = lazy(() => import('@/components/admin/AdminCityManager'
 const KanbanBoard = lazy(() => import('@/components/franchise/KanbanBoard').then(m => ({ default: m.KanbanBoard })));
 const AdminProfileDistribution = lazy(() => import('@/components/admin/AdminProfileDistribution').then(m => ({ default: m.AdminProfileDistribution })));
 const FranchiseDashboard = lazy(() => import('@/pages/FranchiseDashboard'));
+const PerformanceQI = lazy(() => import('@/components/admin/PerformanceQI').then(m => ({ default: m.PerformanceQI })));
 
 function TabFallback() {
   return (
@@ -59,10 +60,11 @@ export default function AdminDashboard() {
   // Live updates: invalidates queries when leads change in the DB
   useLeadsRealtime();
   const { signOut: _signOut, role } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'kanban' | 'analytics' | 'franchises' | 'cities' | 'users' | 'emails' | 'franchise-view'>(() => {
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'franchise-view'>(() => {
     const urlTab = new URLSearchParams(location.search).get('tab');
     if (urlTab === 'leads') return 'leads';
     if (urlTab === 'kanban') return 'kanban';
+    if (urlTab === 'performance-qi') return 'performance-qi';
     return 'overview';
   });
   const [viewFranchiseId, setViewFranchiseId] = useState<string>('');
@@ -315,6 +317,7 @@ export default function AdminDashboard() {
 
   const TABS = [
     { key: 'overview' as const, icon: BarChart3, label: 'Inteligência' },
+    { key: 'performance-qi' as const, icon: Target, label: 'Performance QI' },
     { key: 'analytics' as const, icon: Activity, label: 'Analytics' },
     { key: 'leads' as const, icon: Users, label: 'Leads' },
     { key: 'kanban' as const, icon: Kanban, label: 'Funil Geral' },
@@ -474,6 +477,12 @@ export default function AdminDashboard() {
         {activeTab === 'analytics' && (
           <Suspense fallback={<TabFallback />}>
             <AdminAnalytics franchiseMap={franchiseMap} role={role} />
+          </Suspense>
+        )}
+
+        {activeTab === 'performance-qi' && (
+          <Suspense fallback={<TabFallback />}>
+            <PerformanceQI franchiseMap={franchiseMap} franchises={franchises as any} />
           </Suspense>
         )}
 
