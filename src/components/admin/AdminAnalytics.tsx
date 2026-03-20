@@ -173,18 +173,7 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
       .map(([source, count]) => ({ source, count }));
   }, [filteredEvents]);
 
-  const modelStats = useMemo(() => {
-    const models: Record<string, number> = {};
-    filteredEvents
-      .filter(e => e.event_name === 'quiz_completed')
-      .forEach(e => {
-        const m = (e.metadata as Record<string, unknown>)?.modelo_recomendado as string;
-        if (m) models[m] = (models[m] || 0) + 1;
-      });
-    return Object.entries(models)
-      .sort(([, a], [, b]) => b - a)
-      .map(([model, count]) => ({ model, count }));
-  }, [filteredEvents]);
+  // modelStats removed — now exclusive to Performance QI tab
 
   const totalSessions = useMemo(() => new Set(filteredEvents.map(e => e.session_id)).size, [filteredEvents]);
 
