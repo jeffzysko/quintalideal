@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { BarChart, Bar, XAxis, YAxis, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Cell } from 'recharts';
 import {
   TrendingUp, TrendingDown, Target, Zap, MapPin, Users, Building2,
   Flame, ExternalLink, ArrowRight, Download, Loader2, BarChart3, CheckCircle2
