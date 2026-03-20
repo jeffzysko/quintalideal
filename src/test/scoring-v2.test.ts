@@ -7,6 +7,8 @@ import {
   rankModels,
   getFitLevel,
   recommendPoolsV2,
+  detectHotLead,
+  generateSalesScript,
   type QuizInputV2,
   type PoolModelData,
 } from "@/lib/scoring-v2";
@@ -235,5 +237,54 @@ describe('recommendPoolsV2', () => {
     // Navagio should be top or among alternatives
     const allNames = [result.primary_model.nome_modelo, ...result.alternatives.map(a => a.model.nome_modelo)];
     expect(allNames).toContain('Navagio');
+  });
+  it('retorna is_hot_lead e sales_script', () => {
+    const input: QuizInputV2 = { space_bucket: '5_7m', home_status: 'casa_propria', purchase_intent: '2026', usage_profile: 'familia_grande', budget_range: '18_30k', pool_preference: 'classica', objective_main: 'familia' };
+    const result = recommendPoolsV2(input, allMockModels);
+    expect(typeof result.is_hot_lead).toBe('boolean');
+    expect(typeof result.sales_script).toBe('string');
+    expect(result.sales_script.length).toBeGreaterThan(10);
+  });
+});
+
+// ═══════════════════════════════════════════
+// 7. detectHotLead
+// ═══════════════════════════════════════════
+
+describe('detectHotLead', () => {
+  it('hot quando intent=2026 + score alto + orçamento ok', () => {
+    const input: QuizInputV2 = { space_bucket: '5_7m', home_status: 'casa_propria', purchase_intent: '2026', usage_profile: 'familia_grande', budget_range: '18_30k', pool_preference: 'classica', objective_main: 'familia' };
+    expect(detectHotLead(input, 90)).toBe(true);
+  });
+
+  it('não hot quando intent=pesquisando', () => {
+    const input: QuizInputV2 = { space_bucket: '5_7m', home_status: 'casa_propria', purchase_intent: 'pesquisando', usage_profile: 'casal', budget_range: '18_30k', pool_preference: 'spa', objective_main: 'relaxar' };
+    expect(detectHotLead(input, 95)).toBe(false);
+  });
+
+  it('não hot quando score baixo', () => {
+    const input: QuizInputV2 = { space_bucket: 'ate_3m', home_status: 'planejando', purchase_intent: '2026', usage_profile: 'casal', budget_range: 'ate_18k', pool_preference: 'indeciso', objective_main: 'relaxar' };
+    expect(detectHotLead(input, 60)).toBe(false);
+  });
+});
+
+// ═══════════════════════════════════════════
+// 8. generateSalesScript
+// ═══════════════════════════════════════════
+
+describe('generateSalesScript', () => {
+  it('gera script com nome e modelo', () => {
+    const input: QuizInputV2 = { space_bucket: '5_7m', home_status: 'casa_propria', purchase_intent: '2026', usage_profile: 'familia_grande', budget_range: '18_30k', pool_preference: 'classica', objective_main: 'familia' };
+    const script = generateSalesScript('João Silva', input, 'Tradicional');
+    expect(script).toContain('João');
+    expect(script).toContain('Tradicional');
+    expect(script).toContain('família');
+  });
+
+  it('gera script em espanhol', () => {
+    const input: QuizInputV2 = { space_bucket: '5_7m', home_status: 'casa_propria', purchase_intent: '2026', usage_profile: 'amigos', budget_range: '18_30k', pool_preference: 'classica', objective_main: 'social' };
+    const script = generateSalesScript('Carlos', input, 'Cancún', 'es');
+    expect(script).toContain('Carlos');
+    expect(script).toContain('Cancún');
   });
 });
