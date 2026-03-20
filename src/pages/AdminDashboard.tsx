@@ -60,10 +60,11 @@ export default function AdminDashboard() {
   // Live updates: invalidates queries when leads change in the DB
   useLeadsRealtime();
   const { signOut: _signOut, role } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'kanban' | 'analytics' | 'franchises' | 'cities' | 'users' | 'emails' | 'franchise-view'>(() => {
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'franchise-view'>(() => {
     const urlTab = new URLSearchParams(location.search).get('tab');
     if (urlTab === 'leads') return 'leads';
     if (urlTab === 'kanban') return 'kanban';
+    if (urlTab === 'performance-qi') return 'performance-qi';
     return 'overview';
   });
   const [viewFranchiseId, setViewFranchiseId] = useState<string>('');
