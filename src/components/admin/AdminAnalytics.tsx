@@ -271,7 +271,7 @@ export function AdminAnalytics({ franchiseMap }: AdminAnalyticsProps) {
       </Card>
 
       {/* Quiz Dropoff Analysis */}
-      <QuizDropoffAnalysis events={filteredEvents} />
+      <QuizDropoffAnalysis events={filteredEvents} previousEvents={filterFranchise === 'all' ? previousPeriodEvents : previousPeriodEvents.filter(e => e.franchise_id === filterFranchise)} />
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {/* Question Analysis */}
