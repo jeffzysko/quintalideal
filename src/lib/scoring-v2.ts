@@ -65,11 +65,13 @@ export interface RecommendationResultV2 {
   primary_score: number;
   fit_level: FitLevel;
   reasoning: string;
+  closing_phrase: string;
   recommended_size: RecommendedSize;
   customer_profile: CustomerProfile;
   alternatives: PoolAlternativeV2[];
   upgrade_option: PoolAlternativeV2 | null;
   is_hot_lead: boolean;
+  is_weak_recommendation: boolean;
   sales_script: string;
   /** Legacy score for backward compat (0-100) */
   legacy_score: number;
