@@ -7,6 +7,8 @@ import {
   rankModels,
   getFitLevel,
   recommendPoolsV2,
+  detectHotLead,
+  generateSalesScript,
   type QuizInputV2,
   type PoolModelData,
 } from "@/lib/scoring-v2";
