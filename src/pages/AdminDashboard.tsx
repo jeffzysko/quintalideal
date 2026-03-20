@@ -491,7 +491,7 @@ export default function AdminDashboard() {
           </Suspense>
         )}
 
-        {activeTab === 'leads' && (
+        {activeTab === 'leads' && isSuperAdmin && (
           <>
             <AdminLeadFilters
               searchInput={searchInput} onSearchChange={setSearchInput}
@@ -520,6 +520,12 @@ export default function AdminDashboard() {
               />
             )}
           </>
+        )}
+
+        {activeTab === 'leads' && !isSuperAdmin && (
+          <Suspense fallback={<TabFallback />}>
+            <AdminLeadsReadOnly franchiseMap={franchiseMap} franchises={franchises} />
+          </Suspense>
         )}
 
         {activeTab === 'kanban' && (
