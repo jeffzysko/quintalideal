@@ -235,6 +235,7 @@ export default function LeadDetail() {
       .update({
         status_lead: status as any,
         observacoes,
+        modelo_vendido: status === 'vendido' && modeloVendido ? modeloVendido : null,
         respostas_questionario: Object.keys(updatedRespostas).length > 0 ? updatedRespostas : null,
       })
       .eq('id', lead.id);
