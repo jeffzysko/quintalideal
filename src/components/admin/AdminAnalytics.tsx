@@ -85,36 +85,7 @@ export function AdminAnalytics({ franchiseMap }: AdminAnalyticsProps) {
     });
   }, [filteredEvents]);
 
-  const franchiseFunnels = useMemo(() => {
-    if (!isSuperAdmin) return [];
-    // Single-pass: group events by franchise_id
-    const byFranchise = events.reduce((map, e) => {
-      if (!e.franchise_id) return map;
-      const arr = map.get(e.franchise_id);
-      if (arr) arr.push(e);
-      else map.set(e.franchise_id, [e]);
-      return map;
-    }, new Map<string, AnalyticsEvent[]>());
-
-    return Array.from(byFranchise.entries()).map(([fid, fEvents]) => {
-      const counts: Record<string, Set<string>> = {};
-      FUNNEL_STEPS.forEach(s => { counts[s.key] = new Set(); });
-      fEvents.forEach(e => { if (counts[e.event_name]) counts[e.event_name].add(e.session_id); });
-      const visits = counts['landing_page_viewed'].size;
-      const leads = counts['lead_created'].size;
-      const whatsapp = counts['whatsapp_clicked'].size;
-      const convRate = visits > 0 ? Math.round((leads / visits) * 100) : 0;
-      return {
-        id: fid,
-        name: franchiseMap[fid] || fid.slice(0, 8),
-        visits,
-        quizStarted: counts['quiz_started'].size,
-        leads,
-        whatsapp,
-        convRate,
-      };
-    }).sort((a, b) => b.visits - a.visits);
-  }, [events, isSuperAdmin, franchiseMap]);
+  // franchiseFunnels removed — now exclusive to Performance QI tab
 
   const questionStats = useMemo(() => {
     const questionEvents = filteredEvents.filter(e => e.event_name === 'quiz_question_answered');
