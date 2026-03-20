@@ -11,6 +11,8 @@ import { trackMetaEvent } from '@/components/MetaPixel';
 import { SITE_URL, SITE_DOMAIN } from '@/lib/constants';
 import { type Lang, t } from '@/lib/i18n';
 
+import { type FitLevel, getFitLevelLabel, getFitLevelEmoji } from '@/lib/scoring-v2';
+
 interface PoolSpecs {
   tamanho?: string;
   profundidade?: number;
@@ -22,12 +24,23 @@ interface PoolAlternativeView {
   name: string;
   image?: string;
   description?: string;
+  fitLevel?: FitLevel;
+  matchScore?: number;
   specs?: {
     tamanho?: string;
     profundidade?: number;
     possui_prainha?: boolean;
     possui_spa?: boolean;
   };
+}
+
+interface UpgradeOptionView {
+  name: string;
+  image?: string;
+  description?: string;
+  fitLevel?: FitLevel;
+  matchScore?: number;
+  recommendedSize?: string;
 }
 
 interface ActionButtonsProps {
@@ -43,6 +56,11 @@ interface ActionButtonsProps {
   refCode?: string;
   franchiseId?: string;
   alternatives?: PoolAlternativeView[];
+  fitLevel?: FitLevel;
+  matchScore?: number;
+  reasoning?: string;
+  customerProfile?: string;
+  upgradeOption?: UpgradeOptionView;
   lang?: Lang;
 }
 
