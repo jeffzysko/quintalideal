@@ -87,7 +87,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       });
   }, []);
 
-  const answerKeys = ['espaco', 'moradia', 'uso', 'intencao', 'preferencia', 'orcamento', 'objetivo', 'cidade'];
+  const answerKeys = ['espaco', 'moradia', 'uso', 'intencao', 'preferencia', 'orcamento', 'cidade'];
 
   const handleQuizAnswer = useCallback((value: string) => {
     const key = answerKeys[quizStep];

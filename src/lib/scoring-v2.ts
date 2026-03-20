@@ -527,6 +527,14 @@ export function generateReasoning(modelName: string, input: QuizInputV2, profile
   const profileLabel = PROFILE_LABELS[profile]?.[lang] || '';
   const objective = OBJECTIVE_LABELS[input.objective_main]?.[lang] || '';
 
+  // Special reasoning for "valorizar"
+  if (input.objective_main === 'valorizar') {
+    if (lang === 'es') {
+      return `Elegimos la ${modelName} porque, además de adaptarse a tu espacio de ${space}, entrega un visual sofisticado y valoriza mucho el ambiente de tu casa. Tu interés por ${pref} y tu perfil de ${profileLabel} refuerzan esta elección.`;
+    }
+    return `Escolhemos a ${modelName} porque, além de se encaixar no seu espaço de ${space}, ela entrega um visual sofisticado e valoriza muito o ambiente da sua casa. Seu interesse por ${pref} e seu perfil de ${profileLabel} reforçam essa escolha.`;
+  }
+
   if (lang === 'es') {
     return `Elegimos la ${modelName} porque tu espacio de ${space} se adapta muy bien a este modelo, demostraste interés por ${pref} y tu perfil indica ${profileLabel}. Es una elección muy alineada con tu objetivo de ${objective}.`;
   }
