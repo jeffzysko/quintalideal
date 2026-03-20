@@ -40,6 +40,7 @@ const AdminCityManager = lazy(() => import('@/components/admin/AdminCityManager'
 const KanbanBoard = lazy(() => import('@/components/franchise/KanbanBoard').then(m => ({ default: m.KanbanBoard })));
 const AdminProfileDistribution = lazy(() => import('@/components/admin/AdminProfileDistribution').then(m => ({ default: m.AdminProfileDistribution })));
 const FranchiseDashboard = lazy(() => import('@/pages/FranchiseDashboard'));
+const PerformanceQI = lazy(() => import('@/components/admin/PerformanceQI').then(m => ({ default: m.PerformanceQI })));
 
 function TabFallback() {
   return (
