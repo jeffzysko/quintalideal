@@ -38,6 +38,7 @@ interface Lead {
   cidade: string | null;
   pontuacao_quintal: number | null;
   modelo_recomendado: string | null;
+  modelo_vendido: string | null;
   respostas_questionario: Record<string, string> | null;
   foto1: string | null;
   foto2: string | null;
