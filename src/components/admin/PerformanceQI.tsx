@@ -12,7 +12,7 @@ import {
   Flame, ExternalLink, ArrowRight, Download, Loader2, BarChart3, CheckCircle2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { STATUS_LABELS, type LeadRow, type Franchise } from '@/lib/lead-constants';
+import { type LeadRow, type Franchise } from '@/lib/lead-constants';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { normalizeQuizToV2, detectCustomerProfile, type QuizInputV2 } from '@/lib/scoring-v2';
