@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent } from '@/components/ui/card';
@@ -129,8 +129,6 @@ export default function LeadDetail() {
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
-  const [lead, setLead] = useState<Lead | null>(null);
-  const [loading, setLoading] = useState(true);
   const [status, setStatus] = useState('');
   const [observacoes, setObservacoes] = useState('');
   const [tempOverride, setTempOverride] = useState<LeadTemperature | ''>('');
@@ -138,38 +136,47 @@ export default function LeadDetail() {
   const [activeTab, setActiveTab] = useState('gerenciar');
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
-  const [lastActivityAt, setLastActivityAt] = useState<string | null>(null);
 
+  // Both queries run in parallel — no sequential waterfall
+  const { data: lead, isLoading: loading } = useQuery({
+    queryKey: ['lead-detail', id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('leads')
+        .select('id, nome, telefone, email, cidade, pontuacao_quintal, modelo_recomendado, respostas_questionario, foto1, foto2, foto3, foto4, status_lead, observacoes, created_at, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, franquia_id, lead_origin')
+        .eq('id', id!)
+        .maybeSingle();
+      return data ? (data as Lead) : null;
+    },
+    enabled: !!id,
+    staleTime: 2 * 60 * 1000,
+  });
 
+  const { data: lastActivityAt = null } = useQuery({
+    queryKey: ['lead-last-activity', id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('lead_activities')
+        .select('created_at')
+        .eq('lead_id', id!)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return data?.created_at ?? null;
+    },
+    enabled: !!id,
+    staleTime: 2 * 60 * 1000,
+  });
+
+  // Sync editable form fields when the lead first loads or when ID changes
   useEffect(() => {
-    if (id) {
-      loadLead();
-      loadLastActivity();
-    }
-  }, [id]);
-
-  const loadLead = async () => {
-    const { data } = await supabase.from('leads').select('id, nome, telefone, email, cidade, pontuacao_quintal, modelo_recomendado, respostas_questionario, foto1, foto2, foto3, foto4, status_lead, observacoes, created_at, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, franquia_id, lead_origin').eq('id', id!).maybeSingle();
-    if (data) {
-      setLead(data as Lead);
-      setStatus(data.status_lead);
-      setObservacoes(data.observacoes || '');
-      const respostas = data.respostas_questionario as Record<string, string> | null;
+    if (lead) {
+      setStatus(lead.status_lead);
+      setObservacoes(lead.observacoes || '');
+      const respostas = lead.respostas_questionario as Record<string, string> | null;
       setTempOverride((respostas?.temperatura_manual as LeadTemperature) || '');
     }
-    setLoading(false);
-  };
-
-  const loadLastActivity = async () => {
-    const { data } = await supabase
-      .from('lead_activities')
-      .select('created_at')
-      .eq('lead_id', id!)
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-    if (data) setLastActivityAt(data.created_at);
-  };
+  }, [lead?.id]);
 
   const save = async () => {
     if (!lead) return;
@@ -222,9 +229,11 @@ export default function LeadDetail() {
     setSaving(false);
     if (!error) {
       toast.success('Alterações salvas com sucesso!');
-      setLead({ ...lead, status_lead: status, observacoes, respostas_questionario: Object.keys(updatedRespostas).length > 0 ? updatedRespostas : null });
+      queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
       queryClient.invalidateQueries({ queryKey: ['franchise-leads-all'] });
       queryClient.invalidateQueries({ queryKey: ['franchise-leads-table'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-leads-all'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-leads-table'] });
     } else {
       toast.error('Erro ao salvar.');
     }

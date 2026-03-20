@@ -56,7 +56,7 @@ export const AdminCityRanking = memo(function AdminCityRanking({ leads }: AdminC
                 key={city.cidade}
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.03 }}
+                transition={{ delay: Math.min(i * 0.03, 0.15) }}
                 className="flex items-center gap-3 py-2.5 px-3 rounded-xl hover:bg-muted/40 transition-colors group"
               >
                 <MedalIcon position={i} />

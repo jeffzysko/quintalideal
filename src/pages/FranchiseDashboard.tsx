@@ -106,7 +106,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       twelveMonthsAgo.setFullYear(twelveMonthsAgo.getFullYear() - 1);
       const { data, error } = await supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, respostas_questionario, lead_origin')
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin')
         .eq('franquia_id', franchiseId!)
         .gte('created_at', twelveMonthsAgo.toISOString())
         .order('created_at', { ascending: false })
@@ -126,7 +126,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
       const { data } = await supabase
         .from('lead_activities')
-        .select('lead_id, activity_type, created_at, content')
+        .select('lead_id, activity_type, created_at')
         .eq('activity_type', 'status_change')
         .gte('created_at', sixMonthsAgo.toISOString())
         .order('created_at', { ascending: true })
@@ -146,7 +146,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       const to = from + PAGE_SIZE - 1;
       const { data, count, error } = await supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, respostas_questionario, lead_origin', { count: 'exact' })
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin', { count: 'exact' })
         .eq('franquia_id', franchiseId!)
         .order('created_at', { ascending: false })
         .range(from, to);
