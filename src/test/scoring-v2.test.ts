@@ -227,7 +227,7 @@ describe('recommendPoolsV2', () => {
   it('valorizar prioriza modelos premium', () => {
     const input: QuizInputV2 = { space_bucket: '3_5m', home_status: 'casa_propria', purchase_intent: '2026', usage_profile: 'premium', budget_range: '30_50k', pool_preference: 'classica', objective_main: 'valorizar' };
     const result = recommendPoolsV2(input, allMockModels);
-    const premiumModels = ['Atalaia', 'Nassau', 'Bonaire', 'Navagio', 'Tradicional'];
+    const premiumModels = ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'];
     expect(premiumModels).toContain(result.primary_model.nome_modelo);
   });
 
