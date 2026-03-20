@@ -246,7 +246,8 @@ export default function PoliticaPrivacidade() {
             <p>A plataforma utiliza as seguintes tecnologias:</p>
             <ul className="list-disc pl-5 space-y-1">
               <li><strong className="text-foreground">Cookies de sessão:</strong> para manter o estado da navegação durante o quiz;</li>
-              <li><strong className="text-foreground">Armazenamento local (sessionStorage):</strong> para identificar sessões anônimas de analytics;</li>
+              <li><strong className="text-foreground">Armazenamento local (sessionStorage/localStorage):</strong> para identificar sessões anônimas de analytics e armazenar preferências de notificação;</li>
+              <li><strong className="text-foreground">Service Worker:</strong> para funcionalidades offline (PWA) e recebimento de notificações push em segundo plano;</li>
               <li><strong className="text-foreground">Meta Pixel (opcional):</strong> quando configurado pela franquia, coleta dados anônimos de conversão para campanhas de marketing digital;</li>
               <li><strong className="text-foreground">Parâmetros UTM:</strong> para rastrear a origem de tráfego de campanhas.</li>
             </ul>

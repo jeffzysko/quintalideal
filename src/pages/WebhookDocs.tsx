@@ -483,7 +483,7 @@ export default function WebhookDocs() {
               },
               {
                 q: 'O que acontece se meu servidor estiver fora do ar?',
-                a: 'O lead é salvo normalmente no painel do Quintal Ideal. O webhook falha silenciosamente — sem retry automático. Recomendamos monitorar a disponibilidade do seu endpoint.',
+                a: 'O lead é salvo normalmente no painel do Quintal Ideal. O sistema faz até 3 tentativas automáticas com backoff (0s, 2s, 5s). Se todas falharem, o franqueado recebe um e-mail de alerta automático. Recomendamos monitorar a disponibilidade do seu endpoint.',
               },
               {
                 q: 'Como testar sem um CRM?',
