@@ -480,6 +480,12 @@ export default function AdminDashboard() {
           </Suspense>
         )}
 
+        {activeTab === 'performance-qi' && (
+          <Suspense fallback={<TabFallback />}>
+            <PerformanceQI franchiseMap={franchiseMap} franchises={franchises as any} />
+          </Suspense>
+        )}
+
         {activeTab === 'leads' && (
           <>
             <AdminLeadFilters
