@@ -433,6 +433,7 @@ export default function AdminDashboard() {
                 previousLeads={previousLeads}
                 franchiseCount={orgFilteredFranchises.length}
                 cityCount={cities}
+                franchises={orgFilteredFranchises as any}
               />
             )}
 
