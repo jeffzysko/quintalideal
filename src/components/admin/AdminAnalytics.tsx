@@ -351,72 +351,7 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
         </Card>
       </div>
 
-      {/* Per-franchise funnel comparison (super_admin only) */}
-      {isSuperAdmin && franchiseFunnels.length > 0 && (
-        <Card className="card-premium">
-          <CardHeader className="px-3 sm:px-6">
-            <CardTitle className="text-sm font-bold flex items-center gap-2">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg icon-bg-blue flex items-center justify-center">
-                <Building2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
-              </div>
-              Funil por Franquia
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-0 sm:px-6">
-            {/* Mobile: card layout */}
-            <div className="block sm:hidden space-y-3 px-3">
-              {franchiseFunnels.map(f => (
-                <div key={f.id} className="p-3 rounded-xl bg-muted/30 space-y-1.5">
-                  <p className="text-sm font-semibold text-foreground">{f.name}</p>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div><span className="text-muted-foreground">Visitas:</span> <span className="font-bold">{f.visits}</span></div>
-                    <div><span className="text-muted-foreground">Quiz:</span> <span className="font-bold">{f.quizStarted}</span></div>
-                    <div><span className="text-muted-foreground">Leads:</span> <span className="font-bold">{f.leads}</span></div>
-                    <div><span className="text-muted-foreground">WhatsApp:</span> <span className="font-bold">{f.whatsapp}</span></div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-muted-foreground">Conversão</span>
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${f.convRate >= 10 ? 'bg-emerald-500/10 text-emerald-600' : f.convRate >= 5 ? 'bg-amber-500/10 text-amber-600' : 'bg-muted text-muted-foreground'}`}>
-                      {f.convRate}%
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-            {/* Desktop: table layout */}
-            <div className="hidden sm:block overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border/50">
-                    <th className="text-left py-2 px-2 text-xs font-semibold text-muted-foreground">Franquia</th>
-                    <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">Visitas</th>
-                    <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">Quiz</th>
-                    <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">Leads</th>
-                    <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">WhatsApp</th>
-                    <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">Conversão</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {franchiseFunnels.map(f => (
-                    <tr key={f.id} className="border-b border-border/20 hover:bg-muted/30 transition-colors">
-                      <td className="py-2.5 px-2 font-medium text-foreground">{f.name}</td>
-                      <td className="py-2.5 px-2 text-center text-muted-foreground">{f.visits}</td>
-                      <td className="py-2.5 px-2 text-center text-muted-foreground">{f.quizStarted}</td>
-                      <td className="py-2.5 px-2 text-center font-semibold text-foreground">{f.leads}</td>
-                      <td className="py-2.5 px-2 text-center text-muted-foreground">{f.whatsapp}</td>
-                      <td className="py-2.5 px-2 text-center">
-                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${f.convRate >= 10 ? 'bg-emerald-500/10 text-emerald-600' : f.convRate >= 5 ? 'bg-amber-500/10 text-amber-600' : 'bg-muted text-muted-foreground'}`}>
-                          {f.convRate}%
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {/* Franchise funnel moved to Performance QI tab */}
     </div>
   );
 }
