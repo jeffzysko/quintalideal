@@ -303,7 +303,7 @@ Deno.serve(async (req) => {
 
       // Fire webhook for assigned franchise
       fireWebhook(supabase, assignedFranchiseId, {
-        nome, telefone, email, cidade, pontuacaoQuintal, modeloRecomendado, referredBy,
+        nome, telefone, email, cidade, pontuacaoQuintal, modeloRecomendado,
       }).catch((err) => console.error("Webhook error:", err));
     }
 
