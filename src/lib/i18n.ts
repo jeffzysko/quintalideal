@@ -109,10 +109,8 @@ const translations = {
   exp_step_5_msg: { pt: 'O que você gostaria na sua piscina?', es: '¿Qué te gustaría en tu piscina?' },
   exp_step_6_title: { pt: 'Orçamento', es: 'Presupuesto' },
   exp_step_6_msg: { pt: 'Qual o investimento que você imagina?', es: '¿Cuál es la inversión que imaginas?' },
-  exp_step_7_title: { pt: 'Objetivo', es: 'Objetivo' },
-  exp_step_7_msg: { pt: 'O que mais importa para você?', es: '¿Qué es lo más importante?' },
-  exp_step_8_title: { pt: 'Localização', es: 'Ubicación' },
-  exp_step_8_msg: { pt: 'Onde fica seu quintal?', es: '¿Dónde está tu patio?' },
+  exp_step_7_title: { pt: 'Localização', es: 'Ubicación' },
+  exp_step_7_msg: { pt: 'Onde fica seu quintal?', es: '¿Dónde está tu patio?' },
 
   // ProcessingScreen
   proc_title: { pt: 'Calculando o Índice do seu Quintal…', es: 'Calculando el Índice de tu Patio…' },
