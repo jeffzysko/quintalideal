@@ -234,10 +234,10 @@ function scorePreference(model: PoolModelData, input: QuizInputV2): number {
 // ── NEW: Objective Score (weight 12) ──
 
 const OBJECTIVE_AFFINITY: Record<QuizInputV2['objective_main'], string[]> = {
-  'valorizar': ['Atalaia', 'Nassau', 'Bonaire', 'Navagio', 'Tradicional'],
+  'valorizar': ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'],
   'familia': ['Tradicional', 'Bonaire', 'Tropical', 'Tortuga', 'Cancún'],
   'social': ['Cancún', 'Tropical', 'Atalaia', 'Tradicional', 'Tortuga'],
-  'relaxar': ['Navagio', 'Nassau', 'Italiana', 'Tradicional', 'Bonaire'],
+  'relaxar': ['Navagio', 'Italiana', 'Tradicional', 'Bonaire'],
 };
 
 function scoreObjective(model: PoolModelData, input: QuizInputV2): number {
