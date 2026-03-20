@@ -144,7 +144,8 @@ const guideSteps: GuideStep[] = [
     title: 'Entenda a pontuação do quintal',
     subtitle: 'Cada lead recebe uma pontuação que indica o potencial do quintal para piscina.',
     details: [
-      'A pontuação é calculada com base nas respostas do questionário (espaço, terreno, uso, etc.).',
+      'A pontuação é calculada pelo motor de recomendação V2 com base nas respostas do questionário: espaço disponível, tipo de moradia, uso pretendido, intenção de compra, preferência de modelo e orçamento.',
+      'O sistema identifica automaticamente o perfil do lead (Relaxador, Família, Social, Premium ou Compacto) e recomenda o modelo mais adequado com um score de match.',
       'Na tabela de leads, o score é mostrado como uma barra colorida: verde (ótimo), amarelo (bom) ou vermelho (baixo).',
       'Use a pontuação para priorizar seus contatos e focar nos melhores leads.',
     ],
