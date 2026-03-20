@@ -253,6 +253,9 @@ export function AdminAnalytics({ franchiseMap }: AdminAnalyticsProps) {
         </CardContent>
       </Card>
 
+      {/* Quiz Dropoff Analysis */}
+      <QuizDropoffAnalysis events={filteredEvents} />
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {/* Question Analysis */}
         <Card className="card-premium">
