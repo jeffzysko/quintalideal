@@ -1,9 +1,10 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useState, useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis } from 'recharts';
-import { Activity, TrendingDown, Zap, Smartphone, Monitor, Tablet, AlertCircle, RefreshCw, Building2 } from 'lucide-react';
+import { Activity, TrendingDown, Zap, Smartphone, Monitor, Tablet, AlertCircle, RefreshCw, Building2, Loader2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
 
@@ -39,39 +40,26 @@ interface AdminAnalyticsProps {
 }
 
 export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
-  const [events, setEvents] = useState<AnalyticsEvent[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [periodDays, setPeriodDays] = useState('30');
   const [filterFranchise, setFilterFranchise] = useState('all');
   const isSuperAdmin = role === 'super_admin';
 
-  useEffect(() => {
-    loadEvents();
-  }, [periodDays]);
-
-  const loadEvents = async () => {
-    setLoading(true);
-    setError(null);
-    const since = new Date();
-    since.setDate(since.getDate() - parseInt(periodDays));
-    
-    try {
+  const { data: events = [], isLoading: loading, isError, refetch } = useQuery({
+    queryKey: ['analytics-events', periodDays],
+    queryFn: async () => {
+      const since = new Date();
+      since.setDate(since.getDate() - parseInt(periodDays));
       const { data, error: queryError } = await supabase
         .from('analytics_events')
         .select('id, session_id, event_name, franchise_id, city, device_type, utm_source, utm_medium, utm_campaign, metadata, created_at')
         .gte('created_at', since.toISOString())
         .order('created_at', { ascending: false })
-        .limit(10000);
-      
+        .limit(5000);
       if (queryError) throw queryError;
-      setEvents((data || []) as AnalyticsEvent[]);
-    } catch (_err) {
-      setError('Não foi possível carregar analytics.');
-    } finally {
-      setLoading(false);
-    }
-  };
+      return (data || []) as AnalyticsEvent[];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
   const filteredEvents = useMemo(() => {
     if (filterFranchise === 'all') return events;
@@ -100,9 +88,16 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
 
   const franchiseFunnels = useMemo(() => {
     if (!isSuperAdmin) return [];
-    const franchiseIds = [...new Set(events.filter(e => e.franchise_id).map(e => e.franchise_id!))];
-    return franchiseIds.map(fid => {
-      const fEvents = events.filter(e => e.franchise_id === fid);
+    // Single-pass: group events by franchise_id
+    const byFranchise = events.reduce((map, e) => {
+      if (!e.franchise_id) return map;
+      const arr = map.get(e.franchise_id);
+      if (arr) arr.push(e);
+      else map.set(e.franchise_id, [e]);
+      return map;
+    }, new Map<string, AnalyticsEvent[]>());
+
+    return Array.from(byFranchise.entries()).map(([fid, fEvents]) => {
       const counts: Record<string, Set<string>> = {};
       FUNNEL_STEPS.forEach(s => { counts[s.key] = new Set(); });
       fEvents.forEach(e => { if (counts[e.event_name]) counts[e.event_name].add(e.session_id); });
@@ -202,17 +197,17 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
   if (loading) {
     return (
       <div className="flex justify-center py-12">
-        <div className="animate-spin w-6 h-6 border-2 border-primary border-t-transparent rounded-full" />
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
       </div>
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="flex flex-col items-center justify-center py-16 gap-4">
         <AlertCircle className="w-10 h-10 text-destructive" />
-        <p className="text-muted-foreground text-sm">{error}</p>
-        <Button variant="outline" size="sm" onClick={loadEvents} className="gap-2 rounded-xl">
+        <p className="text-muted-foreground text-sm">Não foi possível carregar analytics.</p>
+        <Button variant="outline" size="sm" onClick={() => refetch()} className="gap-2 rounded-xl">
           <RefreshCw className="w-4 h-4" /> Tentar novamente
         </Button>
       </div>

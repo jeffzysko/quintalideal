@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
-import { classifyLead } from '@/lib/leadScoring';
 import { useQuery, keepPreviousData } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
@@ -103,54 +102,54 @@ export default function AdminDashboard() {
       if (error) throw error;
       return data || [];
     },
+    staleTime: 10 * 60 * 1000,
   });
 
-  // ── Lead activities ──
+  // ── Lead activities (limited to last 6 months, max 2000) ──
   const { data: leadActivities = [] } = useQuery({
     queryKey: ['lead-activities-all'],
     queryFn: async () => {
+      const sixMonthsAgo = new Date();
+      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
       const { data, error } = await supabase
         .from('lead_activities')
         .select('lead_id, activity_type, created_at')
         .eq('activity_type', 'status_change')
-        .order('created_at', { ascending: true });
+        .gte('created_at', sixMonthsAgo.toISOString())
+        .order('created_at', { ascending: true })
+        .limit(2000);
       if (error) throw error;
       return data || [];
     },
+    staleTime: 5 * 60 * 1000,
   });
 
-  // ── All leads ──
+  // ── All leads (last 12 months — bounded, replaces unlimited waterfall) ──
   const { data: allLeads = [], isLoading: loadingKpis } = useQuery({
     queryKey: ['admin-leads-all'],
     queryFn: async () => {
-      const PAGE = 1000;
-      let all: LeadRow[] = [];
-      let from = 0;
-      let hasMore = true;
-      while (hasMore) {
-        const { data, error } = await supabase
-          .from('leads')
-          .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, updated_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, respostas_questionario, lead_origin')
-          .order('created_at', { ascending: false })
-          .range(from, from + PAGE - 1);
-        if (error) throw error;
-        all = all.concat((data || []) as LeadRow[]);
-        hasMore = (data?.length || 0) === PAGE;
-        from += PAGE;
-      }
-      return all;
+      const twelveMonthsAgo = new Date();
+      twelveMonthsAgo.setFullYear(twelveMonthsAgo.getFullYear() - 1);
+      const { data, error } = await supabase
+        .from('leads')
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, updated_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, respostas_questionario, lead_origin')
+        .gte('created_at', twelveMonthsAgo.toISOString())
+        .order('created_at', { ascending: false })
+        .limit(5000);
+      if (error) throw error;
+      return (data || []) as LeadRow[];
     },
+    staleTime: 3 * 60 * 1000,
   });
 
   // ── Paginated leads for table ──
   const { data: paginatedData, isLoading: loadingTable } = useQuery({
     queryKey: ['admin-leads-table', page, search, filterFranquia, filterStatus, filterModelo, filterCidade, filterTemperatura],
     placeholderData: keepPreviousData,
+    staleTime: 60 * 1000,
     queryFn: async () => {
-      // When temperature filter is active, fetch more to compensate for client-side filtering
-      const fetchSize = filterTemperatura !== 'all' ? PAGE_SIZE * 4 : PAGE_SIZE;
-      const from = filterTemperatura !== 'all' ? 0 : (page - 1) * PAGE_SIZE;
-      const to = filterTemperatura !== 'all' ? fetchSize - 1 : from + PAGE_SIZE - 1;
+      const from = (page - 1) * PAGE_SIZE;
+      const to = from + PAGE_SIZE - 1;
 
       let query = supabase
         .from('leads')
@@ -161,24 +160,13 @@ export default function AdminDashboard() {
       if (filterModelo !== 'all') query = query.eq('modelo_recomendado', filterModelo);
       if (filterCidade) query = query.ilike('cidade', `%${filterCidade}%`);
       if (search) query = query.ilike('nome', `%${search}%`);
+      // Server-side temperature filter using the computed column
+      if (filterTemperatura !== 'all') query = query.eq('temperatura', filterTemperatura);
 
       const { data, count, error } = await query.order('created_at', { ascending: false }).range(from, to);
       if (error) throw error;
 
-      let filteredLeads = (data || []) as (LeadRow & { respostas_questionario?: Record<string, string> | null })[];
-
-      // Client-side temperature filter
-      if (filterTemperatura !== 'all') {
-        filteredLeads = filteredLeads.filter(l => {
-          const temp = classifyLead(l.respostas_questionario || null, l.pontuacao_quintal);
-          return temp.temperature === filterTemperatura;
-        });
-        const pageStart = (page - 1) * PAGE_SIZE;
-        const pageEnd = pageStart + PAGE_SIZE;
-        return { leads: filteredLeads.slice(pageStart, pageEnd) as LeadRow[], total: filteredLeads.length };
-      }
-
-      return { leads: filteredLeads as LeadRow[], total: count || 0 };
+      return { leads: (data || []) as LeadRow[], total: count || 0 };
     },
   });
 

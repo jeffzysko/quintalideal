@@ -94,43 +94,43 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
     enabled: !!franchiseId,
   });
 
-  // ── All leads ──
+  // ── All leads (bounded to last 12 months, replaces unlimited waterfall) ──
   const { data: allLeads = [], isLoading: loadingKpis } = useQuery({
     queryKey: ['franchise-leads-all', franchiseId],
     queryFn: async () => {
-      const PAGE = 1000;
-      let all: (LeadRow & { respostas_questionario?: Record<string, string> | null })[] = [];
-      let from = 0;
-      let hasMore = true;
-      while (hasMore) {
-        const { data, error } = await supabase
-          .from('leads')
-          .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, respostas_questionario, lead_origin')
-          .eq('franquia_id', franchiseId!)
-          .order('created_at', { ascending: false })
-          .range(from, from + PAGE - 1);
-        if (error) throw error;
-        all = all.concat((data || []) as any[]);
-        hasMore = (data?.length || 0) === PAGE;
-        from += PAGE;
-      }
-      return all;
+      const twelveMonthsAgo = new Date();
+      twelveMonthsAgo.setFullYear(twelveMonthsAgo.getFullYear() - 1);
+      const { data, error } = await supabase
+        .from('leads')
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, respostas_questionario, lead_origin')
+        .eq('franquia_id', franchiseId!)
+        .gte('created_at', twelveMonthsAgo.toISOString())
+        .order('created_at', { ascending: false })
+        .limit(3000);
+      if (error) throw error;
+      return (data || []) as (LeadRow & { respostas_questionario?: Record<string, string> | null })[];
     },
     enabled: !!franchiseId,
+    staleTime: 3 * 60 * 1000,
   });
 
-  // ── Lead activities for SLA ──
+  // ── Lead activities for SLA (filtered by franchise leads, last 6 months) ──
   const { data: leadActivities = [] } = useQuery({
     queryKey: ['franchise-lead-activities', franchiseId],
     queryFn: async () => {
+      const sixMonthsAgo = new Date();
+      sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
       const { data } = await supabase
         .from('lead_activities')
         .select('lead_id, activity_type, created_at, content')
         .eq('activity_type', 'status_change')
-        .order('created_at', { ascending: true });
+        .gte('created_at', sixMonthsAgo.toISOString())
+        .order('created_at', { ascending: true })
+        .limit(1000);
       return (data || []) as { lead_id: string; activity_type: string; created_at: string; content: string | null }[];
     },
     enabled: !!franchiseId,
+    staleTime: 5 * 60 * 1000,
   });
 
   // ── Paginated leads for table ──
