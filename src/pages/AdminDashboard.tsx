@@ -322,8 +322,8 @@ export default function AdminDashboard() {
     { key: 'overview' as const, icon: BarChart3, label: 'Inteligência' },
     { key: 'performance-qi' as const, icon: Target, label: 'Performance QI' },
     { key: 'analytics' as const, icon: Activity, label: 'Analytics' },
+    { key: 'leads' as const, icon: Users, label: 'Leads' },
     ...(isSuperAdmin ? [
-      { key: 'leads' as const, icon: Users, label: 'Leads' },
       { key: 'kanban' as const, icon: Kanban, label: 'Funil Geral' },
     ] : []),
     { key: 'franchises' as const, icon: Building2, label: 'Franquias' },
