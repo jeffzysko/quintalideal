@@ -10,6 +10,7 @@ interface AnalyticsEvent {
 
 interface Props {
   events: AnalyticsEvent[];
+  previousEvents?: AnalyticsEvent[];
 }
 
 export function QuizDropoffAnalysis({ events }: Props) {
