@@ -109,7 +109,7 @@ export function initWebVitals() {
           reportMetric({ name: 'INP', value: maxDuration, rating: rate('INP', maxDuration) });
         }
       }
-    }).observe({ type: 'event', durationThreshold: 16, buffered: true });
+    }).observe({ type: 'event', buffered: true } as PerformanceObserverInit);
   } catch {}
 
   // TTFB — Time to First Byte

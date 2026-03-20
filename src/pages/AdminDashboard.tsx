@@ -166,7 +166,7 @@ export default function AdminDashboard() {
       if (filterCidade) query = query.ilike('cidade', `%${filterCidade}%`);
       if (search) query = query.ilike('nome', `%${search}%`);
       // Server-side temperature filter using the computed column
-      if (filterTemperatura !== 'all') query = query.eq('temperatura', filterTemperatura);
+      if (filterTemperatura !== 'all') query = query.eq('temperatura' as any, filterTemperatura);
 
       const { data, count, error } = await query.order('created_at', { ascending: false }).range(from, to);
       if (error) throw error;

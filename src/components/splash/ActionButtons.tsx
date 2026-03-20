@@ -64,7 +64,7 @@ interface ActionButtonsProps {
   lang?: Lang;
 }
 
-export function ActionButtons({ score, poolName, poolDescription, poolSpecs, recommendedSize, whatsappNumber, assignedFranchiseName, assignedCidadeBase, leadName, refCode: _refCode, franchiseId, alternatives = [], lang = 'pt' }: ActionButtonsProps) {
+export function ActionButtons({ score, poolName, poolDescription, poolSpecs, recommendedSize, whatsappNumber, assignedFranchiseName, assignedCidadeBase, leadName, refCode: _refCode, franchiseId, alternatives = [], fitLevel, matchScore, reasoning, customerProfile, upgradeOption, lang = 'pt' }: ActionButtonsProps) {
   const ranking = getRankingGaucho(score);
   const classification = getYardClassification(score);
   const socialComparison = getSocialComparison(score);
