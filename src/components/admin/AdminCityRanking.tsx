@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPin, TrendingUp, Trophy } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -20,7 +20,7 @@ function MedalIcon({ position }: { position: number }) {
   return <span className="text-xs font-bold text-muted-foreground w-4 text-center">{position + 1}º</span>;
 }
 
-export function AdminCityRanking({ leads }: AdminCityRankingProps) {
+export const AdminCityRanking = memo(function AdminCityRanking({ leads }: AdminCityRankingProps) {
   const cityData = useMemo((): CityMetric[] => {
     const map: Record<string, { count: number; total: number }> = {};
     leads.forEach(l => {
@@ -82,4 +82,4 @@ export function AdminCityRanking({ leads }: AdminCityRankingProps) {
       </CardContent>
     </Card>
   );
-}
+});

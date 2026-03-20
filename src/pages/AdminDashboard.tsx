@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -26,6 +26,7 @@ import { SectionHeader } from '@/components/dashboard/SectionHeader';
 import type { MetricCardProps } from '@/components/dashboard/MetricCard';
 import { InsightCards } from '@/components/dashboard/InsightCards';
 import { OrganizationSwitcher } from '@/components/OrganizationSwitcher';
+import { useLeadsRealtime } from '@/hooks/useLeadsRealtime';
 
 // Lazy load heavy tab components
 const AdminCityRanking = lazy(() => import('@/components/admin/AdminCityRanking').then(m => ({ default: m.AdminCityRanking })));
@@ -52,6 +53,10 @@ const PAGE_SIZE = 25;
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
+  const queryClient = useQueryClient();
+
+  // Live updates: invalidates queries when leads change in the DB
+  useLeadsRealtime();
   const { signOut: _signOut, role } = useAuth();
   const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'kanban' | 'analytics' | 'franchises' | 'cities' | 'users' | 'emails' | 'franchise-view'>(() => {
     const urlTab = new URLSearchParams(location.search).get('tab');
@@ -172,6 +177,33 @@ export default function AdminDashboard() {
 
   const leads = paginatedData?.leads || [];
   const totalCount = paginatedData?.total || 0;
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+
+  // Prefetch next page so pagination feels instant
+  useEffect(() => {
+    if (page >= totalPages) return;
+    const nextPage = page + 1;
+    queryClient.prefetchQuery({
+      queryKey: ['admin-leads-table', nextPage, search, filterFranquia, filterStatus, filterModelo, filterCidade, filterTemperatura],
+      staleTime: 60 * 1000,
+      queryFn: async () => {
+        const from = (nextPage - 1) * PAGE_SIZE;
+        const to = from + PAGE_SIZE - 1;
+        let query = supabase
+          .from('leads')
+          .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin, respostas_questionario', { count: 'exact' });
+        if (filterFranquia !== 'all') query = query.eq('franquia_id', filterFranquia);
+        if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus as any);
+        if (filterModelo !== 'all') query = query.eq('modelo_recomendado', filterModelo);
+        if (filterCidade) query = query.ilike('cidade', `%${filterCidade}%`);
+        if (search) query = query.ilike('nome', `%${search}%`);
+        if (filterTemperatura !== 'all') query = query.eq('temperatura', filterTemperatura);
+        const { data, count, error } = await query.order('created_at', { ascending: false }).range(from, to);
+        if (error) throw error;
+        return { leads: (data || []) as LeadRow[], total: count || 0 };
+      },
+    });
+  }, [page, totalPages, search, filterFranquia, filterStatus, filterModelo, filterCidade, filterTemperatura, queryClient]);
 
   const franchiseMap = useMemo(() => {
     const map: Record<string, string> = {};

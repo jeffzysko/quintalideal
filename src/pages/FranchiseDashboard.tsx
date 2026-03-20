@@ -33,6 +33,7 @@ import { SectionHeader } from '@/components/dashboard/SectionHeader';
 import { AlertBanner } from '@/components/dashboard/AlertBanner';
 import type { MetricCardProps } from '@/components/dashboard/MetricCard';
 import { InsightCards } from '@/components/dashboard/InsightCards';
+import { useLeadsRealtime } from '@/hooks/useLeadsRealtime';
 
 const PAGE_SIZE = 20;
 
@@ -75,6 +76,9 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   const { franchiseId: authFranchiseId, loading: authLoading } = useAuth();
   const franchiseId = overrideFranchiseId || authFranchiseId;
   const navigate = useNavigate();
+
+  // Live updates: invalidates queries when leads for this franchise change
+  useLeadsRealtime(franchiseId);
   const isMobile = useIsMobile();
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState<'leads' | 'funnel' | 'reports'>('leads');

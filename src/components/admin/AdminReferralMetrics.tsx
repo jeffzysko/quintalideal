@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Share2, Users, Link2, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -7,7 +7,7 @@ interface AdminReferralMetricsProps {
   leads: { referred_by: string | null; ref_code: string | null }[];
 }
 
-export function AdminReferralMetrics({ leads }: AdminReferralMetricsProps) {
+export const AdminReferralMetrics = memo(function AdminReferralMetrics({ leads }: AdminReferralMetricsProps) {
   const metrics = useMemo(() => {
     let totalWithRefCode = 0, totalReferred = 0;
     const refCounts: Record<string, number> = {};
@@ -87,4 +87,4 @@ export function AdminReferralMetrics({ leads }: AdminReferralMetricsProps) {
       </CardContent>
     </Card>
   );
-}
+});
