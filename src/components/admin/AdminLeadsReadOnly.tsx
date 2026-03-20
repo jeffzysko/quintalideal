@@ -52,7 +52,7 @@ export function AdminLeadsReadOnly({ franchiseMap, franchises }: AdminLeadsReadO
         .range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
 
       if (filterFranquia !== 'all') query = query.eq('franquia_id', filterFranquia);
-      if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus);
+      if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus as any);
       if (search) query = query.or(`nome.ilike.%${search}%,cidade.ilike.%${search}%,email.ilike.%${search}%`);
 
       const { data, count, error } = await query;
