@@ -204,8 +204,7 @@ export function getExplorerSteps(lang: Lang) {
     { emoji: '📅', title: t('exp_step_4_title', lang), message: t('exp_step_4_msg', lang) },
     { emoji: '💧', title: t('exp_step_5_title', lang), message: t('exp_step_5_msg', lang) },
     { emoji: '💰', title: t('exp_step_6_title', lang), message: t('exp_step_6_msg', lang) },
-    { emoji: '🎯', title: t('exp_step_7_title', lang), message: t('exp_step_7_msg', lang) },
-    { emoji: '📍', title: t('exp_step_8_title', lang), message: t('exp_step_8_msg', lang) },
+    { emoji: '📍', title: t('exp_step_7_title', lang), message: t('exp_step_7_msg', lang) },
   ];
 }
 
