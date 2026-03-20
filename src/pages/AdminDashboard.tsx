@@ -315,16 +315,20 @@ export default function AdminDashboard() {
     { icon: Share2, label: 'Via convite', value: referralCount, previousValue: prevRef, color: 'text-secondary' },
   ];
 
+  const isSuperAdmin = role === 'super_admin';
+
   const TABS = [
     { key: 'overview' as const, icon: BarChart3, label: 'Inteligência' },
     { key: 'performance-qi' as const, icon: Target, label: 'Performance QI' },
     { key: 'analytics' as const, icon: Activity, label: 'Analytics' },
-    { key: 'leads' as const, icon: Users, label: 'Leads' },
-    { key: 'kanban' as const, icon: Kanban, label: 'Funil Geral' },
+    ...(isSuperAdmin ? [
+      { key: 'leads' as const, icon: Users, label: 'Leads' },
+      { key: 'kanban' as const, icon: Kanban, label: 'Funil Geral' },
+    ] : []),
     { key: 'franchises' as const, icon: Building2, label: 'Franquias' },
     { key: 'cities' as const, icon: Globe, label: 'Territórios' },
-    { key: 'users' as const, icon: Users, label: 'Usuários' },
-    ...(role === 'super_admin' ? [
+    ...(isSuperAdmin ? [
+      { key: 'users' as const, icon: Users, label: 'Usuários' },
       { key: 'emails' as const, icon: Mail, label: 'E-mails' },
       { key: 'franchise-view' as const, icon: Eye, label: 'Visão Franquia' },
     ] : []),
