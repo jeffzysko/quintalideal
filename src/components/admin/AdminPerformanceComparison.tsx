@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Trophy, TrendingUp, Clock, Target, BarChart3 } from 'lucide-react';
@@ -37,7 +37,7 @@ interface FranchisePerformance {
   contactedRate: number;
 }
 
-export function AdminPerformanceComparison({ leads, activities, franchiseMap }: AdminPerformanceComparisonProps) {
+export const AdminPerformanceComparison = memo(function AdminPerformanceComparison({ leads, activities, franchiseMap }: AdminPerformanceComparisonProps) {
   const performances = useMemo(() => {
     // Group leads by franchise
     const byFranchise: Record<string, Lead[]> = {};
@@ -243,4 +243,4 @@ export function AdminPerformanceComparison({ leads, activities, franchiseMap }: 
       </CardContent>
     </Card>
   );
-}
+});

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Building2, TrendingUp, Trophy } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -21,7 +21,7 @@ function MedalIcon({ position }: { position: number }) {
   return <span className="text-xs font-bold text-muted-foreground w-4 text-center">{position + 1}º</span>;
 }
 
-export function AdminFranchiseRanking({ leads, franchiseMap }: AdminFranchiseRankingProps) {
+export const AdminFranchiseRanking = memo(function AdminFranchiseRanking({ leads, franchiseMap }: AdminFranchiseRankingProps) {
   const data = useMemo((): FranchiseMetric[] => {
     const map: Record<string, { count: number; total: number }> = {};
     leads.forEach(l => {
@@ -83,4 +83,4 @@ export function AdminFranchiseRanking({ leads, franchiseMap }: AdminFranchiseRan
       </CardContent>
     </Card>
   );
-}
+});

@@ -3,6 +3,7 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getOptimizedImageUrl } from '@/lib/storage';
 
 interface PhotoLightboxProps {
   photos: string[];
@@ -82,7 +83,12 @@ export function PhotoLightbox({ photos, initialIndex = 0, open, onOpenChange }: 
                 onClick={() => { setIndex(i); setZoomed(false); }}
                 className={`w-12 h-12 rounded-lg overflow-hidden border-2 transition-all ${i === index ? 'border-white scale-110' : 'border-white/20 opacity-60 hover:opacity-100'}`}
               >
-                <img src={url} alt="" className="w-full h-full object-cover" />
+                <img
+                  src={getOptimizedImageUrl(url, 96, 70)}
+                  alt=""
+                  loading="lazy"
+                  className="w-full h-full object-cover"
+                />
               </button>
             ))}
           </div>

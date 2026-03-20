@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { TrendingUp, TrendingDown, AlertTriangle, Zap, Target, BarChart3 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import type { LucideIcon } from 'lucide-react';
@@ -159,7 +159,7 @@ interface InsightCardsProps {
   maxCards?: number;
 }
 
-export function InsightCards({ leads, previousLeads, maxCards = 3 }: InsightCardsProps) {
+export const InsightCards = memo(function InsightCards({ leads, previousLeads, maxCards = 3 }: InsightCardsProps) {
   const insights = useMemo(
     () => computeInsights(leads, previousLeads).slice(0, maxCards),
     [leads, previousLeads, maxCards]
@@ -193,4 +193,4 @@ export function InsightCards({ leads, previousLeads, maxCards = 3 }: InsightCard
       })}
     </div>
   );
-}
+});
