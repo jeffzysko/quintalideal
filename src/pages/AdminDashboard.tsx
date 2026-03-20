@@ -41,6 +41,7 @@ const KanbanBoard = lazy(() => import('@/components/franchise/KanbanBoard').then
 const AdminProfileDistribution = lazy(() => import('@/components/admin/AdminProfileDistribution').then(m => ({ default: m.AdminProfileDistribution })));
 const FranchiseDashboard = lazy(() => import('@/pages/FranchiseDashboard'));
 const PerformanceQI = lazy(() => import('@/components/admin/PerformanceQI').then(m => ({ default: m.PerformanceQI })));
+const AdminLeadsReadOnly = lazy(() => import('@/components/admin/AdminLeadsReadOnly').then(m => ({ default: m.AdminLeadsReadOnly })));
 
 function TabFallback() {
   return (
@@ -321,8 +322,8 @@ export default function AdminDashboard() {
     { key: 'overview' as const, icon: BarChart3, label: 'Inteligência' },
     { key: 'performance-qi' as const, icon: Target, label: 'Performance QI' },
     { key: 'analytics' as const, icon: Activity, label: 'Analytics' },
+    { key: 'leads' as const, icon: Users, label: 'Leads' },
     ...(isSuperAdmin ? [
-      { key: 'leads' as const, icon: Users, label: 'Leads' },
       { key: 'kanban' as const, icon: Kanban, label: 'Funil Geral' },
     ] : []),
     { key: 'franchises' as const, icon: Building2, label: 'Franquias' },
@@ -490,7 +491,7 @@ export default function AdminDashboard() {
           </Suspense>
         )}
 
-        {activeTab === 'leads' && (
+        {activeTab === 'leads' && isSuperAdmin && (
           <>
             <AdminLeadFilters
               searchInput={searchInput} onSearchChange={setSearchInput}
@@ -519,6 +520,12 @@ export default function AdminDashboard() {
               />
             )}
           </>
+        )}
+
+        {activeTab === 'leads' && !isSuperAdmin && (
+          <Suspense fallback={<TabFallback />}>
+            <AdminLeadsReadOnly franchiseMap={franchiseMap} franchises={franchises} />
+          </Suspense>
         )}
 
         {activeTab === 'kanban' && (
