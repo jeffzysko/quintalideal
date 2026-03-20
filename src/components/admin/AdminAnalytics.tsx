@@ -307,27 +307,6 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
           </CardContent>
         </Card>
 
-        {/* Model Stats */}
-        <Card className="card-premium">
-          <CardHeader className="px-3 sm:px-6">
-            <CardTitle className="text-sm font-bold">Modelos Recomendados</CardTitle>
-          </CardHeader>
-          <CardContent className="px-2 sm:px-6">
-            {modelStats.length === 0 ? (
-              <p className="text-muted-foreground text-center py-6 text-sm">Sem dados</p>
-            ) : (
-              <ChartContainer config={{}} className="h-[180px] sm:h-[200px] w-full">
-                <BarChart data={modelStats} layout="vertical" margin={{ left: 0, right: 5, top: 5, bottom: 0 }}>
-                  <XAxis type="number" allowDecimals={false} tick={{ fontSize: 10 }} />
-                  <YAxis type="category" dataKey="model" tick={{ fontSize: 9 }} width={65} />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="count" fill="hsl(207, 90%, 42%)" radius={[0, 6, 6, 0]} />
-                </BarChart>
-              </ChartContainer>
-            )}
-          </CardContent>
-        </Card>
-
         {/* Device Breakdown */}
         <Card className="card-premium">
           <CardHeader className="px-3 sm:px-6">
