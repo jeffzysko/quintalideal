@@ -360,7 +360,6 @@ async function fireWebhook(
       cidade: lead.cidade,
       pontuacao_quintal: lead.pontuacaoQuintal,
       modelo_recomendado: lead.modeloRecomendado,
-      referred_by: lead.referredBy,
       created_at: new Date().toISOString(),
     },
     franquia: {
