@@ -133,22 +133,22 @@ async function roundRobinByLeastLeads(
   cityNormalized: string,
   franchiseIds: string[],
 ): Promise<string> {
-  // Count existing leads per franchise for this city
-  const counts: { id: string; count: number }[] = [];
+  // Single query: fetch all matching leads for this city across all eligible franchises
+  const { data } = await supabase
+    .from("leads")
+    .select("franquia_id")
+    .in("franquia_id", franchiseIds)
+    .eq("lead_city_normalized", cityNormalized);
 
-  for (const fid of franchiseIds) {
-    const { count } = await supabase
-      .from("leads")
-      .select("id", { count: "exact", head: true })
-      .eq("franquia_id", fid)
-      .eq("lead_city_normalized", cityNormalized);
-
-    counts.push({ id: fid, count: count ?? 0 });
+  // Count per franchise from the result
+  const countMap: Record<string, number> = {};
+  for (const fid of franchiseIds) countMap[fid] = 0;
+  for (const row of data ?? []) {
+    if (row.franquia_id) countMap[row.franquia_id] = (countMap[row.franquia_id] ?? 0) + 1;
   }
 
-  // Sort ascending by count, pick the one with fewest
-  counts.sort((a, b) => a.count - b.count);
-  return counts[0].id;
+  // Pick franchise with fewest leads
+  return franchiseIds.reduce((min, fid) => countMap[fid] < countMap[min] ? fid : min, franchiseIds[0]);
 }
 
 Deno.serve(async (req) => {
