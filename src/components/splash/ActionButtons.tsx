@@ -336,16 +336,10 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
               )}
             </div>
             <h3 className="text-lg font-bold text-foreground mb-1">{poolName}</h3>
-            {poolDescription && <p className="text-xs text-muted-foreground leading-relaxed mb-3">{poolDescription}</p>}
-
-            {/* Reasoning block */}
-            {reasoning && (
-              <div className="rounded-xl bg-muted/40 border border-border/50 p-3 mb-4">
-                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
-                  {lang === 'es' ? '¿Por qué esta piscina?' : 'Por que esta piscina?'}
-                </p>
-                <p className="text-xs text-foreground/80 leading-relaxed">{reasoning}</p>
-              </div>
+            {reasoning ? (
+              <p className="text-xs text-muted-foreground leading-relaxed mb-3">{reasoning}</p>
+            ) : (
+              poolDescription && <p className="text-xs text-muted-foreground leading-relaxed mb-3">{poolDescription}</p>
             )}
 
             {poolSpecs && (
