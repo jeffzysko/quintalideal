@@ -29,7 +29,7 @@ import { OrganizationSwitcher } from '@/components/OrganizationSwitcher';
 import { useLeadsRealtime } from '@/hooks/useLeadsRealtime';
 
 // Lazy load heavy tab components
-const AdminCityRanking = lazy(() => import('@/components/admin/AdminCityRanking').then(m => ({ default: m.AdminCityRanking })));
+// AdminCityRanking moved to Performance QI tab
 const AdminFranchiseRanking = lazy(() => import('@/components/admin/AdminFranchiseRanking').then(m => ({ default: m.AdminFranchiseRanking })));
 const AdminReferralMetrics = lazy(() => import('@/components/admin/AdminReferralMetrics').then(m => ({ default: m.AdminReferralMetrics })));
 const AdminAnalytics = lazy(() => import('@/components/admin/AdminAnalytics').then(m => ({ default: m.AdminAnalytics })));
