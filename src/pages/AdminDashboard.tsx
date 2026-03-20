@@ -425,6 +425,16 @@ export default function AdminDashboard() {
 
             <MetricGrid metrics={kpis} loading={loadingKpis} columns={6} />
 
+            {/* Executive Summary */}
+            {!loadingKpis && currentLeads.length > 0 && (
+              <ExecutiveSummary
+                currentLeads={currentLeads}
+                previousLeads={previousLeads}
+                franchiseCount={orgFilteredFranchises.length}
+                cityCount={cities}
+              />
+            )}
+
             {/* Insight Surfacing */}
             {!loadingKpis && currentLeads.length > 0 && (
               <InsightCards leads={currentLeads} previousLeads={previousLeads} maxCards={3} />

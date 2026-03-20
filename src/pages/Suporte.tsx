@@ -152,6 +152,20 @@ const guideSteps: GuideStep[] = [
     tip: 'Leads com pontuação acima de 70% são considerados de alto potencial!',
   },
   {
+    id: 'recommendation-v2',
+    icon: Target,
+    title: 'Motor de Recomendação V2',
+    subtitle: 'Entenda como o sistema escolhe o modelo ideal para cada lead.',
+    details: [
+      'O motor analisa 6 fatores com pesos: Espaço (28%), Orçamento (22%), Uso (20%), Preferência (12%), Objetivo (12%) e Intenção de compra (6%).',
+      'São 5 perfis de cliente detectados automaticamente: Relaxador (busca tranquilidade), Família (uso com filhos), Social (festas e eventos), Premium (alto padrão) e Compacto (espaço reduzido).',
+      'O "Fit Level" indica a aderência do modelo ao perfil: Perfeito (95%+), Excelente (85-94%), Ótimo (75-84%), Bom (65-74%) ou Razoável (<65%). Quando o score é abaixo de 70, o "modelo ideal" é ocultado e o sistema apresenta apenas opções compatíveis.',
+      'Ao fechar uma venda, registre o "Modelo Vendido" no Kanban ou na página do lead — isso alimenta as métricas de aderência (recomendado vs vendido), que a fábrica usa para avaliar a precisão do algoritmo.',
+      'O sistema também detecta automaticamente "leads quentes" (score ≥ 85 + intenção de compra em 2026), que aparecem em destaque.',
+    ],
+    tip: 'Quanto mais vendas com modelo vendido registrado, mais preciso fica o motor de recomendação!',
+  },
+  {
     id: 'meta',
     icon: TrendingUp,
     title: 'Meta mensal de vendas',
