@@ -7,6 +7,7 @@ import { BarChart, Bar, XAxis, YAxis } from 'recharts';
 import { Activity, TrendingDown, Zap, Smartphone, Monitor, Tablet, AlertCircle, RefreshCw, Loader2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { QuizDropoffAnalysis } from './QuizDropoffAnalysis';
 
 interface AnalyticsEvent {
   id: string;
