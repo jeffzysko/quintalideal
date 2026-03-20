@@ -38,6 +38,7 @@ interface Lead {
   cidade: string | null;
   pontuacao_quintal: number | null;
   modelo_recomendado: string | null;
+  modelo_vendido: string | null;
   respostas_questionario: Record<string, string> | null;
   foto1: string | null;
   foto2: string | null;
@@ -131,11 +132,21 @@ export default function LeadDetail() {
   const queryClient = useQueryClient();
   const [status, setStatus] = useState('');
   const [observacoes, setObservacoes] = useState('');
+  const [modeloVendido, setModeloVendido] = useState('');
   const [tempOverride, setTempOverride] = useState<LeadTemperature | ''>('');
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('gerenciar');
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+
+  const { data: poolModels = [] } = useQuery({
+    queryKey: ['pool-models'],
+    queryFn: async () => {
+      const { data } = await supabase.from('pool_models').select('nome_modelo').order('nome_modelo');
+      return data?.map(m => m.nome_modelo) || [];
+    },
+    staleTime: 10 * 60 * 1000,
+  });
 
   // Both queries run in parallel — no sequential waterfall
   const { data: lead, isLoading: loading } = useQuery({
@@ -143,7 +154,7 @@ export default function LeadDetail() {
     queryFn: async () => {
       const { data } = await supabase
         .from('leads')
-        .select('id, nome, telefone, email, cidade, pontuacao_quintal, modelo_recomendado, respostas_questionario, foto1, foto2, foto3, foto4, status_lead, observacoes, created_at, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, franquia_id, lead_origin')
+        .select('id, nome, telefone, email, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, respostas_questionario, foto1, foto2, foto3, foto4, status_lead, observacoes, created_at, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, franquia_id, lead_origin')
         .eq('id', id!)
         .maybeSingle();
       return data ? (data as Lead) : null;
@@ -173,6 +184,7 @@ export default function LeadDetail() {
     if (lead) {
       setStatus(lead.status_lead);
       setObservacoes(lead.observacoes || '');
+      setModeloVendido(lead.modelo_vendido || '');
       const respostas = lead.respostas_questionario as Record<string, string> | null;
       setTempOverride((respostas?.temperatura_manual as LeadTemperature) || '');
     }
@@ -223,6 +235,7 @@ export default function LeadDetail() {
       .update({
         status_lead: status as any,
         observacoes,
+        modelo_vendido: status === 'vendido' && modeloVendido ? modeloVendido : null,
         respostas_questionario: Object.keys(updatedRespostas).length > 0 ? updatedRespostas : null,
       })
       .eq('id', lead.id);
@@ -577,6 +590,24 @@ export default function LeadDetail() {
                           {tempOverride ? `Temperatura fixada como "${tempOverride}". Clique em "Automático" para calcular pelo questionário.` : 'Calculado automaticamente com base nos dados do questionário.'}
                         </p>
                       </div>
+
+                      {/* Modelo Vendido — only when status is vendido */}
+                      {status === 'vendido' && (
+                        <div>
+                          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Modelo Vendido</label>
+                          <Select value={modeloVendido} onValueChange={setModeloVendido}>
+                            <SelectTrigger className="bg-muted/50"><SelectValue placeholder="Selecione o modelo vendido" /></SelectTrigger>
+                            <SelectContent>
+                              {poolModels.map(m => (
+                                <SelectItem key={m} value={m}>{m}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <p className="text-[11px] text-muted-foreground mt-1">
+                            Registre o modelo efetivamente vendido para análise de aderência.
+                          </p>
+                        </div>
+                      )}
 
                       <div>
                         <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Observações</label>

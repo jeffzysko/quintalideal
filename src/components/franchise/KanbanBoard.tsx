@@ -215,6 +215,12 @@ const LeadCard = memo(function LeadCard({
         </div>
 
         <div className="space-y-1">
+          {lead.status_lead === 'vendido' && (lead as any).modelo_vendido && (
+            <div className="flex items-center gap-1 text-[11px] text-emerald-600 font-medium">
+              <span className="w-3 h-3 shrink-0">✅</span>
+              <span className="truncate">Vendido: {(lead as any).modelo_vendido}</span>
+            </div>
+          )}
           {lead.cidade && (
             <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
               <MapPin className="w-3 h-3 shrink-0" />

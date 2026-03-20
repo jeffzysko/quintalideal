@@ -140,7 +140,7 @@ export default function AdminDashboard() {
       twelveMonthsAgo.setFullYear(twelveMonthsAgo.getFullYear() - 1);
       const { data, error } = await supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, updated_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin')
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, updated_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin')
         .gte('created_at', twelveMonthsAgo.toISOString())
         .order('created_at', { ascending: false })
         .limit(1500);
@@ -161,7 +161,7 @@ export default function AdminDashboard() {
 
       let query: any = supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin', { count: 'exact' });
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin', { count: 'exact' });
 
       if (filterFranquia !== 'all') query = query.eq('franquia_id', filterFranquia);
       if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus);
@@ -193,7 +193,7 @@ export default function AdminDashboard() {
         const to = from + PAGE_SIZE - 1;
         let query: any = supabase
           .from('leads')
-          .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin', { count: 'exact' });
+          .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin', { count: 'exact' });
         if (filterFranquia !== 'all') query = query.eq('franquia_id', filterFranquia);
         if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus);
         if (filterModelo !== 'all') query = query.eq('modelo_recomendado', filterModelo);
@@ -258,7 +258,7 @@ export default function AdminDashboard() {
     try {
       let query = supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, lead_origin');
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, lead_origin');
 
       if (filterFranquia !== 'all') query = query.eq('franquia_id', filterFranquia);
       if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus as any);
