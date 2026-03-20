@@ -48,9 +48,9 @@ export function AdminPerformanceComparison({ leads, activities, franchiseMap }: 
     });
 
     // Build activity lookup: first status_change per lead
+    // (activities are pre-filtered to status_change by the query)
     const firstContact: Record<string, string> = {};
-    activities
-      .filter(a => a.activity_type === 'status_change')
+    [...activities]
       .sort((a, b) => a.created_at.localeCompare(b.created_at))
       .forEach(a => {
         if (!firstContact[a.lead_id]) {
@@ -60,9 +60,12 @@ export function AdminPerformanceComparison({ leads, activities, franchiseMap }: 
 
     const results: FranchisePerformance[] = Object.entries(byFranchise).map(([fId, fLeads]) => {
       const total = fLeads.length;
-      const sold = fLeads.filter(l => l.status_lead === 'vendido').length;
-      const lost = fLeads.filter(l => l.status_lead === 'perdido').length;
-      const contacted = fLeads.filter(l => l.status_lead !== 'novo').length;
+      let sold = 0, lost = 0, contacted = 0;
+      for (const l of fLeads) {
+        if (l.status_lead === 'vendido') sold++;
+        else if (l.status_lead === 'perdido') lost++;
+        if (l.status_lead !== 'novo') contacted++;
+      }
 
       // Avg response time (lead created_at → first status_change)
       const responseTimes: number[] = [];

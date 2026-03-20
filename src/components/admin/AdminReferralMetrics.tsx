@@ -9,16 +9,16 @@ interface AdminReferralMetricsProps {
 
 export function AdminReferralMetrics({ leads }: AdminReferralMetricsProps) {
   const metrics = useMemo(() => {
-    const totalWithRefCode = leads.filter(l => l.ref_code).length;
-    const totalReferred = leads.filter(l => l.referred_by).length;
-    const referralRate = totalWithRefCode > 0 ? Math.round((totalReferred / totalWithRefCode) * 100) : 0;
-
+    let totalWithRefCode = 0, totalReferred = 0;
     const refCounts: Record<string, number> = {};
-    leads.forEach(l => {
+    for (const l of leads) {
+      if (l.ref_code) totalWithRefCode++;
       if (l.referred_by) {
+        totalReferred++;
         refCounts[l.referred_by] = (refCounts[l.referred_by] || 0) + 1;
       }
-    });
+    }
+    const referralRate = totalWithRefCode > 0 ? Math.round((totalReferred / totalWithRefCode) * 100) : 0;
     const topReferrers = Object.entries(refCounts)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5);

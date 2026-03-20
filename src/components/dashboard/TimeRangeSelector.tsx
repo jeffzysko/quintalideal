@@ -53,11 +53,11 @@ export function filterByTimeRange<T extends { created_at: string }>(
   const current: T[] = [];
   const previous: T[] = [];
 
-  items.forEach(item => {
-    const t = new Date(item.created_at).getTime();
+  for (const item of items) {
+    const t = Date.parse(item.created_at);
     if (t >= currentStart) current.push(item);
     else if (t >= previousStart) previous.push(item);
-  });
+  }
 
   return { current, previous };
 }

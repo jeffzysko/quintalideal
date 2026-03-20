@@ -47,21 +47,18 @@ export function AdminInactiveAlerts({
   const alerts = useMemo(() => {
     const activeFranchises = franchises.filter(f => f.ativa);
 
-    // Last lead update per franchise
+    // Single pass: last lead update + stuck leads per franchise
     const lastLeadUpdate: Record<string, string> = {};
-    leads.forEach(l => {
-      if (!l.franquia_id) return;
+    const stuckLeads: Record<string, number> = {};
+    for (const l of leads) {
+      if (!l.franquia_id) continue;
       if (!lastLeadUpdate[l.franquia_id] || l.updated_at > lastLeadUpdate[l.franquia_id]) {
         lastLeadUpdate[l.franquia_id] = l.updated_at;
       }
-    });
-
-    // Leads stuck as "novo" per franchise
-    const stuckLeads: Record<string, number> = {};
-    leads.forEach(l => {
-      if (!l.franquia_id || l.status_lead !== 'novo') return;
-      stuckLeads[l.franquia_id] = (stuckLeads[l.franquia_id] || 0) + 1;
-    });
+      if (l.status_lead === 'novo') {
+        stuckLeads[l.franquia_id] = (stuckLeads[l.franquia_id] || 0) + 1;
+      }
+    }
 
     return activeFranchises.map(f => {
       const accessDays = daysSince(f.last_accessed_at);

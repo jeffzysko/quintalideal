@@ -33,9 +33,29 @@ function computeInsights(leads: LeadLike[], previousLeads?: LeadLike[]): Insight
   const currentTotal = leads.length;
   const prevTotal = previousLeads?.length || 0;
 
-  // 1. Conversion rate change
-  const currentSold = leads.filter(l => l.status_lead === 'vendido').length;
-  const prevSold = previousLeads?.filter(l => l.status_lead === 'vendido').length || 0;
+  // Single-pass accumulation over current leads
+  let currentSold = 0, currentLost = 0;
+  let openLeads: LeadLike[] = [];
+  let highValueNew: LeadLike[] = [];
+
+  for (const l of leads) {
+    if (l.status_lead === 'vendido') { currentSold++; continue; }
+    if (l.status_lead === 'perdido') { currentLost++; continue; }
+    if (l.status_lead === 'novo' || l.status_lead === 'contatado' || l.status_lead === 'em_negociacao') {
+      openLeads.push(l);
+      if (l.status_lead === 'novo' && (l.pontuacao_quintal ?? 0) >= 70) highValueNew.push(l);
+    }
+  }
+
+  // Single-pass accumulation over previous leads
+  let prevSold = 0, prevLost = 0;
+  if (previousLeads) {
+    for (const l of previousLeads) {
+      if (l.status_lead === 'vendido') prevSold++;
+      else if (l.status_lead === 'perdido') prevLost++;
+    }
+  }
+
   const currentRate = currentTotal > 0 ? (currentSold / currentTotal) * 100 : 0;
   const prevRate = prevTotal > 0 ? (prevSold / prevTotal) * 100 : 0;
 
@@ -75,7 +95,6 @@ function computeInsights(leads: LeadLike[], previousLeads?: LeadLike[]): Insight
   }
 
   // 3. Stalled pipeline
-  const openLeads = leads.filter(l => ['novo', 'contatado', 'em_negociacao'].includes(l.status_lead));
   const stalledLeads = openLeads.filter(l => {
     const updated = l.updated_at || l.created_at;
     return daysSince(updated) >= 7;
@@ -93,10 +112,6 @@ function computeInsights(leads: LeadLike[], previousLeads?: LeadLike[]): Insight
   }
 
   // 4. High-value leads opportunity
-  const highValueNew = leads.filter(l => {
-    const score = l.pontuacao_quintal ?? 0;
-    return l.status_lead === 'novo' && score >= 70;
-  });
   if (highValueNew.length > 0) {
     insights.push({
       key: 'high_value_opportunity',
@@ -110,8 +125,6 @@ function computeInsights(leads: LeadLike[], previousLeads?: LeadLike[]): Insight
   }
 
   // 5. Lost leads spike
-  const currentLost = leads.filter(l => l.status_lead === 'perdido').length;
-  const prevLost = previousLeads?.filter(l => l.status_lead === 'perdido').length || 0;
   if (prevLost > 0 && currentLost > prevLost * 1.5 && currentLost >= 3) {
     insights.push({
       key: 'lost_spike',
