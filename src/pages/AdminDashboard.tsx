@@ -300,13 +300,11 @@ export default function AdminDashboard() {
   const newLeads = currentLeads.filter(l => l.status_lead === 'novo').length;
   const cities = new Set(currentLeads.map(l => l.cidade).filter(Boolean)).size;
   const avgScore = totalLeads > 0 ? Math.round(currentLeads.reduce((s, l) => s + (l.pontuacao_quintal || 0), 0) / totalLeads) : 0;
-  const referralCount = currentLeads.filter(l => l.referred_by).length;
 
   const prevTotal = previousLeads.length || undefined;
   const prevNew = previousLeads.length > 0 ? previousLeads.filter(l => l.status_lead === 'novo').length : undefined;
   const prevCities = previousLeads.length > 0 ? new Set(previousLeads.map(l => l.cidade).filter(Boolean)).size : undefined;
   const prevAvg = previousLeads.length > 0 ? Math.round(previousLeads.reduce((s, l) => s + (l.pontuacao_quintal || 0), 0) / previousLeads.length) : undefined;
-  const prevRef = previousLeads.length > 0 ? previousLeads.filter(l => l.referred_by).length : undefined;
 
   const kpis: MetricCardProps[] = [
     { icon: Users, label: 'Quintais explorados', value: totalLeads, previousValue: prevTotal, color: 'text-primary' },
@@ -314,7 +312,6 @@ export default function AdminDashboard() {
     { icon: Target, label: 'Média potencial', value: `${avgScore}%`, previousValue: prevAvg, color: 'text-primary' },
     { icon: Building2, label: 'Franquias', value: orgFilteredFranchises.length, color: 'text-violet-600' },
     { icon: MapPin, label: 'Cidades', value: cities, previousValue: prevCities, color: 'text-amber-600' },
-    { icon: Share2, label: 'Via convite', value: referralCount, previousValue: prevRef, color: 'text-secondary' },
   ];
 
   const isSuperAdmin = role === 'super_admin';
