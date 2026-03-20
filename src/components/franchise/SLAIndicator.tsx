@@ -25,14 +25,13 @@ interface SLAIndicatorProps {
 export function SLAIndicator({ leads, activities }: SLAIndicatorProps) {
   const { avgHours, alertLeads } = useMemo(() => {
     // Pre-index: first "Contatado" activity per lead → O(n) lookup
+    // (activities are pre-filtered to status_change by the query)
     const firstContactMap = new Map<string, string>();
-    activities
-      .filter(a => a.activity_type === 'status_change' && a.content?.includes('Contatado'))
-      .forEach(a => {
-        if (!firstContactMap.has(a.lead_id)) {
-          firstContactMap.set(a.lead_id, a.created_at);
-        }
-      });
+    for (const a of activities) {
+      if (a.content?.includes('Contatado') && !firstContactMap.has(a.lead_id)) {
+        firstContactMap.set(a.lead_id, a.created_at);
+      }
+    }
 
     const contactedTimes: number[] = [];
     const now = Date.now();
