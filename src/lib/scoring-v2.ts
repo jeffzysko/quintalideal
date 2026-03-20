@@ -228,6 +228,7 @@ const USAGE_AFFINITY: Record<QuizInputV2['usage_profile'], string[]> = {
   'familia_pequena': ['Tradicional', 'Tropical', 'Italiana', 'Bonaire'],
   'amigos': ['Cancún', 'Tropical', 'Atalaia', 'Tradicional'],
   'casal': ['Navagio', 'Nassau', 'Italiana', 'Tradicional'],
+  'premium': ['Atalaia', 'Nassau', 'Bonaire', 'Navagio', 'Tradicional'],
 };
 
 function scoreUsage(model: PoolModelData, input: QuizInputV2): number {
