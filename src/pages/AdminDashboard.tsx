@@ -197,7 +197,7 @@ export default function AdminDashboard() {
         if (filterModelo !== 'all') query = query.eq('modelo_recomendado', filterModelo);
         if (filterCidade) query = query.ilike('cidade', `%${filterCidade}%`);
         if (search) query = query.ilike('nome', `%${search}%`);
-        if (filterTemperatura !== 'all') query = query.eq('temperatura', filterTemperatura);
+        if (filterTemperatura !== 'all') query = query.eq('temperatura' as any, filterTemperatura);
         const { data, count, error } = await query.order('created_at', { ascending: false }).range(from, to);
         if (error) throw error;
         return { leads: (data || []) as LeadRow[], total: count || 0 };
