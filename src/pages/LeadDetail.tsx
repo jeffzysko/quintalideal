@@ -132,11 +132,21 @@ export default function LeadDetail() {
   const queryClient = useQueryClient();
   const [status, setStatus] = useState('');
   const [observacoes, setObservacoes] = useState('');
+  const [modeloVendido, setModeloVendido] = useState('');
   const [tempOverride, setTempOverride] = useState<LeadTemperature | ''>('');
   const [saving, setSaving] = useState(false);
   const [activeTab, setActiveTab] = useState('gerenciar');
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+
+  const { data: poolModels = [] } = useQuery({
+    queryKey: ['pool-models'],
+    queryFn: async () => {
+      const { data } = await supabase.from('pool_models').select('nome_modelo').order('nome_modelo');
+      return data?.map(m => m.nome_modelo) || [];
+    },
+    staleTime: 10 * 60 * 1000,
+  });
 
   // Both queries run in parallel — no sequential waterfall
   const { data: lead, isLoading: loading } = useQuery({
