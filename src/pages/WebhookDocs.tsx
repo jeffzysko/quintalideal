@@ -33,7 +33,6 @@ const TEST_PAYLOAD_EXAMPLE = `{
     "cidade": "Cidade Teste",
     "pontuacao_quintal": 75,
     "modelo_recomendado": "Cancún",
-    "referred_by": null,
     "created_at": "2026-03-12T16:00:00.000Z"
   },
   "franquia": {
