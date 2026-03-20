@@ -65,11 +65,13 @@ export interface RecommendationResultV2 {
   primary_score: number;
   fit_level: FitLevel;
   reasoning: string;
+  closing_phrase: string;
   recommended_size: RecommendedSize;
   customer_profile: CustomerProfile;
   alternatives: PoolAlternativeV2[];
   upgrade_option: PoolAlternativeV2 | null;
   is_hot_lead: boolean;
+  is_weak_recommendation: boolean;
   sales_script: string;
   /** Legacy score for backward compat (0-100) */
   legacy_score: number;
@@ -603,23 +605,17 @@ export function recommendPoolsV2(input: QuizInputV2, allModels: PoolModelData[])
   const ranked = rankModels(scored);
 
   const primary = ranked[0];
-  const primaryFitLevel = primary ? (getFitLevel(primary.score) || 'BOM') : 'BOM';
-  const primaryModel = primary?.model || allModels[0];
   const primaryScore = primary?.score || 0;
+  const primaryModel = primary?.model || allModels[0];
+  const isWeak = primaryScore < 70;
+  const primaryFitLevel = primary ? (getFitLevel(primary.score) || 'BOM') : 'BOM';
 
   const recommendedSize = recommendBestSize(primaryModel.nome_modelo, input);
   const reasoning = generateReasoning(primaryModel.nome_modelo, input, profile);
+  const closingPhrase = generateClosingPhrase(input);
 
-  const alternatives: PoolAlternativeV2[] = ranked
-    .slice(1)
-    .filter(m => m.model.nome_modelo !== primaryModel.nome_modelo && m.score >= 40)
-    .slice(0, 2)
-    .map(m => ({
-      model: m.model,
-      score: m.score,
-      fitLevel: getFitLevel(m.score) || 'BOM',
-      recommendedSize: recommendBestSize(m.model.nome_modelo, input),
-    }));
+  // Diverse alternatives: filter out same-category models
+  const alternatives: PoolAlternativeV2[] = selectDiverseAlternatives(ranked, primaryModel, isWeak ? 3 : 2);
 
   // Upgrade: model slightly above budget with high perceived value (within +20%)
   let upgrade_option: PoolAlternativeV2 | null = null;
@@ -650,12 +646,68 @@ export function recommendPoolsV2(input: QuizInputV2, allModels: PoolModelData[])
     primary_score: primaryScore,
     fit_level: primaryFitLevel,
     reasoning,
+    closing_phrase: closingPhrase,
     recommended_size: recommendedSize,
     customer_profile: profile,
     alternatives,
     upgrade_option,
     is_hot_lead: isHot,
+    is_weak_recommendation: isWeak,
     sales_script: salesScript,
     legacy_score: calculateLegacyScore(input),
   };
+}
+
+// ── Diverse Alternatives Selection ──
+
+function selectDiverseAlternatives(ranked: ScoredModel[], primaryModel: PoolModelData, count: number): PoolAlternativeV2[] {
+  const result: PoolAlternativeV2[] = [];
+  const usedCategories = new Set<string>();
+  const primaryKey = `${primaryModel.categoria_tamanho}-${primaryModel.possui_spa}-${primaryModel.possui_prainha}`;
+  usedCategories.add(primaryKey);
+
+  for (const m of ranked) {
+    if (result.length >= count) break;
+    if (m.model.nome_modelo === primaryModel.nome_modelo) continue;
+    if (m.score < 40) continue;
+
+    const key = `${m.model.categoria_tamanho}-${m.model.possui_spa}-${m.model.possui_prainha}`;
+    // Prefer diverse categories, but allow same category if we can't find enough
+    const isDiverse = !usedCategories.has(key);
+
+    if (isDiverse || result.length < count - 1) {
+      result.push({
+        model: m.model,
+        score: m.score,
+        fitLevel: getFitLevel(m.score) || 'BOM',
+        recommendedSize: recommendBestSize(m.model.nome_modelo, { ...({} as QuizInputV2), space_bucket: 'ate_3m', home_status: 'casa_propria', purchase_intent: 'pesquisando', usage_profile: 'casal', budget_range: 'ate_18k', pool_preference: 'indeciso', objective_main: 'relaxar' }),
+      });
+      usedCategories.add(key);
+    }
+  }
+
+  return result;
+}
+
+// ── Closing Phrase ──
+
+const CLOSING_PHRASES_PT = [
+  'Pelo que você nos contou, essa é uma escolha muito segura e assertiva para o seu perfil.',
+  'Se você busca exatamente isso, essa é uma das melhores decisões para o seu espaço.',
+  'Esse modelo atende muito bem o que você procura e tende a ser uma escolha extremamente satisfatória.',
+  'Com base no seu perfil, temos muita confiança de que essa é a opção certa para você.',
+  'Essa recomendação foi pensada especialmente para o que você busca — aproveite!',
+];
+
+const CLOSING_PHRASES_ES = [
+  'Según lo que nos contaste, esta es una elección muy segura y acertada para tu perfil.',
+  'Si buscas exactamente esto, esta es una de las mejores decisiones para tu espacio.',
+  'Este modelo atiende muy bien lo que buscas y tiende a ser una elección extremadamente satisfactoria.',
+];
+
+export function generateClosingPhrase(input: QuizInputV2, lang: 'pt' | 'es' = 'pt'): string {
+  const phrases = lang === 'es' ? CLOSING_PHRASES_ES : CLOSING_PHRASES_PT;
+  // Deterministic selection based on input to avoid randomness on re-renders
+  const idx = (input.space_bucket.length + input.objective_main.length + input.usage_profile.length) % phrases.length;
+  return phrases[idx];
 }

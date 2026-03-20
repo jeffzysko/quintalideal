@@ -388,6 +388,8 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
             fitLevel={recommendation.fit_level}
             matchScore={recommendation.primary_score}
             reasoning={recommendation.reasoning}
+            closingPhrase={recommendation.closing_phrase}
+            isWeakRecommendation={recommendation.is_weak_recommendation}
             customerProfile={recommendation.customer_profile}
             upgradeOption={recommendation.upgrade_option ? {
               name: recommendation.upgrade_option.model.nome_modelo,
