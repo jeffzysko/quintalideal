@@ -464,6 +464,9 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
+                <AdminProfileDistribution orgFilter={orgFilter} />
+              </div>
             </Suspense>
           </>
         )}
