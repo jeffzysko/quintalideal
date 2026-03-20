@@ -9,7 +9,7 @@ export interface QuizInputV2 {
   space_bucket: 'ate_3m' | '3_5m' | '5_7m' | '7m_plus';
   home_status: 'casa_propria' | 'construindo' | 'planejando';
   purchase_intent: '2026' | '2026_2027' | 'pesquisando';
-  usage_profile: 'casal' | 'familia_pequena' | 'familia_grande' | 'amigos';
+  usage_profile: 'casal' | 'familia_pequena' | 'familia_grande' | 'amigos' | 'premium';
   budget_range: 'ate_18k' | '18_30k' | '30_50k';
   pool_preference: 'spa' | 'prainha' | 'classica' | 'indeciso';
   objective_main: 'relaxar' | 'familia' | 'social' | 'valorizar';
@@ -84,28 +84,39 @@ export function normalizeQuizToV2(answers: Record<string, string>): QuizInputV2 
   const intentMap: Record<string, QuizInputV2['purchase_intent']> = {
     '2026': '2026', '2026-2027': '2026_2027', 'pesquisando': 'pesquisando',
   };
-  const usageMap: Record<string, QuizInputV2['usage_profile']> = {
-    'casal': 'casal', 'familia-pequena': 'familia_pequena',
-    'familia-grande': 'familia_grande', 'amigos': 'amigos',
-  };
   const budgetMap: Record<string, QuizInputV2['budget_range']> = {
     'ate-18': 'ate_18k', '18-30': '18_30k', '30-50': '30_50k',
   };
   const prefMap: Record<string, QuizInputV2['pool_preference']> = {
     'prainha': 'prainha', 'spa': 'spa', 'simples': 'classica', 'nao-sei': 'indeciso',
   };
-  const objMap: Record<string, QuizInputV2['objective_main']> = {
-    'relaxar': 'relaxar', 'familia': 'familia', 'social': 'social', 'valorizar': 'valorizar',
+
+  // Combined uso question maps to both usage_profile and objective_main
+  const usoToProfile: Record<string, QuizInputV2['usage_profile']> = {
+    'relaxar': 'casal',
+    'filhos': 'familia_pequena',
+    'familia': 'familia_grande',
+    'amigos': 'amigos',
+    'valorizar': 'premium',
   };
+  const usoToObjective: Record<string, QuizInputV2['objective_main']> = {
+    'relaxar': 'relaxar',
+    'filhos': 'familia',
+    'familia': 'familia',
+    'amigos': 'social',
+    'valorizar': 'valorizar',
+  };
+
+  const usoAnswer = answers.uso || '';
 
   return {
     space_bucket: spaceMap[answers.espaco] || 'ate_3m',
     home_status: homeMap[answers.moradia] || 'casa_propria',
     purchase_intent: intentMap[answers.intencao] || 'pesquisando',
-    usage_profile: usageMap[answers.uso] || 'casal',
+    usage_profile: usoToProfile[usoAnswer] || 'casal',
     budget_range: budgetMap[answers.orcamento] || 'ate_18k',
     pool_preference: prefMap[answers.preferencia] || 'indeciso',
-    objective_main: objMap[answers.objetivo] || 'relaxar',
+    objective_main: usoToObjective[usoAnswer] || 'relaxar',
     cidade: answers.cidade,
   };
 }
@@ -217,6 +228,7 @@ const USAGE_AFFINITY: Record<QuizInputV2['usage_profile'], string[]> = {
   'familia_pequena': ['Tradicional', 'Tropical', 'Italiana', 'Bonaire'],
   'amigos': ['Cancún', 'Tropical', 'Atalaia', 'Tradicional'],
   'casal': ['Navagio', 'Nassau', 'Italiana', 'Tradicional'],
+  'premium': ['Atalaia', 'Nassau', 'Bonaire', 'Navagio', 'Tradicional'],
 };
 
 function scoreUsage(model: PoolModelData, input: QuizInputV2): number {
@@ -311,6 +323,18 @@ function specialBonus(model: PoolModelData, input: QuizInputV2): number {
     ['Tradicional', 'Tropical', 'Italiana', 'Cancún'].includes(model.nome_modelo)
   ) {
     bonus += 8;
+  }
+
+  // Rule 6: Valorizar — boost premium/sophisticated models
+  if (input.objective_main === 'valorizar') {
+    const premiumModels = ['Atalaia', 'Nassau', 'Bonaire', 'Navagio', 'Tradicional'];
+    if (premiumModels.includes(model.nome_modelo)) {
+      bonus += 10;
+    }
+    // Extra boost for models with premium features
+    if (model.possui_spa || model.possui_prainha) {
+      bonus += 5;
+    }
   }
 
   return bonus;
@@ -503,6 +527,14 @@ export function generateReasoning(modelName: string, input: QuizInputV2, profile
   const profileLabel = PROFILE_LABELS[profile]?.[lang] || '';
   const objective = OBJECTIVE_LABELS[input.objective_main]?.[lang] || '';
 
+  // Special reasoning for "valorizar"
+  if (input.objective_main === 'valorizar') {
+    if (lang === 'es') {
+      return `Elegimos la ${modelName} porque, además de adaptarse a tu espacio de ${space}, entrega un visual sofisticado y valoriza mucho el ambiente de tu casa. Tu interés por ${pref} y tu perfil de ${profileLabel} refuerzan esta elección.`;
+    }
+    return `Escolhemos a ${modelName} porque, além de se encaixar no seu espaço de ${space}, ela entrega um visual sofisticado e valoriza muito o ambiente da sua casa. Seu interesse por ${pref} e seu perfil de ${profileLabel} reforçam essa escolha.`;
+  }
+
   if (lang === 'es') {
     return `Elegimos la ${modelName} porque tu espacio de ${space} se adapta muy bien a este modelo, demostraste interés por ${pref} y tu perfil indica ${profileLabel}. Es una elección muy alineada con tu objetivo de ${objective}.`;
   }
@@ -534,6 +566,7 @@ export function calculateLegacyScore(input: QuizInputV2): number {
     case 'familia_grande': score += 15; break;
     case 'amigos': score += 13; break;
     case 'familia_pequena': score += 11; break;
+    case 'premium': score += 15; break;
     case 'casal': score += 9; break;
   }
   switch (input.budget_range) {

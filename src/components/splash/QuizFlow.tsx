@@ -73,9 +73,9 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
 
   const quizQuestions = getQuizQuestions(lang);
   // Total quiz option steps (not counting city)
-  const QUIZ_OPTION_STEPS = quizQuestions.length; // 7 (espaco, moradia, uso, intencao, preferencia, orcamento, objetivo)
-  const CITY_STEP = QUIZ_OPTION_STEPS; // step index 7 = city
-  const TOTAL_STEPS = QUIZ_OPTION_STEPS + 1; // 8 total
+  const QUIZ_OPTION_STEPS = quizQuestions.length; // 6 (espaco, moradia, uso, intencao, preferencia, orcamento)
+  const CITY_STEP = QUIZ_OPTION_STEPS; // step index 6 = city
+  const TOTAL_STEPS = QUIZ_OPTION_STEPS + 1; // 7 total
 
   useEffect(() => {
     trackEvent('landing_page_viewed', analyticsCtx);
@@ -87,7 +87,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       });
   }, []);
 
-  const answerKeys = ['espaco', 'moradia', 'uso', 'intencao', 'preferencia', 'orcamento', 'objetivo', 'cidade'];
+  const answerKeys = ['espaco', 'moradia', 'uso', 'intencao', 'preferencia', 'orcamento', 'cidade'];
 
   const handleQuizAnswer = useCallback((value: string) => {
     const key = answerKeys[quizStep];

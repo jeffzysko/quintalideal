@@ -62,10 +62,11 @@ const translations = {
   quiz_q2_o3: { pt: 'Ainda estou planejando', es: 'Todavía estoy planificando' },
 
   quiz_q3: { pt: 'Como você imagina aproveitar sua piscina?', es: '¿Cómo imaginas disfrutar tu piscina?' },
-  quiz_q3_o1: { pt: 'Momentos a dois', es: 'Momentos en pareja' },
-  quiz_q3_o2: { pt: 'Diversão com os filhos', es: 'Diversión con los hijos' },
-  quiz_q3_o3: { pt: 'Reunir toda a família', es: 'Reunir a toda la familia' },
-  quiz_q3_o4: { pt: 'Churrascos e festas', es: 'Asados y fiestas' },
+  quiz_q3_o1: { pt: 'Relaxar e desacelerar no dia a dia', es: 'Relajarme y desacelerar en el día a día' },
+  quiz_q3_o2: { pt: 'Curtir momentos com meus filhos', es: 'Disfrutar momentos con mis hijos' },
+  quiz_q3_o3: { pt: 'Reunir a família nos finais de semana', es: 'Reunir a la familia los fines de semana' },
+  quiz_q3_o4: { pt: 'Receber amigos, churrascos e festas', es: 'Recibir amigos, asados y fiestas' },
+  quiz_q3_o5: { pt: 'Valorizar minha casa e deixar ela mais sofisticada', es: 'Valorizar mi casa y dejarla más sofisticada' },
 
   quiz_q4: { pt: 'Quando você gostaria de ter sua piscina?', es: '¿Cuándo te gustaría tener tu piscina?' },
   quiz_q4_o1: { pt: 'Ainda em 2026', es: 'Todavía en 2026' },
@@ -82,12 +83,6 @@ const translations = {
   quiz_q6_o1: { pt: 'Até R$ 18 mil', es: 'Hasta R$ 18 mil' },
   quiz_q6_o2: { pt: 'R$ 18 mil a R$ 30 mil', es: 'R$ 18 mil a R$ 30 mil' },
   quiz_q6_o3: { pt: 'R$ 30 mil a R$ 50 mil', es: 'R$ 30 mil a R$ 50 mil' },
-
-  quiz_q7: { pt: 'O que mais importa para você em uma piscina?', es: '¿Qué es lo más importante para ti en una piscina?' },
-  quiz_q7_o1: { pt: 'Relaxar', es: 'Relajarse' },
-  quiz_q7_o2: { pt: 'Curtir mais a família', es: 'Disfrutar en familia' },
-  quiz_q7_o3: { pt: 'Receber amigos', es: 'Recibir amigos' },
-  quiz_q7_o4: { pt: 'Valorizar a casa', es: 'Valorizar la casa' },
 
   quiz_city: { pt: 'Cidade onde você mora', es: 'Ciudad donde vives' },
   quiz_city_placeholder: { pt: 'Digite o nome da sua cidade...', es: 'Escribe el nombre de tu ciudad...' },
@@ -114,10 +109,8 @@ const translations = {
   exp_step_5_msg: { pt: 'O que você gostaria na sua piscina?', es: '¿Qué te gustaría en tu piscina?' },
   exp_step_6_title: { pt: 'Orçamento', es: 'Presupuesto' },
   exp_step_6_msg: { pt: 'Qual o investimento que você imagina?', es: '¿Cuál es la inversión que imaginas?' },
-  exp_step_7_title: { pt: 'Objetivo', es: 'Objetivo' },
-  exp_step_7_msg: { pt: 'O que mais importa para você?', es: '¿Qué es lo más importante?' },
-  exp_step_8_title: { pt: 'Localização', es: 'Ubicación' },
-  exp_step_8_msg: { pt: 'Onde fica seu quintal?', es: '¿Dónde está tu patio?' },
+  exp_step_7_title: { pt: 'Localização', es: 'Ubicación' },
+  exp_step_7_msg: { pt: 'Onde fica seu quintal?', es: '¿Dónde está tu patio?' },
 
   // ProcessingScreen
   proc_title: { pt: 'Calculando o Índice do seu Quintal…', es: 'Calculando el Índice de tu Patio…' },
@@ -211,8 +204,7 @@ export function getExplorerSteps(lang: Lang) {
     { emoji: '📅', title: t('exp_step_4_title', lang), message: t('exp_step_4_msg', lang) },
     { emoji: '💧', title: t('exp_step_5_title', lang), message: t('exp_step_5_msg', lang) },
     { emoji: '💰', title: t('exp_step_6_title', lang), message: t('exp_step_6_msg', lang) },
-    { emoji: '🎯', title: t('exp_step_7_title', lang), message: t('exp_step_7_msg', lang) },
-    { emoji: '📍', title: t('exp_step_8_title', lang), message: t('exp_step_8_msg', lang) },
+    { emoji: '📍', title: t('exp_step_7_title', lang), message: t('exp_step_7_msg', lang) },
   ];
 }
 
@@ -238,10 +230,11 @@ export function getQuizQuestions(lang: Lang) {
     {
       question: t('quiz_q3', lang),
       options: [
-        { value: 'casal', label: t('quiz_q3_o1', lang), emoji: '💑' },
-        { value: 'familia-pequena', label: t('quiz_q3_o2', lang), emoji: '👨‍👩‍👧' },
-        { value: 'familia-grande', label: t('quiz_q3_o3', lang), emoji: '👨‍👩‍👧‍👦' },
+        { value: 'relaxar', label: t('quiz_q3_o1', lang), emoji: '🧘' },
+        { value: 'filhos', label: t('quiz_q3_o2', lang), emoji: '👨‍👩‍👧' },
+        { value: 'familia', label: t('quiz_q3_o3', lang), emoji: '👨‍👩‍👧‍👦' },
         { value: 'amigos', label: t('quiz_q3_o4', lang), emoji: '🎉' },
+        { value: 'valorizar', label: t('quiz_q3_o5', lang), emoji: '🏡' },
       ],
     },
     {
@@ -267,15 +260,6 @@ export function getQuizQuestions(lang: Lang) {
         { value: 'ate-18', label: t('quiz_q6_o1', lang), emoji: '💰' },
         { value: '18-30', label: t('quiz_q6_o2', lang), emoji: '💎' },
         { value: '30-50', label: t('quiz_q6_o3', lang), emoji: '🏆' },
-      ],
-    },
-    {
-      question: t('quiz_q7', lang),
-      options: [
-        { value: 'relaxar', label: t('quiz_q7_o1', lang), emoji: '🧘' },
-        { value: 'familia', label: t('quiz_q7_o2', lang), emoji: '👨‍👩‍👧‍👦' },
-        { value: 'social', label: t('quiz_q7_o3', lang), emoji: '🎉' },
-        { value: 'valorizar', label: t('quiz_q7_o4', lang), emoji: '📈' },
       ],
     },
   ];
