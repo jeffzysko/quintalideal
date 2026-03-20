@@ -325,6 +325,18 @@ function specialBonus(model: PoolModelData, input: QuizInputV2): number {
     bonus += 8;
   }
 
+  // Rule 6: Valorizar — boost premium/sophisticated models
+  if (input.objective_main === 'valorizar') {
+    const premiumModels = ['Atalaia', 'Nassau', 'Bonaire', 'Navagio', 'Tradicional'];
+    if (premiumModels.includes(model.nome_modelo)) {
+      bonus += 10;
+    }
+    // Extra boost for models with premium features
+    if (model.possui_spa || model.possui_prainha) {
+      bonus += 5;
+    }
+  }
+
   return bonus;
 }
 
