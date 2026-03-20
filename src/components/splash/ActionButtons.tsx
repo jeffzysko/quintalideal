@@ -11,6 +11,8 @@ import { trackMetaEvent } from '@/components/MetaPixel';
 import { SITE_URL, SITE_DOMAIN } from '@/lib/constants';
 import { type Lang, t } from '@/lib/i18n';
 
+import { type FitLevel, getFitLevelLabel, getFitLevelEmoji } from '@/lib/scoring-v2';
+
 interface PoolSpecs {
   tamanho?: string;
   profundidade?: number;
@@ -22,12 +24,23 @@ interface PoolAlternativeView {
   name: string;
   image?: string;
   description?: string;
+  fitLevel?: FitLevel;
+  matchScore?: number;
   specs?: {
     tamanho?: string;
     profundidade?: number;
     possui_prainha?: boolean;
     possui_spa?: boolean;
   };
+}
+
+interface UpgradeOptionView {
+  name: string;
+  image?: string;
+  description?: string;
+  fitLevel?: FitLevel;
+  matchScore?: number;
+  recommendedSize?: string;
 }
 
 interface ActionButtonsProps {
@@ -43,13 +56,20 @@ interface ActionButtonsProps {
   refCode?: string;
   franchiseId?: string;
   alternatives?: PoolAlternativeView[];
+  fitLevel?: FitLevel;
+  matchScore?: number;
+  reasoning?: string;
+  customerProfile?: string;
+  upgradeOption?: UpgradeOptionView;
   lang?: Lang;
 }
 
-export function ActionButtons({ score, poolName, poolDescription, poolSpecs, recommendedSize, whatsappNumber, assignedFranchiseName, assignedCidadeBase, leadName, refCode: _refCode, franchiseId, alternatives = [], lang = 'pt' }: ActionButtonsProps) {
+export function ActionButtons({ score, poolName, poolDescription, poolSpecs, recommendedSize, whatsappNumber, assignedFranchiseName, assignedCidadeBase, leadName, refCode: _refCode, franchiseId, alternatives = [], fitLevel, matchScore, reasoning, customerProfile: _customerProfile, upgradeOption, lang = 'pt' }: ActionButtonsProps) {
   const ranking = getRankingGaucho(score);
   const classification = getYardClassification(score);
   const socialComparison = getSocialComparison(score);
+  const fitLabel = fitLevel ? getFitLevelLabel(fitLevel, lang) : null;
+  const fitEmoji = fitLevel ? getFitLevelEmoji(fitLevel) : null;
   
   const [showInstaGuide, setShowInstaGuide] = useState(false);
 
@@ -303,12 +323,30 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
             </div>
           )}
           <div className="p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="w-3.5 h-3.5 text-primary" />
-              <span className="text-[9px] font-bold text-primary uppercase tracking-[0.15em]">{t('action_rec_label', lang)}</span>
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-3.5 h-3.5 text-primary" />
+                <span className="text-[9px] font-bold text-primary uppercase tracking-[0.15em]">{t('action_rec_label', lang)}</span>
+              </div>
+              {fitLabel && (
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
+                  {fitEmoji} {fitLabel}
+                  {matchScore != null && <span className="text-primary/60 ml-0.5">({matchScore}%)</span>}
+                </span>
+              )}
             </div>
             <h3 className="text-lg font-bold text-foreground mb-1">{poolName}</h3>
-            {poolDescription && <p className="text-xs text-muted-foreground leading-relaxed mb-4">{poolDescription}</p>}
+            {poolDescription && <p className="text-xs text-muted-foreground leading-relaxed mb-3">{poolDescription}</p>}
+
+            {/* Reasoning block */}
+            {reasoning && (
+              <div className="rounded-xl bg-muted/40 border border-border/50 p-3 mb-4">
+                <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-1.5">
+                  {lang === 'es' ? '¿Por qué esta piscina?' : 'Por que esta piscina?'}
+                </p>
+                <p className="text-xs text-foreground/80 leading-relaxed">{reasoning}</p>
+              </div>
+            )}
 
             {poolSpecs && (
               <div className="grid grid-cols-2 gap-2">
@@ -395,6 +433,36 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
                   </div>
                 </motion.div>
               ))}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Upgrade option */}
+        {upgradeOption && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.72 }}
+            className="mt-4 rounded-2xl overflow-hidden border border-amber-500/20 bg-amber-500/5"
+          >
+            <div className="p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm">⬆️</span>
+                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+                  {lang === 'es' ? 'Opción de Upgrade' : 'Opção de Upgrade'}
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                {upgradeOption.image && (
+                  <img src={upgradeOption.image} alt={upgradeOption.name} className="w-16 h-12 rounded-lg object-cover" loading="lazy" />
+                )}
+                <div>
+                  <p className="text-sm font-bold text-foreground">{upgradeOption.name}</p>
+                  {upgradeOption.recommendedSize && (
+                    <p className="text-[10px] text-muted-foreground">📐 {upgradeOption.recommendedSize}</p>
+                  )}
+                </div>
+              </div>
             </div>
           </motion.div>
         )}

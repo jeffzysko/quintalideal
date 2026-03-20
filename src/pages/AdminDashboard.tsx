@@ -156,16 +156,15 @@ export default function AdminDashboard() {
       const from = (page - 1) * PAGE_SIZE;
       const to = from + PAGE_SIZE - 1;
 
-      let query = supabase
+      let query: any = supabase
         .from('leads')
         .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin', { count: 'exact' });
 
       if (filterFranquia !== 'all') query = query.eq('franquia_id', filterFranquia);
-      if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus as any);
+      if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus);
       if (filterModelo !== 'all') query = query.eq('modelo_recomendado', filterModelo);
       if (filterCidade) query = query.ilike('cidade', `%${filterCidade}%`);
       if (search) query = query.ilike('nome', `%${search}%`);
-      // Server-side temperature filter using the computed column
       if (filterTemperatura !== 'all') query = query.eq('temperatura', filterTemperatura);
 
       const { data, count, error } = await query.order('created_at', { ascending: false }).range(from, to);
@@ -189,11 +188,11 @@ export default function AdminDashboard() {
       queryFn: async () => {
         const from = (nextPage - 1) * PAGE_SIZE;
         const to = from + PAGE_SIZE - 1;
-        let query = supabase
+        let query: any = supabase
           .from('leads')
           .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin', { count: 'exact' });
         if (filterFranquia !== 'all') query = query.eq('franquia_id', filterFranquia);
-        if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus as any);
+        if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus);
         if (filterModelo !== 'all') query = query.eq('modelo_recomendado', filterModelo);
         if (filterCidade) query = query.ilike('cidade', `%${filterCidade}%`);
         if (search) query = query.ilike('nome', `%${search}%`);
