@@ -44,22 +44,39 @@ export function AdminAnalytics({ franchiseMap }: AdminAnalyticsProps) {
   const [periodDays, setPeriodDays] = useState('30');
   const [filterFranchise, setFilterFranchise] = useState('all');
 
-  const { data: events = [], isLoading: loading, isError, refetch } = useQuery({
+  // Fetch current + previous period for comparison
+  const days = parseInt(periodDays);
+  const { data: allEvents = [], isLoading: loading, isError, refetch } = useQuery({
     queryKey: ['analytics-events', periodDays],
     queryFn: async () => {
       const since = new Date();
-      since.setDate(since.getDate() - parseInt(periodDays));
+      since.setDate(since.getDate() - days * 2); // fetch double range for comparison
       const { data, error: queryError } = await supabase
         .from('analytics_events')
         .select('id, session_id, event_name, franchise_id, city, device_type, utm_source, utm_medium, utm_campaign, metadata, created_at')
         .gte('created_at', since.toISOString())
         .order('created_at', { ascending: false })
-        .limit(5000);
+        .limit(10000);
       if (queryError) throw queryError;
       return (data || []) as AnalyticsEvent[];
     },
     staleTime: 5 * 60 * 1000,
   });
+
+  // Split into current and previous periods
+  const { events, previousPeriodEvents } = useMemo(() => {
+    const now = Date.now();
+    const currentStart = now - days * 86400000;
+    const previousStart = currentStart - days * 86400000;
+    const current: AnalyticsEvent[] = [];
+    const previous: AnalyticsEvent[] = [];
+    for (const e of allEvents) {
+      const t = Date.parse(e.created_at);
+      if (t >= currentStart) current.push(e);
+      else if (t >= previousStart) previous.push(e);
+    }
+    return { events: current, previousPeriodEvents: previous };
+  }, [allEvents, days]);
 
   const filteredEvents = useMemo(() => {
     if (filterFranchise === 'all') return events;
