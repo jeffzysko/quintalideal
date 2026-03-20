@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useState, useMemo, useCallback, useEffect, memo } from 'react';
 import {
   DndContext,
   DragOverlay,
@@ -70,7 +70,7 @@ interface KanbanBoardProps {
 }
 
 // ── Draggable Lead Card with Quick Actions ──
-function LeadCard({
+const LeadCard = memo(function LeadCard({
   lead,
   basePath,
   overlay,
@@ -324,10 +324,10 @@ function LeadCard({
       )}
     </div>
   );
-}
+});
 
 // ── Mobile Lead Card for pipeline ──
-function MobilePipelineCard({
+const MobilePipelineCard = memo(function MobilePipelineCard({
   lead,
   basePath,
   franchiseName,
@@ -504,10 +504,10 @@ function MobilePipelineCard({
       </div>
     </motion.div>
   );
-}
+});
 
 // ── Droppable Column (desktop) ──
-function KanbanColumn({
+const KanbanColumn = memo(function KanbanColumn({
   status,
   leads,
   basePath,
@@ -595,7 +595,7 @@ function KanbanColumn({
       </div>
     </div>
   );
-}
+});
 
 // ── Pipeline Summary ──
 function PipelineSummary({ leads, franchiseMap }: { leads: LeadWithQuiz[]; franchiseMap?: Record<string, string> }) {

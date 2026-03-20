@@ -140,7 +140,7 @@ export default function AdminDashboard() {
         .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, updated_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin')
         .gte('created_at', twelveMonthsAgo.toISOString())
         .order('created_at', { ascending: false })
-        .limit(5000);
+        .limit(1500);
       if (error) throw error;
       return (data || []) as LeadRow[];
     },
