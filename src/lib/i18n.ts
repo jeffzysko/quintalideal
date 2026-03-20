@@ -230,10 +230,11 @@ export function getQuizQuestions(lang: Lang) {
     {
       question: t('quiz_q3', lang),
       options: [
-        { value: 'casal', label: t('quiz_q3_o1', lang), emoji: '💑' },
-        { value: 'familia-pequena', label: t('quiz_q3_o2', lang), emoji: '👨‍👩‍👧' },
-        { value: 'familia-grande', label: t('quiz_q3_o3', lang), emoji: '👨‍👩‍👧‍👦' },
+        { value: 'relaxar', label: t('quiz_q3_o1', lang), emoji: '🧘' },
+        { value: 'filhos', label: t('quiz_q3_o2', lang), emoji: '👨‍👩‍👧' },
+        { value: 'familia', label: t('quiz_q3_o3', lang), emoji: '👨‍👩‍👧‍👦' },
         { value: 'amigos', label: t('quiz_q3_o4', lang), emoji: '🎉' },
+        { value: 'valorizar', label: t('quiz_q3_o5', lang), emoji: '🏡' },
       ],
     },
     {
@@ -259,15 +260,6 @@ export function getQuizQuestions(lang: Lang) {
         { value: 'ate-18', label: t('quiz_q6_o1', lang), emoji: '💰' },
         { value: '18-30', label: t('quiz_q6_o2', lang), emoji: '💎' },
         { value: '30-50', label: t('quiz_q6_o3', lang), emoji: '🏆' },
-      ],
-    },
-    {
-      question: t('quiz_q7', lang),
-      options: [
-        { value: 'relaxar', label: t('quiz_q7_o1', lang), emoji: '🧘' },
-        { value: 'familia', label: t('quiz_q7_o2', lang), emoji: '👨‍👩‍👧‍👦' },
-        { value: 'social', label: t('quiz_q7_o3', lang), emoji: '🎉' },
-        { value: 'valorizar', label: t('quiz_q7_o4', lang), emoji: '📈' },
       ],
     },
   ];
