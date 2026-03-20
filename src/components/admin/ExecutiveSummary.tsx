@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, ShieldAlert } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 
 interface LeadLike {
@@ -9,14 +9,28 @@ interface LeadLike {
   created_at: string;
 }
 
+interface FranchiseLike {
+  id: string;
+  nome_franquia: string;
+  ativa: boolean;
+  last_accessed_at?: string | null;
+  last_lead_activity_at?: string | null;
+}
+
 interface Props {
   currentLeads: LeadLike[];
   previousLeads: LeadLike[];
   franchiseCount: number;
   cityCount: number;
+  franchises?: FranchiseLike[];
 }
 
-export function ExecutiveSummary({ currentLeads, previousLeads, franchiseCount, cityCount }: Props) {
+function daysSince(dateStr: string | null | undefined): number | null {
+  if (!dateStr) return null;
+  return Math.floor((Date.now() - new Date(dateStr).getTime()) / 86400000);
+}
+
+export function ExecutiveSummary({ currentLeads, previousLeads, franchiseCount, cityCount, franchises }: Props) {
   const phrases = useMemo(() => {
     const result: string[] = [];
     const total = currentLeads.length;
@@ -69,21 +83,77 @@ export function ExecutiveSummary({ currentLeads, previousLeads, franchiseCount, 
     return result;
   }, [currentLeads, previousLeads, franchiseCount, cityCount]);
 
+  // Network health: inactive franchises
+  const networkHealth = useMemo(() => {
+    if (!franchises || franchises.length === 0) return null;
+    const active = franchises.filter(f => f.ativa);
+    const inactive7d: string[] = [];
+    const neverAccessed: string[] = [];
+
+    for (const f of active) {
+      const accessDays = daysSince(f.last_accessed_at);
+      const activityDays = daysSince(f.last_lead_activity_at);
+      if (accessDays === null && activityDays === null) {
+        neverAccessed.push(f.nome_franquia);
+      } else {
+        const worst = Math.max(accessDays ?? 0, activityDays ?? 0);
+        if (worst >= 7) inactive7d.push(f.nome_franquia);
+      }
+    }
+
+    const totalInactive = inactive7d.length + neverAccessed.length;
+    if (totalInactive === 0) return null;
+
+    return { inactive7d, neverAccessed, totalInactive, totalActive: active.length };
+  }, [franchises]);
+
   return (
-    <Card className="card-premium mb-4 sm:mb-6 border-primary/20 bg-primary/[0.03]">
-      <CardContent className="px-4 sm:px-6 py-4">
-        <div className="flex items-center gap-2 mb-3">
-          <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-            <Sparkles className="w-3.5 h-3.5 text-primary" />
+    <div className="space-y-3 mb-4 sm:mb-6">
+      {/* Executive Summary */}
+      <Card className="card-premium border-primary/20 bg-primary/[0.03]">
+        <CardContent className="px-4 sm:px-6 py-4">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
+              <Sparkles className="w-3.5 h-3.5 text-primary" />
+            </div>
+            <h3 className="text-sm font-bold text-foreground">Resumo Executivo</h3>
           </div>
-          <h3 className="text-sm font-bold text-foreground">Resumo Executivo</h3>
-        </div>
-        <div className="space-y-2">
-          {phrases.map((phrase, i) => (
-            <p key={i} className="text-sm text-muted-foreground leading-relaxed">{phrase}</p>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+          <div className="space-y-2">
+            {phrases.map((phrase, i) => (
+              <p key={i} className="text-sm text-muted-foreground leading-relaxed">{phrase}</p>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Network Health Card */}
+      {networkHealth && (
+        <Card className="card-premium border-amber-500/20 bg-amber-500/[0.03]">
+          <CardContent className="px-4 sm:px-6 py-4">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                <ShieldAlert className="w-3.5 h-3.5 text-amber-600" />
+              </div>
+              <h3 className="text-sm font-bold text-foreground">Saúde da Rede</h3>
+              <span className="text-[10px] text-amber-600 font-semibold bg-amber-500/10 px-2 py-0.5 rounded-full ml-auto">
+                {networkHealth.totalInactive}/{networkHealth.totalActive} inativas
+              </span>
+            </div>
+            <div className="space-y-2">
+              {networkHealth.neverAccessed.length > 0 && (
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  🚨 <strong className="text-destructive">{networkHealth.neverAccessed.length} franquia{networkHealth.neverAccessed.length > 1 ? 's' : ''} nunca acessa{networkHealth.neverAccessed.length > 1 ? 'ram' : 'ou'}</strong> o sistema: {networkHealth.neverAccessed.slice(0, 5).join(', ')}{networkHealth.neverAccessed.length > 5 ? ` e +${networkHealth.neverAccessed.length - 5}` : ''}.
+                </p>
+              )}
+              {networkHealth.inactive7d.length > 0 && (
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  ⚠️ <strong className="text-amber-600">{networkHealth.inactive7d.length} franquia{networkHealth.inactive7d.length > 1 ? 's' : ''} inativa{networkHealth.inactive7d.length > 1 ? 's' : ''} há 7+ dias</strong>: {networkHealth.inactive7d.slice(0, 5).join(', ')}{networkHealth.inactive7d.length > 5 ? ` e +${networkHealth.inactive7d.length - 5}` : ''}.
+                </p>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }
