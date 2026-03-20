@@ -258,7 +258,7 @@ export default function AdminDashboard() {
     try {
       let query = supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, lead_origin');
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, lead_origin');
 
       if (filterFranquia !== 'all') query = query.eq('franquia_id', filterFranquia);
       if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus as any);
