@@ -3,7 +3,7 @@ import { AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import { HeroSection } from './HeroSection';
 import { normalizeQuizToV2, recommendPoolsV2, type PoolModelData, type RecommendationResultV2 } from '@/lib/scoring-v2';
-import { recommendSize as legacyRecommendSize } from '@/lib/scoring';
+// Legacy scoring kept for backward compat reference
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { trackEvent } from '@/lib/analytics';
