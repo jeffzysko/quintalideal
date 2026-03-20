@@ -171,7 +171,7 @@ const FIELDS = [
   { name: 'cidade', type: 'string | null', desc: 'Cidade informada no quiz' },
   { name: 'pontuacao_quintal', type: 'number | null', desc: 'Score de 0 a 100 do Índice do Quintal' },
   { name: 'modelo_recomendado', type: 'string | null', desc: 'Modelo de piscina recomendado' },
-  { name: 'referred_by', type: 'string | null', desc: 'Código de indicação (compartilhamento)' },
+  
   { name: 'created_at', type: 'ISO 8601', desc: 'Data/hora de criação do lead' },
 ];
 

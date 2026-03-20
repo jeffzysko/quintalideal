@@ -340,7 +340,6 @@ async function fireWebhook(
     cidade: string | null;
     pontuacaoQuintal: number | null;
     modeloRecomendado: string | null;
-    referredBy: string | null;
   }
 ) {
   const { data: franchise } = await supabase
