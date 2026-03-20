@@ -184,6 +184,7 @@ export default function LeadDetail() {
     if (lead) {
       setStatus(lead.status_lead);
       setObservacoes(lead.observacoes || '');
+      setModeloVendido(lead.modelo_vendido || '');
       const respostas = lead.respostas_questionario as Record<string, string> | null;
       setTempOverride((respostas?.temperatura_manual as LeadTemperature) || '');
     }
