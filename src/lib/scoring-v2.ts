@@ -216,7 +216,7 @@ function scoreUsage(model: PoolModelData, input: QuizInputV2): number {
 }
 
 const PREFERENCE_AFFINITY: Record<QuizInputV2['pool_preference'], string[]> = {
-  'prainha': ['Tortuga', 'Nassau', 'Atalaia', 'Tradicional'],
+  'prainha': ['Tortuga', 'Atalaia', 'Tradicional', 'Farol da Barra'],
   'spa': ['Navagio', 'Tradicional', 'Atalaia', 'Bonaire'],
   'classica': ['Italiana', 'Tropical', 'Cancún', 'Tradicional', 'Farol da Barra'],
   'indeciso': [],
