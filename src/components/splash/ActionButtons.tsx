@@ -325,26 +325,50 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
             </div>
           )}
           <div className="p-5">
-            <div className="flex items-center justify-between mb-2">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-3.5 h-3.5 text-primary" />
-                <span className="text-[9px] font-bold text-primary uppercase tracking-[0.15em]">{t('action_rec_label', lang)}</span>
-              </div>
-              {fitLabel && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
-                  {fitEmoji} {fitLabel}
-                  {matchScore != null && <span className="text-primary/60 ml-0.5">({matchScore}%)</span>}
-                </span>
-              )}
-            </div>
-            <h3 className="text-lg font-bold text-foreground mb-1">{poolName}</h3>
-            {reasoning ? (
-              <p className="text-xs text-muted-foreground leading-relaxed mb-3">{reasoning}</p>
+            {/* Weak recommendation header */}
+            {isWeakRecommendation ? (
+              <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+                {lang === 'es'
+                  ? 'Encontramos algunas opciones que pueden funcionar bien para tu espacio:'
+                  : 'Encontramos algumas opções que podem funcionar bem para o seu espaço:'}
+              </p>
             ) : (
-              poolDescription && <p className="text-xs text-muted-foreground leading-relaxed mb-3">{poolDescription}</p>
+              <>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-3.5 h-3.5 text-primary" />
+                    <span className="text-[9px] font-bold text-primary uppercase tracking-[0.15em]">{t('action_rec_label', lang)}</span>
+                  </div>
+                  {fitLabel && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
+                      {fitEmoji} {fitLabel}
+                      {matchScore != null && <span className="text-primary/60 ml-0.5">({matchScore}%)</span>}
+                    </span>
+                  )}
+                </div>
+                <h3 className="text-lg font-bold text-foreground mb-1">{poolName}</h3>
+
+                {/* Trust tag */}
+                <p className="text-[10px] text-muted-foreground/70 mb-2 flex items-center gap-1">
+                  <span>✅</span>
+                  {lang === 'es' ? 'Recomendación basada en cientos de proyectos similares' : 'Recomendação baseada em centenas de projetos similares'}
+                </p>
+              </>
             )}
 
-            {poolSpecs && (
+            {/* Reasoning */}
+            {!isWeakRecommendation && reasoning ? (
+              <p className="text-xs text-muted-foreground leading-relaxed mb-2">{reasoning}</p>
+            ) : (
+              !isWeakRecommendation && poolDescription && <p className="text-xs text-muted-foreground leading-relaxed mb-2">{poolDescription}</p>
+            )}
+
+            {/* Closing phrase */}
+            {!isWeakRecommendation && closingPhrase && (
+              <p className="text-[11px] text-foreground/70 font-medium italic mb-3">{closingPhrase}</p>
+            )}
+
+            {!isWeakRecommendation && poolSpecs && (
               <div className="grid grid-cols-2 gap-2">
                 {recommendedSize && (
                   <div className="flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2.5">
