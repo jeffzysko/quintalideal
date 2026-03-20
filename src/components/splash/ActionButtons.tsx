@@ -437,6 +437,36 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
           </motion.div>
         )}
 
+        {/* Upgrade option */}
+        {upgradeOption && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.72 }}
+            className="mt-4 rounded-2xl overflow-hidden border border-amber-500/20 bg-amber-500/5"
+          >
+            <div className="p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm">⬆️</span>
+                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+                  {lang === 'es' ? 'Opción de Upgrade' : 'Opção de Upgrade'}
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                {upgradeOption.image && (
+                  <img src={upgradeOption.image} alt={upgradeOption.name} className="w-16 h-12 rounded-lg object-cover" loading="lazy" />
+                )}
+                <div>
+                  <p className="text-sm font-bold text-foreground">{upgradeOption.name}</p>
+                  {upgradeOption.recommendedSize && (
+                    <p className="text-[10px] text-muted-foreground">📐 {upgradeOption.recommendedSize}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Assigned franchise info */}
         {assignedFranchiseName && (
           <motion.div
