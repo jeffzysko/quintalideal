@@ -205,8 +205,8 @@ const USAGE_AFFINITY: Record<QuizInputV2['usage_profile'], string[]> = {
   'familia_grande': ['Tradicional', 'Bonaire', 'Tropical', 'Tortuga'],
   'familia_pequena': ['Tradicional', 'Tropical', 'Italiana', 'Bonaire'],
   'amigos': ['Cancún', 'Tropical', 'Atalaia', 'Tradicional'],
-  'casal': ['Navagio', 'Nassau', 'Italiana', 'Tradicional'],
-  'premium': ['Atalaia', 'Nassau', 'Bonaire', 'Navagio', 'Tradicional'],
+  'casal': ['Navagio', 'Italiana', 'Tradicional', 'Bonaire'],
+  'premium': ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'],
 };
 
 function scoreUsage(model: PoolModelData, input: QuizInputV2): number {
@@ -216,7 +216,7 @@ function scoreUsage(model: PoolModelData, input: QuizInputV2): number {
 }
 
 const PREFERENCE_AFFINITY: Record<QuizInputV2['pool_preference'], string[]> = {
-  'prainha': ['Tortuga', 'Nassau', 'Atalaia', 'Tradicional'],
+  'prainha': ['Tortuga', 'Atalaia', 'Tradicional', 'Farol da Barra'],
   'spa': ['Navagio', 'Tradicional', 'Atalaia', 'Bonaire'],
   'classica': ['Italiana', 'Tropical', 'Cancún', 'Tradicional', 'Farol da Barra'],
   'indeciso': [],
@@ -234,10 +234,10 @@ function scorePreference(model: PoolModelData, input: QuizInputV2): number {
 // ── NEW: Objective Score (weight 12) ──
 
 const OBJECTIVE_AFFINITY: Record<QuizInputV2['objective_main'], string[]> = {
-  'valorizar': ['Atalaia', 'Nassau', 'Bonaire', 'Navagio', 'Tradicional'],
+  'valorizar': ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'],
   'familia': ['Tradicional', 'Bonaire', 'Tropical', 'Tortuga', 'Cancún'],
   'social': ['Cancún', 'Tropical', 'Atalaia', 'Tradicional', 'Tortuga'],
-  'relaxar': ['Navagio', 'Nassau', 'Italiana', 'Tradicional', 'Bonaire'],
+  'relaxar': ['Navagio', 'Italiana', 'Tradicional', 'Bonaire'],
 };
 
 function scoreObjective(model: PoolModelData, input: QuizInputV2): number {
@@ -267,10 +267,10 @@ function scoreIntent(model: PoolModelData, input: QuizInputV2): number {
 }
 
 const PROFILE_AFFINITY: Record<CustomerProfile, string[]> = {
-  'RELAXADOR': ['Navagio', 'Nassau', 'Tradicional'],
+  'RELAXADOR': ['Navagio', 'Tradicional', 'Bonaire'],
   'FAMILIA': ['Tradicional', 'Bonaire', 'Tropical', 'Tortuga'],
   'SOCIAL': ['Cancún', 'Tropical', 'Atalaia', 'Tradicional'],
-  'PREMIUM': ['Atalaia', 'Nassau', 'Bonaire', 'Navagio', 'Tradicional'],
+  'PREMIUM': ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'],
   'COMPACTO': ['Italiana', 'Navagio', 'Tropical', 'Cancún'],
 };
 
@@ -281,6 +281,9 @@ function profileBonus(model: PoolModelData, profile: CustomerProfile): number {
 
 function specialBonus(model: PoolModelData, input: QuizInputV2): number {
   let bonus = 0;
+
+  // Rule 0: Nassau penalty — complex to install, deprioritize
+  if (model.nome_modelo === 'Nassau') bonus -= 15;
 
   // Rule 1: Navagio relax compacta
   if (
@@ -301,7 +304,7 @@ function specialBonus(model: PoolModelData, input: QuizInputV2): number {
     input.space_bucket === '3_5m' &&
     input.objective_main === 'valorizar' &&
     input.budget_range !== 'ate_18k' &&
-    ['Nassau', 'Navagio', 'Bonaire'].includes(model.nome_modelo)
+    ['Navagio', 'Bonaire'].includes(model.nome_modelo)
   ) bonus += 10;
 
   // Rule 5: Família orçamento controlado
@@ -313,7 +316,7 @@ function specialBonus(model: PoolModelData, input: QuizInputV2): number {
 
   // Rule 6: Valorizar — boost premium models
   if (input.objective_main === 'valorizar') {
-    const premiumModels = ['Atalaia', 'Nassau', 'Bonaire', 'Navagio', 'Tradicional'];
+    const premiumModels = ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'];
     if (premiumModels.includes(model.nome_modelo)) bonus += 10;
     if (model.possui_spa || model.possui_prainha) bonus += 5;
   }
