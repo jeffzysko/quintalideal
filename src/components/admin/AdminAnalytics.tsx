@@ -183,7 +183,7 @@ export function AdminAnalytics({ franchiseMap }: AdminAnalyticsProps) {
           <span className="text-[10px] sm:text-xs text-muted-foreground">({totalSessions} sessões)</span>
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto">
-          {isSuperAdmin && (
+          {Object.keys(franchiseMap).length > 0 && (
             <Select value={filterFranchise} onValueChange={setFilterFranchise}>
               <SelectTrigger className="flex-1 sm:w-44 rounded-xl h-9 text-xs sm:text-sm">
                 <SelectValue placeholder="Todas franquias" />
