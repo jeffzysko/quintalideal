@@ -170,11 +170,11 @@ describe('calculateModelScore', () => {
     expect(scored.score).toBeLessThanOrEqual(100);
   });
 
-  it('bonus valorizar para modelos premium', () => {
+  it('bonus valorizar para modelos premium (Atalaia > Italiana)', () => {
     const input: QuizInputV2 = { space_bucket: '5_7m', home_status: 'casa_propria', purchase_intent: '2026', usage_profile: 'premium', budget_range: '30_50k', pool_preference: 'classica', objective_main: 'valorizar' };
-    const nassau = calculateModelScore(allMockModels[2], input, 'PREMIUM'); // Nassau
+    const atalaia = calculateModelScore(allMockModels[5], input, 'PREMIUM'); // Atalaia
     const italiana = calculateModelScore(allMockModels[3], input, 'PREMIUM'); // Italiana
-    expect(nassau.specialBonus).toBeGreaterThan(italiana.specialBonus);
+    expect(atalaia.specialBonus).toBeGreaterThan(italiana.specialBonus);
   });
 });
 
