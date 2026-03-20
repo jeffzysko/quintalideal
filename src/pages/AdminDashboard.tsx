@@ -38,6 +38,7 @@ const AdminEmailTemplates = lazy(() => import('@/components/admin/AdminEmailTemp
 const AdminUserManager = lazy(() => import('@/components/admin/AdminUserManager').then(m => ({ default: m.AdminUserManager })));
 const AdminCityManager = lazy(() => import('@/components/admin/AdminCityManager').then(m => ({ default: m.AdminCityManager })));
 const KanbanBoard = lazy(() => import('@/components/franchise/KanbanBoard').then(m => ({ default: m.KanbanBoard })));
+const AdminProfileDistribution = lazy(() => import('@/components/admin/AdminProfileDistribution').then(m => ({ default: m.AdminProfileDistribution })));
 const FranchiseDashboard = lazy(() => import('@/pages/FranchiseDashboard'));
 
 function TabFallback() {
