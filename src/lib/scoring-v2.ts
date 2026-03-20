@@ -660,6 +660,7 @@ export function recommendPoolsV2(input: QuizInputV2, allModels: PoolModelData[])
 
 // ── Diverse Alternatives Selection ──
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function isSameCategory(a: PoolModelData, b: PoolModelData): boolean {
   return a.categoria_tamanho === b.categoria_tamanho
     && a.possui_spa === b.possui_spa
