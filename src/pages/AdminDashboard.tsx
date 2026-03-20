@@ -25,6 +25,7 @@ import { TimeRangeSelector, filterByTimeRange, type TimeRange } from '@/componen
 import { SectionHeader } from '@/components/dashboard/SectionHeader';
 import type { MetricCardProps } from '@/components/dashboard/MetricCard';
 import { InsightCards } from '@/components/dashboard/InsightCards';
+import { ExecutiveSummary } from '@/components/admin/ExecutiveSummary';
 import { OrganizationSwitcher } from '@/components/OrganizationSwitcher';
 import { useLeadsRealtime } from '@/hooks/useLeadsRealtime';
 

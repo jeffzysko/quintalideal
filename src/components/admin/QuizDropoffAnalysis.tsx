@@ -5,18 +5,8 @@ import { AlertTriangle, ArrowDown } from 'lucide-react';
 interface AnalyticsEvent {
   session_id: string;
   event_name: string;
+  metadata?: Record<string, unknown> | null;
 }
-
-const QUIZ_STEPS = [
-  { key: 'quiz_started', label: 'Iniciou quiz', emoji: '🏁' },
-  { key: 'quiz_question_answered_1', label: 'P1 – Espaço', emoji: '📐' },
-  { key: 'quiz_question_answered_2', label: 'P2 – Moradia', emoji: '🏠' },
-  { key: 'quiz_question_answered_3', label: 'P3 – Uso', emoji: '🏊' },
-  { key: 'quiz_question_answered_4', label: 'P4 – Intenção', emoji: '📅' },
-  { key: 'quiz_question_answered_5', label: 'P5 – Preferência', emoji: '💎' },
-  { key: 'quiz_question_answered_6', label: 'P6 – Orçamento', emoji: '💰' },
-  { key: 'quiz_completed', label: 'Finalizou quiz', emoji: '✅' },
-];
 
 interface Props {
   events: AnalyticsEvent[];
@@ -24,32 +14,6 @@ interface Props {
 
 export function QuizDropoffAnalysis({ events }: Props) {
   const dropoffData = useMemo(() => {
-    // Build session -> max question reached map
-    const sessionProgress: Record<string, Set<string>> = {};
-
-    events.forEach(e => {
-      if (!sessionProgress[e.session_id]) sessionProgress[e.session_id] = new Set();
-      
-      if (e.event_name === 'quiz_started') {
-        sessionProgress[e.session_id].add('quiz_started');
-      } else if (e.event_name === 'quiz_question_answered') {
-        // This event has metadata but we're mapping by event_name
-        sessionProgress[e.session_id].add(e.event_name);
-      } else if (e.event_name === 'quiz_completed') {
-        sessionProgress[e.session_id].add('quiz_completed');
-      }
-    });
-
-    // Count sessions that answered each question number
-    const questionCounts: Record<number, number> = {};
-    let startedCount = 0;
-    let completedCount = 0;
-
-    events.forEach(e => {
-      if (e.event_name === 'quiz_started') startedCount++;
-    });
-
-    // Deduplicate by session
     const sessionsStarted = new Set<string>();
     const sessionsCompleted = new Set<string>();
     const sessionsByQuestion: Record<number, Set<string>> = {};
@@ -59,8 +23,7 @@ export function QuizDropoffAnalysis({ events }: Props) {
       if (e.event_name === 'quiz_started') sessionsStarted.add(e.session_id);
       if (e.event_name === 'quiz_completed') sessionsCompleted.add(e.session_id);
       if (e.event_name === 'quiz_question_answered') {
-        const meta = (e as any).metadata;
-        const qNum = meta?.question_number as number;
+        const qNum = e.metadata?.question_number as number;
         if (qNum && qNum >= 1 && qNum <= 6) {
           sessionsByQuestion[qNum].add(e.session_id);
         }
@@ -126,10 +89,10 @@ export function QuizDropoffAnalysis({ events }: Props) {
                     style={{
                       width: `${step.survivalRate}%`,
                       background: step.survivalRate > 70
-                        ? 'hsl(142, 60%, 45%)'
+                        ? 'hsl(var(--chart-2))'
                         : step.survivalRate > 40
                         ? 'hsl(38, 90%, 55%)'
-                        : 'hsl(0, 70%, 55%)',
+                        : 'hsl(var(--destructive))',
                       minWidth: step.count > 0 ? '2rem' : 0,
                     }}
                   />
@@ -140,7 +103,7 @@ export function QuizDropoffAnalysis({ events }: Props) {
                 </div>
                 {i > 0 && step.dropoff > 0 && (
                   <span className={`text-[9px] sm:text-[10px] font-bold w-12 sm:w-14 text-right px-1 sm:px-1.5 py-0.5 rounded-md shrink-0 ${
-                    step.dropoff >= 20 ? 'text-red-600 bg-red-500/10' : 
+                    step.dropoff >= 20 ? 'text-destructive bg-destructive/10' : 
                     step.dropoff >= 10 ? 'text-amber-600 bg-amber-500/10' : 
                     'text-muted-foreground bg-muted/40'
                   }`}>
