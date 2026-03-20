@@ -226,7 +226,7 @@ export default function RankingQuintais() {
                   key={lead.id}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.4 + i * 0.025 }}
+                  transition={{ delay: 0.4 + Math.min(i * 0.025, 0.12) }}
                 >
                   <Card className={`transition-all hover:shadow-md ${tier.glow || ''}`}>
                     <CardContent className="p-3 md:p-4">

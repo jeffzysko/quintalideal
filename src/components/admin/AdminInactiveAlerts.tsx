@@ -119,7 +119,7 @@ export function AdminInactiveAlerts({
             key={alert.id}
             initial={{ opacity: 0, x: -16 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: i * 0.05 }}
+            transition={{ delay: Math.min(i * 0.05, 0.15) }}
             className={`rounded-xl p-3 border ${
               alert.overallSeverity === 'critical'
                 ? 'bg-destructive/5 border-destructive/20'

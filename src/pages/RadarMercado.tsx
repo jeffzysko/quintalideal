@@ -1,4 +1,5 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useMemo } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -160,21 +161,31 @@ function SectionCard({ children, title, icon, subtitle, delay, className = '' }:
 }
 
 export default function RadarMercado() {
-  
-  const [leads, setLeads] = useState<LeadData[]>([]);
-  const [franchises, setFranchises] = useState<Franchise[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: leads = [], isLoading: loadingLeads } = useQuery({
+    queryKey: ['radar-leads'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('leads')
+        .select('cidade, pontuacao_quintal, modelo_recomendado, respostas_questionario, franquia_id, status_lead, created_at')
+        .order('created_at', { ascending: false })
+        .limit(2000);
+      if (error) throw error;
+      return (data || []) as LeadData[];
+    },
+    staleTime: 10 * 60 * 1000,
+  });
 
-  useEffect(() => {
-    Promise.all([
-      supabase.from('leads').select('cidade, pontuacao_quintal, modelo_recomendado, respostas_questionario, franquia_id, status_lead, created_at'),
-      supabase.from('franchises').select('id, nome_franquia'),
-    ]).then(([leadsRes, franchisesRes]) => {
-      setLeads((leadsRes.data || []) as LeadData[]);
-      setFranchises(franchisesRes.data || []);
-      setLoading(false);
-    });
-  }, []);
+  const { data: franchises = [], isLoading: loadingFranchises } = useQuery({
+    queryKey: ['radar-franchises'],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('franchises').select('id, nome_franquia');
+      if (error) throw error;
+      return (data || []) as Franchise[];
+    },
+    staleTime: 30 * 60 * 1000,
+  });
+
+  const loading = loadingLeads || loadingFranchises;
 
   const franchiseMap = useMemo(() => {
     const m: Record<string, string> = {};
