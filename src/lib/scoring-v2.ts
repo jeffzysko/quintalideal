@@ -558,6 +558,7 @@ export function calculateLegacyScore(input: QuizInputV2): number {
     case 'familia_grande': score += 15; break;
     case 'amigos': score += 13; break;
     case 'familia_pequena': score += 11; break;
+    case 'premium': score += 15; break;
     case 'casal': score += 9; break;
   }
   switch (input.budget_range) {
