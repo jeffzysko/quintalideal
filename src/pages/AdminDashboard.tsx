@@ -459,7 +459,6 @@ export default function AdminDashboard() {
             <Suspense fallback={<TabFallback />}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
                 <AdminFranchiseRanking leads={orgFilteredLeads} franchiseMap={franchiseMap} />
-                <AdminReferralMetrics leads={orgFilteredLeads} />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
                 <Card className="card-premium">
