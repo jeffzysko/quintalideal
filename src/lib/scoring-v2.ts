@@ -267,10 +267,10 @@ function scoreIntent(model: PoolModelData, input: QuizInputV2): number {
 }
 
 const PROFILE_AFFINITY: Record<CustomerProfile, string[]> = {
-  'RELAXADOR': ['Navagio', 'Nassau', 'Tradicional'],
+  'RELAXADOR': ['Navagio', 'Tradicional', 'Bonaire'],
   'FAMILIA': ['Tradicional', 'Bonaire', 'Tropical', 'Tortuga'],
   'SOCIAL': ['Cancún', 'Tropical', 'Atalaia', 'Tradicional'],
-  'PREMIUM': ['Atalaia', 'Nassau', 'Bonaire', 'Navagio', 'Tradicional'],
+  'PREMIUM': ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'],
   'COMPACTO': ['Italiana', 'Navagio', 'Tropical', 'Cancún'],
 };
 
