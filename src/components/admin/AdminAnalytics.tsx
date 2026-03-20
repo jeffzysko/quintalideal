@@ -39,10 +39,9 @@ interface AdminAnalyticsProps {
   role?: string | null;
 }
 
-export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
+export function AdminAnalytics({ franchiseMap }: AdminAnalyticsProps) {
   const [periodDays, setPeriodDays] = useState('30');
   const [filterFranchise, setFilterFranchise] = useState('all');
-  const isSuperAdmin = role === 'super_admin';
 
   const { data: events = [], isLoading: loading, isError, refetch } = useQuery({
     queryKey: ['analytics-events', periodDays],
