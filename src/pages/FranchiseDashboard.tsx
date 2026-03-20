@@ -110,7 +110,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
         .eq('franquia_id', franchiseId!)
         .gte('created_at', twelveMonthsAgo.toISOString())
         .order('created_at', { ascending: false })
-        .limit(3000);
+        .limit(1000);
       if (error) throw error;
       return (data || []) as (LeadRow & { respostas_questionario?: Record<string, string> | null })[];
     },
