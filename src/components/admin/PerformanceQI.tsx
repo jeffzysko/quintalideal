@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, Cell } from 'recharts';
 import {
-  TrendingUp, TrendingDown, Target, Zap, MapPin, Users, Building2,
+  TrendingUp, MapPin, Users, Building2,
   Flame, ExternalLink, ArrowRight, Download, Loader2, BarChart3, CheckCircle2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
