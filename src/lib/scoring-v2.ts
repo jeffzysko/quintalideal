@@ -9,7 +9,7 @@ export interface QuizInputV2 {
   space_bucket: 'ate_3m' | '3_5m' | '5_7m' | '7m_plus';
   home_status: 'casa_propria' | 'construindo' | 'planejando';
   purchase_intent: '2026' | '2026_2027' | 'pesquisando';
-  usage_profile: 'casal' | 'familia_pequena' | 'familia_grande' | 'amigos';
+  usage_profile: 'casal' | 'familia_pequena' | 'familia_grande' | 'amigos' | 'premium';
   budget_range: 'ate_18k' | '18_30k' | '30_50k';
   pool_preference: 'spa' | 'prainha' | 'classica' | 'indeciso';
   objective_main: 'relaxar' | 'familia' | 'social' | 'valorizar';
