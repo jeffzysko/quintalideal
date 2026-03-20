@@ -29,7 +29,7 @@ import { OrganizationSwitcher } from '@/components/OrganizationSwitcher';
 import { useLeadsRealtime } from '@/hooks/useLeadsRealtime';
 
 // Lazy load heavy tab components
-const AdminCityRanking = lazy(() => import('@/components/admin/AdminCityRanking').then(m => ({ default: m.AdminCityRanking })));
+// AdminCityRanking moved to Performance QI tab
 const AdminFranchiseRanking = lazy(() => import('@/components/admin/AdminFranchiseRanking').then(m => ({ default: m.AdminFranchiseRanking })));
 const AdminReferralMetrics = lazy(() => import('@/components/admin/AdminReferralMetrics').then(m => ({ default: m.AdminReferralMetrics })));
 const AdminAnalytics = lazy(() => import('@/components/admin/AdminAnalytics').then(m => ({ default: m.AdminAnalytics })));
@@ -38,7 +38,7 @@ const AdminEmailTemplates = lazy(() => import('@/components/admin/AdminEmailTemp
 const AdminUserManager = lazy(() => import('@/components/admin/AdminUserManager').then(m => ({ default: m.AdminUserManager })));
 const AdminCityManager = lazy(() => import('@/components/admin/AdminCityManager').then(m => ({ default: m.AdminCityManager })));
 const KanbanBoard = lazy(() => import('@/components/franchise/KanbanBoard').then(m => ({ default: m.KanbanBoard })));
-const AdminProfileDistribution = lazy(() => import('@/components/admin/AdminProfileDistribution').then(m => ({ default: m.AdminProfileDistribution })));
+// AdminProfileDistribution moved to Performance QI tab
 const FranchiseDashboard = lazy(() => import('@/pages/FranchiseDashboard'));
 const PerformanceQI = lazy(() => import('@/components/admin/PerformanceQI').then(m => ({ default: m.PerformanceQI })));
 const AdminLeadsReadOnly = lazy(() => import('@/components/admin/AdminLeadsReadOnly').then(m => ({ default: m.AdminLeadsReadOnly })));
@@ -449,11 +449,10 @@ export default function AdminDashboard() {
 
             <Suspense fallback={<TabFallback />}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
-                <AdminCityRanking leads={orgFilteredLeads} />
                 <AdminFranchiseRanking leads={orgFilteredLeads} franchiseMap={franchiseMap} />
+                <AdminReferralMetrics leads={orgFilteredLeads} />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
-                <AdminReferralMetrics leads={orgFilteredLeads} />
                 <Card className="card-premium">
                 <CardHeader className="px-3 sm:px-6"><CardTitle className="text-sm font-bold">Leads por Mês</CardTitle></CardHeader>
                 <CardContent className="px-2 sm:px-6">
@@ -472,9 +471,6 @@ export default function AdminDashboard() {
                 </CardContent>
               </Card>
             </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
-                <AdminProfileDistribution orgFilter={orgFilter} />
-              </div>
             </Suspense>
           </>
         )}
