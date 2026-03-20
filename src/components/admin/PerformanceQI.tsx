@@ -15,7 +15,7 @@ import { motion } from 'framer-motion';
 import { type LeadRow, type Franchise } from '@/lib/lead-constants';
 import { useNavigate } from 'react-router-dom';
 import { useIsMobile } from '@/hooks/use-mobile';
-import { normalizeQuizToV2, detectCustomerProfile, type QuizInputV2 } from '@/lib/scoring-v2';
+import { normalizeQuizToV2, detectCustomerProfile } from '@/lib/scoring-v2';
 
 interface PerformanceQIProps {
   franchiseMap: Record<string, string>;
