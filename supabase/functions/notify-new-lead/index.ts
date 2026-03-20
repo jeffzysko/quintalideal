@@ -83,7 +83,7 @@ function buildLeadEmailHTML(
             ${buildRow("✉️", "E-mail", String(lead.email || "Não informado"), false)}
             ${buildRow("📍", "Cidade", String(lead.cidade || "Não informada"), false)}
             ${buildRow("🏊", "Modelo Recomendado", String(lead.modelo_recomendado || "—"), false)}
-            ${lead.referred_by ? buildRow("🔗", "Indicado por", String(lead.referred_by), false) : ""}
+            
           </table>
         </td></tr>
 

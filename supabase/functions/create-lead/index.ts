@@ -303,7 +303,7 @@ Deno.serve(async (req) => {
 
       // Fire webhook for assigned franchise
       fireWebhook(supabase, assignedFranchiseId, {
-        nome, telefone, email, cidade, pontuacaoQuintal, modeloRecomendado, referredBy,
+        nome, telefone, email, cidade, pontuacaoQuintal, modeloRecomendado,
       }).catch((err) => console.error("Webhook error:", err));
     }
 
@@ -340,7 +340,6 @@ async function fireWebhook(
     cidade: string | null;
     pontuacaoQuintal: number | null;
     modeloRecomendado: string | null;
-    referredBy: string | null;
   }
 ) {
   const { data: franchise } = await supabase
@@ -360,7 +359,6 @@ async function fireWebhook(
       cidade: lead.cidade,
       pontuacao_quintal: lead.pontuacaoQuintal,
       modelo_recomendado: lead.modeloRecomendado,
-      referred_by: lead.referredBy,
       created_at: new Date().toISOString(),
     },
     franquia: {
