@@ -508,31 +508,6 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
           <ValorizationSimulator score={score} lang={lang} />
         </motion.div>
 
-        {/* Challenge CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2 }}
-          className="mt-5 rounded-2xl p-5 text-center"
-          style={{
-            background: 'linear-gradient(135deg, hsl(207 90% 54% / 0.08), hsl(180 100% 50% / 0.04))',
-            border: '1px solid hsl(207 90% 54% / 0.15)',
-          }}
-        >
-          <Users className="w-6 h-6 text-primary mx-auto mb-2" />
-          <p className="text-sm font-semibold text-foreground mb-1">
-            {t('action_challenge_title', lang)}
-          </p>
-          <p className="text-xs text-muted-foreground mb-3">{t('action_challenge_subtitle', lang)}</p>
-          <Button
-            variant="outline"
-            onClick={handleShareWhatsApp}
-            className="rounded-xl border-primary/20 text-primary hover:bg-primary/5 gap-2"
-          >
-            <MessageCircle className="w-4 h-4" />
-            {t('action_challenge_btn', lang)}
-          </Button>
-        </motion.div>
 
         {/* Share row */}
         <motion.div
