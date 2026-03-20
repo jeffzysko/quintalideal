@@ -83,6 +83,12 @@ const translations = {
   quiz_q6_o2: { pt: 'R$ 18 mil a R$ 30 mil', es: 'R$ 18 mil a R$ 30 mil' },
   quiz_q6_o3: { pt: 'R$ 30 mil a R$ 50 mil', es: 'R$ 30 mil a R$ 50 mil' },
 
+  quiz_q7: { pt: 'O que mais importa para você em uma piscina?', es: '¿Qué es lo más importante para ti en una piscina?' },
+  quiz_q7_o1: { pt: 'Relaxar', es: 'Relajarse' },
+  quiz_q7_o2: { pt: 'Curtir mais a família', es: 'Disfrutar en familia' },
+  quiz_q7_o3: { pt: 'Receber amigos', es: 'Recibir amigos' },
+  quiz_q7_o4: { pt: 'Valorizar a casa', es: 'Valorizar la casa' },
+
   quiz_city: { pt: 'Cidade onde você mora', es: 'Ciudad donde vives' },
   quiz_city_placeholder: { pt: 'Digite o nome da sua cidade...', es: 'Escribe el nombre de tu ciudad...' },
   quiz_city_empty: { pt: 'Nenhuma cidade encontrada', es: 'Ninguna ciudad encontrada' },
