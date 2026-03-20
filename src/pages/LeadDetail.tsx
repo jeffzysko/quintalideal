@@ -591,6 +591,24 @@ export default function LeadDetail() {
                         </p>
                       </div>
 
+                      {/* Modelo Vendido — only when status is vendido */}
+                      {status === 'vendido' && (
+                        <div>
+                          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Modelo Vendido</label>
+                          <Select value={modeloVendido} onValueChange={setModeloVendido}>
+                            <SelectTrigger className="bg-muted/50"><SelectValue placeholder="Selecione o modelo vendido" /></SelectTrigger>
+                            <SelectContent>
+                              {poolModels.map(m => (
+                                <SelectItem key={m} value={m}>{m}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <p className="text-[11px] text-muted-foreground mt-1">
+                            Registre o modelo efetivamente vendido para análise de aderência.
+                          </p>
+                        </div>
+                      )}
+
                       <div>
                         <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Observações</label>
                         <Textarea
