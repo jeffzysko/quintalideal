@@ -84,28 +84,39 @@ export function normalizeQuizToV2(answers: Record<string, string>): QuizInputV2 
   const intentMap: Record<string, QuizInputV2['purchase_intent']> = {
     '2026': '2026', '2026-2027': '2026_2027', 'pesquisando': 'pesquisando',
   };
-  const usageMap: Record<string, QuizInputV2['usage_profile']> = {
-    'casal': 'casal', 'familia-pequena': 'familia_pequena',
-    'familia-grande': 'familia_grande', 'amigos': 'amigos',
-  };
   const budgetMap: Record<string, QuizInputV2['budget_range']> = {
     'ate-18': 'ate_18k', '18-30': '18_30k', '30-50': '30_50k',
   };
   const prefMap: Record<string, QuizInputV2['pool_preference']> = {
     'prainha': 'prainha', 'spa': 'spa', 'simples': 'classica', 'nao-sei': 'indeciso',
   };
-  const objMap: Record<string, QuizInputV2['objective_main']> = {
-    'relaxar': 'relaxar', 'familia': 'familia', 'social': 'social', 'valorizar': 'valorizar',
+
+  // Combined uso question maps to both usage_profile and objective_main
+  const usoToProfile: Record<string, QuizInputV2['usage_profile']> = {
+    'relaxar': 'casal',
+    'filhos': 'familia_pequena',
+    'familia': 'familia_grande',
+    'amigos': 'amigos',
+    'valorizar': 'premium',
   };
+  const usoToObjective: Record<string, QuizInputV2['objective_main']> = {
+    'relaxar': 'relaxar',
+    'filhos': 'familia',
+    'familia': 'familia',
+    'amigos': 'social',
+    'valorizar': 'valorizar',
+  };
+
+  const usoAnswer = answers.uso || '';
 
   return {
     space_bucket: spaceMap[answers.espaco] || 'ate_3m',
     home_status: homeMap[answers.moradia] || 'casa_propria',
     purchase_intent: intentMap[answers.intencao] || 'pesquisando',
-    usage_profile: usageMap[answers.uso] || 'casal',
+    usage_profile: usoToProfile[usoAnswer] || 'casal',
     budget_range: budgetMap[answers.orcamento] || 'ate_18k',
     pool_preference: prefMap[answers.preferencia] || 'indeciso',
-    objective_main: objMap[answers.objetivo] || 'relaxar',
+    objective_main: usoToObjective[usoAnswer] || 'relaxar',
     cidade: answers.cidade,
   };
 }
