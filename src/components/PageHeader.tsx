@@ -50,7 +50,7 @@ export function PageHeader({ title, subtitle, icon, fallbackPath, rightSlot }: P
                 <BackButton fallback={fallbackPath} />
 
                 <motion.img
-                  src={logoSplash}
+                  src={logoQuintalIdeal}
                   alt="Splash"
                   className="h-7 md:h-9 shrink-0 hidden sm:block"
                   style={{ filter: 'drop-shadow(0 0 8px hsl(var(--primary) / 0.4))' }}
