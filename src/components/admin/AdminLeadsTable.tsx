@@ -96,12 +96,12 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                 <thead>
                   <tr className="border-y border-border/40 bg-muted/30" role="row">
                     <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Nome</th>
+                    <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Temp.</th>
                     <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Cidade</th>
                     <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden lg:table-cell">Franquia</th>
-                    <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Score</th>
+                    <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Quintal</th>
                     <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Modelo</th>
                     <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Status</th>
-                    <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden lg:table-cell">Ref</th>
                     <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Data</th>
                     <th role="columnheader" className="w-12 py-3 px-4"></th>
                   </tr>
