@@ -504,12 +504,27 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
           </motion.div>
         )}
 
+        {/* Urgency + social proof */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.78 }}
+          className="mt-5 text-center"
+        >
+          <p className="text-[11px] text-foreground/60 font-medium mb-1">
+            {lang === 'es' ? '📈 Alta demanda en tu región' : '📈 Alta procura na sua região'}
+          </p>
+          <p className="text-[10px] text-muted-foreground">
+            {t('action_whatsapp_urgency', lang)}
+          </p>
+        </motion.div>
+
         {/* Primary CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
-          className="mt-5"
+          className="mt-3"
         >
           <Button
             onClick={handleWhatsApp}
@@ -524,9 +539,13 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
               <ArrowRight className="w-4 h-4" />
             </motion.span>
           </Button>
-          <p className="text-center text-[10px] text-muted-foreground mt-2">
-            {t('action_whatsapp_hint', lang)}
-          </p>
+          <div className="flex items-center justify-center gap-3 mt-2.5">
+            <span className="text-[10px] text-muted-foreground flex items-center gap-1">⚡ {lang === 'es' ? 'Rápido' : 'Rápido'}</span>
+            <span className="w-px h-3 bg-border" />
+            <span className="text-[10px] text-muted-foreground flex items-center gap-1">🤝 {lang === 'es' ? 'Sin compromiso' : 'Sem compromisso'}</span>
+            <span className="w-px h-3 bg-border" />
+            <span className="text-[10px] text-muted-foreground flex items-center gap-1">🎁 {lang === 'es' ? 'Condiciones especiales' : 'Condições especiais'}</span>
+          </div>
         </motion.div>
 
         {/* Valorization Simulator */}
