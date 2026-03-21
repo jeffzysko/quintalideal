@@ -18,7 +18,7 @@ import tradicionalImg from '@/assets/pools/tradicional.webp';
 
 const PhotoUpload = lazy(() => import('./PhotoUpload').then(m => ({ default: m.PhotoUpload })));
 const PhotoAnalysis = lazy(() => import('./PhotoAnalysis').then(m => ({ default: m.PhotoAnalysis })));
-const PreDiagnosis = lazy(() => import('./PreDiagnosis').then(m => ({ default: m.PreDiagnosis })));
+// PreDiagnosis removed to reduce friction
 const QuizStep = lazy(() => import('./QuizStep').then(m => ({ default: m.QuizStep })));
 const ProcessingScreen = lazy(() => import('./ProcessingScreen').then(m => ({ default: m.ProcessingScreen })));
 
