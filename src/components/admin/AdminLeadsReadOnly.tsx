@@ -207,17 +207,19 @@ export function AdminLeadsReadOnly({ franchiseMap, franchises }: AdminLeadsReadO
               {/* Mobile cards */}
               <div className="md:hidden divide-y divide-border/40">
                 {leads.map((lead) => {
-                  const isHot = (lead.respostas_questionario as any)?.v2_recommendation?.is_hot_lead;
+                  const temp = classifyLead((lead.respostas_questionario as Record<string, string>) || null, lead.pontuacao_quintal);
                   return (
                     <button
                       key={lead.id}
                       onClick={() => navigate(`/admin/lead/${lead.id}`)}
-                      className="w-full text-left p-3 hover:bg-muted/30 transition-colors"
+                      className={`w-full text-left p-3 hover:bg-muted/30 transition-colors border-l-[3px] ${temp.borderAccent}`}
                     >
                       <div className="flex items-start justify-between gap-2 mb-1">
-                        <span className="text-sm font-medium truncate flex items-center gap-1">
+                        <span className="text-sm font-medium truncate flex items-center gap-1.5">
                           {lead.nome || '—'}
-                          {isHot && <span className="text-xs">🔥</span>}
+                          <Badge className={`${temp.bgColor} ${temp.color} border text-[9px] font-semibold`} variant="outline">
+                            {temp.emoji} {temp.label}
+                          </Badge>
                         </span>
                         <Badge variant="outline" className={`text-[10px] shrink-0 ${STATUS_COLORS[lead.status_lead] || ''}`}>
                           {STATUS_LABELS[lead.status_lead] || lead.status_lead}
@@ -234,9 +236,7 @@ export function AdminLeadsReadOnly({ franchiseMap, franchises }: AdminLeadsReadO
                           {format(new Date(lead.created_at), "dd/MM", { locale: ptBR })}
                         </span>
                         {lead.pontuacao_quintal != null && (
-                          <span className="flex items-center gap-0.5">
-                            <Star className="w-3 h-3 text-amber-500" />{lead.pontuacao_quintal}
-                          </span>
+                          <span className="font-medium">{lead.pontuacao_quintal}%</span>
                         )}
                       </div>
                       <div className="text-xs text-muted-foreground mt-0.5">
