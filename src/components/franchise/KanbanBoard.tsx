@@ -123,12 +123,7 @@ const LeadCard = memo(function LeadCard({
 
   const currentStatus = lead.status_lead;
 
-  const borderAccent =
-    temp.temperature === 'quente'
-      ? 'border-l-emerald-500'
-      : temp.temperature === 'morno'
-      ? 'border-l-amber-500'
-      : 'border-l-blue-400';
+  const borderAccent = temp.borderAccent;
 
   const scoreColor = (lead.pontuacao_quintal || 0) >= 70 ? 'bg-emerald-500' : (lead.pontuacao_quintal || 0) >= 40 ? 'bg-amber-500' : 'bg-red-400';
 
@@ -179,11 +174,6 @@ const LeadCard = memo(function LeadCard({
         </div>
 
         <div className="flex items-center gap-1.5 mb-2 flex-wrap">
-          {(lead.respostas_questionario as any)?.v2_recommendation?.is_hot_lead && (
-            <Badge className="bg-red-50 text-red-600 border-red-200 text-[10px] font-semibold animate-pulse" variant="outline">
-              🔥 Quente
-            </Badge>
-          )}
           {(lead as any).lead_origin === 'manual' && (
             <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-[10px] font-semibold" variant="outline">
               ✏️ Manual
@@ -375,12 +365,7 @@ const MobilePipelineCard = memo(function MobilePipelineCard({
     }
   };
 
-  const borderAccent =
-    temp.temperature === 'quente'
-      ? 'border-l-emerald-500'
-      : temp.temperature === 'morno'
-      ? 'border-l-amber-500'
-      : 'border-l-blue-400';
+  const borderAccent = temp.borderAccent;
 
   const scoreColor = (lead.pontuacao_quintal || 0) >= 70 ? 'bg-emerald-500' : (lead.pontuacao_quintal || 0) >= 40 ? 'bg-amber-500' : 'bg-red-400';
 

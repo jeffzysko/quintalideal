@@ -1,17 +1,11 @@
 import { memo } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, ChevronRight, Phone, MessageCircle, Clock, Flame, Snowflake, Thermometer } from 'lucide-react';
+import { MapPin, ChevronRight, Phone, MessageCircle, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { STATUS_LABELS, STATUS_COLORS, LeadRow } from '@/lib/lead-constants';
 import { motion } from 'framer-motion';
 import { SmartTagBadges } from '@/components/SmartTagBadges';
 import { classifyLead } from '@/lib/leadScoring';
-
-const TEMP_ICON: Record<string, typeof Flame> = {
-  quente: Flame,
-  morno: Thermometer,
-  frio: Snowflake,
-};
 
 function ScoreBar({ score }: { score: number }) {
   const color = score >= 70 ? 'bg-emerald-500' : score >= 40 ? 'bg-amber-500' : 'bg-red-400';
@@ -40,7 +34,6 @@ interface MobileLeadCardProps {
 export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePath = '/admin/lead', franchiseName }: MobileLeadCardProps) {
   const navigate = useNavigate();
   const temp = classifyLead(lead.respostas_questionario || null, lead.pontuacao_quintal);
-  const TempIcon = TEMP_ICON[temp.temperature] || Thermometer;
 
   const handleWhatsApp = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -67,13 +60,7 @@ export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePa
     return `${Math.floor(days / 30)}m`;
   };
 
-  // Left border accent based on temperature
-  const borderAccent =
-    temp.temperature === 'quente'
-      ? 'border-l-emerald-500'
-      : temp.temperature === 'morno'
-      ? 'border-l-amber-500'
-      : 'border-l-blue-400';
+  const borderAccent = temp.borderAccent;
 
   return (
     <motion.div
@@ -97,8 +84,8 @@ export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePa
                   </span>
                 </div>
                 {/* Temperature indicator dot */}
-                <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full ${temp.bgColor} flex items-center justify-center ring-2 ring-card`}>
-                  <TempIcon className={`w-2.5 h-2.5 ${temp.color}`} />
+                <div className={`absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full ${temp.bgColor} flex items-center justify-center ring-2 ring-card`}>
+                  <span className="text-[10px] leading-none">{temp.emoji}</span>
                 </div>
               </div>
               <div className="min-w-0 flex-1">
@@ -129,11 +116,6 @@ export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePa
 
           {/* Tags row */}
           <div className="flex items-center gap-1.5 flex-wrap">
-            {(lead.respostas_questionario as any)?.v2_recommendation?.is_hot_lead && (
-              <Badge className="bg-red-50 text-red-600 border-red-200 text-[10px] font-semibold animate-pulse" variant="outline">
-                🔥 Quente
-              </Badge>
-            )}
             <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
               {temp.emoji} {temp.label}
             </Badge>

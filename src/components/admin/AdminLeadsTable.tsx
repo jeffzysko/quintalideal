@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileLeadCard } from './MobileLeadCard';
 import { SmartTagBadges } from '@/components/SmartTagBadges';
+import { classifyLead } from '@/lib/leadScoring';
 
 interface AdminLeadsTableProps {
   leads: LeadRow[];
@@ -95,18 +96,20 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                 <thead>
                   <tr className="border-y border-border/40 bg-muted/30" role="row">
                     <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Nome</th>
+                    <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Temp.</th>
                     <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Cidade</th>
                     <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden lg:table-cell">Franquia</th>
-                    <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Score</th>
+                    <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Quintal</th>
                     <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Modelo</th>
                     <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Status</th>
-                    <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden lg:table-cell">Ref</th>
                     <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Data</th>
                     <th role="columnheader" className="w-12 py-3 px-4"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/20">
-                  {leads.map((lead, i) => (
+                  {leads.map((lead, i) => {
+                    const temp = classifyLead((lead as any).respostas_questionario || null, lead.pontuacao_quintal);
+                    return (
                     <motion.tr
                       key={lead.id}
                       initial={{ opacity: 0 }}
@@ -126,6 +129,11 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                             )}
                           </div>
                         </div>
+                      </td>
+                      <td role="cell" className="py-3 px-4">
+                        <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
+                          {temp.emoji} {temp.label}
+                        </Badge>
                       </td>
                       <td role="cell" className="py-3 px-4 hidden md:table-cell text-muted-foreground text-sm">{lead.cidade || '—'}</td>
                       <td role="cell" className="py-3 px-4 hidden lg:table-cell">
@@ -147,11 +155,6 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                           <SmartTagBadges lead={lead} max={1} />
                         </div>
                       </td>
-                      <td role="cell" className="py-3 px-4 hidden lg:table-cell">
-                        {lead.referred_by ? (
-                          <span className="text-[10px] font-mono text-muted-foreground bg-muted/50 px-2 py-1 rounded-md">{lead.referred_by}</span>
-                        ) : <span className="text-muted-foreground/40">—</span>}
-                      </td>
                       <td role="cell" className="py-3 px-4 hidden md:table-cell text-muted-foreground text-xs tabular-nums">
                         {new Date(lead.created_at).toLocaleDateString('pt-BR')}
                       </td>
@@ -167,7 +170,8 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                         </Button>
                       </td>
                     </motion.tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>

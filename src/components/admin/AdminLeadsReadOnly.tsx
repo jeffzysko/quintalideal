@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, MapPin, Calendar, Star, Eye } from 'lucide-react';
+import { Search, MapPin, Calendar, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { STATUS_LABELS } from '@/lib/lead-constants';
 import { format } from 'date-fns';
@@ -13,6 +13,7 @@ import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { TableSkeleton } from '@/components/ui/table-skeleton';
+import { classifyLead } from '@/lib/leadScoring';
 
 interface AdminLeadsReadOnlyProps {
   franchiseMap: Record<string, string>;
@@ -138,25 +139,28 @@ export function AdminLeadsReadOnly({ franchiseMap, franchises }: AdminLeadsReadO
                   <TableHeader>
                     <TableRow>
                       <TableHead className="text-xs">Nome</TableHead>
+                      <TableHead className="text-xs">Temp.</TableHead>
                       <TableHead className="text-xs">Cidade</TableHead>
                       <TableHead className="text-xs">Franquia</TableHead>
                       <TableHead className="text-xs">Status</TableHead>
-                      <TableHead className="text-xs">Modelo Recomendado</TableHead>
-                      <TableHead className="text-xs text-center">Score</TableHead>
+                      <TableHead className="text-xs">Modelo</TableHead>
+                      <TableHead className="text-xs text-center">Quintal</TableHead>
                       <TableHead className="text-xs">Data</TableHead>
                       <TableHead className="text-xs w-10"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {leads.map((lead) => {
-                      const isHot = (lead.respostas_questionario as any)?.v2_recommendation?.is_hot_lead;
+                      const temp = classifyLead((lead.respostas_questionario as Record<string, string>) || null, lead.pontuacao_quintal);
                       return (
                         <TableRow key={lead.id} className="group hover:bg-muted/30">
                           <TableCell className="text-sm font-medium">
-                            <div className="flex items-center gap-1.5">
-                              {lead.nome || '—'}
-                              {isHot && <span className="text-xs" title="Lead quente">🔥</span>}
-                            </div>
+                            {lead.nome || '—'}
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
+                              {temp.emoji} {temp.label}
+                            </Badge>
                           </TableCell>
                           <TableCell className="text-sm text-muted-foreground">
                             <div className="flex items-center gap-1">
@@ -177,10 +181,7 @@ export function AdminLeadsReadOnly({ franchiseMap, franchises }: AdminLeadsReadO
                           </TableCell>
                           <TableCell className="text-center">
                             {lead.pontuacao_quintal != null ? (
-                              <div className="flex items-center justify-center gap-1">
-                                <Star className="w-3 h-3 text-amber-500" />
-                                <span className="text-sm font-medium">{lead.pontuacao_quintal}</span>
-                              </div>
+                              <span className="text-sm font-medium">{lead.pontuacao_quintal}%</span>
                             ) : '—'}
                           </TableCell>
                           <TableCell className="text-xs text-muted-foreground">
@@ -206,17 +207,19 @@ export function AdminLeadsReadOnly({ franchiseMap, franchises }: AdminLeadsReadO
               {/* Mobile cards */}
               <div className="md:hidden divide-y divide-border/40">
                 {leads.map((lead) => {
-                  const isHot = (lead.respostas_questionario as any)?.v2_recommendation?.is_hot_lead;
+                  const temp = classifyLead((lead.respostas_questionario as Record<string, string>) || null, lead.pontuacao_quintal);
                   return (
                     <button
                       key={lead.id}
                       onClick={() => navigate(`/admin/lead/${lead.id}`)}
-                      className="w-full text-left p-3 hover:bg-muted/30 transition-colors"
+                      className={`w-full text-left p-3 hover:bg-muted/30 transition-colors border-l-[3px] ${temp.borderAccent}`}
                     >
                       <div className="flex items-start justify-between gap-2 mb-1">
-                        <span className="text-sm font-medium truncate flex items-center gap-1">
+                        <span className="text-sm font-medium truncate flex items-center gap-1.5">
                           {lead.nome || '—'}
-                          {isHot && <span className="text-xs">🔥</span>}
+                          <Badge className={`${temp.bgColor} ${temp.color} border text-[9px] font-semibold`} variant="outline">
+                            {temp.emoji} {temp.label}
+                          </Badge>
                         </span>
                         <Badge variant="outline" className={`text-[10px] shrink-0 ${STATUS_COLORS[lead.status_lead] || ''}`}>
                           {STATUS_LABELS[lead.status_lead] || lead.status_lead}
@@ -233,9 +236,7 @@ export function AdminLeadsReadOnly({ franchiseMap, franchises }: AdminLeadsReadO
                           {format(new Date(lead.created_at), "dd/MM", { locale: ptBR })}
                         </span>
                         {lead.pontuacao_quintal != null && (
-                          <span className="flex items-center gap-0.5">
-                            <Star className="w-3 h-3 text-amber-500" />{lead.pontuacao_quintal}
-                          </span>
+                          <span className="font-medium">{lead.pontuacao_quintal}%</span>
                         )}
                       </div>
                       <div className="text-xs text-muted-foreground mt-0.5">
