@@ -32,7 +32,7 @@ export function Footer() {
           <div className="flex items-center gap-3 mb-4">
             <img src={logoHallow} alt="Hallow Comunicação" className="w-16 opacity-40 brightness-0 dark:invert" />
             <p className="text-[11px] text-muted-foreground leading-snug flex-1">
-              Iniciativa da Hallow Comunicação com a iGUi Santo Antônio.
+              Quintal Ideal é uma iniciativa da Hallow Comunicação juntamente com a iGUi Santo Antônio.
             </p>
           </div>
 
@@ -91,7 +91,7 @@ function BrandBlock() {
     <div className="col-span-1 flex flex-col items-start gap-3">
       <img src={logoHallow} alt="Hallow Comunicação" className="w-20 opacity-40 brightness-0 dark:invert" />
       <p className="text-xs text-muted-foreground leading-relaxed max-w-[220px]">
-        Essa é uma iniciativa da Hallow Comunicação juntamente com a iGUi Santo Antônio.
+        Quintal Ideal é uma iniciativa da Hallow Comunicação juntamente com a iGUi Santo Antônio.
       </p>
     </div>
   );
