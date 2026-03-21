@@ -24,6 +24,7 @@ type PushRequestBody = {
   url?: string;
   notification_key?: string;
   user_id_filter?: string;
+  type?: string; // new_lead | followup | status_change | sale | alert | system | test
 };
 
 function isApplePushEndpoint(endpoint: string): boolean {
@@ -135,6 +136,7 @@ Deno.serve(async (req) => {
       url: pushUrl,
       notification_key,
       user_id_filter,
+      type: notificationType,
     }: PushRequestBody = await req.json();
 
     if (!franchise_id || !title) {
@@ -170,6 +172,7 @@ Deno.serve(async (req) => {
       title,
       body: message || "",
       url: pushUrl || "/",
+      type: notificationType || "default",
     });
 
     const results = await Promise.all(

@@ -27,9 +27,10 @@ export function TestPushButton() {
         body: {
           franchise_id: effectiveFranchiseId,
           title: '🔔 Teste de notificação',
-          message: 'Se você recebeu este alerta, as notificações push estão funcionando!',
+          message: 'Se você recebeu este alerta, as notificações push estão funcionando! 🎉',
           url: '/notificacoes/preferencias',
           user_id_filter: user.id,
+          type: 'test',
         },
       });
 
