@@ -154,14 +154,15 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Get push subscriptions — optionally filtered to a single user (for test sends)
+    // Get push subscriptions — when user_id_filter is set (test mode), query by user only
     let subsQuery = supabase
       .from("push_subscriptions")
-      .select("*")
-      .eq("franchise_id", franchise_id);
+      .select("*");
 
     if (user_id_filter) {
       subsQuery = subsQuery.eq("user_id", user_id_filter);
+    } else {
+      subsQuery = subsQuery.eq("franchise_id", franchise_id);
     }
 
     const { data: subs, error } = await subsQuery;
