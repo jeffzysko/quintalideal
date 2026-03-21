@@ -30,7 +30,7 @@ export function Footer() {
         <div className="sm:hidden">
           {/* Brand + inline links */}
           <div className="flex items-center gap-3 mb-4">
-            <img src={logoSplash} alt="Splash Piscinas" className="w-8 opacity-70" />
+            <img src={logoHallow} alt="Hallow Comunicação" className="w-16 opacity-40 brightness-0 dark:invert" />
             <p className="text-[11px] text-muted-foreground leading-snug flex-1">
               Iniciativa da Hallow Comunicação com a iGUi Santo Antônio.
             </p>
