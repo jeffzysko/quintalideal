@@ -14,6 +14,16 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
   return outputArray;
 }
 
+function hasSameServerKey(currentKey: ArrayBuffer | null, expectedKey: Uint8Array): boolean {
+  if (!currentKey) return false;
+
+  const currentBytes = new Uint8Array(currentKey);
+
+  if (currentBytes.length !== expectedKey.length) return false;
+
+  return currentBytes.every((value, index) => value === expectedKey[index]);
+}
+
 export function usePushNotifications() {
   const { user, franchiseId } = useAuth();
   const [permission, setPermission] = useState<NotificationPermission>(
@@ -62,7 +72,34 @@ export function usePushNotifications() {
     if (!supported || !user) return;
 
     navigator.serviceWorker.ready.then(async (reg) => {
-      const sub = await reg.pushManager.getSubscription();
+      const expectedKey = urlBase64ToUint8Array(VAPID_PUBLIC_KEY);
+      let sub = await reg.pushManager.getSubscription();
+
+      if (sub && !hasSameServerKey(sub.options?.applicationServerKey ?? null, expectedKey)) {
+        try {
+          const staleEndpoint = sub.endpoint;
+
+          await sub.unsubscribe();
+
+          const { error: cleanupError } = await supabase
+            .from('push_subscriptions' as any)
+            .delete()
+            .eq('endpoint', staleEndpoint)
+            .eq('user_id', user.id);
+
+          if (cleanupError) throw cleanupError;
+
+          sub = await reg.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: expectedKey as BufferSource,
+          });
+        } catch (err) {
+          console.error('Push subscription refresh failed:', err);
+          setIsSubscribed(false);
+          return;
+        }
+      }
+
       setIsSubscribed(!!sub);
 
       if (sub) {
