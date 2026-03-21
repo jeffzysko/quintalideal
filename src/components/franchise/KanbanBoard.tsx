@@ -370,12 +370,7 @@ const MobilePipelineCard = memo(function MobilePipelineCard({
     }
   };
 
-  const borderAccent =
-    temp.temperature === 'quente'
-      ? 'border-l-emerald-500'
-      : temp.temperature === 'morno'
-      ? 'border-l-amber-500'
-      : 'border-l-blue-400';
+  const borderAccent = temp.borderAccent;
 
   const scoreColor = (lead.pontuacao_quintal || 0) >= 70 ? 'bg-emerald-500' : (lead.pontuacao_quintal || 0) >= 40 ? 'bg-amber-500' : 'bg-red-400';
 

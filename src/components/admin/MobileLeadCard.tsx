@@ -84,8 +84,8 @@ export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePa
                   </span>
                 </div>
                 {/* Temperature indicator dot */}
-                <div className={`absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full ${temp.bgColor} flex items-center justify-center ring-2 ring-card`}>
-                  <TempIcon className={`w-2.5 h-2.5 ${temp.color}`} />
+                <div className={`absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full ${temp.bgColor} flex items-center justify-center ring-2 ring-card`}>
+                  <span className="text-[10px] leading-none">{temp.emoji}</span>
                 </div>
               </div>
               <div className="min-w-0 flex-1">
