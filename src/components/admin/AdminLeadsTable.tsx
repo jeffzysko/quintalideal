@@ -107,7 +107,9 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/20">
-                  {leads.map((lead, i) => (
+                  {leads.map((lead, i) => {
+                    const temp = classifyLead((lead as any).respostas_questionario || null, lead.pontuacao_quintal);
+                    return (
                     <motion.tr
                       key={lead.id}
                       initial={{ opacity: 0 }}
@@ -127,6 +129,11 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                             )}
                           </div>
                         </div>
+                      </td>
+                      <td role="cell" className="py-3 px-4">
+                        <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
+                          {temp.emoji} {temp.label}
+                        </Badge>
                       </td>
                       <td role="cell" className="py-3 px-4 hidden md:table-cell text-muted-foreground text-sm">{lead.cidade || '—'}</td>
                       <td role="cell" className="py-3 px-4 hidden lg:table-cell">
@@ -148,11 +155,6 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                           <SmartTagBadges lead={lead} max={1} />
                         </div>
                       </td>
-                      <td role="cell" className="py-3 px-4 hidden lg:table-cell">
-                        {lead.referred_by ? (
-                          <span className="text-[10px] font-mono text-muted-foreground bg-muted/50 px-2 py-1 rounded-md">{lead.referred_by}</span>
-                        ) : <span className="text-muted-foreground/40">—</span>}
-                      </td>
                       <td role="cell" className="py-3 px-4 hidden md:table-cell text-muted-foreground text-xs tabular-nums">
                         {new Date(lead.created_at).toLocaleDateString('pt-BR')}
                       </td>
@@ -168,7 +170,8 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                         </Button>
                       </td>
                     </motion.tr>
-                  ))}
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
