@@ -139,25 +139,28 @@ export function AdminLeadsReadOnly({ franchiseMap, franchises }: AdminLeadsReadO
                   <TableHeader>
                     <TableRow>
                       <TableHead className="text-xs">Nome</TableHead>
+                      <TableHead className="text-xs">Temp.</TableHead>
                       <TableHead className="text-xs">Cidade</TableHead>
                       <TableHead className="text-xs">Franquia</TableHead>
                       <TableHead className="text-xs">Status</TableHead>
-                      <TableHead className="text-xs">Modelo Recomendado</TableHead>
-                      <TableHead className="text-xs text-center">Score</TableHead>
+                      <TableHead className="text-xs">Modelo</TableHead>
+                      <TableHead className="text-xs text-center">Quintal</TableHead>
                       <TableHead className="text-xs">Data</TableHead>
                       <TableHead className="text-xs w-10"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {leads.map((lead) => {
-                      const isHot = (lead.respostas_questionario as any)?.v2_recommendation?.is_hot_lead;
+                      const temp = classifyLead((lead.respostas_questionario as Record<string, string>) || null, lead.pontuacao_quintal);
                       return (
                         <TableRow key={lead.id} className="group hover:bg-muted/30">
                           <TableCell className="text-sm font-medium">
-                            <div className="flex items-center gap-1.5">
-                              {lead.nome || '—'}
-                              {isHot && <span className="text-xs" title="Lead quente">🔥</span>}
-                            </div>
+                            {lead.nome || '—'}
+                          </TableCell>
+                          <TableCell>
+                            <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
+                              {temp.emoji} {temp.label}
+                            </Badge>
                           </TableCell>
                           <TableCell className="text-sm text-muted-foreground">
                             <div className="flex items-center gap-1">
@@ -178,10 +181,7 @@ export function AdminLeadsReadOnly({ franchiseMap, franchises }: AdminLeadsReadO
                           </TableCell>
                           <TableCell className="text-center">
                             {lead.pontuacao_quintal != null ? (
-                              <div className="flex items-center justify-center gap-1">
-                                <Star className="w-3 h-3 text-amber-500" />
-                                <span className="text-sm font-medium">{lead.pontuacao_quintal}</span>
-                              </div>
+                              <span className="text-sm font-medium">{lead.pontuacao_quintal}%</span>
                             ) : '—'}
                           </TableCell>
                           <TableCell className="text-xs text-muted-foreground">
