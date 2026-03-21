@@ -6,7 +6,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-// ---- Native VAPID / Web Push helpers (no npm deps) ----
+// ---- VAPID helpers ----
 
 function base64UrlEncode(buf: ArrayBuffer): string {
   const bytes = new Uint8Array(buf);
@@ -23,59 +23,19 @@ function base64UrlDecode(str: string): Uint8Array {
   return bytes;
 }
 
-async function importVapidPrivateKey(base64Url: string): Promise<CryptoKey> {
-  const raw = base64UrlDecode(base64Url);
-  // VAPID private key is 32 bytes raw; wrap it in PKCS8
-  const pkcs8 = buildPkcs8FromRaw(raw);
-  return crypto.subtle.importKey("pkcs8", pkcs8, { name: "ECDSA", namedCurve: "P-256" }, false, ["sign"]);
-}
-
-function buildPkcs8FromRaw(raw: Uint8Array): Uint8Array {
-  // PKCS8 wrapper for EC P-256 private key (32 bytes raw)
-  const header = new Uint8Array([
-    0x30, 0x81, 0x87, 0x02, 0x01, 0x00, 0x30, 0x13,
-    0x06, 0x07, 0x2a, 0x86, 0x48, 0xce, 0x3d, 0x02,
-    0x01, 0x06, 0x08, 0x2a, 0x86, 0x48, 0xce, 0x3d,
-    0x03, 0x01, 0x07, 0x04, 0x6d, 0x30, 0x6b, 0x02,
-    0x01, 0x01, 0x04, 0x20,
-  ]);
-  const footer = new Uint8Array([
-    0xa1, 0x44, 0x03, 0x42, 0x00,
-  ]);
-  // We need the public key for the footer, but for signing we can omit it
-  // Actually, Deno's SubtleCrypto needs the full structure. Let's use JWK instead.
-  void header;
-  void footer;
-  // Fallback: not used, we'll import via JWK
-  return new Uint8Array(0);
-}
-
 async function importVapidKeys(privateKeyBase64Url: string, publicKeyBase64Url: string) {
   const rawPrivate = base64UrlDecode(privateKeyBase64Url);
   const rawPublic = base64UrlDecode(publicKeyBase64Url);
-
-  // Build JWK from raw keys
   const x = base64UrlEncode(rawPublic.slice(1, 33).buffer);
   const y = base64UrlEncode(rawPublic.slice(33, 65).buffer);
   const d = base64UrlEncode(rawPrivate.buffer);
-
-  const jwk = {
-    kty: "EC",
-    crv: "P-256",
-    x,
-    y,
-    d,
-  };
-
-  const key = await crypto.subtle.importKey(
+  return crypto.subtle.importKey(
     "jwk",
-    jwk,
+    { kty: "EC", crv: "P-256", x, y, d },
     { name: "ECDSA", namedCurve: "P-256" },
     false,
     ["sign"]
   );
-
-  return key;
 }
 
 async function createVapidJwt(
@@ -87,51 +47,35 @@ async function createVapidJwt(
 ): Promise<string> {
   const header = { typ: "JWT", alg: "ES256" };
   const now = Math.floor(Date.now() / 1000);
-  const payload = {
-    aud: audience,
-    exp: now + expSeconds,
-    sub: subject,
-  };
-
+  const payload = { aud: audience, exp: now + expSeconds, sub: subject };
   const encoder = new TextEncoder();
   const headerB64 = base64UrlEncode(encoder.encode(JSON.stringify(header)).buffer);
   const payloadB64 = base64UrlEncode(encoder.encode(JSON.stringify(payload)).buffer);
   const unsigned = `${headerB64}.${payloadB64}`;
-
   const signature = await crypto.subtle.sign(
     { name: "ECDSA", hash: "SHA-256" },
     privateKey,
     encoder.encode(unsigned)
   );
-
-  // Convert DER signature to raw r||s (64 bytes)
   const rawSig = derToRaw(new Uint8Array(signature));
-  const sigB64 = base64UrlEncode(rawSig.buffer);
-
-  return `${unsigned}.${sigB64}`;
+  return `${unsigned}.${base64UrlEncode(rawSig.buffer)}`;
 }
 
 function derToRaw(der: Uint8Array): Uint8Array {
-  // DER: 0x30 <len> 0x02 <rLen> <r> 0x02 <sLen> <s>
-  if (der[0] !== 0x30) return der; // already raw?
+  if (der[0] !== 0x30) return der;
   const raw = new Uint8Array(64);
-
   let offset = 2;
-  // R
   const rLen = der[offset + 1];
   offset += 2;
   const rStart = rLen > 32 ? offset + (rLen - 32) : offset;
   const rDest = rLen < 32 ? 32 - rLen : 0;
   raw.set(der.slice(rStart, offset + rLen), rDest);
   offset += rLen;
-
-  // S
   const sLen = der[offset + 1];
   offset += 2;
   const sStart = sLen > 32 ? offset + (sLen - 32) : offset;
   const sDest = sLen < 32 ? 32 + (32 - sLen) : 32;
   raw.set(der.slice(sStart, offset + sLen), sDest);
-
   return raw;
 }
 
@@ -143,15 +87,13 @@ async function sendWebPush(
 ): Promise<Response> {
   const url = new URL(subscription.endpoint);
   const audience = `${url.protocol}//${url.host}`;
-
   const jwt = await createVapidJwt(
     audience,
     "mailto:contato@quintalideal.com.br",
     vapidPrivateKey,
     vapidPublicKey,
   );
-
-  const response = await fetch(subscription.endpoint, {
+  return fetch(subscription.endpoint, {
     method: "POST",
     headers: {
       "Content-Type": "application/octet-stream",
@@ -160,8 +102,31 @@ async function sendWebPush(
     },
     body: new TextEncoder().encode(payload),
   });
+}
 
-  return response;
+// ---- Preference check helper ----
+
+async function getUserPushPreference(
+  supabase: ReturnType<typeof createClient>,
+  userId: string,
+  notificationKey: string,
+): Promise<boolean> {
+  try {
+    const { data } = await supabase
+      .from("notification_preferences")
+      .select("preferences")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (!data?.preferences) return true; // no prefs saved = default ON
+
+    const prefs = data.preferences as Record<string, { push?: boolean }>;
+    const keyPref = prefs[notificationKey];
+    if (!keyPref || keyPref.push === undefined) return true; // key not configured = default ON
+    return keyPref.push;
+  } catch {
+    return true; // on error, default to sending
+  }
 }
 
 // ---- Main handler ----
@@ -180,7 +145,7 @@ Deno.serve(async (req) => {
     const supabase = createClient(supabaseUrl, serviceRoleKey);
     const vapidPrivateKey = await importVapidKeys(vapidPrivateKeyRaw, vapidPublicKey);
 
-    const { franchise_id, title, message, url: pushUrl } = await req.json();
+    const { franchise_id, title, message, url: pushUrl, notification_key } = await req.json();
 
     if (!franchise_id || !title) {
       return new Response(
@@ -212,19 +177,23 @@ Deno.serve(async (req) => {
 
     const results = await Promise.allSettled(
       subs.map(async (sub: any) => {
+        // Check user preference if notification_key is provided
+        if (notification_key) {
+          const allowed = await getUserPushPreference(supabase, sub.user_id, notification_key);
+          if (!allowed) {
+            return { endpoint: sub.endpoint, status: "skipped_by_preference" };
+          }
+        }
+
         const pushSubscription = {
           endpoint: sub.endpoint,
-          keys: {
-            p256dh: sub.p256dh,
-            auth: sub.auth_key,
-          },
+          keys: { p256dh: sub.p256dh, auth: sub.auth_key },
         };
 
         try {
           const res = await sendWebPush(pushSubscription, payload, vapidPublicKey, vapidPrivateKey);
 
           if (res.status === 404 || res.status === 410) {
-            // Subscription expired, clean up
             await supabase.from("push_subscriptions").delete().eq("id", sub.id);
             await res.text().catch(() => {});
             return { endpoint: sub.endpoint, status: "expired_removed" };
@@ -248,9 +217,12 @@ Deno.serve(async (req) => {
     const sent = results.filter(
       (r) => r.status === "fulfilled" && (r.value as any).status === "sent"
     ).length;
+    const skipped = results.filter(
+      (r) => r.status === "fulfilled" && (r.value as any).status === "skipped_by_preference"
+    ).length;
 
     return new Response(
-      JSON.stringify({ sent, total: subs.length, results }),
+      JSON.stringify({ sent, skipped, total: subs.length, results }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err: any) {
