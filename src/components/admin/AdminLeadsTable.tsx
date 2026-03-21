@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileLeadCard } from './MobileLeadCard';
 import { SmartTagBadges } from '@/components/SmartTagBadges';
+import { classifyLead } from '@/lib/leadScoring';
 
 interface AdminLeadsTableProps {
   leads: LeadRow[];
