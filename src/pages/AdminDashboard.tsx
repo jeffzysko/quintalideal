@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
-import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -154,9 +154,8 @@ export default function AdminDashboard() {
   });
 
   // ── Paginated leads for table ──
-  const { data: paginatedData, isLoading: loadingTable } = useQuery({
+  const { data: paginatedData, isLoading: loadingTable, isFetching: fetchingTable } = useQuery({
     queryKey: ['admin-leads-table', page, search, filterFranquia, filterStatus, filterModelo, filterCidade, filterTemperatura],
-    placeholderData: keepPreviousData,
     staleTime: 60 * 1000,
     queryFn: async () => {
       // Temperature is computed client-side, so when filtering by temperature
@@ -533,7 +532,7 @@ export default function AdminDashboard() {
               franchises={franchises}
               models={models}
             />
-            {loadingTable ? (
+            {loadingTable || fetchingTable ? (
               <Card className="border-border/50 shadow-sm">
                 <CardHeader><CardTitle className="text-sm font-semibold">Todos os Leads</CardTitle></CardHeader>
                 <CardContent><TableSkeleton rows={10} cols={8} /></CardContent>
@@ -544,7 +543,9 @@ export default function AdminDashboard() {
                 totalCount={totalCount}
                 page={page}
                 pageSize={PAGE_SIZE}
-                onPageChange={setPage}
+                onPageChange={(nextPage) => {
+                  if (nextPage !== page) setPage(nextPage);
+                }}
                 isLoading={false}
                 franchiseMap={franchiseMap}
               />
