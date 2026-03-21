@@ -202,7 +202,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: i * 0.04 }}
-                          onClick={() => onAnswer(value)}
+                          onClick={() => { haptic('light'); onAnswer(value); }}
                           className="w-full text-left px-4 py-3.5 rounded-xl hover:bg-accent active:bg-accent/70 transition-colors flex items-center gap-3 text-sm group"
                         >
                           <MapPin className="w-4 h-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
