@@ -532,7 +532,7 @@ export default function AdminDashboard() {
               franchises={franchises}
               models={models}
             />
-            {loadingTable ? (
+            {loadingTable || fetchingTable ? (
               <Card className="border-border/50 shadow-sm">
                 <CardHeader><CardTitle className="text-sm font-semibold">Todos os Leads</CardTitle></CardHeader>
                 <CardContent><TableSkeleton rows={10} cols={8} /></CardContent>
@@ -543,7 +543,9 @@ export default function AdminDashboard() {
                 totalCount={totalCount}
                 page={page}
                 pageSize={PAGE_SIZE}
-                onPageChange={setPage}
+                onPageChange={(nextPage) => {
+                  if (nextPage !== page) setPage(nextPage);
+                }}
                 isLoading={false}
                 franchiseMap={franchiseMap}
               />
