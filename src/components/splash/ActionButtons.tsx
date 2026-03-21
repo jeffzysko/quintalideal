@@ -540,7 +540,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.4 }}
-          className="space-y-3 mt-6 pb-14"
+          className="space-y-3 mt-8 pb-14"
         >
           <div className="grid grid-cols-2 gap-2">
             <Button
