@@ -223,7 +223,7 @@ Deno.serve(async (req) => {
 
     console.log("Email sent successfully:", resendData);
 
-    // Also trigger push notifications for this franchise
+    // Also trigger push notifications for this franchise (respects user preferences)
     try {
       const pushUrl = `${supabaseUrl}/functions/v1/send-push`;
       const pushRes = await fetch(pushUrl, {
@@ -237,12 +237,12 @@ Deno.serve(async (req) => {
           title: `🎯 Novo Lead: ${lead.nome || "Cliente"}`,
           message: `${lead.cidade || "Sem cidade"} · Score ${lead.pontuacao_quintal || 0}%`,
           url: "/hoje",
+          notification_key: "new_lead_assigned",
         }),
       });
       const pushData = await pushRes.json();
       console.log("Push notification result:", pushData);
     } catch (pushErr) {
-      // Don't fail the whole function if push fails
       console.error("Push notification failed (non-blocking):", pushErr);
     }
 
