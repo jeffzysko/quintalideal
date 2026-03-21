@@ -16,7 +16,7 @@ export function Footer() {
 
   return (
     <footer className="w-full border-t border-border/40 bg-background/95 backdrop-blur-md">
-      <div className="max-w-5xl mx-auto px-4 py-6 sm:py-10">
+      <div className="max-w-7xl mx-auto px-4 py-6 sm:py-10">
 
         {/* ── Desktop: full grid ── */}
         <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-4 gap-8">
