@@ -123,6 +123,7 @@ Deno.serve(async (req) => {
           // Send push respecting individual user preferences
           try {
             const pushUrl = `${supabaseUrl}/functions/v1/send-push`;
+            const urgencyEmoji = daysSinceUpdate >= 7 ? '🚨' : daysSinceUpdate >= 5 ? '⚠️' : '⏰';
             const pushRes = await fetch(pushUrl, {
               method: 'POST',
               headers: {
@@ -131,10 +132,11 @@ Deno.serve(async (req) => {
               },
               body: JSON.stringify({
                 franchise_id: lead.franquia_id,
-                title: `⏰ ${message}`,
-                message: `${lead.nome || 'Lead'} — ${daysSinceUpdate} dias sem interação`,
+                title: `${urgencyEmoji} Hora de agir!`,
+                message: `${lead.nome || 'Lead'} está esperando há ${daysSinceUpdate} dias 👋`,
                 url: '/hoje',
                 notification_key: notifKey,
+                type: 'followup',
               }),
             });
             await pushRes.text().catch(() => {});
