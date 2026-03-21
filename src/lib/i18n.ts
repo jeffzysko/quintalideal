@@ -2,14 +2,14 @@ export type Lang = 'pt' | 'es';
 
 const translations = {
   // HeroSection
-  hero_title_1: { pt: 'Descubra o', es: 'Descubre el' },
-  hero_title_2: { pt: 'potencial escondido', es: 'potencial oculto' },
-  hero_title_3: { pt: 'do seu quintal.', es: 'de tu patio.' },
+  hero_title_1: { pt: 'Descubra qual piscina é', es: 'Descubre qué piscina es' },
+  hero_title_2: { pt: 'perfeita para o seu quintal', es: 'perfecta para tu patio' },
+  hero_title_3: { pt: 'em menos de 60 segundos.', es: 'en menos de 60 segundos.' },
   hero_subtitle: {
-    pt: 'Análise inteligente em menos de 60 segundos. Descubra se seu quintal pode ter uma piscina Splash.',
-    es: 'Análisis inteligente en menos de 60 segundos. Descubre si tu patio puede tener una piscina Splash.',
+    pt: 'Responda algumas perguntas e veja o modelo ideal com base no seu espaço, estilo e orçamento.',
+    es: 'Responde algunas preguntas y ve el modelo ideal según tu espacio, estilo y presupuesto.',
   },
-  hero_cta: { pt: 'Explorar meu quintal', es: 'Explorar mi patio' },
+  hero_cta: { pt: 'Descobrir minha piscina ideal', es: 'Descubrir mi piscina ideal' },
   hero_trust_time: { pt: '60 segundos', es: '60 segundos' },
   hero_trust_free: { pt: '100% gratuito', es: '100% gratis' },
   hero_trust_analyses: { pt: '+2.500 análises', es: '+2.500 análisis' },
