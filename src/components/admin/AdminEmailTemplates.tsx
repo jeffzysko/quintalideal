@@ -175,6 +175,36 @@ const templates: EmailTemplate[] = [
 </div>
 </div>`,
   },
+  {
+    id: 'webhook-failure',
+    name: 'Alerta de Falha no Webhook',
+    trigger: 'Todas as 3 tentativas de webhook falharam para um novo lead',
+    recipient: 'E-mail da franquia com webhook configurado',
+    subject: '⚠️ Falha no Webhook — Lead {nome_lead} não foi entregue ao CRM',
+    icon: <AlertTriangle className="w-4 h-4" />,
+    category: 'notificacao',
+    html: `<div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06)">
+<div style="background:linear-gradient(135deg,#dc2626,#b91c1c);padding:32px 24px;text-align:center">
+<div style="width:48px;height:48px;background:rgba(255,255,255,0.2);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:12px"><span style="font-size:24px">⚠️</span></div>
+<h1 style="color:#fff;margin:0;font-size:20px;font-weight:700">Falha na Entrega do Webhook</h1>
+<p style="color:#fecaca;margin:8px 0 0;font-size:13px">{nome_franquia}</p>
+</div>
+<div style="padding:28px 24px">
+<p style="margin:0 0 16px;font-size:14px;color:#1e293b;line-height:1.6">O sistema tentou enviar os dados do lead <strong>{nome_lead}</strong> para o seu CRM via webhook, mas <strong>todas as 3 tentativas falharam</strong>.</p>
+<div style="border:1px solid #fee2e2;border-radius:10px;overflow:hidden;background:#fef2f2;padding:14px 16px;margin-bottom:16px">
+<p style="margin:0 0 6px;font-size:12px;color:#991b1b;text-transform:uppercase;letter-spacing:1px;font-weight:700">URL configurada</p>
+<p style="margin:0;font-size:13px;color:#7f1d1d;font-family:monospace;word-break:break-all">{webhook_url}</p>
+</div>
+<p style="margin:0;font-size:13px;color:#64748b;line-height:1.6"><strong>O lead foi salvo normalmente</strong> no painel. Verifique se a URL do webhook está correta.</p>
+</div>
+<div style="padding:0 24px 28px;text-align:center">
+<a href="https://quintalideal.com.br/perfil#integracoes" style="display:inline-block;background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff;text-decoration:none;padding:12px 32px;border-radius:10px;font-weight:700;font-size:14px">Verificar configurações →</a>
+</div>
+<div style="padding:20px 24px;background:#f8fafc;text-align:center;border-top:1px solid #e2e8f0">
+<p style="color:#94a3b8;font-size:12px;margin:0">Quintal Ideal Splash • Alerta automático</p>
+</div>
+</div>`,
+  },
 ];
 
 const categoryConfig: Record<string, { label: string; color: string }> = {
