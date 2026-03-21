@@ -44,7 +44,7 @@ export function PageHeader({ title, subtitle, icon, fallbackPath, rightSlot }: P
               boxShadow: '0 8px 32px -8px hsl(var(--primary) / 0.08), 0 4px 16px -4px rgba(0,0,0,0.1), inset 0 1px 0 0 hsl(0 0% 100% / 0.06)',
             }}
           >
-            <div className="h-14 md:h-16 flex items-center justify-between px-3 md:px-6 gap-2">
+            <div className="min-h-[5rem] md:min-h-[5.5rem] flex items-center justify-between px-3 md:px-6 gap-2 py-2">
               {/* Left: Back + Logo + Title */}
               <div className="flex items-center gap-2 md:gap-3 min-w-0">
                 <BackButton fallback={fallbackPath} />
@@ -52,7 +52,7 @@ export function PageHeader({ title, subtitle, icon, fallbackPath, rightSlot }: P
                 <motion.img
                   src={logoQuintalIdeal}
                   alt="Quintal Ideal"
-                  className="h-10 md:h-12 shrink-0 hidden sm:block"
+                  className="h-14 md:h-16 w-auto shrink-0"
                   style={{ filter: 'drop-shadow(0 0 8px hsl(var(--primary) / 0.4))' }}
                   animate={{
                     filter: [

@@ -43,13 +43,13 @@ export function PanelHeader({ title, children }: PanelHeaderProps) {
             boxShadow: '0 8px 32px -8px hsl(var(--primary) / 0.08), 0 4px 16px -4px rgba(0,0,0,0.1), inset 0 1px 0 0 hsl(0 0% 100% / 0.06)',
           }}
         >
-          <div className="h-14 md:h-16 flex items-center justify-between px-3 sm:px-4 md:px-6">
+          <div className="h-20 md:h-24 flex items-center justify-between px-3 sm:px-4 md:px-6">
             {/* Left: Logo + title */}
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <motion.img
                 src={logoSplash}
                 alt="Quintal Ideal"
-                className="h-10 md:h-12 shrink-0"
+                className="h-16 md:h-20 w-auto shrink-0"
                 style={{ filter: 'drop-shadow(0 0 8px hsl(var(--primary) / 0.4))' }}
                 animate={{
                   filter: [
