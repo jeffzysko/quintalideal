@@ -193,6 +193,13 @@
   }
 
   /* ─── Focus States (Consistent) ─── */
+  input,
+  textarea,
+  select,
+  [role="combobox"] {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
   input:focus-visible,
   textarea:focus-visible,
   select:focus-visible,
