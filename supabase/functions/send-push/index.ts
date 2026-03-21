@@ -172,6 +172,7 @@ Deno.serve(async (req) => {
       title,
       body: message || "",
       url: pushUrl || "/",
+      type: notificationType || "default",
     });
 
     const results = await Promise.all(
