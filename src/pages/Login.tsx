@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Lock, Mail, ArrowRight, Droplets, Shield, Eye, EyeOff } from 'lucide-react';
-import logoSplash from '@/assets/logo-splash.png';
+import logoSplash from '@/assets/logo-quintal-ideal.png';
 
 export default function Login() {
   const { signIn } = useAuth();
