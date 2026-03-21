@@ -8,8 +8,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { lazy, Suspense, useEffect } from "react";
-import { AnimatePresence } from "framer-motion";
-import { PageTransition } from "@/components/PageTransition";
+
 import { CommandPalette } from "@/components/CommandPalette";
 import HomePage from "./pages/HomePage";
 import { Footer } from "@/components/Footer";
@@ -90,123 +89,118 @@ function LayoutWithFooter() {
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex-1">
-        <PageTransition key={pathname}>
-          <Outlet />
-        </PageTransition>
+        <Outlet />
       </div>
       {!hideFooter && <Footer />}
     </div>
   );
 }
 
-function AnimatedRoutes() {
-  const location = useLocation();
+function AppRouteTree() {
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        {/* Pages WITHOUT footer (quiz/lead flow) */}
-        <Route path="/" element={<PageTransition><HomePage /></PageTransition>} />
-        <Route path="/install" element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><PageTransition><InstallPage /></PageTransition></ProtectedRoute>} />
-        <Route path="/explorar" element={<ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}><PageTransition><ExplorarPage /></PageTransition></ProtectedRoute>} />
+    <Routes>
+      {/* Pages WITHOUT footer (quiz/lead flow) */}
+      <Route path="/" element={<HomePage />} />
+      <Route path="/install" element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><InstallPage /></ProtectedRoute>} />
+      <Route path="/explorar" element={<ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}><ExplorarPage /></ProtectedRoute>} />
 
-        {/* Pages WITH footer */}
-        <Route element={<LayoutWithFooter />}>
-          <Route path="/mapa" element={<MapaQuintais />} />
-          <Route path="/ranking" element={<RankingQuintais />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/forgot-password" element={<ForgotPassword />} />
-          <Route path="/reset-password" element={<ResetPassword />} />
-          <Route path="/termos" element={<TermosDeUso />} />
-          <Route path="/privacidade" element={<PoliticaPrivacidade />} />
-          <Route
-            path="/suporte"
-            element={
-              <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
-                <Suporte />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/perfil"
-            element={
-              <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
-                <ProfileSettings />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/notificacoes"
-            element={
-              <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
-                <Notificacoes />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/hoje"
-            element={
-              <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
-                <HojePage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/notificacoes/preferencias"
-            element={
-              <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
-                <NotificationPreferences />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/painel" element={<PainelRouter />} />
-          <Route
-            path="/franquia"
-            element={
-              <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
-                <FranchiseDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/painel/lead/:id"
-            element={
-              <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
-                <LeadDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}>
-                <AdminDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/radar"
-            element={
-              <ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}>
-                <RadarMercado />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/lead/:id"
-            element={
-              <ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}>
-                <LeadDetail />
-              </ProtectedRoute>
-            }
-          />
-          <Route path="/docs/webhook" element={<WebhookDocs />} />
-        </Route>
+      {/* Pages WITH footer */}
+      <Route element={<LayoutWithFooter />}>
+        <Route path="/mapa" element={<MapaQuintais />} />
+        <Route path="/ranking" element={<RankingQuintais />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/termos" element={<TermosDeUso />} />
+        <Route path="/privacidade" element={<PoliticaPrivacidade />} />
+        <Route
+          path="/suporte"
+          element={
+            <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
+              <Suporte />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/perfil"
+          element={
+            <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
+              <ProfileSettings />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/notificacoes"
+          element={
+            <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
+              <Notificacoes />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/hoje"
+          element={
+            <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
+              <HojePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/notificacoes/preferencias"
+          element={
+            <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
+              <NotificationPreferences />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/painel" element={<PainelRouter />} />
+        <Route
+          path="/franquia"
+          element={
+            <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
+              <FranchiseDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/painel/lead/:id"
+          element={
+            <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
+              <LeadDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/radar"
+          element={
+            <ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}>
+              <RadarMercado />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/lead/:id"
+          element={
+            <ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}>
+              <LeadDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/docs/webhook" element={<WebhookDocs />} />
+      </Route>
 
-        {/* Franchise dynamic landing - NO footer (quiz flow) */}
-        <Route path="/:slug" element={<PageTransition><FranchiseLanding /></PageTransition>} />
-        <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
-      </Routes>
-    </AnimatePresence>
+      {/* Franchise dynamic landing - NO footer (quiz flow) */}
+      <Route path="/:slug" element={<FranchiseLanding />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }
 
@@ -224,7 +218,7 @@ function AppRoutes() {
                 <ScrollToTop />
                 <PullToRefresh>
                 <Suspense fallback={<LazyFallback />}>
-                  <AnimatedRoutes />
+                  <AppRouteTree />
                 </Suspense>
                 <CookieConsentBanner />
                 <CommandPalette />
