@@ -116,11 +116,6 @@ export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePa
 
           {/* Tags row */}
           <div className="flex items-center gap-1.5 flex-wrap">
-            {(lead.respostas_questionario as any)?.v2_recommendation?.is_hot_lead && (
-              <Badge className="bg-red-50 text-red-600 border-red-200 text-[10px] font-semibold animate-pulse" variant="outline">
-                🔥 Quente
-              </Badge>
-            )}
             <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
               {temp.emoji} {temp.label}
             </Badge>
