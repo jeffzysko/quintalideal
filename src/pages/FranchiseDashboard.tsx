@@ -252,7 +252,25 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       )}
 
       {/* SLA + Goals row */}
-      {!loadingKpis && franchiseId && (
+      {loadingKpis ? (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Card key={i} className="border-border/50">
+              <CardContent className="p-5 space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="skeleton w-10 h-10 rounded-xl" />
+                  <div className="space-y-2 flex-1">
+                    <div className="skeleton h-3 w-24 rounded-full" />
+                    <div className="skeleton h-5 w-16 rounded-full" />
+                  </div>
+                </div>
+                <div className="skeleton h-2 w-full rounded-full" />
+                <div className="skeleton h-3 w-32 rounded-full" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : franchiseId && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <SLAIndicator leads={allLeads} activities={leadActivities} />
           <MonthlyGoals franchiseId={franchiseId} soldThisMonth={soldThisMonth} />
@@ -261,7 +279,22 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       )}
 
       {/* Conversion Funnel */}
-      {!loadingKpis && allLeads.length > 0 && <ConversionFunnel leads={allLeads} />}
+      {loadingKpis ? (
+        <Card className="border-border/50 mb-6">
+          <CardContent className="p-5 space-y-4">
+            <div className="skeleton h-4 w-32 rounded-full" />
+            <div className="space-y-3">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <div className="skeleton h-3 w-20 rounded-full" />
+                  <div className="skeleton h-8 rounded-lg flex-1" style={{ maxWidth: `${100 - i * 20}%` }} />
+                  <div className="skeleton h-3 w-10 rounded-full" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      ) : allLeads.length > 0 && <ConversionFunnel leads={allLeads} />}
 
       {/* Tab switcher */}
       <div className="flex gap-1 mb-6 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-full sm:w-fit overflow-x-auto scrollbar-none border border-border/30" role="tablist">
