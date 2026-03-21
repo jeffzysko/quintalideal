@@ -334,7 +334,7 @@ export default function LeadDetail() {
                 <div className="flex-1 space-y-2 w-full">
                   <div className="text-center sm:text-left">
                     <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Índice do Quintal</p>
-                    <p className="text-sm text-foreground mt-0.5">Potencial de instalação de piscina</p>
+                    <p className="text-sm text-foreground mt-0.5">Quanto maior, mais preparado está o quintal para uma piscina</p>
                   </div>
                   {/* Inactivity Badge */}
                   <div className="flex justify-center sm:justify-start">
