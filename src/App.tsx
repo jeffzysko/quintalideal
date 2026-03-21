@@ -218,7 +218,7 @@ function AppRoutes() {
                 <ScrollToTop />
                 <PullToRefresh>
                 <Suspense fallback={<LazyFallback />}>
-                  <AnimatedRoutes />
+                  <AppRouteTree />
                 </Suspense>
                 <CookieConsentBanner />
                 <CommandPalette />
