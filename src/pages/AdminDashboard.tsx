@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useState, useEffect, useMemo, useRef, lazy, Suspense } from 'react';
+import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -59,7 +59,13 @@ const getAdminTabFromSearch = (search: string): 'overview' | 'leads' | 'kanban' 
   const urlTab = new URLSearchParams(search).get('tab');
   if (urlTab === 'leads') return 'leads';
   if (urlTab === 'kanban') return 'kanban';
+  if (urlTab === 'analytics') return 'analytics';
   if (urlTab === 'performance-qi') return 'performance-qi';
+  if (urlTab === 'franchises') return 'franchises';
+  if (urlTab === 'cities') return 'cities';
+  if (urlTab === 'users') return 'users';
+  if (urlTab === 'emails') return 'emails';
+  if (urlTab === 'franchise-view') return 'franchise-view';
   return 'overview';
 };
 
@@ -88,37 +94,41 @@ export default function AdminDashboard() {
   const [filterModelo, setFilterModelo] = useState('all');
   const [filterTemperatura, setFilterTemperatura] = useState('all');
   const [page, setPage] = useState(() => getLeadListPageFromSearch(location.search));
+  const didInitSearch = useRef(false);
+  const didInitCity = useRef(false);
+  const didInitFilters = useRef(false);
 
-  useEffect(() => {
-    const nextTab = getAdminTabFromSearch(location.search);
-    if (nextTab !== activeTab) {
-      setActiveTab(nextTab);
-    }
-  }, [activeTab, location.search]);
+  const updateLeadListPage = (nextPage: number) => {
+    const safePage = Math.max(1, nextPage);
+    setPage(safePage);
 
-  useEffect(() => {
-    if (getAdminTabFromSearch(location.search) !== 'leads') return;
-    const nextPage = getLeadListPageFromSearch(location.search);
-    if (nextPage !== page) {
-      setPage(nextPage);
-    }
-  }, [location.search, page]);
-
-  useEffect(() => {
     if (activeTab !== 'leads') return;
-    const params = new URLSearchParams(location.search);
-    const nextPage = String(page);
-    if (params.get('tab') === 'leads' && params.get('page') === nextPage) return;
-    params.set('tab', 'leads');
-    params.set('page', nextPage);
-    navigate({ pathname: location.pathname, search: `?${params.toString()}` }, { replace: true });
-  }, [activeTab, location.pathname, location.search, navigate, page]);
 
-  // Sync leads tab franchise filter when org switcher changes
-  useEffect(() => {
-    setFilterFranquia(orgFilter || 'all');
-    setPage(1);
-  }, [orgFilter]);
+    const params = new URLSearchParams(location.search);
+    params.set('tab', 'leads');
+    params.set('page', String(safePage));
+    navigate({ pathname: location.pathname, search: `?${params.toString()}` }, { replace: true });
+  };
+
+  const handleAdminTabChange = (nextTab: typeof activeTab) => {
+    setActiveTab(nextTab);
+
+    const params = new URLSearchParams(location.search);
+    if (nextTab === 'overview') {
+      params.delete('tab');
+      params.delete('page');
+    } else {
+      params.set('tab', nextTab);
+      if (nextTab === 'leads') {
+        params.set('page', String(page));
+      } else {
+        params.delete('page');
+      }
+    }
+
+    const nextSearch = params.toString();
+    navigate({ pathname: location.pathname, search: nextSearch ? `?${nextSearch}` : '' }, { replace: true });
+  };
 
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
@@ -126,16 +136,36 @@ export default function AdminDashboard() {
   const [filterCidade, setFilterCidade] = useState('');
 
   useEffect(() => {
-    const timer = setTimeout(() => { setSearch(searchInput); setPage(1); }, 400);
+    const timer = setTimeout(() => {
+      if (!didInitSearch.current) {
+        didInitSearch.current = true;
+        return;
+      }
+      setSearch(searchInput);
+      updateLeadListPage(1);
+    }, 400);
     return () => clearTimeout(timer);
   }, [searchInput]);
 
   useEffect(() => {
-    const timer = setTimeout(() => { setFilterCidade(cidadeInput); setPage(1); }, 400);
+    const timer = setTimeout(() => {
+      if (!didInitCity.current) {
+        didInitCity.current = true;
+        return;
+      }
+      setFilterCidade(cidadeInput);
+      updateLeadListPage(1);
+    }, 400);
     return () => clearTimeout(timer);
   }, [cidadeInput]);
 
-  useEffect(() => { setPage(1); }, [filterFranquia, filterStatus, filterModelo, filterTemperatura]);
+  useEffect(() => {
+    if (!didInitFilters.current) {
+      didInitFilters.current = true;
+      return;
+    }
+    updateLeadListPage(1);
+  }, [filterFranquia, filterStatus, filterModelo, filterTemperatura]);
 
   // ── Franchises ──
   const { data: franchises = [] } = useQuery({
@@ -188,6 +218,7 @@ export default function AdminDashboard() {
   // ── Paginated leads for table ──
   const { data: paginatedData, isLoading: loadingTable, isFetching: fetchingTable } = useQuery({
     queryKey: ['admin-leads-table', page, search, filterFranquia, filterStatus, filterModelo, filterCidade, filterTemperatura],
+    placeholderData: keepPreviousData,
     staleTime: 60 * 1000,
     queryFn: async () => {
       // Temperature is computed client-side, so when filtering by temperature
@@ -231,7 +262,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (activeTab !== 'leads' || totalPages === 0 || page <= totalPages) return;
-    setPage(totalPages);
+    updateLeadListPage(totalPages);
   }, [activeTab, page, totalPages]);
 
   // Prefetch next page so pagination feels instant
@@ -430,7 +461,7 @@ export default function AdminDashboard() {
               onSwitch={(id) => {
                 setOrgFilter(id);
                 setFilterFranquia(id || 'all');
-                setPage(1);
+                updateLeadListPage(1);
               }}
               compact
             />
@@ -438,7 +469,7 @@ export default function AdminDashboard() {
         </div>
         {/* Mobile: Select dropdown */}
         <div className="md:hidden mb-4">
-          <Select value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
+          <Select value={activeTab} onValueChange={(v) => handleAdminTabChange(v as typeof activeTab)}>
             <SelectTrigger className="w-full bg-card border-border/50">
               <SelectValue />
             </SelectTrigger>
@@ -464,7 +495,7 @@ export default function AdminDashboard() {
                   key={tab.key}
                   role="tab"
                   aria-selected={activeTab === tab.key}
-                  onClick={() => setActiveTab(tab.key)}
+                  onClick={() => handleAdminTabChange(tab.key)}
                   className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all whitespace-nowrap ${activeTab === tab.key ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
                 >
                   <tab.icon className={`w-4 h-4 shrink-0 ${activeTab === tab.key ? 'text-primary' : ''}`} />
@@ -569,7 +600,7 @@ export default function AdminDashboard() {
               franchises={franchises}
               models={models}
             />
-            {loadingTable || fetchingTable ? (
+            {loadingTable && !paginatedData ? (
               <Card className="border-border/50 shadow-sm">
                 <CardHeader><CardTitle className="text-sm font-semibold">Todos os Leads</CardTitle></CardHeader>
                 <CardContent><TableSkeleton rows={10} cols={8} /></CardContent>
@@ -581,7 +612,7 @@ export default function AdminDashboard() {
                 page={page}
                 pageSize={PAGE_SIZE}
                 onPageChange={(nextPage) => {
-                  if (nextPage !== page) setPage(nextPage);
+                  if (nextPage !== page && !fetchingTable) updateLeadListPage(nextPage);
                 }}
                 isLoading={false}
                 franchiseMap={franchiseMap}
