@@ -148,9 +148,9 @@ export default function HomePage() {
             transition={{ delay: 0.35, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             className="text-center text-[1.75rem] sm:text-[2rem] md:text-[2.75rem] font-extrabold leading-[1.08] mb-3 sm:mb-4 text-white tracking-tight"
           >
-            Descubra o <br />
+            A piscina ideal{' '}
             <span className="bg-gradient-to-r from-blue-300 via-blue-200 to-cyan-300 bg-clip-text text-transparent">
-              potencial do seu quintal
+              para o seu quintal
             </span>
           </m.h1>
 

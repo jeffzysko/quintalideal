@@ -324,11 +324,8 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
           <PhotoUpload key="photos" onNext={handlePhotosNext} onBack={() => setStep('hero')} lang={lang} />
         )}
         {step === 'photo-analysis' && (
-          <PhotoAnalysis key="photo-analysis" onDone={() => setStep('pre-diagnosis')} lang={lang} />
-        )}
-        {step === 'pre-diagnosis' && (
-          <PreDiagnosis key="pre-diagnosis" onContinue={() => setStep('quiz')} lang={lang} />
-        )}
+          <PhotoAnalysis key="photo-analysis" onDone={() => setStep('quiz')} lang={lang} />
+        )
         {step === 'quiz' && enrichedQuestion && quizStep < QUIZ_OPTION_STEPS && (
           <QuizStep
             key={`quiz-${quizStep}`}
