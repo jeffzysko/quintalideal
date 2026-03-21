@@ -154,9 +154,8 @@ export default function AdminDashboard() {
   });
 
   // ── Paginated leads for table ──
-  const { data: paginatedData, isLoading: loadingTable } = useQuery({
+  const { data: paginatedData, isLoading: loadingTable, isFetching: fetchingTable } = useQuery({
     queryKey: ['admin-leads-table', page, search, filterFranquia, filterStatus, filterModelo, filterCidade, filterTemperatura],
-    placeholderData: keepPreviousData,
     staleTime: 60 * 1000,
     queryFn: async () => {
       // Temperature is computed client-side, so when filtering by temperature
