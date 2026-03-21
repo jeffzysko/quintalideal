@@ -278,7 +278,7 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
               className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-foreground hover:bg-muted/50 transition-colors"
             >
               <div className="flex items-center gap-2">
-                <span>Classificação do Lead</span>
+                <span>Temperatura do Lead</span>
                 <Badge variant="outline" className={cn('text-xs border', preview.bgColor, preview.color)}>
                   {preview.emoji} {preview.label}
                 </Badge>
