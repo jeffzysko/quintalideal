@@ -145,7 +145,7 @@ Deno.serve(async (req) => {
     const supabase = createClient(supabaseUrl, serviceRoleKey);
     const vapidPrivateKey = await importVapidKeys(vapidPrivateKeyRaw, vapidPublicKey);
 
-    const { franchise_id, title, message, url: pushUrl, notification_key } = await req.json();
+    const { franchise_id, title, message, url: pushUrl, notification_key, user_id_filter } = await req.json();
 
     if (!franchise_id || !title) {
       return new Response(
@@ -154,11 +154,17 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Get all push subscriptions for this franchise
-    const { data: subs, error } = await supabase
+    // Get push subscriptions — optionally filtered to a single user (for test sends)
+    let subsQuery = supabase
       .from("push_subscriptions")
       .select("*")
       .eq("franchise_id", franchise_id);
+
+    if (user_id_filter) {
+      subsQuery = subsQuery.eq("user_id", user_id_filter);
+    }
+
+    const { data: subs, error } = await subsQuery;
 
     if (error) throw error;
 
