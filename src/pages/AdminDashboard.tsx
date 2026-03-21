@@ -55,6 +55,19 @@ function TabFallback() {
 
 const PAGE_SIZE = 25;
 
+const getAdminTabFromSearch = (search: string): 'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'franchise-view' => {
+  const urlTab = new URLSearchParams(search).get('tab');
+  if (urlTab === 'leads') return 'leads';
+  if (urlTab === 'kanban') return 'kanban';
+  if (urlTab === 'performance-qi') return 'performance-qi';
+  return 'overview';
+};
+
+const getLeadListPageFromSearch = (search: string) => {
+  const rawPage = Number(new URLSearchParams(search).get('page') || '1');
+  return Number.isFinite(rawPage) && rawPage > 0 ? Math.floor(rawPage) : 1;
+};
+
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -63,13 +76,7 @@ export default function AdminDashboard() {
   // Live updates: invalidates queries when leads change in the DB
   useLeadsRealtime();
   const { signOut: _signOut, role } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'franchise-view'>(() => {
-    const urlTab = new URLSearchParams(location.search).get('tab');
-    if (urlTab === 'leads') return 'leads';
-    if (urlTab === 'kanban') return 'kanban';
-    if (urlTab === 'performance-qi') return 'performance-qi';
-    return 'overview';
-  });
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'franchise-view'>(() => getAdminTabFromSearch(location.search));
   const [viewFranchiseId, setViewFranchiseId] = useState<string>('');
   const [timeRange, setTimeRange] = useState<TimeRange>('30');
 
@@ -80,7 +87,32 @@ export default function AdminDashboard() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterModelo, setFilterModelo] = useState('all');
   const [filterTemperatura, setFilterTemperatura] = useState('all');
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(() => getLeadListPageFromSearch(location.search));
+
+  useEffect(() => {
+    const nextTab = getAdminTabFromSearch(location.search);
+    if (nextTab !== activeTab) {
+      setActiveTab(nextTab);
+    }
+  }, [activeTab, location.search]);
+
+  useEffect(() => {
+    if (getAdminTabFromSearch(location.search) !== 'leads') return;
+    const nextPage = getLeadListPageFromSearch(location.search);
+    if (nextPage !== page) {
+      setPage(nextPage);
+    }
+  }, [location.search, page]);
+
+  useEffect(() => {
+    if (activeTab !== 'leads') return;
+    const params = new URLSearchParams(location.search);
+    const nextPage = String(page);
+    if (params.get('tab') === 'leads' && params.get('page') === nextPage) return;
+    params.set('tab', 'leads');
+    params.set('page', nextPage);
+    navigate({ pathname: location.pathname, search: `?${params.toString()}` }, { replace: true });
+  }, [activeTab, location.pathname, location.search, navigate, page]);
 
   // Sync leads tab franchise filter when org switcher changes
   useEffect(() => {

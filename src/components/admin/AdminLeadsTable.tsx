@@ -47,6 +47,8 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
   const from = (page - 1) * pageSize;
   const to = from + pageSize;
   const totalPages = Math.ceil(totalCount / pageSize);
+  const detailReturnTo = `/admin?tab=leads&page=${page}`;
+  const detailRouteState = { returnTo: detailReturnTo };
 
   return (
     <Card className="card-premium overflow-hidden">

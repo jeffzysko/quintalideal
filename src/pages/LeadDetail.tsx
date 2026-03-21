@@ -274,9 +274,10 @@ export default function LeadDetail() {
   const statusInfo = statusConfig[lead.status_lead] || statusConfig.novo;
   const isAdminRoute = location.pathname.startsWith('/admin');
   const leadsUrl = isAdminRoute ? '/admin?tab=leads' : '/franquia';
+  const returnTo = ((location.state as { returnTo?: string } | null)?.returnTo) || leadsUrl;
   const breadcrumbItems = [
     { label: isAdminRoute ? 'Admin' : 'Painel', href: isAdminRoute ? '/admin' : '/franquia' },
-    { label: 'Leads', href: leadsUrl },
+    { label: 'Leads', href: returnTo },
     { label: lead.nome || 'Detalhes' },
   ];
 
@@ -284,7 +285,7 @@ export default function LeadDetail() {
     <PageTransition>
     <div className="min-h-screen bg-background pb-bottomnav">
       <PanelHeader title={lead.nome || 'Detalhes do Lead'}>
-        <BackButton fallback={leadsUrl} />
+        <BackButton fallback={returnTo} />
         <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
         <NotificationBell />
         <UserAvatarMenu />
