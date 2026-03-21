@@ -75,7 +75,7 @@ export function SLAIndicator({ leads, activities }: SLAIndicatorProps) {
               {isOverSLA ? <AlertTriangle className="w-[18px] h-[18px] text-destructive" /> : <Clock className="w-[18px] h-[18px] text-primary" />}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">Velocidade de Resposta</p>
+              <p className="text-[11px] text-muted-foreground font-semibold uppercase tracking-wider">Tempo médio de 1º contato</p>
               <p className={`text-2xl font-extrabold tracking-tight mt-0.5 ${isOverSLA ? 'text-destructive' : 'text-foreground'}`}>
                 {avgHours === 0 ? '—' : formatTime(avgHours)}
               </p>

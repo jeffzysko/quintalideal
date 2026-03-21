@@ -117,7 +117,7 @@ function computeInsights(leads: LeadLike[], previousLeads?: LeadLike[]): Insight
       key: 'high_value_opportunity',
       icon: Target,
       title: `${highValueNew.length} lead${highValueNew.length > 1 ? 's' : ''} quente${highValueNew.length > 1 ? 's' : ''} — ligue agora!`,
-      description: 'Esses leads têm alto interesse e ainda não foram contatados. Priorize-os!',
+      description: 'Esses leads demonstraram alto interesse e ainda não foram contatados. São sua maior chance de venda!',
       color: 'text-primary',
       bg: 'bg-primary/10',
       priority: 10,
