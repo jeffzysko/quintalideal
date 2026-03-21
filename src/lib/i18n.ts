@@ -130,7 +130,7 @@ const translations = {
 
   // LeadForm
   lead_title: { pt: 'Quase lá! 🎉', es: '¡Casi listo! 🎉' },
-  lead_subtitle: { pt: 'Preencha seus dados para receber sua recomendação personalizada.', es: 'Completa tus datos para recibir tu recomendación personalizada.' },
+  lead_subtitle: { pt: 'Preencha seus dados para ver qual piscina é ideal para o seu quintal.', es: 'Completa tus datos para ver qué piscina es ideal para tu patio.' },
   lead_name: { pt: 'Nome', es: 'Nombre' },
   lead_name_placeholder: { pt: 'Seu nome completo', es: 'Tu nombre completo' },
   lead_whatsapp: { pt: 'WhatsApp', es: 'WhatsApp' },
