@@ -207,6 +207,7 @@ function AppRouteTree() {
 
 function AppRoutes() {
   usePrefetchRoutes();
+  useAppBadge();
   return (
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>
