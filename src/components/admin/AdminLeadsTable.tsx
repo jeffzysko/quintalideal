@@ -183,27 +183,36 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                   Mostrando <span className="font-semibold text-foreground">{from + 1}–{Math.min(to, totalCount)}</span> de {totalCount}
                 </p>
                 <div className="flex items-center gap-1">
-                  <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg" onClick={() => onPageChange(Math.max(1, page - 1))} disabled={page === 1}>
+                  <button
+                    type="button"
+                    className="inline-flex items-center justify-center h-9 w-9 rounded-lg border border-input bg-background text-sm hover:bg-accent disabled:opacity-50 disabled:pointer-events-none"
+                    onClick={() => onPageChange(Math.max(1, page - 1))}
+                    disabled={page === 1}
+                  >
                     <ChevronLeft className="w-4 h-4" />
-                  </Button>
+                  </button>
                   {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
                     const pageNum = i + 1;
                     return (
-                      <Button
+                      <button
+                        type="button"
                         key={pageNum}
-                        variant={page === pageNum ? 'default' : 'ghost'}
-                        size="icon"
-                        className="h-8 w-8 rounded-lg text-xs"
+                        className={`inline-flex items-center justify-center h-9 w-9 rounded-lg text-xs font-medium transition-colors ${page === pageNum ? 'bg-primary text-primary-foreground' : 'hover:bg-accent text-foreground'}`}
                         onClick={() => onPageChange(pageNum)}
                       >
                         {pageNum}
-                      </Button>
+                      </button>
                     );
                   })}
                   {totalPages > 5 && <span className="text-xs text-muted-foreground px-1">…</span>}
-                  <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg" onClick={() => onPageChange(page + 1)} disabled={page >= totalPages}>
+                  <button
+                    type="button"
+                    className="inline-flex items-center justify-center h-9 w-9 rounded-lg border border-input bg-background text-sm hover:bg-accent disabled:opacity-50 disabled:pointer-events-none"
+                    onClick={() => onPageChange(page + 1)}
+                    disabled={page >= totalPages}
+                  >
                     <ChevronRight className="w-4 h-4" />
-                  </Button>
+                  </button>
                 </div>
               </div>
             )}

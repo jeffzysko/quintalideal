@@ -254,12 +254,22 @@ export function AdminLeadsReadOnly({ franchiseMap, franchises }: AdminLeadsReadO
                     Página {page} de {totalPages}
                   </span>
                   <div className="flex gap-1">
-                    <Button variant="outline" size="sm" disabled={page <= 1} onClick={() => setPage(p => p - 1)} className="h-7 text-xs">
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center h-8 px-3 rounded-md border border-input bg-background text-xs font-medium hover:bg-accent disabled:opacity-50 disabled:pointer-events-none"
+                      disabled={page <= 1}
+                      onClick={() => setPage(p => p - 1)}
+                    >
                       Anterior
-                    </Button>
-                    <Button variant="outline" size="sm" disabled={page >= totalPages} onClick={() => setPage(p => p + 1)} className="h-7 text-xs">
+                    </button>
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center h-8 px-3 rounded-md border border-input bg-background text-xs font-medium hover:bg-accent disabled:opacity-50 disabled:pointer-events-none"
+                      disabled={page >= totalPages}
+                      onClick={() => setPage(p => p + 1)}
+                    >
                       Próxima
-                    </Button>
+                    </button>
                   </div>
                 </div>
               )}
