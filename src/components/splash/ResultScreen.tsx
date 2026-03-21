@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
-import logoSplash from '@/assets/logo-quintal-ideal.png';
+import logoSplash from '@/assets/logo-splash.png';
 import { getYardClassification } from '@/lib/ranking';
 import { getPoolImage } from '@/lib/poolImages';
 import { type Lang, t } from '@/lib/i18n';

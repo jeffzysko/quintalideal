@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react';
-import logoSplash from '@/assets/logo-quintal-ideal.png';
+import logoSplash from '@/assets/logo-splash.png';
 
 export default function ForgotPassword() {
   const navigate = useNavigate();

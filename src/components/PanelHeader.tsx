@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
-import logoSplash from '@/assets/logo-quintal-ideal.png';
+import logoSplash from '@/assets/logo-splash.png';
 
 interface PanelHeaderProps {
   title?: string;
@@ -48,8 +48,8 @@ export function PanelHeader({ title, children }: PanelHeaderProps) {
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
               <motion.img
                 src={logoSplash}
-                alt="Quintal Ideal"
-                className="h-10 md:h-12 shrink-0"
+                alt="Splash"
+                className="h-7 md:h-9 shrink-0"
                 style={{ filter: 'drop-shadow(0 0 8px hsl(var(--primary) / 0.4))' }}
                 animate={{
                   filter: [

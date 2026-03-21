@@ -1,6 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { LazyMotion, domAnimation, m } from 'framer-motion';
-import logoSplash from '@/assets/logo-quintal-ideal.png';
+import logoSplash from '@/assets/logo-splash.png';
 import heroPool from '@/assets/hero-pool.webp';
 import { ArrowRight, Droplets, Shield, Clock } from 'lucide-react';
 import { type Lang, t, UY_ENABLED_SLUGS } from '@/lib/i18n';
