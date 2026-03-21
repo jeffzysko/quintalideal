@@ -60,13 +60,7 @@ export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePa
     return `${Math.floor(days / 30)}m`;
   };
 
-  // Left border accent based on temperature
-  const borderAccent =
-    temp.temperature === 'quente'
-      ? 'border-l-emerald-500'
-      : temp.temperature === 'morno'
-      ? 'border-l-amber-500'
-      : 'border-l-blue-400';
+  const borderAccent = temp.borderAccent;
 
   return (
     <motion.div
