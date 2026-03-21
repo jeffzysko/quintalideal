@@ -19,6 +19,7 @@ import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { NetworkStatus } from "@/components/NetworkStatus";
 import { BottomNav } from "@/components/BottomNav";
 import { PullToRefresh } from "@/components/PullToRefresh";
+import { useAppBadge } from "@/hooks/useAppBadge";
 const NotFound = lazy(() => import("./pages/NotFound"));
 const ExplorarPage = lazy(() => import("./pages/ExplorarPage"));
 const InstallPage = lazy(() => import("./pages/InstallPage"));
