@@ -604,8 +604,8 @@ export default function LeadDetail() {
                               ))}
                             </SelectContent>
                           </Select>
-                          <p className="text-[11px] text-muted-foreground mt-1">
-                            Registre o modelo efetivamente vendido para análise de aderência.
+                           <p className="text-[11px] text-muted-foreground mt-1">
+                            Registre o modelo efetivamente vendido. Isso melhora a inteligência das recomendações futuras.
                           </p>
                         </div>
                       )}

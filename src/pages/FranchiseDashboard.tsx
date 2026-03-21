@@ -238,10 +238,10 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       {/* Alerts */}
       {overdueLeads.length > 0 && (
         <div className="mb-4 sm:mb-6">
-          <AlertBanner
+           <AlertBanner
             level="warning"
             title={`${overdueLeads.length} lead${overdueLeads.length > 1 ? 's' : ''} sem contato há mais de 48h`}
-            description="Leads aguardando primeiro contato. Responda rapidamente para aumentar sua taxa de conversão."
+            description="Quanto mais rápido você responder, maior a chance de fechar. Ligue ou mande WhatsApp agora!"
             action={
               <Button variant="outline" size="sm" className="rounded-xl text-xs shrink-0" onClick={() => setActiveTab('leads')}>
                 Ver leads
