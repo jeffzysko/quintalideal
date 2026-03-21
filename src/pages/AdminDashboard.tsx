@@ -262,7 +262,7 @@ export default function AdminDashboard() {
 
   useEffect(() => {
     if (activeTab !== 'leads' || totalPages === 0 || page <= totalPages) return;
-    setPage(totalPages);
+    updateLeadListPage(totalPages);
   }, [activeTab, page, totalPages]);
 
   // Prefetch next page so pagination feels instant
