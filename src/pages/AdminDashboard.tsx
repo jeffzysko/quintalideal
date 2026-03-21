@@ -229,6 +229,11 @@ export default function AdminDashboard() {
   const totalCount = paginatedData?.total || 0;
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
+  useEffect(() => {
+    if (activeTab !== 'leads' || totalPages === 0 || page <= totalPages) return;
+    setPage(totalPages);
+  }, [activeTab, page, totalPages]);
+
   // Prefetch next page so pagination feels instant
   useEffect(() => {
     if (page >= totalPages) return;

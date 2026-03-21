@@ -161,7 +161,7 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                         <Button
                           size="icon"
                           variant="ghost"
-                          onClick={(e) => { e.stopPropagation(); navigate(`/admin/lead/${lead.id}`); }}
+                          onClick={(e) => { e.stopPropagation(); navigate(`/admin/lead/${lead.id}`, { state: detailRouteState }); }}
                           className="h-8 w-8 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
                           aria-label="Ver detalhes do lead"
                         >

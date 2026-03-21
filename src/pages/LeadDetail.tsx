@@ -677,11 +677,11 @@ export default function LeadDetail() {
                                   queryClient.invalidateQueries({ queryKey: ['leads'] });
                                   queryClient.invalidateQueries({ queryKey: ['kanban-leads'] });
                                   if (isAdminRoute) {
-                                    navigate('/admin?tab=leads');
+                                    navigate(returnTo, { replace: true });
                                   } else if (window.history.length > 2) {
                                     navigate(-1);
                                   } else {
-                                    navigate('/franquia');
+                                    navigate('/franquia', { replace: true });
                                   }
                                 }
                               }}
