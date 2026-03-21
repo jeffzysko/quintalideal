@@ -102,6 +102,22 @@ export function ExplorerProgress({ currentStep, onBack, lang = 'pt' }: ExplorerP
         {t('explorer_discovery', lang).replace('{pct}', String(Math.round(progress)))}
       </motion.p>
 
+      {/* Micro-reward message */}
+      {currentStep >= 2 && currentStep <= 6 && (
+        <motion.p
+          key={`reward-${currentStep}`}
+          initial={{ opacity: 0, y: 5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="text-[11px] text-emerald-600 dark:text-emerald-400 mt-1 text-right font-medium"
+        >
+          {currentStep === 2 && (lang === 'es' ? '✨ Perfecto, ya entendemos tu espacio' : '✨ Perfeito, já entendemos seu espaço')}
+          {currentStep === 3 && (lang === 'es' ? '💡 Genial, ahora conseguimos personalizar' : '💡 Ótimo, agora conseguimos personalizar')}
+          {currentStep === 4 && (lang === 'es' ? '🎯 Estamos cerca de tu resultado' : '🎯 Estamos perto do seu resultado')}
+          {currentStep === 5 && (lang === 'es' ? '🏊 Casi listo, falta poco' : '🏊 Quase lá, falta pouco')}
+          {currentStep === 6 && (lang === 'es' ? '🔥 Última pregunta!' : '🔥 Última pergunta!')}
+        </motion.p>
+      )}
+
       {/* Step info */}
       <motion.div
         key={currentStep}

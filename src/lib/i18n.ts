@@ -2,14 +2,14 @@ export type Lang = 'pt' | 'es';
 
 const translations = {
   // HeroSection
-  hero_title_1: { pt: 'Descubra o', es: 'Descubre el' },
-  hero_title_2: { pt: 'potencial escondido', es: 'potencial oculto' },
-  hero_title_3: { pt: 'do seu quintal.', es: 'de tu patio.' },
+  hero_title_1: { pt: 'Descubra qual piscina é', es: 'Descubre qué piscina es' },
+  hero_title_2: { pt: 'perfeita para o seu quintal', es: 'perfecta para tu patio' },
+  hero_title_3: { pt: 'em menos de 60 segundos.', es: 'en menos de 60 segundos.' },
   hero_subtitle: {
-    pt: 'Análise inteligente em menos de 60 segundos. Descubra se seu quintal pode ter uma piscina Splash.',
-    es: 'Análisis inteligente en menos de 60 segundos. Descubre si tu patio puede tener una piscina Splash.',
+    pt: 'Responda algumas perguntas e veja o modelo ideal com base no seu espaço, estilo e orçamento.',
+    es: 'Responde algunas preguntas y ve el modelo ideal según tu espacio, estilo y presupuesto.',
   },
-  hero_cta: { pt: 'Explorar meu quintal', es: 'Explorar mi patio' },
+  hero_cta: { pt: 'Descobrir minha piscina ideal', es: 'Descubrir mi piscina ideal' },
   hero_trust_time: { pt: '60 segundos', es: '60 segundos' },
   hero_trust_free: { pt: '100% gratuito', es: '100% gratis' },
   hero_trust_analyses: { pt: '+2.500 análises', es: '+2.500 análisis' },
@@ -156,8 +156,9 @@ const translations = {
   action_depth: { pt: 'Profundidade', es: 'Profundidad' },
   action_beach: { pt: 'Com prainha', es: 'Con playa' },
   action_spa: { pt: 'Com hidro/SPA', es: 'Con hidro/SPA' },
-  action_whatsapp_cta: { pt: 'Falar com especialista agora', es: 'Hablar con un especialista ahora' },
-  action_whatsapp_hint: { pt: 'Sem compromisso — tire suas dúvidas e receba um orçamento', es: 'Sin compromiso — resuelve tus dudas y recibe un presupuesto' },
+  action_whatsapp_cta: { pt: 'Quero falar com um especialista agora', es: 'Quiero hablar con un especialista ahora' },
+  action_whatsapp_hint: { pt: '⚡ Atendimento rápido · Sem compromisso · Condições especiais', es: '⚡ Atención rápida · Sin compromiso · Condiciones especiales' },
+  action_whatsapp_urgency: { pt: 'Seu resultado está pronto — fale agora e garanta as melhores condições', es: 'Tu resultado está listo — habla ahora y asegura las mejores condiciones' },
   action_challenge_title: { pt: 'Será que o quintal dos seus amigos tem mais potencial que o seu?', es: '¿El patio de tus amigos tiene más potencial que el tuyo?' },
   action_challenge_subtitle: { pt: 'Desafie seus amigos e descubra!', es: '¡Desafía a tus amigos y descúbrelo!' },
   action_challenge_btn: { pt: 'Desafiar um amigo', es: 'Desafiar a un amigo' },
