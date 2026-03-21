@@ -349,7 +349,7 @@ export default function LeadDetail() {
                       <div className={`flex items-center gap-2 ${temp.bgColor} border rounded-lg px-3 py-2`}>
                         <span className="text-lg">{temp.emoji}</span>
                         <div>
-                          <p className="text-xs text-muted-foreground">Classificação</p>
+                          <p className="text-xs text-muted-foreground">Temperatura</p>
                           <p className={`text-sm font-semibold ${temp.color}`}>Lead {temp.label}</p>
                         </div>
                       </div>
