@@ -2,9 +2,9 @@ export type Lang = 'pt' | 'es';
 
 const translations = {
   // HeroSection
-  hero_title_1: { pt: 'Descubra qual piscina é', es: 'Descubre qué piscina es' },
-  hero_title_2: { pt: 'perfeita para o seu quintal', es: 'perfecta para tu patio' },
-  hero_title_3: { pt: 'em menos de 60 segundos.', es: 'en menos de 60 segundos.' },
+  hero_title_1: { pt: 'A piscina ideal', es: 'La piscina ideal' },
+  hero_title_2: { pt: 'para o seu quintal', es: 'para tu patio' },
+  hero_title_3: { pt: '', es: '' },
   hero_subtitle: {
     pt: 'Responda algumas perguntas e veja o modelo ideal com base no seu espaço, estilo e orçamento.',
     es: 'Responde algunas preguntas y ve el modelo ideal según tu espacio, estilo y presupuesto.',

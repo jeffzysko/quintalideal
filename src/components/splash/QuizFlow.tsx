@@ -18,7 +18,7 @@ import tradicionalImg from '@/assets/pools/tradicional.webp';
 
 const PhotoUpload = lazy(() => import('./PhotoUpload').then(m => ({ default: m.PhotoUpload })));
 const PhotoAnalysis = lazy(() => import('./PhotoAnalysis').then(m => ({ default: m.PhotoAnalysis })));
-const PreDiagnosis = lazy(() => import('./PreDiagnosis').then(m => ({ default: m.PreDiagnosis })));
+// PreDiagnosis removed to reduce friction
 const QuizStep = lazy(() => import('./QuizStep').then(m => ({ default: m.QuizStep })));
 const ProcessingScreen = lazy(() => import('./ProcessingScreen').then(m => ({ default: m.ProcessingScreen })));
 
@@ -324,10 +324,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
           <PhotoUpload key="photos" onNext={handlePhotosNext} onBack={() => setStep('hero')} lang={lang} />
         )}
         {step === 'photo-analysis' && (
-          <PhotoAnalysis key="photo-analysis" onDone={() => setStep('pre-diagnosis')} lang={lang} />
-        )}
-        {step === 'pre-diagnosis' && (
-          <PreDiagnosis key="pre-diagnosis" onContinue={() => setStep('quiz')} lang={lang} />
+          <PhotoAnalysis key="photo-analysis" onDone={() => setStep('quiz')} lang={lang} />
         )}
         {step === 'quiz' && enrichedQuestion && quizStep < QUIZ_OPTION_STEPS && (
           <QuizStep
