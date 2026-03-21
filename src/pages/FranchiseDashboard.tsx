@@ -55,7 +55,8 @@ function FranchiseLinkBanner({ slug }: { slug: string }) {
           <Link2 className="w-5 h-5 text-primary" />
         </div>
         <div className="min-w-0">
-          <p className="text-xs font-bold text-foreground mb-0.5 uppercase tracking-wider">Seu link de divulgação</p>
+          <p className="text-xs font-bold text-foreground mb-0.5 uppercase tracking-wider">Seu link exclusivo</p>
+          <p className="text-[11px] text-muted-foreground mb-0.5">Compartilhe para receber leads</p>
           <p className="text-sm text-primary font-mono truncate">{url}</p>
         </div>
       </div>
