@@ -136,6 +136,7 @@ Deno.serve(async (req) => {
       url: pushUrl,
       notification_key,
       user_id_filter,
+      type: notificationType,
     }: PushRequestBody = await req.json();
 
     if (!franchise_id || !title) {
