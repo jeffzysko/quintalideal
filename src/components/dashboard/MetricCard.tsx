@@ -13,6 +13,7 @@ export interface MetricCardProps {
   color?: string;
   delay?: number;
   onClick?: () => void;
+  tooltip?: string;
 }
 
 function formatDelta(current: number, previous: number): { label: string; direction: 'up' | 'down' | 'neutral' } {
