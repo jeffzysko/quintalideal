@@ -8,7 +8,6 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { lazy, Suspense, useEffect } from "react";
-import { AnimatePresence } from "framer-motion";
 import { PageTransition } from "@/components/PageTransition";
 import { CommandPalette } from "@/components/CommandPalette";
 import HomePage from "./pages/HomePage";
