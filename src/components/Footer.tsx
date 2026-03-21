@@ -4,7 +4,7 @@ import { Waves, MapPin, Trophy, FileText, Shield, Instagram, Code2, HelpCircle, 
 import { useAuth } from '@/hooks/useAuth';
 import { useStandalone } from '@/hooks/useStandalone';
 import { cn } from '@/lib/utils';
-import logoSplash from '@/assets/logo-splash.png';
+import logoHallow from '@/assets/logo-hallow.png';
 
 export function Footer() {
   const { user } = useAuth();
