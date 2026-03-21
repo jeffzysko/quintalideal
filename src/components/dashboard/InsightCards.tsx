@@ -104,7 +104,7 @@ function computeInsights(leads: LeadLike[], previousLeads?: LeadLike[]): Insight
       key: 'stalled_pipeline',
       icon: AlertTriangle,
       title: `${stalledLeads.length} leads parados — retome o contato!`,
-      description: 'Esses leads não recebem atenção há mais de 7 dias. Ligue ou mande mensagem hoje!',
+      description: 'Esses leads não recebem atenção há mais de 7 dias. Um simples "Olá, tudo bem?" pode reativar o interesse!',
       color: 'text-amber-600',
       bg: 'bg-amber-500/10',
       priority: 8,
