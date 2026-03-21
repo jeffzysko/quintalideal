@@ -89,7 +89,7 @@ export function Footer() {
 function BrandBlock() {
   return (
     <div className="col-span-1 flex flex-col items-start gap-3">
-      <img src={logoSplash} alt="Splash Piscinas" className="w-10 opacity-70" />
+      <img src={logoHallow} alt="Hallow Comunicação" className="w-20 opacity-40 brightness-0 dark:invert" />
       <p className="text-xs text-muted-foreground leading-relaxed max-w-[220px]">
         Essa é uma iniciativa da Hallow Comunicação juntamente com a iGUi Santo Antônio.
       </p>
