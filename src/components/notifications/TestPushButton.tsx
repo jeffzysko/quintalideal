@@ -39,6 +39,8 @@ export function TestPushButton() {
         setSent(true);
         toast.success('Notificação de teste enviada!');
         setTimeout(() => setSent(false), 5000);
+      } else if (data?.total > 0) {
+        toast.error('A assinatura foi encontrada, mas a entrega do push falhou neste dispositivo.');
       } else {
         toast.info('Nenhuma assinatura encontrada para este dispositivo.');
       }
