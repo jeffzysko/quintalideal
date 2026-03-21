@@ -91,7 +91,7 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                 ))}
               </div>
             ) : (
-            <div className="overflow-x-auto">
+            <div className="relative z-0 overflow-x-auto">
               <table className="w-full text-sm" role="table">
                 <thead>
                   <tr className="border-y border-border/40 bg-muted/30" role="row">
@@ -107,14 +107,11 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/20">
-                  {leads.map((lead, i) => {
+                  {leads.map((lead) => {
                     const temp = classifyLead((lead as any).respostas_questionario || null, lead.pontuacao_quintal);
                     return (
-                    <motion.tr
+                    <tr
                       key={lead.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: i * 0.02 }}
                       className="hover:bg-muted/30 transition-colors cursor-pointer group"
                       role="row"
                       onClick={() => navigate(`/admin/lead/${lead.id}`)}
@@ -169,16 +166,19 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                           <Eye className="w-4 h-4" />
                         </Button>
                       </td>
-                    </motion.tr>
+                    </tr>
                     );
                   })}
                 </tbody>
               </table>
             </div>
             )}
-
+ 
             {totalCount > 0 && (
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 py-4 border-t border-border/30 bg-muted/10">
+              <div
+                className="relative z-10 isolate flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 py-4 border-t border-border/30 bg-card"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <p className="text-xs text-muted-foreground">
                   Mostrando <span className="font-semibold text-foreground">{from + 1}–{Math.min(to, totalCount)}</span> de {totalCount}
                 </p>
