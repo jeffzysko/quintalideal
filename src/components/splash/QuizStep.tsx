@@ -5,6 +5,7 @@ import { cidades, type CityOption } from '@/lib/cities';
 import { ExplorerProgress } from './ExplorerProgress';
 import { MapPin, Search, Check } from 'lucide-react';
 import { type Lang, t, UY_ENABLED_SLUGS } from '@/lib/i18n';
+import { haptic } from '@/lib/celebrations';
 
 interface QuizOption {
   value: string;
