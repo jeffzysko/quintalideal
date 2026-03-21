@@ -1,7 +1,8 @@
 import { memo } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { motion } from 'framer-motion';
-import { TrendingUp, TrendingDown, Minus, LucideIcon } from 'lucide-react';
+import { TrendingUp, TrendingDown, Minus, LucideIcon, Info } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 export interface MetricCardProps {
   icon: LucideIcon;

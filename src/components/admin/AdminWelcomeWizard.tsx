@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { BarChart3, Users, Target, Globe, Shield, ArrowRight, Sparkles } from 'lucide-react';
+import { BarChart3, Users, Target, Globe, ArrowRight, Sparkles } from 'lucide-react';
 
 const WIZARD_KEY = 'admin-welcome-dismissed';
 
