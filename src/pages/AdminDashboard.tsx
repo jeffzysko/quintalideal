@@ -29,7 +29,7 @@ import { InsightCards } from '@/components/dashboard/InsightCards';
 import { ExecutiveSummary } from '@/components/admin/ExecutiveSummary';
 import { OrganizationSwitcher } from '@/components/OrganizationSwitcher';
 import { useLeadsRealtime } from '@/hooks/useLeadsRealtime';
-
+import { AdminWelcomeWizard } from '@/components/admin/AdminWelcomeWizard';
 // Lazy load heavy tab components
 // AdminCityRanking moved to Performance QI tab
 const AdminFranchiseRanking = lazy(() => import('@/components/admin/AdminFranchiseRanking').then(m => ({ default: m.AdminFranchiseRanking })));
