@@ -864,7 +864,14 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
     }
 
     setMovingLeads(prev => { const next = new Set(prev); next.delete(leadId); return next; });
-    toast.success(`Lead movido para ${STATUS_LABELS[newStatus]}`);
+    if (newStatus === 'vendido') {
+      const { fireConfetti, haptic } = await import('@/lib/celebrations');
+      fireConfetti();
+      haptic('heavy');
+      toast.success('🎉 Venda registrada! Parabéns!');
+    } else {
+      toast.success(`Lead movido para ${STATUS_LABELS[newStatus]}`);
+    }
     queryClient.invalidateQueries({ queryKey: ['franchise-leads-all', franchiseId] });
     queryClient.invalidateQueries({ queryKey: ['franchise-leads-table', franchiseId] });
   }, [leads, localStatusOverrides, franchiseId, queryClient, movingLeads]);

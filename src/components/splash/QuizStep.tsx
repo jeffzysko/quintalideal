@@ -5,6 +5,7 @@ import { cidades, type CityOption } from '@/lib/cities';
 import { ExplorerProgress } from './ExplorerProgress';
 import { MapPin, Search, Check } from 'lucide-react';
 import { type Lang, t, UY_ENABLED_SLUGS } from '@/lib/i18n';
+import { haptic } from '@/lib/celebrations';
 
 interface QuizOption {
   value: string;
@@ -47,6 +48,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
 
   const handleSelect = (value: string) => {
     setSelectedValue(value);
+    haptic('light');
     setTimeout(() => onAnswer(value), 350);
   };
 
@@ -200,7 +202,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: i * 0.04 }}
-                          onClick={() => onAnswer(value)}
+                          onClick={() => { haptic('light'); onAnswer(value); }}
                           className="w-full text-left px-4 py-3.5 rounded-xl hover:bg-accent active:bg-accent/70 transition-colors flex items-center gap-3 text-sm group"
                         >
                           <MapPin className="w-4 h-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
