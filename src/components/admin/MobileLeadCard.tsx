@@ -1,17 +1,11 @@
 import { memo } from 'react';
 import { Badge } from '@/components/ui/badge';
-import { MapPin, ChevronRight, Phone, MessageCircle, Clock, Flame, Snowflake, Thermometer } from 'lucide-react';
+import { MapPin, ChevronRight, Phone, MessageCircle, Clock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { STATUS_LABELS, STATUS_COLORS, LeadRow } from '@/lib/lead-constants';
 import { motion } from 'framer-motion';
 import { SmartTagBadges } from '@/components/SmartTagBadges';
 import { classifyLead } from '@/lib/leadScoring';
-
-const TEMP_ICON: Record<string, typeof Flame> = {
-  quente: Flame,
-  morno: Thermometer,
-  frio: Snowflake,
-};
 
 function ScoreBar({ score }: { score: number }) {
   const color = score >= 70 ? 'bg-emerald-500' : score >= 40 ? 'bg-amber-500' : 'bg-red-400';
