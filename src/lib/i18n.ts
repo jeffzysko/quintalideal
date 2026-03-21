@@ -138,7 +138,7 @@ const translations = {
   lead_email: { pt: 'Email', es: 'Email' },
   lead_email_optional: { pt: '(opcional)', es: '(opcional)' },
   lead_email_placeholder: { pt: 'seu@email.com', es: 'tu@email.com' },
-  lead_submit: { pt: 'Ver meu resultado', es: 'Ver mi resultado' },
+  lead_submit: { pt: 'Descobrir minha piscina ideal', es: 'Descubrir mi piscina ideal' },
   lead_checking: { pt: 'Verificando...', es: 'Verificando...' },
   lead_saving: { pt: 'Salvando...', es: 'Guardando...' },
   lead_safe: { pt: 'Seus dados estão seguros e protegidos', es: 'Tus datos están seguros y protegidos' },
