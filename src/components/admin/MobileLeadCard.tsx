@@ -34,7 +34,6 @@ interface MobileLeadCardProps {
 export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePath = '/admin/lead', franchiseName }: MobileLeadCardProps) {
   const navigate = useNavigate();
   const temp = classifyLead(lead.respostas_questionario || null, lead.pontuacao_quintal);
-  const TempIcon = TEMP_ICON[temp.temperature] || Thermometer;
 
   const handleWhatsApp = (e: React.MouseEvent) => {
     e.stopPropagation();
