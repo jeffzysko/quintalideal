@@ -1,9 +1,29 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import * as webpush from "jsr:@negrel/webpush";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers":
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
+};
+
+const PUSH_CONTACT = "mailto:contato@quintalideal.com.br";
+
+type StoredSubscription = {
+  id: string;
+  user_id: string;
+  endpoint: string;
+  p256dh: string;
+  auth_key: string;
+};
+
+type PushRequestBody = {
+  franchise_id?: string;
+  title?: string;
+  message?: string;
+  url?: string;
+  notification_key?: string;
+  user_id_filter?: string;
 };
 
 // ---- VAPID helpers ----
@@ -29,78 +49,29 @@ async function importVapidKeys(privateKeyBase64Url: string, publicKeyBase64Url: 
   const x = base64UrlEncode(rawPublic.slice(1, 33).buffer);
   const y = base64UrlEncode(rawPublic.slice(33, 65).buffer);
   const d = base64UrlEncode(rawPrivate.buffer);
-  return crypto.subtle.importKey(
-    "jwk",
-    { kty: "EC", crv: "P-256", x, y, d },
-    { name: "ECDSA", namedCurve: "P-256" },
-    false,
-    ["sign"]
-  );
-}
-
-async function createVapidJwt(
-  audience: string,
-  subject: string,
-  privateKey: CryptoKey,
-  publicKeyBase64Url: string,
-  expSeconds = 86400,
-): Promise<string> {
-  const header = { typ: "JWT", alg: "ES256" };
-  const now = Math.floor(Date.now() / 1000);
-  const payload = { aud: audience, exp: now + expSeconds, sub: subject };
-  const encoder = new TextEncoder();
-  const headerB64 = base64UrlEncode(encoder.encode(JSON.stringify(header)).buffer);
-  const payloadB64 = base64UrlEncode(encoder.encode(JSON.stringify(payload)).buffer);
-  const unsigned = `${headerB64}.${payloadB64}`;
-  const signature = await crypto.subtle.sign(
-    { name: "ECDSA", hash: "SHA-256" },
-    privateKey,
-    encoder.encode(unsigned)
-  );
-  const rawSig = derToRaw(new Uint8Array(signature));
-  return `${unsigned}.${base64UrlEncode(rawSig.buffer)}`;
-}
-
-function derToRaw(der: Uint8Array): Uint8Array {
-  if (der[0] !== 0x30) return der;
-  const raw = new Uint8Array(64);
-  let offset = 2;
-  const rLen = der[offset + 1];
-  offset += 2;
-  const rStart = rLen > 32 ? offset + (rLen - 32) : offset;
-  const rDest = rLen < 32 ? 32 - rLen : 0;
-  raw.set(der.slice(rStart, offset + rLen), rDest);
-  offset += rLen;
-  const sLen = der[offset + 1];
-  offset += 2;
-  const sStart = sLen > 32 ? offset + (sLen - 32) : offset;
-  const sDest = sLen < 32 ? 32 + (32 - sLen) : 32;
-  raw.set(der.slice(sStart, offset + sLen), sDest);
-  return raw;
+  return webpush.importVapidKeys({
+    publicKey: { kty: "EC", crv: "P-256", x, y },
+    privateKey: { kty: "EC", crv: "P-256", x, y, d },
+  });
 }
 
 async function sendWebPush(
-  subscription: { endpoint: string; keys: { p256dh: string; auth: string } },
+  appServer: webpush.ApplicationServer,
+  subscription: StoredSubscription,
   payload: string,
-  vapidPublicKey: string,
-  vapidPrivateKey: CryptoKey,
-): Promise<Response> {
-  const url = new URL(subscription.endpoint);
-  const audience = `${url.protocol}//${url.host}`;
-  const jwt = await createVapidJwt(
-    audience,
-    "mailto:contato@quintalideal.com.br",
-    vapidPrivateKey,
-    vapidPublicKey,
-  );
-  return fetch(subscription.endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/octet-stream",
-      TTL: "86400",
-      Authorization: `vapid t=${jwt}, k=${vapidPublicKey}`,
+): Promise<void> {
+  const subscriber = appServer.subscribe({
+    endpoint: subscription.endpoint,
+    keys: {
+      p256dh: subscription.p256dh,
+      auth: subscription.auth_key,
     },
-    body: new TextEncoder().encode(payload),
+  });
+
+  await subscriber.pushTextMessage(payload, {
+    ttl: 86400,
+    urgency: webpush.Urgency.High,
+    topic: "quintal-ideal",
   });
 }
 
@@ -143,9 +114,20 @@ Deno.serve(async (req) => {
     const vapidPrivateKeyRaw = Deno.env.get("VAPID_PRIVATE_KEY")!;
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
-    const vapidPrivateKey = await importVapidKeys(vapidPrivateKeyRaw, vapidPublicKey);
+    const vapidKeys = await importVapidKeys(vapidPrivateKeyRaw, vapidPublicKey);
+    const appServer = await webpush.ApplicationServer.new({
+      contactInformation: PUSH_CONTACT,
+      vapidKeys,
+    });
 
-    const { franchise_id, title, message, url: pushUrl, notification_key, user_id_filter } = await req.json();
+    const {
+      franchise_id,
+      title,
+      message,
+      url: pushUrl,
+      notification_key,
+      user_id_filter,
+    }: PushRequestBody = await req.json();
 
     if (!franchise_id || !title) {
       return new Response(
@@ -182,8 +164,8 @@ Deno.serve(async (req) => {
       url: pushUrl || "/",
     });
 
-    const results = await Promise.allSettled(
-      subs.map(async (sub: any) => {
+    const results = await Promise.all(
+      (subs as StoredSubscription[]).map(async (sub) => {
         // Check user preference if notification_key is provided
         if (notification_key) {
           const allowed = await getUserPushPreference(supabase, sub.user_id, notification_key);
@@ -192,44 +174,38 @@ Deno.serve(async (req) => {
           }
         }
 
-        const pushSubscription = {
-          endpoint: sub.endpoint,
-          keys: { p256dh: sub.p256dh, auth: sub.auth_key },
-        };
-
         try {
-          const res = await sendWebPush(pushSubscription, payload, vapidPublicKey, vapidPrivateKey);
-
-          if (res.status === 404 || res.status === 410) {
-            await supabase.from("push_subscriptions").delete().eq("id", sub.id);
-            await res.text().catch(() => {});
-            return { endpoint: sub.endpoint, status: "expired_removed" };
-          }
-
-          if (!res.ok) {
-            const errText = await res.text().catch(() => "");
-            console.error(`Push failed (${res.status}) for ${sub.endpoint}:`, errText);
-            return { endpoint: sub.endpoint, status: "error", error: `HTTP ${res.status}` };
-          }
-
-          await res.text().catch(() => {});
+          await sendWebPush(appServer, sub, payload);
           return { endpoint: sub.endpoint, status: "sent" };
         } catch (err: any) {
+          if (err instanceof webpush.PushMessageError) {
+            const errText = await err.response.text().catch(() => "");
+
+            if (err.isGone()) {
+              await supabase.from("push_subscriptions").delete().eq("id", sub.id);
+              return { endpoint: sub.endpoint, status: "expired_removed" };
+            }
+
+            console.error(`Push failed (${err.response.status}) for ${sub.endpoint}:`, errText);
+            return {
+              endpoint: sub.endpoint,
+              status: "error",
+              error: errText || `HTTP ${err.response.status}`,
+            };
+          }
+
           console.error(`Push error for ${sub.endpoint}:`, err.message);
           return { endpoint: sub.endpoint, status: "error", error: err.message };
         }
       })
     );
 
-    const sent = results.filter(
-      (r) => r.status === "fulfilled" && (r.value as any).status === "sent"
-    ).length;
-    const skipped = results.filter(
-      (r) => r.status === "fulfilled" && (r.value as any).status === "skipped_by_preference"
-    ).length;
+    const sent = results.filter((result) => result.status === "sent").length;
+    const skipped = results.filter((result) => result.status === "skipped_by_preference").length;
+    const failed = results.filter((result) => result.status === "error").length;
 
     return new Response(
-      JSON.stringify({ sent, skipped, total: subs.length, results }),
+      JSON.stringify({ sent, skipped, failed, total: subs.length, results }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err: any) {
