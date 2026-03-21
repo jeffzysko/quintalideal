@@ -72,6 +72,7 @@ export default function NotificationPreferences() {
               className="space-y-3"
             >
               <PushPermissionCard />
+              <TestPushButton />
 
               <GlobalNotificationControls
                 onEnableAll={enableAll}
