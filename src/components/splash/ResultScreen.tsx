@@ -6,6 +6,7 @@ import logoSplash from '@/assets/logo-splash.png';
 import { getYardClassification } from '@/lib/ranking';
 import { getPoolImage } from '@/lib/poolImages';
 import { type Lang, t } from '@/lib/i18n';
+import { fireConfetti, haptic } from '@/lib/celebrations';
 
 interface PoolAlternativeView {
   name: string;
