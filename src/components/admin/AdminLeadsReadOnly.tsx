@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, MapPin, Calendar, Star, Eye } from 'lucide-react';
+import { Search, MapPin, Calendar, Eye } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { STATUS_LABELS } from '@/lib/lead-constants';
 import { format } from 'date-fns';
@@ -13,6 +13,7 @@ import { ptBR } from 'date-fns/locale';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { TableSkeleton } from '@/components/ui/table-skeleton';
+import { classifyLead } from '@/lib/leadScoring';
 
 interface AdminLeadsReadOnlyProps {
   franchiseMap: Record<string, string>;
