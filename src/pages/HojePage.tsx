@@ -551,7 +551,7 @@ export default function HojePage() {
                         const daysWaiting = differenceInDays(now, new Date(lead.created_at));
                         const waitLabel = daysWaiting > 0 ? `${daysWaiting}d` : `${hoursWaiting}h`;
                         const temp = classifyLead((lead as any).respostas_questionario || null, lead.pontuacao_quintal);
-                        const borderAccent = temp.temperature === 'quente' ? 'border-l-emerald-500' : temp.temperature === 'morno' ? 'border-l-amber-500' : 'border-l-blue-400';
+                        const borderAccent = temp.borderAccent;
 
                         return (
                           <motion.div
