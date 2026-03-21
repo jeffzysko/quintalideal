@@ -116,7 +116,7 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                       key={lead.id}
                       className="hover:bg-muted/30 transition-colors cursor-pointer group"
                       role="row"
-                      onClick={() => navigate(`/admin/lead/${lead.id}`)}
+                      onClick={() => navigate(`/admin/lead/${lead.id}`, { state: detailRouteState })}
                     >
                       <td role="cell" className="py-3 px-4">
                         <div className="flex items-center gap-3">
