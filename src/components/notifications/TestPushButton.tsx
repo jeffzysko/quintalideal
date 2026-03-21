@@ -40,7 +40,18 @@ export function TestPushButton() {
         toast.success('Notificação de teste enviada!');
         setTimeout(() => setSent(false), 5000);
       } else if (data?.total > 0) {
-        toast.error('A assinatura foi encontrada, mas a entrega do push falhou neste dispositivo.');
+        const firstError = Array.isArray(data?.results)
+          ? data.results.find((result: { status?: string }) => result.status === 'error')
+          : null;
+
+        const needsResubscribe = typeof firstError?.error === 'string' &&
+          firstError.error.includes('VapidPkHashMismatch');
+
+        toast.error(
+          needsResubscribe
+            ? 'A assinatura deste aparelho ficou desatualizada. Desative e ative o push novamente.'
+            : 'A assinatura foi encontrada, mas a entrega do push falhou neste dispositivo.'
+        );
       } else {
         toast.info('Nenhuma assinatura encontrada para este dispositivo.');
       }
