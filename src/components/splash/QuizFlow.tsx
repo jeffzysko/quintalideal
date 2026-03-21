@@ -325,7 +325,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         )}
         {step === 'photo-analysis' && (
           <PhotoAnalysis key="photo-analysis" onDone={() => setStep('quiz')} lang={lang} />
-        )
+        )}
         {step === 'quiz' && enrichedQuestion && quizStep < QUIZ_OPTION_STEPS && (
           <QuizStep
             key={`quiz-${quizStep}`}
