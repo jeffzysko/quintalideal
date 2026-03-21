@@ -47,6 +47,8 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
   const from = (page - 1) * pageSize;
   const to = from + pageSize;
   const totalPages = Math.ceil(totalCount / pageSize);
+  const detailReturnTo = `/admin?tab=leads&page=${page}`;
+  const detailRouteState = { returnTo: detailReturnTo };
 
   return (
     <Card className="card-premium overflow-hidden">
@@ -114,7 +116,7 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                       key={lead.id}
                       className="hover:bg-muted/30 transition-colors cursor-pointer group"
                       role="row"
-                      onClick={() => navigate(`/admin/lead/${lead.id}`)}
+                      onClick={() => navigate(`/admin/lead/${lead.id}`, { state: detailRouteState })}
                     >
                       <td role="cell" className="py-3 px-4">
                         <div className="flex items-center gap-3">
@@ -159,7 +161,7 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                         <Button
                           size="icon"
                           variant="ghost"
-                          onClick={(e) => { e.stopPropagation(); navigate(`/admin/lead/${lead.id}`); }}
+                          onClick={(e) => { e.stopPropagation(); navigate(`/admin/lead/${lead.id}`, { state: detailRouteState }); }}
                           className="h-8 w-8 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
                           aria-label="Ver detalhes do lead"
                         >
