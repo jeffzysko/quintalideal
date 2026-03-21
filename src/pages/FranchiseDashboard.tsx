@@ -106,7 +106,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       twelveMonthsAgo.setFullYear(twelveMonthsAgo.getFullYear() - 1);
       const { data, error } = await supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin')
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin, respostas_questionario')
         .eq('franquia_id', franchiseId!)
         .gte('created_at', twelveMonthsAgo.toISOString())
         .order('created_at', { ascending: false })
@@ -146,7 +146,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       const to = from + PAGE_SIZE - 1;
       const { data, count, error } = await supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin', { count: 'exact' })
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin, respostas_questionario', { count: 'exact' })
         .eq('franquia_id', franchiseId!)
         .order('created_at', { ascending: false })
         .range(from, to);
