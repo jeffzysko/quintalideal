@@ -130,7 +130,7 @@ const translations = {
 
   // LeadForm
   lead_title: { pt: 'Quase lá! 🎉', es: '¡Casi listo! 🎉' },
-  lead_subtitle: { pt: 'Preencha seus dados para receber sua recomendação personalizada.', es: 'Completa tus datos para recibir tu recomendación personalizada.' },
+  lead_subtitle: { pt: 'Preencha seus dados para ver qual piscina é ideal para o seu quintal.', es: 'Completa tus datos para ver qué piscina es ideal para tu patio.' },
   lead_name: { pt: 'Nome', es: 'Nombre' },
   lead_name_placeholder: { pt: 'Seu nome completo', es: 'Tu nombre completo' },
   lead_whatsapp: { pt: 'WhatsApp', es: 'WhatsApp' },
@@ -138,7 +138,7 @@ const translations = {
   lead_email: { pt: 'Email', es: 'Email' },
   lead_email_optional: { pt: '(opcional)', es: '(opcional)' },
   lead_email_placeholder: { pt: 'seu@email.com', es: 'tu@email.com' },
-  lead_submit: { pt: 'Ver meu resultado', es: 'Ver mi resultado' },
+  lead_submit: { pt: 'Descobrir minha piscina ideal', es: 'Descubrir mi piscina ideal' },
   lead_checking: { pt: 'Verificando...', es: 'Verificando...' },
   lead_saving: { pt: 'Salvando...', es: 'Guardando...' },
   lead_safe: { pt: 'Seus dados estão seguros e protegidos', es: 'Tus datos están seguros y protegidos' },
@@ -156,8 +156,8 @@ const translations = {
   action_depth: { pt: 'Profundidade', es: 'Profundidad' },
   action_beach: { pt: 'Com prainha', es: 'Con playa' },
   action_spa: { pt: 'Com hidro/SPA', es: 'Con hidro/SPA' },
-  action_whatsapp_cta: { pt: 'Falar com um consultor', es: 'Hablar con un asesor' },
-  action_whatsapp_hint: { pt: 'Tire suas dúvidas e solicite um orçamento pelo WhatsApp', es: 'Resuelve tus dudas y solicita un presupuesto por WhatsApp' },
+  action_whatsapp_cta: { pt: 'Falar com especialista agora', es: 'Hablar con un especialista ahora' },
+  action_whatsapp_hint: { pt: 'Sem compromisso — tire suas dúvidas e receba um orçamento', es: 'Sin compromiso — resuelve tus dudas y recibe un presupuesto' },
   action_challenge_title: { pt: 'Será que o quintal dos seus amigos tem mais potencial que o seu?', es: '¿El patio de tus amigos tiene más potencial que el tuyo?' },
   action_challenge_subtitle: { pt: 'Desafie seus amigos e descubra!', es: '¡Desafía a tus amigos y descúbrelo!' },
   action_challenge_btn: { pt: 'Desafiar um amigo', es: 'Desafiar a un amigo' },

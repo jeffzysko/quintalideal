@@ -334,7 +334,7 @@ export default function LeadDetail() {
                 <div className="flex-1 space-y-2 w-full">
                   <div className="text-center sm:text-left">
                     <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Índice do Quintal</p>
-                    <p className="text-sm text-foreground mt-0.5">Potencial de instalação de piscina</p>
+                    <p className="text-sm text-foreground mt-0.5">Quanto maior, mais preparado está o quintal para uma piscina</p>
                   </div>
                   {/* Inactivity Badge */}
                   <div className="flex justify-center sm:justify-start">
@@ -588,7 +588,7 @@ export default function LeadDetail() {
                           ))}
                         </div>
                         <p className="text-[11px] text-muted-foreground mt-1">
-                          {tempOverride ? `Temperatura fixada como "${tempOverride}". Clique em "Automático" para calcular pelo questionário.` : 'Calculado automaticamente com base nos dados do questionário.'}
+                          {tempOverride ? `Temperatura fixada como "${tempOverride}". Toque em "Automático" para usar o cálculo inteligente.` : 'Calculado automaticamente com base nas respostas do quiz (intenção, orçamento e espaço).'}
                         </p>
                       </div>
 
@@ -604,8 +604,8 @@ export default function LeadDetail() {
                               ))}
                             </SelectContent>
                           </Select>
-                          <p className="text-[11px] text-muted-foreground mt-1">
-                            Registre o modelo efetivamente vendido para análise de aderência.
+                           <p className="text-[11px] text-muted-foreground mt-1">
+                            Registre o modelo efetivamente vendido. Isso melhora a inteligência das recomendações futuras.
                           </p>
                         </div>
                       )}

@@ -540,8 +540,11 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.4 }}
-          className="space-y-3 mt-6 pb-14"
+          className="space-y-3 mt-8 pb-14"
         >
+          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1 mb-1">
+            {lang === 'es' ? '📤 Comparte tu resultado' : '📤 Compartilhe seu resultado'}
+          </p>
           <div className="grid grid-cols-2 gap-2">
             <Button
               variant="outline"

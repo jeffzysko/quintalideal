@@ -55,7 +55,8 @@ function FranchiseLinkBanner({ slug }: { slug: string }) {
           <Link2 className="w-5 h-5 text-primary" />
         </div>
         <div className="min-w-0">
-          <p className="text-xs font-bold text-foreground mb-0.5 uppercase tracking-wider">Seu link de divulgação</p>
+          <p className="text-xs font-bold text-foreground mb-0.5 uppercase tracking-wider">Seu link exclusivo</p>
+          <p className="text-[11px] text-muted-foreground mb-0.5">Compartilhe para receber leads</p>
           <p className="text-sm text-primary font-mono truncate">{url}</p>
         </div>
       </div>
@@ -237,10 +238,10 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       {/* Alerts */}
       {overdueLeads.length > 0 && (
         <div className="mb-4 sm:mb-6">
-          <AlertBanner
+           <AlertBanner
             level="warning"
             title={`${overdueLeads.length} lead${overdueLeads.length > 1 ? 's' : ''} sem contato há mais de 48h`}
-            description="Leads aguardando primeiro contato. Responda rapidamente para aumentar sua taxa de conversão."
+            description="Quanto mais rápido você responder, maior a chance de fechar. Ligue ou mande WhatsApp agora!"
             action={
               <Button variant="outline" size="sm" className="rounded-xl text-xs shrink-0" onClick={() => setActiveTab('leads')}>
                 Ver leads
@@ -316,9 +317,9 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                       <Inbox className="w-10 h-10 text-primary/60" />
                     </div>
                     <h3 className="text-lg font-semibold text-foreground mb-2">Nenhum lead ainda</h3>
-                    <p className="text-sm text-muted-foreground text-center max-w-md mb-6">
-                      Seus leads aparecerão aqui assim que os primeiros clientes responderem ao quiz da sua página. Compartilhe seu link para começar!
-                    </p>
+                     <p className="text-sm text-muted-foreground text-center max-w-md mb-6">
+                       Seus leads aparecerão aqui assim que os primeiros clientes responderem ao quiz. Compartilhe seu link nas redes sociais e WhatsApp para começar a receber leads!
+                     </p>
                     {franchiseSlug && (
                       <Button variant="outline" className="gap-2 rounded-xl" onClick={() => {
                         navigator.clipboard.writeText(`${SITE_URL}/${franchiseSlug}`);
