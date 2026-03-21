@@ -89,9 +89,7 @@ function LayoutWithFooter() {
   return (
     <div className="flex flex-col min-h-screen">
       <div className="flex-1">
-        <PageTransition key={pathname}>
-          <Outlet />
-        </PageTransition>
+        <Outlet />
       </div>
       {!hideFooter && <Footer />}
     </div>
