@@ -15,14 +15,15 @@ self.addEventListener('push', (event) => {
 
   const options = {
     body: data.body,
-    icon: '/pwa-icon-192.png',
-    badge: '/pwa-icon-192.png',
-    tag: 'quintal-ideal-notification',
+    icon: '/notification-icon.png',
+    badge: '/favicon.png',
+    tag: 'quintal-ideal-' + Date.now(),
     renotify: true,
+    vibrate: [100, 50, 100],
     data: { url: data.url || '/' },
     actions: [
-      { action: 'open', title: 'Abrir' },
-      { action: 'dismiss', title: 'Fechar' },
+      { action: 'open', title: 'Ver agora' },
+      { action: 'dismiss', title: 'Dispensar' },
     ],
   };
 
