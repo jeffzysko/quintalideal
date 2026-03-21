@@ -17,6 +17,7 @@ import { AdminInactiveAlerts } from '@/components/admin/AdminInactiveAlerts';
 import { AdminPerformanceComparison } from '@/components/admin/AdminPerformanceComparison';
 import { TableSkeleton } from '@/components/ui/table-skeleton';
 import { STATUS_LABELS, LeadRow } from '@/lib/lead-constants';
+import { classifyLead } from '@/lib/leadScoring';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { NotificationBell } from '@/components/NotificationBell';
 import { PanelHeader } from '@/components/PanelHeader';
@@ -158,8 +159,11 @@ export default function AdminDashboard() {
     placeholderData: keepPreviousData,
     staleTime: 60 * 1000,
     queryFn: async () => {
+      // Temperature is computed client-side, so when filtering by temperature
+      // we fetch a larger batch and filter in JS to maintain correct pagination
+      const isTemperatureFiltered = filterTemperatura !== 'all';
       const from = (page - 1) * PAGE_SIZE;
-      const to = from + PAGE_SIZE - 1;
+      const to = isTemperatureFiltered ? from + PAGE_SIZE * 10 - 1 : from + PAGE_SIZE - 1;
 
       let query: any = supabase
         .from('leads')
@@ -170,12 +174,23 @@ export default function AdminDashboard() {
       if (filterModelo !== 'all') query = query.eq('modelo_recomendado', filterModelo);
       if (filterCidade) query = query.ilike('cidade', `%${filterCidade}%`);
       if (search) query = query.ilike('nome', `%${search}%`);
-      if (filterTemperatura !== 'all') query = query.eq('temperatura', filterTemperatura);
 
       const { data, count, error } = await query.order('created_at', { ascending: false }).range(from, to);
       if (error) throw error;
 
-      return { leads: (data || []) as LeadRow[], total: count || 0 };
+      let filteredLeads = (data || []) as LeadRow[];
+      let filteredTotal = count || 0;
+
+      if (isTemperatureFiltered) {
+        filteredLeads = filteredLeads.filter(l => {
+          const temp = classifyLead((l as any).respostas_questionario || null, l.pontuacao_quintal);
+          return temp.temperature === filterTemperatura;
+        });
+        filteredTotal = filteredLeads.length;
+        filteredLeads = filteredLeads.slice(0, PAGE_SIZE);
+      }
+
+      return { leads: filteredLeads, total: isTemperatureFiltered ? filteredTotal : (count || 0) };
     },
   });
 
@@ -191,8 +206,9 @@ export default function AdminDashboard() {
       queryKey: ['admin-leads-table', nextPage, search, filterFranquia, filterStatus, filterModelo, filterCidade, filterTemperatura],
       staleTime: 60 * 1000,
       queryFn: async () => {
+        const isTemperatureFiltered = filterTemperatura !== 'all';
         const from = (nextPage - 1) * PAGE_SIZE;
-        const to = from + PAGE_SIZE - 1;
+        const to = isTemperatureFiltered ? from + PAGE_SIZE * 10 - 1 : from + PAGE_SIZE - 1;
         let query: any = supabase
           .from('leads')
           .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin, respostas_questionario', { count: 'exact' });
@@ -201,10 +217,19 @@ export default function AdminDashboard() {
         if (filterModelo !== 'all') query = query.eq('modelo_recomendado', filterModelo);
         if (filterCidade) query = query.ilike('cidade', `%${filterCidade}%`);
         if (search) query = query.ilike('nome', `%${search}%`);
-        if (filterTemperatura !== 'all') query = query.eq('temperatura', filterTemperatura);
         const { data, count, error } = await query.order('created_at', { ascending: false }).range(from, to);
         if (error) throw error;
-        return { leads: (data || []) as LeadRow[], total: count || 0 };
+        let filteredLeads = (data || []) as LeadRow[];
+        let filteredTotal = count || 0;
+        if (isTemperatureFiltered) {
+          filteredLeads = filteredLeads.filter(l => {
+            const temp = classifyLead((l as any).respostas_questionario || null, l.pontuacao_quintal);
+            return temp.temperature === filterTemperatura;
+          });
+          filteredTotal = filteredLeads.length;
+          filteredLeads = filteredLeads.slice(0, PAGE_SIZE);
+        }
+        return { leads: filteredLeads, total: isTemperatureFiltered ? filteredTotal : (count || 0) };
       },
     });
   }, [page, totalPages, search, filterFranquia, filterStatus, filterModelo, filterCidade, filterTemperatura, queryClient]);
