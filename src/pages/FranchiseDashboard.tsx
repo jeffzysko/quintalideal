@@ -316,9 +316,9 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                       <Inbox className="w-10 h-10 text-primary/60" />
                     </div>
                     <h3 className="text-lg font-semibold text-foreground mb-2">Nenhum lead ainda</h3>
-                    <p className="text-sm text-muted-foreground text-center max-w-md mb-6">
-                      Seus leads aparecerão aqui assim que os primeiros clientes responderem ao quiz da sua página. Compartilhe seu link para começar!
-                    </p>
+                     <p className="text-sm text-muted-foreground text-center max-w-md mb-6">
+                       Seus leads aparecerão aqui assim que os primeiros clientes responderem ao quiz. Compartilhe seu link nas redes sociais e WhatsApp para começar a receber leads!
+                     </p>
                     {franchiseSlug && (
                       <Button variant="outline" className="gap-2 rounded-xl" onClick={() => {
                         navigator.clipboard.writeText(`${SITE_URL}/${franchiseSlug}`);
