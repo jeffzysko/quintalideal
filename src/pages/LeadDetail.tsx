@@ -669,6 +669,12 @@ export default function LeadDetail() {
                                   toast.error('Erro ao excluir lead.');
                                 } else {
                                   toast.success('Lead de teste excluído com sucesso.');
+                                  // Invalidate all lead-related queries so lists refresh immediately
+                                  queryClient.invalidateQueries({ queryKey: ['admin-leads-table'] });
+                                  queryClient.invalidateQueries({ queryKey: ['admin-leads'] });
+                                  queryClient.invalidateQueries({ queryKey: ['franchise-leads'] });
+                                  queryClient.invalidateQueries({ queryKey: ['leads'] });
+                                  queryClient.invalidateQueries({ queryKey: ['kanban-leads'] });
                                   if (isAdminRoute) {
                                     navigate('/admin?tab=leads');
                                   } else if (window.history.length > 2) {
