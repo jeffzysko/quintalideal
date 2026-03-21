@@ -299,14 +299,19 @@
   .card-premium {
     @apply bg-card border border-border/50 rounded-xl;
     box-shadow: var(--shadow-sm);
-    transition: box-shadow 0.2s ease, transform 0.15s ease;
+    transition: box-shadow 0.25s ease, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
   }
 
   @media (hover: hover) {
     .card-premium:hover {
       box-shadow: var(--shadow-lg);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
     }
+  }
+
+  .card-premium:active {
+    transform: scale(0.98);
   }
 
   .card-glow-blue {

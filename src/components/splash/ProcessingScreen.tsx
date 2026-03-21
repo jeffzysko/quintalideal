@@ -57,6 +57,7 @@ export function ProcessingScreen({ onDone, lang = 'pt' }: ProcessingScreenProps)
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
+      transition={{ duration: 0.4 }}
       className="min-h-screen flex flex-col items-center justify-center px-6 relative overflow-hidden"
       style={{ background: 'linear-gradient(160deg, #0a1628 0%, #0d3060 40%, #0a2445 100%)' }}
     >
@@ -94,8 +95,23 @@ export function ProcessingScreen({ onDone, lang = 'pt' }: ProcessingScreenProps)
           <motion.div
             className="h-full rounded-full"
             style={{ background: 'linear-gradient(90deg, #1e88e5, #00e5ff)', width: `${progress}%` }}
+            transition={{ duration: 0.05, ease: 'linear' }}
           />
         </div>
+
+        {/* Skeleton preview of result card */}
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="rounded-2xl overflow-hidden border border-white/8 bg-white/5 backdrop-blur-sm mb-6"
+        >
+          <div className="aspect-[16/9] w-full skeleton" style={{ background: 'linear-gradient(90deg, rgba(255,255,255,0.03) 0%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.03) 100%)', backgroundSize: '200% 100%', animation: 'skeleton-shimmer 1.5s ease-in-out infinite' }} />
+          <div className="p-4 space-y-3">
+            <div className="h-4 w-3/4 rounded-full" style={{ background: 'rgba(255,255,255,0.06)' }} />
+            <div className="h-3 w-1/2 rounded-full" style={{ background: 'rgba(255,255,255,0.04)' }} />
+          </div>
+        </motion.div>
 
         <div className="space-y-3 text-left">
           {steps.map((step, i) => (
@@ -103,15 +119,20 @@ export function ProcessingScreen({ onDone, lang = 'pt' }: ProcessingScreenProps)
               key={i}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: i <= currentStep ? 1 : 0.3, x: 0 }}
-              transition={{ delay: i * 0.15 }}
+              transition={{ delay: i * 0.15, duration: 0.3 }}
               className="flex items-center gap-3"
             >
-              <CheckCircle2
-                className={`w-4 h-4 shrink-0 transition-colors ${
-                  i <= currentStep ? 'text-blue-400' : 'text-white/20'
-                }`}
-              />
-              <span className={`text-sm ${i <= currentStep ? 'text-white/70' : 'text-white/20'}`}>
+              <motion.div
+                animate={i <= currentStep ? { scale: [0.8, 1.1, 1] } : {}}
+                transition={{ duration: 0.3 }}
+              >
+                <CheckCircle2
+                  className={`w-4 h-4 shrink-0 transition-colors duration-300 ${
+                    i <= currentStep ? 'text-blue-400' : 'text-white/20'
+                  }`}
+                />
+              </motion.div>
+              <span className={`text-sm transition-colors duration-300 ${i <= currentStep ? 'text-white/70' : 'text-white/20'}`}>
                 {step}
               </span>
             </motion.div>
