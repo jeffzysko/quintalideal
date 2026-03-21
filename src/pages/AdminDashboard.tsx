@@ -270,7 +270,7 @@ export default function AdminDashboard() {
 
       const { data, error } = await query.order('created_at', { ascending: false });
       if (error) throw error;
-      const exportLeads = (data || []) as LeadRow[];
+      const exportLeads = (data || []) as any[];
 
       const headers = ['Nome', 'Telefone', 'Email', 'Cidade', 'Franquia Atribuída', 'Franquia Origem', 'Pontuação', 'Modelo', 'Status', 'Territorial', 'Referência', 'Data'];
       const rows = exportLeads.map(l => [
