@@ -588,7 +588,7 @@ export default function LeadDetail() {
                           ))}
                         </div>
                         <p className="text-[11px] text-muted-foreground mt-1">
-                          {tempOverride ? `Temperatura fixada como "${tempOverride}". Clique em "Automático" para calcular pelo questionário.` : 'Calculado automaticamente com base nos dados do questionário.'}
+                          {tempOverride ? `Temperatura fixada como "${tempOverride}". Toque em "Automático" para usar o cálculo inteligente.` : 'Calculado automaticamente com base nas respostas do quiz (intenção, orçamento e espaço).'}
                         </p>
                       </div>
 
