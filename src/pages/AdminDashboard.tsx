@@ -29,7 +29,7 @@ import { InsightCards } from '@/components/dashboard/InsightCards';
 import { ExecutiveSummary } from '@/components/admin/ExecutiveSummary';
 import { OrganizationSwitcher } from '@/components/OrganizationSwitcher';
 import { useLeadsRealtime } from '@/hooks/useLeadsRealtime';
-
+import { AdminWelcomeWizard } from '@/components/admin/AdminWelcomeWizard';
 // Lazy load heavy tab components
 // AdminCityRanking moved to Performance QI tab
 const AdminFranchiseRanking = lazy(() => import('@/components/admin/AdminFranchiseRanking').then(m => ({ default: m.AdminFranchiseRanking })));
@@ -332,11 +332,11 @@ export default function AdminDashboard() {
   const prevAvg = previousLeads.length > 0 ? Math.round(previousLeads.reduce((s, l) => s + (l.pontuacao_quintal || 0), 0) / previousLeads.length) : undefined;
 
   const kpis: MetricCardProps[] = [
-    { icon: Users, label: 'Quintais explorados', value: totalLeads, previousValue: prevTotal, color: 'text-primary' },
-    { icon: TrendingUp, label: 'Novos leads', value: newLeads, previousValue: prevNew, color: 'text-emerald-600' },
-    { icon: Target, label: 'Média potencial', value: `${avgScore}%`, previousValue: prevAvg, color: 'text-primary' },
-    { icon: Building2, label: 'Franquias', value: orgFilteredFranchises.length, color: 'text-violet-600' },
-    { icon: MapPin, label: 'Cidades', value: cities, previousValue: prevCities, color: 'text-amber-600' },
+    { icon: Users, label: 'Quintais explorados', value: totalLeads, previousValue: prevTotal, color: 'text-primary', tooltip: 'Total de leads gerados pelo quiz no período selecionado.' },
+    { icon: TrendingUp, label: 'Novos leads', value: newLeads, previousValue: prevNew, color: 'text-emerald-600', tooltip: 'Leads com status "Novo" que ainda não foram contatados.' },
+    { icon: Target, label: 'Média potencial', value: `${avgScore}%`, previousValue: prevAvg, color: 'text-primary', tooltip: 'Média da pontuação do Índice do Quintal de todos os leads no período.' },
+    { icon: Building2, label: 'Franquias', value: orgFilteredFranchises.length, color: 'text-violet-600', tooltip: 'Quantidade de franquias ativas no sistema.' },
+    { icon: MapPin, label: 'Cidades', value: cities, previousValue: prevCities, color: 'text-amber-600', tooltip: 'Número de cidades distintas de onde vieram leads no período.' },
   ];
 
   const isSuperAdmin = role === 'super_admin';
@@ -361,6 +361,7 @@ export default function AdminDashboard() {
   return (
     <PageTransition>
     <div className="min-h-screen bg-background pb-bottomnav">
+      <AdminWelcomeWizard />
       <PanelHeader title="Fábrica">
         {[
           { icon: CalendarClock, label: 'Hoje', action: () => navigate('/hoje') },
