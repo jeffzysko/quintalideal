@@ -48,6 +48,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
 
   const handleSelect = (value: string) => {
     setSelectedValue(value);
+    haptic('light');
     setTimeout(() => onAnswer(value), 350);
   };
 

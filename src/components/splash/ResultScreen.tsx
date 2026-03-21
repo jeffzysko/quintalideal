@@ -78,6 +78,8 @@ export function ResultScreen({ score, poolName, poolDescription, recommendedSize
         clearInterval(interval);
         setShowConfetti(true);
         setAnimDone(true);
+        fireConfetti();
+        haptic('heavy');
       }
       setDisplayScore(current);
     }, 18);
