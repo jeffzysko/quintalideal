@@ -26,6 +26,14 @@ type PushRequestBody = {
   user_id_filter?: string;
 };
 
+function isApplePushEndpoint(endpoint: string): boolean {
+  try {
+    return new URL(endpoint).hostname === "web.push.apple.com";
+  } catch {
+    return false;
+  }
+}
+
 // ---- VAPID helpers ----
 
 function base64UrlEncode(buf: ArrayBuffer): string {
@@ -71,7 +79,7 @@ async function sendWebPush(
   await subscriber.pushTextMessage(payload, {
     ttl: 86400,
     urgency: webpush.Urgency.High,
-    topic: "quintal-ideal",
+    ...(isApplePushEndpoint(subscription.endpoint) ? {} : { topic: "quintal-ideal" }),
   });
 }
 
