@@ -59,7 +59,13 @@ const getAdminTabFromSearch = (search: string): 'overview' | 'leads' | 'kanban' 
   const urlTab = new URLSearchParams(search).get('tab');
   if (urlTab === 'leads') return 'leads';
   if (urlTab === 'kanban') return 'kanban';
+  if (urlTab === 'analytics') return 'analytics';
   if (urlTab === 'performance-qi') return 'performance-qi';
+  if (urlTab === 'franchises') return 'franchises';
+  if (urlTab === 'cities') return 'cities';
+  if (urlTab === 'users') return 'users';
+  if (urlTab === 'emails') return 'emails';
+  if (urlTab === 'franchise-view') return 'franchise-view';
   return 'overview';
 };
 
@@ -88,37 +94,41 @@ export default function AdminDashboard() {
   const [filterModelo, setFilterModelo] = useState('all');
   const [filterTemperatura, setFilterTemperatura] = useState('all');
   const [page, setPage] = useState(() => getLeadListPageFromSearch(location.search));
+  const didInitSearch = useRef(false);
+  const didInitCity = useRef(false);
+  const didInitFilters = useRef(false);
 
-  useEffect(() => {
-    const nextTab = getAdminTabFromSearch(location.search);
-    if (nextTab !== activeTab) {
-      setActiveTab(nextTab);
-    }
-  }, [activeTab, location.search]);
+  const updateLeadListPage = (nextPage: number) => {
+    const safePage = Math.max(1, nextPage);
+    setPage(safePage);
 
-  useEffect(() => {
-    if (getAdminTabFromSearch(location.search) !== 'leads') return;
-    const nextPage = getLeadListPageFromSearch(location.search);
-    if (nextPage !== page) {
-      setPage(nextPage);
-    }
-  }, [location.search, page]);
-
-  useEffect(() => {
     if (activeTab !== 'leads') return;
-    const params = new URLSearchParams(location.search);
-    const nextPage = String(page);
-    if (params.get('tab') === 'leads' && params.get('page') === nextPage) return;
-    params.set('tab', 'leads');
-    params.set('page', nextPage);
-    navigate({ pathname: location.pathname, search: `?${params.toString()}` }, { replace: true });
-  }, [activeTab, location.pathname, location.search, navigate, page]);
 
-  // Sync leads tab franchise filter when org switcher changes
-  useEffect(() => {
-    setFilterFranquia(orgFilter || 'all');
-    setPage(1);
-  }, [orgFilter]);
+    const params = new URLSearchParams(location.search);
+    params.set('tab', 'leads');
+    params.set('page', String(safePage));
+    navigate({ pathname: location.pathname, search: `?${params.toString()}` }, { replace: true });
+  };
+
+  const handleAdminTabChange = (nextTab: typeof activeTab) => {
+    setActiveTab(nextTab);
+
+    const params = new URLSearchParams(location.search);
+    if (nextTab === 'overview') {
+      params.delete('tab');
+      params.delete('page');
+    } else {
+      params.set('tab', nextTab);
+      if (nextTab === 'leads') {
+        params.set('page', String(page));
+      } else {
+        params.delete('page');
+      }
+    }
+
+    const nextSearch = params.toString();
+    navigate({ pathname: location.pathname, search: nextSearch ? `?${nextSearch}` : '' }, { replace: true });
+  };
 
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
@@ -126,16 +136,36 @@ export default function AdminDashboard() {
   const [filterCidade, setFilterCidade] = useState('');
 
   useEffect(() => {
-    const timer = setTimeout(() => { setSearch(searchInput); setPage(1); }, 400);
+    const timer = setTimeout(() => {
+      if (!didInitSearch.current) {
+        didInitSearch.current = true;
+        return;
+      }
+      setSearch(searchInput);
+      updateLeadListPage(1);
+    }, 400);
     return () => clearTimeout(timer);
   }, [searchInput]);
 
   useEffect(() => {
-    const timer = setTimeout(() => { setFilterCidade(cidadeInput); setPage(1); }, 400);
+    const timer = setTimeout(() => {
+      if (!didInitCity.current) {
+        didInitCity.current = true;
+        return;
+      }
+      setFilterCidade(cidadeInput);
+      updateLeadListPage(1);
+    }, 400);
     return () => clearTimeout(timer);
   }, [cidadeInput]);
 
-  useEffect(() => { setPage(1); }, [filterFranquia, filterStatus, filterModelo, filterTemperatura]);
+  useEffect(() => {
+    if (!didInitFilters.current) {
+      didInitFilters.current = true;
+      return;
+    }
+    updateLeadListPage(1);
+  }, [filterFranquia, filterStatus, filterModelo, filterTemperatura]);
 
   // ── Franchises ──
   const { data: franchises = [] } = useQuery({
