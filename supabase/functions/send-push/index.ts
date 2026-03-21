@@ -24,6 +24,7 @@ type PushRequestBody = {
   url?: string;
   notification_key?: string;
   user_id_filter?: string;
+  type?: string; // new_lead | followup | status_change | sale | alert | system | test
 };
 
 function isApplePushEndpoint(endpoint: string): boolean {
