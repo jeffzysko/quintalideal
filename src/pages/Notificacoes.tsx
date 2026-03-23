@@ -17,6 +17,7 @@ import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { NotificationBell } from '@/components/NotificationBell';
 import { motion } from 'framer-motion';
 import { getNotificationType, FILTERABLE_TYPES } from '@/lib/notification-types';
+import { useNotificationFilter } from '@/hooks/useNotificationFilter';
 
 interface Notification {
   id: string;
@@ -56,6 +57,7 @@ export default function NotificacoesPage() {
   const { user, franchiseId, role } = useAuth();
   const navigate = useNavigate();
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const { shouldShow } = useNotificationFilter();
 
   const [filterRead, setFilterRead] = useState<'all' | 'unread' | 'read'>('all');
   const [filterType, setFilterType] = useState('all');
@@ -89,9 +91,11 @@ export default function NotificacoesPage() {
     enabled: !!user,
   });
 
-  const notifications = data?.notifications || [];
-  const total = data?.total || 0;
-  const totalPages = Math.ceil(total / PAGE_SIZE);
+  const allNotifications = data?.notifications || [];
+  // Filter by user notification preferences
+  const notifications = allNotifications.filter(n => shouldShow(n.type));
+  const total = notifications.length;
+  const totalPages = Math.ceil((data?.total || 0) / PAGE_SIZE);
   const groups = groupByDate(notifications);
 
   const markAsRead = async (id: string) => {

@@ -14,6 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getNotificationType } from '@/lib/notification-types';
+import { useNotificationFilter } from '@/hooks/useNotificationFilter';
 
 interface Notification {
   id: string;
@@ -82,8 +83,12 @@ export function NotificationBell() {
   const [open, setOpen] = useState(false);
   const initialLoadDone = useRef(false);
 
-  const unreadCount = notifications.filter(n => !n.read).length;
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const { shouldShow } = useNotificationFilter();
+
+  // Filter notifications based on user preferences
+  const visibleNotifications = notifications.filter(n => shouldShow(n.type));
+  const unreadCount = visibleNotifications.filter(n => !n.read).length;
 
   const fetchNotifications = useCallback(async () => {
     if (!user) return;
@@ -119,7 +124,8 @@ export function NotificationBell() {
         (payload) => {
           const newNotif = payload.new as Notification;
           setNotifications(prev => [newNotif, ...prev].slice(0, 20));
-          if (initialLoadDone.current) playNotificationSound();
+          // Only play sound if notification type is enabled in preferences
+          if (initialLoadDone.current && shouldShow(newNotif.type)) playNotificationSound();
         }
       )
       .subscribe();
@@ -197,14 +203,14 @@ export function NotificationBell() {
           </div>
         </div>
         <ScrollArea className="max-h-80">
-          {notifications.length === 0 ? (
+          {visibleNotifications.length === 0 ? (
             <div className="px-4 py-8 text-center">
               <Bell className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
               <p className="text-sm text-muted-foreground">Nenhuma notificação</p>
             </div>
           ) : (
             <div className="divide-y divide-border/30">
-              {notifications.map((notif) => {
+              {visibleNotifications.map((notif) => {
                 const cfg = getNotificationType(notif.type);
                 const Icon = cfg.icon;
                 return (
@@ -246,7 +252,7 @@ export function NotificationBell() {
             </div>
           )}
         </ScrollArea>
-        {notifications.length > 0 && (
+        {visibleNotifications.length > 0 && (
           <div className="border-t border-border/30 px-4 py-2.5">
             <Button
               variant="ghost"
