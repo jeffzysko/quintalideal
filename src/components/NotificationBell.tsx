@@ -83,8 +83,12 @@ export function NotificationBell() {
   const [open, setOpen] = useState(false);
   const initialLoadDone = useRef(false);
 
-  const unreadCount = notifications.filter(n => !n.read).length;
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const { shouldShow } = useNotificationFilter();
+
+  // Filter notifications based on user preferences
+  const visibleNotifications = notifications.filter(n => shouldShow(n.type));
+  const unreadCount = visibleNotifications.filter(n => !n.read).length;
 
   const fetchNotifications = useCallback(async () => {
     if (!user) return;
