@@ -14,6 +14,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getNotificationType } from '@/lib/notification-types';
+import { useNotificationFilter } from '@/hooks/useNotificationFilter';
 
 interface Notification {
   id: string;
