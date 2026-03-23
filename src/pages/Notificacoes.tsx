@@ -91,9 +91,11 @@ export default function NotificacoesPage() {
     enabled: !!user,
   });
 
-  const notifications = data?.notifications || [];
-  const total = data?.total || 0;
-  const totalPages = Math.ceil(total / PAGE_SIZE);
+  const allNotifications = data?.notifications || [];
+  // Filter by user notification preferences
+  const notifications = allNotifications.filter(n => shouldShow(n.type));
+  const total = notifications.length;
+  const totalPages = Math.ceil((data?.total || 0) / PAGE_SIZE);
   const groups = groupByDate(notifications);
 
   const markAsRead = async (id: string) => {
