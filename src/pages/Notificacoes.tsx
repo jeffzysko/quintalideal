@@ -17,6 +17,7 @@ import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { NotificationBell } from '@/components/NotificationBell';
 import { motion } from 'framer-motion';
 import { getNotificationType, FILTERABLE_TYPES } from '@/lib/notification-types';
+import { useNotificationFilter } from '@/hooks/useNotificationFilter';
 
 interface Notification {
   id: string;
