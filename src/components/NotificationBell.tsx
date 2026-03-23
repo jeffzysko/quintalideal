@@ -202,14 +202,14 @@ export function NotificationBell() {
           </div>
         </div>
         <ScrollArea className="max-h-80">
-          {notifications.length === 0 ? (
+          {visibleNotifications.length === 0 ? (
             <div className="px-4 py-8 text-center">
               <Bell className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
               <p className="text-sm text-muted-foreground">Nenhuma notificação</p>
             </div>
           ) : (
             <div className="divide-y divide-border/30">
-              {notifications.map((notif) => {
+              {visibleNotifications.map((notif) => {
                 const cfg = getNotificationType(notif.type);
                 const Icon = cfg.icon;
                 return (
