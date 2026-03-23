@@ -124,7 +124,8 @@ export function NotificationBell() {
         (payload) => {
           const newNotif = payload.new as Notification;
           setNotifications(prev => [newNotif, ...prev].slice(0, 20));
-          if (initialLoadDone.current) playNotificationSound();
+          // Only play sound if notification type is enabled in preferences
+          if (initialLoadDone.current && shouldShow(newNotif.type)) playNotificationSound();
         }
       )
       .subscribe();
