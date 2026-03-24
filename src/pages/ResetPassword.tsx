@@ -169,10 +169,20 @@ export default function ResetPassword() {
     }
 
     setLoading(true);
+
+    // Check if there's an active session before attempting password update
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      console.error('updateUser: no active session found');
+      setError('Sua sessão expirou. Solicite um novo link de recuperação na tela de login.');
+      setLoading(false);
+      return;
+    }
+
     const { error } = await supabase.auth.updateUser({ password });
 
     if (error) {
-      console.error('updateUser error:', error.message, 'status:', error.status);
+      console.error('updateUser error:', error.message, 'status:', error.status, 'name:', error.name);
       setError(translateAuthError(error.message));
       setLoading(false);
     } else {
