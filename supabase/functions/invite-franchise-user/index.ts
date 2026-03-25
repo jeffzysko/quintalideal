@@ -118,7 +118,7 @@ Deno.serve(async (req) => {
       .from("user_roles")
       .select("role")
       .eq("user_id", callerUser.id)
-      .eq("role", "admin_fabrica")
+      .in("role", ["admin_fabrica", "super_admin"])
       .maybeSingle();
 
     if (!roleData) {
@@ -177,7 +177,21 @@ Deno.serve(async (req) => {
       .eq("user_id", userId);
 
     // Build a link to the forgot-password page (pre-filled with user email)
-    const resetPageLink = `https://quintalideal.com.br/forgot-password?email=${encodeURIComponent(email)}`;
+    // Generate a direct recovery link so the user goes straight to /reset-password (1 email, not 2)
+    const { data: linkData, error: linkError } = await adminClient.auth.admin.generateLink({
+      type: "recovery",
+      email,
+      options: { redirectTo: `https://quintalideal.com.br/reset-password` },
+    });
+
+    let resetPageLink: string;
+    if (linkError || !linkData?.properties?.hashed_token) {
+      console.warn("Could not generate direct recovery link, falling back to forgot-password:", linkError?.message);
+      resetPageLink = `https://quintalideal.com.br/forgot-password?email=${encodeURIComponent(email)}`;
+    } else {
+      resetPageLink = `https://quintalideal.com.br/reset-password?token_hash=${encodeURIComponent(linkData.properties.hashed_token)}&type=recovery`;
+    }
+
     const userName = full_name || franchise.nome_franquia;
 
     const htmlContent = buildInviteEmailHTML(userName, franchise.nome_franquia, resetPageLink);
