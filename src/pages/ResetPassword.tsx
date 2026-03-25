@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import { translateAuthError } from '@/lib/auth-errors';
+import { establishPasswordSession } from '@/lib/password-reset-session';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -99,60 +100,35 @@ export default function ResetPassword() {
       return;
     }
 
-    const tokenHash = searchParams.get('token_hash');
-    const type = searchParams.get('type');
+    let cancelled = false;
 
-    const verifyRecoveryToken = async () => {
-      if (tokenHash && type === 'recovery') {
-        const { error } = await supabase.auth.verifyOtp({
-          type: 'recovery',
-          token_hash: tokenHash,
-        });
+    const bootstrapPasswordSession = async () => {
+      const { session, error } = await establishPasswordSession({
+        tokenHash: searchParams.get('token_hash'),
+        tokenType: searchParams.get('type'),
+        hash: window.location.hash,
+      });
 
-        if (error) {
-          setIsRecovery(false);
-          setChecking(false);
-          return;
-        }
+      if (cancelled) return;
 
-        window.history.replaceState({}, '', '/reset-password');
-        setIsRecovery(true);
+      if (!session) {
+        console.error('reset-password bootstrap failed:', error?.message);
+        setIsRecovery(false);
         setChecking(false);
         return;
       }
 
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-        if (event === 'PASSWORD_RECOVERY') {
-          setIsRecovery(true);
-          setChecking(false);
-        } else if (event === 'SIGNED_IN' && session && window.location.hash.includes('type=recovery')) {
-          setIsRecovery(true);
-          setChecking(false);
-        }
-      });
-
-      const hash = window.location.hash;
-      if (hash && hash.includes('type=recovery')) {
-        setIsRecovery(true);
-        setChecking(false);
-      }
-
-      const timeout = setTimeout(() => {
-        setChecking(false);
-      }, 5000);
-
-      return () => {
-        subscription.unsubscribe();
-        clearTimeout(timeout);
-      };
+      window.history.replaceState({}, '', '/reset-password');
+      setIsRecovery(true);
+      setChecking(false);
     };
 
-    const cleanupPromise = verifyRecoveryToken();
+    void bootstrapPasswordSession();
 
     return () => {
-      cleanupPromise.then(cleanup => cleanup?.());
+      cancelled = true;
     };
-  }, [searchParams]);
+  }, [isPreview, searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

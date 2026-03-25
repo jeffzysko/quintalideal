@@ -70,6 +70,8 @@ export function translateAuthError(msg: string): string {
     return 'Muitas tentativas seguidas. Aguarde alguns instantes e tente novamente.';
   if (lower.includes('session') && (lower.includes('missing') || lower.includes('not found') || lower.includes('expired')))
     return 'Sessão expirada. Volte à tela de login e solicite um novo link de recuperação.';
+  if (lower.includes('unexpected') || lower.includes('update user') || lower.includes('failed to update'))
+    return 'Não foi possível concluir a definição da senha por este link. Solicite um novo e-mail e tente novamente.';
   if (lower.includes('network') || lower.includes('fetch'))
     return 'Erro de conexão. Verifique sua internet e tente novamente.';
   if (lower.includes('password') && lower.includes('characters'))
