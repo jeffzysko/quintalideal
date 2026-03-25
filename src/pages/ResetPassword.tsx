@@ -16,6 +16,7 @@ const PASSWORD_RULES = [
   { key: 'upper', label: 'Uma letra maiúscula', test: (p: string) => /[A-Z]/.test(p) },
   { key: 'lower', label: 'Uma letra minúscula', test: (p: string) => /[a-z]/.test(p) },
   { key: 'number', label: 'Um número', test: (p: string) => /\d/.test(p) },
+  { key: 'special', label: 'Um caractere especial', test: (p: string) => /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(p) },
 ] as const;
 
 function usePasswordStrength(password: string) {
@@ -135,7 +136,7 @@ export default function ResetPassword() {
     setError('');
 
     if (!strength.allPass) {
-      setError('A senha não atende a todos os requisitos.');
+      setError('A senha precisa ter ao menos 6 caracteres, incluindo letra maiúscula, minúscula, número e caractere especial.');
       return;
     }
 
@@ -270,7 +271,7 @@ export default function ResetPassword() {
                       onChange={e => setPassword(e.target.value)}
                       required
                       autoComplete="new-password"
-                      placeholder="Mínimo 6 caracteres"
+                      placeholder="Mínimo 6 caracteres, com símbolo"
                       className="pl-10 pr-10 h-11 bg-background/60 border-border/60 focus:border-primary/50 transition-colors"
                     />
                     <button
