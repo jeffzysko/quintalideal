@@ -99,7 +99,33 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
     setOrcamento(''); setIntencao(''); setEspaco('');
     setMoradia(''); setTempOverride(''); setShowClassification(false);
     setDuplicateWarning(null);
-  }, []);
+    photoFiles.forEach(f => URL.revokeObjectURL(f.preview));
+    setPhotoFiles([]);
+  }, [photoFiles]);
+
+  const handlePhotoFiles = (files: FileList | null) => {
+    if (!files) return;
+    const remaining = 4 - photoFiles.length;
+    const selected = Array.from(files).slice(0, remaining);
+    const valid: { file: File; preview: string }[] = [];
+    for (const file of selected) {
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        toast.error(`${file.name}: formato não suportado.`);
+        continue;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error(`${file.name}: máximo 10MB.`);
+        continue;
+      }
+      valid.push({ file, preview: URL.createObjectURL(file) });
+    }
+    setPhotoFiles(prev => [...prev, ...valid]);
+  };
+
+  const removePhoto = (index: number) => {
+    URL.revokeObjectURL(photoFiles[index].preview);
+    setPhotoFiles(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handlePhoneChange = (val: string) => {
     setTelefone(formatPhoneBR(val));
