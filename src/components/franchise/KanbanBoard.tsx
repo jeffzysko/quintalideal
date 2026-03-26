@@ -12,6 +12,7 @@ import {
   type DragOverEvent,
 } from '@dnd-kit/core';
 import { useDroppable } from '@dnd-kit/core';
+import { toWhatsAppPhone } from '@/lib/phone-utils';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Badge } from '@/components/ui/badge';
@@ -237,8 +238,7 @@ const LeadCard = memo(function LeadCard({
             <button
               onClick={(e) => {
                 e.stopPropagation();
-                const phone = lead.telefone!.replace(/\D/g, '');
-                const fullPhone = phone.startsWith('55') ? phone : `55${phone}`;
+                const fullPhone = toWhatsAppPhone(lead.telefone!);
                 window.open(`https://wa.me/${fullPhone}`, '_blank');
               }}
               className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[10px] font-medium text-success hover:bg-success/5 transition-colors"
@@ -467,8 +467,7 @@ const MobilePipelineCard = memo(function MobilePipelineCard({
           <button
             onClick={(e) => {
               e.stopPropagation();
-              const phone = lead.telefone!.replace(/\D/g, '');
-              const fullPhone = phone.startsWith('55') ? phone : `55${phone}`;
+              const fullPhone = toWhatsAppPhone(lead.telefone!);
               window.open(`https://wa.me/${fullPhone}`, '_blank');
             }}
             className="flex-1 flex items-center justify-center gap-1 py-2 text-[11px] font-medium text-success hover:bg-success/5 transition-colors min-h-[44px]"

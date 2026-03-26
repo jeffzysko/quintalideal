@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { MessageCircle, Copy, Send, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toWhatsAppPhone } from '@/lib/phone-utils';
 
 interface WhatsAppTemplatesProps {
   leadName: string | null;
@@ -113,8 +114,7 @@ export function WhatsAppTemplates(props: WhatsAppTemplatesProps) {
 
   if (!props.leadPhone) return null;
 
-  const phone = props.leadPhone.replace(/\D/g, '');
-  const fullPhone = phone.startsWith('55') ? phone : `55${phone}`;
+  const fullPhone = toWhatsAppPhone(props.leadPhone);
 
   const sendWhatsApp = (message: string) => {
     const encoded = encodeURIComponent(message);

@@ -6,6 +6,7 @@ import { STATUS_LABELS, STATUS_COLORS, LeadRow } from '@/lib/lead-constants';
 import { motion } from 'framer-motion';
 import { SmartTagBadges } from '@/components/SmartTagBadges';
 import { classifyLead } from '@/lib/leadScoring';
+import { toWhatsAppPhone } from '@/lib/phone-utils';
 
 function ScoreBar({ score }: { score: number }) {
   const color = score >= 70 ? 'bg-emerald-500' : score >= 40 ? 'bg-amber-500' : 'bg-red-400';
@@ -38,8 +39,7 @@ export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePa
   const handleWhatsApp = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (!lead.telefone) return;
-    const phone = lead.telefone.replace(/\D/g, '');
-    const fullPhone = phone.startsWith('55') ? phone : `55${phone}`;
+    const fullPhone = toWhatsAppPhone(lead.telefone);
     const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem?`);
     window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
   };

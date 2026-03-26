@@ -29,6 +29,7 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
+import { toWhatsAppPhone } from '@/lib/phone-utils';
 
 interface Lead {
   id: string;
@@ -391,8 +392,7 @@ export default function LeadDetail() {
                     size="sm"
                     className="bg-success hover:bg-success/90 text-success-foreground text-xs h-8 gap-1.5 w-full sm:w-auto"
                     onClick={() => {
-                      const phone = (lead.telefone || '').replace(/\D/g, '');
-                      const fullPhone = phone.startsWith('55') ? phone : `55${phone}`;
+                      const fullPhone = toWhatsAppPhone(lead.telefone || '');
                       const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem? Vi que você fez o teste do Índice do Quintal Splash!`);
                       window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
                     }}
@@ -712,8 +712,7 @@ export default function LeadDetail() {
             size="sm"
             className="flex-1 bg-success hover:bg-success/90 text-success-foreground gap-1.5 h-11"
             onClick={() => {
-              const phone = lead.telefone!.replace(/\D/g, '');
-              const fullPhone = phone.startsWith('55') ? phone : `55${phone}`;
+              const fullPhone = toWhatsAppPhone(lead.telefone!);
               const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem?`);
               window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
             }}

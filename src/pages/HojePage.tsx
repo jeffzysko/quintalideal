@@ -5,6 +5,7 @@ import { BackButton } from '@/components/BackButton';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
+import { toWhatsAppPhone } from '@/lib/phone-utils';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -393,8 +394,7 @@ export default function HojePage() {
   // ── Handlers ──
   const handleWhatsApp = (lead: LeadRow) => {
     if (!lead.telefone) return;
-    const phone = lead.telefone.replace(/\D/g, '');
-    const fullPhone = phone.startsWith('55') ? phone : `55${phone}`;
+    const fullPhone = toWhatsAppPhone(lead.telefone);
     const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem?`);
     window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
   };
