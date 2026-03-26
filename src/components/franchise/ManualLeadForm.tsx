@@ -315,6 +315,47 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
             </Select>
           </div>
 
+          {/* Fotos */}
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2">
+              <Camera className="w-4 h-4 text-primary" />
+              Fotos do Quintal
+              <span className="text-xs text-muted-foreground">({photoFiles.length}/4)</span>
+            </Label>
+            <div className="grid grid-cols-4 gap-2">
+              {photoFiles.map((f, i) => (
+                <div key={i} className="relative rounded-xl overflow-hidden border border-primary/30 aspect-square">
+                  <img src={f.preview} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => removePhoto(i)}
+                    className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-0.5 shadow-md"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+              {photoFiles.length < 4 && (
+                <button
+                  type="button"
+                  onClick={() => photoInputRef.current?.click()}
+                  className="flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-muted-foreground/20 hover:border-primary/50 hover:bg-primary/5 text-muted-foreground hover:text-primary aspect-square transition-colors"
+                >
+                  <Plus className="w-5 h-5" />
+                  <span className="text-[10px] font-medium">Foto</span>
+                </button>
+              )}
+            </div>
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              multiple
+              className="hidden"
+              onChange={(e) => handlePhotoFiles(e.target.files)}
+            />
+          </div>
+
           {/* Observações */}
           <div className="space-y-1.5">
             <Label htmlFor="ml-obs">Observações</Label>
