@@ -4,6 +4,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { MessageCircle, Copy, Send, ChevronDown, ChevronUp, Check } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
+import { toWhatsAppPhone } from '@/lib/phone-utils';
 
 interface WhatsAppTemplatesProps {
   leadName: string | null;

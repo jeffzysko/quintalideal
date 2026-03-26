@@ -29,6 +29,7 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
+import { toWhatsAppPhone } from '@/lib/phone-utils';
 
 interface Lead {
   id: string;

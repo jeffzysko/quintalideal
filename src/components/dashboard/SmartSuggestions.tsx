@@ -13,6 +13,7 @@ import {
 import { differenceInDays } from 'date-fns';
 import type { LeadRow } from '@/lib/lead-constants';
 import { STATUS_LABELS, STATUS_COLORS } from '@/lib/lead-constants';
+import { toWhatsAppPhone } from '@/lib/phone-utils';
 import { cn } from '@/lib/utils';
 
 // ── Types ──

@@ -6,6 +6,7 @@ import { STATUS_LABELS, STATUS_COLORS, LeadRow } from '@/lib/lead-constants';
 import { motion } from 'framer-motion';
 import { SmartTagBadges } from '@/components/SmartTagBadges';
 import { classifyLead } from '@/lib/leadScoring';
+import { toWhatsAppPhone } from '@/lib/phone-utils';
 
 function ScoreBar({ score }: { score: number }) {
   const color = score >= 70 ? 'bg-emerald-500' : score >= 40 ? 'bg-amber-500' : 'bg-red-400';

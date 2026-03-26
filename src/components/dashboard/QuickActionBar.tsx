@@ -6,6 +6,7 @@ import { MessageCircle, Phone, Workflow, UserPlus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import type { LeadRow } from '@/lib/lead-constants';
+import { toWhatsAppPhone } from '@/lib/phone-utils';
 
 interface QuickAction {
   icon: typeof MessageCircle;

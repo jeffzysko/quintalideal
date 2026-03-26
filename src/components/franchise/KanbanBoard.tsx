@@ -12,6 +12,7 @@ import {
   type DragOverEvent,
 } from '@dnd-kit/core';
 import { useDroppable } from '@dnd-kit/core';
+import { toWhatsAppPhone } from '@/lib/phone-utils';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Badge } from '@/components/ui/badge';
