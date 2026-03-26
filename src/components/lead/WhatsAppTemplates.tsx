@@ -113,8 +113,7 @@ export function WhatsAppTemplates(props: WhatsAppTemplatesProps) {
 
   if (!props.leadPhone) return null;
 
-  const phone = props.leadPhone.replace(/\D/g, '');
-  const fullPhone = phone.startsWith('55') ? phone : `55${phone}`;
+  const fullPhone = toWhatsAppPhone(props.leadPhone);
 
   const sendWhatsApp = (message: string) => {
     const encoded = encodeURIComponent(message);

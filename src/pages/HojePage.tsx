@@ -393,8 +393,7 @@ export default function HojePage() {
   // ── Handlers ──
   const handleWhatsApp = (lead: LeadRow) => {
     if (!lead.telefone) return;
-    const phone = lead.telefone.replace(/\D/g, '');
-    const fullPhone = phone.startsWith('55') ? phone : `55${phone}`;
+    const fullPhone = toWhatsAppPhone(lead.telefone);
     const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem?`);
     window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
   };

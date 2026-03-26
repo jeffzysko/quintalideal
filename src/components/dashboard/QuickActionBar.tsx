@@ -35,8 +35,7 @@ export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowup
 
   const handleWhatsApp = () => {
     if (hotUncontacted?.telefone) {
-      const phone = hotUncontacted.telefone.replace(/\D/g, '');
-      const fullPhone = phone.startsWith('55') ? phone : `55${phone}`;
+      const fullPhone = toWhatsAppPhone(hotUncontacted.telefone);
       const msg = encodeURIComponent(`Olá ${hotUncontacted.nome || ''}, tudo bem?`);
       window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
     } else {
