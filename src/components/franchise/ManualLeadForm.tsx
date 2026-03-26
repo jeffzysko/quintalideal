@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +11,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { UserPlus, Loader2, ChevronDown, ChevronUp, AlertTriangle } from 'lucide-react';
+import { UserPlus, Loader2, ChevronDown, ChevronUp, AlertTriangle, Camera, Plus, X } from 'lucide-react';
 import { isValidBRPhone, isValidEmail, formatPhoneBR, unformatPhone } from '@/lib/validation';
 import { classifyLead, LeadTemperature } from '@/lib/leadScoring';
 import { cn } from '@/lib/utils';
@@ -81,7 +81,8 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
   const [moradia, setMoradia] = useState('');
   const [tempOverride, setTempOverride] = useState<LeadTemperature | ''>('');
   const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
-
+  const [photoFiles, setPhotoFiles] = useState<{ file: File; preview: string }[]>([]);
+  const photoInputRef = useRef<HTMLInputElement>(null);
   const preview = useMemo(() => {
     const respostas: Record<string, string> = {};
     if (orcamento) respostas.orcamento = orcamento;
@@ -98,7 +99,33 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
     setOrcamento(''); setIntencao(''); setEspaco('');
     setMoradia(''); setTempOverride(''); setShowClassification(false);
     setDuplicateWarning(null);
-  }, []);
+    photoFiles.forEach(f => URL.revokeObjectURL(f.preview));
+    setPhotoFiles([]);
+  }, [photoFiles]);
+
+  const handlePhotoFiles = (files: FileList | null) => {
+    if (!files) return;
+    const remaining = 4 - photoFiles.length;
+    const selected = Array.from(files).slice(0, remaining);
+    const valid: { file: File; preview: string }[] = [];
+    for (const file of selected) {
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) {
+        toast.error(`${file.name}: formato não suportado.`);
+        continue;
+      }
+      if (file.size > 10 * 1024 * 1024) {
+        toast.error(`${file.name}: máximo 10MB.`);
+        continue;
+      }
+      valid.push({ file, preview: URL.createObjectURL(file) });
+    }
+    setPhotoFiles(prev => [...prev, ...valid]);
+  };
+
+  const removePhoto = (index: number) => {
+    URL.revokeObjectURL(photoFiles[index].preview);
+    setPhotoFiles(prev => prev.filter((_, i) => i !== index));
+  };
 
   const handlePhoneChange = (val: string) => {
     setTelefone(formatPhoneBR(val));
@@ -150,6 +177,29 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
     if (tempOverride) respostas.temperatura_manual = tempOverride;
 
     try {
+      // Upload photos first if any
+      const photoUrls: string[] = [];
+      if (photoFiles.length > 0) {
+        for (const { file } of photoFiles) {
+          const ext = file.name.split('.').pop() || 'jpg';
+          const path = `${franchiseId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+          const { error: uploadErr } = await supabase.storage.from('quintal-photos').upload(path, file, {
+            cacheControl: '31536000',
+            upsert: false,
+          });
+          if (uploadErr) throw uploadErr;
+          const { data: urlData } = supabase.storage.from('quintal-photos').getPublicUrl(path);
+          photoUrls.push(urlData.publicUrl);
+        }
+      }
+
+      const photoFields: Record<string, string | null> = {
+        foto1: photoUrls[0] || null,
+        foto2: photoUrls[1] || null,
+        foto3: photoUrls[2] || null,
+        foto4: photoUrls[3] || null,
+      };
+
       const { error } = await supabase.from('leads').insert({
         nome: trimmedName,
         telefone: digits,
@@ -162,6 +212,7 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
         lead_origin: 'manual',
         status_lead: 'novo',
         respostas_questionario: Object.keys(respostas).length > 0 ? respostas : null,
+        ...photoFields,
       });
 
       if (error) throw error;
@@ -262,6 +313,47 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
                 {POOL_MODELS.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Fotos */}
+          <div className="space-y-2">
+            <Label className="flex items-center gap-2">
+              <Camera className="w-4 h-4 text-primary" />
+              Fotos do Quintal
+              <span className="text-xs text-muted-foreground">({photoFiles.length}/4)</span>
+            </Label>
+            <div className="grid grid-cols-4 gap-2">
+              {photoFiles.map((f, i) => (
+                <div key={i} className="relative rounded-xl overflow-hidden border border-primary/30 aspect-square">
+                  <img src={f.preview} alt={`Foto ${i + 1}`} className="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => removePhoto(i)}
+                    className="absolute top-1 right-1 bg-destructive text-destructive-foreground rounded-full p-0.5 shadow-md"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
+                </div>
+              ))}
+              {photoFiles.length < 4 && (
+                <button
+                  type="button"
+                  onClick={() => photoInputRef.current?.click()}
+                  className="flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-muted-foreground/20 hover:border-primary/50 hover:bg-primary/5 text-muted-foreground hover:text-primary aspect-square transition-colors"
+                >
+                  <Plus className="w-5 h-5" />
+                  <span className="text-[10px] font-medium">Foto</span>
+                </button>
+              )}
+            </div>
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              multiple
+              className="hidden"
+              onChange={(e) => handlePhotoFiles(e.target.files)}
+            />
           </div>
 
           {/* Observações */}
