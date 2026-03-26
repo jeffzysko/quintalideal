@@ -470,6 +470,18 @@ Deno.serve(async (req) => {
         });
       }
 
+      // Update password if provided
+      const { password } = body;
+      if (password) {
+        const { error: pwError } = await adminClient.auth.admin.updateUserById(user_id, { password });
+        if (pwError) {
+          return new Response(JSON.stringify({ error: `Erro ao atualizar senha: ${pwError.message}` }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
+      }
+
       // Update profile
       const profileUpdate: any = {};
       if (full_name !== undefined) profileUpdate.full_name = full_name;
