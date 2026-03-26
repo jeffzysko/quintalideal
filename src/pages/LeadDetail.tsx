@@ -21,6 +21,7 @@ import { InactivityBadge } from '@/components/lead/InactivityBadge';
 import { WhatsAppTemplates } from '@/components/lead/WhatsAppTemplates';
 import { LeadValueEstimator } from '@/components/lead/LeadValueEstimator';
 import { ContactAttempts } from '@/components/lead/ContactAttempts';
+import { LeadPhotoUpload } from '@/components/lead/LeadPhotoUpload';
 
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -520,24 +521,38 @@ export default function LeadDetail() {
                 <motion.div key="fotos" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
                   <Card className="glass-card">
                     <CardContent className="p-3 sm:p-5">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Camera className="w-4 h-4 text-primary" />
-                        <h2 className="text-sm font-semibold text-foreground">Fotos do Quintal</h2>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        {photos.map((url, i) => (
-                          <button
-                            key={i}
-                            onClick={() => { setLightboxIndex(i); setLightboxOpen(true); }}
-                            className="relative group rounded-xl overflow-hidden border border-border/50 aspect-square focus:outline-none focus:ring-2 focus:ring-primary"
-                          >
-                            <img src={url} alt={`Quintal ${i + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
-                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                              <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </div>
-                          </button>
-                        ))}
-                      </div>
+                      {photos.length > 0 && (
+                        <>
+                          <div className="flex items-center gap-2 mb-3">
+                            <Camera className="w-4 h-4 text-primary" />
+                            <h2 className="text-sm font-semibold text-foreground">Fotos do Quintal</h2>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 mb-4">
+                            {photos.map((url, i) => (
+                              <button
+                                key={i}
+                                onClick={() => { setLightboxIndex(i); setLightboxOpen(true); }}
+                                className="relative group rounded-xl overflow-hidden border border-border/50 aspect-square focus:outline-none focus:ring-2 focus:ring-primary"
+                              >
+                                <img src={url} alt={`Quintal ${i + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
+                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                                  <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                      {photos.length < 4 && lead && (
+                        <LeadPhotoUpload
+                          leadId={lead.id}
+                          existingPhotos={[lead.foto1, lead.foto2, lead.foto3, lead.foto4]}
+                          franchiseId={lead.franquia_id || ''}
+                          onSaved={() => {
+                            queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
+                          }}
+                        />
+                      )}
                     </CardContent>
                   </Card>
                   <PhotoLightbox photos={photos} initialIndex={lightboxIndex} open={lightboxOpen} onOpenChange={setLightboxOpen} />
