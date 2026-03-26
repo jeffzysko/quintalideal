@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +11,7 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
 import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { UserPlus, Loader2, ChevronDown, ChevronUp, AlertTriangle } from 'lucide-react';
+import { UserPlus, Loader2, ChevronDown, ChevronUp, AlertTriangle, Camera, Plus, X } from 'lucide-react';
 import { isValidBRPhone, isValidEmail, formatPhoneBR, unformatPhone } from '@/lib/validation';
 import { classifyLead, LeadTemperature } from '@/lib/leadScoring';
 import { cn } from '@/lib/utils';
@@ -81,7 +81,8 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
   const [moradia, setMoradia] = useState('');
   const [tempOverride, setTempOverride] = useState<LeadTemperature | ''>('');
   const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
-
+  const [photoFiles, setPhotoFiles] = useState<{ file: File; preview: string }[]>([]);
+  const photoInputRef = useRef<HTMLInputElement>(null);
   const preview = useMemo(() => {
     const respostas: Record<string, string> = {};
     if (orcamento) respostas.orcamento = orcamento;
