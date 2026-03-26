@@ -177,6 +177,29 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
     if (tempOverride) respostas.temperatura_manual = tempOverride;
 
     try {
+      // Upload photos first if any
+      const photoUrls: string[] = [];
+      if (photoFiles.length > 0) {
+        for (const { file } of photoFiles) {
+          const ext = file.name.split('.').pop() || 'jpg';
+          const path = `${franchiseId}/${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+          const { error: uploadErr } = await supabase.storage.from('quintal-photos').upload(path, file, {
+            cacheControl: '31536000',
+            upsert: false,
+          });
+          if (uploadErr) throw uploadErr;
+          const { data: urlData } = supabase.storage.from('quintal-photos').getPublicUrl(path);
+          photoUrls.push(urlData.publicUrl);
+        }
+      }
+
+      const photoFields: Record<string, string | null> = {
+        foto1: photoUrls[0] || null,
+        foto2: photoUrls[1] || null,
+        foto3: photoUrls[2] || null,
+        foto4: photoUrls[3] || null,
+      };
+
       const { error } = await supabase.from('leads').insert({
         nome: trimmedName,
         telefone: digits,
@@ -189,6 +212,7 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
         lead_origin: 'manual',
         status_lead: 'novo',
         respostas_questionario: Object.keys(respostas).length > 0 ? respostas : null,
+        ...photoFields,
       });
 
       if (error) throw error;
