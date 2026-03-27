@@ -469,7 +469,7 @@ export default function LeadDetail() {
             <div className="bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl p-1.5 shadow-sm">
               <TabsList className="w-full grid grid-cols-4 h-12 bg-transparent p-0 gap-1">
                 {[
-                  { value: 'fotos', icon: Image, label: 'Fotos', disabled: photos.length === 0, badge: photos.length > 0 ? photos.length : undefined },
+                  { value: 'fotos', icon: Image, label: 'Fotos', disabled: false, badge: photos.length > 0 ? photos.length : undefined },
                   { value: 'gerenciar', icon: Settings2, label: 'Gerenciar' },
                   { value: 'followups', icon: CalendarClock, label: 'Follow-ups' },
                   { value: 'timeline', icon: Clock, label: 'Timeline' },
