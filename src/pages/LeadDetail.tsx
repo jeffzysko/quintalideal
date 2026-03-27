@@ -542,16 +542,56 @@ export default function LeadDetail() {
                           </div>
                           <div className="grid grid-cols-2 gap-2 mb-4">
                             {photos.map((url, i) => (
-                              <button
-                                key={i}
-                                onClick={() => { setLightboxIndex(i); setLightboxOpen(true); }}
-                                className="relative group rounded-xl overflow-hidden border border-border/50 aspect-square focus:outline-none focus:ring-2 focus:ring-primary"
-                              >
-                                <img src={url} alt={`Quintal ${i + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
-                                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                                  <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                                </div>
-                              </button>
+                              <div key={i} className="relative group rounded-xl overflow-hidden border border-border/50 aspect-square">
+                                <button
+                                  onClick={() => { setLightboxIndex(i); setLightboxOpen(true); }}
+                                  className="w-full h-full focus:outline-none focus:ring-2 focus:ring-primary"
+                                >
+                                  <img src={url} alt={`Quintal ${i + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
+                                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                                    <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                                  </div>
+                                </button>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <button
+                                      className="absolute top-1.5 right-1.5 w-6 h-6 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md z-10"
+                                    >
+                                      <X className="w-3.5 h-3.5" />
+                                    </button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Remover foto?</AlertDialogTitle>
+                                      <AlertDialogDescription>Esta ação não pode ser desfeita. A foto será removida permanentemente do lead.</AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                      <AlertDialogAction
+                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                        onClick={async () => {
+                                          if (!lead) return;
+                                          const photoFields = ['foto1', 'foto2', 'foto3', 'foto4'] as const;
+                                          const remaining = photos.filter((_, idx) => idx !== i);
+                                          const update: Record<string, string | null> = {};
+                                          photoFields.forEach((field, idx) => {
+                                            update[field] = remaining[idx] || null;
+                                          });
+                                          const { error } = await supabase.from('leads').update(update).eq('id', lead.id);
+                                          if (error) {
+                                            toast.error('Erro ao remover foto.');
+                                          } else {
+                                            toast.success('Foto removida com sucesso!');
+                                            queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
+                                          }
+                                        }}
+                                      >
+                                        Remover
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </div>
                             ))}
                           </div>
                         </>
