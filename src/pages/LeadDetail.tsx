@@ -534,7 +534,7 @@ export default function LeadDetail() {
                 <motion.div key="fotos" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
                   <Card className="glass-card">
                     <CardContent className="p-3 sm:p-5">
-                      {photos.length > 0 && (
+                      {photos.length > 0 ? (
                         <>
                           <div className="flex items-center gap-2 mb-3">
                             <Camera className="w-4 h-4 text-primary" />
@@ -555,6 +555,14 @@ export default function LeadDetail() {
                             ))}
                           </div>
                         </>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center py-8 text-center">
+                          <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-3">
+                            <Camera className="w-7 h-7 text-primary" />
+                          </div>
+                          <p className="text-sm font-medium text-foreground mb-1">Nenhuma foto adicionada</p>
+                          <p className="text-xs text-muted-foreground max-w-[220px]">Adicione fotos do quintal para enriquecer o cadastro deste lead</p>
+                        </div>
                       )}
                       {photos.length < 4 && lead && (
                         <LeadPhotoUpload
