@@ -86,7 +86,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
                       key={opt.value}
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.12 + i * 0.05 }}
+                      transition={{ delay: 0.12 + Math.min(i * 0.05, 0.15) }}
                       onClick={() => handleSelect(opt.value)}
                       className={`w-full flex items-center gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-2xl border-2 transition-all duration-200 text-left group relative overflow-hidden active:scale-[0.98] ${
                         isSelected
@@ -130,7 +130,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
                       key={opt.value}
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      transition={{ delay: 0.1 + i * 0.06, type: 'spring', damping: 18 }}
+                      transition={{ delay: 0.1 + Math.min(i * 0.06, 0.15), type: 'spring', damping: 18 }}
                       onClick={() => handleSelect(opt.value)}
                       className={`relative rounded-2xl border-2 overflow-hidden transition-all duration-200 active:scale-[0.97] group ${
                         isSelected
@@ -201,7 +201,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
                           key={`${city.pais}-${city.nome}`}
                           initial={{ opacity: 0, x: -10 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.04 }}
+                          transition={{ delay: Math.min(i * 0.04, 0.15) }}
                           onClick={() => { haptic('light'); onAnswer(value); }}
                           className="w-full text-left px-4 py-3.5 rounded-xl hover:bg-accent active:bg-accent/70 transition-colors flex items-center gap-3 text-sm group"
                         >

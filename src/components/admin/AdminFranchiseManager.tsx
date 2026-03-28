@@ -262,7 +262,7 @@ export function AdminFranchiseManager() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2">
           {franchises.map((f, i) => (
-            <motion.div key={f.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+            <motion.div key={f.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i * 0.05, 0.15) }}>
               <Card className={`border-border/50 shadow-sm hover:shadow-md transition-shadow ${!f.ativa ? 'opacity-60' : ''}`}>
                 <CardContent className="p-5">
                   <div className="flex items-start justify-between mb-3">

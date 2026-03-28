@@ -149,7 +149,7 @@ export function WhatsAppTemplates(props: WhatsAppTemplatesProps) {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.15, delay: i * 0.03 }}
+                transition={{ duration: 0.15, delay: Math.min(i * 0.03, 0.15) }}
                 className="overflow-hidden"
               >
                 <div className="bg-muted/30 rounded-xl p-3 sm:p-4 hover:bg-muted/50 transition-colors">

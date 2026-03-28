@@ -479,7 +479,7 @@ export default function RadarMercado() {
                     key={m.model}
                     initial={{ opacity: 0, x: -16 }}
                     animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.5 + i * 0.05 }}
+                    transition={{ delay: 0.5 + Math.min(i * 0.05, 0.15) }}
                     className="flex items-center gap-3 py-2.5 px-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors"
                   >
                     <span className="text-lg font-bold text-muted-foreground/60 w-6">
@@ -509,7 +509,7 @@ export default function RadarMercado() {
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${p.pct}%` }}
-                        transition={{ delay: 0.8 + i * 0.1, duration: 0.6, ease: 'easeOut' }}
+                        transition={{ delay: 0.8 + Math.min(i * 0.1, 0.15), duration: 0.6, ease: 'easeOut' }}
                         className="h-full rounded-full"
                         style={{ background: `linear-gradient(90deg, hsl(var(--primary)), hsl(207 90% 64%))` }}
                       />
@@ -568,7 +568,7 @@ export default function RadarMercado() {
                       key={f.id}
                       initial={{ opacity: 0, x: -12 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.8 + i * 0.04 }}
+                      transition={{ delay: 0.8 + Math.min(i * 0.04, 0.15) }}
                       className="border-b border-border/30 hover:bg-muted/30 transition-colors"
                     >
                       <td className="py-2.5 px-3 font-bold text-muted-foreground">
@@ -603,7 +603,7 @@ export default function RadarMercado() {
                   key={o.cidade}
                   initial={{ opacity: 0, x: -16 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.9 + i * 0.06 }}
+                  transition={{ delay: 0.9 + Math.min(i * 0.06, 0.15) }}
                   className="flex items-center gap-3 py-3 px-4 rounded-xl bg-amber-500/5 border border-amber-500/15 hover:bg-amber-500/10 transition-colors"
                 >
                   <Sparkles className="w-5 h-5 text-amber-500 flex-shrink-0 animate-pulse-glow" />

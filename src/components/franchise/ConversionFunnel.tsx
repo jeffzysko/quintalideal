@@ -74,7 +74,7 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
                 key={step.key}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.08 }}
+                transition={{ delay: Math.min(i * 0.08, 0.15) }}
               >
                 {/* Mobile: stacked layout */}
                 <div className="sm:hidden">
@@ -95,7 +95,7 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${barWidth}%` }}
-                      transition={{ delay: 0.2 + i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                      transition={{ delay: 0.2 + Math.min(i * 0.1, 0.15), duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                       className="h-full rounded-xl"
                       style={{ backgroundColor: `${step.color}20`, borderLeft: `3px solid ${step.color}` }}
                     />
@@ -122,7 +122,7 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${barWidth}%` }}
-                        transition={{ delay: 0.2 + i * 0.1, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                        transition={{ delay: 0.2 + Math.min(i * 0.1, 0.15), duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
                         className="h-full rounded-xl"
                         style={{ backgroundColor: `${step.color}20`, borderLeft: `3px solid ${step.color}` }}
                       />

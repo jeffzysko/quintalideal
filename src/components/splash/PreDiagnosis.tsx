@@ -79,7 +79,7 @@ export function PreDiagnosis({ onContinue, lang = 'pt' }: PreDiagnosisProps) {
               key={i}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.5 + i * 0.1 }}
+              transition={{ delay: 0.5 + Math.min(i * 0.1, 0.15) }}
               className="flex items-center gap-3"
             >
               <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"

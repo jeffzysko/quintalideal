@@ -158,7 +158,7 @@ export function LeadTimeline({ leadId }: LeadTimelineProps) {
                       key={act.id}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.03 }}
+                      transition={{ delay: Math.min(i * 0.03, 0.15) }}
                       className="relative mb-3 last:mb-0"
                     >
                       <div className={`absolute -left-5 top-1.5 w-3.5 h-3.5 rounded-full border-2 border-background flex items-center justify-center ${config.dotColor}`}>

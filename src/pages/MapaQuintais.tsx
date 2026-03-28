@@ -166,7 +166,7 @@ export default function MapaQuintais() {
                           key={city.cidade}
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.45 + i * 0.05 }}
+                          transition={{ delay: 0.45 + Math.min(i * 0.05, 0.15) }}
                           className="flex items-center gap-3 py-2.5 px-3 rounded-xl bg-muted/30 hover:bg-muted/50 transition-colors group"
                         >
                           <span className="text-sm font-bold text-muted-foreground w-6">
@@ -189,7 +189,7 @@ export default function MapaQuintais() {
                               style={{ backgroundColor: barColor }}
                               initial={{ width: 0 }}
                               animate={{ width: `${(city.count / maxCount) * 100}%` }}
-                              transition={{ delay: 0.5 + i * 0.05, duration: 0.6 }}
+                              transition={{ delay: 0.5 + Math.min(i * 0.05, 0.15), duration: 0.6 }}
                             />
                           </div>
                         </motion.div>

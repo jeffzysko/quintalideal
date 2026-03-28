@@ -362,7 +362,7 @@ export function PhotoUpload({ onNext, onBack, lang = 'pt' }: PhotoUploadProps) {
                             key={i}
                             initial={{ opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 + i * 0.08 }}
+                            transition={{ delay: 0.1 + Math.min(i * 0.08, 0.15) }}
                             className="flex items-start gap-2 text-[11px] text-muted-foreground"
                           >
                             <span className="text-sm leading-none mt-0.5">{tip.icon}</span>

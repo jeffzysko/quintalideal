@@ -119,7 +119,7 @@ export function ProcessingScreen({ onDone, lang = 'pt' }: ProcessingScreenProps)
               key={i}
               initial={{ opacity: 0, x: -10 }}
               animate={{ opacity: i <= currentStep ? 1 : 0.3, x: 0 }}
-              transition={{ delay: i * 0.15, duration: 0.3 }}
+              transition={{ delay: Math.min(i * 0.15, 0.15), duration: 0.3 }}
               className="flex items-center gap-3"
             >
               <motion.div

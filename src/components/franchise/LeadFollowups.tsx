@@ -367,7 +367,7 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
               key={f.id}
               initial={{ opacity: 0, x: -8 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.04 }}
+              transition={{ delay: Math.min(i * 0.04, 0.15) }}
               className={cn(
                 'flex items-start gap-2.5 p-3 rounded-xl transition-all duration-200',
                 f.completed
