@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileLeadCard } from './MobileLeadCard';
 import { SmartTagBadges } from '@/components/SmartTagBadges';
+import { classifyLead } from '@/lib/leadScoring';
 
 interface AdminLeadsTableProps {
   leads: LeadRow[];
@@ -46,6 +47,8 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
   const from = (page - 1) * pageSize;
   const to = from + pageSize;
   const totalPages = Math.ceil(totalCount / pageSize);
+  const detailReturnTo = `/admin?tab=leads&page=${page}`;
+  const detailRouteState = { returnTo: detailReturnTo };
 
   return (
     <Card className="card-premium overflow-hidden">
@@ -90,31 +93,30 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                 ))}
               </div>
             ) : (
-            <div className="overflow-x-auto">
+            <div className="relative z-0 overflow-x-auto">
               <table className="w-full text-sm" role="table">
                 <thead>
                   <tr className="border-y border-border/40 bg-muted/30" role="row">
                     <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Nome</th>
+                    <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Temp.</th>
                     <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Cidade</th>
                     <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden lg:table-cell">Franquia</th>
-                    <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Score</th>
+                    <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Quintal</th>
                     <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Modelo</th>
                     <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider">Status</th>
-                    <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden lg:table-cell">Ref</th>
                     <th role="columnheader" className="text-left py-3 px-4 font-semibold text-muted-foreground text-xs uppercase tracking-wider hidden md:table-cell">Data</th>
                     <th role="columnheader" className="w-12 py-3 px-4"></th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border/20">
-                  {leads.map((lead, i) => (
-                    <motion.tr
+                  {leads.map((lead) => {
+                    const temp = classifyLead((lead as any).respostas_questionario || null, lead.pontuacao_quintal);
+                    return (
+                    <tr
                       key={lead.id}
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ delay: Math.min(i * 0.02, 0.15) }}
                       className="hover:bg-muted/30 transition-colors cursor-pointer group"
                       role="row"
-                      onClick={() => navigate(`/admin/lead/${lead.id}`)}
+                      onClick={() => navigate(`/admin/lead/${lead.id}`, { state: detailRouteState })}
                     >
                       <td role="cell" className="py-3 px-4">
                         <div className="flex items-center gap-3">
@@ -126,6 +128,11 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                             )}
                           </div>
                         </div>
+                      </td>
+                      <td role="cell" className="py-3 px-4">
+                        <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
+                          {temp.emoji} {temp.label}
+                        </Badge>
                       </td>
                       <td role="cell" className="py-3 px-4 hidden md:table-cell text-muted-foreground text-sm">{lead.cidade || '—'}</td>
                       <td role="cell" className="py-3 px-4 hidden lg:table-cell">
@@ -147,11 +154,6 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                           <SmartTagBadges lead={lead} max={1} />
                         </div>
                       </td>
-                      <td role="cell" className="py-3 px-4 hidden lg:table-cell">
-                        {lead.referred_by ? (
-                          <span className="text-[10px] font-mono text-muted-foreground bg-muted/50 px-2 py-1 rounded-md">{lead.referred_by}</span>
-                        ) : <span className="text-muted-foreground/40">—</span>}
-                      </td>
                       <td role="cell" className="py-3 px-4 hidden md:table-cell text-muted-foreground text-xs tabular-nums">
                         {new Date(lead.created_at).toLocaleDateString('pt-BR')}
                       </td>
@@ -159,47 +161,60 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                         <Button
                           size="icon"
                           variant="ghost"
-                          onClick={(e) => { e.stopPropagation(); navigate(`/admin/lead/${lead.id}`); }}
+                          onClick={(e) => { e.stopPropagation(); navigate(`/admin/lead/${lead.id}`, { state: detailRouteState }); }}
                           className="h-8 w-8 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity"
                           aria-label="Ver detalhes do lead"
                         >
                           <Eye className="w-4 h-4" />
                         </Button>
                       </td>
-                    </motion.tr>
-                  ))}
+                    </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
             )}
-
+ 
             {totalCount > 0 && (
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 py-4 border-t border-border/30 bg-muted/10">
+              <div
+                className="relative z-10 isolate flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 py-4 border-t border-border/30 bg-card"
+                onClick={(e) => e.stopPropagation()}
+              >
                 <p className="text-xs text-muted-foreground">
                   Mostrando <span className="font-semibold text-foreground">{from + 1}–{Math.min(to, totalCount)}</span> de {totalCount}
                 </p>
                 <div className="flex items-center gap-1">
-                  <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg" onClick={() => onPageChange(Math.max(1, page - 1))} disabled={page === 1}>
+                  <button
+                    type="button"
+                    className="inline-flex items-center justify-center h-9 w-9 rounded-lg border border-input bg-background text-sm hover:bg-accent disabled:opacity-50 disabled:pointer-events-none"
+                    onClick={() => onPageChange(Math.max(1, page - 1))}
+                    disabled={page === 1}
+                  >
                     <ChevronLeft className="w-4 h-4" />
-                  </Button>
+                  </button>
                   {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
                     const pageNum = i + 1;
                     return (
-                      <Button
+                      <button
+                        type="button"
                         key={pageNum}
-                        variant={page === pageNum ? 'default' : 'ghost'}
-                        size="icon"
-                        className="h-8 w-8 rounded-lg text-xs"
+                        className={`inline-flex items-center justify-center h-9 w-9 rounded-lg text-xs font-medium transition-colors ${page === pageNum ? 'bg-primary text-primary-foreground' : 'hover:bg-accent text-foreground'}`}
                         onClick={() => onPageChange(pageNum)}
                       >
                         {pageNum}
-                      </Button>
+                      </button>
                     );
                   })}
                   {totalPages > 5 && <span className="text-xs text-muted-foreground px-1">…</span>}
-                  <Button variant="outline" size="icon" className="h-8 w-8 rounded-lg" onClick={() => onPageChange(page + 1)} disabled={page >= totalPages}>
+                  <button
+                    type="button"
+                    className="inline-flex items-center justify-center h-9 w-9 rounded-lg border border-input bg-background text-sm hover:bg-accent disabled:opacity-50 disabled:pointer-events-none"
+                    onClick={() => onPageChange(page + 1)}
+                    disabled={page >= totalPages}
+                  >
                     <ChevronRight className="w-4 h-4" />
-                  </Button>
+                  </button>
                 </div>
               </div>
             )}

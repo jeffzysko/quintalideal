@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, Trophy, ArrowRight, Sparkles, Ruler, Waves, Droplets, Users, Instagram, X, MapPin } from 'lucide-react';
+import { MessageCircle, Trophy, ArrowRight, Sparkles, Ruler, Waves, Droplets, Instagram, X, MapPin } from 'lucide-react';
 import logoSplash from '@/assets/logo-splash.png';
 import { getRankingGaucho, getYardClassification, getSharePhrase, getSocialComparison } from '@/lib/ranking';
 import { getPoolImage } from '@/lib/poolImages';
@@ -10,6 +10,8 @@ import { trackEvent } from '@/lib/analytics';
 import { trackMetaEvent } from '@/components/MetaPixel';
 import { SITE_URL, SITE_DOMAIN } from '@/lib/constants';
 import { type Lang, t } from '@/lib/i18n';
+
+import { type FitLevel, getFitLevelLabel, getFitLevelEmoji } from '@/lib/scoring-v2';
 
 interface PoolSpecs {
   tamanho?: string;
@@ -22,12 +24,23 @@ interface PoolAlternativeView {
   name: string;
   image?: string;
   description?: string;
+  fitLevel?: FitLevel;
+  matchScore?: number;
   specs?: {
     tamanho?: string;
     profundidade?: number;
     possui_prainha?: boolean;
     possui_spa?: boolean;
   };
+}
+
+interface UpgradeOptionView {
+  name: string;
+  image?: string;
+  description?: string;
+  fitLevel?: FitLevel;
+  matchScore?: number;
+  recommendedSize?: string;
 }
 
 interface ActionButtonsProps {
@@ -43,13 +56,22 @@ interface ActionButtonsProps {
   refCode?: string;
   franchiseId?: string;
   alternatives?: PoolAlternativeView[];
+  fitLevel?: FitLevel;
+  matchScore?: number;
+  reasoning?: string;
+  closingPhrase?: string;
+  isWeakRecommendation?: boolean;
+  customerProfile?: string;
+  upgradeOption?: UpgradeOptionView;
   lang?: Lang;
 }
 
-export function ActionButtons({ score, poolName, poolDescription, poolSpecs, recommendedSize, whatsappNumber, assignedFranchiseName, assignedCidadeBase, leadName, refCode: _refCode, franchiseId, alternatives = [], lang = 'pt' }: ActionButtonsProps) {
+export function ActionButtons({ score, poolName, poolDescription, poolSpecs, recommendedSize, whatsappNumber, assignedFranchiseName, assignedCidadeBase, leadName, refCode: _refCode, franchiseId, alternatives = [], fitLevel, matchScore, reasoning, closingPhrase, isWeakRecommendation, customerProfile: _customerProfile, upgradeOption, lang = 'pt' }: ActionButtonsProps) {
   const ranking = getRankingGaucho(score);
   const classification = getYardClassification(score);
   const socialComparison = getSocialComparison(score);
+  const fitLabel = fitLevel ? getFitLevelLabel(fitLevel, lang) : null;
+  const fitEmoji = fitLevel ? getFitLevelEmoji(fitLevel) : null;
   
   const [showInstaGuide, setShowInstaGuide] = useState(false);
 
@@ -303,14 +325,50 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
             </div>
           )}
           <div className="p-5">
-            <div className="flex items-center gap-2 mb-2">
-              <Sparkles className="w-3.5 h-3.5 text-primary" />
-              <span className="text-[9px] font-bold text-primary uppercase tracking-[0.15em]">{t('action_rec_label', lang)}</span>
-            </div>
-            <h3 className="text-lg font-bold text-foreground mb-1">{poolName}</h3>
-            {poolDescription && <p className="text-xs text-muted-foreground leading-relaxed mb-4">{poolDescription}</p>}
+            {/* Weak recommendation header */}
+            {isWeakRecommendation ? (
+              <p className="text-xs text-muted-foreground leading-relaxed mb-3">
+                {lang === 'es'
+                  ? 'Encontramos algunas opciones que pueden funcionar bien para tu espacio:'
+                  : 'Encontramos algumas opções que podem funcionar bem para o seu espaço:'}
+              </p>
+            ) : (
+              <>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-3.5 h-3.5 text-primary" />
+                    <span className="text-[9px] font-bold text-primary uppercase tracking-[0.15em]">{t('action_rec_label', lang)}</span>
+                  </div>
+                  {fitLabel && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
+                      {fitEmoji} {fitLabel}
+                      {matchScore != null && <span className="text-primary/60 ml-0.5">({matchScore}%)</span>}
+                    </span>
+                  )}
+                </div>
+                <h3 className="text-lg font-bold text-foreground mb-1">{poolName}</h3>
 
-            {poolSpecs && (
+                {/* Trust tag */}
+                <p className="text-[10px] text-muted-foreground/70 mb-2 flex items-center gap-1">
+                  <span>✅</span>
+                  {lang === 'es' ? 'Recomendación basada en cientos de proyectos similares' : 'Recomendação baseada em centenas de projetos similares'}
+                </p>
+              </>
+            )}
+
+            {/* Reasoning */}
+            {!isWeakRecommendation && reasoning ? (
+              <p className="text-xs text-muted-foreground leading-relaxed mb-2">{reasoning}</p>
+            ) : (
+              !isWeakRecommendation && poolDescription && <p className="text-xs text-muted-foreground leading-relaxed mb-2">{poolDescription}</p>
+            )}
+
+            {/* Closing phrase */}
+            {!isWeakRecommendation && closingPhrase && (
+              <p className="text-[11px] text-foreground/70 font-medium italic mb-3">{closingPhrase}</p>
+            )}
+
+            {!isWeakRecommendation && poolSpecs && (
               <div className="grid grid-cols-2 gap-2">
                 {recommendedSize && (
                   <div className="flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2.5">
@@ -399,6 +457,36 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
           </motion.div>
         )}
 
+        {/* Upgrade option */}
+        {upgradeOption && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.72 }}
+            className="mt-4 rounded-2xl overflow-hidden border border-amber-500/20 bg-amber-500/5"
+          >
+            <div className="p-4">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="text-sm">⬆️</span>
+                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+                  {lang === 'es' ? 'Opción de Upgrade' : 'Opção de Upgrade'}
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                {upgradeOption.image && (
+                  <img src={upgradeOption.image} alt={upgradeOption.name} className="w-16 h-12 rounded-lg object-cover" loading="lazy" />
+                )}
+                <div>
+                  <p className="text-sm font-bold text-foreground">{upgradeOption.name}</p>
+                  {upgradeOption.recommendedSize && (
+                    <p className="text-[10px] text-muted-foreground">📐 {upgradeOption.recommendedSize}</p>
+                  )}
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         {/* Assigned franchise info */}
         {assignedFranchiseName && (
           <motion.div
@@ -416,12 +504,27 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
           </motion.div>
         )}
 
+        {/* Urgency + social proof */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.78 }}
+          className="mt-5 text-center"
+        >
+          <p className="text-[11px] text-foreground/60 font-medium mb-1">
+            {lang === 'es' ? '📈 Alta demanda en tu región' : '📈 Alta procura na sua região'}
+          </p>
+          <p className="text-[10px] text-muted-foreground">
+            {t('action_whatsapp_urgency', lang)}
+          </p>
+        </motion.div>
+
         {/* Primary CTA */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.8 }}
-          className="mt-5"
+          className="mt-3"
         >
           <Button
             onClick={handleWhatsApp}
@@ -436,9 +539,13 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
               <ArrowRight className="w-4 h-4" />
             </motion.span>
           </Button>
-          <p className="text-center text-[10px] text-muted-foreground mt-2">
-            {t('action_whatsapp_hint', lang)}
-          </p>
+          <div className="flex items-center justify-center gap-3 mt-2.5">
+            <span className="text-[10px] text-muted-foreground flex items-center gap-1">⚡ {lang === 'es' ? 'Rápido' : 'Rápido'}</span>
+            <span className="w-px h-3 bg-border" />
+            <span className="text-[10px] text-muted-foreground flex items-center gap-1">🤝 {lang === 'es' ? 'Sin compromiso' : 'Sem compromisso'}</span>
+            <span className="w-px h-3 bg-border" />
+            <span className="text-[10px] text-muted-foreground flex items-center gap-1">🎁 {lang === 'es' ? 'Condiciones especiales' : 'Condições especiais'}</span>
+          </div>
         </motion.div>
 
         {/* Valorization Simulator */}
@@ -446,39 +553,17 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
           <ValorizationSimulator score={score} lang={lang} />
         </motion.div>
 
-        {/* Challenge CTA */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.2 }}
-          className="mt-5 rounded-2xl p-5 text-center"
-          style={{
-            background: 'linear-gradient(135deg, hsl(207 90% 54% / 0.08), hsl(180 100% 50% / 0.04))',
-            border: '1px solid hsl(207 90% 54% / 0.15)',
-          }}
-        >
-          <Users className="w-6 h-6 text-primary mx-auto mb-2" />
-          <p className="text-sm font-semibold text-foreground mb-1">
-            {t('action_challenge_title', lang)}
-          </p>
-          <p className="text-xs text-muted-foreground mb-3">{t('action_challenge_subtitle', lang)}</p>
-          <Button
-            variant="outline"
-            onClick={handleShareWhatsApp}
-            className="rounded-xl border-primary/20 text-primary hover:bg-primary/5 gap-2"
-          >
-            <MessageCircle className="w-4 h-4" />
-            {t('action_challenge_btn', lang)}
-          </Button>
-        </motion.div>
 
         {/* Share row */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.4 }}
-          className="space-y-3 mt-6 pb-14"
+          className="space-y-3 mt-8 pb-14"
         >
+          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1 mb-1">
+            {lang === 'es' ? '📤 Comparte tu resultado' : '📤 Compartilhe seu resultado'}
+          </p>
           <div className="grid grid-cols-2 gap-2">
             <Button
               variant="outline"

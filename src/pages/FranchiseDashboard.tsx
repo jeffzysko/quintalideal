@@ -55,7 +55,8 @@ function FranchiseLinkBanner({ slug }: { slug: string }) {
           <Link2 className="w-5 h-5 text-primary" />
         </div>
         <div className="min-w-0">
-          <p className="text-xs font-bold text-foreground mb-0.5 uppercase tracking-wider">Seu link de divulgação</p>
+          <p className="text-xs font-bold text-foreground mb-0.5 uppercase tracking-wider">Seu link exclusivo</p>
+          <p className="text-[11px] text-muted-foreground mb-0.5">Compartilhe para receber leads</p>
           <p className="text-sm text-primary font-mono truncate">{url}</p>
         </div>
       </div>
@@ -107,7 +108,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       twelveMonthsAgo.setFullYear(twelveMonthsAgo.getFullYear() - 1);
       const { data, error } = await supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin')
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin, respostas_questionario')
         .eq('franquia_id', franchiseId!)
         .gte('created_at', twelveMonthsAgo.toISOString())
         .order('created_at', { ascending: false })
@@ -147,7 +148,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       const to = from + PAGE_SIZE - 1;
       const { data, count, error } = await supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin', { count: 'exact' })
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin, respostas_questionario', { count: 'exact' })
         .eq('franquia_id', franchiseId!)
         .order('created_at', { ascending: false })
         .range(from, to);
@@ -261,10 +262,10 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       {/* Alerts */}
       {overdueLeads.length > 0 && (
         <div className="mb-4 sm:mb-6">
-          <AlertBanner
+           <AlertBanner
             level="warning"
             title={`${overdueLeads.length} lead${overdueLeads.length > 1 ? 's' : ''} sem contato há mais de 48h`}
-            description="Leads aguardando primeiro contato. Responda rapidamente para aumentar sua taxa de conversão."
+            description="Quanto mais rápido você responder, maior a chance de fechar. Ligue ou mande WhatsApp agora!"
             action={
               <Button variant="outline" size="sm" className="rounded-xl text-xs shrink-0" onClick={() => setActiveTab('leads')}>
                 Ver leads
@@ -275,7 +276,25 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       )}
 
       {/* SLA + Goals row */}
-      {!loadingKpis && franchiseId && (
+      {loadingKpis ? (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <Card key={i} className="border-border/50">
+              <CardContent className="p-5 space-y-4">
+                <div className="flex items-center gap-3">
+                  <div className="skeleton w-10 h-10 rounded-xl" />
+                  <div className="space-y-2 flex-1">
+                    <div className="skeleton h-3 w-24 rounded-full" />
+                    <div className="skeleton h-5 w-16 rounded-full" />
+                  </div>
+                </div>
+                <div className="skeleton h-2 w-full rounded-full" />
+                <div className="skeleton h-3 w-32 rounded-full" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : franchiseId && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           <SLAIndicator leads={allLeads} activities={leadActivities} />
           <MonthlyGoals franchiseId={franchiseId} soldThisMonth={soldThisMonth} />
@@ -284,7 +303,22 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       )}
 
       {/* Conversion Funnel */}
-      {!loadingKpis && allLeads.length > 0 && <ConversionFunnel leads={allLeads} />}
+      {loadingKpis ? (
+        <Card className="border-border/50 mb-6">
+          <CardContent className="p-5 space-y-4">
+            <div className="skeleton h-4 w-32 rounded-full" />
+            <div className="space-y-3">
+              {Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-3">
+                  <div className="skeleton h-3 w-20 rounded-full" />
+                  <div className="skeleton h-8 rounded-lg flex-1" style={{ maxWidth: `${100 - i * 20}%` }} />
+                  <div className="skeleton h-3 w-10 rounded-full" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      ) : allLeads.length > 0 && <ConversionFunnel leads={allLeads} />}
 
       {/* Tab switcher */}
       <div className="flex gap-1 mb-6 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-full sm:w-fit overflow-x-auto scrollbar-none border border-border/30" role="tablist">
@@ -340,9 +374,9 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                       <Inbox className="w-10 h-10 text-primary/60" />
                     </div>
                     <h3 className="text-lg font-semibold text-foreground mb-2">Nenhum lead ainda</h3>
-                    <p className="text-sm text-muted-foreground text-center max-w-md mb-6">
-                      Seus leads aparecerão aqui assim que os primeiros clientes responderem ao quiz da sua página. Compartilhe seu link para começar!
-                    </p>
+                     <p className="text-sm text-muted-foreground text-center max-w-md mb-6">
+                       Seus leads aparecerão aqui assim que os primeiros clientes responderem ao quiz. Compartilhe seu link nas redes sociais e WhatsApp para começar a receber leads!
+                     </p>
                     {franchiseSlug && (
                       <Button variant="outline" className="gap-2 rounded-xl" onClick={() => {
                         navigator.clipboard.writeText(`${SITE_URL}/${franchiseSlug}`);

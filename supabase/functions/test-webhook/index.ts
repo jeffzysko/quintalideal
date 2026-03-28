@@ -95,7 +95,6 @@ Deno.serve(async (req) => {
         cidade: "Cidade Teste",
         pontuacao_quintal: 75,
         modelo_recomendado: "Cancún",
-        referred_by: null,
         created_at: new Date().toISOString(),
       },
       franquia: {

@@ -1,9 +1,9 @@
-import { useState, useEffect, useMemo, lazy, Suspense } from 'react';
+import { useState, useEffect, useMemo, useRef, lazy, Suspense } from 'react';
 import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Share2, Globe, Kanban, CalendarClock } from 'lucide-react';
+import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Globe, Kanban, CalendarClock } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -17,6 +17,7 @@ import { AdminInactiveAlerts } from '@/components/admin/AdminInactiveAlerts';
 import { AdminPerformanceComparison } from '@/components/admin/AdminPerformanceComparison';
 import { TableSkeleton } from '@/components/ui/table-skeleton';
 import { STATUS_LABELS, LeadRow } from '@/lib/lead-constants';
+import { classifyLead } from '@/lib/leadScoring';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { NotificationBell } from '@/components/NotificationBell';
 import { PanelHeader } from '@/components/PanelHeader';
@@ -25,20 +26,24 @@ import { TimeRangeSelector, filterByTimeRange, type TimeRange } from '@/componen
 import { SectionHeader } from '@/components/dashboard/SectionHeader';
 import type { MetricCardProps } from '@/components/dashboard/MetricCard';
 import { InsightCards } from '@/components/dashboard/InsightCards';
+import { ExecutiveSummary } from '@/components/admin/ExecutiveSummary';
 import { OrganizationSwitcher } from '@/components/OrganizationSwitcher';
 import { useLeadsRealtime } from '@/hooks/useLeadsRealtime';
-
+import { AdminWelcomeWizard } from '@/components/admin/AdminWelcomeWizard';
 // Lazy load heavy tab components
-const AdminCityRanking = lazy(() => import('@/components/admin/AdminCityRanking').then(m => ({ default: m.AdminCityRanking })));
+// AdminCityRanking moved to Performance QI tab
 const AdminFranchiseRanking = lazy(() => import('@/components/admin/AdminFranchiseRanking').then(m => ({ default: m.AdminFranchiseRanking })));
-const AdminReferralMetrics = lazy(() => import('@/components/admin/AdminReferralMetrics').then(m => ({ default: m.AdminReferralMetrics })));
+// AdminReferralMetrics removed — referral system no longer active
 const AdminAnalytics = lazy(() => import('@/components/admin/AdminAnalytics').then(m => ({ default: m.AdminAnalytics })));
 const AdminFranchiseManager = lazy(() => import('@/components/admin/AdminFranchiseManager').then(m => ({ default: m.AdminFranchiseManager })));
 const AdminEmailTemplates = lazy(() => import('@/components/admin/AdminEmailTemplates').then(m => ({ default: m.AdminEmailTemplates })));
 const AdminUserManager = lazy(() => import('@/components/admin/AdminUserManager').then(m => ({ default: m.AdminUserManager })));
 const AdminCityManager = lazy(() => import('@/components/admin/AdminCityManager').then(m => ({ default: m.AdminCityManager })));
 const KanbanBoard = lazy(() => import('@/components/franchise/KanbanBoard').then(m => ({ default: m.KanbanBoard })));
+// AdminProfileDistribution moved to Performance QI tab
 const FranchiseDashboard = lazy(() => import('@/pages/FranchiseDashboard'));
+const PerformanceQI = lazy(() => import('@/components/admin/PerformanceQI').then(m => ({ default: m.PerformanceQI })));
+const AdminLeadsReadOnly = lazy(() => import('@/components/admin/AdminLeadsReadOnly').then(m => ({ default: m.AdminLeadsReadOnly })));
 
 function TabFallback() {
   return (
@@ -50,6 +55,25 @@ function TabFallback() {
 
 const PAGE_SIZE = 25;
 
+const getAdminTabFromSearch = (search: string): 'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'franchise-view' => {
+  const urlTab = new URLSearchParams(search).get('tab');
+  if (urlTab === 'leads') return 'leads';
+  if (urlTab === 'kanban') return 'kanban';
+  if (urlTab === 'analytics') return 'analytics';
+  if (urlTab === 'performance-qi') return 'performance-qi';
+  if (urlTab === 'franchises') return 'franchises';
+  if (urlTab === 'cities') return 'cities';
+  if (urlTab === 'users') return 'users';
+  if (urlTab === 'emails') return 'emails';
+  if (urlTab === 'franchise-view') return 'franchise-view';
+  return 'overview';
+};
+
+const getLeadListPageFromSearch = (search: string) => {
+  const rawPage = Number(new URLSearchParams(search).get('page') || '1');
+  return Number.isFinite(rawPage) && rawPage > 0 ? Math.floor(rawPage) : 1;
+};
+
 export default function AdminDashboard() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -58,12 +82,7 @@ export default function AdminDashboard() {
   // Live updates: invalidates queries when leads change in the DB
   useLeadsRealtime();
   const { signOut: _signOut, role } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'kanban' | 'analytics' | 'franchises' | 'cities' | 'users' | 'emails' | 'franchise-view'>(() => {
-    const urlTab = new URLSearchParams(location.search).get('tab');
-    if (urlTab === 'leads') return 'leads';
-    if (urlTab === 'kanban') return 'kanban';
-    return 'overview';
-  });
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'franchise-view'>(() => getAdminTabFromSearch(location.search));
   const [viewFranchiseId, setViewFranchiseId] = useState<string>('');
   const [timeRange, setTimeRange] = useState<TimeRange>('30');
 
@@ -74,13 +93,42 @@ export default function AdminDashboard() {
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterModelo, setFilterModelo] = useState('all');
   const [filterTemperatura, setFilterTemperatura] = useState('all');
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(() => getLeadListPageFromSearch(location.search));
+  const didInitSearch = useRef(false);
+  const didInitCity = useRef(false);
+  const didInitFilters = useRef(false);
 
-  // Sync leads tab franchise filter when org switcher changes
-  useEffect(() => {
-    setFilterFranquia(orgFilter || 'all');
-    setPage(1);
-  }, [orgFilter]);
+  const updateLeadListPage = (nextPage: number) => {
+    const safePage = Math.max(1, nextPage);
+    setPage(safePage);
+
+    if (activeTab !== 'leads') return;
+
+    const params = new URLSearchParams(location.search);
+    params.set('tab', 'leads');
+    params.set('page', String(safePage));
+    navigate({ pathname: location.pathname, search: `?${params.toString()}` }, { replace: true });
+  };
+
+  const handleAdminTabChange = (nextTab: typeof activeTab) => {
+    setActiveTab(nextTab);
+
+    const params = new URLSearchParams(location.search);
+    if (nextTab === 'overview') {
+      params.delete('tab');
+      params.delete('page');
+    } else {
+      params.set('tab', nextTab);
+      if (nextTab === 'leads') {
+        params.set('page', String(page));
+      } else {
+        params.delete('page');
+      }
+    }
+
+    const nextSearch = params.toString();
+    navigate({ pathname: location.pathname, search: nextSearch ? `?${nextSearch}` : '' }, { replace: true });
+  };
 
   const [searchInput, setSearchInput] = useState('');
   const [search, setSearch] = useState('');
@@ -88,16 +136,36 @@ export default function AdminDashboard() {
   const [filterCidade, setFilterCidade] = useState('');
 
   useEffect(() => {
-    const timer = setTimeout(() => { setSearch(searchInput); setPage(1); }, 400);
+    const timer = setTimeout(() => {
+      if (!didInitSearch.current) {
+        didInitSearch.current = true;
+        return;
+      }
+      setSearch(searchInput);
+      updateLeadListPage(1);
+    }, 400);
     return () => clearTimeout(timer);
   }, [searchInput]);
 
   useEffect(() => {
-    const timer = setTimeout(() => { setFilterCidade(cidadeInput); setPage(1); }, 400);
+    const timer = setTimeout(() => {
+      if (!didInitCity.current) {
+        didInitCity.current = true;
+        return;
+      }
+      setFilterCidade(cidadeInput);
+      updateLeadListPage(1);
+    }, 400);
     return () => clearTimeout(timer);
   }, [cidadeInput]);
 
-  useEffect(() => { setPage(1); }, [filterFranquia, filterStatus, filterModelo, filterTemperatura]);
+  useEffect(() => {
+    if (!didInitFilters.current) {
+      didInitFilters.current = true;
+      return;
+    }
+    updateLeadListPage(1);
+  }, [filterFranquia, filterStatus, filterModelo, filterTemperatura]);
 
   // ── Franchises ──
   const { data: franchises = [] } = useQuery({
@@ -137,7 +205,7 @@ export default function AdminDashboard() {
       twelveMonthsAgo.setFullYear(twelveMonthsAgo.getFullYear() - 1);
       const { data, error } = await supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, updated_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin')
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, updated_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin, respostas_questionario')
         .gte('created_at', twelveMonthsAgo.toISOString())
         .order('created_at', { ascending: false })
         .limit(1500);
@@ -148,36 +216,54 @@ export default function AdminDashboard() {
   });
 
   // ── Paginated leads for table ──
-  const { data: paginatedData, isLoading: loadingTable } = useQuery({
+  const { data: paginatedData, isLoading: loadingTable, isFetching: fetchingTable } = useQuery({
     queryKey: ['admin-leads-table', page, search, filterFranquia, filterStatus, filterModelo, filterCidade, filterTemperatura],
     placeholderData: keepPreviousData,
     staleTime: 60 * 1000,
     queryFn: async () => {
+      // Temperature is computed client-side, so when filtering by temperature
+      // we fetch a larger batch and filter in JS to maintain correct pagination
+      const isTemperatureFiltered = filterTemperatura !== 'all';
       const from = (page - 1) * PAGE_SIZE;
-      const to = from + PAGE_SIZE - 1;
+      const to = isTemperatureFiltered ? from + PAGE_SIZE * 10 - 1 : from + PAGE_SIZE - 1;
 
-      let query = supabase
+      let query: any = supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin', { count: 'exact' });
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin, respostas_questionario', { count: 'exact' });
 
       if (filterFranquia !== 'all') query = query.eq('franquia_id', filterFranquia);
-      if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus as any);
+      if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus);
       if (filterModelo !== 'all') query = query.eq('modelo_recomendado', filterModelo);
       if (filterCidade) query = query.ilike('cidade', `%${filterCidade}%`);
       if (search) query = query.ilike('nome', `%${search}%`);
-      // Server-side temperature filter using the computed column
-      if (filterTemperatura !== 'all') query = query.eq('temperatura', filterTemperatura);
 
       const { data, count, error } = await query.order('created_at', { ascending: false }).range(from, to);
       if (error) throw error;
 
-      return { leads: (data || []) as LeadRow[], total: count || 0 };
+      let filteredLeads = (data || []) as LeadRow[];
+      let filteredTotal = count || 0;
+
+      if (isTemperatureFiltered) {
+        filteredLeads = filteredLeads.filter(l => {
+          const temp = classifyLead((l as any).respostas_questionario || null, l.pontuacao_quintal);
+          return temp.temperature === filterTemperatura;
+        });
+        filteredTotal = filteredLeads.length;
+        filteredLeads = filteredLeads.slice(0, PAGE_SIZE);
+      }
+
+      return { leads: filteredLeads, total: isTemperatureFiltered ? filteredTotal : (count || 0) };
     },
   });
 
   const leads = paginatedData?.leads || [];
   const totalCount = paginatedData?.total || 0;
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+
+  useEffect(() => {
+    if (activeTab !== 'leads' || totalPages === 0 || page <= totalPages) return;
+    updateLeadListPage(totalPages);
+  }, [activeTab, page, totalPages]);
 
   // Prefetch next page so pagination feels instant
   useEffect(() => {
@@ -187,20 +273,30 @@ export default function AdminDashboard() {
       queryKey: ['admin-leads-table', nextPage, search, filterFranquia, filterStatus, filterModelo, filterCidade, filterTemperatura],
       staleTime: 60 * 1000,
       queryFn: async () => {
+        const isTemperatureFiltered = filterTemperatura !== 'all';
         const from = (nextPage - 1) * PAGE_SIZE;
-        const to = from + PAGE_SIZE - 1;
-        let query = supabase
+        const to = isTemperatureFiltered ? from + PAGE_SIZE * 10 - 1 : from + PAGE_SIZE - 1;
+        let query: any = supabase
           .from('leads')
-          .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin', { count: 'exact' });
+          .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin, respostas_questionario', { count: 'exact' });
         if (filterFranquia !== 'all') query = query.eq('franquia_id', filterFranquia);
-        if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus as any);
+        if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus);
         if (filterModelo !== 'all') query = query.eq('modelo_recomendado', filterModelo);
         if (filterCidade) query = query.ilike('cidade', `%${filterCidade}%`);
         if (search) query = query.ilike('nome', `%${search}%`);
-        if (filterTemperatura !== 'all') query = query.eq('temperatura', filterTemperatura);
         const { data, count, error } = await query.order('created_at', { ascending: false }).range(from, to);
         if (error) throw error;
-        return { leads: (data || []) as LeadRow[], total: count || 0 };
+        let filteredLeads = (data || []) as LeadRow[];
+        let filteredTotal = count || 0;
+        if (isTemperatureFiltered) {
+          filteredLeads = filteredLeads.filter(l => {
+            const temp = classifyLead((l as any).respostas_questionario || null, l.pontuacao_quintal);
+            return temp.temperature === filterTemperatura;
+          });
+          filteredTotal = filteredLeads.length;
+          filteredLeads = filteredLeads.slice(0, PAGE_SIZE);
+        }
+        return { leads: filteredLeads, total: isTemperatureFiltered ? filteredTotal : (count || 0) };
       },
     });
   }, [page, totalPages, search, filterFranquia, filterStatus, filterModelo, filterCidade, filterTemperatura, queryClient]);
@@ -256,7 +352,7 @@ export default function AdminDashboard() {
     try {
       let query = supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, lead_origin');
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, lead_origin, respostas_questionario');
 
       if (filterFranquia !== 'all') query = query.eq('franquia_id', filterFranquia);
       if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus as any);
@@ -266,7 +362,7 @@ export default function AdminDashboard() {
 
       const { data, error } = await query.order('created_at', { ascending: false });
       if (error) throw error;
-      const exportLeads = (data || []) as LeadRow[];
+      const exportLeads = (data || []) as any[];
 
       const headers = ['Nome', 'Telefone', 'Email', 'Cidade', 'Franquia Atribuída', 'Franquia Origem', 'Pontuação', 'Modelo', 'Status', 'Territorial', 'Referência', 'Data'];
       const rows = exportLeads.map(l => [
@@ -296,32 +392,34 @@ export default function AdminDashboard() {
   const newLeads = currentLeads.filter(l => l.status_lead === 'novo').length;
   const cities = new Set(currentLeads.map(l => l.cidade).filter(Boolean)).size;
   const avgScore = totalLeads > 0 ? Math.round(currentLeads.reduce((s, l) => s + (l.pontuacao_quintal || 0), 0) / totalLeads) : 0;
-  const referralCount = currentLeads.filter(l => l.referred_by).length;
 
   const prevTotal = previousLeads.length || undefined;
   const prevNew = previousLeads.length > 0 ? previousLeads.filter(l => l.status_lead === 'novo').length : undefined;
   const prevCities = previousLeads.length > 0 ? new Set(previousLeads.map(l => l.cidade).filter(Boolean)).size : undefined;
   const prevAvg = previousLeads.length > 0 ? Math.round(previousLeads.reduce((s, l) => s + (l.pontuacao_quintal || 0), 0) / previousLeads.length) : undefined;
-  const prevRef = previousLeads.length > 0 ? previousLeads.filter(l => l.referred_by).length : undefined;
 
   const kpis: MetricCardProps[] = [
-    { icon: Users, label: 'Quintais explorados', value: totalLeads, previousValue: prevTotal, color: 'text-primary' },
-    { icon: TrendingUp, label: 'Novos leads', value: newLeads, previousValue: prevNew, color: 'text-emerald-600' },
-    { icon: Target, label: 'Média potencial', value: `${avgScore}%`, previousValue: prevAvg, color: 'text-primary' },
-    { icon: Building2, label: 'Franquias', value: orgFilteredFranchises.length, color: 'text-violet-600' },
-    { icon: MapPin, label: 'Cidades', value: cities, previousValue: prevCities, color: 'text-amber-600' },
-    { icon: Share2, label: 'Via convite', value: referralCount, previousValue: prevRef, color: 'text-secondary' },
+    { icon: Users, label: 'Quintais explorados', value: totalLeads, previousValue: prevTotal, color: 'text-primary', tooltip: 'Total de leads gerados pelo quiz no período selecionado.' },
+    { icon: TrendingUp, label: 'Novos leads', value: newLeads, previousValue: prevNew, color: 'text-emerald-600', tooltip: 'Leads com status "Novo" que ainda não foram contatados.' },
+    { icon: Target, label: 'Média potencial', value: `${avgScore}%`, previousValue: prevAvg, color: 'text-primary', tooltip: 'Média da pontuação do Índice do Quintal de todos os leads no período.' },
+    { icon: Building2, label: 'Franquias', value: orgFilteredFranchises.length, color: 'text-violet-600', tooltip: 'Quantidade de franquias ativas no sistema.' },
+    { icon: MapPin, label: 'Cidades', value: cities, previousValue: prevCities, color: 'text-amber-600', tooltip: 'Número de cidades distintas de onde vieram leads no período.' },
   ];
+
+  const isSuperAdmin = role === 'super_admin';
 
   const TABS = [
     { key: 'overview' as const, icon: BarChart3, label: 'Inteligência' },
+    { key: 'performance-qi' as const, icon: Target, label: 'Performance QI' },
     { key: 'analytics' as const, icon: Activity, label: 'Analytics' },
     { key: 'leads' as const, icon: Users, label: 'Leads' },
-    { key: 'kanban' as const, icon: Kanban, label: 'Funil Geral' },
+    ...(isSuperAdmin ? [
+      { key: 'kanban' as const, icon: Kanban, label: 'Funil Geral' },
+    ] : []),
     { key: 'franchises' as const, icon: Building2, label: 'Franquias' },
     { key: 'cities' as const, icon: Globe, label: 'Territórios' },
-    { key: 'users' as const, icon: Users, label: 'Usuários' },
-    ...(role === 'super_admin' ? [
+    ...(isSuperAdmin ? [
+      { key: 'users' as const, icon: Users, label: 'Usuários' },
       { key: 'emails' as const, icon: Mail, label: 'E-mails' },
       { key: 'franchise-view' as const, icon: Eye, label: 'Visão Franquia' },
     ] : []),
@@ -330,6 +428,7 @@ export default function AdminDashboard() {
   return (
     <PageTransition>
     <div className="min-h-screen bg-background pb-bottomnav">
+      <AdminWelcomeWizard />
       <PanelHeader title="Fábrica">
         {[
           { icon: CalendarClock, label: 'Hoje', action: () => navigate('/hoje') },
@@ -362,7 +461,7 @@ export default function AdminDashboard() {
               onSwitch={(id) => {
                 setOrgFilter(id);
                 setFilterFranquia(id || 'all');
-                setPage(1);
+                updateLeadListPage(1);
               }}
               compact
             />
@@ -370,7 +469,7 @@ export default function AdminDashboard() {
         </div>
         {/* Mobile: Select dropdown */}
         <div className="md:hidden mb-4">
-          <Select value={activeTab} onValueChange={(v) => setActiveTab(v as typeof activeTab)}>
+          <Select value={activeTab} onValueChange={(v) => handleAdminTabChange(v as typeof activeTab)}>
             <SelectTrigger className="w-full bg-card border-border/50">
               <SelectValue />
             </SelectTrigger>
@@ -396,7 +495,7 @@ export default function AdminDashboard() {
                   key={tab.key}
                   role="tab"
                   aria-selected={activeTab === tab.key}
-                  onClick={() => setActiveTab(tab.key)}
+                  onClick={() => handleAdminTabChange(tab.key)}
                   className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all whitespace-nowrap ${activeTab === tab.key ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
                 >
                   <tab.icon className={`w-4 h-4 shrink-0 ${activeTab === tab.key ? 'text-primary' : ''}`} />
@@ -416,6 +515,17 @@ export default function AdminDashboard() {
             </div>
 
             <MetricGrid metrics={kpis} loading={loadingKpis} columns={6} />
+
+            {/* Executive Summary */}
+            {!loadingKpis && currentLeads.length > 0 && (
+              <ExecutiveSummary
+                currentLeads={currentLeads}
+                previousLeads={previousLeads}
+                franchiseCount={orgFilteredFranchises.length}
+                cityCount={cities}
+                franchises={orgFilteredFranchises as any}
+              />
+            )}
 
             {/* Insight Surfacing */}
             {!loadingKpis && currentLeads.length > 0 && (
@@ -441,11 +551,9 @@ export default function AdminDashboard() {
 
             <Suspense fallback={<TabFallback />}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
-                <AdminCityRanking leads={orgFilteredLeads} />
                 <AdminFranchiseRanking leads={orgFilteredLeads} franchiseMap={franchiseMap} />
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 mb-4 sm:mb-6">
-                <AdminReferralMetrics leads={orgFilteredLeads} />
                 <Card className="card-premium">
                 <CardHeader className="px-3 sm:px-6"><CardTitle className="text-sm font-bold">Leads por Mês</CardTitle></CardHeader>
                 <CardContent className="px-2 sm:px-6">
@@ -474,7 +582,13 @@ export default function AdminDashboard() {
           </Suspense>
         )}
 
-        {activeTab === 'leads' && (
+        {activeTab === 'performance-qi' && (
+          <Suspense fallback={<TabFallback />}>
+            <PerformanceQI franchiseMap={franchiseMap} franchises={franchises as any} />
+          </Suspense>
+        )}
+
+        {activeTab === 'leads' && isSuperAdmin && (
           <>
             <AdminLeadFilters
               searchInput={searchInput} onSearchChange={setSearchInput}
@@ -486,7 +600,7 @@ export default function AdminDashboard() {
               franchises={franchises}
               models={models}
             />
-            {loadingTable ? (
+            {loadingTable && !paginatedData ? (
               <Card className="border-border/50 shadow-sm">
                 <CardHeader><CardTitle className="text-sm font-semibold">Todos os Leads</CardTitle></CardHeader>
                 <CardContent><TableSkeleton rows={10} cols={8} /></CardContent>
@@ -497,12 +611,20 @@ export default function AdminDashboard() {
                 totalCount={totalCount}
                 page={page}
                 pageSize={PAGE_SIZE}
-                onPageChange={setPage}
+                onPageChange={(nextPage) => {
+                  if (nextPage !== page && !fetchingTable) updateLeadListPage(nextPage);
+                }}
                 isLoading={false}
                 franchiseMap={franchiseMap}
               />
             )}
           </>
+        )}
+
+        {activeTab === 'leads' && !isSuperAdmin && (
+          <Suspense fallback={<TabFallback />}>
+            <AdminLeadsReadOnly franchiseMap={franchiseMap} franchises={franchises} />
+          </Suspense>
         )}
 
         {activeTab === 'kanban' && (

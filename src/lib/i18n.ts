@@ -2,14 +2,14 @@ export type Lang = 'pt' | 'es';
 
 const translations = {
   // HeroSection
-  hero_title_1: { pt: 'Descubra o', es: 'Descubre el' },
-  hero_title_2: { pt: 'potencial escondido', es: 'potencial oculto' },
-  hero_title_3: { pt: 'do seu quintal.', es: 'de tu patio.' },
+  hero_title_1: { pt: 'A piscina ideal', es: 'La piscina ideal' },
+  hero_title_2: { pt: 'o seu quintal', es: 'tu patio' },
+  hero_title_3: { pt: '', es: '' },
   hero_subtitle: {
-    pt: 'Análise inteligente em menos de 60 segundos. Descubra se seu quintal pode ter uma piscina Splash.',
-    es: 'Análisis inteligente en menos de 60 segundos. Descubre si tu patio puede tener una piscina Splash.',
+    pt: 'Responda algumas perguntas e veja o modelo ideal com base no seu espaço, estilo e orçamento.',
+    es: 'Responde algunas preguntas y ve el modelo ideal según tu espacio, estilo y presupuesto.',
   },
-  hero_cta: { pt: 'Explorar meu quintal', es: 'Explorar mi patio' },
+  hero_cta: { pt: 'Descobrir minha piscina ideal', es: 'Descubrir mi piscina ideal' },
   hero_trust_time: { pt: '60 segundos', es: '60 segundos' },
   hero_trust_free: { pt: '100% gratuito', es: '100% gratis' },
   hero_trust_analyses: { pt: '+2.500 análises', es: '+2.500 análisis' },
@@ -62,10 +62,11 @@ const translations = {
   quiz_q2_o3: { pt: 'Ainda estou planejando', es: 'Todavía estoy planificando' },
 
   quiz_q3: { pt: 'Como você imagina aproveitar sua piscina?', es: '¿Cómo imaginas disfrutar tu piscina?' },
-  quiz_q3_o1: { pt: 'Momentos a dois', es: 'Momentos en pareja' },
-  quiz_q3_o2: { pt: 'Diversão com os filhos', es: 'Diversión con los hijos' },
-  quiz_q3_o3: { pt: 'Reunir toda a família', es: 'Reunir a toda la familia' },
-  quiz_q3_o4: { pt: 'Churrascos e festas', es: 'Asados y fiestas' },
+  quiz_q3_o1: { pt: 'Relaxar e desacelerar no dia a dia', es: 'Relajarme y desacelerar en el día a día' },
+  quiz_q3_o2: { pt: 'Curtir momentos com meus filhos', es: 'Disfrutar momentos con mis hijos' },
+  quiz_q3_o3: { pt: 'Reunir a família nos finais de semana', es: 'Reunir a la familia los fines de semana' },
+  quiz_q3_o4: { pt: 'Receber amigos, churrascos e festas', es: 'Recibir amigos, asados y fiestas' },
+  quiz_q3_o5: { pt: 'Valorizar minha casa e deixar ela mais sofisticada', es: 'Valorizar mi casa y dejarla más sofisticada' },
 
   quiz_q4: { pt: 'Quando você gostaria de ter sua piscina?', es: '¿Cuándo te gustaría tener tu piscina?' },
   quiz_q4_o1: { pt: 'Ainda em 2026', es: 'Todavía en 2026' },
@@ -129,7 +130,7 @@ const translations = {
 
   // LeadForm
   lead_title: { pt: 'Quase lá! 🎉', es: '¡Casi listo! 🎉' },
-  lead_subtitle: { pt: 'Preencha seus dados para receber sua recomendação personalizada.', es: 'Completa tus datos para recibir tu recomendación personalizada.' },
+  lead_subtitle: { pt: 'Preencha seus dados para ver qual piscina é ideal para o seu quintal.', es: 'Completa tus datos para ver qué piscina es ideal para tu patio.' },
   lead_name: { pt: 'Nome', es: 'Nombre' },
   lead_name_placeholder: { pt: 'Seu nome completo', es: 'Tu nombre completo' },
   lead_whatsapp: { pt: 'WhatsApp', es: 'WhatsApp' },
@@ -137,7 +138,7 @@ const translations = {
   lead_email: { pt: 'Email', es: 'Email' },
   lead_email_optional: { pt: '(opcional)', es: '(opcional)' },
   lead_email_placeholder: { pt: 'seu@email.com', es: 'tu@email.com' },
-  lead_submit: { pt: 'Ver meu resultado', es: 'Ver mi resultado' },
+  lead_submit: { pt: 'Descobrir minha piscina ideal', es: 'Descubrir mi piscina ideal' },
   lead_checking: { pt: 'Verificando...', es: 'Verificando...' },
   lead_saving: { pt: 'Salvando...', es: 'Guardando...' },
   lead_safe: { pt: 'Seus dados estão seguros e protegidos', es: 'Tus datos están seguros y protegidos' },
@@ -155,8 +156,9 @@ const translations = {
   action_depth: { pt: 'Profundidade', es: 'Profundidad' },
   action_beach: { pt: 'Com prainha', es: 'Con playa' },
   action_spa: { pt: 'Com hidro/SPA', es: 'Con hidro/SPA' },
-  action_whatsapp_cta: { pt: 'Falar com um consultor', es: 'Hablar con un asesor' },
-  action_whatsapp_hint: { pt: 'Tire suas dúvidas e solicite um orçamento pelo WhatsApp', es: 'Resuelve tus dudas y solicita un presupuesto por WhatsApp' },
+  action_whatsapp_cta: { pt: 'Quero falar com um especialista agora', es: 'Quiero hablar con un especialista ahora' },
+  action_whatsapp_hint: { pt: '⚡ Atendimento rápido · Sem compromisso · Condições especiais', es: '⚡ Atención rápida · Sin compromiso · Condiciones especiales' },
+  action_whatsapp_urgency: { pt: 'Seu resultado está pronto — fale agora e garanta as melhores condições', es: 'Tu resultado está listo — habla ahora y asegura las mejores condiciones' },
   action_challenge_title: { pt: 'Será que o quintal dos seus amigos tem mais potencial que o seu?', es: '¿El patio de tus amigos tiene más potencial que el tuyo?' },
   action_challenge_subtitle: { pt: 'Desafie seus amigos e descubra!', es: '¡Desafía a tus amigos y descúbrelo!' },
   action_challenge_btn: { pt: 'Desafiar um amigo', es: 'Desafiar a un amigo' },
@@ -229,10 +231,11 @@ export function getQuizQuestions(lang: Lang) {
     {
       question: t('quiz_q3', lang),
       options: [
-        { value: 'casal', label: t('quiz_q3_o1', lang), emoji: '💑' },
-        { value: 'familia-pequena', label: t('quiz_q3_o2', lang), emoji: '👨‍👩‍👧' },
-        { value: 'familia-grande', label: t('quiz_q3_o3', lang), emoji: '👨‍👩‍👧‍👦' },
+        { value: 'relaxar', label: t('quiz_q3_o1', lang), emoji: '🧘' },
+        { value: 'filhos', label: t('quiz_q3_o2', lang), emoji: '👨‍👩‍👧' },
+        { value: 'familia', label: t('quiz_q3_o3', lang), emoji: '👨‍👩‍👧‍👦' },
         { value: 'amigos', label: t('quiz_q3_o4', lang), emoji: '🎉' },
+        { value: 'valorizar', label: t('quiz_q3_o5', lang), emoji: '🏡' },
       ],
     },
     {

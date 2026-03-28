@@ -5,6 +5,45 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Check if ANY user in a franchise has push enabled for a notification key
+async function franchiseHasPushEnabled(
+  supabase: ReturnType<typeof createClient>,
+  franchiseId: string,
+  notificationKey: string,
+): Promise<boolean> {
+  try {
+    // Get all user_ids for this franchise
+    const { data: profiles } = await supabase
+      .from('profiles')
+      .select('user_id')
+      .eq('franquia_id', franchiseId);
+
+    if (!profiles || profiles.length === 0) return true; // no profiles = default ON
+
+    // Check preferences for each user
+    const userIds = profiles.map((p: any) => p.user_id);
+    const { data: prefs } = await supabase
+      .from('notification_preferences')
+      .select('user_id, preferences')
+      .in('user_id', userIds);
+
+    if (!prefs || prefs.length === 0) return true; // no prefs saved = default ON
+
+    // If at least one user has push enabled (or no pref for this key), allow
+    for (const pref of prefs) {
+      const userPrefs = pref.preferences as Record<string, { push?: boolean }> | null;
+      if (!userPrefs) return true; // no prefs = default ON
+      const keyPref = userPrefs[notificationKey];
+      if (!keyPref || keyPref.push === undefined || keyPref.push) return true;
+    }
+
+    // All users explicitly disabled this notification
+    return false;
+  } catch {
+    return true; // on error, default to sending
+  }
+}
+
 Deno.serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -15,22 +54,20 @@ Deno.serve(async (req) => {
     const serviceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, serviceKey);
 
-    // Configuration: days without update to trigger reminders
     const STALE_NOVO_DAYS = 3;
     const STALE_CONTATADO_DAYS = 5;
     const STALE_NEGOCIACAO_DAYS = 7;
 
     const now = new Date();
-    const results = { reminders_created: 0, leads_checked: 0 };
+    const results = { reminders_created: 0, leads_checked: 0, skipped_by_preference: 0 };
 
-    // Find leads that are stale (no update in X days) and still open
     const cutoffs = [
-      { status: 'novo', days: STALE_NOVO_DAYS, message: 'Lead sem contato inicial' },
-      { status: 'contatado', days: STALE_CONTATADO_DAYS, message: 'Lead sem atualização' },
-      { status: 'em_negociacao', days: STALE_NEGOCIACAO_DAYS, message: 'Negociação parada' },
+      { status: 'novo', days: STALE_NOVO_DAYS, message: 'Lead sem contato inicial', notifKey: 'lead_no_first_contact' },
+      { status: 'contatado', days: STALE_CONTATADO_DAYS, message: 'Lead sem atualização', notifKey: 'followup_overdue' },
+      { status: 'em_negociacao', days: STALE_NEGOCIACAO_DAYS, message: 'Negociação parada', notifKey: 'followup_overdue' },
     ];
 
-    for (const { status, days, message } of cutoffs) {
+    for (const { status, days, message, notifKey } of cutoffs) {
       const cutoffDate = new Date(now.getTime() - days * 86400000).toISOString();
 
       const { data: staleLeads, error } = await supabase
@@ -48,6 +85,13 @@ Deno.serve(async (req) => {
       results.leads_checked += staleLeads?.length || 0;
 
       for (const lead of staleLeads || []) {
+        // Check if franchise users want this notification
+        const pushEnabled = await franchiseHasPushEnabled(supabase, lead.franquia_id, notifKey);
+        if (!pushEnabled) {
+          results.skipped_by_preference++;
+          continue;
+        }
+
         // Check if we already sent a reminder for this lead in the last 24h
         const oneDayAgo = new Date(now.getTime() - 86400000).toISOString();
         const { data: existing } = await supabase
@@ -61,7 +105,6 @@ Deno.serve(async (req) => {
 
         if (existing && existing.length > 0) continue;
 
-        // Create reminder notification
         const daysSinceUpdate = Math.floor(
           (now.getTime() - new Date(lead.updated_at).getTime()) / 86400000
         );
@@ -76,6 +119,30 @@ Deno.serve(async (req) => {
 
         if (!insertError) {
           results.reminders_created++;
+
+          // Send push respecting individual user preferences
+          try {
+            const pushUrl = `${supabaseUrl}/functions/v1/send-push`;
+            const urgencyEmoji = daysSinceUpdate >= 7 ? '🚨' : daysSinceUpdate >= 5 ? '⚠️' : '⏰';
+            const pushRes = await fetch(pushUrl, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${serviceKey}`,
+              },
+              body: JSON.stringify({
+                franchise_id: lead.franquia_id,
+                title: `${urgencyEmoji} Hora de agir!`,
+                message: `${lead.nome || 'Lead'} está esperando há ${daysSinceUpdate} dias 👋`,
+                url: '/hoje',
+                notification_key: notifKey,
+                type: 'followup',
+              }),
+            });
+            await pushRes.text().catch(() => {});
+          } catch (pushErr) {
+            console.error('Push notification failed (non-blocking):', pushErr);
+          }
         } else {
           console.error('Error creating reminder:', insertError);
         }
@@ -87,7 +154,7 @@ Deno.serve(async (req) => {
     return new Response(JSON.stringify(results), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
-  } catch (err) {
+  } catch (err: any) {
     console.error('Followup reminder error:', err);
     return new Response(JSON.stringify({ error: err.message }), {
       status: 500,

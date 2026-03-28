@@ -2,7 +2,8 @@ import { useState, useCallback, useRef, useEffect, lazy, Suspense } from 'react'
 import { AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import { HeroSection } from './HeroSection';
-import { calculateScore, recommendPool, recommendSize, type QuizAnswers, type PoolPriceInfo } from '@/lib/scoring';
+import { normalizeQuizToV2, recommendPoolsV2, type PoolModelData, type RecommendationResultV2 } from '@/lib/scoring-v2';
+// Legacy scoring kept for backward compat reference
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { trackEvent } from '@/lib/analytics';
@@ -17,7 +18,7 @@ import tradicionalImg from '@/assets/pools/tradicional.webp';
 
 const PhotoUpload = lazy(() => import('./PhotoUpload').then(m => ({ default: m.PhotoUpload })));
 const PhotoAnalysis = lazy(() => import('./PhotoAnalysis').then(m => ({ default: m.PhotoAnalysis })));
-const PreDiagnosis = lazy(() => import('./PreDiagnosis').then(m => ({ default: m.PreDiagnosis })));
+// PreDiagnosis removed to reduce friction
 const QuizStep = lazy(() => import('./QuizStep').then(m => ({ default: m.QuizStep })));
 const ProcessingScreen = lazy(() => import('./ProcessingScreen').then(m => ({ default: m.ProcessingScreen })));
 
@@ -41,17 +42,6 @@ interface QuizFlowProps {
   isTestMode?: boolean;
 }
 
-interface PoolAlternative {
-  nome_modelo: string;
-  descricao: string | null;
-  tamanho: string | null;
-  preco_min: number | null;
-  preco_max: number | null;
-  possui_prainha: boolean | null;
-  possui_spa: boolean | null;
-  profundidade: number | null;
-}
-
 function StepFallback() {
   return (
     <div className="min-h-screen flex items-center justify-center gradient-hero">
@@ -68,17 +58,12 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   const [step, setStep] = useState<Step>('hero');
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
   const [quizStep, setQuizStep] = useState(0);
-  const [answers, setAnswers] = useState<Partial<QuizAnswers>>({});
-  const [score, setScore] = useState(0);
-  const [poolName, setPoolName] = useState('');
-  const [poolDesc, setPoolDesc] = useState('');
-  const [poolSpecs, setPoolSpecs] = useState<{ tamanho?: string; profundidade?: number; possui_prainha?: boolean; possui_spa?: boolean } | null>(null);
-  const [recommendedSize, setRecommendedSize] = useState('');
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [recommendation, setRecommendation] = useState<RecommendationResultV2 | null>(null);
   const [leadName, setLeadName] = useState('');
   const [leadRefCode, setLeadRefCode] = useState('');
   const [saving, setSaving] = useState(false);
-  const [poolPrices, setPoolPrices] = useState<PoolPriceInfo[]>([]);
-  const [poolAlternatives, setPoolAlternatives] = useState<PoolAlternative[]>([]);
+  const [allModels, setAllModels] = useState<PoolModelData[]>([]);
   const [assignedWhatsapp, setAssignedWhatsapp] = useState<string | undefined>(undefined);
   const [assignedFranchiseName, setAssignedFranchiseName] = useState<string | undefined>(undefined);
   const [assignedCidadeBase, setAssignedCidadeBase] = useState<string | undefined>(undefined);
@@ -87,15 +72,22 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   const analyticsCtx = { franchiseId };
 
   const quizQuestions = getQuizQuestions(lang);
+  // Total quiz option steps (not counting city)
+  const QUIZ_OPTION_STEPS = quizQuestions.length; // 6 (espaco, moradia, uso, intencao, preferencia, orcamento)
+  const CITY_STEP = QUIZ_OPTION_STEPS; // step index 6 = city
+  const TOTAL_STEPS = QUIZ_OPTION_STEPS + 1; // 7 total
 
   useEffect(() => {
     trackEvent('landing_page_viewed', analyticsCtx);
-    supabase.from('pool_models').select('nome_modelo, preco_min, preco_max').then(({ data }) => {
-      if (data) setPoolPrices(data.map(d => ({ nome_modelo: d.nome_modelo, preco_min: d.preco_min, preco_max: d.preco_max })));
-    });
+    supabase
+      .from('pool_models')
+      .select('nome_modelo, categoria_tamanho, tamanho, preco_min, preco_max, possui_prainha, possui_spa, profundidade, comprimento, largura, descricao')
+      .then(({ data }) => {
+        if (data) setAllModels(data as PoolModelData[]);
+      });
   }, []);
 
-  const answerKeys: (keyof QuizAnswers)[] = ['espaco', 'moradia', 'uso', 'intencao', 'preferencia', 'orcamento', 'cidade'];
+  const answerKeys = ['espaco', 'moradia', 'uso', 'intencao', 'preferencia', 'orcamento', 'cidade'];
 
   const handleQuizAnswer = useCallback((value: string) => {
     const key = answerKeys[quizStep];
@@ -107,106 +99,37 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
       metadata: { question_number: quizStep + 1, answer: value },
     });
 
-    if (quizStep < quizQuestions.length) {
+    // If not last step, advance
+    if (quizStep < TOTAL_STEPS - 1) {
       setQuizStep(prev => prev + 1);
+      return;
     }
 
-    if (quizStep === 6) {
-      const fullAnswers = newAnswers as QuizAnswers;
-      const s = calculateScore(fullAnswers);
-      const pool = recommendPool(fullAnswers, poolPrices);
-      const size = recommendSize(fullAnswers.espaco, pool);
-      setScore(s);
-      setPoolName(pool);
-      setRecommendedSize(size);
-      fetchPoolDescription(pool);
-      fetchAlternatives(pool, fullAnswers);
+    // Last step (city) — run recommendation engine
+    const v2Input = normalizeQuizToV2(newAnswers);
+    const result = recommendPoolsV2(v2Input, allModels);
+    setRecommendation(result);
 
-      trackEvent('quiz_completed', {
-        ...analyticsCtx,
-        city: fullAnswers.cidade,
-        metadata: { score: s, modelo_recomendado: pool },
-      });
+    trackEvent('quiz_completed', {
+      ...analyticsCtx,
+      city: newAnswers.cidade,
+      metadata: {
+        score: result.legacy_score,
+        modelo_recomendado: result.primary_model.nome_modelo,
+        match_score: result.primary_score,
+        fit_level: result.fit_level,
+        customer_profile: result.customer_profile,
+      },
+    });
 
-      trackMetaEvent('CompleteRegistration', {
-        content_name: pool,
-        value: s,
-        currency: 'BRL',
-      });
+    trackMetaEvent('CompleteRegistration', {
+      content_name: result.primary_model.nome_modelo,
+      value: result.legacy_score,
+      currency: 'BRL',
+    });
 
-      // Go to lead form BEFORE showing results
-      setStep('lead-form');
-    }
-  }, [quizStep, answers, lang]);
-
-  const fetchPoolDescription = async (name: string) => {
-    try {
-      const { data } = await supabase
-        .from('pool_models')
-        .select('descricao, tamanho, profundidade, possui_prainha, possui_spa')
-        .eq('nome_modelo', name)
-        .single();
-      if (data) {
-        setPoolDesc(data.descricao || '');
-        setPoolSpecs({
-          tamanho: data.tamanho || undefined,
-          profundidade: data.profundidade || undefined,
-          possui_prainha: data.possui_prainha || false,
-          possui_spa: data.possui_spa || false,
-        });
-      }
-    } catch {
-      // Non-critical
-    }
-  };
-
-  const fetchAlternatives = async (recommended: string, fullAnswers: QuizAnswers) => {
-    try {
-      // Map budget answer to max price filter
-      const budgetMax: Record<string, number> = {
-        'ate-18': 18000,
-        '18-30': 30000,
-        '30-50': 50000,
-        '50-80': 80000,
-        'mais-80': 999999,
-      };
-      const maxBudget = budgetMax[fullAnswers.orcamento] || 999999;
-
-      // Map space answer to compatible size categories
-      const spaceSizes: Record<string, ('pequena' | 'media' | 'grande')[]> = {
-        'ate-3': ['pequena'],
-        '3-5': ['pequena', 'media'],
-        '5-7': ['media', 'grande'],
-        'mais-7': ['media', 'grande'],
-      };
-      const allowedSizes = spaceSizes[fullAnswers.espaco] || (['pequena', 'media', 'grande'] as const);
-
-      const { data } = await supabase
-        .from('pool_models')
-        .select('nome_modelo, descricao, tamanho, preco_min, preco_max, possui_prainha, possui_spa, profundidade, categoria_tamanho')
-        .neq('nome_modelo', recommended)
-        .neq('nome_modelo', 'Nassau')
-        .in('categoria_tamanho', allowedSizes)
-        .lte('preco_min', maxBudget)
-        .limit(10);
-
-      if (data) {
-        const pref = fullAnswers.preferencia;
-        let alts = data as (PoolAlternative & { categoria_tamanho?: string })[];
-        // Prioritize alternatives that match preference
-        const prefMatch = alts.filter(a => {
-          if (pref === 'prainha') return a.possui_prainha;
-          if (pref === 'spa') return a.possui_spa;
-          return true;
-        });
-        const nonMatch = alts.filter(a => !prefMatch.includes(a));
-        const sorted = [...prefMatch, ...nonMatch];
-        setPoolAlternatives(sorted.slice(0, 2));
-      }
-    } catch {
-      // Non-critical
-    }
-  };
+    setStep('lead-form');
+  }, [quizStep, answers, allModels, lang]);
 
   const checkDuplicate = async (telefone: string, email: string) => {
     const { data, error } = await supabase.functions.invoke('check-duplicate-lead', {
@@ -217,13 +140,15 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   };
 
   const handleLeadSubmit = async (data: { nome: string; telefone: string; email: string }) => {
-    if (isSubmittingRef.current) return;
+    if (isSubmittingRef.current || !recommendation) return;
     isSubmittingRef.current = true;
+
+    const score = recommendation.legacy_score;
+    const poolName = recommendation.primary_model.nome_modelo;
 
     setSaving(true);
     setLeadName(data.nome);
 
-    // Test mode: skip lead creation, emails, and notifications
     if (isTestMode) {
       toast.success('Modo teste: lead simulado com sucesso (nada foi salvo)');
       setStep('processing');
@@ -250,7 +175,18 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
           franquia_id: franchiseId || null,
           pontuacao_quintal: score,
           modelo_recomendado: poolName,
-          respostas_questionario: answers,
+          respostas_questionario: {
+            ...answers,
+            customer_profile: recommendation.customer_profile,
+            objective_main: recommendation.reasoning ? answers.uso : undefined,
+            match_score: recommendation.primary_score,
+            fit_level: recommendation.fit_level,
+            reasoning: recommendation.reasoning,
+            alternatives: recommendation.alternatives.map(a => a.model.nome_modelo),
+            upgrade_shown: !!recommendation.upgrade_option,
+            is_hot_lead: recommendation.is_hot_lead,
+            sales_script: recommendation.sales_script,
+          },
           foto1: photoUrls[0] || null,
           foto2: photoUrls[1] || null,
           foto3: photoUrls[2] || null,
@@ -338,16 +274,22 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   };
 
   const handleProcessingDone = () => {
+    if (!recommendation) return;
     trackEvent('result_viewed', {
       ...analyticsCtx,
       city: answers.cidade,
-      metadata: { modelo_recomendado: poolName, indice_quintal: score },
+      metadata: {
+        modelo_recomendado: recommendation.primary_model.nome_modelo,
+        indice_quintal: recommendation.legacy_score,
+        match_score: recommendation.primary_score,
+        fit_level: recommendation.fit_level,
+      },
     });
 
     trackMetaEvent('ViewContent', {
-      content_name: poolName,
+      content_name: recommendation.primary_model.nome_modelo,
       content_category: answers.cidade || '',
-      value: score,
+      value: recommendation.legacy_score,
       currency: 'BRL',
     });
 
@@ -382,16 +324,13 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
           <PhotoUpload key="photos" onNext={handlePhotosNext} onBack={() => setStep('hero')} lang={lang} />
         )}
         {step === 'photo-analysis' && (
-          <PhotoAnalysis key="photo-analysis" onDone={() => setStep('pre-diagnosis')} lang={lang} />
+          <PhotoAnalysis key="photo-analysis" onDone={() => setStep('quiz')} lang={lang} />
         )}
-        {step === 'pre-diagnosis' && (
-          <PreDiagnosis key="pre-diagnosis" onContinue={() => setStep('quiz')} lang={lang} />
-        )}
-        {step === 'quiz' && enrichedQuestion && quizStep < 6 && (
+        {step === 'quiz' && enrichedQuestion && quizStep < QUIZ_OPTION_STEPS && (
           <QuizStep
             key={`quiz-${quizStep}`}
             step={quizStep + 1}
-            totalSteps={7}
+            totalSteps={TOTAL_STEPS}
             question={enrichedQuestion.question}
             options={enrichedQuestion.options}
             onAnswer={handleQuizAnswer}
@@ -404,16 +343,16 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
             lang={lang}
           />
         )}
-        {step === 'quiz' && quizStep === 6 && (
+        {step === 'quiz' && quizStep === CITY_STEP && (
           <QuizStep
             key="quiz-city"
-            step={7}
-            totalSteps={7}
+            step={TOTAL_STEPS}
+            totalSteps={TOTAL_STEPS}
             question={t('quiz_city', lang)}
             type="city"
             onAnswer={handleQuizAnswer}
-            explorerStep={7}
-            onBack={() => setQuizStep(5)}
+            explorerStep={TOTAL_STEPS}
+            onBack={() => setQuizStep(QUIZ_OPTION_STEPS - 1)}
             franchiseSlug={franchiseSlug}
             lang={lang}
           />
@@ -424,29 +363,50 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
         {step === 'processing' && (
           <ProcessingScreen key="processing" onDone={handleProcessingDone} lang={lang} />
         )}
-        {step === 'actions' && (
+        {step === 'actions' && recommendation && (
           <ActionButtons
             key="actions"
-            score={score}
-            poolName={poolName}
-            poolDescription={poolDesc}
-            poolSpecs={poolSpecs}
-            recommendedSize={recommendedSize}
+            score={recommendation.legacy_score}
+            poolName={recommendation.primary_model.nome_modelo}
+            poolDescription={recommendation.primary_model.descricao || ''}
+            poolSpecs={{
+              tamanho: recommendation.primary_model.tamanho || undefined,
+              profundidade: recommendation.primary_model.profundidade || undefined,
+              possui_prainha: recommendation.primary_model.possui_prainha || false,
+              possui_spa: recommendation.primary_model.possui_spa || false,
+            }}
+            recommendedSize={recommendation.recommended_size.label}
             whatsappNumber={assignedWhatsapp || franchiseWhatsapp}
             assignedFranchiseName={assignedFranchiseName}
             assignedCidadeBase={assignedCidadeBase}
             leadName={leadName}
             refCode={leadRefCode}
             franchiseId={franchiseId}
-            alternatives={poolAlternatives.map(a => ({
-              name: a.nome_modelo,
-              image: getPoolImage(a.nome_modelo),
-              description: a.descricao || undefined,
+            fitLevel={recommendation.fit_level}
+            matchScore={recommendation.primary_score}
+            reasoning={recommendation.reasoning}
+            closingPhrase={recommendation.closing_phrase}
+            isWeakRecommendation={recommendation.is_weak_recommendation}
+            customerProfile={recommendation.customer_profile}
+            upgradeOption={recommendation.upgrade_option ? {
+              name: recommendation.upgrade_option.model.nome_modelo,
+              image: getPoolImage(recommendation.upgrade_option.model.nome_modelo),
+              description: recommendation.upgrade_option.model.descricao || undefined,
+              fitLevel: recommendation.upgrade_option.fitLevel,
+              matchScore: recommendation.upgrade_option.score,
+              recommendedSize: recommendation.upgrade_option.recommendedSize.label,
+            } : undefined}
+            alternatives={recommendation.alternatives.map(a => ({
+              name: a.model.nome_modelo,
+              image: getPoolImage(a.model.nome_modelo),
+              description: a.model.descricao || undefined,
+              fitLevel: a.fitLevel,
+              matchScore: a.score,
               specs: {
-                tamanho: recommendSize(answers.espaco || '', a.nome_modelo) || a.tamanho || undefined,
-                profundidade: a.profundidade || undefined,
-                possui_prainha: a.possui_prainha || false,
-                possui_spa: a.possui_spa || false,
+                tamanho: a.recommendedSize.label || a.model.tamanho || undefined,
+                profundidade: a.model.profundidade || undefined,
+                possui_prainha: a.model.possui_prainha || false,
+                possui_spa: a.model.possui_spa || false,
               },
             }))}
             lang={lang}

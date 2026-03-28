@@ -309,6 +309,7 @@ export type Database = {
           lead_city_normalized: string | null
           lead_origin: string
           modelo_recomendado: string | null
+          modelo_vendido: string | null
           nome: string | null
           observacoes: string | null
           origin_franchise_id: string | null
@@ -338,6 +339,7 @@ export type Database = {
           lead_city_normalized?: string | null
           lead_origin?: string
           modelo_recomendado?: string | null
+          modelo_vendido?: string | null
           nome?: string | null
           observacoes?: string | null
           origin_franchise_id?: string | null
@@ -367,6 +369,7 @@ export type Database = {
           lead_city_normalized?: string | null
           lead_origin?: string
           modelo_recomendado?: string | null
+          modelo_vendido?: string | null
           nome?: string | null
           observacoes?: string | null
           origin_franchise_id?: string | null

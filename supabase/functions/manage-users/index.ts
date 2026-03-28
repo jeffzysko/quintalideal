@@ -220,7 +220,19 @@ Deno.serve(async (req) => {
         }).eq("user_id", userId);
 
         // Send invite email
-        const resetPageLink = `https://quintalideal.com.br/forgot-password?email=${encodeURIComponent(email)}`;
+        // Generate direct recovery link so user goes straight to /reset-password (1 email, not 2)
+        let resetPageLink: string;
+        const { data: linkData1, error: linkError1 } = await adminClient.auth.admin.generateLink({
+          type: "recovery",
+          email,
+          options: { redirectTo: `https://quintalideal.com.br/reset-password` },
+        });
+        if (linkError1 || !linkData1?.properties?.hashed_token) {
+          console.warn("Direct recovery link failed, falling back:", linkError1?.message);
+          resetPageLink = `https://quintalideal.com.br/forgot-password?email=${encodeURIComponent(email)}`;
+        } else {
+          resetPageLink = `https://quintalideal.com.br/reset-password?token_hash=${encodeURIComponent(linkData1.properties.hashed_token)}&type=recovery`;
+        }
         if (RESEND_API_KEY) {
           const html = buildInviteEmailHTML(full_name || email, "Franquia", resetPageLink);
           await fetch("https://api.resend.com/emails", {
@@ -394,7 +406,19 @@ Deno.serve(async (req) => {
       }
 
       // Build link to forgot-password page (no expiring token)
-      const resetPageLink = `https://quintalideal.com.br/forgot-password?email=${encodeURIComponent(email)}`;
+      // Generate direct recovery link
+      let resetPageLink: string;
+      const { data: linkData2, error: linkError2 } = await adminClient.auth.admin.generateLink({
+        type: "recovery",
+        email,
+        options: { redirectTo: `https://quintalideal.com.br/reset-password` },
+      });
+      if (linkError2 || !linkData2?.properties?.hashed_token) {
+        console.warn("Direct recovery link failed, falling back:", linkError2?.message);
+        resetPageLink = `https://quintalideal.com.br/forgot-password?email=${encodeURIComponent(email)}`;
+      } else {
+        resetPageLink = `https://quintalideal.com.br/reset-password?token_hash=${encodeURIComponent(linkData2.properties.hashed_token)}&type=recovery`;
+      }
       const roleLabels: Record<string, string> = {
         admin_fabrica: "Administrador da Fábrica",
         franquia: "Franquia",
@@ -444,6 +468,18 @@ Deno.serve(async (req) => {
           status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
+      }
+
+      // Update password if provided
+      const { password } = body;
+      if (password) {
+        const { error: pwError } = await adminClient.auth.admin.updateUserById(user_id, { password });
+        if (pwError) {
+          return new Response(JSON.stringify({ error: `Erro ao atualizar senha: ${pwError.message}` }), {
+            status: 400,
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+          });
+        }
       }
 
       // Update profile
@@ -531,7 +567,19 @@ Deno.serve(async (req) => {
       const roleName = roleLabels[roleData?.role || ""] || roleData?.role || "Usuário";
       const userName = profileData?.full_name || email;
 
-      const resetPageLink = `https://quintalideal.com.br/forgot-password?email=${encodeURIComponent(email)}`;
+      // Generate direct recovery link for resend
+      let resetPageLink: string;
+      const { data: linkData3, error: linkError3 } = await adminClient.auth.admin.generateLink({
+        type: "recovery",
+        email,
+        options: { redirectTo: `https://quintalideal.com.br/reset-password` },
+      });
+      if (linkError3 || !linkData3?.properties?.hashed_token) {
+        console.warn("Direct recovery link failed, falling back:", linkError3?.message);
+        resetPageLink = `https://quintalideal.com.br/forgot-password?email=${encodeURIComponent(email)}`;
+      } else {
+        resetPageLink = `https://quintalideal.com.br/reset-password?token_hash=${encodeURIComponent(linkData3.properties.hashed_token)}&type=recovery`;
+      }
 
       if (!RESEND_API_KEY) {
         return new Response(JSON.stringify({ error: "RESEND_API_KEY não configurada" }), {

@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Camera, ClipboardList, Settings2, Save, User, Trash2, Clock, Image, CalendarClock } from 'lucide-react';
+import { MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Camera, ClipboardList, Settings2, Save, User, Trash2, Clock, Image, CalendarClock, Pencil, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 import { BackButton } from '@/components/BackButton';
 import { PanelHeader } from '@/components/PanelHeader';
 import { NotificationBell } from '@/components/NotificationBell';
@@ -21,6 +22,7 @@ import { InactivityBadge } from '@/components/lead/InactivityBadge';
 import { WhatsAppTemplates } from '@/components/lead/WhatsAppTemplates';
 import { LeadValueEstimator } from '@/components/lead/LeadValueEstimator';
 import { ContactAttempts } from '@/components/lead/ContactAttempts';
+import { LeadPhotoUpload } from '@/components/lead/LeadPhotoUpload';
 
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -29,6 +31,7 @@ import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
+import { toWhatsAppPhone } from '@/lib/phone-utils';
 
 interface Lead {
   id: string;
@@ -38,6 +41,7 @@ interface Lead {
   cidade: string | null;
   pontuacao_quintal: number | null;
   modelo_recomendado: string | null;
+  modelo_vendido: string | null;
   respostas_questionario: Record<string, string> | null;
   foto1: string | null;
   foto2: string | null;
@@ -80,10 +84,11 @@ const answerLabels: Record<string, string> = {
   'minha': 'Já é minha casa',
   'construindo': 'Estou construindo',
   'planejando': 'Ainda estou planejando',
-  'casal': 'Momentos a dois',
-  'familia-pequena': 'Diversão com os filhos',
-  'familia-grande': 'Reunir toda a família',
+  'relaxar': 'Relaxar e desacelerar',
+  'filhos': 'Curtir com os filhos',
+  'familia': 'Reunir a família',
   'amigos': 'Churrascos e festas',
+  'valorizar': 'Valorizar a casa',
   '2026': 'Ainda em 2026',
   '2026-2027': 'Talvez em 2026 ou 2027',
   'pesquisando': 'Só estou pesquisando',
@@ -131,11 +136,25 @@ export default function LeadDetail() {
   const queryClient = useQueryClient();
   const [status, setStatus] = useState('');
   const [observacoes, setObservacoes] = useState('');
+  const [modeloVendido, setModeloVendido] = useState('');
   const [tempOverride, setTempOverride] = useState<LeadTemperature | ''>('');
   const [saving, setSaving] = useState(false);
+  const [editNome, setEditNome] = useState('');
+  const [editTelefone, setEditTelefone] = useState('');
+  const [editEmail, setEditEmail] = useState('');
+  const [editCidade, setEditCidade] = useState('');
   const [activeTab, setActiveTab] = useState('gerenciar');
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+
+  const { data: poolModels = [] } = useQuery({
+    queryKey: ['pool-models'],
+    queryFn: async () => {
+      const { data } = await supabase.from('pool_models').select('nome_modelo').order('nome_modelo');
+      return data?.map(m => m.nome_modelo) || [];
+    },
+    staleTime: 10 * 60 * 1000,
+  });
 
   // Both queries run in parallel — no sequential waterfall
   const { data: lead, isLoading: loading } = useQuery({
@@ -143,7 +162,7 @@ export default function LeadDetail() {
     queryFn: async () => {
       const { data } = await supabase
         .from('leads')
-        .select('id, nome, telefone, email, cidade, pontuacao_quintal, modelo_recomendado, respostas_questionario, foto1, foto2, foto3, foto4, status_lead, observacoes, created_at, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, franquia_id, lead_origin')
+        .select('id, nome, telefone, email, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, respostas_questionario, foto1, foto2, foto3, foto4, status_lead, observacoes, created_at, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, franquia_id, lead_origin')
         .eq('id', id!)
         .maybeSingle();
       return data ? (data as Lead) : null;
@@ -173,6 +192,11 @@ export default function LeadDetail() {
     if (lead) {
       setStatus(lead.status_lead);
       setObservacoes(lead.observacoes || '');
+      setModeloVendido(lead.modelo_vendido || '');
+      setEditNome(lead.nome || '');
+      setEditTelefone(lead.telefone || '');
+      setEditEmail(lead.email || '');
+      setEditCidade(lead.cidade || '');
       const respostas = lead.respostas_questionario as Record<string, string> | null;
       setTempOverride((respostas?.temperatura_manual as LeadTemperature) || '');
     }
@@ -221,8 +245,13 @@ export default function LeadDetail() {
     const { error } = await supabase
       .from('leads')
       .update({
+        nome: editNome.trim() || null,
+        telefone: editTelefone.trim() || null,
+        email: editEmail.trim() || null,
+        cidade: editCidade.trim() || null,
         status_lead: status as any,
         observacoes,
+        modelo_vendido: status === 'vendido' && modeloVendido ? modeloVendido : null,
         respostas_questionario: Object.keys(updatedRespostas).length > 0 ? updatedRespostas : null,
       })
       .eq('id', lead.id);
@@ -260,9 +289,10 @@ export default function LeadDetail() {
   const statusInfo = statusConfig[lead.status_lead] || statusConfig.novo;
   const isAdminRoute = location.pathname.startsWith('/admin');
   const leadsUrl = isAdminRoute ? '/admin?tab=leads' : '/franquia';
+  const returnTo = ((location.state as { returnTo?: string } | null)?.returnTo) || leadsUrl;
   const breadcrumbItems = [
     { label: isAdminRoute ? 'Admin' : 'Painel', href: isAdminRoute ? '/admin' : '/franquia' },
-    { label: 'Leads', href: leadsUrl },
+    { label: 'Leads', href: returnTo },
     { label: lead.nome || 'Detalhes' },
   ];
 
@@ -270,7 +300,7 @@ export default function LeadDetail() {
     <PageTransition>
     <div className="min-h-screen bg-background pb-bottomnav">
       <PanelHeader title={lead.nome || 'Detalhes do Lead'}>
-        <BackButton fallback={leadsUrl} />
+        <BackButton fallback={returnTo} />
         <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
         <NotificationBell />
         <UserAvatarMenu />
@@ -320,7 +350,7 @@ export default function LeadDetail() {
                 <div className="flex-1 space-y-2 w-full">
                   <div className="text-center sm:text-left">
                     <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Índice do Quintal</p>
-                    <p className="text-sm text-foreground mt-0.5">Potencial de instalação de piscina</p>
+                    <p className="text-sm text-foreground mt-0.5">Quanto maior, mais preparado está o quintal para uma piscina</p>
                   </div>
                   {/* Inactivity Badge */}
                   <div className="flex justify-center sm:justify-start">
@@ -336,7 +366,7 @@ export default function LeadDetail() {
                       <div className={`flex items-center gap-2 ${temp.bgColor} border rounded-lg px-3 py-2`}>
                         <span className="text-lg">{temp.emoji}</span>
                         <div>
-                          <p className="text-xs text-muted-foreground">Classificação</p>
+                          <p className="text-xs text-muted-foreground">Temperatura</p>
                           <p className={`text-sm font-semibold ${temp.color}`}>Lead {temp.label}</p>
                         </div>
                       </div>
@@ -376,8 +406,9 @@ export default function LeadDetail() {
                     size="sm"
                     className="bg-success hover:bg-success/90 text-success-foreground text-xs h-8 gap-1.5 w-full sm:w-auto"
                     onClick={() => {
+                      const fullPhone = toWhatsAppPhone(lead.telefone || '');
                       const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem? Vi que você fez o teste do Índice do Quintal Splash!`);
-                      window.open(`https://wa.me/55${lead.telefone}?text=${msg}`, '_blank');
+                      window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
                     }}
                   >
                     <MessageCircle className="w-3.5 h-3.5" /> WhatsApp
@@ -438,7 +469,7 @@ export default function LeadDetail() {
             <div className="bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl p-1.5 shadow-sm">
               <TabsList className="w-full grid grid-cols-4 h-12 bg-transparent p-0 gap-1">
                 {[
-                  { value: 'fotos', icon: Image, label: 'Fotos', disabled: photos.length === 0, badge: photos.length > 0 ? photos.length : undefined },
+                  { value: 'fotos', icon: Image, label: 'Fotos', disabled: false, badge: photos.length > 0 ? photos.length : undefined },
                   { value: 'gerenciar', icon: Settings2, label: 'Gerenciar' },
                   { value: 'followups', icon: CalendarClock, label: 'Follow-ups' },
                   { value: 'timeline', icon: Clock, label: 'Timeline' },
@@ -503,24 +534,86 @@ export default function LeadDetail() {
                 <motion.div key="fotos" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
                   <Card className="glass-card">
                     <CardContent className="p-3 sm:p-5">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Camera className="w-4 h-4 text-primary" />
-                        <h2 className="text-sm font-semibold text-foreground">Fotos do Quintal</h2>
-                      </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        {photos.map((url, i) => (
-                          <button
-                            key={i}
-                            onClick={() => { setLightboxIndex(i); setLightboxOpen(true); }}
-                            className="relative group rounded-xl overflow-hidden border border-border/50 aspect-square focus:outline-none focus:ring-2 focus:ring-primary"
-                          >
-                            <img src={url} alt={`Quintal ${i + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
-                            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                              <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </div>
-                          </button>
-                        ))}
-                      </div>
+                      {photos.length > 0 ? (
+                        <>
+                          <div className="flex items-center gap-2 mb-3">
+                            <Camera className="w-4 h-4 text-primary" />
+                            <h2 className="text-sm font-semibold text-foreground">Fotos do Quintal</h2>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 mb-4">
+                            {photos.map((url, i) => (
+                              <div key={i} className="relative group rounded-xl overflow-hidden border border-border/50 aspect-square">
+                                <button
+                                  onClick={() => { setLightboxIndex(i); setLightboxOpen(true); }}
+                                  className="w-full h-full focus:outline-none focus:ring-2 focus:ring-primary"
+                                >
+                                  <img src={url} alt={`Quintal ${i + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
+                                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
+                                    <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
+                                  </div>
+                                </button>
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <button
+                                      className="absolute top-1.5 right-1.5 w-6 h-6 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md z-10"
+                                    >
+                                      <X className="w-3.5 h-3.5" />
+                                    </button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>Remover foto?</AlertDialogTitle>
+                                      <AlertDialogDescription>Esta ação não pode ser desfeita. A foto será removida permanentemente do lead.</AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                      <AlertDialogAction
+                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                        onClick={async () => {
+                                          if (!lead) return;
+                                          const photoFields = ['foto1', 'foto2', 'foto3', 'foto4'] as const;
+                                          const remaining = photos.filter((_, idx) => idx !== i);
+                                          const update: Record<string, string | null> = {};
+                                          photoFields.forEach((field, idx) => {
+                                            update[field] = remaining[idx] || null;
+                                          });
+                                          const { error } = await supabase.from('leads').update(update).eq('id', lead.id);
+                                          if (error) {
+                                            toast.error('Erro ao remover foto.');
+                                          } else {
+                                            toast.success('Foto removida com sucesso!');
+                                            queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
+                                          }
+                                        }}
+                                      >
+                                        Remover
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex flex-col items-center justify-center py-8 text-center">
+                          <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-3">
+                            <Camera className="w-7 h-7 text-primary" />
+                          </div>
+                          <p className="text-sm font-medium text-foreground mb-1">Nenhuma foto adicionada</p>
+                          <p className="text-xs text-muted-foreground max-w-[220px]">Adicione fotos do quintal para enriquecer o cadastro deste lead</p>
+                        </div>
+                      )}
+                      {photos.length < 4 && lead && (
+                        <LeadPhotoUpload
+                          leadId={lead.id}
+                          existingPhotos={[lead.foto1, lead.foto2, lead.foto3, lead.foto4]}
+                          franchiseId={lead.franquia_id || ''}
+                          onSaved={() => {
+                            queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
+                          }}
+                        />
+                      )}
                     </CardContent>
                   </Card>
                   <PhotoLightbox photos={photos} initialIndex={lightboxIndex} open={lightboxOpen} onOpenChange={setLightboxOpen} />
@@ -535,6 +628,32 @@ export default function LeadDetail() {
                       <div className="flex items-center gap-2 mb-1">
                         <Settings2 className="w-4 h-4 text-primary" />
                         <h2 className="text-sm font-semibold text-foreground">Gerenciar Lead</h2>
+                      </div>
+
+                      {/* Personal info fields */}
+                      <div className="space-y-3 p-3 bg-muted/30 rounded-xl border border-border/40">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Pencil className="w-3.5 h-3.5 text-muted-foreground" />
+                          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Dados Pessoais</span>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Nome</label>
+                            <Input value={editNome} onChange={e => setEditNome(e.target.value)} placeholder="Nome do lead" className="bg-background" maxLength={200} />
+                          </div>
+                          <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Telefone</label>
+                            <Input value={editTelefone} onChange={e => setEditTelefone(e.target.value)} placeholder="(XX) XXXXX-XXXX" className="bg-background" maxLength={20} />
+                          </div>
+                          <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Email</label>
+                            <Input type="email" value={editEmail} onChange={e => setEditEmail(e.target.value)} placeholder="email@exemplo.com" className="bg-background" maxLength={255} />
+                          </div>
+                          <div>
+                            <label className="text-xs font-medium text-muted-foreground mb-1 block">Cidade</label>
+                            <Input value={editCidade} onChange={e => setEditCidade(e.target.value)} placeholder="Cidade" className="bg-background" maxLength={200} />
+                          </div>
+                        </div>
                       </div>
 
                       <div>
@@ -574,9 +693,27 @@ export default function LeadDetail() {
                           ))}
                         </div>
                         <p className="text-[11px] text-muted-foreground mt-1">
-                          {tempOverride ? `Temperatura fixada como "${tempOverride}". Clique em "Automático" para calcular pelo questionário.` : 'Calculado automaticamente com base nos dados do questionário.'}
+                          {tempOverride ? `Temperatura fixada como "${tempOverride}". Toque em "Automático" para usar o cálculo inteligente.` : 'Calculado automaticamente com base nas respostas do quiz (intenção, orçamento e espaço).'}
                         </p>
                       </div>
+
+                      {/* Modelo Vendido — only when status is vendido */}
+                      {status === 'vendido' && (
+                        <div>
+                          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Modelo Vendido</label>
+                          <Select value={modeloVendido} onValueChange={setModeloVendido}>
+                            <SelectTrigger className="bg-muted/50"><SelectValue placeholder="Selecione o modelo vendido" /></SelectTrigger>
+                            <SelectContent>
+                              {poolModels.map(m => (
+                                <SelectItem key={m} value={m}>{m}</SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                           <p className="text-[11px] text-muted-foreground mt-1">
+                            Registre o modelo efetivamente vendido. Isso melhora a inteligência das recomendações futuras.
+                          </p>
+                        </div>
+                      )}
 
                       <div>
                         <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Observações</label>
@@ -637,12 +774,18 @@ export default function LeadDetail() {
                                   toast.error('Erro ao excluir lead.');
                                 } else {
                                   toast.success('Lead de teste excluído com sucesso.');
+                                  // Invalidate all lead-related queries so lists refresh immediately
+                                  queryClient.invalidateQueries({ queryKey: ['admin-leads-table'] });
+                                  queryClient.invalidateQueries({ queryKey: ['admin-leads'] });
+                                  queryClient.invalidateQueries({ queryKey: ['franchise-leads'] });
+                                  queryClient.invalidateQueries({ queryKey: ['leads'] });
+                                  queryClient.invalidateQueries({ queryKey: ['kanban-leads'] });
                                   if (isAdminRoute) {
-                                    navigate('/admin?tab=leads');
+                                    navigate(returnTo, { replace: true });
                                   } else if (window.history.length > 2) {
                                     navigate(-1);
                                   } else {
-                                    navigate('/franquia');
+                                    navigate('/franquia', { replace: true });
                                   }
                                 }
                               }}
@@ -671,8 +814,7 @@ export default function LeadDetail() {
             size="sm"
             className="flex-1 bg-success hover:bg-success/90 text-success-foreground gap-1.5 h-11"
             onClick={() => {
-              const phone = lead.telefone!.replace(/\D/g, '');
-              const fullPhone = phone.startsWith('55') ? phone : `55${phone}`;
+              const fullPhone = toWhatsAppPhone(lead.telefone!);
               const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem?`);
               window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
             }}

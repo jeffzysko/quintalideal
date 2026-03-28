@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
 import { translateAuthError } from '@/lib/auth-errors';
+import { establishPasswordSession } from '@/lib/password-reset-session';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,6 +16,7 @@ const PASSWORD_RULES = [
   { key: 'upper', label: 'Uma letra maiúscula', test: (p: string) => /[A-Z]/.test(p) },
   { key: 'lower', label: 'Uma letra minúscula', test: (p: string) => /[a-z]/.test(p) },
   { key: 'number', label: 'Um número', test: (p: string) => /\d/.test(p) },
+  { key: 'special', label: 'Um caractere especial', test: (p: string) => /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(p) },
 ] as const;
 
 function usePasswordStrength(password: string) {
@@ -99,67 +101,42 @@ export default function ResetPassword() {
       return;
     }
 
-    const tokenHash = searchParams.get('token_hash');
-    const type = searchParams.get('type');
+    let cancelled = false;
 
-    const verifyRecoveryToken = async () => {
-      if (tokenHash && type === 'recovery') {
-        const { error } = await supabase.auth.verifyOtp({
-          type: 'recovery',
-          token_hash: tokenHash,
-        });
+    const bootstrapPasswordSession = async () => {
+      const { session, error } = await establishPasswordSession({
+        tokenHash: searchParams.get('token_hash'),
+        tokenType: searchParams.get('type'),
+        hash: window.location.hash,
+      });
 
-        if (error) {
-          setIsRecovery(false);
-          setChecking(false);
-          return;
-        }
+      if (cancelled) return;
 
-        window.history.replaceState({}, '', '/reset-password');
-        setIsRecovery(true);
+      if (!session) {
+        console.error('reset-password bootstrap failed:', error?.message);
+        setIsRecovery(false);
         setChecking(false);
         return;
       }
 
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-        if (event === 'PASSWORD_RECOVERY') {
-          setIsRecovery(true);
-          setChecking(false);
-        } else if (event === 'SIGNED_IN' && session && window.location.hash.includes('type=recovery')) {
-          setIsRecovery(true);
-          setChecking(false);
-        }
-      });
-
-      const hash = window.location.hash;
-      if (hash && hash.includes('type=recovery')) {
-        setIsRecovery(true);
-        setChecking(false);
-      }
-
-      const timeout = setTimeout(() => {
-        setChecking(false);
-      }, 5000);
-
-      return () => {
-        subscription.unsubscribe();
-        clearTimeout(timeout);
-      };
+      window.history.replaceState({}, '', '/reset-password');
+      setIsRecovery(true);
+      setChecking(false);
     };
 
-    const cleanupPromise = verifyRecoveryToken();
+    void bootstrapPasswordSession();
 
     return () => {
-      cleanupPromise.then(cleanup => cleanup?.());
+      cancelled = true;
     };
-  }, [searchParams]);
+  }, [isPreview, searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
 
     if (!strength.allPass) {
-      setError('A senha não atende a todos os requisitos.');
+      setError('A senha precisa ter ao menos 6 caracteres, incluindo letra maiúscula, minúscula, número e caractere especial.');
       return;
     }
 
@@ -169,10 +146,20 @@ export default function ResetPassword() {
     }
 
     setLoading(true);
+
+    // Check if there's an active session before attempting password update
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      console.error('updateUser: no active session found');
+      setError('Sua sessão expirou. Solicite um novo link de recuperação na tela de login.');
+      setLoading(false);
+      return;
+    }
+
     const { error } = await supabase.auth.updateUser({ password });
 
     if (error) {
-      console.error('updateUser error:', error.message, 'status:', error.status);
+      console.error('updateUser error:', JSON.stringify({ message: error.message, status: error.status, name: error.name, code: (error as any).code }));
       setError(translateAuthError(error.message));
       setLoading(false);
     } else {
@@ -284,7 +271,7 @@ export default function ResetPassword() {
                       onChange={e => setPassword(e.target.value)}
                       required
                       autoComplete="new-password"
-                      placeholder="Mínimo 6 caracteres"
+                      placeholder="Mínimo 6 caracteres, com símbolo"
                       className="pl-10 pr-10 h-11 bg-background/60 border-border/60 focus:border-primary/50 transition-colors"
                     />
                     <button

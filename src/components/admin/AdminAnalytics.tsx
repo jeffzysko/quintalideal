@@ -4,9 +4,10 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis } from 'recharts';
-import { Activity, TrendingDown, Zap, Smartphone, Monitor, Tablet, AlertCircle, RefreshCw, Building2, Loader2 } from 'lucide-react';
+import { Activity, TrendingDown, Zap, Smartphone, Monitor, Tablet, AlertCircle, RefreshCw, Loader2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
+import { QuizDropoffAnalysis } from './QuizDropoffAnalysis';
 
 interface AnalyticsEvent {
   id: string;
@@ -39,27 +40,43 @@ interface AdminAnalyticsProps {
   role?: string | null;
 }
 
-export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
+export function AdminAnalytics({ franchiseMap }: AdminAnalyticsProps) {
   const [periodDays, setPeriodDays] = useState('30');
   const [filterFranchise, setFilterFranchise] = useState('all');
-  const isSuperAdmin = role === 'super_admin';
 
-  const { data: events = [], isLoading: loading, isError, refetch } = useQuery({
+  // Fetch current + previous period for comparison
+  const days = parseInt(periodDays);
+  const { data: allEvents = [], isLoading: loading, isError, refetch } = useQuery({
     queryKey: ['analytics-events', periodDays],
     queryFn: async () => {
       const since = new Date();
-      since.setDate(since.getDate() - parseInt(periodDays));
+      since.setDate(since.getDate() - days * 2); // fetch double range for comparison
       const { data, error: queryError } = await supabase
         .from('analytics_events')
         .select('id, session_id, event_name, franchise_id, city, device_type, utm_source, utm_medium, utm_campaign, metadata, created_at')
         .gte('created_at', since.toISOString())
         .order('created_at', { ascending: false })
-        .limit(5000);
+        .limit(10000);
       if (queryError) throw queryError;
       return (data || []) as AnalyticsEvent[];
     },
     staleTime: 5 * 60 * 1000,
   });
+
+  // Split into current and previous periods
+  const { events, previousPeriodEvents } = useMemo(() => {
+    const now = Date.now();
+    const currentStart = now - days * 86400000;
+    const previousStart = currentStart - days * 86400000;
+    const current: AnalyticsEvent[] = [];
+    const previous: AnalyticsEvent[] = [];
+    for (const e of allEvents) {
+      const t = Date.parse(e.created_at);
+      if (t >= currentStart) current.push(e);
+      else if (t >= previousStart) previous.push(e);
+    }
+    return { events: current, previousPeriodEvents: previous };
+  }, [allEvents, days]);
 
   const filteredEvents = useMemo(() => {
     if (filterFranchise === 'all') return events;
@@ -86,36 +103,7 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
     });
   }, [filteredEvents]);
 
-  const franchiseFunnels = useMemo(() => {
-    if (!isSuperAdmin) return [];
-    // Single-pass: group events by franchise_id
-    const byFranchise = events.reduce((map, e) => {
-      if (!e.franchise_id) return map;
-      const arr = map.get(e.franchise_id);
-      if (arr) arr.push(e);
-      else map.set(e.franchise_id, [e]);
-      return map;
-    }, new Map<string, AnalyticsEvent[]>());
-
-    return Array.from(byFranchise.entries()).map(([fid, fEvents]) => {
-      const counts: Record<string, Set<string>> = {};
-      FUNNEL_STEPS.forEach(s => { counts[s.key] = new Set(); });
-      fEvents.forEach(e => { if (counts[e.event_name]) counts[e.event_name].add(e.session_id); });
-      const visits = counts['landing_page_viewed'].size;
-      const leads = counts['lead_created'].size;
-      const whatsapp = counts['whatsapp_clicked'].size;
-      const convRate = visits > 0 ? Math.round((leads / visits) * 100) : 0;
-      return {
-        id: fid,
-        name: franchiseMap[fid] || fid.slice(0, 8),
-        visits,
-        quizStarted: counts['quiz_started'].size,
-        leads,
-        whatsapp,
-        convRate,
-      };
-    }).sort((a, b) => b.visits - a.visits);
-  }, [events, isSuperAdmin, franchiseMap]);
+  // franchiseFunnels removed — now exclusive to Performance QI tab
 
   const questionStats = useMemo(() => {
     const questionEvents = filteredEvents.filter(e => e.event_name === 'quiz_question_answered');
@@ -173,18 +161,7 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
       .map(([source, count]) => ({ source, count }));
   }, [filteredEvents]);
 
-  const modelStats = useMemo(() => {
-    const models: Record<string, number> = {};
-    filteredEvents
-      .filter(e => e.event_name === 'quiz_completed')
-      .forEach(e => {
-        const m = (e.metadata as Record<string, unknown>)?.modelo_recomendado as string;
-        if (m) models[m] = (models[m] || 0) + 1;
-      });
-    return Object.entries(models)
-      .sort(([, a], [, b]) => b - a)
-      .map(([model, count]) => ({ model, count }));
-  }, [filteredEvents]);
+  // modelStats removed — now exclusive to Performance QI tab
 
   const totalSessions = useMemo(() => new Set(filteredEvents.map(e => e.session_id)).size, [filteredEvents]);
 
@@ -224,7 +201,7 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
           <span className="text-[10px] sm:text-xs text-muted-foreground">({totalSessions} sessões)</span>
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto">
-          {isSuperAdmin && (
+          {Object.keys(franchiseMap).length > 0 && (
             <Select value={filterFranchise} onValueChange={setFilterFranchise}>
               <SelectTrigger className="flex-1 sm:w-44 rounded-xl h-9 text-xs sm:text-sm">
                 <SelectValue placeholder="Todas franquias" />
@@ -293,6 +270,9 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
         </CardContent>
       </Card>
 
+      {/* Quiz Dropoff Analysis */}
+      <QuizDropoffAnalysis events={filteredEvents} previousEvents={filterFranchise === 'all' ? previousPeriodEvents : previousPeriodEvents.filter(e => e.franchise_id === filterFranchise)} />
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {/* Question Analysis */}
         <Card className="card-premium">
@@ -314,27 +294,6 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
                   </div>
                 ))}
               </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Model Stats */}
-        <Card className="card-premium">
-          <CardHeader className="px-3 sm:px-6">
-            <CardTitle className="text-sm font-bold">Modelos Recomendados</CardTitle>
-          </CardHeader>
-          <CardContent className="px-2 sm:px-6">
-            {modelStats.length === 0 ? (
-              <p className="text-muted-foreground text-center py-6 text-sm">Sem dados</p>
-            ) : (
-              <ChartContainer config={{}} className="h-[180px] sm:h-[200px] w-full">
-                <BarChart data={modelStats} layout="vertical" margin={{ left: 0, right: 5, top: 5, bottom: 0 }}>
-                  <XAxis type="number" allowDecimals={false} tick={{ fontSize: 10 }} />
-                  <YAxis type="category" dataKey="model" tick={{ fontSize: 9 }} width={65} />
-                  <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="count" fill="hsl(207, 90%, 42%)" radius={[0, 6, 6, 0]} />
-                </BarChart>
-              </ChartContainer>
             )}
           </CardContent>
         </Card>
@@ -383,72 +342,7 @@ export function AdminAnalytics({ franchiseMap, role }: AdminAnalyticsProps) {
         </Card>
       </div>
 
-      {/* Per-franchise funnel comparison (super_admin only) */}
-      {isSuperAdmin && franchiseFunnels.length > 0 && (
-        <Card className="card-premium">
-          <CardHeader className="px-3 sm:px-6">
-            <CardTitle className="text-sm font-bold flex items-center gap-2">
-              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg icon-bg-blue flex items-center justify-center">
-                <Building2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
-              </div>
-              Funil por Franquia
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="px-0 sm:px-6">
-            {/* Mobile: card layout */}
-            <div className="block sm:hidden space-y-3 px-3">
-              {franchiseFunnels.map(f => (
-                <div key={f.id} className="p-3 rounded-xl bg-muted/30 space-y-1.5">
-                  <p className="text-sm font-semibold text-foreground">{f.name}</p>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    <div><span className="text-muted-foreground">Visitas:</span> <span className="font-bold">{f.visits}</span></div>
-                    <div><span className="text-muted-foreground">Quiz:</span> <span className="font-bold">{f.quizStarted}</span></div>
-                    <div><span className="text-muted-foreground">Leads:</span> <span className="font-bold">{f.leads}</span></div>
-                    <div><span className="text-muted-foreground">WhatsApp:</span> <span className="font-bold">{f.whatsapp}</span></div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[10px] text-muted-foreground">Conversão</span>
-                    <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${f.convRate >= 10 ? 'bg-emerald-500/10 text-emerald-600' : f.convRate >= 5 ? 'bg-amber-500/10 text-amber-600' : 'bg-muted text-muted-foreground'}`}>
-                      {f.convRate}%
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-            {/* Desktop: table layout */}
-            <div className="hidden sm:block overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-border/50">
-                    <th className="text-left py-2 px-2 text-xs font-semibold text-muted-foreground">Franquia</th>
-                    <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">Visitas</th>
-                    <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">Quiz</th>
-                    <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">Leads</th>
-                    <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">WhatsApp</th>
-                    <th className="text-center py-2 px-2 text-xs font-semibold text-muted-foreground">Conversão</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {franchiseFunnels.map(f => (
-                    <tr key={f.id} className="border-b border-border/20 hover:bg-muted/30 transition-colors">
-                      <td className="py-2.5 px-2 font-medium text-foreground">{f.name}</td>
-                      <td className="py-2.5 px-2 text-center text-muted-foreground">{f.visits}</td>
-                      <td className="py-2.5 px-2 text-center text-muted-foreground">{f.quizStarted}</td>
-                      <td className="py-2.5 px-2 text-center font-semibold text-foreground">{f.leads}</td>
-                      <td className="py-2.5 px-2 text-center text-muted-foreground">{f.whatsapp}</td>
-                      <td className="py-2.5 px-2 text-center">
-                        <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${f.convRate >= 10 ? 'bg-emerald-500/10 text-emerald-600' : f.convRate >= 5 ? 'bg-amber-500/10 text-amber-600' : 'bg-muted text-muted-foreground'}`}>
-                          {f.convRate}%
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {/* Franchise funnel moved to Performance QI tab */}
     </div>
   );
 }

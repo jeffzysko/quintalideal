@@ -54,17 +54,6 @@ export function HeroSection({ onStart, franchiseName, franchiseSlug, lang, onLan
           </m.div>
         )}
 
-        {/* Floating water drops - only on desktop */}
-        <m.div
-          animate={{ y: [-8, 8, -8] }}
-          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute top-[15%] left-[10%] text-3xl opacity-20 hidden sm:block"
-        >💧</m.div>
-        <m.div
-          animate={{ y: [6, -10, 6] }}
-          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-          className="absolute top-[25%] right-[12%] text-2xl opacity-15 hidden sm:block"
-        >💧</m.div>
 
         {/* Content */}
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-5 pb-10 sm:py-10 max-w-lg mx-auto w-full" style={{ marginTop: '-5vh' }}>
@@ -94,11 +83,10 @@ export function HeroSection({ onStart, franchiseName, franchiseSlug, lang, onLan
             transition={{ delay: 0.35, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             className="text-center text-[1.75rem] sm:text-[2rem] md:text-[2.75rem] font-extrabold leading-[1.08] mb-3 sm:mb-4 text-white tracking-tight"
           >
-            {t('hero_title_1', lang)} <br />
+            {t('hero_title_1', lang)} para<br />
             <span className="bg-gradient-to-r from-blue-300 via-blue-200 to-cyan-300 bg-clip-text text-transparent">
               {t('hero_title_2', lang)}
             </span>
-            <br />{t('hero_title_3', lang)}
           </m.h1>
 
           <m.p

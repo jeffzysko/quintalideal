@@ -4,7 +4,7 @@ import { Waves, MapPin, Trophy, FileText, Shield, Instagram, Code2, HelpCircle, 
 import { useAuth } from '@/hooks/useAuth';
 import { useStandalone } from '@/hooks/useStandalone';
 import { cn } from '@/lib/utils';
-import logoSplash from '@/assets/logo-splash.png';
+import logoHallow from '@/assets/logo-hallow.png';
 
 export function Footer() {
   const { user } = useAuth();
@@ -16,7 +16,7 @@ export function Footer() {
 
   return (
     <footer className="w-full border-t border-border/40 bg-background/95 backdrop-blur-md">
-      <div className="max-w-5xl mx-auto px-4 py-6 sm:py-10">
+      <div className="max-w-7xl mx-auto px-4 py-6 sm:py-10">
 
         {/* ── Desktop: full grid ── */}
         <div className="hidden sm:grid sm:grid-cols-2 md:grid-cols-4 gap-8">
@@ -30,9 +30,9 @@ export function Footer() {
         <div className="sm:hidden">
           {/* Brand + inline links */}
           <div className="flex items-center gap-3 mb-4">
-            <img src={logoSplash} alt="Splash Piscinas" className="w-8 opacity-70" />
+            <img src={logoHallow} alt="Hallow Comunicação" className="w-16 opacity-40 brightness-0 dark:invert" />
             <p className="text-[11px] text-muted-foreground leading-snug flex-1">
-              Iniciativa da Hallow Comunicação com a iGUi Santo Antônio.
+              Quintal Ideal é uma iniciativa da Hallow Comunicação juntamente com a iGUi Santo Antônio.
             </p>
           </div>
 
@@ -89,9 +89,9 @@ export function Footer() {
 function BrandBlock() {
   return (
     <div className="col-span-1 flex flex-col items-start gap-3">
-      <img src={logoSplash} alt="Splash Piscinas" className="w-10 opacity-70" />
+      <img src={logoHallow} alt="Hallow Comunicação" className="w-20 opacity-40 brightness-0 dark:invert" />
       <p className="text-xs text-muted-foreground leading-relaxed max-w-[220px]">
-        Essa é uma iniciativa da Hallow Comunicação juntamente com a iGUi Santo Antônio.
+        Quintal Ideal é uma iniciativa da Hallow Comunicação juntamente com a iGUi Santo Antônio.
       </p>
     </div>
   );

@@ -6,6 +6,7 @@ import logoSplash from '@/assets/logo-splash.png';
 import { getYardClassification } from '@/lib/ranking';
 import { getPoolImage } from '@/lib/poolImages';
 import { type Lang, t } from '@/lib/i18n';
+import { fireConfetti, haptic } from '@/lib/celebrations';
 
 interface PoolAlternativeView {
   name: string;
@@ -77,6 +78,8 @@ export function ResultScreen({ score, poolName, poolDescription, recommendedSize
         clearInterval(interval);
         setShowConfetti(true);
         setAnimDone(true);
+        fireConfetti();
+        haptic('heavy');
       }
       setDisplayScore(current);
     }, 18);
@@ -180,12 +183,20 @@ export function ResultScreen({ score, poolName, poolDescription, recommendedSize
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="text-lg sm:text-xl md:text-2xl font-extrabold mb-2 tracking-tight text-white text-center"
+          className="text-lg sm:text-xl md:text-2xl font-extrabold mb-1 tracking-tight text-white text-center"
         >
-          {t('result_title_1', lang)}{' '}
-          <span className="bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-transparent">{score}%</span>
-          <br />{t('result_title_2', lang)}
+          {lang === 'es' ? '¡Encontramos la piscina' : 'Encontramos a piscina'}{' '}
+          <span className="bg-gradient-to-r from-blue-300 to-cyan-300 bg-clip-text text-transparent">{lang === 'es' ? 'perfecta' : 'perfeita'}</span>
+          {' '}{lang === 'es' ? 'para ti!' : 'para você!'}
         </motion.h2>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="text-white/40 text-[11px] text-center mb-2"
+        >
+          {lang === 'es' ? 'Basado en tu espacio, estilo y presupuesto' : 'Baseado no seu espaço, estilo e orçamento'}
+        </motion.p>
 
         {/* Classification badge */}
         <motion.div

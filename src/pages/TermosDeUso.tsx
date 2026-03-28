@@ -172,9 +172,10 @@ export default function TermosDeUso() {
           <Section number="7" icon={RefreshCw} title="Integrações com Terceiros" index={6}>
             <p>A plataforma oferece integrações técnicas opcionais, incluindo:</p>
             <ul className="list-disc pl-5 space-y-1">
-              <li><strong className="text-foreground">Webhooks para CRM:</strong> envio automático de dados de leads para sistemas de gestão externos configurados pela franquia;</li>
+              <li><strong className="text-foreground">Webhooks para CRM:</strong> envio automático de dados de leads para sistemas de gestão externos configurados pela franquia, com retry automático (3 tentativas) e validação HMAC-SHA256;</li>
               <li><strong className="text-foreground">Meta Pixel:</strong> rastreamento de conversões para campanhas de marketing digital;</li>
-              <li><strong className="text-foreground">Serviços de e-mail:</strong> envio de notificações transacionais.</li>
+              <li><strong className="text-foreground">Notificações push:</strong> envio de alertas em tempo real sobre novos leads e follow-ups via Web Push API, mediante autorização do navegador;</li>
+              <li><strong className="text-foreground">Serviços de e-mail:</strong> envio de notificações transacionais, relatórios mensais e alertas de falha de webhook.</li>
             </ul>
             <p>A configuração e utilização dessas integrações é de responsabilidade exclusiva de cada franquia. A Hallow Comunicação não se responsabiliza pelo tratamento de dados realizado por sistemas de terceiros após o envio via webhook.</p>
           </Section>

@@ -141,9 +141,10 @@ export default function PoliticaPrivacidade() {
             <ul className="list-disc pl-5 space-y-1">
               <li><strong className="text-foreground">Dados de identificação:</strong> nome completo, telefone e e-mail;</li>
               <li><strong className="text-foreground">Dados de localização:</strong> cidade informada durante o quiz;</li>
-              <li><strong className="text-foreground">Dados de preferência:</strong> respostas ao questionário de avaliação do quintal;</li>
+              <li><strong className="text-foreground">Dados de preferência:</strong> respostas ao questionário de avaliação do quintal, perfil de uso detectado e modelo recomendado;</li>
               <li><strong className="text-foreground">Dados visuais:</strong> fotos do quintal enviadas voluntariamente;</li>
-              <li><strong className="text-foreground">Dados de navegação:</strong> endereço IP, tipo de dispositivo, sistema operacional e parâmetros de campanha (UTM).</li>
+              <li><strong className="text-foreground">Dados de navegação:</strong> endereço IP, tipo de dispositivo, sistema operacional e parâmetros de campanha (UTM);</li>
+              <li><strong className="text-foreground">Dados de notificações push:</strong> endpoint do navegador e chaves de criptografia para envio de notificações, quando autorizadas pelo usuário.</li>
             </ul>
           </Section>
 
@@ -245,7 +246,8 @@ export default function PoliticaPrivacidade() {
             <p>A plataforma utiliza as seguintes tecnologias:</p>
             <ul className="list-disc pl-5 space-y-1">
               <li><strong className="text-foreground">Cookies de sessão:</strong> para manter o estado da navegação durante o quiz;</li>
-              <li><strong className="text-foreground">Armazenamento local (sessionStorage):</strong> para identificar sessões anônimas de analytics;</li>
+              <li><strong className="text-foreground">Armazenamento local (sessionStorage/localStorage):</strong> para identificar sessões anônimas de analytics e armazenar preferências de notificação;</li>
+              <li><strong className="text-foreground">Service Worker:</strong> para funcionalidades offline (PWA) e recebimento de notificações push em segundo plano;</li>
               <li><strong className="text-foreground">Meta Pixel (opcional):</strong> quando configurado pela franquia, coleta dados anônimos de conversão para campanhas de marketing digital;</li>
               <li><strong className="text-foreground">Parâmetros UTM:</strong> para rastrear a origem de tráfego de campanhas.</li>
             </ul>

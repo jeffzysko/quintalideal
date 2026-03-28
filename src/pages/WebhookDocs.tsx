@@ -16,7 +16,6 @@ const PAYLOAD_EXAMPLE = `{
     "cidade": "Porto Alegre",
     "pontuacao_quintal": 78,
     "modelo_recomendado": "Atalaia",
-    "referred_by": null,
     "created_at": "2026-03-12T16:00:00.000Z"
   },
   "franquia": {
@@ -34,7 +33,6 @@ const TEST_PAYLOAD_EXAMPLE = `{
     "cidade": "Cidade Teste",
     "pontuacao_quintal": 75,
     "modelo_recomendado": "Cancún",
-    "referred_by": null,
     "created_at": "2026-03-12T16:00:00.000Z"
   },
   "franquia": {
@@ -173,7 +171,7 @@ const FIELDS = [
   { name: 'cidade', type: 'string | null', desc: 'Cidade informada no quiz' },
   { name: 'pontuacao_quintal', type: 'number | null', desc: 'Score de 0 a 100 do Índice do Quintal' },
   { name: 'modelo_recomendado', type: 'string | null', desc: 'Modelo de piscina recomendado' },
-  { name: 'referred_by', type: 'string | null', desc: 'Código de indicação (compartilhamento)' },
+  
   { name: 'created_at', type: 'ISO 8601', desc: 'Data/hora de criação do lead' },
 ];
 
@@ -483,7 +481,7 @@ export default function WebhookDocs() {
               },
               {
                 q: 'O que acontece se meu servidor estiver fora do ar?',
-                a: 'O lead é salvo normalmente no painel do Quintal Ideal. O webhook falha silenciosamente — sem retry automático. Recomendamos monitorar a disponibilidade do seu endpoint.',
+                a: 'O lead é salvo normalmente no painel do Quintal Ideal. O sistema faz até 3 tentativas automáticas com backoff (0s, 2s, 5s). Se todas falharem, o franqueado recebe um e-mail de alerta automático. Recomendamos monitorar a disponibilidade do seu endpoint.',
               },
               {
                 q: 'Como testar sem um CRM?',

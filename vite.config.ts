@@ -24,6 +24,7 @@ export default defineConfig(({ mode }) => ({
         "pwa-icon-192.png",
         "pwa-icon-512.png",
         "pwa-icon-maskable-512.png",
+        "notification-icon.png",
         "og-image.png",
       ],
       manifest: {

@@ -83,7 +83,7 @@ function buildLeadEmailHTML(
             ${buildRow("✉️", "E-mail", String(lead.email || "Não informado"), false)}
             ${buildRow("📍", "Cidade", String(lead.cidade || "Não informada"), false)}
             ${buildRow("🏊", "Modelo Recomendado", String(lead.modelo_recomendado || "—"), false)}
-            ${lead.referred_by ? buildRow("🔗", "Indicado por", String(lead.referred_by), false) : ""}
+            
           </table>
         </td></tr>
 
@@ -223,9 +223,11 @@ Deno.serve(async (req) => {
 
     console.log("Email sent successfully:", resendData);
 
-    // Also trigger push notifications for this franchise
+    // Also trigger push notifications for this franchise (respects user preferences)
     try {
       const pushUrl = `${supabaseUrl}/functions/v1/send-push`;
+      const score = Number(lead.pontuacao_quintal || 0);
+      const scoreEmoji = score >= 70 ? '🔥' : score >= 40 ? '⭐' : '📋';
       const pushRes = await fetch(pushUrl, {
         method: "POST",
         headers: {
@@ -234,15 +236,16 @@ Deno.serve(async (req) => {
         },
         body: JSON.stringify({
           franchise_id: assignedFranchiseId,
-          title: `🎯 Novo Lead: ${lead.nome || "Cliente"}`,
-          message: `${lead.cidade || "Sem cidade"} · Score ${lead.pontuacao_quintal || 0}%`,
+          title: `🎯 Novo lead chegou!`,
+          message: `${lead.nome || "Cliente"} · ${lead.cidade || "Sem cidade"} ${scoreEmoji} ${score}%`,
           url: "/hoje",
+          notification_key: "new_lead_assigned",
+          type: "new_lead",
         }),
       });
       const pushData = await pushRes.json();
       console.log("Push notification result:", pushData);
     } catch (pushErr) {
-      // Don't fail the whole function if push fails
       console.error("Push notification failed (non-blocking):", pushErr);
     }
 

@@ -193,6 +193,13 @@
   }
 
   /* ─── Focus States (Consistent) ─── */
+  input,
+  textarea,
+  select,
+  [role="combobox"] {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
   input:focus-visible,
   textarea:focus-visible,
   select:focus-visible,
@@ -257,6 +264,11 @@
   .glass-card {
     @apply bg-card/80 backdrop-blur-xl border border-border/50;
     box-shadow: var(--shadow-md);
+    transition: box-shadow 0.25s ease, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .glass-card:active {
+    transform: scale(0.995);
   }
 
   /* ─── Gradient Presets ─── */
@@ -292,14 +304,19 @@
   .card-premium {
     @apply bg-card border border-border/50 rounded-xl;
     box-shadow: var(--shadow-sm);
-    transition: box-shadow 0.2s ease, transform 0.15s ease;
+    transition: box-shadow 0.25s ease, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+    will-change: transform;
   }
 
   @media (hover: hover) {
     .card-premium:hover {
       box-shadow: var(--shadow-lg);
-      transform: translateY(-1px);
+      transform: translateY(-2px);
     }
+  }
+
+  .card-premium:active {
+    transform: scale(0.98);
   }
 
   .card-glow-blue {
@@ -398,9 +415,44 @@
     50% { opacity: 1; }
   }
 
+  @keyframes skeleton-shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
   .animate-float { animation: float 4s ease-in-out infinite; }
   .animate-float-delayed { animation: float 5s ease-in-out 1s infinite; }
   .animate-pulse-glow { animation: pulse-glow 2s ease-in-out infinite; }
+
+  /* ─── Skeleton Loading ─── */
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--muted-foreground) / 0.08) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 1.5s ease-in-out infinite;
+    border-radius: var(--radius-sm);
+  }
+
+  /* ─── Premium Interaction Feedback ─── */
+  .press-scale {
+    transition: transform 0.15s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .press-scale:active {
+    transform: scale(0.97);
+  }
+
+  /* ─── Smooth Content Reveal ─── */
+  .reveal-up {
+    animation: reveal-up 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+  @keyframes reveal-up {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
   /* ─── Progress Bar Gradients ─── */
   .progress-gradient-blue { background: linear-gradient(90deg, hsl(207 90% 52%), hsl(207 90% 42%)); }

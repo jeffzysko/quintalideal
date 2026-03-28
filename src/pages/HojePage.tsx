@@ -5,6 +5,7 @@ import { BackButton } from '@/components/BackButton';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
+import { toWhatsAppPhone } from '@/lib/phone-utils';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -393,8 +394,7 @@ export default function HojePage() {
   // ── Handlers ──
   const handleWhatsApp = (lead: LeadRow) => {
     if (!lead.telefone) return;
-    const phone = lead.telefone.replace(/\D/g, '');
-    const fullPhone = phone.startsWith('55') ? phone : `55${phone}`;
+    const fullPhone = toWhatsAppPhone(lead.telefone);
     const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem?`);
     window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
   };
@@ -551,7 +551,7 @@ export default function HojePage() {
                         const daysWaiting = differenceInDays(now, new Date(lead.created_at));
                         const waitLabel = daysWaiting > 0 ? `${daysWaiting}d` : `${hoursWaiting}h`;
                         const temp = classifyLead((lead as any).respostas_questionario || null, lead.pontuacao_quintal);
-                        const borderAccent = temp.temperature === 'quente' ? 'border-l-emerald-500' : temp.temperature === 'morno' ? 'border-l-amber-500' : 'border-l-blue-400';
+                        const borderAccent = temp.borderAccent;
 
                         return (
                           <motion.div
@@ -617,7 +617,7 @@ export default function HojePage() {
                     {newLeads.slice(0, 6).map((lead, i) => {
                       const temp = classifyLead((lead as any).respostas_questionario || null, lead.pontuacao_quintal);
                       const timeAgo = formatDistanceToNow(new Date(lead.created_at), { locale: ptBR, addSuffix: true });
-                      const borderAccent = temp.temperature === 'quente' ? 'border-l-emerald-500' : temp.temperature === 'morno' ? 'border-l-amber-500' : 'border-l-blue-400';
+                      const borderAccent = temp.borderAccent;
 
                       return (
                         <motion.div

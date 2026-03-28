@@ -25,6 +25,8 @@ export function translateAuthError(msg: string): string {
       'A senha precisa ter no mínimo 6 caracteres.',
     'Password should be at least 6 characters long.':
       'A senha precisa ter no mínimo 6 caracteres.',
+    "Password should contain at least one character of each: abcdefghijklmnopqrstuvwxyz, ABCDEFGHIJKLMNOPQRSTUVWXYZ, 0123456789, !@#$%^&*()_+-=[]{};':\"|<>?,./`~.":
+      'A senha precisa incluir pelo menos 1 letra maiúscula, 1 letra minúscula, 1 número e 1 caractere especial.',
 
     // Session / token issues
     'Auth session missing!':
@@ -70,8 +72,12 @@ export function translateAuthError(msg: string): string {
     return 'Muitas tentativas seguidas. Aguarde alguns instantes e tente novamente.';
   if (lower.includes('session') && (lower.includes('missing') || lower.includes('not found') || lower.includes('expired')))
     return 'Sessão expirada. Volte à tela de login e solicite um novo link de recuperação.';
+  if (lower.includes('unexpected') || lower.includes('update user') || lower.includes('failed to update'))
+    return 'Não foi possível concluir a definição da senha por este link. Solicite um novo e-mail e tente novamente.';
   if (lower.includes('network') || lower.includes('fetch'))
     return 'Erro de conexão. Verifique sua internet e tente novamente.';
+  if (lower.includes('one character of each'))
+    return 'A senha precisa incluir pelo menos 1 letra maiúscula, 1 letra minúscula, 1 número e 1 caractere especial.';
   if (lower.includes('password') && lower.includes('characters'))
     return 'A senha precisa ter no mínimo 6 caracteres.';
   if (lower.includes('password') && lower.includes('different'))

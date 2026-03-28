@@ -13,6 +13,7 @@ import {
 import { differenceInDays } from 'date-fns';
 import type { LeadRow } from '@/lib/lead-constants';
 import { STATUS_LABELS, STATUS_COLORS } from '@/lib/lead-constants';
+import { toWhatsAppPhone } from '@/lib/phone-utils';
 import { cn } from '@/lib/utils';
 
 // ── Types ──
@@ -262,8 +263,7 @@ export function SmartSuggestions({ leads, followups, activities, basePath }: Sma
 
   const handleWhatsApp = (lead: LeadRow) => {
     if (!lead.telefone) return;
-    const phone = lead.telefone.replace(/\D/g, '');
-    const fullPhone = phone.startsWith('55') ? phone : `55${phone}`;
+    const fullPhone = toWhatsAppPhone(lead.telefone);
     const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem?`);
     window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
   };
