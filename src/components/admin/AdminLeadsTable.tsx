@@ -18,6 +18,7 @@ interface AdminLeadsTableProps {
   onPageChange: (page: number) => void;
   isLoading: boolean;
   franchiseMap: Record<string, string>;
+  temperatureFiltered?: boolean;
 }
 
 function ScoreBar({ score }: { score: number }) {
@@ -41,7 +42,7 @@ function AvatarInitial({ name }: { name: string | null }) {
   );
 }
 
-export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChange, isLoading, franchiseMap }: AdminLeadsTableProps) {
+export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChange, isLoading, franchiseMap, temperatureFiltered }: AdminLeadsTableProps) {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const from = (page - 1) * pageSize;
@@ -181,41 +182,49 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                 className="relative z-10 isolate flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 px-4 py-4 border-t border-border/30 bg-card"
                 onClick={(e) => e.stopPropagation()}
               >
-                <p className="text-xs text-muted-foreground">
-                  Mostrando <span className="font-semibold text-foreground">{from + 1}–{Math.min(to, totalCount)}</span> de {totalCount}
-                </p>
-                <div className="flex items-center gap-1">
-                  <button
-                    type="button"
-                    className="inline-flex items-center justify-center h-9 w-9 rounded-lg border border-input bg-background text-sm hover:bg-accent disabled:opacity-50 disabled:pointer-events-none"
-                    onClick={() => onPageChange(Math.max(1, page - 1))}
-                    disabled={page === 1}
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                  </button>
-                  {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
-                    const pageNum = i + 1;
-                    return (
-                      <button
-                        type="button"
-                        key={pageNum}
-                        className={`inline-flex items-center justify-center h-9 w-9 rounded-lg text-xs font-medium transition-colors ${page === pageNum ? 'bg-primary text-primary-foreground' : 'hover:bg-accent text-foreground'}`}
-                        onClick={() => onPageChange(pageNum)}
-                      >
-                        {pageNum}
-                      </button>
-                    );
-                  })}
-                  {totalPages > 5 && <span className="text-xs text-muted-foreground px-1">…</span>}
-                  <button
-                    type="button"
-                    className="inline-flex items-center justify-center h-9 w-9 rounded-lg border border-input bg-background text-sm hover:bg-accent disabled:opacity-50 disabled:pointer-events-none"
-                    onClick={() => onPageChange(page + 1)}
-                    disabled={page >= totalPages}
-                  >
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
+                {temperatureFiltered ? (
+                  <p className="text-xs text-muted-foreground">
+                    Exibindo <span className="font-semibold text-foreground">{totalCount}</span> {totalCount === 1 ? 'resultado' : 'resultados'} <span className="text-muted-foreground/60">(filtro de temperatura aplicado)</span>
+                  </p>
+                ) : (
+                  <p className="text-xs text-muted-foreground">
+                    Mostrando <span className="font-semibold text-foreground">{from + 1}–{Math.min(to, totalCount)}</span> de {totalCount}
+                  </p>
+                )}
+                {!temperatureFiltered && (
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-input bg-background text-sm hover:bg-accent disabled:opacity-50 disabled:pointer-events-none"
+                      onClick={() => onPageChange(Math.max(1, page - 1))}
+                      disabled={page === 1}
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    {Array.from({ length: Math.min(totalPages, 5) }, (_, i) => {
+                      const pageNum = i + 1;
+                      return (
+                        <button
+                          type="button"
+                          key={pageNum}
+                          className={`inline-flex items-center justify-center h-10 w-10 rounded-lg text-xs font-medium transition-colors ${page === pageNum ? 'bg-primary text-primary-foreground' : 'hover:bg-accent text-foreground'}`}
+                          onClick={() => onPageChange(pageNum)}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    })}
+                    {totalPages > 5 && <span className="text-xs text-muted-foreground px-1">…</span>}
+                    <button
+                      type="button"
+                      className="inline-flex items-center justify-center h-11 w-11 rounded-lg border border-input bg-background text-sm hover:bg-accent disabled:opacity-50 disabled:pointer-events-none"
+                      onClick={() => onPageChange(page + 1)}
+                      disabled={page >= totalPages}
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </>

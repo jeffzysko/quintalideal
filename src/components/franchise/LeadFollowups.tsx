@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { CalendarClock, Check, Plus, Trash2, Phone, MessageCircle, Mail, Users, MapPin, MoreHorizontal, CalendarIcon, Clock } from 'lucide-react';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
@@ -65,6 +66,7 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
   const [selectedTime, setSelectedTime] = useState('09:00');
   const [followupType, setFollowupType] = useState<FollowupType>('ligacao');
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const { data: followups = [] } = useQuery({
     queryKey: ['followups', franchiseId, leadId],
@@ -144,7 +146,10 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
     mutationFn: async ({ id, completed }: { id: string; completed: boolean }) => {
       await supabase.from('lead_followups' as any).update({ completed }).eq('id', id);
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['followups'] }),
+    onSuccess: (_, { completed }) => {
+      queryClient.invalidateQueries({ queryKey: ['followups'] });
+      toast.success(completed ? 'Concluído ✓' : 'Reaberto');
+    },
   });
 
   const deleteFollowup = useMutation({
@@ -353,7 +358,19 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
         </AnimatePresence>
 
         {pendingFollowups.length === 0 && !showForm && (
-          <p className="text-xs text-muted-foreground py-3 text-center">Nenhum follow-up pendente</p>
+          <div className="flex flex-col items-center gap-2 py-5 text-center">
+            <div className="w-9 h-9 rounded-xl bg-muted/60 flex items-center justify-center">
+              <CalendarClock className="w-5 h-5 text-muted-foreground/60" />
+            </div>
+            <p className="text-xs font-medium text-muted-foreground">Nenhum follow-up pendente</p>
+            <p className="text-[11px] text-muted-foreground/60">Agende o próximo contato para manter o engajamento</p>
+            {leadId && (
+              <Button size="sm" variant="outline" className="mt-1 h-7 text-xs rounded-lg gap-1.5" onClick={() => setShowForm(true)}>
+                <Plus className="w-3 h-3" />
+                Agendar follow-up
+              </Button>
+            )}
+          </div>
         )}
 
         {followups.map((f, i) => {
@@ -379,6 +396,7 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
             >
               <button
                 onClick={() => toggleComplete.mutate({ id: f.id, completed: !f.completed })}
+                aria-label={f.completed ? 'Marcar como pendente' : 'Marcar como concluído'}
                 className={cn(
                   'w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-0.5 transition-all duration-200',
                   f.completed
@@ -410,13 +428,37 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
                 </p>
               </div>
 
-              <button onClick={() => deleteFollowup.mutate(f.id)} className="text-muted-foreground/40 hover:text-destructive transition-colors p-1 rounded-lg hover:bg-destructive/10">
+              <button
+                onClick={() => setDeleteId(f.id)}
+                aria-label="Excluir follow-up"
+                className="text-muted-foreground/40 hover:text-destructive transition-colors p-1 rounded-lg hover:bg-destructive/10"
+              >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
             </motion.div>
           );
         })}
       </CardContent>
+
+      <AlertDialog open={!!deleteId} onOpenChange={() => setDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir follow-up?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita. O follow-up será removido permanentemente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => { deleteFollowup.mutate(deleteId!); setDeleteId(null); }}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }

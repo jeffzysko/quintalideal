@@ -233,7 +233,7 @@ const LeadCard = memo(function LeadCard({
 
       {/* Quick action bar — visible on hover */}
       {!overlay && (
-        <div className="flex items-center border-t border-border/30 opacity-0 group-hover:opacity-100 transition-opacity divide-x divide-border/30">
+        <div className="flex items-center border-t border-border/30 opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100 transition-opacity divide-x divide-border/30">
           {lead.telefone && (
             <button
               onClick={(e) => {
@@ -241,6 +241,7 @@ const LeadCard = memo(function LeadCard({
                 const fullPhone = toWhatsAppPhone(lead.telefone!);
                 window.open(`https://wa.me/${fullPhone}`, '_blank');
               }}
+              aria-label="Abrir WhatsApp"
               className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[10px] font-medium text-success hover:bg-success/5 transition-colors"
               title="WhatsApp"
             >
@@ -254,6 +255,7 @@ const LeadCard = memo(function LeadCard({
                 const phone = lead.telefone!.replace(/\D/g, '');
                 window.open(`tel:+55${phone}`, '_self');
               }}
+              aria-label="Ligar para lead"
               className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[10px] font-medium text-primary hover:bg-primary/5 transition-colors"
               title="Ligar"
             >
@@ -264,6 +266,7 @@ const LeadCard = memo(function LeadCard({
             <PopoverTrigger asChild>
               <button
                 onClick={(e) => e.stopPropagation()}
+                aria-label="Adicionar nota rápida"
                 className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[10px] font-medium text-muted-foreground hover:bg-muted/40 transition-colors"
                 title="Adicionar nota"
               >
@@ -295,6 +298,7 @@ const LeadCard = memo(function LeadCard({
               <DropdownMenuTrigger asChild>
                 <button
                   onClick={(e) => e.stopPropagation()}
+                  aria-label="Mover para próxima etapa"
                   className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[10px] font-medium text-muted-foreground hover:bg-muted/40 transition-colors"
                   title="Mover etapa"
                 >

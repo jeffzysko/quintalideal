@@ -101,7 +101,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   });
 
   // ── All leads (bounded to last 12 months, replaces unlimited waterfall) ──
-  const { data: allLeads = [], isLoading: loadingKpis } = useQuery({
+  const { data: allLeads = [], isLoading: loadingKpis, isError: franchiseError, refetch: refetchFranchise } = useQuery({
     queryKey: ['franchise-leads-all', franchiseId],
     queryFn: async () => {
       const twelveMonthsAgo = new Date();
@@ -349,6 +349,18 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
           >
+            {franchiseError && (
+              <div className="flex items-center justify-between gap-3 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive mb-4">
+                <p className="font-medium">Erro ao carregar dados. Verifique sua conexão.</p>
+                <button
+                  type="button"
+                  onClick={() => refetchFranchise()}
+                  className="shrink-0 underline underline-offset-2 hover:no-underline font-semibold"
+                >
+                  Tentar novamente
+                </button>
+              </div>
+            )}
             <Card className="card-premium">
               <CardHeader>
                 <CardTitle className="text-sm font-bold flex items-center justify-between">
@@ -382,8 +394,8 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                         navigator.clipboard.writeText(`${SITE_URL}/${franchiseSlug}`);
                         toast.success('Link copiado!');
                       }}>
-                        <Share2 className="w-4 h-4" />
-                        Copiar link do quiz
+                        <Copy className="w-4 h-4" />
+                        Copiar link
                       </Button>
                     )}
                   </motion.div>

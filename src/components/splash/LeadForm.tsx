@@ -12,13 +12,15 @@ interface LeadFormProps {
   onCheckDuplicate?: (telefone: string, email: string) => Promise<{ duplicate: boolean; field?: string; franchiseName?: string | null }>;
   loading?: boolean;
   lang?: Lang;
+  step?: number;
+  totalSteps?: number;
 }
 
 function sanitizeText(input: string): string {
   return input.replace(/[<>'"&]/g, '').trim();
 }
 
-export function LeadForm({ onSubmit, onCheckDuplicate, loading, lang = 'pt' }: LeadFormProps) {
+export function LeadForm({ onSubmit, onCheckDuplicate, loading, lang = 'pt', step, totalSteps }: LeadFormProps) {
   const [nome, setNome] = useState('');
   const [telefone, setTelefone] = useState('');
   const [email, setEmail] = useState('');
@@ -95,6 +97,24 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading, lang = 'pt' }: L
       className="min-h-screen flex flex-col items-center justify-center px-5 sm:px-6 py-10 sm:py-12 gradient-hero"
     >
       <div className="w-full max-w-md">
+        {step != null && totalSteps != null && (
+          <motion.div
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-5"
+          >
+            <div className="flex items-center justify-between mb-1.5">
+              <span className="text-[11px] text-muted-foreground font-medium">{step}/{totalSteps}</span>
+              <span className="text-[11px] text-primary font-semibold">100%</span>
+            </div>
+            <div className="w-full h-1.5 rounded-full bg-muted/60 overflow-hidden">
+              <div
+                className="h-full rounded-full bg-primary transition-all duration-500"
+                style={{ width: `${(step / totalSteps) * 100}%` }}
+              />
+            </div>
+          </motion.div>
+        )}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

@@ -198,7 +198,7 @@ export default function AdminDashboard() {
   });
 
   // ── All leads (last 12 months — bounded, replaces unlimited waterfall) ──
-  const { data: allLeads = [], isLoading: loadingKpis } = useQuery({
+  const { data: allLeads = [], isLoading: loadingKpis, isError: kpisError, refetch: refetchKpis } = useQuery({
     queryKey: ['admin-leads-all'],
     queryFn: async () => {
       const twelveMonthsAgo = new Date();
@@ -216,7 +216,7 @@ export default function AdminDashboard() {
   });
 
   // ── Paginated leads for table ──
-  const { data: paginatedData, isLoading: loadingTable, isFetching: fetchingTable } = useQuery({
+  const { data: paginatedData, isLoading: loadingTable, isFetching: fetchingTable, isError: tableError, refetch: refetchTable } = useQuery({
     queryKey: ['admin-leads-table', page, search, filterFranquia, filterStatus, filterModelo, filterCidade, filterTemperatura],
     placeholderData: keepPreviousData,
     staleTime: 60 * 1000,
@@ -252,7 +252,7 @@ export default function AdminDashboard() {
         filteredLeads = filteredLeads.slice(0, PAGE_SIZE);
       }
 
-      return { leads: filteredLeads, total: isTemperatureFiltered ? filteredTotal : (count || 0) };
+      return { leads: filteredLeads, total: isTemperatureFiltered ? filteredTotal : (count || 0), temperatureFiltered: isTemperatureFiltered };
     },
   });
 
@@ -590,6 +590,18 @@ export default function AdminDashboard() {
 
         {activeTab === 'leads' && isSuperAdmin && (
           <>
+            {(kpisError || tableError) && (
+              <div className="flex items-center justify-between gap-3 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+                <p className="font-medium">Erro ao carregar dados. Verifique sua conexão.</p>
+                <button
+                  type="button"
+                  onClick={() => { refetchKpis(); refetchTable(); }}
+                  className="shrink-0 underline underline-offset-2 hover:no-underline font-semibold"
+                >
+                  Tentar novamente
+                </button>
+              </div>
+            )}
             <AdminLeadFilters
               searchInput={searchInput} onSearchChange={setSearchInput}
               cidadeInput={cidadeInput} onCidadeChange={setCidadeInput}
@@ -616,6 +628,7 @@ export default function AdminDashboard() {
                 }}
                 isLoading={false}
                 franchiseMap={franchiseMap}
+                temperatureFiltered={paginatedData?.temperatureFiltered}
               />
             )}
           </>
