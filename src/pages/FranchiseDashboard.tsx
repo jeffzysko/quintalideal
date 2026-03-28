@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Users, TrendingUp, Clock, Eye, Inbox, Share2, Droplets, BarChart3, Link2, Copy, Check, Workflow, CalendarClock } from 'lucide-react';
+import { Users, TrendingUp, Clock, Eye, Inbox, Droplets, BarChart3, Link2, Copy, Check, Workflow, CalendarClock } from 'lucide-react';
 import { ConversionFunnel } from '@/components/franchise/ConversionFunnel';
 import { SLAIndicator } from '@/components/franchise/SLAIndicator';
 import { MonthlyGoals } from '@/components/franchise/MonthlyGoals';
@@ -374,7 +374,25 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
               </CardHeader>
               <CardContent>
                 {isLoading ? (
-                  <TableSkeleton rows={8} cols={6} />
+                  isMobile ? (
+                    <div className="space-y-3">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <div key={i} className="rounded-2xl border border-border/50 bg-card p-4 animate-pulse">
+                          <div className="flex items-start gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-muted shrink-0" />
+                            <div className="flex-1 space-y-2">
+                              <div className="h-3.5 bg-muted rounded w-2/3" />
+                              <div className="h-2.5 bg-muted/60 rounded w-1/2" />
+                            </div>
+                            <div className="h-5 w-14 bg-muted rounded-full" />
+                          </div>
+                          <div className="mt-3 h-1.5 bg-muted/40 rounded-full" />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <TableSkeleton rows={8} cols={6} />
+                  )
                 ) : totalCount === 0 ? (
                   <motion.div 
                     initial={{ opacity: 0, y: 20 }} 
