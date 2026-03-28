@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { ManualLeadForm } from '@/components/franchise/ManualLeadForm';
 import { CSVLeadImport } from '@/components/franchise/CSVLeadImport';
 import { BackButton } from '@/components/BackButton';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
@@ -23,7 +23,7 @@ import { ptBR } from 'date-fns/locale';
 import {
   CalendarClock, AlertTriangle, Inbox, Phone, MessageCircle,
   ChevronRight, Clock, Flame, Zap, CheckCircle2, Users,
-  TrendingUp, ArrowRight, Sparkles, Target, MapPin,
+  TrendingUp, ArrowRight, Sparkles, Target, MapPin, Rocket,
 } from 'lucide-react';
 import { STATUS_LABELS, STATUS_COLORS, type LeadRow } from '@/lib/lead-constants';
 import { classifyLead } from '@/lib/leadScoring';
@@ -267,7 +267,7 @@ export default function HojePage() {
   });
 
   // ── Leads (lightweight) ──
-  const { data: leads = [], isLoading: loadingLeads } = useQuery({
+  const { data: leads = [], isLoading: loadingLeads, isError: leadsError, refetch: refetchLeads } = useQuery({
     queryKey: ['hoje-leads', franchiseId, isAdmin],
     queryFn: async () => {
       let query = supabase
@@ -391,6 +391,18 @@ export default function HojePage() {
     { icon: Flame, label: 'Leads quentes', value: hotLeads.length, color: 'text-amber-600', ringColor: 'icon-bg-amber', description: 'Score ≥ 70%' },
   ], [todayFollowups, overdueFollowups, newLeads, hotLeads]);
 
+  // ── Mutations ──
+  const queryClient = useQueryClient();
+  const toggleFollowup = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from('lead_followups').update({ completed: true }).eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['hoje-followups'] });
+    },
+  });
+
   // ── Handlers ──
   const handleWhatsApp = (lead: LeadRow) => {
     if (!lead.telefone) return;
@@ -418,6 +430,18 @@ export default function HojePage() {
 
           {isLoading ? <PageSkeleton /> : (
             <>
+              {leadsError && (
+                <div className="flex items-center justify-between gap-3 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive mb-4">
+                  <p className="font-medium">Erro ao carregar dados. Verifique sua conexão.</p>
+                  <button
+                    type="button"
+                    onClick={() => refetchLeads()}
+                    className="shrink-0 underline underline-offset-2 hover:no-underline font-semibold"
+                  >
+                    Tentar novamente
+                  </button>
+                </div>
+              )}
                <Greeting name={profile?.full_name || null} summaryItems={summaryItems} />
                <QuickActionBar
                  onNavigatePipeline={() => navigate(isAdmin ? '/admin?tab=kanban' : '/franquia?tab=funnel')}
@@ -474,6 +498,15 @@ export default function HojePage() {
                             <p className="text-[11px] text-destructive font-medium">{schedule.label}</p>
                             {parsed.text && <p className="text-[11px] text-muted-foreground truncate mt-0.5">{parsed.text}</p>}
                           </div>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-7 w-7 rounded-lg shrink-0"
+                            aria-label="Marcar como concluído"
+                            onClick={(e) => { e.stopPropagation(); toggleFollowup.mutate(f.id); }}
+                          >
+                            <CheckCircle2 className="w-4 h-4 text-muted-foreground/60 hover:text-emerald-500" />
+                          </Button>
                           <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
                         </motion.div>
                       );
@@ -533,6 +566,15 @@ export default function HojePage() {
                             <p className="text-[11px] text-primary font-medium">{schedule.label}</p>
                             {parsed.text && <p className="text-[11px] text-muted-foreground truncate mt-0.5">{parsed.text}</p>}
                           </div>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-7 w-7 rounded-lg shrink-0"
+                            aria-label="Marcar como concluído"
+                            onClick={(e) => { e.stopPropagation(); toggleFollowup.mutate(f.id); }}
+                          >
+                            <CheckCircle2 className="w-4 h-4 text-muted-foreground/60 hover:text-emerald-500" />
+                          </Button>
                           <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
                         </motion.div>
                       );
@@ -778,12 +820,20 @@ export default function HojePage() {
                 <Card className="card-premium">
                   <CardContent className="flex flex-col items-center py-16 text-center">
                     <div className="w-16 h-16 rounded-2xl icon-bg-blue flex items-center justify-center mb-4">
-                      <Sparkles className="w-8 h-8 text-primary/50" />
+                      <Rocket className="w-8 h-8 text-primary/60" />
                     </div>
-                    <h3 className="text-lg font-semibold text-foreground mb-2">Tudo em dia!</h3>
-                    <p className="text-sm text-muted-foreground max-w-sm">
-                      Sua central de ações aparecerá aqui quando houver leads, follow-ups e atividades para gerenciar.
+                    <h3 className="text-lg font-semibold text-foreground mb-2">Tudo pronto para começar!</h3>
+                    <p className="text-sm text-muted-foreground max-w-sm mb-5">
+                      Compartilhe seu link para receber os primeiros leads e acompanhe tudo por aqui.
                     </p>
+                    <Button
+                      variant="outline"
+                      className="rounded-xl gap-2"
+                      onClick={() => navigate(isAdmin ? '/admin' : '/franquia')}
+                    >
+                      <TrendingUp className="w-4 h-4" />
+                      Ver painel completo
+                    </Button>
                   </CardContent>
                 </Card>
               )}

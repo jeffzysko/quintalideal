@@ -183,6 +183,7 @@ export default function HomePage() {
                   }
                 }}
                 placeholder="Digite sua cidade..."
+                aria-label="Busca por cidade"
                 className="pl-11 py-6 rounded-2xl text-[15px] bg-white/10 backdrop-blur-md border-white/15 text-white placeholder:text-white/35 focus:border-primary/50 focus:ring-primary/20"
                 autoFocus
               />
@@ -298,15 +299,22 @@ export default function HomePage() {
               )}
 
               {searchState === 'error' && (
-                <m.p
+                <m.div
                   key="error"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="text-center text-red-300/80 text-sm mt-4"
+                  className="flex flex-col items-center gap-2 mt-4"
                 >
-                  Erro ao buscar. Tente novamente.
-                </m.p>
+                  <p className="text-center text-red-300/80 text-sm">Erro ao buscar. Verifique sua conexão.</p>
+                  <button
+                    type="button"
+                    onClick={() => handleCitySelect(citySearch)}
+                    className="text-xs text-white/60 underline underline-offset-2 hover:text-white/80 transition-colors"
+                  >
+                    Tentar novamente
+                  </button>
+                </m.div>
               )}
             </AnimatePresence>
           </m.div>

@@ -28,6 +28,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { classifyLead, type LeadTemperature } from '@/lib/leadScoring';
 import { toast } from 'sonner';
+import { isValidBRPhone, isValidEmail } from '@/lib/validation';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
@@ -204,6 +205,12 @@ export default function LeadDetail() {
 
   const save = async () => {
     if (!lead) return;
+    if (!editNome.trim()) { toast.error('Nome é obrigatório'); return; }
+    if (editEmail.trim() && !isValidEmail(editEmail.trim())) { toast.error('E-mail inválido'); return; }
+    if (editTelefone.trim()) {
+      const digits = editTelefone.replace(/\D/g, '');
+      if (!isValidBRPhone(digits)) { toast.error('Telefone inválido (ex: 11999998888)'); return; }
+    }
     setSaving(true);
 
     if (status !== lead.status_lead) {
