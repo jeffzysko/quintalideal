@@ -49,7 +49,7 @@ export const AdminReferralMetrics = memo(function AdminReferralMetrics({ leads }
               key={kpi.label}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
+              transition={{ delay: Math.min(i * 0.05, 0.15) }}
               className="text-center p-3 rounded-xl bg-muted/40 hover:bg-muted/60 transition-colors"
             >
               <div className={`w-8 h-8 rounded-lg ${kpi.iconBg} flex items-center justify-center mx-auto mb-2`}>
@@ -70,7 +70,7 @@ export const AdminReferralMetrics = memo(function AdminReferralMetrics({ leads }
                   key={code}
                   initial={{ opacity: 0, x: -8 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.04 }}
+                  transition={{ delay: Math.min(i * 0.04, 0.15) }}
                   className="flex justify-between items-center text-xs py-2 px-3 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors"
                 >
                   <span className="font-mono text-muted-foreground">{code}</span>

@@ -176,7 +176,7 @@ export const InsightCards = memo(function InsightCards({ leads, previousLeads, m
             key={insight.key}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.08 }}
+            transition={{ delay: Math.min(i * 0.08, 0.15) }}
             className={`rounded-2xl border border-border/30 p-4 ${insight.bg} backdrop-blur-sm`}
           >
             <div className="flex items-start gap-3">

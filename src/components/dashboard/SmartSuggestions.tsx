@@ -327,7 +327,7 @@ export function SmartSuggestions({ leads, followups, activities, basePath }: Sma
                 initial={{ opacity: 0, x: -16 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 16 }}
-                transition={{ delay: i * 0.06 }}
+                transition={{ delay: Math.min(i * 0.06, 0.15) }}
               >
                 <Card
                   className={cn(

@@ -244,7 +244,7 @@ export function ResultScreen({ score, poolName, poolDescription, recommendedSize
                       key={alt.name}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 0.5 + i * 0.1 }}
+                      transition={{ delay: 0.5 + Math.min(i * 0.1, 0.15) }}
                       className="rounded-xl overflow-hidden border border-white/8 bg-white/5"
                     >
                       {alt.image && (

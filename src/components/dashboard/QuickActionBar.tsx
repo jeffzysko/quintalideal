@@ -95,7 +95,7 @@ export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowup
             key={action.label}
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: i * 0.05 }}
+            transition={{ delay: Math.min(i * 0.05, 0.15) }}
             onClick={action.onClick}
             className={cn(
               'flex flex-col items-center gap-2 min-w-[72px] py-3.5 px-2 rounded-2xl relative',

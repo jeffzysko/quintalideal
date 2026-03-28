@@ -364,7 +364,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
                   key={alt.name}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7 + i * 0.1 }}
+                  transition={{ delay: 0.7 + Math.min(i * 0.1, 0.15) }}
                   className="rounded-xl overflow-hidden border border-border bg-card"
                 >
                   {alt.image && (

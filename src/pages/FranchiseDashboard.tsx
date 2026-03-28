@@ -1,5 +1,5 @@
-import { useState, useMemo } from 'react';
-import { useQuery, keepPreviousData } from '@tanstack/react-query';
+import { useState, useMemo, useEffect } from 'react';
+import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -76,6 +76,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   const { franchiseId: authFranchiseId, loading: authLoading } = useAuth();
   const franchiseId = overrideFranchiseId || authFranchiseId;
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   // Live updates: invalidates queries when leads for this franchise change
   useLeadsRealtime(franchiseId);
@@ -154,7 +155,30 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       return { leads: (data || []) as (LeadRow & { respostas_questionario?: Record<string, string> | null })[], total: count || 0 };
     },
     enabled: !!franchiseId,
+    staleTime: 60 * 1000,
   });
+
+  // Prefetch next page so pagination feels instant
+  useEffect(() => {
+    if (!franchiseId || page >= Math.ceil((paginatedData?.total || 0) / PAGE_SIZE)) return;
+    const nextPage = page + 1;
+    const from = (nextPage - 1) * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+    queryClient.prefetchQuery({
+      queryKey: ['franchise-leads-table', franchiseId, nextPage],
+      staleTime: 60 * 1000,
+      queryFn: async () => {
+        const { data, count, error } = await supabase
+          .from('leads')
+          .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin', { count: 'exact' })
+          .eq('franquia_id', franchiseId)
+          .order('created_at', { ascending: false })
+          .range(from, to);
+        if (error) throw error;
+        return { leads: (data || []) as LeadRow[], total: count || 0 };
+      },
+    });
+  }, [page, paginatedData?.total, franchiseId, queryClient]);
 
   // Sort leads by temperature priority
   const sortedLeads = useMemo(() => {

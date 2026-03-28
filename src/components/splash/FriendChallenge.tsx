@@ -112,7 +112,7 @@ export function FriendChallenge({ refCode, score, leadName }: FriendChallengePro
                   key={i}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1 }}
+                  transition={{ delay: Math.min(i * 0.1, 0.15) }}
                   className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-colors ${
                     p.isMe
                       ? 'bg-primary/8 border border-primary/15 shadow-sm'

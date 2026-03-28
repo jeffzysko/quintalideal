@@ -223,7 +223,7 @@ export default function NotificacoesPage() {
                           key={notif.id}
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: i * 0.03 }}
+                          transition={{ delay: Math.min(i * 0.03, 0.15) }}
                         >
                           <Card
                             className={`p-3 sm:p-4 cursor-pointer hover:bg-muted/30 transition-colors flex items-start gap-2.5 sm:gap-3 ${

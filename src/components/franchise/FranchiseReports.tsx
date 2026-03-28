@@ -157,7 +157,7 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
       {/* Insights */}
       <div className="space-y-2">
         {insights.map((insight, i) => (
-          <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.06 }}>
+          <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: Math.min(i * 0.06, 0.15) }}>
             <div className={`flex items-start sm:items-center gap-2.5 sm:gap-3 px-3 sm:px-4 py-2.5 sm:py-3 rounded-xl ${insight.bg}`}>
               <insight.icon className={`w-4 h-4 ${insight.color} shrink-0 mt-0.5 sm:mt-0`} />
               <span className="text-xs sm:text-sm text-foreground leading-snug">{insight.text}</span>
@@ -288,7 +288,7 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
                             className="h-full bg-primary rounded-full"
                             initial={{ width: 0 }}
                             animate={{ width: `${pct}%` }}
-                            transition={{ duration: 0.6, delay: i * 0.1 }}
+                            transition={{ duration: 0.6, delay: Math.min(i * 0.1, 0.15) }}
                           />
                         </div>
                       </div>
@@ -325,7 +325,7 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
                             className="h-full bg-secondary rounded-full"
                             initial={{ width: 0 }}
                             animate={{ width: `${pct}%` }}
-                            transition={{ duration: 0.6, delay: i * 0.1 }}
+                            transition={{ duration: 0.6, delay: Math.min(i * 0.1, 0.15) }}
                           />
                         </div>
                       </div>

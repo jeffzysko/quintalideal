@@ -111,7 +111,7 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                       key={lead.id}
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      transition={{ delay: i * 0.02 }}
+                      transition={{ delay: Math.min(i * 0.02, 0.15) }}
                       className="hover:bg-muted/30 transition-colors cursor-pointer group"
                       role="row"
                       onClick={() => navigate(`/admin/lead/${lead.id}`)}

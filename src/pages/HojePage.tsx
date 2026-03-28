@@ -191,7 +191,7 @@ function QuickStats({ stats }: { stats: { icon: typeof Users; label: string; val
           key={stat.label}
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          transition={{ delay: i * 0.05 }}
+          transition={{ delay: Math.min(i * 0.05, 0.15) }}
         >
           <Card className="card-premium hover:shadow-md transition-shadow">
             <CardContent className="p-4">
@@ -462,7 +462,7 @@ export default function HojePage() {
                           key={f.id}
                           initial={{ opacity: 0, x: -12 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.04 }}
+                          transition={{ delay: Math.min(i * 0.04, 0.15) }}
                           className={cn('flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all hover:shadow-sm active:scale-[0.98]', URGENCY_STYLES.overdue)}
                           onClick={() => navigate(`${basePath}/${f.lead_id}`)}
                         >
@@ -521,7 +521,7 @@ export default function HojePage() {
                           key={f.id}
                           initial={{ opacity: 0, x: -12 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.04 }}
+                          transition={{ delay: Math.min(i * 0.04, 0.15) }}
                           className={cn('flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all hover:shadow-sm active:scale-[0.98]', URGENCY_STYLES.today)}
                           onClick={() => navigate(`${basePath}/${f.lead_id}`)}
                         >
@@ -558,7 +558,7 @@ export default function HojePage() {
                             key={lead.id}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            transition={{ delay: i * 0.03 }}
+                            transition={{ delay: Math.min(i * 0.03, 0.15) }}
                             className={cn('flex items-center gap-2.5 p-3 cursor-pointer hover:bg-muted/40 transition-colors border-l-[3px]', borderAccent)}
                             onClick={() => navigate(`${basePath}/${lead.id}`)}
                           >
@@ -624,7 +624,7 @@ export default function HojePage() {
                           key={lead.id}
                           initial={{ opacity: 0, x: -12 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.04 }}
+                          transition={{ delay: Math.min(i * 0.04, 0.15) }}
                           className={cn('flex items-center gap-2.5 p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 cursor-pointer hover:shadow-sm transition-all active:scale-[0.98] border-l-[3px]', borderAccent)}
                           onClick={() => navigate(`${basePath}/${lead.id}`)}
                         >
@@ -671,7 +671,7 @@ export default function HojePage() {
                             key={lead.id}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            transition={{ delay: i * 0.03 }}
+                            transition={{ delay: Math.min(i * 0.03, 0.15) }}
                             className="flex items-center gap-2.5 p-3 cursor-pointer hover:bg-muted/40 transition-colors active:scale-[0.98] border-l-[3px] border-l-emerald-500"
                             onClick={() => navigate(`${basePath}/${lead.id}`)}
                           >
@@ -720,7 +720,7 @@ export default function HojePage() {
                           key={f.id}
                           initial={{ opacity: 0, x: -12 }}
                           animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: i * 0.04 }}
+                          transition={{ delay: Math.min(i * 0.04, 0.15) }}
                           className={cn('flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all hover:shadow-sm active:scale-[0.98]', URGENCY_STYLES[schedule.urgency])}
                           onClick={() => navigate(`${basePath}/${f.lead_id}`)}
                         >
@@ -753,7 +753,7 @@ export default function HojePage() {
                             key={`${a.lead_id}-${a.created_at}`}
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
-                            transition={{ delay: i * 0.03 }}
+                            transition={{ delay: Math.min(i * 0.03, 0.15) }}
                             className="flex items-start gap-2.5 py-2.5 cursor-pointer hover:bg-muted/30 rounded-lg px-2 transition-colors active:scale-[0.98]"
                             onClick={() => navigate(`${basePath}/${a.lead_id}`)}
                           >

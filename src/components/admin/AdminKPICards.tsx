@@ -44,7 +44,7 @@ export function AdminKPICards({ kpis, columns }: AdminKPICardsProps) {
             key={i}
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.06, type: 'spring', stiffness: 300, damping: 24 }}
+            transition={{ delay: Math.min(i * 0.06, 0.15), type: 'spring', stiffness: 300, damping: 24 }}
           >
             <Card className="card-premium group overflow-hidden">
               <CardContent className="p-4 sm:p-5">

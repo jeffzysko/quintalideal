@@ -213,7 +213,7 @@ export function AdminEmailTemplates() {
                   key={t.id}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.08 }}
+                  transition={{ delay: Math.min(i * 0.08, 0.15) }}
                   className="flex items-center gap-3"
                 >
                   <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
@@ -247,7 +247,7 @@ export function AdminEmailTemplates() {
           const isOpen = selectedTemplate === t.id;
 
           return (
-            <motion.div key={t.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
+            <motion.div key={t.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: Math.min(i * 0.05, 0.15) }}>
               <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
                 <CardContent className="p-0">
                   <button

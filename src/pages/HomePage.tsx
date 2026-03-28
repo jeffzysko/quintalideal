@@ -202,7 +202,7 @@ export default function HomePage() {
                       key={`${city.pais}-${city.nome}`}
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: i * 0.04 }}
+                      transition={{ delay: Math.min(i * 0.04, 0.15) }}
                       onClick={() => handleCitySelect(city.nome)}
                       className="w-full text-left px-4 py-3.5 rounded-xl bg-white/5 backdrop-blur-sm hover:bg-white/15 active:bg-white/20 transition-colors flex items-center gap-3 text-sm group"
                     >

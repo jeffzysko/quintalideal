@@ -87,7 +87,7 @@ export function PipelineSnapshot({ leads }: PipelineSnapshotProps) {
                   className={cn('h-full', STAGE_COLORS[stage])}
                   initial={{ width: 0 }}
                   animate={{ width: `${(counts[stage] / total) * 100}%` }}
-                  transition={{ duration: 0.6, delay: i * 0.1, ease: 'easeOut' }}
+                  transition={{ duration: 0.6, delay: Math.min(i * 0.1, 0.15), ease: 'easeOut' }}
                 />
               ))}
             </div>
@@ -102,7 +102,7 @@ export function PipelineSnapshot({ leads }: PipelineSnapshotProps) {
                   key={stage}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 + i * 0.05 }}
+                  transition={{ delay: 0.2 + Math.min(i * 0.05, 0.15) }}
                   className={cn(
                     'flex flex-col items-center py-3 px-1',
                     i < 4 && 'border-r border-border/20'

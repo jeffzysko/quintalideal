@@ -141,7 +141,7 @@ export const AdminPerformanceComparison = memo(function AdminPerformanceComparis
                   key={p.id}
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.04 }}
+                  transition={{ delay: Math.min(i * 0.04, 0.15) }}
                   className="border-b border-border/20 hover:bg-muted/30 transition-colors"
                 >
                   <td className="py-2.5 px-2 font-bold text-muted-foreground">
@@ -163,7 +163,7 @@ export const AdminPerformanceComparison = memo(function AdminPerformanceComparis
                           }}
                           initial={{ width: 0 }}
                           animate={{ width: `${(p.conversionRate / maxConversion) * 100}%` }}
-                          transition={{ delay: 0.3 + i * 0.05, duration: 0.6 }}
+                          transition={{ delay: 0.3 + Math.min(i * 0.05, 0.15), duration: 0.6 }}
                         />
                       </div>
                       <span className="font-semibold text-xs w-10">{p.conversionRate}%</span>
@@ -204,7 +204,7 @@ export const AdminPerformanceComparison = memo(function AdminPerformanceComparis
               key={p.id}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
+              transition={{ delay: Math.min(i * 0.05, 0.15) }}
               className="rounded-xl bg-muted/30 p-3 border border-border/20"
             >
               <div className="flex items-center gap-2 mb-2">
