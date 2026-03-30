@@ -62,7 +62,7 @@ interface ManualLeadFormProps {
 export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFormProps) {
   const [open, setOpen] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [showClassification, setShowClassification] = useState(false);
+  const [showClassification, setShowClassification] = useState(true);
   const { user } = useAuth();
   const queryClient = useQueryClient();
 
