@@ -226,6 +226,7 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
         origin_franchise_id: franchiseId,
         lead_origin: 'manual',
         status_lead: 'novo',
+        pontuacao_quintal: pontuacao,
         respostas_questionario: Object.keys(respostas).length > 0 ? respostas : null,
         ...photoFields,
       });
