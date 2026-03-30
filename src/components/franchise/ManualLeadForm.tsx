@@ -176,6 +176,21 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
     if (moradia) respostas.moradia = moradia;
     if (tempOverride) respostas.temperatura_manual = tempOverride;
 
+    // Calculate pontuacao_quintal from mini-quiz (0-100 scale)
+    let pontuacao: number | null = null;
+    if (orcamento || intencao || espaco || moradia) {
+      let score = 0;
+      const maxScore = 10; // max possible: 3+3+2+1+1 = 10
+      if (orcamento === '30-50') score += 3;
+      else if (orcamento === '18-30') score += 1;
+      if (intencao === '2026') score += 3;
+      else if (intencao === '2026-2027') score += 1;
+      if (espaco === 'mais-7') score += 2;
+      else if (espaco === '5-7') score += 1;
+      if (moradia === 'minha') score += 1;
+      pontuacao = Math.round((score / maxScore) * 100);
+    }
+
     try {
       // Upload photos first if any
       const photoUrls: string[] = [];
