@@ -663,6 +663,37 @@ export default function LeadDetail() {
                         </div>
                       </div>
 
+                      {/* Score / Pontuação visual */}
+                      {lead.pontuacao_quintal != null && (
+                        <div className="space-y-2 p-3 bg-muted/30 rounded-xl border border-border/40">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pontuação do Quintal</span>
+                            <span className={`text-sm font-bold ${
+                              lead.pontuacao_quintal >= 70 ? 'text-emerald-600 dark:text-emerald-400' :
+                              lead.pontuacao_quintal >= 40 ? 'text-amber-600 dark:text-amber-400' :
+                              'text-red-500 dark:text-red-400'
+                            }`}>{lead.pontuacao_quintal}%</span>
+                          </div>
+                          <div className="h-3 bg-muted rounded-full overflow-hidden">
+                            <motion.div
+                              className={`h-full rounded-full ${
+                                lead.pontuacao_quintal >= 70 ? 'bg-gradient-to-r from-emerald-400 to-emerald-500' :
+                                lead.pontuacao_quintal >= 40 ? 'bg-gradient-to-r from-amber-400 to-amber-500' :
+                                'bg-gradient-to-r from-red-400 to-red-500'
+                              }`}
+                              initial={{ width: 0 }}
+                              animate={{ width: `${lead.pontuacao_quintal}%` }}
+                              transition={{ duration: 0.8, ease: 'easeOut' }}
+                            />
+                          </div>
+                          <p className="text-[11px] text-muted-foreground">
+                            {lead.pontuacao_quintal >= 70 ? 'Excelente — quintal muito preparado para uma piscina.' :
+                             lead.pontuacao_quintal >= 40 ? 'Bom potencial — com alguns ajustes, o quintal estará pronto.' :
+                             'Potencial inicial — vale explorar mais com o cliente.'}
+                          </p>
+                        </div>
+                      )}
+
                       <div>
                         <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Status</label>
                         <Select value={status} onValueChange={setStatus}>
