@@ -1,6 +1,7 @@
 import { useMemo, useState, useCallback } from 'react';
 import { PullToRefresh } from '@/components/PullToRefresh';
 import { SwipeableLeadCard } from '@/components/dashboard/SwipeableLeadCard';
+import { SwipeHint } from '@/components/dashboard/SwipeHint';
 import { ManualLeadForm } from '@/components/franchise/ManualLeadForm';
 import { CSVLeadImport } from '@/components/franchise/CSVLeadImport';
 import { BackButton } from '@/components/BackButton';
