@@ -122,7 +122,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
 
             {/* Image-based layout for preference step */}
             {type === 'options' && options && hasImages && (
-              <div className="grid grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-2 gap-2">
                 {options.map((opt, i) => {
                   const isSelected = selectedValue === opt.value;
                   return (

@@ -631,6 +631,7 @@ export default function HojePage() {
                               </div>
                             </motion.div>
                           </SwipeableLeadCard>
+                          </div>
                         );
                       })}
                     </CardContent>
