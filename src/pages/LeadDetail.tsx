@@ -752,7 +752,39 @@ export default function LeadDetail() {
                         />
                       </div>
 
-                      <Button onClick={save} disabled={saving} className="w-full gap-2">
+                      {/* Personal info — collapsible, below observações */}
+                      <Collapsible>
+                        <CollapsibleTrigger asChild>
+                          <button className="w-full flex items-center justify-between p-3 bg-muted/30 rounded-xl border border-border/40 hover:bg-muted/50 transition-colors text-left">
+                            <div className="flex items-center gap-2">
+                              <Pencil className="w-3.5 h-3.5 text-muted-foreground" />
+                              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Editar Dados Pessoais</span>
+                            </div>
+                            <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform duration-200 [[data-state=open]>&]:rotate-180" />
+                          </button>
+                        </CollapsibleTrigger>
+                        <CollapsibleContent className="mt-2 space-y-3 p-3 bg-muted/30 rounded-xl border border-border/40">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <div>
+                              <label className="text-xs font-medium text-muted-foreground mb-1 block">Nome</label>
+                              <Input value={editNome} onChange={e => setEditNome(e.target.value)} placeholder="Nome do lead" className="bg-background" maxLength={200} />
+                            </div>
+                            <div>
+                              <label className="text-xs font-medium text-muted-foreground mb-1 block">Telefone</label>
+                              <Input value={editTelefone} onChange={e => setEditTelefone(e.target.value)} placeholder="(XX) XXXXX-XXXX" className="bg-background" maxLength={20} />
+                            </div>
+                            <div>
+                              <label className="text-xs font-medium text-muted-foreground mb-1 block">Email</label>
+                              <Input type="email" value={editEmail} onChange={e => setEditEmail(e.target.value)} placeholder="email@exemplo.com" className="bg-background" maxLength={255} />
+                            </div>
+                            <div>
+                              <label className="text-xs font-medium text-muted-foreground mb-1 block">Cidade</label>
+                              <Input value={editCidade} onChange={e => setEditCidade(e.target.value)} placeholder="Cidade" className="bg-background" maxLength={200} />
+                            </div>
+                          </div>
+                        </CollapsibleContent>
+                      </Collapsible>
+
                         {saving ? (
                           <>
                             <div className="animate-spin w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full" />
