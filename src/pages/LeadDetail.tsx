@@ -564,7 +564,7 @@ export default function LeadDetail() {
                       className="relative h-10 text-[11px] sm:text-xs gap-1 sm:gap-1.5 rounded-xl font-medium transition-all duration-200 text-muted-foreground data-[state=active]:bg-gradient-to-b data-[state=active]:from-primary data-[state=active]:to-primary/90 data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/20 hover:bg-muted/60 data-[state=active]:hover:bg-primary"
                     >
                       <Icon className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-                      <span className="hidden sm:inline">{tab.label}</span>
+                      <span className="text-[10px] sm:text-xs">{tab.label}</span>
                       {tab.badge && (
                         <span className={`text-[9px] rounded-full px-1.5 leading-tight font-bold ${isActive ? 'bg-white/20 text-primary-foreground' : 'bg-primary/10 text-primary'}`}>
                           {tab.badge}
