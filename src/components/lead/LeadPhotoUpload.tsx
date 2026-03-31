@@ -168,7 +168,7 @@ export const LeadPhotoUpload = forwardRef<LeadPhotoUploadRef, LeadPhotoUploadPro
             <button
               type="button"
               onClick={() => removeNew(i)}
-              className="absolute top-1.5 right-1.5 bg-destructive text-destructive-foreground rounded-full p-1 shadow-md hover:bg-destructive/90 transition-colors"
+              className="absolute top-1.5 right-1.5 bg-destructive text-destructive-foreground rounded-full p-1.5 shadow-md hover:bg-destructive/90 transition-colors"
             >
               <X className="w-3.5 h-3.5" />
             </button>
