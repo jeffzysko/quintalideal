@@ -73,7 +73,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
             transition={{ delay: 0.08, duration: 0.4 }}
             className="glass-card rounded-3xl p-5 sm:p-8"
           >
-            <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-5 sm:mb-8 text-foreground leading-snug tracking-tight">
+            <h2 className="text-base sm:text-xl md:text-2xl font-bold mb-4 sm:mb-8 text-foreground leading-snug tracking-tight">
               {question}
             </h2>
 
