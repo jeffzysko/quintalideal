@@ -51,10 +51,18 @@ export function PullToRefresh({ children, onRefresh }: PullToRefreshProps) {
     if (currentPull >= THRESHOLD && !refreshing) {
       setRefreshing(true);
       animate(pullY, THRESHOLD * 0.6, { duration: 0.2 });
-      // Reload the page after a brief delay for visual feedback
-      setTimeout(() => {
-        window.location.reload();
-      }, 600);
+      if (onRefresh) {
+        Promise.resolve(onRefresh()).finally(() => {
+          setTimeout(() => {
+            setRefreshing(false);
+            animate(pullY, 0, { type: 'spring', stiffness: 400, damping: 30 });
+          }, 400);
+        });
+      } else {
+        setTimeout(() => {
+          window.location.reload();
+        }, 600);
+      }
     } else {
       animate(pullY, 0, { type: 'spring', stiffness: 400, damping: 30 });
     }
