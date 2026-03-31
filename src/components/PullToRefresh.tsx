@@ -6,7 +6,12 @@ import { useStandalone } from '@/hooks/useStandalone';
 const THRESHOLD = 80;
 const MAX_PULL = 120;
 
-export function PullToRefresh({ children }: { children: React.ReactNode }) {
+interface PullToRefreshProps {
+  children: React.ReactNode;
+  onRefresh?: () => Promise<void> | void;
+}
+
+export function PullToRefresh({ children, onRefresh }: PullToRefreshProps) {
   const isStandalone = useStandalone();
   const [refreshing, setRefreshing] = useState(false);
   const pullY = useMotionValue(0);
@@ -46,10 +51,18 @@ export function PullToRefresh({ children }: { children: React.ReactNode }) {
     if (currentPull >= THRESHOLD && !refreshing) {
       setRefreshing(true);
       animate(pullY, THRESHOLD * 0.6, { duration: 0.2 });
-      // Reload the page after a brief delay for visual feedback
-      setTimeout(() => {
-        window.location.reload();
-      }, 600);
+      if (onRefresh) {
+        Promise.resolve(onRefresh()).finally(() => {
+          setTimeout(() => {
+            setRefreshing(false);
+            animate(pullY, 0, { type: 'spring', stiffness: 400, damping: 30 });
+          }, 400);
+        });
+      } else {
+        setTimeout(() => {
+          window.location.reload();
+        }, 600);
+      }
     } else {
       animate(pullY, 0, { type: 'spring', stiffness: 400, damping: 30 });
     }

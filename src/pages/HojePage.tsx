@@ -1,11 +1,12 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
+import { PullToRefresh } from '@/components/PullToRefresh';
+import { SwipeableLeadCard } from '@/components/dashboard/SwipeableLeadCard';
 import { ManualLeadForm } from '@/components/franchise/ManualLeadForm';
 import { CSVLeadImport } from '@/components/franchise/CSVLeadImport';
 import { BackButton } from '@/components/BackButton';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
-import { toWhatsAppPhone } from '@/lib/phone-utils';
 import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -404,16 +405,19 @@ export default function HojePage() {
   });
 
   // ── Handlers ──
-  const handleWhatsApp = (lead: LeadRow) => {
-    if (!lead.telefone) return;
-    const fullPhone = toWhatsAppPhone(lead.telefone);
-    const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem?`);
-    window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
-  };
+
+  const handlePullRefresh = useCallback(async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['hoje-leads'] }),
+      queryClient.invalidateQueries({ queryKey: ['hoje-followups'] }),
+      queryClient.invalidateQueries({ queryKey: ['hoje-activities'] }),
+    ]);
+  }, [queryClient]);
 
   // ── Render ──
   return (
     <PageTransition>
+      <PullToRefresh onRefresh={handlePullRefresh}>
       <div className="min-h-screen bg-background pb-bottomnav">
         <PanelHeader title="Hoje">
           <BackButton fallback={isAdmin ? '/admin' : '/franquia'} />
@@ -596,44 +600,34 @@ export default function HojePage() {
                         const borderAccent = temp.borderAccent;
 
                         return (
-                          <motion.div
-                            key={lead.id}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: Math.min(i * 0.03, 0.15) }}
-                            className={cn('flex items-center gap-2.5 p-3 cursor-pointer hover:bg-muted/40 transition-colors border-l-[3px]', borderAccent)}
-                            onClick={() => navigate(`${basePath}/${lead.id}`)}
-                          >
-                            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500/15 to-amber-500/5 flex items-center justify-center shrink-0">
-                              <span className="text-xs font-bold text-amber-600">
-                                {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
-                              </span>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-[13px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
-                              <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5">
-                                {lead.cidade && <span className="truncate max-w-[100px]">{lead.cidade}</span>}
-                                <span className="text-amber-600 font-bold">⏱ {waitLabel} esperando</span>
+                          <SwipeableLeadCard key={lead.id} leadPhone={lead.telefone} leadName={lead.nome}>
+                            <motion.div
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ delay: Math.min(i * 0.03, 0.15) }}
+                              className={cn('flex items-center gap-2.5 p-3 cursor-pointer hover:bg-muted/40 transition-colors border-l-[3px]', borderAccent)}
+                              onClick={() => navigate(`${basePath}/${lead.id}`)}
+                            >
+                              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500/15 to-amber-500/5 flex items-center justify-center shrink-0">
+                                <span className="text-xs font-bold text-amber-600">
+                                  {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
+                                </span>
                               </div>
-                            </div>
-                            <div className="flex items-center gap-1.5 shrink-0">
-                              <Badge className={cn(temp.bgColor, temp.color, 'border text-[9px] font-semibold px-1.5 py-0')} variant="outline">
-                                {temp.emoji} {temp.label}
-                              </Badge>
-                              <MiniScoreBar score={lead.pontuacao_quintal || 0} />
-                              {lead.telefone && (
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  className="h-8 w-8 rounded-lg"
-                                  onClick={(e) => { e.stopPropagation(); handleWhatsApp(lead); }}
-                                  aria-label="WhatsApp"
-                                >
-                                  <MessageCircle className="w-3.5 h-3.5 text-green-600" />
-                                </Button>
-                              )}
-                            </div>
-                          </motion.div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-[13px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
+                                <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5">
+                                  {lead.cidade && <span className="truncate max-w-[100px]">{lead.cidade}</span>}
+                                  <span className="text-amber-600 font-bold">⏱ {waitLabel} esperando</span>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <Badge className={cn(temp.bgColor, temp.color, 'border text-[9px] font-semibold px-1.5 py-0')} variant="outline">
+                                  {temp.emoji} {temp.label}
+                                </Badge>
+                                <MiniScoreBar score={lead.pontuacao_quintal || 0} />
+                              </div>
+                            </motion.div>
+                          </SwipeableLeadCard>
                         );
                       })}
                     </CardContent>
@@ -662,41 +656,31 @@ export default function HojePage() {
                       const borderAccent = temp.borderAccent;
 
                       return (
-                        <motion.div
-                          key={lead.id}
-                          initial={{ opacity: 0, x: -12 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: Math.min(i * 0.04, 0.15) }}
-                          className={cn('flex items-center gap-2.5 p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 cursor-pointer hover:shadow-sm transition-all active:scale-[0.98] border-l-[3px]', borderAccent)}
-                          onClick={() => navigate(`${basePath}/${lead.id}`)}
-                        >
-                          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500/15 to-emerald-500/5 flex items-center justify-center shrink-0">
-                            <span className="text-xs font-bold text-emerald-600">
-                              {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
-                            </span>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-[13px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
-                            <p className="text-[10px] text-muted-foreground truncate">{timeAgo} · {lead.cidade || 'Sem cidade'}</p>
-                          </div>
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            <Badge className={cn(temp.bgColor, temp.color, 'border text-[9px] font-semibold px-1.5 py-0')} variant="outline">
-                              {temp.emoji} {temp.label}
-                            </Badge>
-                            <MiniScoreBar score={lead.pontuacao_quintal || 0} />
-                            {lead.telefone && (
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                className="h-8 w-8 rounded-lg"
-                                onClick={(e) => { e.stopPropagation(); handleWhatsApp(lead); }}
-                                aria-label="WhatsApp"
-                              >
-                                <MessageCircle className="w-3.5 h-3.5 text-green-600" />
-                              </Button>
-                            )}
-                          </div>
-                        </motion.div>
+                        <SwipeableLeadCard key={lead.id} leadPhone={lead.telefone} leadName={lead.nome}>
+                          <motion.div
+                            initial={{ opacity: 0, x: -12 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: Math.min(i * 0.04, 0.15) }}
+                            className={cn('flex items-center gap-2.5 p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 cursor-pointer hover:shadow-sm transition-all active:scale-[0.98] border-l-[3px]', borderAccent)}
+                            onClick={() => navigate(`${basePath}/${lead.id}`)}
+                          >
+                            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500/15 to-emerald-500/5 flex items-center justify-center shrink-0">
+                              <span className="text-xs font-bold text-emerald-600">
+                                {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
+                              </span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[13px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
+                              <p className="text-[10px] text-muted-foreground truncate">{timeAgo} · {lead.cidade || 'Sem cidade'}</p>
+                            </div>
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <Badge className={cn(temp.bgColor, temp.color, 'border text-[9px] font-semibold px-1.5 py-0')} variant="outline">
+                                {temp.emoji} {temp.label}
+                              </Badge>
+                              <MiniScoreBar score={lead.pontuacao_quintal || 0} />
+                            </div>
+                          </motion.div>
+                        </SwipeableLeadCard>
                       );
                     })}
                   </div>
@@ -709,38 +693,39 @@ export default function HojePage() {
                   <Card className="card-premium overflow-hidden">
                     <CardContent className="p-0 divide-y divide-border/30">
                       {hotLeads.map((lead, i) => (
-                          <motion.div
-                            key={lead.id}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: Math.min(i * 0.03, 0.15) }}
-                            className="flex items-center gap-2.5 p-3 cursor-pointer hover:bg-muted/40 transition-colors active:scale-[0.98] border-l-[3px] border-l-emerald-500"
-                            onClick={() => navigate(`${basePath}/${lead.id}`)}
-                          >
-                            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
-                              <span className="text-xs font-bold text-primary">
-                                {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
-                              </span>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-[13px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
-                              <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mt-0.5">
-                                <Badge className={`${STATUS_COLORS[lead.status_lead]} border text-[9px] px-1 py-0`} variant="secondary">
-                                  {STATUS_LABELS[lead.status_lead]}
-                                </Badge>
-                                {lead.modelo_recomendado && <span className="truncate">{lead.modelo_recomendado}</span>}
-                                {lead.cidade && (
-                                  <span className="flex items-center gap-0.5">
-                                    <MapPin className="w-2.5 h-2.5" />{lead.cidade}
-                                  </span>
-                                )}
+                          <SwipeableLeadCard key={lead.id} leadPhone={lead.telefone} leadName={lead.nome}>
+                            <motion.div
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ delay: Math.min(i * 0.03, 0.15) }}
+                              className="flex items-center gap-2.5 p-3 cursor-pointer hover:bg-muted/40 transition-colors active:scale-[0.98] border-l-[3px] border-l-emerald-500"
+                              onClick={() => navigate(`${basePath}/${lead.id}`)}
+                            >
+                              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
+                                <span className="text-xs font-bold text-primary">
+                                  {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
+                                </span>
                               </div>
-                            </div>
-                            <div className="flex items-center gap-2 shrink-0">
-                              <MiniScoreBar score={lead.pontuacao_quintal || 0} />
-                              <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                            </div>
-                          </motion.div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-[13px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
+                                <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mt-0.5">
+                                  <Badge className={`${STATUS_COLORS[lead.status_lead]} border text-[9px] px-1 py-0`} variant="secondary">
+                                    {STATUS_LABELS[lead.status_lead]}
+                                  </Badge>
+                                  {lead.modelo_recomendado && <span className="truncate">{lead.modelo_recomendado}</span>}
+                                  {lead.cidade && (
+                                    <span className="flex items-center gap-0.5">
+                                      <MapPin className="w-2.5 h-2.5" />{lead.cidade}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2 shrink-0">
+                                <MiniScoreBar score={lead.pontuacao_quintal || 0} />
+                                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                              </div>
+                            </motion.div>
+                          </SwipeableLeadCard>
                         ))}
                     </CardContent>
                   </Card>
@@ -841,6 +826,7 @@ export default function HojePage() {
           )}
         </div>
       </div>
+      </PullToRefresh>
     </PageTransition>
   );
 }
