@@ -6,7 +6,12 @@ import { useStandalone } from '@/hooks/useStandalone';
 const THRESHOLD = 80;
 const MAX_PULL = 120;
 
-export function PullToRefresh({ children }: { children: React.ReactNode }) {
+interface PullToRefreshProps {
+  children: React.ReactNode;
+  onRefresh?: () => Promise<void> | void;
+}
+
+export function PullToRefresh({ children, onRefresh }: PullToRefreshProps) {
   const isStandalone = useStandalone();
   const [refreshing, setRefreshing] = useState(false);
   const pullY = useMotionValue(0);
