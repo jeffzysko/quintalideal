@@ -940,8 +940,8 @@ export default function LeadDetail() {
           </Tabs>
         </motion.div>
 
-        {/* Spacer for sticky bar */}
-        {isMobile && <div className="h-20" />}
+        {/* Spacer for sticky bar + bottom nav */}
+        {isMobile && <div className="h-32" />}
       </div>
 
       {/* Sticky bottom action bar - mobile only */}
