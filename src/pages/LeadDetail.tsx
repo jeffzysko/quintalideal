@@ -779,7 +779,7 @@ export default function LeadDetail() {
                             <button
                               key={t.value}
                               type="button"
-                              onClick={() => setTempOverride(t.value)}
+                              onClick={() => handleTempChange(t.value)}
                               className={`flex-1 text-xs py-2.5 px-1 rounded-lg border transition-colors font-medium ${
                                 tempOverride === t.value
                                   ? 'border-primary bg-primary/10 text-primary'
