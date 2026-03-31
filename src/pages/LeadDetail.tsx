@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Camera, ClipboardList, Settings2, Save, User, Trash2, Clock, Image, CalendarClock, Pencil, X, ChevronDown } from 'lucide-react';
+import { MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Camera, ClipboardList, Settings2, Save, User, Trash2, Clock, Image, CalendarClock, Pencil, X, ChevronDown, Check } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { BackButton } from '@/components/BackButton';
@@ -275,6 +275,72 @@ export default function LeadDetail() {
       toast.error('Erro ao salvar.');
     }
   };
+
+  const [autoSaving, setAutoSaving] = useState(false);
+  const [autoSaved, setAutoSaved] = useState<string | null>(null);
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout>();
+
+  const autoSaveField = useCallback(async (field: 'status' | 'temperature', newValue: string) => {
+    if (!lead) return;
+    setAutoSaving(true);
+
+    const currentRespostas = { ...(lead.respostas_questionario || {}) } as Record<string, string>;
+    const { data: { user: currentUser } } = await supabase.auth.getUser();
+
+    if (field === 'status') {
+      if (newValue !== lead.status_lead && currentUser) {
+        const oldLabel = statusConfig[lead.status_lead]?.label || lead.status_lead;
+        const newLabel = statusConfig[newValue]?.label || newValue;
+        await supabase.from('lead_activities').insert({
+          lead_id: lead.id,
+          user_id: currentUser.id,
+          activity_type: 'status_change',
+          content: `Status alterado de "${oldLabel}" para "${newLabel}"`,
+        });
+      }
+      const { error } = await supabase.from('leads').update({ status_lead: newValue as any }).eq('id', lead.id);
+      if (error) { toast.error('Erro ao salvar status'); setAutoSaving(false); return; }
+    }
+
+    if (field === 'temperature') {
+      const TEMP_LABELS: Record<string, string> = { quente: '🔥 Quente', morno: '☀️ Morno', frio: '❄️ Frio', '': '🤖 Automático' };
+      const oldTemp = currentRespostas.temperatura_manual || '';
+      if (newValue !== oldTemp && currentUser) {
+        await supabase.from('lead_activities').insert({
+          lead_id: lead.id,
+          user_id: currentUser.id,
+          activity_type: 'temperature_change',
+          content: `Temperatura alterada de "${TEMP_LABELS[oldTemp] || '🤖 Automático'}" para "${TEMP_LABELS[newValue] || '🤖 Automático'}"`,
+        });
+      }
+      const updatedRespostas = { ...currentRespostas };
+      if (newValue) { updatedRespostas.temperatura_manual = newValue; } else { delete updatedRespostas.temperatura_manual; }
+      const { error } = await supabase.from('leads').update({
+        respostas_questionario: Object.keys(updatedRespostas).length > 0 ? updatedRespostas : null,
+      }).eq('id', lead.id);
+      if (error) { toast.error('Erro ao salvar temperatura'); setAutoSaving(false); return; }
+    }
+
+    setAutoSaving(false);
+    setAutoSaved(field === 'status' ? 'Status salvo!' : 'Temperatura salva!');
+    if (autoSaveTimeoutRef.current) clearTimeout(autoSaveTimeoutRef.current);
+    autoSaveTimeoutRef.current = setTimeout(() => setAutoSaved(null), 2000);
+    queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
+    queryClient.invalidateQueries({ queryKey: ['franchise-leads-all'] });
+    queryClient.invalidateQueries({ queryKey: ['franchise-leads-table'] });
+    queryClient.invalidateQueries({ queryKey: ['admin-leads-all'] });
+    queryClient.invalidateQueries({ queryKey: ['admin-leads-table'] });
+  }, [lead, id, queryClient]);
+
+  const handleStatusChange = useCallback((newStatus: string) => {
+    setStatus(newStatus);
+    autoSaveField('status', newStatus);
+  }, [autoSaveField]);
+
+  const handleTempChange = useCallback((newTemp: LeadTemperature | '') => {
+    setTempOverride(newTemp);
+    autoSaveField('temperature', newTemp);
+  }, [autoSaveField]);
 
   const photos = lead ? [lead.foto1, lead.foto2, lead.foto3, lead.foto4].filter(Boolean) as string[] : [];
 
@@ -676,9 +742,15 @@ export default function LeadDetail() {
                           <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold">▶</span>
                           Alterar Status do Lead
                         </label>
-                        <p className="text-xs text-muted-foreground mb-3">Selecione o estágio atual deste lead no funil de vendas</p>
-                        <Select value={status} onValueChange={setStatus}>
-                          <SelectTrigger className="bg-background border-2 border-primary/20 hover:border-primary/40 transition-colors h-12 text-sm font-medium">
+                        <p className="text-xs text-muted-foreground mb-3">Selecione o estágio atual deste lead no funil de vendas — salva automaticamente</p>
+                        {autoSaved && (
+                          <div className="flex items-center gap-1.5 mb-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium animate-in fade-in slide-in-from-top-1 duration-200">
+                            <Check className="w-3.5 h-3.5" />
+                            {autoSaved}
+                          </div>
+                        )}
+                        <Select value={status} onValueChange={handleStatusChange}>
+                          <SelectTrigger className={`bg-background border-2 border-primary/20 hover:border-primary/40 transition-colors h-12 text-sm font-medium ${autoSaving ? 'opacity-70 pointer-events-none' : ''}`}>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -707,7 +779,7 @@ export default function LeadDetail() {
                             <button
                               key={t.value}
                               type="button"
-                              onClick={() => setTempOverride(t.value)}
+                              onClick={() => handleTempChange(t.value)}
                               className={`flex-1 text-xs py-2.5 px-1 rounded-lg border transition-colors font-medium ${
                                 tempOverride === t.value
                                   ? 'border-primary bg-primary/10 text-primary'
