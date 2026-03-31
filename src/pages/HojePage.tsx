@@ -665,39 +665,31 @@ export default function HojePage() {
                       const borderAccent = temp.borderAccent;
 
                       return (
-                        <motion.div
-                          key={lead.id}
-                          initial={{ opacity: 0, x: -12 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: Math.min(i * 0.04, 0.15) }}
-                          className={cn('flex items-center gap-2.5 p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 cursor-pointer hover:shadow-sm transition-all active:scale-[0.98] border-l-[3px]', borderAccent)}
-                          onClick={() => navigate(`${basePath}/${lead.id}`)}
-                        >
-                          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500/15 to-emerald-500/5 flex items-center justify-center shrink-0">
-                            <span className="text-xs font-bold text-emerald-600">
-                              {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
-                            </span>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-[13px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
-                            <p className="text-[10px] text-muted-foreground truncate">{timeAgo} · {lead.cidade || 'Sem cidade'}</p>
-                          </div>
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            <Badge className={cn(temp.bgColor, temp.color, 'border text-[9px] font-semibold px-1.5 py-0')} variant="outline">
-                              {temp.emoji} {temp.label}
-                            </Badge>
-                            <MiniScoreBar score={lead.pontuacao_quintal || 0} />
-                            {lead.telefone && (
-                              <Button
-                                size="icon"
-                                variant="ghost"
-                                className="h-8 w-8 rounded-lg"
-                                onClick={(e) => { e.stopPropagation(); handleWhatsApp(lead); }}
-                                aria-label="WhatsApp"
-                              >
-                                <MessageCircle className="w-3.5 h-3.5 text-green-600" />
-                              </Button>
-                            )}
+                        <SwipeableLeadCard key={lead.id} leadPhone={lead.telefone} leadName={lead.nome}>
+                          <motion.div
+                            initial={{ opacity: 0, x: -12 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: Math.min(i * 0.04, 0.15) }}
+                            className={cn('flex items-center gap-2.5 p-3 rounded-xl border border-emerald-500/20 bg-emerald-500/5 cursor-pointer hover:shadow-sm transition-all active:scale-[0.98] border-l-[3px]', borderAccent)}
+                            onClick={() => navigate(`${basePath}/${lead.id}`)}
+                          >
+                            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-emerald-500/15 to-emerald-500/5 flex items-center justify-center shrink-0">
+                              <span className="text-xs font-bold text-emerald-600">
+                                {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
+                              </span>
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-[13px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
+                              <p className="text-[10px] text-muted-foreground truncate">{timeAgo} · {lead.cidade || 'Sem cidade'}</p>
+                            </div>
+                            <div className="flex items-center gap-1.5 shrink-0">
+                              <Badge className={cn(temp.bgColor, temp.color, 'border text-[9px] font-semibold px-1.5 py-0')} variant="outline">
+                                {temp.emoji} {temp.label}
+                              </Badge>
+                              <MiniScoreBar score={lead.pontuacao_quintal || 0} />
+                            </div>
+                          </motion.div>
+                        </SwipeableLeadCard>
                           </div>
                         </motion.div>
                       );
