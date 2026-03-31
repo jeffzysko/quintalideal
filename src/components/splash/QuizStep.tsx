@@ -105,7 +105,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
                           {opt.emoji}
                         </span>
                       )}
-                      <span className="font-medium text-[13px] sm:text-sm text-foreground">{opt.label}</span>
+                      <span className="font-medium text-xs sm:text-sm text-foreground">{opt.label}</span>
 
                       {isSelected && (
                         <motion.div
