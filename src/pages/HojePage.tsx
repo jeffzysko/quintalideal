@@ -601,7 +601,9 @@ export default function HojePage() {
                         const borderAccent = temp.borderAccent;
 
                         return (
-                          <SwipeableLeadCard key={lead.id} leadPhone={lead.telefone} leadName={lead.nome}>
+                          <div key={lead.id} className="relative">
+                            {i === 0 && <SwipeHint />}
+                            <SwipeableLeadCard leadPhone={lead.telefone} leadName={lead.nome}>
                             <motion.div
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
