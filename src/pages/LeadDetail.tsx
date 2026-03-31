@@ -946,7 +946,7 @@ export default function LeadDetail() {
 
       {/* Sticky bottom action bar - mobile only */}
       {isMobile && lead.telefone && (
-        <div className="fixed bottom-0 inset-x-0 z-40 bg-card/95 backdrop-blur-xl border-t border-border/50 px-4 py-3 flex items-center gap-2 shadow-lg" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 0.75rem)' }}>
+        <div className="fixed bottom-14 inset-x-0 z-40 bg-card/95 backdrop-blur-xl border-t border-border/50 px-4 py-3 flex items-center gap-2 shadow-lg" style={{ paddingBottom: '0.25rem' }}>
           <Button
             size="sm"
             className="flex-1 bg-success hover:bg-success/90 text-success-foreground gap-1.5 h-11"
