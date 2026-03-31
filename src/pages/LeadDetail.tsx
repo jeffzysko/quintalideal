@@ -694,13 +694,24 @@ export default function LeadDetail() {
                         </div>
                       )}
 
-                      <div>
-                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Status</label>
+                      <div className={`rounded-lg border-l-4 p-4 ${statusConfig[status]?.accent || 'border-l-primary bg-primary/5'} transition-colors duration-200`}>
+                        <label className="text-sm font-semibold text-foreground flex items-center gap-2 mb-2">
+                          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold">▶</span>
+                          Alterar Status do Lead
+                        </label>
+                        <p className="text-xs text-muted-foreground mb-3">Selecione o estágio atual deste lead no funil de vendas</p>
                         <Select value={status} onValueChange={setStatus}>
-                          <SelectTrigger className="bg-muted/50"><SelectValue /></SelectTrigger>
+                          <SelectTrigger className="bg-background border-2 border-primary/20 hover:border-primary/40 transition-colors h-12 text-sm font-medium">
+                            <SelectValue />
+                          </SelectTrigger>
                           <SelectContent>
                             {Object.entries(statusConfig).map(([val, cfg]) => (
-                              <SelectItem key={val} value={val}>{cfg.label}</SelectItem>
+                              <SelectItem key={val} value={val}>
+                                <span className="flex items-center gap-2">
+                                  <span className={`inline-block w-2.5 h-2.5 rounded-full ${cfg.color.split(' ')[0]}`} />
+                                  {cfg.label}
+                                </span>
+                              </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
