@@ -335,6 +335,12 @@ export default function LeadDetail() {
   const handleStatusChange = useCallback((newStatus: string) => {
     setStatus(newStatus);
     autoSaveField('status', newStatus);
+    if (newStatus === 'vendido') {
+      import('canvas-confetti').then(({ default: confetti }) => {
+        confetti({ particleCount: 120, spread: 80, origin: { y: 0.6 } });
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+      });
+    }
   }, [autoSaveField]);
 
   const handleTempChange = useCallback((newTemp: LeadTemperature | '') => {
