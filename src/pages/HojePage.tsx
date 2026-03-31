@@ -1,6 +1,7 @@
 import { useMemo, useState, useCallback } from 'react';
 import { PullToRefresh } from '@/components/PullToRefresh';
 import { SwipeableLeadCard } from '@/components/dashboard/SwipeableLeadCard';
+import { SwipeHint } from '@/components/dashboard/SwipeHint';
 import { ManualLeadForm } from '@/components/franchise/ManualLeadForm';
 import { CSVLeadImport } from '@/components/franchise/CSVLeadImport';
 import { BackButton } from '@/components/BackButton';
@@ -600,7 +601,9 @@ export default function HojePage() {
                         const borderAccent = temp.borderAccent;
 
                         return (
-                          <SwipeableLeadCard key={lead.id} leadPhone={lead.telefone} leadName={lead.nome}>
+                          <div key={lead.id} className="relative">
+                            {i === 0 && <SwipeHint />}
+                            <SwipeableLeadCard leadPhone={lead.telefone} leadName={lead.nome}>
                             <motion.div
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
@@ -628,6 +631,7 @@ export default function HojePage() {
                               </div>
                             </motion.div>
                           </SwipeableLeadCard>
+                          </div>
                         );
                       })}
                     </CardContent>

@@ -61,7 +61,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -60 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="h-[100dvh] flex flex-col px-4 sm:px-6 py-3 sm:py-6 gradient-hero"
+      className="h-[100dvh] flex flex-col px-3 sm:px-6 py-3 sm:py-6 gradient-hero"
     >
       <div className="w-full max-w-lg mx-auto flex-1 flex flex-col">
         <ExplorerProgress currentStep={explorerStep} onBack={onBack} lang={lang} />
@@ -73,7 +73,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
             transition={{ delay: 0.08, duration: 0.4 }}
             className="glass-card rounded-3xl p-5 sm:p-8"
           >
-            <h2 className="text-lg sm:text-xl md:text-2xl font-bold mb-5 sm:mb-8 text-foreground leading-snug tracking-tight">
+            <h2 className="text-base sm:text-xl md:text-2xl font-bold mb-4 sm:mb-8 text-foreground leading-snug tracking-tight">
               {question}
             </h2>
 
@@ -105,7 +105,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
                           {opt.emoji}
                         </span>
                       )}
-                      <span className="font-medium text-[13px] sm:text-sm text-foreground">{opt.label}</span>
+                      <span className="font-medium text-xs sm:text-sm text-foreground">{opt.label}</span>
 
                       {isSelected && (
                         <motion.div
@@ -122,7 +122,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
 
             {/* Image-based layout for preference step */}
             {type === 'options' && options && hasImages && (
-              <div className="grid grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-2 gap-2">
                 {options.map((opt, i) => {
                   const isSelected = selectedValue === opt.value;
                   return (

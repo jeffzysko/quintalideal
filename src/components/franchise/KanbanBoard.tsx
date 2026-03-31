@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, memo } from 'react';
+import { SwipeableLeadCard } from '@/components/dashboard/SwipeableLeadCard';
 import {
   DndContext,
   DragOverlay,
@@ -1002,13 +1003,14 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
               </motion.div>
             ) : (
               currentStageLeads.map((lead) => (
-                <MobilePipelineCard
-                  key={lead.id}
-                  lead={lead}
-                  basePath={basePath}
-                  franchiseName={franchiseMap?.[lead.franquia_id || '']}
-                  onStageChange={handleMobileStageChange}
-                />
+                <SwipeableLeadCard key={lead.id} leadPhone={lead.telefone} leadName={lead.nome}>
+                  <MobilePipelineCard
+                    lead={lead}
+                    basePath={basePath}
+                    franchiseName={franchiseMap?.[lead.franquia_id || '']}
+                    onStageChange={handleMobileStageChange}
+                  />
+                </SwipeableLeadCard>
               ))
             )}
           </AnimatePresence>
