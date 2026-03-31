@@ -607,42 +607,34 @@ export default function HojePage() {
                         const borderAccent = temp.borderAccent;
 
                         return (
-                          <motion.div
-                            key={lead.id}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: Math.min(i * 0.03, 0.15) }}
-                            className={cn('flex items-center gap-2.5 p-3 cursor-pointer hover:bg-muted/40 transition-colors border-l-[3px]', borderAccent)}
-                            onClick={() => navigate(`${basePath}/${lead.id}`)}
-                          >
-                            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500/15 to-amber-500/5 flex items-center justify-center shrink-0">
-                              <span className="text-xs font-bold text-amber-600">
-                                {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
-                              </span>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-[13px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
-                              <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5">
-                                {lead.cidade && <span className="truncate max-w-[100px]">{lead.cidade}</span>}
-                                <span className="text-amber-600 font-bold">⏱ {waitLabel} esperando</span>
+                          <SwipeableLeadCard key={lead.id} leadPhone={lead.telefone} leadName={lead.nome}>
+                            <motion.div
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ delay: Math.min(i * 0.03, 0.15) }}
+                              className={cn('flex items-center gap-2.5 p-3 cursor-pointer hover:bg-muted/40 transition-colors border-l-[3px]', borderAccent)}
+                              onClick={() => navigate(`${basePath}/${lead.id}`)}
+                            >
+                              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500/15 to-amber-500/5 flex items-center justify-center shrink-0">
+                                <span className="text-xs font-bold text-amber-600">
+                                  {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
+                                </span>
                               </div>
-                            </div>
-                            <div className="flex items-center gap-1.5 shrink-0">
-                              <Badge className={cn(temp.bgColor, temp.color, 'border text-[9px] font-semibold px-1.5 py-0')} variant="outline">
-                                {temp.emoji} {temp.label}
-                              </Badge>
-                              <MiniScoreBar score={lead.pontuacao_quintal || 0} />
-                              {lead.telefone && (
-                                <Button
-                                  size="icon"
-                                  variant="ghost"
-                                  className="h-8 w-8 rounded-lg"
-                                  onClick={(e) => { e.stopPropagation(); handleWhatsApp(lead); }}
-                                  aria-label="WhatsApp"
-                                >
-                                  <MessageCircle className="w-3.5 h-3.5 text-green-600" />
-                                </Button>
-                              )}
+                              <div className="flex-1 min-w-0">
+                                <p className="text-[13px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
+                                <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5">
+                                  {lead.cidade && <span className="truncate max-w-[100px]">{lead.cidade}</span>}
+                                  <span className="text-amber-600 font-bold">⏱ {waitLabel} esperando</span>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <Badge className={cn(temp.bgColor, temp.color, 'border text-[9px] font-semibold px-1.5 py-0')} variant="outline">
+                                  {temp.emoji} {temp.label}
+                                </Badge>
+                                <MiniScoreBar score={lead.pontuacao_quintal || 0} />
+                              </div>
+                            </motion.div>
+                          </SwipeableLeadCard>
                             </div>
                           </motion.div>
                         );
