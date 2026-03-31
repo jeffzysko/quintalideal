@@ -785,6 +785,7 @@ export default function LeadDetail() {
                         </CollapsibleContent>
                       </Collapsible>
 
+                      <Button onClick={save} disabled={saving} className="w-full gap-2">
                         {saving ? (
                           <>
                             <div className="animate-spin w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full" />
