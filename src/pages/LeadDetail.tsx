@@ -750,7 +750,7 @@ export default function LeadDetail() {
                           </div>
                         )}
                         <Select value={status} onValueChange={handleStatusChange}>
-                          <SelectTrigger className="bg-background border-2 border-primary/20 hover:border-primary/40 transition-colors h-12 text-sm font-medium">
+                          <SelectTrigger className={`bg-background border-2 border-primary/20 hover:border-primary/40 transition-colors h-12 text-sm font-medium ${autoSaving ? 'opacity-70 pointer-events-none' : ''}`}>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
