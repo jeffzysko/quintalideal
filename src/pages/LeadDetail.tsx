@@ -632,10 +632,10 @@ export default function LeadDetail() {
                                     <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                                   </div>
                                 </button>
-                                <AlertDialog>
+                <AlertDialog>
                                   <AlertDialogTrigger asChild>
                                     <button
-                                      className="absolute top-1.5 right-1.5 w-6 h-6 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md z-10"
+                                      className="absolute top-1.5 right-1.5 w-7 h-7 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shadow-md z-10"
                                     >
                                       <X className="w-3.5 h-3.5" />
                                     </button>
