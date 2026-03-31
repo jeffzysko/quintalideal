@@ -406,12 +406,6 @@ export default function HojePage() {
   });
 
   // ── Handlers ──
-  const handleWhatsApp = (lead: LeadRow) => {
-    if (!lead.telefone) return;
-    const fullPhone = toWhatsAppPhone(lead.telefone);
-    const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem?`);
-    window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
-  };
 
   const handlePullRefresh = useCallback(async () => {
     await Promise.all([
