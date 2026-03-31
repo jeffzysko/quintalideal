@@ -742,8 +742,14 @@ export default function LeadDetail() {
                           <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold">▶</span>
                           Alterar Status do Lead
                         </label>
-                        <p className="text-xs text-muted-foreground mb-3">Selecione o estágio atual deste lead no funil de vendas</p>
-                        <Select value={status} onValueChange={setStatus}>
+                        <p className="text-xs text-muted-foreground mb-3">Selecione o estágio atual deste lead no funil de vendas — salva automaticamente</p>
+                        {autoSaved && (
+                          <div className="flex items-center gap-1.5 mb-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium animate-in fade-in slide-in-from-top-1 duration-200">
+                            <Check className="w-3.5 h-3.5" />
+                            {autoSaved}
+                          </div>
+                        )}
+                        <Select value={status} onValueChange={handleStatusChange}>
                           <SelectTrigger className="bg-background border-2 border-primary/20 hover:border-primary/40 transition-colors h-12 text-sm font-medium">
                             <SelectValue />
                           </SelectTrigger>
