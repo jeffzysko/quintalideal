@@ -777,7 +777,7 @@ export default function LeadDetail() {
                         <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Temperatura do Lead</label>
                         <div className="flex gap-2">
                           {([
-                            { value: '' as const, label: 'Automático', emoji: '🤖' },
+                            { value: '' as const, label: 'Auto', emoji: '🤖' },
                             { value: 'quente' as LeadTemperature, label: 'Quente', emoji: '🔥' },
                             { value: 'morno' as LeadTemperature, label: 'Morno', emoji: '☀️' },
                             { value: 'frio' as LeadTemperature, label: 'Frio', emoji: '❄️' },
@@ -786,7 +786,7 @@ export default function LeadDetail() {
                               key={t.value}
                               type="button"
                               onClick={() => handleTempChange(t.value)}
-                              className={`flex-1 text-xs py-2.5 px-1 rounded-lg border transition-colors font-medium ${
+                              className={`flex-1 text-xs py-3 px-1 rounded-lg border transition-colors font-medium min-h-[44px] active:scale-[0.97] ${
                                 tempOverride === t.value
                                   ? 'border-primary bg-primary/10 text-primary'
                                   : 'border-border text-muted-foreground hover:bg-muted/50'
