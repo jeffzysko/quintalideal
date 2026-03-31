@@ -852,6 +852,7 @@ export default function HojePage() {
           )}
         </div>
       </div>
+      </PullToRefresh>
     </PageTransition>
   );
 }
