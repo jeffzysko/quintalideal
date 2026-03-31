@@ -59,12 +59,12 @@ interface Lead {
   lead_origin?: string;
 }
 
-const statusConfig: Record<string, { label: string; color: string }> = {
-  novo: { label: 'Novo', color: 'bg-white text-slate-800 border-white/80' },
-  contatado: { label: 'Contatado', color: 'bg-sky-100 text-sky-800 border-sky-200' },
-  em_negociacao: { label: 'Em Negociação', color: 'bg-amber-100 text-amber-800 border-amber-200' },
-  vendido: { label: 'Vendido', color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-  perdido: { label: 'Perdido', color: 'bg-red-100 text-red-800 border-red-200' },
+const statusConfig: Record<string, { label: string; color: string; accent: string }> = {
+  novo: { label: 'Novo', color: 'bg-white text-slate-800 border-white/80', accent: 'border-l-primary bg-primary/5' },
+  contatado: { label: 'Contatado', color: 'bg-sky-100 text-sky-800 border-sky-200', accent: 'border-l-sky-500 bg-sky-50' },
+  em_negociacao: { label: 'Em Negociação', color: 'bg-amber-100 text-amber-800 border-amber-200', accent: 'border-l-amber-500 bg-amber-50' },
+  vendido: { label: 'Vendido', color: 'bg-emerald-100 text-emerald-800 border-emerald-200', accent: 'border-l-emerald-500 bg-emerald-50' },
+  perdido: { label: 'Perdido', color: 'bg-red-100 text-red-800 border-red-200', accent: 'border-l-red-500 bg-red-50' },
 };
 
 const questionLabels: Record<string, { label: string; icon: string }> = {
@@ -694,13 +694,24 @@ export default function LeadDetail() {
                         </div>
                       )}
 
-                      <div>
-                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Status</label>
+                      <div className={`rounded-lg border-l-4 p-4 ${statusConfig[status]?.accent || 'border-l-primary bg-primary/5'} transition-colors duration-200`}>
+                        <label className="text-sm font-semibold text-foreground flex items-center gap-2 mb-2">
+                          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold">▶</span>
+                          Alterar Status do Lead
+                        </label>
+                        <p className="text-xs text-muted-foreground mb-3">Selecione o estágio atual deste lead no funil de vendas</p>
                         <Select value={status} onValueChange={setStatus}>
-                          <SelectTrigger className="bg-muted/50"><SelectValue /></SelectTrigger>
+                          <SelectTrigger className="bg-background border-2 border-primary/20 hover:border-primary/40 transition-colors h-12 text-sm font-medium">
+                            <SelectValue />
+                          </SelectTrigger>
                           <SelectContent>
                             {Object.entries(statusConfig).map(([val, cfg]) => (
-                              <SelectItem key={val} value={val}>{cfg.label}</SelectItem>
+                              <SelectItem key={val} value={val}>
+                                <span className="flex items-center gap-2">
+                                  <span className={`inline-block w-2.5 h-2.5 rounded-full ${cfg.color.split(' ')[0]}`} />
+                                  {cfg.label}
+                                </span>
+                              </SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
