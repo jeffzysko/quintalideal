@@ -413,9 +413,18 @@ export default function HojePage() {
     window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
   };
 
+  const handlePullRefresh = useCallback(async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['hoje-leads'] }),
+      queryClient.invalidateQueries({ queryKey: ['hoje-followups'] }),
+      queryClient.invalidateQueries({ queryKey: ['hoje-activities'] }),
+    ]);
+  }, [queryClient]);
+
   // ── Render ──
   return (
     <PageTransition>
+      <PullToRefresh onRefresh={handlePullRefresh}>
       <div className="min-h-screen bg-background pb-bottomnav">
         <PanelHeader title="Hoje">
           <BackButton fallback={isAdmin ? '/admin' : '/franquia'} />
