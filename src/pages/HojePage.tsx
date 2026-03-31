@@ -704,38 +704,39 @@ export default function HojePage() {
                   <Card className="card-premium overflow-hidden">
                     <CardContent className="p-0 divide-y divide-border/30">
                       {hotLeads.map((lead, i) => (
-                          <motion.div
-                            key={lead.id}
-                            initial={{ opacity: 0 }}
-                            animate={{ opacity: 1 }}
-                            transition={{ delay: Math.min(i * 0.03, 0.15) }}
-                            className="flex items-center gap-2.5 p-3 cursor-pointer hover:bg-muted/40 transition-colors active:scale-[0.98] border-l-[3px] border-l-emerald-500"
-                            onClick={() => navigate(`${basePath}/${lead.id}`)}
-                          >
-                            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
-                              <span className="text-xs font-bold text-primary">
-                                {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
-                              </span>
-                            </div>
-                            <div className="flex-1 min-w-0">
-                              <p className="text-[13px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
-                              <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mt-0.5">
-                                <Badge className={`${STATUS_COLORS[lead.status_lead]} border text-[9px] px-1 py-0`} variant="secondary">
-                                  {STATUS_LABELS[lead.status_lead]}
-                                </Badge>
-                                {lead.modelo_recomendado && <span className="truncate">{lead.modelo_recomendado}</span>}
-                                {lead.cidade && (
-                                  <span className="flex items-center gap-0.5">
-                                    <MapPin className="w-2.5 h-2.5" />{lead.cidade}
-                                  </span>
-                                )}
+                          <SwipeableLeadCard key={lead.id} leadPhone={lead.telefone} leadName={lead.nome}>
+                            <motion.div
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ delay: Math.min(i * 0.03, 0.15) }}
+                              className="flex items-center gap-2.5 p-3 cursor-pointer hover:bg-muted/40 transition-colors active:scale-[0.98] border-l-[3px] border-l-emerald-500"
+                              onClick={() => navigate(`${basePath}/${lead.id}`)}
+                            >
+                              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center shrink-0">
+                                <span className="text-xs font-bold text-primary">
+                                  {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
+                                </span>
                               </div>
-                            </div>
-                            <div className="flex items-center gap-2 shrink-0">
-                              <MiniScoreBar score={lead.pontuacao_quintal || 0} />
-                              <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                            </div>
-                          </motion.div>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-[13px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
+                                <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground mt-0.5">
+                                  <Badge className={`${STATUS_COLORS[lead.status_lead]} border text-[9px] px-1 py-0`} variant="secondary">
+                                    {STATUS_LABELS[lead.status_lead]}
+                                  </Badge>
+                                  {lead.modelo_recomendado && <span className="truncate">{lead.modelo_recomendado}</span>}
+                                  {lead.cidade && (
+                                    <span className="flex items-center gap-0.5">
+                                      <MapPin className="w-2.5 h-2.5" />{lead.cidade}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-2 shrink-0">
+                                <MiniScoreBar score={lead.pontuacao_quintal || 0} />
+                                <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                              </div>
+                            </motion.div>
+                          </SwipeableLeadCard>
                         ))}
                     </CardContent>
                   </Card>
