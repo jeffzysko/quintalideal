@@ -564,7 +564,7 @@ export default function LeadDetail() {
                       className="relative h-10 text-[11px] sm:text-xs gap-1 sm:gap-1.5 rounded-xl font-medium transition-all duration-200 text-muted-foreground data-[state=active]:bg-gradient-to-b data-[state=active]:from-primary data-[state=active]:to-primary/90 data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/20 hover:bg-muted/60 data-[state=active]:hover:bg-primary"
                     >
                       <Icon className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-                      <span className="hidden sm:inline">{tab.label}</span>
+                      <span className="text-[10px] sm:text-xs">{tab.label}</span>
                       {tab.badge && (
                         <span className={`text-[9px] rounded-full px-1.5 leading-tight font-bold ${isActive ? 'bg-white/20 text-primary-foreground' : 'bg-primary/10 text-primary'}`}>
                           {tab.badge}
@@ -632,10 +632,10 @@ export default function LeadDetail() {
                                     <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                                   </div>
                                 </button>
-                                <AlertDialog>
+                <AlertDialog>
                                   <AlertDialogTrigger asChild>
                                     <button
-                                      className="absolute top-1.5 right-1.5 w-6 h-6 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-md z-10"
+                                      className="absolute top-1.5 right-1.5 w-7 h-7 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shadow-md z-10"
                                     >
                                       <X className="w-3.5 h-3.5" />
                                     </button>
@@ -777,7 +777,7 @@ export default function LeadDetail() {
                         <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Temperatura do Lead</label>
                         <div className="flex gap-2">
                           {([
-                            { value: '' as const, label: 'Automático', emoji: '🤖' },
+                            { value: '' as const, label: 'Auto', emoji: '🤖' },
                             { value: 'quente' as LeadTemperature, label: 'Quente', emoji: '🔥' },
                             { value: 'morno' as LeadTemperature, label: 'Morno', emoji: '☀️' },
                             { value: 'frio' as LeadTemperature, label: 'Frio', emoji: '❄️' },
@@ -786,7 +786,7 @@ export default function LeadDetail() {
                               key={t.value}
                               type="button"
                               onClick={() => handleTempChange(t.value)}
-                              className={`flex-1 text-xs py-2.5 px-1 rounded-lg border transition-colors font-medium ${
+                              className={`flex-1 text-xs py-3 px-1 rounded-lg border transition-colors font-medium min-h-[44px] active:scale-[0.97] ${
                                 tempOverride === t.value
                                   ? 'border-primary bg-primary/10 text-primary'
                                   : 'border-border text-muted-foreground hover:bg-muted/50'
@@ -940,13 +940,13 @@ export default function LeadDetail() {
           </Tabs>
         </motion.div>
 
-        {/* Spacer for sticky bar */}
-        {isMobile && <div className="h-20" />}
+        {/* Spacer for sticky bar + bottom nav */}
+        {isMobile && <div className="h-32" />}
       </div>
 
       {/* Sticky bottom action bar - mobile only */}
       {isMobile && lead.telefone && (
-        <div className="fixed bottom-0 inset-x-0 z-40 bg-card/95 backdrop-blur-xl border-t border-border/50 px-4 py-3 flex items-center gap-2 shadow-lg" style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 0.75rem)' }}>
+        <div className="fixed bottom-14 inset-x-0 z-40 bg-card/95 backdrop-blur-xl border-t border-border/50 px-4 py-3 flex items-center gap-2 shadow-lg" style={{ paddingBottom: '0.25rem' }}>
           <Button
             size="sm"
             className="flex-1 bg-success hover:bg-success/90 text-success-foreground gap-1.5 h-11"

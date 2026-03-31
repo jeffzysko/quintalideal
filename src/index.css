@@ -170,6 +170,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overscroll-behavior: none;
+    overflow-x: hidden;
     font-feature-settings: 'cv01', 'cv02', 'cv11';
   }
 
