@@ -688,8 +688,6 @@ export default function HojePage() {
                             </div>
                           </motion.div>
                         </SwipeableLeadCard>
-                          </div>
-                        </motion.div>
                       );
                     })}
                   </div>
