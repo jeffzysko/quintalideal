@@ -276,6 +276,72 @@ export default function LeadDetail() {
     }
   };
 
+  const [autoSaving, setAutoSaving] = useState(false);
+  const [autoSaved, setAutoSaved] = useState<string | null>(null);
+  const autoSaveTimeoutRef = useRef<NodeJS.Timeout>();
+
+  const autoSaveField = useCallback(async (field: 'status' | 'temperature', newValue: string) => {
+    if (!lead) return;
+    setAutoSaving(true);
+
+    const currentRespostas = { ...(lead.respostas_questionario || {}) } as Record<string, string>;
+    const { data: { user: currentUser } } = await supabase.auth.getUser();
+
+    if (field === 'status') {
+      if (newValue !== lead.status_lead && currentUser) {
+        const oldLabel = statusConfig[lead.status_lead]?.label || lead.status_lead;
+        const newLabel = statusConfig[newValue]?.label || newValue;
+        await supabase.from('lead_activities').insert({
+          lead_id: lead.id,
+          user_id: currentUser.id,
+          activity_type: 'status_change',
+          content: `Status alterado de "${oldLabel}" para "${newLabel}"`,
+        });
+      }
+      const { error } = await supabase.from('leads').update({ status_lead: newValue as any }).eq('id', lead.id);
+      if (error) { toast.error('Erro ao salvar status'); setAutoSaving(false); return; }
+    }
+
+    if (field === 'temperature') {
+      const TEMP_LABELS: Record<string, string> = { quente: '🔥 Quente', morno: '☀️ Morno', frio: '❄️ Frio', '': '🤖 Automático' };
+      const oldTemp = currentRespostas.temperatura_manual || '';
+      if (newValue !== oldTemp && currentUser) {
+        await supabase.from('lead_activities').insert({
+          lead_id: lead.id,
+          user_id: currentUser.id,
+          activity_type: 'temperature_change',
+          content: `Temperatura alterada de "${TEMP_LABELS[oldTemp] || '🤖 Automático'}" para "${TEMP_LABELS[newValue] || '🤖 Automático'}"`,
+        });
+      }
+      const updatedRespostas = { ...currentRespostas };
+      if (newValue) { updatedRespostas.temperatura_manual = newValue; } else { delete updatedRespostas.temperatura_manual; }
+      const { error } = await supabase.from('leads').update({
+        respostas_questionario: Object.keys(updatedRespostas).length > 0 ? updatedRespostas : null,
+      }).eq('id', lead.id);
+      if (error) { toast.error('Erro ao salvar temperatura'); setAutoSaving(false); return; }
+    }
+
+    setAutoSaving(false);
+    setAutoSaved(field === 'status' ? 'Status salvo!' : 'Temperatura salva!');
+    if (autoSaveTimeoutRef.current) clearTimeout(autoSaveTimeoutRef.current);
+    autoSaveTimeoutRef.current = setTimeout(() => setAutoSaved(null), 2000);
+    queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
+    queryClient.invalidateQueries({ queryKey: ['franchise-leads-all'] });
+    queryClient.invalidateQueries({ queryKey: ['franchise-leads-table'] });
+    queryClient.invalidateQueries({ queryKey: ['admin-leads-all'] });
+    queryClient.invalidateQueries({ queryKey: ['admin-leads-table'] });
+  }, [lead, id, queryClient]);
+
+  const handleStatusChange = useCallback((newStatus: string) => {
+    setStatus(newStatus);
+    autoSaveField('status', newStatus);
+  }, [autoSaveField]);
+
+  const handleTempChange = useCallback((newTemp: LeadTemperature | '') => {
+    setTempOverride(newTemp);
+    autoSaveField('temperature', newTemp);
+  }, [autoSaveField]);
+
   const photos = lead ? [lead.foto1, lead.foto2, lead.foto3, lead.foto4].filter(Boolean) as string[] : [];
 
   if (loading) {
