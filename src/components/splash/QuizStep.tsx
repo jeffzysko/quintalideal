@@ -61,7 +61,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -60 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="h-[100dvh] flex flex-col px-4 sm:px-6 py-3 sm:py-6 gradient-hero"
+      className="h-[100dvh] flex flex-col px-3 sm:px-6 py-3 sm:py-6 gradient-hero"
     >
       <div className="w-full max-w-lg mx-auto flex-1 flex flex-col">
         <ExplorerProgress currentStep={explorerStep} onBack={onBack} lang={lang} />
