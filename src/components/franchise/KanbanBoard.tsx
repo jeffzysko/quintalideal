@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useEffect, memo } from 'react';
+import { SwipeableLeadCard } from '@/components/dashboard/SwipeableLeadCard';
 import {
   DndContext,
   DragOverlay,
