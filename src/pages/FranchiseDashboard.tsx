@@ -27,6 +27,7 @@ import { PanelHeader } from '@/components/PanelHeader';
 import { classifyLead } from '@/lib/leadScoring';
 import { KanbanBoard } from '@/components/franchise/KanbanBoard';
 import { WelcomeWizard } from '@/components/franchise/WelcomeWizard';
+import { AchievementsDashboard } from '@/components/franchise/AchievementsDashboard';
 import { MetricGrid } from '@/components/dashboard/MetricGrid';
 import { TimeRangeSelector, filterByTimeRange, type TimeRange } from '@/components/dashboard/TimeRangeSelector';
 import { SectionHeader } from '@/components/dashboard/SectionHeader';
@@ -83,7 +84,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   useLeadsRealtime(franchiseId);
   const isMobile = useIsMobile();
   const [page, setPage] = useState(1);
-  const [activeTab, setActiveTab] = useState<'leads' | 'funnel' | 'reports'>('leads');
+  const [activeTab, setActiveTab] = useState<'leads' | 'funnel' | 'reports' | 'achievements'>('leads');
   const [timeRange, setTimeRange] = useState<TimeRange>('30');
 
   // ── Franchise info ──
@@ -334,6 +335,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
         {[
           { key: 'leads' as const, icon: Users, label: 'Leads', tour: 'tab-leads' },
           { key: 'funnel' as const, icon: Workflow, label: 'Funil', tour: 'tab-funnel' },
+          { key: 'achievements' as const, icon: TrendingUp, label: 'Metas', tour: 'tab-achievements' },
           { key: 'reports' as const, icon: BarChart3, label: 'Relatórios', tour: 'tab-reports' },
         ].map(tab => (
           <button
@@ -540,6 +542,18 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
               franchiseId={franchiseId!}
               basePath={leadDetailPath}
             />
+          </motion.div>
+        )}
+
+        {activeTab === 'achievements' && (
+          <motion.div
+            key="achievements"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+          >
+            {franchiseId && <AchievementsDashboard franchiseId={franchiseId} leads={allLeads} />}
           </motion.div>
         )}
 
