@@ -251,10 +251,10 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
           <CardContent className="px-2 sm:px-6">
             <ChartContainer config={{}} className="h-[200px] sm:h-[220px] w-full">
               <BarChart data={scoreDistribution} margin={{ left: -15, right: 5, top: 5, bottom: 0 }}>
-                <XAxis dataKey="range" tick={{ fontSize: 9 }} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 10 }} width={30} />
+                <XAxis dataKey="range" tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} width={30} axisLine={false} tickLine={false} />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="count" fill="hsl(330, 90%, 46%)" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="count" fill="hsl(var(--accent))" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ChartContainer>
           </CardContent>

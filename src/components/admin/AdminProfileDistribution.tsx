@@ -99,8 +99,8 @@ export function AdminProfileDistribution({ orgFilter }: AdminProfileDistribution
           <>
             <ChartContainer config={{}} className="h-[200px] sm:h-[250px] w-full">
               <BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 30, top: 5, bottom: 5 }}>
-                <XAxis type="number" allowDecimals={false} tick={{ fontSize: 10 }} />
-                <YAxis type="category" dataKey="label" tick={{ fontSize: 11 }} width={110} />
+                <XAxis type="number" allowDecimals={false} tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} axisLine={false} tickLine={false} />
+                <YAxis type="category" dataKey="label" tick={{ fontSize: 11, fill: 'hsl(var(--foreground))' }} width={110} axisLine={false} tickLine={false} />
                 <ChartTooltip
                   content={<ChartTooltipContent />}
                   formatter={(value: number, _name: string, props: any) =>

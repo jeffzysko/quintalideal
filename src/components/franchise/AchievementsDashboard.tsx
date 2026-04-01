@@ -246,8 +246,8 @@ export function AchievementsDashboard({ franchiseId, leads }: AchievementsDashbo
         <CardContent>
           <ChartContainer config={chartConfig} className="h-[200px] w-full">
             <BarChart data={monthlyData} barGap={2}>
-              <XAxis dataKey="label" fontSize={11} tickLine={false} axisLine={false} />
-              <YAxis fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} width={24} />
+              <XAxis dataKey="label" fontSize={11} tickLine={false} axisLine={false} tick={{ fill: 'hsl(var(--muted-foreground))' }} />
+              <YAxis fontSize={11} tickLine={false} axisLine={false} allowDecimals={false} width={24} tick={{ fill: 'hsl(var(--muted-foreground))' }} />
               <ChartTooltip content={<ChartTooltipContent />} />
               <Bar dataKey="goal" fill="hsl(var(--muted-foreground) / 0.15)" radius={[4, 4, 0, 0]} name="Meta" />
               <Bar dataKey="sold" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="Vendas" />

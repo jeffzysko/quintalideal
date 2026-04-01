@@ -331,10 +331,10 @@ export function AdminAnalytics({ franchiseMap }: AdminAnalyticsProps) {
             ) : (
               <ChartContainer config={{}} className="h-[180px] sm:h-[200px] w-full">
                 <BarChart data={utmStats} margin={{ left: -10, right: 5, top: 5, bottom: 0 }}>
-                  <XAxis dataKey="source" tick={{ fontSize: 9 }} interval={0} angle={-30} textAnchor="end" height={45} />
-                  <YAxis allowDecimals={false} tick={{ fontSize: 10 }} width={30} />
+                  <XAxis dataKey="source" tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }} interval={0} angle={-30} textAnchor="end" height={45} axisLine={false} tickLine={false} />
+                  <YAxis allowDecimals={false} tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} width={30} axisLine={false} tickLine={false} />
                   <ChartTooltip content={<ChartTooltipContent />} />
-                  <Bar dataKey="count" fill="hsl(207, 90%, 54%)" radius={[6, 6, 0, 0]} />
+                  <Bar dataKey="count" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
                 </BarChart>
               </ChartContainer>
             )}
