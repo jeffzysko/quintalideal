@@ -41,7 +41,7 @@ export function UserAvatarMenu() {
     role === 'franquia' ? 'bg-emerald-500/15 text-emerald-600 border-emerald-500/25' :
     'bg-muted text-muted-foreground border-border';
 
-  const isDark = theme === 'dark';
+  
 
   useEffect(() => {
     if (!user) return;
