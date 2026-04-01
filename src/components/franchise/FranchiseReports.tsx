@@ -181,7 +181,7 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
                 <XAxis dataKey="label" tick={{ fontSize: 10 }} />
                 <YAxis allowDecimals={false} tick={{ fontSize: 10 }} width={30} />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Bar dataKey="count" fill="hsl(207, 90%, 42%)" radius={[6, 6, 0, 0]} />
+                <Bar dataKey="count" fill="hsl(var(--primary))" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ChartContainer>
           </CardContent>
