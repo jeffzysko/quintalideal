@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -7,6 +7,8 @@ import { Trophy, Star, Flame, TrendingUp, Zap, Target, Medal, Crown, Rocket } fr
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { Progress } from '@/components/ui/progress';
+import { toast } from 'sonner';
+import { fireConfetti, haptic } from '@/lib/celebrations';
 import type { LeadRow } from '@/lib/lead-constants';
 
 interface AchievementsDashboardProps {
