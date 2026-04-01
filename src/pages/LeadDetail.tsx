@@ -61,11 +61,11 @@ interface Lead {
 }
 
 const statusConfig: Record<string, { label: string; color: string; accent: string }> = {
-  novo: { label: 'Novo', color: 'bg-white text-slate-800 border-white/80', accent: 'border-l-primary bg-primary/5' },
-  contatado: { label: 'Contatado', color: 'bg-sky-100 text-sky-800 border-sky-200', accent: 'border-l-sky-500 bg-sky-50' },
-  em_negociacao: { label: 'Em Negociação', color: 'bg-amber-100 text-amber-800 border-amber-200', accent: 'border-l-amber-500 bg-amber-50' },
-  vendido: { label: 'Vendido', color: 'bg-emerald-100 text-emerald-800 border-emerald-200', accent: 'border-l-emerald-500 bg-emerald-50' },
-  perdido: { label: 'Perdido', color: 'bg-red-100 text-red-800 border-red-200', accent: 'border-l-red-500 bg-red-50' },
+  novo: { label: 'Novo', color: 'bg-card text-foreground border-border', accent: 'border-l-primary bg-primary/5' },
+  contatado: { label: 'Contatado', color: 'bg-sky-100 dark:bg-sky-900/40 text-sky-800 dark:text-sky-300 border-sky-200 dark:border-sky-700', accent: 'border-l-sky-500 bg-sky-50 dark:bg-sky-950/30' },
+  em_negociacao: { label: 'Em Negociação', color: 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-700', accent: 'border-l-amber-500 bg-amber-50 dark:bg-amber-950/30' },
+  vendido: { label: 'Vendido', color: 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-700', accent: 'border-l-emerald-500 bg-emerald-50 dark:bg-emerald-950/30' },
+  perdido: { label: 'Perdido', color: 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 border-red-200 dark:border-red-700', accent: 'border-l-red-500 bg-red-50 dark:bg-red-950/30' },
 };
 
 const questionLabels: Record<string, { label: string; icon: string }> = {
