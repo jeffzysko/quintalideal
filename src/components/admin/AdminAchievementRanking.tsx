@@ -1,6 +1,6 @@
 import { memo, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Trophy, Star, Flame, Target, Zap, Crown, Rocket, Medal } from 'lucide-react';
+import { Trophy, Star, Zap, Crown, Rocket, Medal } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Progress } from '@/components/ui/progress';
 import type { LeadRow } from '@/lib/lead-constants';
