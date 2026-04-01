@@ -17,29 +17,45 @@ Deno.serve(async (req) => {
     const supabase = createClient(supabaseUrl, serviceKey);
 
     // Delete analytics events older than 12 months
-    const cutoffDate = new Date();
-    cutoffDate.setMonth(cutoffDate.getMonth() - 12);
-    const cutoffISO = cutoffDate.toISOString();
+    const analyticsCutoff = new Date();
+    analyticsCutoff.setMonth(analyticsCutoff.getMonth() - 12);
+    const analyticsCutoffISO = analyticsCutoff.toISOString();
 
-    const { count, error } = await supabase
+    const { count: analyticsDeleted, error: analyticsError } = await supabase
       .from("analytics_events")
       .delete({ count: "exact" })
-      .lt("created_at", cutoffISO);
+      .lt("created_at", analyticsCutoffISO);
 
-    if (error) {
-      console.error("Cleanup error:", error.message);
-      return new Response(
-        JSON.stringify({ success: false, error: error.message }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    if (analyticsError) {
+      console.error("Analytics cleanup error:", analyticsError.message);
     }
 
-    console.log(`Cleanup complete: deleted ${count ?? 0} events older than ${cutoffISO}`);
+    // Delete webhook logs older than 3 months
+    const webhookCutoff = new Date();
+    webhookCutoff.setMonth(webhookCutoff.getMonth() - 3);
+    const webhookCutoffISO = webhookCutoff.toISOString();
 
-    return new Response(
-      JSON.stringify({ success: true, deleted: count ?? 0, cutoff: cutoffISO }),
-      { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-    );
+    const { count: webhooksDeleted, error: webhookError } = await supabase
+      .from("webhook_logs")
+      .delete({ count: "exact" })
+      .lt("created_at", webhookCutoffISO);
+
+    if (webhookError) {
+      console.error("Webhook cleanup error:", webhookError.message);
+    }
+
+    const result = {
+      success: true,
+      analytics: { deleted: analyticsDeleted ?? 0, cutoff: analyticsCutoffISO, error: analyticsError?.message ?? null },
+      webhook_logs: { deleted: webhooksDeleted ?? 0, cutoff: webhookCutoffISO, error: webhookError?.message ?? null },
+    };
+
+    console.log("Cleanup complete:", JSON.stringify(result));
+
+    return new Response(JSON.stringify(result), {
+      status: 200,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Unknown error";
     console.error("Cleanup failed:", message);
