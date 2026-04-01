@@ -194,6 +194,32 @@ export function AchievementsDashboard({ franchiseId, leads }: AchievementsDashbo
 
   const unlockedCount = achievements.filter(a => a.unlocked).length;
 
+  // Track previously unlocked achievements to detect new unlocks
+  const prevUnlockedRef = useRef<Set<string> | null>(null);
+
+  useEffect(() => {
+    const currentUnlocked = new Set(achievements.filter(a => a.unlocked).map(a => a.id));
+
+    if (prevUnlockedRef.current !== null) {
+      const newlyUnlocked = achievements.filter(
+        a => a.unlocked && !prevUnlockedRef.current!.has(a.id)
+      );
+
+      newlyUnlocked.forEach((a, i) => {
+        setTimeout(() => {
+          haptic('heavy');
+          fireConfetti();
+          toast.success(`🏆 Conquista desbloqueada!`, {
+            description: `${a.title} — ${a.description}`,
+            duration: 5000,
+          });
+        }, i * 800);
+      });
+    }
+
+    prevUnlockedRef.current = currentUnlocked;
+  }, [achievements]);
+
   const chartConfig = {
     sold: { label: 'Vendas', color: 'hsl(var(--primary))' },
     goal: { label: 'Meta', color: 'hsl(var(--muted-foreground) / 0.3)' },
