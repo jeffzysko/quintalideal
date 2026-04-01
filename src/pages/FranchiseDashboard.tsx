@@ -335,6 +335,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
         {[
           { key: 'leads' as const, icon: Users, label: 'Leads', tour: 'tab-leads' },
           { key: 'funnel' as const, icon: Workflow, label: 'Funil', tour: 'tab-funnel' },
+          { key: 'achievements' as const, icon: TrendingUp, label: 'Metas', tour: 'tab-achievements' },
           { key: 'reports' as const, icon: BarChart3, label: 'Relatórios', tour: 'tab-reports' },
         ].map(tab => (
           <button
