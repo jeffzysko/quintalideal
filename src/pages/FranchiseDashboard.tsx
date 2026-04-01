@@ -84,7 +84,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   useLeadsRealtime(franchiseId);
   const isMobile = useIsMobile();
   const [page, setPage] = useState(1);
-  const [activeTab, setActiveTab] = useState<'leads' | 'funnel' | 'reports'>('leads');
+  const [activeTab, setActiveTab] = useState<'leads' | 'funnel' | 'reports' | 'achievements'>('leads');
   const [timeRange, setTimeRange] = useState<TimeRange>('30');
 
   // ── Franchise info ──
