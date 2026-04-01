@@ -332,9 +332,9 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       {/* Tab switcher */}
       <div className="flex gap-1 mb-6 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-full sm:w-fit overflow-x-auto scrollbar-none border border-border/30" role="tablist">
         {[
-          { key: 'leads' as const, icon: Users, label: 'Leads' },
-          { key: 'funnel' as const, icon: Workflow, label: 'Funil' },
-          { key: 'reports' as const, icon: BarChart3, label: 'Relatórios' },
+          { key: 'leads' as const, icon: Users, label: 'Leads', tour: 'tab-leads' },
+          { key: 'funnel' as const, icon: Workflow, label: 'Funil', tour: 'tab-funnel' },
+          { key: 'reports' as const, icon: BarChart3, label: 'Relatórios', tour: 'tab-reports' },
         ].map(tab => (
           <button
             key={tab.key}
