@@ -98,22 +98,30 @@ export function UserAvatarMenu() {
           </div>
         </div>
 
-        <DropdownMenuItem
-          onSelect={() => setTheme(isDark ? 'light' : 'dark')}
-          className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
-        >
-          <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
-            {isDark ? (
-              <Sun className="w-4 h-4 text-amber-500" />
-            ) : (
-              <Moon className="w-4 h-4 text-primary" />
+        {/* Theme options */}
+        <p className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
+          Aparência
+        </p>
+        {([
+          { value: 'light', label: 'Claro', icon: Sun, iconColor: 'text-amber-500' },
+          { value: 'dark', label: 'Escuro', icon: Moon, iconColor: 'text-primary' },
+          { value: 'system', label: 'Automático', icon: Monitor, iconColor: 'text-muted-foreground' },
+        ] as const).map(opt => (
+          <DropdownMenuItem
+            key={opt.value}
+            onSelect={() => setTheme(opt.value)}
+            className={cn(
+              'cursor-pointer rounded-xl px-3 py-2 text-sm gap-3 transition-colors',
+              theme === opt.value && 'bg-accent'
             )}
-          </div>
-          <div>
-            <p className="font-medium">{isDark ? 'Modo claro' : 'Modo escuro'}</p>
-            <p className="text-[10px] text-muted-foreground">Alternar aparência</p>
-          </div>
-        </DropdownMenuItem>
+          >
+            <div className="w-7 h-7 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
+              <opt.icon className={`w-4 h-4 ${opt.iconColor}`} />
+            </div>
+            <span className="font-medium">{opt.label}</span>
+            {theme === opt.value && <Check className="w-3.5 h-3.5 ml-auto text-primary" />}
+          </DropdownMenuItem>
+        ))}
 
         <DropdownMenuItem
           onClick={() => go('/perfil')}
