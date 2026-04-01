@@ -11,7 +11,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { LogOut, Settings, ChevronDown, Sun, Moon, LifeBuoy, BarChart3, Webhook, Building2, Bell } from 'lucide-react';
+import { LogOut, Settings, ChevronDown, Sun, Moon, Monitor, LifeBuoy, BarChart3, Webhook, Building2, Bell, Check } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export function UserAvatarMenu() {
   const { user, role, signOut } = useAuth();
