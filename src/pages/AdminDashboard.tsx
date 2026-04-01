@@ -197,20 +197,29 @@ export default function AdminDashboard() {
     staleTime: 5 * 60 * 1000,
   });
 
-  // ── All leads (last 12 months — bounded, replaces unlimited waterfall) ──
+  // ── All leads (last 12 months — batched loading for >1000 rows) ──
   const { data: allLeads = [], isLoading: loadingKpis, isError: kpisError, refetch: refetchKpis } = useQuery({
     queryKey: ['admin-leads-all'],
     queryFn: async () => {
       const twelveMonthsAgo = new Date();
       twelveMonthsAgo.setFullYear(twelveMonthsAgo.getFullYear() - 1);
-      const { data, error } = await supabase
-        .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, updated_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin, respostas_questionario')
-        .gte('created_at', twelveMonthsAgo.toISOString())
-        .order('created_at', { ascending: false })
-        .limit(1500);
-      if (error) throw error;
-      return (data || []) as LeadRow[];
+      const BATCH = 1000;
+      const allData: LeadRow[] = [];
+      let from = 0;
+      while (true) {
+        const { data, error } = await supabase
+          .from('leads')
+          .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, updated_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin, respostas_questionario')
+          .gte('created_at', twelveMonthsAgo.toISOString())
+          .order('created_at', { ascending: false })
+          .range(from, from + BATCH - 1);
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+        allData.push(...(data as LeadRow[]));
+        if (data.length < BATCH) break;
+        from += BATCH;
+      }
+      return allData;
     },
     staleTime: 3 * 60 * 1000,
   });

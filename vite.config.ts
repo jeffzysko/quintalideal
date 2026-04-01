@@ -93,6 +93,16 @@ export default defineConfig(({ mode }) => ({
           },
           {
             urlPattern:
+              /^https:\/\/bbfkorzehzoaogrnuyqp\.supabase\.co\/storage\/v1\/.*/i,
+            handler: "CacheFirst",
+            options: {
+              cacheName: "supabase-storage",
+              expiration: { maxEntries: 100, maxAgeSeconds: 60 * 60 * 24 * 30 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
+          {
+            urlPattern:
               /^https:\/\/bbfkorzehzoaogrnuyqp\.supabase\.co\/rest\/.*/i,
             handler: "NetworkFirst",
             options: {
