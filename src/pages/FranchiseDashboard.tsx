@@ -340,6 +340,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
             key={tab.key}
             role="tab"
             aria-selected={activeTab === tab.key}
+            data-tour={tab.tour}
             onClick={() => setActiveTab(tab.key)}
             className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex-1 sm:flex-none whitespace-nowrap min-h-[44px] flex items-center justify-center gap-2 active:scale-[0.97] ${activeTab === tab.key ? 'tab-active shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
           >
