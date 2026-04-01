@@ -33,6 +33,7 @@ import { AdminWelcomeWizard } from '@/components/admin/AdminWelcomeWizard';
 // Lazy load heavy tab components
 // AdminCityRanking moved to Performance QI tab
 const AdminFranchiseRanking = lazy(() => import('@/components/admin/AdminFranchiseRanking').then(m => ({ default: m.AdminFranchiseRanking })));
+const AdminAchievementRanking = lazy(() => import('@/components/admin/AdminAchievementRanking').then(m => ({ default: m.AdminAchievementRanking })));
 // AdminReferralMetrics removed — referral system no longer active
 const AdminAnalytics = lazy(() => import('@/components/admin/AdminAnalytics').then(m => ({ default: m.AdminAnalytics })));
 const AdminFranchiseManager = lazy(() => import('@/components/admin/AdminFranchiseManager').then(m => ({ default: m.AdminFranchiseManager })));
