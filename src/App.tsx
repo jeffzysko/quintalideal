@@ -229,6 +229,7 @@ function AppRoutes() {
                 <PWAUpdatePrompt />
                 <PWAInstallBanner />
                 <NetworkStatus />
+                <ThemeColorSync />
                 <BottomNav />
                 </PullToRefresh>
               </BrowserRouter>
