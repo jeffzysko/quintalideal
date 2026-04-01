@@ -99,30 +99,34 @@ export function UserAvatarMenu() {
           </div>
         </div>
 
-        {/* Theme options */}
-        <p className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
-          Aparência
-        </p>
-        {([
-          { value: 'light', label: 'Claro', icon: Sun, iconColor: 'text-amber-500' },
-          { value: 'dark', label: 'Escuro', icon: Moon, iconColor: 'text-primary' },
-          { value: 'system', label: 'Automático', icon: Monitor, iconColor: 'text-muted-foreground' },
-        ] as const).map(opt => (
-          <DropdownMenuItem
-            key={opt.value}
-            onSelect={() => setTheme(opt.value)}
-            className={cn(
-              'cursor-pointer rounded-xl px-3 py-2 text-sm gap-3 transition-colors',
-              theme === opt.value && 'bg-accent'
-            )}
-          >
-            <div className="w-7 h-7 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
-              <opt.icon className={`w-4 h-4 ${opt.iconColor}`} />
-            </div>
-            <span className="font-medium">{opt.label}</span>
-            {theme === opt.value && <Check className="w-3.5 h-3.5 ml-auto text-primary" />}
-          </DropdownMenuItem>
-        ))}
+        {/* Compact theme switcher */}
+        <div className="px-3 py-2">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-2">
+            Aparência
+          </p>
+          <div className="flex items-center gap-1 p-1 rounded-xl bg-muted/50 border border-border/30">
+            {([
+              { value: 'light', icon: Sun, label: 'Claro' },
+              { value: 'dark', icon: Moon, label: 'Escuro' },
+              { value: 'system', icon: Monitor, label: 'Auto' },
+            ] as const).map(opt => (
+              <button
+                key={opt.value}
+                onClick={(e) => { e.preventDefault(); e.stopPropagation(); setTheme(opt.value); }}
+                className={cn(
+                  'flex-1 flex items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] font-medium transition-all duration-200',
+                  theme === opt.value
+                    ? 'bg-background text-foreground shadow-sm border border-border/50'
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+                aria-label={opt.label}
+              >
+                <opt.icon className="w-3.5 h-3.5" />
+                <span>{opt.label}</span>
+              </button>
+            ))}
+          </div>
+        </div>
 
         <DropdownMenuItem
           onClick={() => go('/perfil')}
