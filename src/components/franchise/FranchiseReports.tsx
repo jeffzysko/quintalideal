@@ -232,10 +232,10 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
           <CardContent className="px-2 sm:px-6">
             <ChartContainer config={{}} className="h-[200px] sm:h-[220px] w-full">
               <LineChart data={weeklyTrend} margin={{ left: -15, right: 5, top: 5, bottom: 0 }}>
-                <XAxis dataKey="week" tick={{ fontSize: 9 }} interval={1} />
-                <YAxis allowDecimals={false} tick={{ fontSize: 10 }} width={30} />
+                <XAxis dataKey="week" tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }} interval={1} axisLine={false} tickLine={false} />
+                <YAxis allowDecimals={false} tick={{ fontSize: 10, fill: 'hsl(var(--muted-foreground))' }} width={30} axisLine={false} tickLine={false} />
                 <ChartTooltip content={<ChartTooltipContent />} />
-                <Line type="monotone" dataKey="count" stroke="hsl(207, 90%, 42%)" strokeWidth={2.5} dot={{ r: 3, fill: 'hsl(207, 90%, 42%)' }} />
+                <Line type="monotone" dataKey="count" stroke="hsl(var(--primary))" strokeWidth={2.5} dot={{ r: 3, fill: 'hsl(var(--primary))' }} />
               </LineChart>
             </ChartContainer>
           </CardContent>
