@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
@@ -7,6 +7,8 @@ import { Trophy, Star, Flame, TrendingUp, Zap, Target, Medal, Crown, Rocket } fr
 import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { Progress } from '@/components/ui/progress';
+import { toast } from 'sonner';
+import { fireConfetti, haptic } from '@/lib/celebrations';
 import type { LeadRow } from '@/lib/lead-constants';
 
 interface AchievementsDashboardProps {
@@ -191,6 +193,32 @@ export function AchievementsDashboard({ franchiseId, leads }: AchievementsDashbo
   ], [soldTotal, monthsMetGoal, streak, totalLeads, hotLeads, contactedIn24h]);
 
   const unlockedCount = achievements.filter(a => a.unlocked).length;
+
+  // Track previously unlocked achievements to detect new unlocks
+  const prevUnlockedRef = useRef<Set<string> | null>(null);
+
+  useEffect(() => {
+    const currentUnlocked = new Set(achievements.filter(a => a.unlocked).map(a => a.id));
+
+    if (prevUnlockedRef.current !== null) {
+      const newlyUnlocked = achievements.filter(
+        a => a.unlocked && !prevUnlockedRef.current!.has(a.id)
+      );
+
+      newlyUnlocked.forEach((a, i) => {
+        setTimeout(() => {
+          haptic('heavy');
+          fireConfetti();
+          toast.success(`🏆 Conquista desbloqueada!`, {
+            description: `${a.title} — ${a.description}`,
+            duration: 5000,
+          });
+        }, i * 800);
+      });
+    }
+
+    prevUnlockedRef.current = currentUnlocked;
+  }, [achievements]);
 
   const chartConfig = {
     sold: { label: 'Vendas', color: 'hsl(var(--primary))' },
