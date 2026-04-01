@@ -261,7 +261,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
         <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
       </div>
 
-      <MetricGrid metrics={metrics} loading={loadingKpis} columns={4} />
+      <div data-tour="kpi-grid"><MetricGrid metrics={metrics} loading={loadingKpis} columns={4} /></div>
 
       {/* Insight Surfacing */}
       {!loadingKpis && currentLeads.length > 0 && (
