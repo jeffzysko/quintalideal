@@ -15,11 +15,11 @@ export const STATUS_COLORS: Record<string, string> = {
 };
 
 export const STATUS_CHART_COLORS: Record<string, string> = {
-  novo: '#0ea5e9',
-  contatado: '#f59e0b',
-  em_negociacao: '#8b5cf6',
-  vendido: '#10b981',
-  perdido: '#ef4444',
+  novo: 'hsl(199, 89%, 48%)',
+  contatado: 'hsl(38, 92%, 50%)',
+  em_negociacao: 'hsl(258, 90%, 66%)',
+  vendido: 'hsl(160, 84%, 39%)',
+  perdido: 'hsl(0, 84%, 60%)',
 };
 
 export const TERRITORY_LABELS: Record<string, string> = {
