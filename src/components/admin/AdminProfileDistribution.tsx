@@ -8,11 +8,11 @@ import { Users } from 'lucide-react';
 import { normalizeQuizToV2, detectCustomerProfile, type CustomerProfile } from '@/lib/scoring-v2';
 
 const PROFILE_META: Record<CustomerProfile, { label: string; color: string; emoji: string }> = {
-  RELAXADOR: { label: 'Relaxador', color: 'hsl(207, 90%, 42%)', emoji: '🧘' },
-  FAMILIA: { label: 'Família', color: 'hsl(152, 60%, 42%)', emoji: '👨‍👩‍👧‍👦' },
-  SOCIAL: { label: 'Social', color: 'hsl(36, 90%, 50%)', emoji: '🎉' },
-  PREMIUM: { label: 'Premium', color: 'hsl(280, 60%, 50%)', emoji: '💎' },
-  COMPACTO: { label: 'Compacto', color: 'hsl(0, 70%, 55%)', emoji: '📐' },
+  RELAXADOR: { label: 'Relaxador', color: 'hsl(207, 90%, 54%)', emoji: '🧘' },
+  FAMILIA: { label: 'Família', color: 'hsl(152, 60%, 50%)', emoji: '👨‍👩‍👧‍👦' },
+  SOCIAL: { label: 'Social', color: 'hsl(36, 90%, 55%)', emoji: '🎉' },
+  PREMIUM: { label: 'Premium', color: 'hsl(280, 60%, 58%)', emoji: '💎' },
+  COMPACTO: { label: 'Compacto', color: 'hsl(0, 70%, 60%)', emoji: '📐' },
 };
 
 interface AdminProfileDistributionProps {
