@@ -17,6 +17,7 @@ import { ScrollToTop } from "@/components/ScrollToTop";
 import { PWAUpdatePrompt } from "@/components/PWAUpdatePrompt";
 import { PWAInstallBanner } from "@/components/PWAInstallBanner";
 import { NetworkStatus } from "@/components/NetworkStatus";
+import { ThemeColorSync } from "@/components/ThemeColorSync";
 import { BottomNav } from "@/components/BottomNav";
 import { PullToRefresh } from "@/components/PullToRefresh";
 import { useAppBadge } from "@/hooks/useAppBadge";
