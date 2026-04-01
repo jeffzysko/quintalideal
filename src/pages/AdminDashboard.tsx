@@ -504,6 +504,7 @@ export default function AdminDashboard() {
                   key={tab.key}
                   role="tab"
                   aria-selected={activeTab === tab.key}
+                  data-tour={`admin-tab-${tab.key}`}
                   onClick={() => handleAdminTabChange(tab.key)}
                   className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all whitespace-nowrap ${activeTab === tab.key ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
                 >
