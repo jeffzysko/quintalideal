@@ -62,6 +62,7 @@ export function BottomNav() {
             <button
               key={item.label}
               onClick={() => navigate(item.path)}
+              data-tour={item.label === 'Início' ? 'nav-hoje' : undefined}
               className={cn(
                 'flex flex-col items-center justify-center gap-0.5 flex-1 relative transition-colors min-h-[48px]',
                 '-webkit-tap-highlight-color: transparent',

@@ -49,7 +49,7 @@ function FranchiseLinkBanner({ slug }: { slug: string }) {
   };
 
   return (
-    <div className="mb-6 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 via-primary/3 to-transparent p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 card-glow-blue">
+    <div data-tour="franchise-link" className="mb-6 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/5 via-primary/3 to-transparent p-5 flex flex-col sm:flex-row items-start sm:items-center gap-3 card-glow-blue">
       <div className="flex items-center gap-3 min-w-0 flex-1">
         <div className="w-10 h-10 rounded-xl icon-bg-blue flex items-center justify-center shrink-0">
           <Link2 className="w-5 h-5 text-primary" />
@@ -261,7 +261,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
         <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
       </div>
 
-      <MetricGrid metrics={metrics} loading={loadingKpis} columns={4} />
+      <div data-tour="kpi-grid"><MetricGrid metrics={metrics} loading={loadingKpis} columns={4} /></div>
 
       {/* Insight Surfacing */}
       {!loadingKpis && currentLeads.length > 0 && (
@@ -332,14 +332,15 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       {/* Tab switcher */}
       <div className="flex gap-1 mb-6 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-full sm:w-fit overflow-x-auto scrollbar-none border border-border/30" role="tablist">
         {[
-          { key: 'leads' as const, icon: Users, label: 'Leads' },
-          { key: 'funnel' as const, icon: Workflow, label: 'Funil' },
-          { key: 'reports' as const, icon: BarChart3, label: 'Relatórios' },
+          { key: 'leads' as const, icon: Users, label: 'Leads', tour: 'tab-leads' },
+          { key: 'funnel' as const, icon: Workflow, label: 'Funil', tour: 'tab-funnel' },
+          { key: 'reports' as const, icon: BarChart3, label: 'Relatórios', tour: 'tab-reports' },
         ].map(tab => (
           <button
             key={tab.key}
             role="tab"
             aria-selected={activeTab === tab.key}
+            data-tour={tab.tour}
             onClick={() => setActiveTab(tab.key)}
             className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex-1 sm:flex-none whitespace-nowrap min-h-[44px] flex items-center justify-center gap-2 active:scale-[0.97] ${activeTab === tab.key ? 'tab-active shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
           >
