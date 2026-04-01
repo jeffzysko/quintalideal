@@ -61,11 +61,11 @@ interface Lead {
 }
 
 const statusConfig: Record<string, { label: string; color: string; accent: string }> = {
-  novo: { label: 'Novo', color: 'bg-white text-slate-800 border-white/80', accent: 'border-l-primary bg-primary/5' },
-  contatado: { label: 'Contatado', color: 'bg-sky-100 text-sky-800 border-sky-200', accent: 'border-l-sky-500 bg-sky-50' },
-  em_negociacao: { label: 'Em Negociação', color: 'bg-amber-100 text-amber-800 border-amber-200', accent: 'border-l-amber-500 bg-amber-50' },
-  vendido: { label: 'Vendido', color: 'bg-emerald-100 text-emerald-800 border-emerald-200', accent: 'border-l-emerald-500 bg-emerald-50' },
-  perdido: { label: 'Perdido', color: 'bg-red-100 text-red-800 border-red-200', accent: 'border-l-red-500 bg-red-50' },
+  novo: { label: 'Novo', color: 'bg-card text-foreground border-border', accent: 'border-l-primary bg-primary/5' },
+  contatado: { label: 'Contatado', color: 'bg-sky-100 dark:bg-sky-900/40 text-sky-800 dark:text-sky-300 border-sky-200 dark:border-sky-700', accent: 'border-l-sky-500 bg-sky-50 dark:bg-sky-950/30' },
+  em_negociacao: { label: 'Em Negociação', color: 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-700', accent: 'border-l-amber-500 bg-amber-50 dark:bg-amber-950/30' },
+  vendido: { label: 'Vendido', color: 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-700', accent: 'border-l-emerald-500 bg-emerald-50 dark:bg-emerald-950/30' },
+  perdido: { label: 'Perdido', color: 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 border-red-200 dark:border-red-700', accent: 'border-l-red-500 bg-red-50 dark:bg-red-950/30' },
 };
 
 const questionLabels: Record<string, { label: string; icon: string }> = {
@@ -394,7 +394,7 @@ export default function LeadDetail() {
           <Card className="glass-card overflow-hidden">
             <div className="gradient-blue px-3 sm:px-5 py-3 sm:py-4 relative">
               <div className="flex items-start sm:items-center gap-3 sm:gap-4">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/20 backdrop-blur flex items-center justify-center shrink-0">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary-foreground/20 backdrop-blur flex items-center justify-center shrink-0">
                   <User className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
                 </div>
                 <div className="flex-1 min-w-0">
