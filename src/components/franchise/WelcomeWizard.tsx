@@ -64,6 +64,6 @@ interface WelcomeWizardProps {
   franchiseName?: string;
 }
 
-export function WelcomeWizard({ franchiseName }: WelcomeWizardProps) {
+export function WelcomeWizard(_props: WelcomeWizardProps) {
   return <GuidedTour steps={steps} storageKey={WIZARD_KEY} delay={1500} />;
 }
