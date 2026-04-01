@@ -41,7 +41,7 @@ export function AchievementsDashboard({ franchiseId, leads }: AchievementsDashbo
         .gte('year', sixMonthsAgo.getFullYear())
         .order('year', { ascending: true })
         .order('month', { ascending: true });
-      return (data || []) as { month: number; year: number; sales_goal: number }[];
+      return (data || []) as unknown as { month: number; year: number; sales_goal: number }[];
     },
     enabled: !!franchiseId,
     staleTime: 5 * 60 * 1000,
