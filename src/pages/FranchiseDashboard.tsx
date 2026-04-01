@@ -100,21 +100,30 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
     enabled: !!franchiseId,
   });
 
-  // ── All leads (bounded to last 12 months, replaces unlimited waterfall) ──
+  // ── All leads (bounded to last 12 months, batched for >1000 rows) ──
   const { data: allLeads = [], isLoading: loadingKpis, isError: franchiseError, refetch: refetchFranchise } = useQuery({
     queryKey: ['franchise-leads-all', franchiseId],
     queryFn: async () => {
       const twelveMonthsAgo = new Date();
       twelveMonthsAgo.setFullYear(twelveMonthsAgo.getFullYear() - 1);
-      const { data, error } = await supabase
-        .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin, respostas_questionario')
-        .eq('franquia_id', franchiseId!)
-        .gte('created_at', twelveMonthsAgo.toISOString())
-        .order('created_at', { ascending: false })
-        .limit(1000);
-      if (error) throw error;
-      return (data || []) as (LeadRow & { respostas_questionario?: Record<string, string> | null })[];
+      const BATCH = 1000;
+      const allData: (LeadRow & { respostas_questionario?: Record<string, string> | null })[] = [];
+      let from = 0;
+      while (true) {
+        const { data, error } = await supabase
+          .from('leads')
+          .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin, respostas_questionario')
+          .eq('franquia_id', franchiseId!)
+          .gte('created_at', twelveMonthsAgo.toISOString())
+          .order('created_at', { ascending: false })
+          .range(from, from + BATCH - 1);
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+        allData.push(...(data as typeof allData));
+        if (data.length < BATCH) break;
+        from += BATCH;
+      }
+      return allData;
     },
     enabled: !!franchiseId,
     staleTime: 3 * 60 * 1000,
