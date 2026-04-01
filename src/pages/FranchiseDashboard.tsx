@@ -545,6 +545,18 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
           </motion.div>
         )}
 
+        {activeTab === 'achievements' && (
+          <motion.div
+            key="achievements"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+          >
+            {franchiseId && <AchievementsDashboard franchiseId={franchiseId} leads={allLeads} />}
+          </motion.div>
+        )}
+
         {activeTab === 'reports' && (
           <motion.div
             key="reports"
