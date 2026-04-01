@@ -67,8 +67,9 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 1000 * 60 * 5, // 5 minutes
-      gcTime: 1000 * 60 * 10, // 10 minutes garbage collection
+      gcTime: 1000 * 60 * 15, // 15 minutes garbage collection
       retry: 1,
+      refetchOnWindowFocus: false, // Prevent unnecessary refetches on tab switch
     },
   },
 });
