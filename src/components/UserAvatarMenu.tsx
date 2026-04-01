@@ -11,7 +11,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { LogOut, Settings, ChevronDown, Sun, Moon, Monitor, LifeBuoy, BarChart3, Webhook, Building2, Bell } from 'lucide-react';
+import { LogOut, Settings, ChevronDown, Sun, Moon, Monitor, LifeBuoy, Webhook, Building2, Bell } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export function UserAvatarMenu() {
@@ -74,37 +74,25 @@ export function UserAvatarMenu() {
       <DropdownMenuContent
         align="end"
         sideOffset={12}
-        className="w-64 rounded-2xl p-2 border-border/40 backdrop-blur-xl data-[state=closed]:duration-0"
+        className="w-56 rounded-2xl p-1.5 border-border/40 backdrop-blur-xl data-[state=closed]:duration-0"
         style={{
           background: 'linear-gradient(135deg, hsl(var(--card) / 0.95), hsl(var(--card) / 0.85))',
-          boxShadow: '0 16px 48px -12px hsl(var(--primary) / 0.1), 0 8px 24px -8px rgba(0,0,0,0.15)',
+          boxShadow: '0 12px 40px -10px hsl(var(--primary) / 0.1), 0 6px 20px -6px rgba(0,0,0,0.12)',
         }}
       >
-        <div className="px-3 py-3 rounded-xl bg-muted/40 mb-1.5">
-          <div className="flex items-center gap-3">
-            <Avatar className="h-10 w-10 border-2 border-primary/20">
-              {avatarUrl && <AvatarImage src={avatarUrl} alt="Avatar" />}
-              <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/5 text-primary text-xs font-bold">
-                {initials}
-              </AvatarFallback>
-            </Avatar>
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-foreground leading-tight truncate">{email}</p>
-              {roleLabel && (
-                <span className={`inline-flex items-center mt-1 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${roleBadgeClass}`}>
-                  {roleLabel}
-                </span>
-              )}
-            </div>
-          </div>
+        {/* User info */}
+        <div className="px-3 py-2.5 rounded-xl bg-muted/40 mb-1">
+          <p className="text-sm font-semibold text-foreground truncate">{email}</p>
+          {roleLabel && (
+            <span className={`inline-flex items-center mt-0.5 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${roleBadgeClass}`}>
+              {roleLabel}
+            </span>
+          )}
         </div>
 
-        {/* Compact theme switcher */}
-        <div className="px-3 py-2">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50 mb-2">
-            Aparência
-          </p>
-          <div className="flex items-center gap-1 p-1 rounded-xl bg-muted/50 border border-border/30">
+        {/* Theme switcher */}
+        <div className="px-2 py-1.5">
+          <div className="flex items-center gap-0.5 p-0.5 rounded-lg bg-muted/50 border border-border/30">
             {([
               { value: 'light', icon: Sun, label: 'Claro' },
               { value: 'dark', icon: Moon, label: 'Escuro' },
@@ -114,108 +102,59 @@ export function UserAvatarMenu() {
                 key={opt.value}
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); setTheme(opt.value); }}
                 className={cn(
-                  'flex-1 flex items-center justify-center gap-1.5 rounded-lg px-2 py-1.5 text-[11px] font-medium transition-all duration-200',
+                  'flex-1 flex items-center justify-center gap-1 rounded-md px-1.5 py-1 text-[10px] font-medium transition-all duration-200',
                   theme === opt.value
                     ? 'bg-background text-foreground shadow-sm border border-border/50'
                     : 'text-muted-foreground hover:text-foreground'
                 )}
-                aria-label={opt.label}
               >
-                <opt.icon className="w-3.5 h-3.5" />
+                <opt.icon className="w-3 h-3" />
                 <span>{opt.label}</span>
               </button>
             ))}
           </div>
         </div>
 
-        <DropdownMenuItem
-          onClick={() => go('/perfil')}
-          className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
-        >
-          <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
-            <Settings className="w-4 h-4 text-muted-foreground" />
-          </div>
-          <div>
-            <p className="font-medium">Configurações</p>
-            <p className="text-[10px] text-muted-foreground">Perfil e preferências</p>
-          </div>
+        <DropdownMenuSeparator className="my-1 bg-border/30" />
+
+        {/* Main actions */}
+        <DropdownMenuItem onClick={() => go('/perfil')} className="cursor-pointer rounded-lg px-3 py-2 text-sm gap-2.5">
+          <Settings className="w-4 h-4 text-muted-foreground" />
+          Configurações
         </DropdownMenuItem>
 
-        <DropdownMenuItem
-          onClick={() => go('/perfil#notificacoes')}
-          className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
-        >
-          <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
-            <Bell className="w-4 h-4 text-muted-foreground" />
-          </div>
-          <div>
-            <p className="font-medium">Notificações</p>
-            <p className="text-[10px] text-muted-foreground">Push e preferências</p>
-          </div>
+        <DropdownMenuItem onClick={() => go('/perfil#notificacoes')} className="cursor-pointer rounded-lg px-3 py-2 text-sm gap-2.5">
+          <Bell className="w-4 h-4 text-muted-foreground" />
+          Notificações
         </DropdownMenuItem>
 
         {role === 'franquia' && (
-          <DropdownMenuItem
-            onClick={() => go('/perfil#franquia')}
-            className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
-          >
-            <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
-              <Building2 className="w-4 h-4 text-muted-foreground" />
-            </div>
-            <div>
-              <p className="font-medium">Organização</p>
-              <p className="text-[10px] text-muted-foreground">Configurações da franquia</p>
-            </div>
+          <DropdownMenuItem onClick={() => go('/perfil#franquia')} className="cursor-pointer rounded-lg px-3 py-2 text-sm gap-2.5">
+            <Building2 className="w-4 h-4 text-muted-foreground" />
+            Organização
           </DropdownMenuItem>
         )}
 
         {(role === 'franquia' || role === 'admin_fabrica' || role === 'super_admin') && (
-          <>
-            <DropdownMenuSeparator className="my-1.5 bg-border/30" />
-            <p className="px-3 py-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground/50">
-              Integrações
-            </p>
-            <DropdownMenuItem
-              onClick={() => go('/perfil#integracoes')}
-              className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
-            >
-              <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
-                <BarChart3 className="w-4 h-4 text-muted-foreground" />
-              </div>
-              Meta Pixel
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => go('/perfil#integracoes')}
-              className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
-            >
-              <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
-                <Webhook className="w-4 h-4 text-muted-foreground" />
-              </div>
-              Webhook CRM
-            </DropdownMenuItem>
-          </>
+          <DropdownMenuItem onClick={() => go('/perfil#integracoes')} className="cursor-pointer rounded-lg px-3 py-2 text-sm gap-2.5">
+            <Webhook className="w-4 h-4 text-muted-foreground" />
+            Integrações
+          </DropdownMenuItem>
         )}
 
-        <DropdownMenuSeparator className="my-1.5 bg-border/30" />
-
-        <DropdownMenuItem
-          onClick={() => go('/suporte')}
-          className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 transition-colors"
-        >
-          <div className="w-8 h-8 rounded-lg bg-muted/60 flex items-center justify-center shrink-0">
-            <LifeBuoy className="w-4 h-4 text-muted-foreground" />
-          </div>
-          Suporte & Guia
+        <DropdownMenuItem onClick={() => go('/suporte')} className="cursor-pointer rounded-lg px-3 py-2 text-sm gap-2.5">
+          <LifeBuoy className="w-4 h-4 text-muted-foreground" />
+          Suporte
         </DropdownMenuItem>
+
+        <DropdownMenuSeparator className="my-1 bg-border/30" />
 
         <DropdownMenuItem
           onClick={() => { setOpen(false); void signOut(); }}
-          className="cursor-pointer rounded-xl px-3 py-2.5 text-sm gap-3 text-destructive focus:text-destructive transition-colors"
+          className="cursor-pointer rounded-lg px-3 py-2 text-sm gap-2.5 text-destructive focus:text-destructive"
         >
-          <div className="w-8 h-8 rounded-lg bg-destructive/10 flex items-center justify-center shrink-0">
-            <LogOut className="w-4 h-4" />
-          </div>
-          Sair da conta
+          <LogOut className="w-4 h-4" />
+          Sair
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
