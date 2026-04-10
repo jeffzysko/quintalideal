@@ -1061,6 +1061,12 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
                     <SelectItem value="quiz">📝 Quiz</SelectItem>
                     <SelectItem value="manual">✏️ Manual</SelectItem>
                     <SelectItem value="csv_import">📄 CSV</SelectItem>
+                    <SelectItem value="instagram">📸 Instagram</SelectItem>
+                    <SelectItem value="facebook">📘 Facebook</SelectItem>
+                    <SelectItem value="google">🔍 Google Ads</SelectItem>
+                    <SelectItem value="indicacao">🤝 Indicação</SelectItem>
+                    <SelectItem value="organico">🌱 Orgânico</SelectItem>
+                    <SelectItem value="tiktok">🎵 TikTok</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -1155,6 +1161,12 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
             <SelectItem value="quiz">📝 Quiz</SelectItem>
             <SelectItem value="manual">✏️ Manual</SelectItem>
             <SelectItem value="csv_import">📄 CSV</SelectItem>
+            <SelectItem value="instagram">📸 Instagram</SelectItem>
+            <SelectItem value="facebook">📘 Facebook</SelectItem>
+            <SelectItem value="google">🔍 Google Ads</SelectItem>
+            <SelectItem value="indicacao">🤝 Indicação</SelectItem>
+            <SelectItem value="organico">🌱 Orgânico</SelectItem>
+            <SelectItem value="tiktok">🎵 TikTok</SelectItem>
           </SelectContent>
         </Select>
 
