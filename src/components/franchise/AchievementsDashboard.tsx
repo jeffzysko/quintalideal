@@ -61,14 +61,20 @@ export function AchievementsDashboard({ franchiseId, leads }: AchievementsDashbo
     }
 
     leads.forEach(l => {
-      const d = new Date(l.created_at);
-      const m = d.getMonth() + 1;
-      const y = d.getFullYear();
-      const entry = months.find(e => e.month === m && e.year === y);
-      if (entry) {
-        entry.leads++;
-        if (l.status_lead === 'vendido') entry.sold++;
+      if (l.status_lead === 'vendido') {
+        // For sold leads, use updated_at (when the sale was recorded) for monthly attribution
+        const d = new Date((l as any).updated_at || l.created_at);
+        const m = d.getMonth() + 1;
+        const y = d.getFullYear();
+        const entry = months.find(e => e.month === m && e.year === y);
+        if (entry) entry.sold++;
       }
+      // For total lead count, use created_at
+      const dc = new Date(l.created_at);
+      const mc = dc.getMonth() + 1;
+      const yc = dc.getFullYear();
+      const entryC = months.find(e => e.month === mc && e.year === yc);
+      if (entryC) entryC.leads++;
     });
 
     goals.forEach(g => {
