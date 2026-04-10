@@ -53,6 +53,17 @@ const TEMP_OPTIONS: { value: LeadTemperature | ''; label: string; emoji: string 
   { value: 'frio', label: 'Frio', emoji: '❄️' },
 ];
 
+const LEAD_SOURCE_OPTIONS = [
+  { value: '', label: 'Não informado' },
+  { value: 'instagram', label: '📸 Instagram' },
+  { value: 'facebook', label: '📘 Facebook' },
+  { value: 'google', label: '🔍 Google Ads' },
+  { value: 'indicacao', label: '🤝 Indicação' },
+  { value: 'organico', label: '🌱 Orgânico' },
+  { value: 'tiktok', label: '🎵 TikTok' },
+  { value: 'outro', label: '📌 Outro' },
+];
+
 interface ManualLeadFormProps {
   franchiseId: string;
   trigger?: React.ReactNode;
@@ -80,6 +91,7 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
   const [espaco, setEspaco] = useState('');
   const [moradia, setMoradia] = useState('');
   const [tempOverride, setTempOverride] = useState<LeadTemperature | ''>('');
+  const [leadSource, setLeadSource] = useState('');
   const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
   const [photoFiles, setPhotoFiles] = useState<{ file: File; preview: string }[]>([]);
   const photoInputRef = useRef<HTMLInputElement>(null);
@@ -97,7 +109,7 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
     setNome(''); setTelefone(''); setEmail(''); setCidade('');
     setModelo(''); setObservacoes(''); setErrors({});
     setOrcamento(''); setIntencao(''); setEspaco('');
-    setMoradia(''); setTempOverride(''); setShowClassification(false);
+    setMoradia(''); setTempOverride(''); setLeadSource(''); setShowClassification(false);
     setDuplicateWarning(null);
     photoFiles.forEach(f => URL.revokeObjectURL(f.preview));
     setPhotoFiles([]);
@@ -228,6 +240,8 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
         status_lead: 'novo',
         pontuacao_quintal: pontuacao,
         respostas_questionario: Object.keys(respostas).length > 0 ? respostas : null,
+        utm_source: leadSource || null,
+        utm_medium: leadSource ? 'manual_entry' : null,
         ...photoFields,
       });
 
