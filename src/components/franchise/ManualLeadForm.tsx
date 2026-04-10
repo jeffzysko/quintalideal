@@ -54,7 +54,6 @@ const TEMP_OPTIONS: { value: LeadTemperature | ''; label: string; emoji: string 
 ];
 
 const LEAD_SOURCE_OPTIONS = [
-  { value: '', label: 'Não informado' },
   { value: 'instagram', label: '📸 Instagram' },
   { value: 'facebook', label: '📘 Facebook' },
   { value: 'google', label: '🔍 Google Ads' },
@@ -348,11 +347,11 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
           {/* Origem do Lead */}
           <div className="space-y-1.5">
             <Label>Origem do Lead</Label>
-            <Select value={leadSource} onValueChange={setLeadSource}>
+            <Select value={leadSource || undefined} onValueChange={setLeadSource}>
               <SelectTrigger><SelectValue placeholder="De onde veio este lead?" /></SelectTrigger>
               <SelectContent>
                 {LEAD_SOURCE_OPTIONS.map((o) => (
-                  <SelectItem key={o.value || '_empty'} value={o.value || '_none'}>{o.label}</SelectItem>
+                  <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
