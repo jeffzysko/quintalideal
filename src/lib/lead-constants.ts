@@ -55,6 +55,9 @@ export interface LeadRow {
   ref_code: string | null;
   referred_by: string | null;
   lead_origin?: string;
+  utm_source?: string | null;
+  utm_medium?: string | null;
+  utm_campaign?: string | null;
 }
 
 export interface Franchise {

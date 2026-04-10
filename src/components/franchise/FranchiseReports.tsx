@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
-import { TrendingUp, TrendingDown, Target, Zap, MapPin, Droplets, CalendarDays, BarChart3 } from 'lucide-react';
+import { TrendingUp, TrendingDown, Target, Zap, MapPin, Droplets, CalendarDays, BarChart3, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { STATUS_LABELS, STATUS_CHART_COLORS, LeadRow } from '@/lib/lead-constants';
 
@@ -106,6 +106,42 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
       weeks.push({ week: label, count });
     }
     return weeks;
+  }, [leads]);
+
+  const SOURCE_LABELS: Record<string, string> = {
+    instagram: 'Instagram',
+    facebook: 'Facebook',
+    google: 'Google Ads',
+    tiktok: 'TikTok',
+    youtube: 'YouTube',
+    organic: 'Orgânico',
+  };
+
+  const SOURCE_COLORS: Record<string, string> = {
+    instagram: 'hsl(330, 70%, 55%)',
+    facebook: 'hsl(220, 70%, 55%)',
+    google: 'hsl(45, 90%, 50%)',
+    tiktok: 'hsl(180, 60%, 45%)',
+    youtube: 'hsl(0, 70%, 55%)',
+    organic: 'hsl(var(--primary))',
+  };
+
+  const leadSources = useMemo(() => {
+    const counts: Record<string, number> = {};
+    leads.forEach(l => {
+      const src = (l as any).utm_source || 'organic';
+      const key = src.toLowerCase();
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .map(([source, count]) => ({
+        source,
+        label: SOURCE_LABELS[source] || source,
+        count,
+        color: SOURCE_COLORS[source] || 'hsl(var(--muted-foreground))',
+      }));
   }, [leads]);
 
   if (totalLeads === 0) {
@@ -337,6 +373,45 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
           </Card>
         )}
       </div>
+
+      {/* Lead Sources */}
+      {leadSources.length > 0 && leadSources.some(s => s.source !== 'organic') && (
+        <Card className="border-border/50 shadow-sm">
+          <CardHeader className="pb-2 px-3 sm:px-6">
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <Share2 className="w-4 h-4 text-primary" /> Origem dos Leads
+            </CardTitle>
+            <p className="text-[11px] text-muted-foreground mt-0.5">De onde seus leads estão vindo (baseado em UTM).</p>
+          </CardHeader>
+          <CardContent className="px-3 sm:px-6">
+            <div className="space-y-2">
+              {leadSources.map((s, i) => {
+                const pct = totalLeads > 0 ? Math.round((s.count / totalLeads) * 100) : 0;
+                return (
+                  <div key={i} className="flex items-center gap-2 sm:gap-3">
+                    <span className="text-xs font-bold text-muted-foreground w-5">{i + 1}.</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-xs sm:text-sm font-medium text-foreground truncate">{s.label}</span>
+                        <span className="text-[10px] sm:text-xs text-muted-foreground shrink-0 ml-2">{s.count} ({pct}%)</span>
+                      </div>
+                      <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                        <motion.div
+                          className="h-full rounded-full"
+                          style={{ backgroundColor: s.color }}
+                          initial={{ width: 0 }}
+                          animate={{ width: `${pct}%` }}
+                          transition={{ duration: 0.6, delay: Math.min(i * 0.1, 0.15) }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
