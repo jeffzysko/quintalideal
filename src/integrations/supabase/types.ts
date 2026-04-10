@@ -323,6 +323,9 @@ export type Database = {
             | Database["public"]["Enums"]["territory_match_status"]
             | null
           updated_at: string
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
         }
         Insert: {
           cidade?: string | null
@@ -353,6 +356,9 @@ export type Database = {
             | Database["public"]["Enums"]["territory_match_status"]
             | null
           updated_at?: string
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
         }
         Update: {
           cidade?: string | null
@@ -383,6 +389,9 @@ export type Database = {
             | Database["public"]["Enums"]["territory_match_status"]
             | null
           updated_at?: string
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
         }
         Relationships: [
           {
