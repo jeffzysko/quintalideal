@@ -166,6 +166,9 @@ Deno.serve(async (req) => {
     const modeloRecomendado =
       typeof payload.modelo_recomendado === "string" ? payload.modelo_recomendado.trim().slice(0, 120) : null;
     const referredBy = typeof payload.referred_by === "string" ? payload.referred_by.trim().slice(0, 120) : null;
+    const utmSource = typeof payload.utm_source === "string" ? payload.utm_source.trim().slice(0, 120) : null;
+    const utmMedium = typeof payload.utm_medium === "string" ? payload.utm_medium.trim().slice(0, 120) : null;
+    const utmCampaign = typeof payload.utm_campaign === "string" ? payload.utm_campaign.trim().slice(0, 120) : null;
     const pontuacaoQuintal = Number.isFinite(payload.pontuacao_quintal)
       ? Number(payload.pontuacao_quintal)
       : null;
@@ -252,6 +255,9 @@ Deno.serve(async (req) => {
         foto4: typeof payload.foto4 === "string" ? payload.foto4 : null,
         referred_by: referredBy,
         ref_code: refCode,
+        utm_source: utmSource,
+        utm_medium: utmMedium,
+        utm_campaign: utmCampaign,
       }).select('id').single();
 
       if (!error && insertedLead) {

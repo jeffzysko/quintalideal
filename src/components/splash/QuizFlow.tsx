@@ -192,6 +192,9 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
           foto3: photoUrls[2] || null,
           foto4: photoUrls[3] || null,
           referred_by: referredBy || null,
+          utm_source: new URLSearchParams(window.location.search).get('utm_source') || null,
+          utm_medium: new URLSearchParams(window.location.search).get('utm_medium') || null,
+          utm_campaign: new URLSearchParams(window.location.search).get('utm_campaign') || null,
         },
       });
 
