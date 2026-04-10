@@ -782,7 +782,13 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
         if (lead.cidade !== cityFilter) return false;
       }
       if (originFilter !== 'all') {
-        if ((lead.lead_origin || 'quiz') !== originFilter) return false;
+        // Filter by lead_origin (quiz/manual/csv) or utm_source (instagram/facebook/etc)
+        const isLeadOriginValue = ['quiz', 'manual', 'csv_import'].includes(originFilter);
+        if (isLeadOriginValue) {
+          if ((lead.lead_origin || 'quiz') !== originFilter) return false;
+        } else {
+          if ((lead.utm_source || '') !== originFilter) return false;
+        }
       }
       if (franchiseFilter !== 'all' && franchiseMap) {
         if (lead.franquia_id !== franchiseFilter) return false;
