@@ -345,6 +345,19 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
             </Select>
           </div>
 
+          {/* Origem do Lead */}
+          <div className="space-y-1.5">
+            <Label>Origem do Lead</Label>
+            <Select value={leadSource} onValueChange={setLeadSource}>
+              <SelectTrigger><SelectValue placeholder="De onde veio este lead?" /></SelectTrigger>
+              <SelectContent>
+                {LEAD_SOURCE_OPTIONS.map((o) => (
+                  <SelectItem key={o.value || '_empty'} value={o.value || '_none'}>{o.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           {/* Fotos */}
           <div className="space-y-2">
             <Label className="flex items-center gap-2">
