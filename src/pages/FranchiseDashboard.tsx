@@ -113,7 +113,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       while (true) {
         const { data, error } = await supabase
           .from('leads')
-          .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin, respostas_questionario')
+          .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, updated_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin, respostas_questionario')
           .eq('franquia_id', franchiseId!)
           .gte('created_at', twelveMonthsAgo.toISOString())
           .order('created_at', { ascending: false })
@@ -224,7 +224,8 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   const now = new Date();
   const soldThisMonth = allLeads.filter(l => {
     if (l.status_lead !== 'vendido') return false;
-    const d = new Date(l.created_at);
+    // Use updated_at (date the status was changed to "vendido") instead of created_at
+    const d = new Date((l as any).updated_at || l.created_at);
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   }).length;
 
