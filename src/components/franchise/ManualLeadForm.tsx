@@ -53,6 +53,16 @@ const TEMP_OPTIONS: { value: LeadTemperature | ''; label: string; emoji: string 
   { value: 'frio', label: 'Frio', emoji: '❄️' },
 ];
 
+const LEAD_SOURCE_OPTIONS = [
+  { value: 'instagram', label: '📸 Instagram' },
+  { value: 'facebook', label: '📘 Facebook' },
+  { value: 'google', label: '🔍 Google Ads' },
+  { value: 'indicacao', label: '🤝 Indicação' },
+  { value: 'organico', label: '🌱 Orgânico' },
+  { value: 'tiktok', label: '🎵 TikTok' },
+  { value: 'outro', label: '📌 Outro' },
+];
+
 interface ManualLeadFormProps {
   franchiseId: string;
   trigger?: React.ReactNode;
@@ -80,6 +90,7 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
   const [espaco, setEspaco] = useState('');
   const [moradia, setMoradia] = useState('');
   const [tempOverride, setTempOverride] = useState<LeadTemperature | ''>('');
+  const [leadSource, setLeadSource] = useState('');
   const [duplicateWarning, setDuplicateWarning] = useState<string | null>(null);
   const [photoFiles, setPhotoFiles] = useState<{ file: File; preview: string }[]>([]);
   const photoInputRef = useRef<HTMLInputElement>(null);
@@ -97,7 +108,7 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
     setNome(''); setTelefone(''); setEmail(''); setCidade('');
     setModelo(''); setObservacoes(''); setErrors({});
     setOrcamento(''); setIntencao(''); setEspaco('');
-    setMoradia(''); setTempOverride(''); setShowClassification(false);
+    setMoradia(''); setTempOverride(''); setLeadSource(''); setShowClassification(false);
     setDuplicateWarning(null);
     photoFiles.forEach(f => URL.revokeObjectURL(f.preview));
     setPhotoFiles([]);
@@ -228,6 +239,8 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
         status_lead: 'novo',
         pontuacao_quintal: pontuacao,
         respostas_questionario: Object.keys(respostas).length > 0 ? respostas : null,
+        utm_source: leadSource || null,
+        utm_medium: leadSource ? 'manual_entry' : null,
         ...photoFields,
       });
 
@@ -327,6 +340,19 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
               <SelectTrigger><SelectValue placeholder="Selecione um modelo (opcional)" /></SelectTrigger>
               <SelectContent>
                 {POOL_MODELS.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Origem do Lead */}
+          <div className="space-y-1.5">
+            <Label>Origem do Lead</Label>
+            <Select value={leadSource || undefined} onValueChange={setLeadSource}>
+              <SelectTrigger><SelectValue placeholder="De onde veio este lead?" /></SelectTrigger>
+              <SelectContent>
+                {LEAD_SOURCE_OPTIONS.map((o) => (
+                  <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>

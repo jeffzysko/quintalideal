@@ -782,7 +782,13 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
         if (lead.cidade !== cityFilter) return false;
       }
       if (originFilter !== 'all') {
-        if ((lead.lead_origin || 'quiz') !== originFilter) return false;
+        // Filter by lead_origin (quiz/manual/csv) or utm_source (instagram/facebook/etc)
+        const isLeadOriginValue = ['quiz', 'manual', 'csv_import'].includes(originFilter);
+        if (isLeadOriginValue) {
+          if ((lead.lead_origin || 'quiz') !== originFilter) return false;
+        } else {
+          if ((lead.utm_source || '') !== originFilter) return false;
+        }
       }
       if (franchiseFilter !== 'all' && franchiseMap) {
         if (lead.franquia_id !== franchiseFilter) return false;
@@ -1055,6 +1061,12 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
                     <SelectItem value="quiz">📝 Quiz</SelectItem>
                     <SelectItem value="manual">✏️ Manual</SelectItem>
                     <SelectItem value="csv_import">📄 CSV</SelectItem>
+                    <SelectItem value="instagram">📸 Instagram</SelectItem>
+                    <SelectItem value="facebook">📘 Facebook</SelectItem>
+                    <SelectItem value="google">🔍 Google Ads</SelectItem>
+                    <SelectItem value="indicacao">🤝 Indicação</SelectItem>
+                    <SelectItem value="organico">🌱 Orgânico</SelectItem>
+                    <SelectItem value="tiktok">🎵 TikTok</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -1149,6 +1161,12 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
             <SelectItem value="quiz">📝 Quiz</SelectItem>
             <SelectItem value="manual">✏️ Manual</SelectItem>
             <SelectItem value="csv_import">📄 CSV</SelectItem>
+            <SelectItem value="instagram">📸 Instagram</SelectItem>
+            <SelectItem value="facebook">📘 Facebook</SelectItem>
+            <SelectItem value="google">🔍 Google Ads</SelectItem>
+            <SelectItem value="indicacao">🤝 Indicação</SelectItem>
+            <SelectItem value="organico">🌱 Orgânico</SelectItem>
+            <SelectItem value="tiktok">🎵 TikTok</SelectItem>
           </SelectContent>
         </Select>
 
