@@ -2,7 +2,7 @@ import { useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
-import { TrendingUp, TrendingDown, Target, Zap, MapPin, Droplets, CalendarDays, BarChart3 } from 'lucide-react';
+import { TrendingUp, TrendingDown, Target, Zap, MapPin, Droplets, CalendarDays, BarChart3, Share2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { STATUS_LABELS, STATUS_CHART_COLORS, LeadRow } from '@/lib/lead-constants';
 
@@ -106,6 +106,42 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
       weeks.push({ week: label, count });
     }
     return weeks;
+  }, [leads]);
+
+  const SOURCE_LABELS: Record<string, string> = {
+    instagram: 'Instagram',
+    facebook: 'Facebook',
+    google: 'Google Ads',
+    tiktok: 'TikTok',
+    youtube: 'YouTube',
+    organic: 'Orgânico',
+  };
+
+  const SOURCE_COLORS: Record<string, string> = {
+    instagram: 'hsl(330, 70%, 55%)',
+    facebook: 'hsl(220, 70%, 55%)',
+    google: 'hsl(45, 90%, 50%)',
+    tiktok: 'hsl(180, 60%, 45%)',
+    youtube: 'hsl(0, 70%, 55%)',
+    organic: 'hsl(var(--primary))',
+  };
+
+  const leadSources = useMemo(() => {
+    const counts: Record<string, number> = {};
+    leads.forEach(l => {
+      const src = (l as any).utm_source || 'organic';
+      const key = src.toLowerCase();
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    return Object.entries(counts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 6)
+      .map(([source, count]) => ({
+        source,
+        label: SOURCE_LABELS[source] || source,
+        count,
+        color: SOURCE_COLORS[source] || 'hsl(var(--muted-foreground))',
+      }));
   }, [leads]);
 
   if (totalLeads === 0) {
