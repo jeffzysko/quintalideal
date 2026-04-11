@@ -59,6 +59,13 @@ export type Database = {
             foreignKeyName: "analytics_events_franchise_id_fkey"
             columns: ["franchise_id"]
             isOneToOne: false
+            referencedRelation: "franchise_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "analytics_events_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
             referencedRelation: "franchises"
             referencedColumns: ["id"]
           },
@@ -100,6 +107,13 @@ export type Database = {
           notes?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "franchise_covered_cities_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchise_safe"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "franchise_covered_cities_franchise_id_fkey"
             columns: ["franchise_id"]
@@ -398,6 +412,13 @@ export type Database = {
             foreignKeyName: "leads_franquia_id_fkey"
             columns: ["franquia_id"]
             isOneToOne: false
+            referencedRelation: "franchise_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_franquia_id_fkey"
+            columns: ["franquia_id"]
+            isOneToOne: false
             referencedRelation: "franchises"
             referencedColumns: ["id"]
           },
@@ -406,6 +427,13 @@ export type Database = {
             columns: ["franquia_id"]
             isOneToOne: false
             referencedRelation: "franchises_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_origin_franchise_id_fkey"
+            columns: ["origin_franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchise_safe"
             referencedColumns: ["id"]
           },
           {
@@ -568,6 +596,13 @@ export type Database = {
             foreignKeyName: "profiles_franquia_id_fkey"
             columns: ["franquia_id"]
             isOneToOne: false
+            referencedRelation: "franchise_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "profiles_franquia_id_fkey"
+            columns: ["franquia_id"]
+            isOneToOne: false
             referencedRelation: "franchises"
             referencedColumns: ["id"]
           },
@@ -670,6 +705,13 @@ export type Database = {
             foreignKeyName: "webhook_logs_franchise_id_fkey"
             columns: ["franchise_id"]
             isOneToOne: false
+            referencedRelation: "franchise_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "webhook_logs_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
             referencedRelation: "franchises"
             referencedColumns: ["id"]
           },
@@ -684,6 +726,57 @@ export type Database = {
       }
     }
     Views: {
+      franchise_safe: {
+        Row: {
+          ativa: boolean | null
+          cidade_base: string | null
+          cidades_atendidas: string[] | null
+          created_at: string | null
+          email: string | null
+          id: string | null
+          last_accessed_at: string | null
+          last_lead_activity_at: string | null
+          meta_pixel_id: string | null
+          nome_franquia: string | null
+          responsavel: string | null
+          slug_url: string | null
+          webhook_url: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          ativa?: boolean | null
+          cidade_base?: string | null
+          cidades_atendidas?: string[] | null
+          created_at?: string | null
+          email?: string | null
+          id?: string | null
+          last_accessed_at?: string | null
+          last_lead_activity_at?: string | null
+          meta_pixel_id?: string | null
+          nome_franquia?: string | null
+          responsavel?: string | null
+          slug_url?: string | null
+          webhook_url?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          ativa?: boolean | null
+          cidade_base?: string | null
+          cidades_atendidas?: string[] | null
+          created_at?: string | null
+          email?: string | null
+          id?: string | null
+          last_accessed_at?: string | null
+          last_lead_activity_at?: string | null
+          meta_pixel_id?: string | null
+          nome_franquia?: string | null
+          responsavel?: string | null
+          slug_url?: string | null
+          webhook_url?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
       franchises_public: {
         Row: {
           ativa: boolean | null
