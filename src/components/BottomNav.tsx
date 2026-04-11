@@ -36,8 +36,10 @@ export function BottomNav() {
   if (!user || !role) return null;
 
   // Don't show on public pages
-  const publicPaths = ['/', '/login', '/forgot-password', '/reset-password', '/termos', '/privacidade', '/install', '/ranking', '/mapa'];
-  if (publicPaths.includes(location.pathname)) return null;
+  // Paths where the bottom nav should be visible (authenticated pages)
+  const authenticatedPrefixes = ['/admin', '/franquia', '/hoje', '/perfil', '/suporte', '/docs', '/notificacoes', '/lead', '/painel', '/radar'];
+  const isAuthenticatedPage = authenticatedPrefixes.some(p => location.pathname.startsWith(p));
+  if (!isAuthenticatedPage) return null;
 
   const navItems = getNavForRole(role);
 
