@@ -36,7 +36,7 @@ export function BottomNav() {
   if (!user || !role) return null;
 
   // Don't show on public pages
-  const publicPaths = ['/', '/login', '/forgot-password', '/reset-password', '/termos', '/privacidade', '/install', '/ranking', '/mapa'];
+  const publicPaths = ['/', '/login', '/forgot-password', '/reset-password', '/termos', '/privacidade', '/install', '/ranking', '/mapa', '/explorar'];
   if (publicPaths.includes(location.pathname)) return null;
 
   const navItems = getNavForRole(role);

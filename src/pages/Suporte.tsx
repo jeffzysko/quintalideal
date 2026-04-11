@@ -363,7 +363,7 @@ export default function Suporte() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background pb-bottomnav">
       <PanelHeader title="Suporte & Guia">
         <BackButton fallback="/franquia" />
         <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
