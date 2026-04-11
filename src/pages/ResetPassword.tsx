@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Lock, ArrowRight, CheckCircle2, AlertCircle, Check, X, Eye, EyeOff } from 'lucide-react';
+import { Lock, ArrowRight, ArrowLeft, CheckCircle2, AlertCircle, Check, X, Eye, EyeOff } from 'lucide-react';
 import logoSplash from '@/assets/logo-splash.png';
 
 /* ── Password validation rules ── */
@@ -352,6 +352,14 @@ export default function ResetPassword() {
                   )}
                 </Button>
               </form>
+
+              <button
+                onClick={() => navigate('/login')}
+                className="w-full mt-4 text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center gap-1.5"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                Voltar ao login
+              </button>
             </>
           )}
         </motion.div>

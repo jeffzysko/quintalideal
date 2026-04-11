@@ -21,20 +21,37 @@ export default function ForgotPassword() {
     if (prefill) setEmail(prefill);
   }, [searchParams]);
 
+  const [cooldown, setCooldown] = useState(0);
+
+  // Cooldown timer
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setTimeout(() => setCooldown(c => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [cooldown]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    const trimmed = email.trim();
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setError('Informe um e-mail válido.');
+      return;
+    }
+
     setLoading(true);
 
     try {
       const { error: fnError } = await supabase.functions.invoke('send-recovery-email', {
-        body: { email, siteOrigin: window.location.origin },
+        body: { email: trimmed, siteOrigin: window.location.origin },
       });
 
       if (fnError) {
         setError('Erro ao enviar e-mail. Tente novamente.');
       } else {
         setSent(true);
+        setCooldown(60);
       }
     } catch {
       setError('Erro ao enviar e-mail. Tente novamente.');
@@ -82,14 +99,27 @@ export default function ForgotPassword() {
               <p className="text-sm text-muted-foreground mb-4">
                 Verifique sua caixa de entrada (e o spam) para o link de recuperação.
               </p>
-              <Button
-                variant="outline"
-                onClick={() => navigate('/login')}
-                className="rounded-xl gap-2"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Voltar ao Login
-              </Button>
+              <div className="flex flex-col gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSent(false);
+                    setError('');
+                  }}
+                  disabled={cooldown > 0}
+                  className="rounded-xl gap-2"
+                >
+                  {cooldown > 0 ? `Reenviar em ${cooldown}s` : 'Reenviar e-mail'}
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate('/login')}
+                  className="rounded-xl gap-2"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Voltar ao Login
+                </Button>
+              </div>
             </motion.div>
           ) : (
             <>
