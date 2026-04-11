@@ -90,9 +90,11 @@ export default defineConfig(({ mode }) => ({
         globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,woff,woff2}"],
         navigateFallback: "/index.html",
         navigateFallbackDenylist: [/^\/~oauth/, /^\/api/],
-        
+        skipWaiting: false,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
         additionalManifestEntries: [
-          { url: "/offline.html", revision: "v2" },
+          { url: "/offline.html", revision: "v3" },
         ],
         runtimeCaching: [
           {
