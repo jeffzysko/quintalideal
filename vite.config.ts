@@ -36,13 +36,17 @@ export default defineConfig(({ mode }) => ({
         start_url: "/login",
         scope: "/",
         display: "standalone",
+        display_override: ["standalone", "minimal-ui"],
         orientation: "portrait",
         theme_color: "#08a1d6",
         background_color: "#0a1628",
         categories: ["business", "lifestyle"],
+        dir: "ltr",
+        lang: "pt-BR",
         launch_handler: {
           client_mode: "navigate-existing",
         },
+        handle_links: "preferred",
         icons: [
           {
             src: "/pwa-icon-192.png",
@@ -72,15 +76,24 @@ export default defineConfig(({ mode }) => ({
         ],
         shortcuts: [
           {
+            name: "Painel do Dia",
+            short_name: "Hoje",
+            description: "Veja seus leads e tarefas de hoje",
+            url: "/hoje",
+            icons: [{ src: "/pwa-icon-192.png", sizes: "192x192" }],
+          },
+          {
             name: "Dashboard",
             short_name: "Painel",
+            description: "Acesse o painel completo da franquia",
             url: "/franquia",
             icons: [{ src: "/pwa-icon-192.png", sizes: "192x192" }],
           },
           {
-            name: "Hoje",
-            short_name: "Hoje",
-            url: "/hoje",
+            name: "Notificações",
+            short_name: "Alertas",
+            description: "Veja suas notificações",
+            url: "/notificacoes",
             icons: [{ src: "/pwa-icon-192.png", sizes: "192x192" }],
           },
         ],
