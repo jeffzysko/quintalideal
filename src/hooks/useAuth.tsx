@@ -107,10 +107,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     try {
       const meta = await fetchUserMeta(currentUser.id);
-      if (!mountedRef.current) return;
+      if (!mountedRef.current || syncLockRef.current !== lockId) return;
 
       if (meta.inactive) {
-        await supabase.auth.signOut();
+        await supabase.auth.signOut({ scope: 'local' });
+        return;
+      }
+
+      // Users without a role cannot access any dashboard
+      if (!meta.role) {
+        console.warn('Auth: user has no assigned role, signing out:', currentUser.id);
+        await supabase.auth.signOut({ scope: 'local' });
         return;
       }
 
@@ -126,7 +133,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .then(() => {});
       }
     } catch (_err) {
-      if (!mountedRef.current) return;
+      if (!mountedRef.current || syncLockRef.current !== lockId) return;
       setRole(null);
       setFranchiseId(null);
       metaResolvedUserRef.current = currentUser.id;
@@ -172,6 +179,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       metaResolvedUserRef.current = null;
       const lockId = 'signin-force';
       await syncSession(data.user, lockId);
+
+      // After sync, check if user was signed out (inactive franchise or no role)
+      const { data: { session: postSyncSession } } = await supabase.auth.getSession();
+      if (!postSyncSession) {
+        setLoading(false);
+        return { error: 'Sua conta não possui acesso ao painel. Entre em contato com o administrador.' };
+      }
     }
 
     return { error: null };
@@ -179,11 +193,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = useCallback(async () => {
     setLoading(true);
-    const { error } = await supabase.auth.signOut();
-    if (error) {
+    try {
+      await supabase.auth.signOut({ scope: 'local' });
+    } catch (_err) {
+      // Force clear state even if signOut API fails
+      setUser(null);
+      setRole(null);
+      setFranchiseId(null);
+      lastSyncedUserRef.current = null;
+      metaResolvedUserRef.current = null;
+    } finally {
       setLoading(false);
     }
-    // onAuthStateChange will handle clearing state
+    // onAuthStateChange will also fire and clear state
   }, []);
 
   return (
