@@ -36,11 +36,10 @@ export function BottomNav() {
   if (!user || !role) return null;
 
   // Don't show on public pages
-  const publicPaths = ['/', '/login', '/forgot-password', '/reset-password', '/termos', '/privacidade', '/install', '/ranking', '/mapa', '/explorar'];
-  const isPublicPage = publicPaths.includes(location.pathname);
-  // Hide on franchise landing pages (slug routes like /porto-alegre)
-  const isQuizRoute = !location.pathname.startsWith('/admin') && !location.pathname.startsWith('/franquia') && !location.pathname.startsWith('/hoje') && !location.pathname.startsWith('/perfil') && !location.pathname.startsWith('/suporte') && !location.pathname.startsWith('/docs') && !location.pathname.startsWith('/notificacoes') && !location.pathname.startsWith('/lead') && !location.pathname.startsWith('/painel') && !location.pathname.startsWith('/radar');
-  if (isPublicPage || (isQuizRoute && location.pathname !== '/hoje')) return null;
+  // Paths where the bottom nav should be visible (authenticated pages)
+  const authenticatedPrefixes = ['/admin', '/franquia', '/hoje', '/perfil', '/suporte', '/docs', '/notificacoes', '/lead', '/painel', '/radar'];
+  const isAuthenticatedPage = authenticatedPrefixes.some(p => location.pathname.startsWith(p));
+  if (!isAuthenticatedPage) return null;
 
   const navItems = getNavForRole(role);
 
