@@ -352,6 +352,14 @@ export default function ResetPassword() {
                   )}
                 </Button>
               </form>
+
+              <button
+                onClick={() => navigate('/login')}
+                className="w-full mt-4 text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center gap-1.5"
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                Voltar ao login
+              </button>
             </>
           )}
         </motion.div>
