@@ -156,16 +156,31 @@ export default function ResetPassword() {
       return;
     }
 
-    const { error } = await supabase.auth.updateUser({ password });
+    try {
+      const { error } = await supabase.auth.updateUser({ password });
 
-    if (error) {
-      console.error('updateUser error:', JSON.stringify({ message: error.message, status: error.status, name: error.name, code: (error as any).code }));
-      setError(translateAuthError(error.message));
+      if (error) {
+        console.error('updateUser error:', JSON.stringify({ message: error.message, status: error.status, name: error.name, code: (error as any).code }));
+        setError(translateAuthError(error.message));
+        setLoading(false);
+      } else {
+        // Verify the password was actually saved by checking session is still valid
+        const { data: { session: postSession } } = await supabase.auth.getSession();
+        if (postSession) {
+          console.log('Password updated successfully for user:', postSession.user.email);
+          setSuccess(true);
+          setLoading(false);
+          setTimeout(() => navigate('/painel'), 2500);
+        } else {
+          console.error('Session lost after password update');
+          setError('Houve um problema ao salvar sua senha. Solicite um novo link de recuperação.');
+          setLoading(false);
+        }
+      }
+    } catch (err) {
+      console.error('updateUser unexpected error:', err);
+      setError('Erro inesperado ao definir a senha. Tente novamente.');
       setLoading(false);
-    } else {
-      setSuccess(true);
-      setLoading(false);
-      setTimeout(() => navigate('/painel'), 2500);
     }
   };
 
