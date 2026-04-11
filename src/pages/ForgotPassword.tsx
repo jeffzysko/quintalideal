@@ -99,14 +99,27 @@ export default function ForgotPassword() {
               <p className="text-sm text-muted-foreground mb-4">
                 Verifique sua caixa de entrada (e o spam) para o link de recuperação.
               </p>
-              <Button
-                variant="outline"
-                onClick={() => navigate('/login')}
-                className="rounded-xl gap-2"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                Voltar ao Login
-              </Button>
+              <div className="flex flex-col gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setSent(false);
+                    setError('');
+                  }}
+                  disabled={cooldown > 0}
+                  className="rounded-xl gap-2"
+                >
+                  {cooldown > 0 ? `Reenviar em ${cooldown}s` : 'Reenviar e-mail'}
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => navigate('/login')}
+                  className="rounded-xl gap-2"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Voltar ao Login
+                </Button>
+              </div>
             </motion.div>
           ) : (
             <>
