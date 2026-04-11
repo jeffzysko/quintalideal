@@ -35,7 +35,7 @@ function PasswordChecklist({ password }: { password: string }) {
   if (!password) return null;
 
   const barColor = level === 'strong' ? 'bg-emerald-500' : level === 'medium' ? 'bg-amber-500' : 'bg-destructive';
-  const levelLabel = level === 'strong' ? 'Forte' : level === 'medium' ? 'Média' : 'Fraca';
+  const levelLabel = level === 'strong' ? '✅ Forte — ótima senha!' : level === 'medium' ? '⚠️ Média — quase lá!' : '❌ Fraca — complete os itens abaixo';
 
   return (
     <motion.div
@@ -44,6 +44,26 @@ function PasswordChecklist({ password }: { password: string }) {
       exit={{ opacity: 0, height: 0 }}
       className="space-y-2 overflow-hidden"
     >
+      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+        Sua senha precisa ter:
+      </p>
+
+      {/* Rules checklist */}
+      <ul className="space-y-1">
+        {results.map(r => (
+          <li key={r.key} className="flex items-center gap-1.5 text-xs">
+            {r.pass ? (
+              <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+            ) : (
+              <X className="w-3.5 h-3.5 text-destructive/60 shrink-0" />
+            )}
+            <span className={r.pass ? 'text-emerald-600 dark:text-emerald-400' : 'text-foreground/70'}>
+              {r.label}
+            </span>
+          </li>
+        ))}
+      </ul>
+
       {/* Strength bar */}
       <div className="flex items-center gap-2">
         <div className="flex-1 h-1.5 rounded-full bg-muted overflow-hidden">
@@ -54,26 +74,10 @@ function PasswordChecklist({ password }: { password: string }) {
             transition={{ duration: 0.3 }}
           />
         </div>
-        <span className={`text-[11px] font-semibold ${barColor.replace('bg-', 'text-')}`}>
-          {levelLabel}
-        </span>
       </div>
-
-      {/* Rules checklist */}
-      <ul className="space-y-1">
-        {results.map(r => (
-          <li key={r.key} className="flex items-center gap-1.5 text-xs">
-            {r.pass ? (
-              <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
-            ) : (
-              <X className="w-3.5 h-3.5 text-muted-foreground/50 shrink-0" />
-            )}
-            <span className={r.pass ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted-foreground'}>
-              {r.label}
-            </span>
-          </li>
-        ))}
-      </ul>
+      <p className={`text-[11px] font-semibold ${barColor.replace('bg-', 'text-')}`}>
+        {levelLabel}
+      </p>
     </motion.div>
   );
 }
@@ -136,7 +140,8 @@ export default function ResetPassword() {
     setError('');
 
     if (!strength.allPass) {
-      setError('A senha precisa ter ao menos 6 caracteres, incluindo letra maiúscula, minúscula, número e caractere especial.');
+      const missing = PASSWORD_RULES.filter(r => !r.test(password)).map(r => r.label.toLowerCase());
+      setError(`Sua senha ainda não atende todos os requisitos. Falta: ${missing.join(', ')}.`);
       return;
     }
 
@@ -271,7 +276,7 @@ export default function ResetPassword() {
                 </div>
                 <h1 className="text-xl font-bold text-foreground">Defina sua senha</h1>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Crie uma senha segura para acessar o painel
+                  Crie uma senha segura para acessar o painel. Ela precisa conter letras, números e caracteres especiais.
                 </p>
               </div>
 
