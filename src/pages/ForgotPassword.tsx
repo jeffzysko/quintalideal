@@ -21,20 +21,37 @@ export default function ForgotPassword() {
     if (prefill) setEmail(prefill);
   }, [searchParams]);
 
+  const [cooldown, setCooldown] = useState(0);
+
+  // Cooldown timer
+  useEffect(() => {
+    if (cooldown <= 0) return;
+    const t = setTimeout(() => setCooldown(c => c - 1), 1000);
+    return () => clearTimeout(t);
+  }, [cooldown]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+
+    const trimmed = email.trim();
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      setError('Informe um e-mail válido.');
+      return;
+    }
+
     setLoading(true);
 
     try {
       const { error: fnError } = await supabase.functions.invoke('send-recovery-email', {
-        body: { email, siteOrigin: window.location.origin },
+        body: { email: trimmed, siteOrigin: window.location.origin },
       });
 
       if (fnError) {
         setError('Erro ao enviar e-mail. Tente novamente.');
       } else {
         setSent(true);
+        setCooldown(60);
       }
     } catch {
       setError('Erro ao enviar e-mail. Tente novamente.');
