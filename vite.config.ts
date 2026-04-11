@@ -28,6 +28,7 @@ export default defineConfig(({ mode }) => ({
         "og-image.png",
       ],
       manifest: {
+        id: "/login",
         name: "Quintal Ideal Splash",
         short_name: "Quintal Ideal",
         description:
@@ -39,6 +40,9 @@ export default defineConfig(({ mode }) => ({
         theme_color: "#08a1d6",
         background_color: "#0a1628",
         categories: ["business", "lifestyle"],
+        launch_handler: {
+          client_mode: "navigate-existing",
+        },
         icons: [
           {
             src: "/pwa-icon-192.png",
@@ -55,6 +59,15 @@ export default defineConfig(({ mode }) => ({
             sizes: "512x512",
             type: "image/png",
             purpose: "maskable",
+          },
+        ],
+        screenshots: [
+          {
+            src: "/og-image.png",
+            sizes: "1200x630",
+            type: "image/png",
+            form_factor: "wide",
+            label: "Painel de gestão do Quintal Ideal",
           },
         ],
         shortcuts: [
