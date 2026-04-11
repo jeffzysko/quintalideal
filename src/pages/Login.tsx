@@ -145,13 +145,22 @@ export default function Login() {
             </div>
 
             {error && (
-              <motion.p
+              <motion.div
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="text-sm text-destructive bg-destructive/10 rounded-lg px-3 py-2"
+                className="text-sm text-destructive bg-destructive/10 rounded-lg px-3 py-2.5 space-y-1"
               >
-                {error}
-              </motion.p>
+                <p>{error}</p>
+                {error.toLowerCase().includes('senha') && (
+                  <button
+                    type="button"
+                    onClick={() => navigate('/forgot-password', { state: { email } })}
+                    className="text-xs text-primary underline underline-offset-2 hover:text-primary/80 transition-colors"
+                  >
+                    Esqueci minha senha — recuperar agora
+                  </button>
+                )}
+              </motion.div>
             )}
 
             <Button

@@ -89,6 +89,10 @@ export function translateAuthError(msg: string): string {
   if (lower.includes('user not allowed') || lower.includes('not authorized'))
     return 'Sessão expirada. Volte à tela de login e solicite um novo link de recuperação.';
 
+  // Signup disabled
+  if (lower.includes('signup') && (lower.includes('disabled') || lower.includes('not allowed')))
+    return 'Novos cadastros não estão habilitados. Entre em contato com o administrador.';
+
   // Generic fallback — never show raw English
   return 'Ocorreu um erro inesperado. Tente novamente ou entre em contato com o suporte.';
 }
