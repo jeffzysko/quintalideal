@@ -10,7 +10,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Check, X, MessageCircle, Download, CreditCard, Truck, CalendarDays, Phone, User, FileText, AlertTriangle, RefreshCw, Droplets, Shield, Star, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
+import { Check, X, MessageCircle, Download, CreditCard, Truck, CalendarDays, Phone, User, FileText, AlertTriangle, RefreshCw, Droplets, Shield, Star, Sparkles, ArrowRight, Loader2, ShieldCheck, Copy, CheckCircle2 } from 'lucide-react';
 import { format, differenceInDays, differenceInHours, differenceInMinutes, isPast } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
@@ -97,6 +97,88 @@ const staggerItem = {
   hidden: { opacity: 0, y: 20 },
   show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const } },
 };
+
+/* ── Verification code generator ── */
+function generateVerificationCode(id: string, token: string): string {
+  // Deterministic hash from id + token
+  let hash = 0;
+  const str = id + token;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  const abs = Math.abs(hash);
+  const part1 = (abs % 10000).toString().padStart(4, '0');
+  const part2 = ((abs >>> 8) % 10000).toString().padStart(4, '0');
+  return `SPL-${part1}-${part2}`;
+}
+
+/* ── Verification Footer ── */
+function VerificationFooter({ proposal }: { proposal: ProposalData }) {
+  const [copied, setCopied] = useState(false);
+  const code = generateVerificationCode(proposal.id, proposal.public_token);
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return (
+    <motion.div
+      data-pdf-section
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: true }}
+      className="space-y-5 pb-6"
+    >
+      {/* Verification card */}
+      <div className="relative rounded-2xl border border-border/40 bg-card/60 backdrop-blur-sm overflow-hidden">
+        <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, hsl(207 90% 42%), hsl(152 70% 45%), hsl(207 90% 42%))' }} />
+        <div className="p-5 space-y-4">
+          <div className="flex items-center justify-center gap-2">
+            <ShieldCheck className="w-5 h-5 text-success" />
+            <h4 className="text-sm font-bold text-foreground">Código de Verificação</h4>
+          </div>
+
+          <div className="flex items-center justify-center gap-3">
+            <div className="bg-muted/50 border border-border/50 rounded-xl px-5 py-3">
+              <span className="font-mono text-lg font-black tracking-[0.15em] text-foreground">{code}</span>
+            </div>
+            <button
+              onClick={handleCopy}
+              className="p-2.5 rounded-xl bg-muted/50 border border-border/50 hover:bg-muted transition-colors print:hidden"
+              title="Copiar código"
+            >
+              {copied ? <CheckCircle2 className="w-4 h-4 text-success" /> : <Copy className="w-4 h-4 text-muted-foreground" />}
+            </button>
+          </div>
+
+          <div className="text-center space-y-1.5">
+            <p className="text-[11px] text-muted-foreground/70 leading-relaxed max-w-sm mx-auto">
+              Este código garante a autenticidade desta proposta.
+              Verifique diretamente com a <strong className="text-foreground/80">Splash Piscinas</strong> em caso de dúvida.
+            </p>
+            <div className="flex items-center justify-center gap-4 text-[10px] text-muted-foreground/50 font-medium">
+              <span>ID: #{proposal.id.slice(0, 8).toUpperCase()}</span>
+              <span>•</span>
+              <span>Emitida em {format(new Date(proposal.created_at), "dd/MM/yyyy")}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Logo footer */}
+      <div className="text-center space-y-2">
+        <img src={logoSplash} alt="Splash" className="h-7 mx-auto opacity-20" />
+        <p className="text-[10px] text-muted-foreground/40 font-medium">
+          Proposta gerada pela plataforma Splash Piscinas
+        </p>
+      </div>
+    </motion.div>
+  );
+}
 
 /* ── Countdown ── */
 function CountdownTimer({ validityDate }: { validityDate: string }) {
@@ -825,19 +907,8 @@ export default function PublicProposal() {
             </motion.div>
           )}
 
-          {/* ═══════════ TRUST BADGES ═══════════ */}
           <TrustBadges />
-
-          {/* ═══════════ FOOTER ═══════════ */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-center pb-4 space-y-2"
-          >
-            <img src={logoSplash} alt="Splash" className="h-7 mx-auto opacity-20" />
-            <p className="text-[10px] text-muted-foreground/40 font-medium">Proposta gerada pela plataforma Splash Piscinas</p>
-          </motion.div>
+          <VerificationFooter proposal={proposal} />
         </main>
 
         {/* ═══════════ MOBILE BOTTOM BAR ═══════════ */}
