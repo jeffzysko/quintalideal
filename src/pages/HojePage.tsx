@@ -768,6 +768,9 @@ export default function HojePage() {
                       </Card>
                     )}
                   </TabsContent>
+
+                    </motion.div>
+                  </AnimatePresence>
                 </Tabs>
               </>
             )}
