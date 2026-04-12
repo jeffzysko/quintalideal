@@ -39,18 +39,18 @@ export default function ProposalsList() {
   });
 
   return (
-    <div className="min-h-screen bg-muted/30">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-6 space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-foreground flex items-center gap-2">
-              <FileText className="w-5 h-5 text-primary" />
-              Propostas Comerciais
+    <div className="min-h-screen bg-muted/30 pb-safe">
+      <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4 sm:space-y-6 pb-20 sm:pb-6">
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <h1 className="text-lg sm:text-xl font-bold text-foreground flex items-center gap-2">
+              <FileText className="w-5 h-5 text-primary shrink-0" />
+              <span className="truncate">Propostas Comerciais</span>
             </h1>
-            <p className="text-sm text-muted-foreground mt-0.5">Gerencie suas propostas</p>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">Gerencie suas propostas</p>
           </div>
-          <Button onClick={() => navigate('/propostas/nova')} className="bg-primary hover:bg-primary/90">
-            <Plus className="w-4 h-4 mr-1" /> Nova Proposta
+          <Button onClick={() => navigate('/propostas/nova')} size="sm" className="bg-primary hover:bg-primary/90 shrink-0 h-9">
+            <Plus className="w-4 h-4 mr-1" /> Nova
           </Button>
         </div>
 

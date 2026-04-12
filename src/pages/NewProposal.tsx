@@ -265,34 +265,37 @@ export default function NewProposal() {
   };
 
   return (
-    <div className="min-h-screen bg-muted/30">
+    <div className="min-h-screen bg-muted/30 pb-safe">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border/40">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-4">
-          <div className="min-w-0">
-            <h1 className="text-lg sm:text-xl font-bold text-foreground flex items-center gap-2">
-              <FileText className="w-5 h-5 text-primary shrink-0" />
-              Nova Proposta Comercial
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-2 sm:gap-4">
+          <div className="min-w-0 flex-1">
+            <h1 className="text-base sm:text-xl font-bold text-foreground flex items-center gap-2">
+              <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0" />
+              <span className="truncate">{isMobile ? 'Nova Proposta' : 'Nova Proposta Comercial'}</span>
             </h1>
             {lastSaved && (
-              <p className="text-xs text-muted-foreground mt-0.5">Rascunho salvo às {lastSaved}</p>
+              <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">Rascunho salvo às {lastSaved}</p>
             )}
           </div>
-          <div className="flex items-center gap-2 shrink-0">
-            <Button variant="ghost" size="sm" onClick={() => navigate(-1)}>
-              <X className="w-4 h-4 mr-1" /> Cancelar
+          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
+            <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="h-8 px-2 sm:px-3">
+              <X className="w-4 h-4" />
+              <span className="hidden sm:inline ml-1">Cancelar</span>
             </Button>
-            <Button variant="outline" size="sm" onClick={handleSaveDraft} disabled={saving}>
-              <Save className="w-4 h-4 mr-1" /> Salvar Rascunho
+            <Button variant="outline" size="sm" onClick={handleSaveDraft} disabled={saving} className="h-8 px-2 sm:px-3">
+              <Save className="w-4 h-4" />
+              <span className="hidden sm:inline ml-1">Rascunho</span>
             </Button>
-            <Button size="sm" onClick={() => handleSubmit()} disabled={saving} className="bg-primary hover:bg-primary/90">
-              <FileText className="w-4 h-4 mr-1" /> Criar Proposta
+            <Button size="sm" onClick={() => handleSubmit()} disabled={saving} className="h-8 px-2.5 sm:px-3 bg-primary hover:bg-primary/90">
+              <FileText className="w-4 h-4" />
+              {!isMobile && <span className="ml-1">Criar Proposta</span>}
             </Button>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
         <div className="flex gap-8">
           {/* Sidebar Navigation (desktop) */}
           {!isMobile && (
@@ -329,8 +332,8 @@ export default function NewProposal() {
 
           {/* Mobile stepper */}
           {isMobile && (
-            <div className="fixed bottom-16 left-0 right-0 z-20 bg-background/95 backdrop-blur-sm border-t border-border/40 px-4 py-2">
-              <div className="flex justify-between">
+            <div className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] left-0 right-0 z-20 bg-background/95 backdrop-blur-sm border-t border-border/40 px-2 py-1.5">
+              <div className="flex justify-around">
                 {SECTIONS.map((section, idx) => {
                   const isActive = activeSection === section.id;
                   const complete = sectionComplete(section.id);
@@ -338,16 +341,16 @@ export default function NewProposal() {
                     <button
                       key={section.id}
                       onClick={() => scrollToSection(section.id)}
-                      className="flex flex-col items-center gap-1"
+                      className="flex flex-col items-center gap-0.5 min-w-0 px-1 active:scale-95 transition-transform"
                     >
                       <div className={cn(
-                        'w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all',
+                        'w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold transition-all',
                         complete ? 'bg-emerald-100 text-emerald-600' :
                         isActive ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
                       )}>
-                        {complete ? <Check className="w-3.5 h-3.5" /> : idx + 1}
+                        {complete ? <Check className="w-3 h-3" /> : idx + 1}
                       </div>
-                      <span className={cn('text-[10px]', isActive ? 'text-primary font-medium' : 'text-muted-foreground')}>
+                      <span className={cn('text-[9px] leading-tight truncate max-w-[52px]', isActive ? 'text-primary font-medium' : 'text-muted-foreground')}>
                         {section.label.split(' ')[0]}
                       </span>
                     </button>
@@ -358,7 +361,7 @@ export default function NewProposal() {
           )}
 
           {/* Main form */}
-          <div className="flex-1 min-w-0 space-y-6 pb-24">
+          <div className={cn('flex-1 min-w-0 space-y-4 sm:space-y-6', isMobile && 'pb-32')}>
             <motion.div
               id="lead"
               ref={el => { sectionRefs.current.lead = el; }}
