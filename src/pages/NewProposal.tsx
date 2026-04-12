@@ -14,6 +14,8 @@ import { ProposalItemsSection } from '@/components/proposals/ProposalItemsSectio
 import { ProposalPaymentSection } from '@/components/proposals/ProposalPaymentSection';
 import { ProposalObservationsSection } from '@/components/proposals/ProposalObservationsSection';
 import { cn } from '@/lib/utils';
+import { isValidBRPhone, isValidEmail, unformatPhone } from '@/lib/validation';
+import { isValidCPF, isValidCNPJ } from '@/lib/document-utils';
 
 export interface ProposalItem {
   id: string;
