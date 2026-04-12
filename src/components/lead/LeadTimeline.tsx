@@ -91,7 +91,7 @@ export function LeadTimeline({ leadId }: LeadTimelineProps) {
       <CardContent className="p-3 sm:p-5">
         <div className="flex items-center gap-2 mb-3">
           <Clock className="w-4 h-4 text-primary" />
-          <h2 className="text-sm font-semibold text-foreground">Timeline</h2>
+          <h2 className="text-sm font-semibold text-foreground">Histórico</h2>
           {activities.length > 0 && (
             <span className="text-[10px] bg-muted px-1.5 py-0.5 rounded-full text-muted-foreground font-medium">
               {activities.length}

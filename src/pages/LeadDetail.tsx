@@ -552,7 +552,7 @@ export default function LeadDetail() {
                   { value: 'fotos', icon: Image, label: 'Fotos', disabled: false, badge: photos.length > 0 ? photos.length : undefined },
                   { value: 'gerenciar', icon: Settings2, label: 'Gerenciar' },
                   { value: 'followups', icon: CalendarClock, label: 'Follow-ups' },
-                  { value: 'timeline', icon: Clock, label: 'Timeline' },
+                  { value: 'timeline', icon: Clock, label: 'Histórico' },
                 ].map(tab => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.value;
