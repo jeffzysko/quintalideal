@@ -58,6 +58,7 @@ const SECTIONS = [
   { id: 'client', label: 'Cliente', icon: User },
   { id: 'items', label: 'Itens', icon: Package },
   { id: 'payment', label: 'Pagamento', icon: CreditCard },
+  { id: 'video', label: 'Vídeo', icon: Video },
   { id: 'observations', label: 'Observações', icon: MessageSquare },
 ];
 
@@ -97,6 +98,8 @@ export default function NewProposal() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const draftRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [saveTemplateOpen, setSaveTemplateOpen] = useState(false);
+  const [loadTemplateOpen, setLoadTemplateOpen] = useState(false);
 
   const updateForm = useCallback((updates: Partial<ProposalFormData>) => {
     setForm(prev => ({ ...prev, ...updates }));
@@ -289,12 +292,13 @@ export default function NewProposal() {
         validity_date: form.validity_date || null,
         delivery_deadline: form.delivery_deadline.trim() || null,
         observations: form.observations.trim() || null,
+        video_url: form.video_url.trim() || null,
         status: finalStatus as any,
         global_discount: form.global_discount,
         global_discount_type: form.global_discount_type,
         subtotal,
         total,
-      };
+      } as any;
 
       let proposalId: string;
 
