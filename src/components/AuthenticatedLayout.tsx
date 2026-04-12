@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/AppSidebar';
 import { useAuth } from '@/hooks/useAuth';
@@ -7,6 +7,9 @@ import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Footer } from '@/components/Footer';
+import { Map, Trophy, Radar } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 
 /**
  * Layout for all authenticated pages.

@@ -72,16 +72,11 @@ const FRANCHISE_TABS: SidebarNavItem[] = [
 
 const ADMIN_NAV: SidebarNavItem[] = [
   { title: 'Início', url: '/hoje', icon: Home },
-  { title: 'Radar de Mercado', url: '/admin/radar', icon: Radar },
-  { title: 'Mapa', url: '/mapa', icon: Map },
-  { title: 'Ranking', url: '/ranking', icon: Trophy },
   { title: 'Notificações', url: '/notificacoes', icon: Bell },
 ];
 
 const FRANCHISE_NAV: SidebarNavItem[] = [
   { title: 'Início', url: '/hoje', icon: Home },
-  { title: 'Mapa', url: '/mapa', icon: Map },
-  { title: 'Ranking', url: '/ranking', icon: Trophy },
   { title: 'Notificações', url: '/notificacoes', icon: Bell },
 ];
 
