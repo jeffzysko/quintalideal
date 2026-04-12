@@ -71,19 +71,6 @@ export function ProposalPaymentSection({ form, updateForm }: Props) {
             />
           </div>
 
-          <div>
-            <Label className="text-sm">Status Inicial</Label>
-            <Select value={form.status} onValueChange={(v: any) => updateForm({ status: v })}>
-              <SelectTrigger className="mt-1.5">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="rascunho">Rascunho</SelectItem>
-                <SelectItem value="enviada">Enviada</SelectItem>
-                <SelectItem value="em_negociacao">Em negociação</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
         </div>
       </CardContent>
     </Card>
