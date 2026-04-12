@@ -50,6 +50,7 @@ export interface ProposalFormData {
   global_discount: number;
   global_discount_type: 'fixed' | 'percent';
   observations: string;
+  video_url: string;
 }
 
 const SECTIONS = [
