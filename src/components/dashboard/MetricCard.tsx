@@ -52,12 +52,12 @@ export const MetricCard = memo(function MetricCard({ icon: Icon, label, value, p
         className={`card-premium group active:scale-[0.98] transition-transform ${onClick ? 'cursor-pointer' : ''}`}
         onClick={onClick}
       >
-        <CardContent className="p-4 sm:p-5">
-          <div className="flex items-start justify-between mb-3">
+        <CardContent className="space-y-3 p-4 sm:p-5">
+          <div className="flex flex-wrap items-start gap-2 sm:gap-3">
             <div className={`w-10 h-10 rounded-xl ${bg} flex items-center justify-center group-hover:scale-105 transition-transform`}>
               <Icon className={`w-[18px] h-[18px] sm:w-5 sm:h-5 ${color}`} />
             </div>
-            <div className="flex items-center gap-1.5">
+            <div className="ml-auto flex max-w-full flex-wrap items-center justify-end gap-1.5">
               {tooltip && (
                 <Tooltip>
                   <TooltipTrigger asChild>
@@ -71,7 +71,7 @@ export const MetricCard = memo(function MetricCard({ icon: Icon, label, value, p
                 </Tooltip>
               )}
               {delta && (
-                <div className={`flex items-center gap-0.5 text-[11px] sm:text-xs font-semibold rounded-lg px-1.5 py-0.5 ${
+                <div className={`flex max-w-full items-center gap-0.5 whitespace-nowrap text-[11px] sm:text-xs font-semibold rounded-lg px-1.5 py-0.5 ${
                   delta.direction === 'up' ? 'text-emerald-600 bg-emerald-500/10' :
                   delta.direction === 'down' ? 'text-destructive bg-destructive/10' :
                   'text-muted-foreground bg-muted'

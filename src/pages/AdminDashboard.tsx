@@ -510,7 +510,7 @@ export default function AdminDashboard() {
               <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
             </div>
 
-            <div data-tour="admin-kpis"><MetricGrid metrics={kpis} loading={loadingKpis} columns={6} /></div>
+            <div data-tour="admin-kpis"><MetricGrid metrics={kpis} loading={loadingKpis} columns={kpis.length} /></div>
 
             {/* Executive Summary */}
             {!loadingKpis && currentLeads.length > 0 && (
