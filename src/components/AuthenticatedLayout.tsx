@@ -62,7 +62,7 @@ export function AuthenticatedLayout() {
               <TooltipTrigger asChild>
                 <SidebarTrigger className="shrink-0 h-9 w-9" />
               </TooltipTrigger>
-              <TooltipContent>Menu lateral</TooltipContent>
+              <TooltipContent>Recolher menu</TooltipContent>
             </Tooltip>
             <div className="flex-1 min-w-0">
               <Breadcrumbs />
