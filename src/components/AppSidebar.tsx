@@ -88,7 +88,7 @@ const BOTTOM_NAV: SidebarNavItem[] = [
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === 'collapsed';
-  const { role } = useAuth();
+  const { role, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
