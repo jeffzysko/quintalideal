@@ -75,19 +75,20 @@ export function ProposalItemsSection({ form, updateForm, subtotal, discountAmoun
                   rows={2}
                 />
               </div>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 xs:grid-cols-3 gap-3">
                 <div>
-                  <Label className="text-sm">Quantidade <span className="text-destructive">*</span></Label>
+                  <Label className="text-sm">Qtd <span className="text-destructive">*</span></Label>
                   <Input
                     type="number"
                     min={1}
                     value={item.quantity}
                     onChange={(e) => updateItem(item.id, { quantity: Math.max(1, Number(e.target.value)) })}
                     className="mt-1.5"
+                    inputMode="numeric"
                   />
                 </div>
                 <div>
-                  <Label className="text-sm">Valor Unitário <span className="text-destructive">*</span></Label>
+                  <Label className="text-sm">Valor Un. <span className="text-destructive">*</span></Label>
                   <Input
                     type="number"
                     min={0}
@@ -96,6 +97,7 @@ export function ProposalItemsSection({ form, updateForm, subtotal, discountAmoun
                     onChange={(e) => updateItem(item.id, { unit_price: Math.max(0, Number(e.target.value)) })}
                     placeholder="0,00"
                     className="mt-1.5"
+                    inputMode="decimal"
                   />
                 </div>
                 <div>
@@ -108,6 +110,7 @@ export function ProposalItemsSection({ form, updateForm, subtotal, discountAmoun
                     onChange={(e) => updateItem(item.id, { discount: Math.max(0, Number(e.target.value)) })}
                     placeholder="0,00"
                     className="mt-1.5"
+                    inputMode="decimal"
                   />
                 </div>
               </div>
@@ -128,7 +131,7 @@ export function ProposalItemsSection({ form, updateForm, subtotal, discountAmoun
             <span className="text-muted-foreground">Subtotal</span>
             <span className="font-medium">{formatCurrency(subtotal)}</span>
           </div>
-          <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-3">
             <span className="text-sm text-muted-foreground shrink-0">Desconto global</span>
             <div className="flex items-center gap-2">
               <Select
@@ -151,6 +154,7 @@ export function ProposalItemsSection({ form, updateForm, subtotal, discountAmoun
                 onChange={(e) => updateForm({ global_discount: Math.max(0, Number(e.target.value)) })}
                 className="w-28 h-8 text-sm"
                 placeholder="0"
+                inputMode="decimal"
               />
             </div>
           </div>
