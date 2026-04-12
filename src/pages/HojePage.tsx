@@ -294,7 +294,7 @@ function SectionHeader({ icon: Icon, title, count, variant = 'default', delay = 
       initial={{ opacity: 0, x: -8 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay, type: 'spring', stiffness: 300, damping: 30 }}
-      className="flex items-center gap-2.5 mb-3 mt-14 first:mt-0"
+      className="flex items-center gap-2.5 mb-4"
     >
       <div className={cn('w-8 h-8 rounded-xl flex items-center justify-center', bgMap[variant])}>
         <Icon className={cn('w-4 h-4', colorMap[variant])} />
