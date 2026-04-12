@@ -8,8 +8,8 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Footer } from '@/components/Footer';
 import { Map, Trophy, Radar } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Button } from '@/components/ui/button';
 
 /**
  * Layout for all authenticated pages.

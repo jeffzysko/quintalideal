@@ -1,10 +1,7 @@
 import {
   Home,
-  Map,
-  Trophy,
   Settings,
   HelpCircle,
-  Radar,
   Bell,
   Workflow,
   BarChart3,
