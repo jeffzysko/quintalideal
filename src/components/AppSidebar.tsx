@@ -1,6 +1,5 @@
 import {
   Home,
-  LayoutDashboard,
   Map,
   Trophy,
   Settings,
@@ -19,8 +18,9 @@ import {
   Kanban,
   TrendingUp,
 } from 'lucide-react';
-import { NavLink } from '@/components/NavLink';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
+import logoSplash from '@/assets/logo-splash.png';
 import { useAuth } from '@/hooks/useAuth';
 import logoSplash from '@/assets/logo-splash.png';
 
