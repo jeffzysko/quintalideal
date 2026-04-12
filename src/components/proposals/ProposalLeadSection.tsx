@@ -81,6 +81,12 @@ export function ProposalLeadSection({ updateForm, franchiseId }: Props) {
 
   const unlinkLead = () => {
     setSelectedLead(null);
+    setSkipped(false);
+    updateForm({ lead_id: null });
+  };
+
+  const skipLead = () => {
+    setSkipped(true);
     updateForm({ lead_id: null });
   };
 
