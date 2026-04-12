@@ -184,7 +184,7 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter>
+      <SidebarFooter className="p-0">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
