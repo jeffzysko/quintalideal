@@ -615,6 +615,146 @@ export type Database = {
           },
         ]
       }
+      proposal_items: {
+        Row: {
+          created_at: string
+          description: string | null
+          discount: number
+          id: string
+          product_name: string
+          proposal_id: string
+          quantity: number
+          sort_order: number
+          subtotal: number
+          unit_price: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          discount?: number
+          id?: string
+          product_name: string
+          proposal_id: string
+          quantity?: number
+          sort_order?: number
+          subtotal?: number
+          unit_price?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          discount?: number
+          id?: string
+          product_name?: string
+          proposal_id?: string
+          quantity?: number
+          sort_order?: number
+          subtotal?: number
+          unit_price?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_items_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      proposals: {
+        Row: {
+          client_address: string | null
+          client_contact_name: string | null
+          client_document: string | null
+          client_email: string | null
+          client_name: string
+          client_phone: string | null
+          created_at: string
+          created_by: string
+          delivery_deadline: string | null
+          franchise_id: string
+          global_discount: number
+          global_discount_type: string
+          id: string
+          lead_id: string | null
+          observations: string | null
+          payment_conditions: string | null
+          payment_method: string | null
+          person_type: string
+          status: Database["public"]["Enums"]["proposal_status"]
+          subtotal: number
+          total: number
+          updated_at: string
+          validity_date: string | null
+        }
+        Insert: {
+          client_address?: string | null
+          client_contact_name?: string | null
+          client_document?: string | null
+          client_email?: string | null
+          client_name: string
+          client_phone?: string | null
+          created_at?: string
+          created_by: string
+          delivery_deadline?: string | null
+          franchise_id: string
+          global_discount?: number
+          global_discount_type?: string
+          id?: string
+          lead_id?: string | null
+          observations?: string | null
+          payment_conditions?: string | null
+          payment_method?: string | null
+          person_type?: string
+          status?: Database["public"]["Enums"]["proposal_status"]
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          validity_date?: string | null
+        }
+        Update: {
+          client_address?: string | null
+          client_contact_name?: string | null
+          client_document?: string | null
+          client_email?: string | null
+          client_name?: string
+          client_phone?: string | null
+          created_at?: string
+          created_by?: string
+          delivery_deadline?: string | null
+          franchise_id?: string
+          global_discount?: number
+          global_discount_type?: string
+          id?: string
+          lead_id?: string | null
+          observations?: string | null
+          payment_conditions?: string | null
+          payment_method?: string | null
+          person_type?: string
+          status?: Database["public"]["Enums"]["proposal_status"]
+          subtotal?: number
+          total?: number
+          updated_at?: string
+          validity_date?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposals_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proposals_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_map"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       push_subscriptions: {
         Row: {
           auth_key: string
@@ -860,6 +1000,12 @@ export type Database = {
         | "em_negociacao"
         | "vendido"
         | "perdido"
+      proposal_status:
+        | "rascunho"
+        | "enviada"
+        | "em_negociacao"
+        | "aceita"
+        | "recusada"
       territory_match_status:
         | "matched_unique_franchise"
         | "matched_multiple_franchises"
@@ -995,6 +1141,13 @@ export const Constants = {
       app_role: ["admin_fabrica", "franquia", "visualizador", "super_admin"],
       categoria_tamanho: ["pequena", "media", "grande"],
       lead_status: ["novo", "contatado", "em_negociacao", "vendido", "perdido"],
+      proposal_status: [
+        "rascunho",
+        "enviada",
+        "em_negociacao",
+        "aceita",
+        "recusada",
+      ],
       territory_match_status: [
         "matched_unique_franchise",
         "matched_multiple_franchises",
