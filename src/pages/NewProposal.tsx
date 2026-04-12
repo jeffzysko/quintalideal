@@ -165,21 +165,46 @@ export default function NewProposal() {
 
   const handleSubmit = async (statusOverride?: string) => {
     if (!franchiseId || !user) return;
-    if (!form.client_name.trim()) {
-      toast.error('Preencha o nome do cliente');
-      scrollToSection('client');
-      return;
+
+    const errs: Record<string, string> = {};
+    if (!form.client_name.trim()) errs.client_name = 'Nome é obrigatório';
+
+    const phoneDigits = unformatPhone(form.client_phone);
+    if (!phoneDigits) {
+      errs.client_phone = 'Telefone é obrigatório';
+    } else if (!isValidBRPhone(phoneDigits)) {
+      errs.client_phone = 'Telefone inválido. Use DDD + número';
     }
-    if (!form.client_phone.trim()) {
-      toast.error('Preencha o telefone do cliente');
-      scrollToSection('client');
-      return;
+
+    if (form.client_email.trim() && !isValidEmail(form.client_email)) {
+      errs.client_email = 'Email inválido';
     }
+
+    if (form.client_document.trim()) {
+      const isPJ = form.person_type === 'pj';
+      if (isPJ && !isValidCNPJ(form.client_document)) {
+        errs.client_document = 'CNPJ inválido';
+      } else if (!isPJ && !isValidCPF(form.client_document)) {
+        errs.client_document = 'CPF inválido';
+      }
+    }
+
     if (form.items.length === 0 || !form.items[0].product_name.trim()) {
-      toast.error('Adicione ao menos um item à proposta');
-      scrollToSection('items');
+      errs.items = 'Adicione ao menos um item à proposta';
+    }
+
+    if (Object.keys(errs).length > 0) {
+      setFieldErrors(errs);
+      if (errs.client_name || errs.client_phone || errs.client_email || errs.client_document) {
+        scrollToSection('client');
+        toast.error('Verifique os dados do cliente');
+      } else if (errs.items) {
+        scrollToSection('items');
+        toast.error('Adicione ao menos um item à proposta');
+      }
       return;
     }
+    setFieldErrors({});
 
     setSaving(true);
     try {
