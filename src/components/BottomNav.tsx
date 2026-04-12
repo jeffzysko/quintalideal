@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, Workflow, Home, Settings } from 'lucide-react';
+import { LayoutDashboard, Home, Settings, FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface NavItem {
@@ -16,13 +16,15 @@ function getNavForRole(role: string | null): NavItem[] {
     return [
       { icon: Home, label: 'Início', path: '/hoje' },
       { icon: LayoutDashboard, label: 'Painel', path: '/admin', matchPaths: ['/admin'] },
+      { icon: FileText, label: 'Propostas', path: '/propostas', matchPaths: ['/propostas'] },
       { icon: Settings, label: 'Perfil', path: '/perfil' },
     ];
   }
+
   return [
     { icon: Home, label: 'Início', path: '/hoje' },
     { icon: LayoutDashboard, label: 'Painel', path: '/franquia', matchPaths: ['/franquia', '/painel'] },
-    { icon: Workflow, label: 'Funil', path: '/franquia?tab=funnel' },
+    { icon: FileText, label: 'Propostas', path: '/propostas', matchPaths: ['/propostas'] },
     { icon: Settings, label: 'Perfil', path: '/perfil' },
   ];
 }
@@ -32,12 +34,9 @@ export function BottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  // Only show for authenticated users on authenticated pages
   if (!user || !role) return null;
 
-  // Don't show on public pages
-  // Paths where the bottom nav should be visible (authenticated pages)
-  const authenticatedPrefixes = ['/admin', '/franquia', '/hoje', '/perfil', '/suporte', '/docs', '/notificacoes', '/lead', '/painel', '/radar'];
+  const authenticatedPrefixes = ['/admin', '/franquia', '/hoje', '/perfil', '/suporte', '/docs', '/notificacoes', '/lead', '/painel', '/radar', '/propostas'];
   const isAuthenticatedPage = authenticatedPrefixes.some(p => location.pathname.startsWith(p));
   if (!isAuthenticatedPage) return null;
 
