@@ -1069,6 +1069,23 @@ export type Database = {
         Returns: boolean
       }
       normalize_city_name: { Args: { _city: string }; Returns: string }
+      public_accept_proposal: {
+        Args: { _name: string; _token: string; _user_agent?: string }
+        Returns: boolean
+      }
+      public_ask_proposal_question: {
+        Args: { _question: string; _token: string }
+        Returns: boolean
+      }
+      public_get_proposal_by_token: { Args: { _token: string }; Returns: Json }
+      public_refuse_proposal: {
+        Args: { _reason: string; _token: string; _user_agent?: string }
+        Returns: boolean
+      }
+      public_register_proposal_view: {
+        Args: { _token: string; _user_agent?: string }
+        Returns: boolean
+      }
     }
     Enums: {
       app_role: "admin_fabrica" | "franquia" | "visualizador" | "super_admin"
