@@ -58,7 +58,12 @@ export function AuthenticatedLayout() {
         <div className="flex-1 flex flex-col min-w-0">
           {/* Top bar */}
           <header className="sticky top-0 z-30 flex items-center gap-2 border-b border-border/40 bg-background/80 backdrop-blur-xl px-4 h-14">
-            <SidebarTrigger className="shrink-0" />
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <SidebarTrigger className="shrink-0 h-9 w-9" />
+              </TooltipTrigger>
+              <TooltipContent>Menu lateral</TooltipContent>
+            </Tooltip>
             <div className="flex-1 min-w-0">
               <Breadcrumbs />
             </div>
