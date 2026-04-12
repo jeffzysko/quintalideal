@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { PullToRefresh } from '@/components/PullToRefresh';
 import { SwipeableLeadCard } from '@/components/dashboard/SwipeableLeadCard';
 import { SwipeHint } from '@/components/dashboard/SwipeHint';
@@ -17,7 +17,7 @@ import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { NotificationBell } from '@/components/NotificationBell';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { format, isToday, isTomorrow, isPast, differenceInHours, differenceInDays, formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
@@ -405,8 +405,9 @@ export default function HojePage() {
     ]);
   }, [queryClient]);
 
-  // ── Action items (merged: overdue + today followups + stale leads) ──
+  // ── Action items ──
   const allFollowups = useMemo(() => [...overdueFollowups, ...todayFollowups], [overdueFollowups, todayFollowups]);
+  const [activeTab, setActiveTab] = useState('acoes');
 
   // ── Render ──
   return (
@@ -478,12 +479,11 @@ export default function HojePage() {
                 )}
 
                 {/* ═══ 3 BLOCKS ═══ */}
-                <Tabs defaultValue="acoes" className="w-full">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                   <TabsList className="w-full grid grid-cols-3 mb-6 h-11">
                     <TabsTrigger value="acoes" className="text-xs sm:text-sm gap-1.5 data-[state=active]:shadow-sm">
                       <ListChecks className="w-3.5 h-3.5" />
-                      <span className="hidden xs:inline">Ações</span>
-                      <span className="xs:hidden">Ações</span>
+                      Ações
                       {urgentCount > 0 && (
                         <Badge variant="destructive" className="text-[9px] font-bold px-1 py-0 h-4 min-w-[16px]">
                           {urgentCount > 9 ? '9+' : urgentCount}
@@ -499,6 +499,15 @@ export default function HojePage() {
                       Insights
                     </TabsTrigger>
                   </TabsList>
+
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeTab}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.2, ease: 'easeOut' }}
+                    >
 
                   {/* ══ TAB 1: O QUE FAZER AGORA ══ */}
                   <TabsContent value="acoes" className="space-y-6 mt-0">
@@ -759,6 +768,9 @@ export default function HojePage() {
                       </Card>
                     )}
                   </TabsContent>
+
+                    </motion.div>
+                  </AnimatePresence>
                 </Tabs>
               </>
             )}
