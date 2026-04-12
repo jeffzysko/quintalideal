@@ -445,7 +445,13 @@ export default function HojePage() {
                     </motion.div>
                   )}
 
-                  <div className="space-y-8 sm:space-y-10">
+                  <HeroGreeting
+                    name={profile?.full_name || null}
+                    totalTasks={totalTasks}
+                    completedToday={completedToday}
+                  />
+
+                  <div className="space-y-10 sm:space-y-12">
                     {/* ── 1. Overdue follow-ups ── */}
                     {overdueFollowups.length > 0 && (
                       <div>
