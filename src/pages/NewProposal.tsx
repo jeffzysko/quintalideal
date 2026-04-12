@@ -395,9 +395,9 @@ export default function NewProposal() {
         <Save className="w-4 h-4" />
         <span className="hidden sm:inline ml-1">Rascunho</span>
       </Button>
-      <Button size="sm" onClick={() => handleSubmit()} disabled={saving} className="h-8 px-2.5 sm:px-3">
-        <FileText className="w-4 h-4" />
-        {!isMobile && <span className="ml-1">{isEditMode ? 'Salvar' : 'Criar'}</span>}
+      <Button size="sm" onClick={() => handleSubmit('enviada')} disabled={saving} className="h-8 px-2.5 sm:px-3 gap-1.5">
+        <Link2 className="w-4 h-4" />
+        {!isMobile && <span>{isEditMode ? 'Salvar e Enviar' : 'Criar e Enviar'}</span>}
       </Button>
     </div>
   );
