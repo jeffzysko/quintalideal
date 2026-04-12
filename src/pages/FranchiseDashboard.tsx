@@ -11,7 +11,7 @@ import { SLAIndicator } from '@/components/franchise/SLAIndicator';
 import { MonthlyGoals } from '@/components/franchise/MonthlyGoals';
 import { LeadFollowups } from '@/components/franchise/LeadFollowups';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SITE_URL } from '@/lib/constants';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -78,13 +78,33 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   const { franchiseId: authFranchiseId, loading: authLoading } = useAuth();
   const franchiseId = overrideFranchiseId || authFranchiseId;
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
 
   // Live updates: invalidates queries when leads for this franchise change
   useLeadsRealtime(franchiseId);
   const isMobile = useIsMobile();
   const [page, setPage] = useState(1);
-  const [activeTab, setActiveTab] = useState<'leads' | 'funnel' | 'reports' | 'achievements'>('leads');
+  
+  // Read tab from URL params
+  const getTabFromSearch = (search: string): 'leads' | 'funnel' | 'reports' | 'achievements' => {
+    const urlTab = new URLSearchParams(search).get('tab');
+    if (urlTab === 'funnel') return 'funnel';
+    if (urlTab === 'reports') return 'reports';
+    if (urlTab === 'achievements') return 'achievements';
+    return 'leads';
+  };
+  const activeTab = getTabFromSearch(location.search);
+  const setActiveTab = (tab: 'leads' | 'funnel' | 'reports' | 'achievements') => {
+    const params = new URLSearchParams(location.search);
+    if (tab === 'leads') {
+      params.delete('tab');
+    } else {
+      params.set('tab', tab);
+    }
+    const qs = params.toString();
+    navigate(`${location.pathname}${qs ? `?${qs}` : ''}`, { replace: true });
+  };
   const [timeRange, setTimeRange] = useState<TimeRange>('30');
 
   // ── Franchise info ──
