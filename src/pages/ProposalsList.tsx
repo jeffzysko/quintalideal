@@ -1,4 +1,5 @@
-import { useQuery } from '@tanstack/react-query';
+import { useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { useNavigate } from 'react-router-dom';
@@ -30,11 +31,14 @@ const formatCurrency = (v: number) => v.toLocaleString('pt-BR', { style: 'curren
 export default function ProposalsList() {
   const { franchiseId, role } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
   const basePath = isAdmin ? '/admin' : '/franquia';
 
+  const proposalsQueryKey = ['proposals', franchiseId];
+
   const { data: proposals, isLoading } = useQuery({
-    queryKey: ['proposals', franchiseId],
+    queryKey: proposalsQueryKey,
     queryFn: async () => {
       if (!franchiseId) return [];
       const { data, error } = await supabase
@@ -46,6 +50,24 @@ export default function ProposalsList() {
     },
     enabled: !!franchiseId,
   });
+
+  // Realtime subscription to auto-refresh list
+  useEffect(() => {
+    const channel = supabase
+      .channel('proposals-list-changes')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'proposals' },
+        () => {
+          queryClient.invalidateQueries({ queryKey: proposalsQueryKey });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [queryClient, franchiseId]);
 
   return (
     <PageTransition>

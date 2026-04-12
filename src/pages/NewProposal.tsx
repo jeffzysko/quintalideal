@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
@@ -80,8 +80,12 @@ const initialForm: ProposalFormData = {
 export default function NewProposal() {
   const { franchiseId, user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const editId = searchParams.get('edit');
   const isMobile = useIsMobile();
   const [form, setForm] = useState<ProposalFormData>(initialForm);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editLoaded, setEditLoaded] = useState(false);
   const [activeSection, setActiveSection] = useState('lead');
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<string | null>(null);
@@ -125,9 +129,66 @@ export default function NewProposal() {
     return () => { if (draftRef.current) clearInterval(draftRef.current); };
   }, [form, franchiseId, user]);
 
-  // Load draft on mount
+  // Load existing proposal data for edit mode
   useEffect(() => {
-    if (!franchiseId) return;
+    if (!editId || editLoaded) return;
+    const loadProposal = async () => {
+      const { data: proposal, error } = await supabase
+        .from('proposals')
+        .select('*')
+        .eq('id', editId)
+        .single();
+      if (error || !proposal) {
+        toast.error('Proposta não encontrada');
+        navigate('/propostas');
+        return;
+      }
+      // Load items
+      const { data: items } = await supabase
+        .from('proposal_items')
+        .select('*')
+        .eq('proposal_id', editId)
+        .order('sort_order');
+
+      const formItems: ProposalItem[] = (items && items.length > 0)
+        ? items.map(it => ({
+            id: it.id,
+            product_name: it.product_name,
+            description: it.description || '',
+            quantity: Number(it.quantity),
+            unit_price: Number(it.unit_price),
+            discount: Number(it.discount),
+          }))
+        : [{ id: crypto.randomUUID(), product_name: '', description: '', quantity: 1, unit_price: 0, discount: 0 }];
+
+      setForm({
+        lead_id: proposal.lead_id,
+        person_type: (proposal.person_type as 'pf' | 'pj') || 'pf',
+        client_name: proposal.client_name || '',
+        client_document: proposal.client_document || '',
+        client_contact_name: proposal.client_contact_name || '',
+        client_phone: proposal.client_phone || '',
+        client_email: proposal.client_email || '',
+        client_address: proposal.client_address || '',
+        items: formItems,
+        payment_method: proposal.payment_method || '',
+        payment_conditions: proposal.payment_conditions || '',
+        validity_date: proposal.validity_date || '',
+        delivery_deadline: proposal.delivery_deadline || '',
+        status: (proposal.status as any) || 'rascunho',
+        global_discount: Number(proposal.global_discount) || 0,
+        global_discount_type: (proposal.global_discount_type as 'fixed' | 'percent') || 'fixed',
+        observations: proposal.observations || '',
+      });
+      setIsEditMode(true);
+      setEditLoaded(true);
+    };
+    loadProposal();
+  }, [editId, editLoaded, navigate]);
+
+  // Load draft on mount (only when not editing)
+  useEffect(() => {
+    if (!franchiseId || editId) return;
     try {
       const draft = localStorage.getItem(`proposal_draft_${franchiseId}`);
       if (draft) {
@@ -135,7 +196,7 @@ export default function NewProposal() {
         setForm(prev => ({ ...prev, ...parsed }));
       }
     } catch { /* ignore */ }
-  }, [franchiseId]);
+  }, [franchiseId, editId]);
 
   const scrollToSection = (id: string) => {
     setActiveSection(id);
@@ -208,39 +269,58 @@ export default function NewProposal() {
 
     try {
       const finalStatus = statusOverride || form.status;
+      const proposalPayload = {
+        lead_id: form.lead_id,
+        person_type: form.person_type,
+        client_name: form.client_name.trim(),
+        client_document: form.client_document.trim() || null,
+        client_contact_name: form.client_contact_name.trim() || null,
+        client_phone: form.client_phone.trim(),
+        client_email: form.client_email.trim() || null,
+        client_address: form.client_address.trim() || null,
+        payment_method: form.payment_method || null,
+        payment_conditions: form.payment_conditions.trim() || null,
+        validity_date: form.validity_date || null,
+        delivery_deadline: form.delivery_deadline.trim() || null,
+        observations: form.observations.trim() || null,
+        status: finalStatus as any,
+        global_discount: form.global_discount,
+        global_discount_type: form.global_discount_type,
+        subtotal,
+        total,
+      };
 
-      const { data, error } = await supabase
-        .from('proposals')
-        .insert({
-          franchise_id: franchiseId,
-          created_by: user.id,
-          lead_id: form.lead_id,
-          person_type: form.person_type,
-          client_name: form.client_name.trim(),
-          client_document: form.client_document.trim() || null,
-          client_contact_name: form.client_contact_name.trim() || null,
-          client_phone: form.client_phone.trim(),
-          client_email: form.client_email.trim() || null,
-          client_address: form.client_address.trim() || null,
-          payment_method: form.payment_method || null,
-          payment_conditions: form.payment_conditions.trim() || null,
-          validity_date: form.validity_date || null,
-          delivery_deadline: form.delivery_deadline.trim() || null,
-          observations: form.observations.trim() || null,
-          status: finalStatus as any,
-          global_discount: form.global_discount,
-          global_discount_type: form.global_discount_type,
-          subtotal,
-          total,
-        })
-        .select('id')
-        .single();
+      let proposalId: string;
 
-      if (error) throw error;
+      if (isEditMode && editId) {
+        // Update existing proposal
+        const { error } = await supabase
+          .from('proposals')
+          .update(proposalPayload)
+          .eq('id', editId);
+        if (error) throw error;
+        proposalId = editId;
 
-      if (form.items.length > 0 && data) {
+        // Delete old items and re-insert
+        await supabase.from('proposal_items').delete().eq('proposal_id', editId);
+      } else {
+        // Create new proposal
+        const { data, error } = await supabase
+          .from('proposals')
+          .insert({
+            franchise_id: franchiseId,
+            created_by: user.id,
+            ...proposalPayload,
+          })
+          .select('id')
+          .single();
+        if (error) throw error;
+        proposalId = data.id;
+      }
+
+      if (form.items.length > 0) {
         const itemsToInsert = form.items.map((item, idx) => ({
-          proposal_id: data.id,
+          proposal_id: proposalId,
           product_name: item.product_name.trim(),
           description: item.description.trim() || null,
           quantity: item.quantity,
@@ -256,12 +336,13 @@ export default function NewProposal() {
 
       localStorage.removeItem(`proposal_draft_${franchiseId}`);
 
-      toast.success('Proposta criada com sucesso!', {
-        action: { label: 'Ver proposta', onClick: () => navigate(`/propostas/${data.id}`) },
+      const msg = isEditMode ? 'Proposta atualizada com sucesso!' : 'Proposta criada com sucesso!';
+      toast.success(msg, {
+        action: { label: 'Ver proposta', onClick: () => navigate(`/propostas/${proposalId}`) },
       });
-      navigate('/propostas');
+      navigate(`/propostas/${proposalId}`);
     } catch (err: any) {
-      toast.error('Erro ao criar proposta: ' + (err.message || 'Tente novamente'));
+      toast.error('Erro ao salvar proposta: ' + (err.message || 'Tente novamente'));
     } finally {
       setSaving(false);
     }
@@ -279,7 +360,7 @@ export default function NewProposal() {
       </Button>
       <Button size="sm" onClick={() => handleSubmit()} disabled={saving} className="h-8 px-2.5 sm:px-3">
         <FileText className="w-4 h-4" />
-        {!isMobile && <span className="ml-1">Criar</span>}
+        {!isMobile && <span className="ml-1">{isEditMode ? 'Salvar' : 'Criar'}</span>}
       </Button>
     </div>
   );
@@ -287,7 +368,7 @@ export default function NewProposal() {
   return (
     <div className="min-h-screen bg-background pb-bottomnav sm:pb-0">
       {/* Mobile header — same pattern as HojePage */}
-      <PanelHeader title="Nova Proposta">
+      <PanelHeader title={isEditMode ? "Editar Proposta" : "Nova Proposta"}>
         <BackButton fallback="/propostas" />
         {actionButtons}
       </PanelHeader>
@@ -297,7 +378,7 @@ export default function NewProposal() {
         <div className="hidden md:flex items-center justify-between mb-5">
           <div>
             <Breadcrumbs />
-            <h1 className="text-page-title text-foreground mt-1">Nova Proposta Comercial</h1>
+            <h1 className="text-page-title text-foreground mt-1">{isEditMode ? 'Editar Proposta Comercial' : 'Nova Proposta Comercial'}</h1>
             {lastSaved && (
               <p className="text-xs text-muted-foreground mt-0.5">
                 Rascunho salvo às {lastSaved}

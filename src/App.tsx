@@ -157,10 +157,6 @@ function AppRouteTree() {
           element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><ProposalsList /></ProtectedRoute>}
         />
         <Route
-          path="/propostas"
-          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><ProposalsList /></ProtectedRoute>}
-        />
-        <Route
           path="/propostas/nova"
           element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><NewProposal /></ProtectedRoute>}
         />
