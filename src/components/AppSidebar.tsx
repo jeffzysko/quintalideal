@@ -153,7 +153,7 @@ export function AppSidebar() {
             className="h-8 w-8 shrink-0 object-contain"
           />
           {!collapsed && (
-            <span className="text-sm font-bold tracking-tight text-foreground truncate">
+             <span className="text-sm font-bold tracking-tight text-sidebar-foreground truncate">
               Quintal Ideal
             </span>
           )}
