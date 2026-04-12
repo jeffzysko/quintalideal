@@ -812,9 +812,9 @@ export default function PublicProposal() {
                       className="gap-2 text-muted-foreground hover:text-foreground rounded-xl h-12 font-semibold">
                       <MessageCircle className="w-4 h-4" /> Tenho uma dúvida
                     </Button>
-                    <Button variant="ghost" onClick={handlePrint}
+                    <Button variant="ghost" onClick={handleExportPDF} disabled={exporting}
                       className="gap-2 text-muted-foreground/50 rounded-xl h-12">
-                      <Download className="w-4 h-4" /> PDF
+                      {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />} PDF
                     </Button>
                   </div>
                 </div>
