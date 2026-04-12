@@ -376,7 +376,7 @@ export default function NewProposal() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <ProposalClientSection form={form} updateForm={updateForm} />
+              <ProposalClientSection form={form} updateForm={updateForm} errors={fieldErrors} />
             </motion.div>
 
             <motion.div
