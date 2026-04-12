@@ -113,7 +113,7 @@ export default function MapaQuintais() {
       </PanelHeader>
 
       <div className="px-4 md:px-6 py-4 md:py-6 max-w-5xl mx-auto">
-        <Breadcrumbs items={[
+        <Breadcrumbs className="md:hidden" items={[
           { label: 'Admin', href: '/admin' },
           { label: 'Mapa de Calor' },
         ]} />

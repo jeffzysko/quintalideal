@@ -618,7 +618,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       </PanelHeader>
 
       <div className="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
-        <Breadcrumbs items={[{ label: 'Franquia' }]} />
+        <Breadcrumbs className="md:hidden" items={[{ label: 'Franquia' }]} />
         {content}
       </div>
     </div>
