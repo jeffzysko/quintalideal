@@ -16,7 +16,7 @@ import { ptBR } from 'date-fns/locale';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
 import { VideoEmbed } from '@/components/proposals/ProposalVideoSection';
 import logoSplash from '@/assets/logo-splash.png';
-import html2canvas from 'html2canvas';
+// html2canvas removed – PDF now uses native jsPDF vector drawing
 import { jsPDF } from 'jspdf';
 
 const formatCurrency = (v: number) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
