@@ -294,7 +294,7 @@ function SectionHeader({ icon: Icon, title, count, variant = 'default', delay = 
       initial={{ opacity: 0, x: -8 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay, type: 'spring', stiffness: 300, damping: 30 }}
-      className="flex items-center gap-2.5 mb-3 mt-14 first:mt-0"
+      className="flex items-center gap-2.5 mb-4"
     >
       <div className={cn('w-8 h-8 rounded-xl flex items-center justify-center', bgMap[variant])}>
         <Icon className={cn('w-4 h-4', colorMap[variant])} />
@@ -451,80 +451,82 @@ export default function HojePage() {
                     completedToday={completedToday}
                   />
 
-                  {/* ── 1. Overdue follow-ups ── */}
-                  {overdueFollowups.length > 0 && (
-                    <div>
-                      <SectionHeader icon={AlertTriangle} title="Atrasados" count={overdueFollowups.length} variant="danger" delay={nextDelay()} />
-                      <div className="space-y-2">
-                        {overdueFollowups.map((f, i) => (
-                          <FollowupRow key={f.id} f={f} index={i} leadName={leadNameMap[f.lead_id] || 'Lead'} basePath={basePath} onComplete={(id) => toggleFollowup.mutate(id)} navigate={navigate} />
-                        ))}
+                  <div className="space-y-10 sm:space-y-12">
+                    {/* ── 1. Overdue follow-ups ── */}
+                    {overdueFollowups.length > 0 && (
+                      <div>
+                        <SectionHeader icon={AlertTriangle} title="Atrasados" count={overdueFollowups.length} variant="danger" delay={nextDelay()} />
+                        <div className="space-y-2">
+                          {overdueFollowups.map((f, i) => (
+                            <FollowupRow key={f.id} f={f} index={i} leadName={leadNameMap[f.lead_id] || 'Lead'} basePath={basePath} onComplete={(id) => toggleFollowup.mutate(id)} navigate={navigate} />
+                          ))}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {/* ── 2. Today follow-ups ── */}
-                  <div>
-                    <SectionHeader icon={CalendarClock} title="Follow-ups de hoje" count={todayFollowups.length} delay={nextDelay()} />
-                    {todayFollowups.length === 0 ? (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.4 }}
-                      >
-                        <Card className="border-dashed rounded-2xl">
-                          <CardContent className="flex items-center gap-3 py-4 px-4">
-                            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                              <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                            </div>
-                            <p className="text-sm text-muted-foreground">Nenhum follow-up para hoje</p>
+                    {/* ── 2. Today follow-ups ── */}
+                    <div>
+                      <SectionHeader icon={CalendarClock} title="Follow-ups de hoje" count={todayFollowups.length} delay={nextDelay()} />
+                      {todayFollowups.length === 0 ? (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          transition={{ delay: 0.4 }}
+                        >
+                          <Card className="border-dashed rounded-2xl">
+                            <CardContent className="flex items-center gap-3 py-4 px-4">
+                              <div className="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                                <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                              </div>
+                              <p className="text-sm text-muted-foreground">Nenhum follow-up para hoje</p>
+                            </CardContent>
+                          </Card>
+                        </motion.div>
+                      ) : (
+                        <div className="space-y-2">
+                          {todayFollowups.map((f, i) => (
+                            <FollowupRow key={f.id} f={f} index={i} leadName={leadNameMap[f.lead_id] || 'Lead'} basePath={basePath} onComplete={(id) => toggleFollowup.mutate(id)} navigate={navigate} />
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* ── 3. Stale leads ── */}
+                    {staleLeads.length > 0 && (
+                      <div>
+                        <SectionHeader icon={Clock} title="Sem contato" count={staleLeads.length} variant="warning" delay={nextDelay()} />
+                        <Card className="overflow-hidden rounded-2xl border-amber-200/30">
+                          <CardContent className="p-0 divide-y divide-border/20">
+                            {staleLeads.slice(0, 8).map((lead, i) => (
+                              <div key={lead.id} className="relative">
+                                {i === 0 && <SwipeHint />}
+                                <LeadRow lead={lead} index={i} basePath={basePath} navigate={navigate} now={now} variant="stale" />
+                              </div>
+                            ))}
                           </CardContent>
                         </Card>
-                      </motion.div>
-                    ) : (
-                      <div className="space-y-2">
-                        {todayFollowups.map((f, i) => (
-                          <FollowupRow key={f.id} f={f} index={i} leadName={leadNameMap[f.lead_id] || 'Lead'} basePath={basePath} onComplete={(id) => toggleFollowup.mutate(id)} navigate={navigate} />
-                        ))}
+                        {staleLeads.length > 8 && (
+                          <Button variant="ghost" size="sm" className="w-full mt-2 text-xs text-muted-foreground gap-1 rounded-xl" onClick={() => navigate(isAdmin ? '/admin?tab=leads' : '/franquia')}>
+                            Ver todos ({staleLeads.length})
+                          </Button>
+                        )}
+                      </div>
+                    )}
+
+                    {/* ── 4. New leads ── */}
+                    {newLeads.length > 0 && (
+                      <div>
+                        <SectionHeader icon={Rocket} title="Novos leads" count={newLeads.length} delay={nextDelay()} />
+                        <Card className="overflow-hidden rounded-2xl">
+                          <CardContent className="p-0 divide-y divide-border/20">
+                            {newLeads.slice(0, 5).map((lead, i) => (
+                              <LeadRow key={lead.id} lead={lead} index={i} basePath={basePath} navigate={navigate} now={now} variant="new" />
+                            ))}
+                          </CardContent>
+                        </Card>
                       </div>
                     )}
                   </div>
-
-                  {/* ── 3. Stale leads ── */}
-                  {staleLeads.length > 0 && (
-                    <div>
-                      <SectionHeader icon={Clock} title="Sem contato" count={staleLeads.length} variant="warning" delay={nextDelay()} />
-                      <Card className="overflow-hidden rounded-2xl border-amber-200/30">
-                        <CardContent className="p-0 divide-y divide-border/20">
-                          {staleLeads.slice(0, 8).map((lead, i) => (
-                            <div key={lead.id} className="relative">
-                              {i === 0 && <SwipeHint />}
-                              <LeadRow lead={lead} index={i} basePath={basePath} navigate={navigate} now={now} variant="stale" />
-                            </div>
-                          ))}
-                        </CardContent>
-                      </Card>
-                      {staleLeads.length > 8 && (
-                        <Button variant="ghost" size="sm" className="w-full mt-2 text-xs text-muted-foreground gap-1 rounded-xl" onClick={() => navigate(isAdmin ? '/admin?tab=leads' : '/franquia')}>
-                          Ver todos ({staleLeads.length})
-                        </Button>
-                      )}
-                    </div>
-                  )}
-
-                  {/* ── 4. New leads ── */}
-                  {newLeads.length > 0 && (
-                    <div>
-                      <SectionHeader icon={Rocket} title="Novos leads" count={newLeads.length} delay={nextDelay()} />
-                      <Card className="overflow-hidden rounded-2xl">
-                        <CardContent className="p-0 divide-y divide-border/20">
-                          {newLeads.slice(0, 5).map((lead, i) => (
-                            <LeadRow key={lead.id} lead={lead} index={i} basePath={basePath} navigate={navigate} now={now} variant="new" />
-                          ))}
-                        </CardContent>
-                      </Card>
-                    </div>
-                  )}
 
                   {/* ── Empty state ── */}
                   {totalTasks === 0 && (
