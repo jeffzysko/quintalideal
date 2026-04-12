@@ -83,6 +83,8 @@ function LazyFallback() {
   );
 }
 
+import { AuthenticatedLayout } from '@/components/AuthenticatedLayout';
+
 const NO_FOOTER_PATHS = new Set(['/', '/explorar']);
 
 function LayoutWithFooter() {
@@ -102,12 +104,10 @@ function LayoutWithFooter() {
 function AppRouteTree() {
   return (
     <Routes>
-      {/* Pages WITHOUT footer (quiz/lead flow) */}
+      {/* Public pages WITHOUT footer/sidebar */}
       <Route path="/" element={<HomePage />} />
-      <Route path="/install" element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><InstallPage /></ProtectedRoute>} />
-      <Route path="/explorar" element={<ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}><ExplorarPage /></ProtectedRoute>} />
 
-      {/* Pages WITH footer */}
+      {/* Public pages WITH footer */}
       <Route element={<LayoutWithFooter />}>
         <Route path="/mapa" element={<MapaQuintais />} />
         <Route path="/ranking" element={<RankingQuintais />} />
@@ -116,88 +116,54 @@ function AppRouteTree() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/termos" element={<TermosDeUso />} />
         <Route path="/privacidade" element={<PoliticaPrivacidade />} />
+        <Route path="/docs/webhook" element={<WebhookDocs />} />
+      </Route>
+
+      {/* Authenticated pages with sidebar (desktop) / BottomNav (mobile) */}
+      <Route element={<AuthenticatedLayout />}>
+        <Route path="/install" element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><InstallPage /></ProtectedRoute>} />
+        <Route path="/explorar" element={<ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}><ExplorarPage /></ProtectedRoute>} />
         <Route
           path="/suporte"
-          element={
-            <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
-              <Suporte />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><Suporte /></ProtectedRoute>}
         />
         <Route
           path="/perfil"
-          element={
-            <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
-              <ProfileSettings />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><ProfileSettings /></ProtectedRoute>}
         />
         <Route
           path="/notificacoes"
-          element={
-            <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
-              <Notificacoes />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><Notificacoes /></ProtectedRoute>}
         />
         <Route
           path="/hoje"
-          element={
-            <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
-              <HojePage />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><HojePage /></ProtectedRoute>}
         />
         <Route
           path="/notificacoes/preferencias"
-          element={
-            <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
-              <NotificationPreferences />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><NotificationPreferences /></ProtectedRoute>}
         />
         <Route path="/painel" element={<PainelRouter />} />
         <Route
           path="/franquia"
-          element={
-            <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
-              <FranchiseDashboard />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><FranchiseDashboard /></ProtectedRoute>}
         />
         <Route
           path="/painel/lead/:id"
-          element={
-            <ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}>
-              <LeadDetail />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><LeadDetail /></ProtectedRoute>}
         />
         <Route
           path="/admin"
-          element={
-            <ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}>
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}><AdminDashboard /></ProtectedRoute>}
         />
         <Route
           path="/admin/radar"
-          element={
-            <ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}>
-              <RadarMercado />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}><RadarMercado /></ProtectedRoute>}
         />
         <Route
           path="/admin/lead/:id"
-          element={
-            <ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}>
-              <LeadDetail />
-            </ProtectedRoute>
-          }
+          element={<ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}><LeadDetail /></ProtectedRoute>}
         />
-        <Route path="/docs/webhook" element={<WebhookDocs />} />
       </Route>
 
       {/* Franchise dynamic landing - NO footer (quiz flow) */}
