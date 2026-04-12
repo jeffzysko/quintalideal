@@ -907,19 +907,7 @@ export default function PublicProposal() {
             </motion.div>
           )}
 
-          {/* ═══════════ TRUST BADGES ═══════════ */}
-          <TrustBadges />
-
-          {/* ═══════════ FOOTER ═══════════ */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="text-center pb-4 space-y-2"
-          >
-            <img src={logoSplash} alt="Splash" className="h-7 mx-auto opacity-20" />
-            <p className="text-[10px] text-muted-foreground/40 font-medium">Proposta gerada pela plataforma Splash Piscinas</p>
-          </motion.div>
+          <VerificationFooter proposal={proposal} />
         </main>
 
         {/* ═══════════ MOBILE BOTTOM BAR ═══════════ */}
