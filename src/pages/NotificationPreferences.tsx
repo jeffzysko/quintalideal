@@ -40,7 +40,7 @@ export default function NotificationPreferences() {
         </PanelHeader>
 
         <div className="max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-3 sm:py-6 md:py-8">
-          <Breadcrumbs items={[
+          <Breadcrumbs className="md:hidden" items={[
             { label: isAdmin ? 'Admin' : 'Painel', href: backPath },
             { label: 'Notificações' },
           ]} />

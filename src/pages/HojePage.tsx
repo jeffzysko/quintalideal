@@ -428,7 +428,7 @@ export default function HojePage() {
         </PanelHeader>
 
         <div className="max-w-3xl mx-auto px-4 sm:px-5 md:px-6 py-5 sm:py-8">
-          <Breadcrumbs items={[
+          <Breadcrumbs className="md:hidden" items={[
             { label: isAdmin ? 'Admin' : 'Painel', href: isAdmin ? '/admin' : '/franquia' },
             { label: 'Hoje' },
           ]} />

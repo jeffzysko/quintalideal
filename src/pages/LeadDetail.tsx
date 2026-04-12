@@ -387,7 +387,7 @@ export default function LeadDetail() {
       </PanelHeader>
 
       <div className="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-5">
-        <Breadcrumbs items={breadcrumbItems} />
+        <Breadcrumbs className="md:hidden" items={breadcrumbItems} />
 
         {/* Hero Card */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>

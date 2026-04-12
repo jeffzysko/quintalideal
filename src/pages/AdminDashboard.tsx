@@ -470,7 +470,7 @@ export default function AdminDashboard() {
 
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
         <div className="flex items-center justify-between gap-3 mb-2">
-          <Breadcrumbs items={[{ label: 'Admin' }]} />
+          <Breadcrumbs className="md:hidden" items={[{ label: 'Admin' }]} />
           {['overview', 'leads', 'kanban'].includes(activeTab) && (
             <OrganizationSwitcher
               activeFranchiseId={orgFilter}

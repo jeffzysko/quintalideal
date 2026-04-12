@@ -194,7 +194,7 @@ export default function WebhookDocs() {
       </div>
 
       <div className="relative max-w-3xl mx-auto px-4 py-6 md:py-10">
-        <Breadcrumbs items={[
+        <Breadcrumbs className="md:hidden" items={[
           { label: 'Admin', href: '/admin' },
           { label: 'Webhook Docs' },
         ]} />

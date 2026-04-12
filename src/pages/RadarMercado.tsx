@@ -343,7 +343,7 @@ export default function RadarMercado() {
       </PanelHeader>
 
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
-        <Breadcrumbs items={[
+        <Breadcrumbs className="md:hidden" items={[
           { label: 'Admin', href: '/admin' },
           { label: 'Radar de Mercado' },
         ]} />

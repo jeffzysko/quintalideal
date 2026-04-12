@@ -388,7 +388,7 @@ export default function Suporte() {
       </div>
 
       <div className="relative z-10 flex-1 max-w-3xl mx-auto w-full px-4 py-8 sm:py-12">
-        <Breadcrumbs items={[
+        <Breadcrumbs className="md:hidden" items={[
           { label: 'Painel', href: '/franquia' },
           { label: 'Suporte & Guia' },
         ]} />

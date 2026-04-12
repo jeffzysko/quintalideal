@@ -1,5 +1,6 @@
 import { Fragment } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -29,9 +30,10 @@ const ROUTE_LABELS: Record<string, string> = {
 
 interface BreadcrumbsProps {
   items?: BreadcrumbItemData[];
+  className?: string;
 }
 
-export function Breadcrumbs({ items }: BreadcrumbsProps) {
+export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
   const { pathname } = useLocation();
 
   const crumbs: BreadcrumbItemData[] = items || (() => {
@@ -60,7 +62,7 @@ export function Breadcrumbs({ items }: BreadcrumbsProps) {
   if (crumbs.length <= 1) return null;
 
   return (
-    <Breadcrumb className="mb-4 sm:mb-5 overflow-x-auto scrollbar-none">
+    <Breadcrumb className={cn("mb-4 sm:mb-5 overflow-x-auto scrollbar-none", className)}>
       <BreadcrumbList className="min-w-max flex-nowrap gap-1 whitespace-nowrap text-xs sm:gap-1.5">
         {crumbs.map((crumb, index) => {
           const isLast = index === crumbs.length - 1;
