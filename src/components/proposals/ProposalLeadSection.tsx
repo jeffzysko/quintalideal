@@ -31,6 +31,7 @@ export function ProposalLeadSection({ updateForm, franchiseId }: Props) {
   const [searching, setSearching] = useState(false);
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedLead, setSelectedLead] = useState<LeadResult | null>(null);
+  const [skipped, setSkipped] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
   const containerRef = useRef<HTMLDivElement>(null);
 
