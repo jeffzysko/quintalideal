@@ -129,9 +129,66 @@ export default function NewProposal() {
     return () => { if (draftRef.current) clearInterval(draftRef.current); };
   }, [form, franchiseId, user]);
 
-  // Load draft on mount
+  // Load existing proposal data for edit mode
   useEffect(() => {
-    if (!franchiseId) return;
+    if (!editId || editLoaded) return;
+    const loadProposal = async () => {
+      const { data: proposal, error } = await supabase
+        .from('proposals')
+        .select('*')
+        .eq('id', editId)
+        .single();
+      if (error || !proposal) {
+        toast.error('Proposta não encontrada');
+        navigate('/propostas');
+        return;
+      }
+      // Load items
+      const { data: items } = await supabase
+        .from('proposal_items')
+        .select('*')
+        .eq('proposal_id', editId)
+        .order('sort_order');
+
+      const formItems: ProposalItem[] = (items && items.length > 0)
+        ? items.map(it => ({
+            id: it.id,
+            product_name: it.product_name,
+            description: it.description || '',
+            quantity: Number(it.quantity),
+            unit_price: Number(it.unit_price),
+            discount: Number(it.discount),
+          }))
+        : [{ id: crypto.randomUUID(), product_name: '', description: '', quantity: 1, unit_price: 0, discount: 0 }];
+
+      setForm({
+        lead_id: proposal.lead_id,
+        person_type: (proposal.person_type as 'pf' | 'pj') || 'pf',
+        client_name: proposal.client_name || '',
+        client_document: proposal.client_document || '',
+        client_contact_name: proposal.client_contact_name || '',
+        client_phone: proposal.client_phone || '',
+        client_email: proposal.client_email || '',
+        client_address: proposal.client_address || '',
+        items: formItems,
+        payment_method: proposal.payment_method || '',
+        payment_conditions: proposal.payment_conditions || '',
+        validity_date: proposal.validity_date || '',
+        delivery_deadline: proposal.delivery_deadline || '',
+        status: (proposal.status as any) || 'rascunho',
+        global_discount: Number(proposal.global_discount) || 0,
+        global_discount_type: (proposal.global_discount_type as 'fixed' | 'percent') || 'fixed',
+        observations: proposal.observations || '',
+      });
+      setIsEditMode(true);
+      setEditLoaded(true);
+    };
+    loadProposal();
+  }, [editId, editLoaded, navigate]);
+
+  // Load draft on mount (only when not editing)
+  useEffect(() => {
+    if (!franchiseId || editId) return;
     try {
       const draft = localStorage.getItem(`proposal_draft_${franchiseId}`);
       if (draft) {
@@ -139,7 +196,7 @@ export default function NewProposal() {
         setForm(prev => ({ ...prev, ...parsed }));
       }
     } catch { /* ignore */ }
-  }, [franchiseId]);
+  }, [franchiseId, editId]);
 
   const scrollToSection = (id: string) => {
     setActiveSection(id);
