@@ -14,6 +14,8 @@ import {
   Eye,
   Kanban,
   TrendingUp,
+  Webhook,
+  LogOut,
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -78,6 +80,7 @@ const FRANCHISE_NAV: SidebarNavItem[] = [
 ];
 
 const BOTTOM_NAV: SidebarNavItem[] = [
+  { title: 'Integrações', url: '/perfil#integracoes', icon: Webhook },
   { title: 'Configurações', url: '/perfil', icon: Settings },
   { title: 'Suporte', url: '/suporte', icon: HelpCircle },
 ];
@@ -85,7 +88,7 @@ const BOTTOM_NAV: SidebarNavItem[] = [
 export function AppSidebar() {
   const { state } = useSidebar();
   const collapsed = state === 'collapsed';
-  const { role } = useAuth();
+  const { role, signOut } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -189,6 +192,15 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {BOTTOM_NAV.map((item) => renderNavItem(item))}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  tooltip={collapsed ? 'Sair' : undefined}
+                  onClick={() => void signOut()}
+                >
+                  <LogOut className="h-4 w-4 shrink-0 text-destructive" />
+                  <span className="truncate text-destructive">Sair</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
