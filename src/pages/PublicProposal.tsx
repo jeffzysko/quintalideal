@@ -443,6 +443,7 @@ export default function PublicProposal() {
 
           {/* ═══════════ HERO ═══════════ */}
           <motion.div
+            data-pdf-section
             variants={stagger} initial="hidden" animate="show"
             className="text-center space-y-5 pt-2"
           >
