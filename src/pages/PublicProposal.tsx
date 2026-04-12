@@ -10,10 +10,12 @@ import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
-import { Check, X, MessageCircle, Download, CreditCard, Truck, CalendarDays, Phone, User, FileText, Timer, AlertTriangle } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Check, X, MessageCircle, Download, CreditCard, Truck, CalendarDays, Phone, User, FileText, Timer, AlertTriangle, RefreshCw } from 'lucide-react';
 import { format, differenceInDays, differenceInHours, differenceInMinutes, isPast } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
+import { VideoEmbed } from '@/components/proposals/ProposalVideoSection';
 
 const formatCurrency = (v: number) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -43,6 +45,7 @@ interface ProposalData {
   refused_at: string | null;
   refused_reason: string | null;
   franchise_id: string;
+  video_url?: string | null;
   items: Array<{
     id: string;
     product_name: string;
@@ -79,7 +82,7 @@ const REFUSE_REASONS = [
   'Preço alto',
   'Prazo inadequado',
   'Optei por outro fornecedor',
-  'Desisti do projeto',
+  'Não é o momento',
   'Outro',
 ];
 
@@ -87,7 +90,7 @@ function CountdownTimer({ validityDate }: { validityDate: string }) {
   const [now, setNow] = useState(new Date());
 
   useEffect(() => {
-    const interval = setInterval(() => setNow(new Date()), 60000);
+    const interval = setInterval(() => setNow(new Date()), 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -107,8 +110,8 @@ function CountdownTimer({ validityDate }: { validityDate: string }) {
 
   return (
     <div className="flex items-center gap-2 text-amber-700 bg-amber-50 px-4 py-3 rounded-xl text-sm font-medium">
-      <Timer className="w-4 h-4" />
-      Esta proposta expira em {days > 0 && `${days}d `}{hours}h {minutes}min
+      <Timer className="w-4 h-4 shrink-0" />
+      <span>⏱ Esta proposta expira em {days > 0 && `${days}d `}{hours}h {minutes}min</span>
     </div>
   );
 }
@@ -123,11 +126,16 @@ export default function PublicProposal() {
   const [acceptOpen, setAcceptOpen] = useState(false);
   const [refuseOpen, setRefuseOpen] = useState(false);
   const [questionOpen, setQuestionOpen] = useState(false);
+  const [negotiateOpen, setNegotiateOpen] = useState(false);
   const [acceptName, setAcceptName] = useState('');
   const [refuseReason, setRefuseReason] = useState('');
+  const [customRefuseReason, setCustomRefuseReason] = useState('');
   const [questionText, setQuestionText] = useState('');
+  const [negotiateItem, setNegotiateItem] = useState('');
+  const [negotiateMessage, setNegotiateMessage] = useState('');
+  const [negotiateValue, setNegotiateValue] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [actionDone, setActionDone] = useState<'accepted' | 'refused' | 'question' | null>(null);
+  const [actionDone, setActionDone] = useState<'accepted' | 'refused' | 'question' | 'negotiated' | null>(null);
 
   const fetchProposal = useCallback(async () => {
     if (!token) return;
@@ -161,9 +169,10 @@ export default function PublicProposal() {
   };
 
   const handleRefuse = async () => {
-    if (!token || !refuseReason.trim()) return;
+    const reason = refuseReason === 'Outro' ? customRefuseReason.trim() : refuseReason;
+    if (!token || !reason) return;
     setSubmitting(true);
-    await supabase.rpc('public_refuse_proposal', { _token: token, _reason: refuseReason.trim(), _user_agent: navigator.userAgent });
+    await supabase.rpc('public_refuse_proposal', { _token: token, _reason: reason, _user_agent: navigator.userAgent });
     setSubmitting(false);
     setRefuseOpen(false);
     setActionDone('refused');
@@ -178,6 +187,24 @@ export default function PublicProposal() {
     setQuestionOpen(false);
     setQuestionText('');
     setActionDone('question');
+  };
+
+  const handleNegotiate = async () => {
+    if (!token || !negotiateMessage.trim()) return;
+    setSubmitting(true);
+    await supabase.rpc('public_submit_negotiation' as any, {
+      _token: token,
+      _item_reference: negotiateItem || null,
+      _client_message: negotiateMessage.trim(),
+      _proposed_value: negotiateValue ? parseFloat(negotiateValue) : null,
+    });
+    setSubmitting(false);
+    setNegotiateOpen(false);
+    setNegotiateMessage('');
+    setNegotiateItem('');
+    setNegotiateValue('');
+    setActionDone('negotiated');
+    fetchProposal();
   };
 
   const handlePrint = () => window.print();
@@ -238,7 +265,7 @@ export default function PublicProposal() {
           {actionDone === 'accepted' && (
             <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center">
               <Check className="w-8 h-8 text-emerald-600 mx-auto mb-2" />
-              <p className="font-semibold text-emerald-800">Proposta aceita!</p>
+              <p className="font-semibold text-emerald-800">Proposta aceita com sucesso!</p>
               <p className="text-sm text-emerald-700 mt-1">O vendedor foi notificado e entrará em contato em breve.</p>
             </motion.div>
           )}
@@ -254,6 +281,13 @@ export default function PublicProposal() {
               <MessageCircle className="w-8 h-8 text-blue-600 mx-auto mb-2" />
               <p className="font-semibold text-blue-800">Dúvida enviada!</p>
               <p className="text-sm text-blue-700 mt-1">O vendedor receberá sua mensagem e responderá em breve.</p>
+            </motion.div>
+          )}
+          {actionDone === 'negotiated' && (
+            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
+              <RefreshCw className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+              <p className="font-semibold text-blue-800">Proposta de ajuste enviada!</p>
+              <p className="text-sm text-blue-700 mt-1">O vendedor analisará sua contraproposta e retornará em breve.</p>
             </motion.div>
           )}
 
@@ -284,7 +318,19 @@ export default function PublicProposal() {
             </motion.div>
           )}
 
-          {/* Seção 3 — Dados do Cliente */}
+          {/* Seção 3 — Vídeo de Apresentação (opcional) */}
+          {proposal.video_url && (
+            <motion.div {...sectionAnim}>
+              <Card className="border-border/50 shadow-sm overflow-hidden">
+                <CardContent className="py-4 px-5 space-y-3">
+                  <h3 className="font-semibold text-sm text-foreground">🎬 Uma mensagem do seu consultor</h3>
+                  <VideoEmbed url={proposal.video_url} />
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+
+          {/* Seção 4 — Dados do Cliente */}
           <motion.div {...sectionAnim}>
             <Card className="border-border/50 shadow-sm">
               <CardContent className="py-4 px-5 space-y-2">
@@ -299,7 +345,7 @@ export default function PublicProposal() {
             </Card>
           </motion.div>
 
-          {/* Seção 4 — Itens */}
+          {/* Seção 5 — Itens */}
           <motion.div {...sectionAnim}>
             <Card className="border-border/50 shadow-sm overflow-hidden">
               <CardContent className="py-4 px-0">
@@ -355,7 +401,7 @@ export default function PublicProposal() {
             </Card>
           </motion.div>
 
-          {/* Seção 5 — Condições Comerciais */}
+          {/* Seção 6 — Condições Comerciais */}
           <motion.div {...sectionAnim}>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {proposal.payment_method && (
@@ -409,6 +455,7 @@ export default function PublicProposal() {
           {canAct && !actionDone && (
             <motion.div {...sectionAnim} className="hidden sm:flex flex-wrap gap-3 justify-center print:hidden">
               <Button onClick={() => setAcceptOpen(true)} className="gap-2"><Check className="w-4 h-4" /> Aceitar Proposta</Button>
+              <Button variant="outline" onClick={() => setNegotiateOpen(true)} className="gap-2 border-blue-200 text-blue-700 hover:bg-blue-50"><RefreshCw className="w-4 h-4" /> Propor Ajuste</Button>
               <Button variant="destructive" onClick={() => setRefuseOpen(true)} className="gap-2"><X className="w-4 h-4" /> Recusar Proposta</Button>
               <Button variant="outline" onClick={() => setQuestionOpen(true)} className="gap-2"><MessageCircle className="w-4 h-4" /> Tenho uma dúvida</Button>
               <Button variant="ghost" onClick={handlePrint} className="gap-2"><Download className="w-4 h-4" /> Baixar PDF</Button>
@@ -421,6 +468,7 @@ export default function PublicProposal() {
           <div className="fixed bottom-0 left-0 right-0 bg-white border-t p-3 sm:hidden print:hidden z-20 safe-bottom">
             <div className="flex gap-2">
               <Button onClick={() => setAcceptOpen(true)} className="flex-1 gap-1.5 h-11"><Check className="w-4 h-4" /> Aceitar</Button>
+              <Button variant="outline" onClick={() => setNegotiateOpen(true)} className="gap-1.5 h-11 px-3 border-blue-200 text-blue-700"><RefreshCw className="w-4 h-4" /></Button>
               <Button variant="destructive" onClick={() => setRefuseOpen(true)} className="gap-1.5 h-11 px-3"><X className="w-4 h-4" /></Button>
               <Button variant="outline" onClick={() => setQuestionOpen(true)} className="gap-1.5 h-11 px-3"><MessageCircle className="w-4 h-4" /></Button>
               <Button variant="ghost" onClick={handlePrint} className="gap-1.5 h-11 px-3"><Download className="w-4 h-4" /></Button>
@@ -453,15 +501,15 @@ export default function PublicProposal() {
           </DialogHeader>
           <div className="flex flex-wrap gap-2">
             {REFUSE_REASONS.map((r) => (
-              <Button key={r} variant={refuseReason === r ? 'default' : 'outline'} size="sm" onClick={() => setRefuseReason(r)}>{r}</Button>
+              <Button key={r} variant={refuseReason === r ? 'default' : 'outline'} size="sm" onClick={() => { setRefuseReason(r); if (r !== 'Outro') setCustomRefuseReason(''); }}>{r}</Button>
             ))}
           </div>
           {refuseReason === 'Outro' && (
-            <Textarea placeholder="Descreva o motivo..." value={refuseReason === 'Outro' ? '' : refuseReason} onChange={(e) => setRefuseReason(e.target.value || 'Outro')} />
+            <Textarea placeholder="Descreva o motivo..." value={customRefuseReason} onChange={(e) => setCustomRefuseReason(e.target.value)} />
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setRefuseOpen(false)}>Cancelar</Button>
-            <Button variant="destructive" onClick={handleRefuse} disabled={!refuseReason.trim() || submitting}>{submitting ? 'Enviando...' : 'Confirmar Recusa'}</Button>
+            <Button variant="destructive" onClick={handleRefuse} disabled={(!refuseReason || (refuseReason === 'Outro' && !customRefuseReason.trim())) || submitting}>{submitting ? 'Enviando...' : 'Confirmar Recusa'}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -470,13 +518,48 @@ export default function PublicProposal() {
       <Dialog open={questionOpen} onOpenChange={setQuestionOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Enviar dúvida</DialogTitle>
+            <DialogTitle>💬 Enviar dúvida</DialogTitle>
             <DialogDescription>Escreva sua pergunta e o vendedor responderá em breve.</DialogDescription>
           </DialogHeader>
           <Textarea placeholder="Qual sua dúvida sobre esta proposta?" value={questionText} onChange={(e) => setQuestionText(e.target.value)} rows={4} />
           <DialogFooter>
             <Button variant="outline" onClick={() => setQuestionOpen(false)}>Cancelar</Button>
             <Button onClick={handleQuestion} disabled={!questionText.trim() || submitting}>{submitting ? 'Enviando...' : 'Enviar Dúvida'}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Negotiate modal */}
+      <Dialog open={negotiateOpen} onOpenChange={setNegotiateOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>🔄 Propor Ajuste</DialogTitle>
+            <DialogDescription>Selecione o item que deseja negociar e descreva sua contraproposta.</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div>
+              <label className="text-sm font-medium text-foreground">Item (opcional)</label>
+              <Select value={negotiateItem} onValueChange={setNegotiateItem}>
+                <SelectTrigger className="mt-1"><SelectValue placeholder="Selecione um item..." /></SelectTrigger>
+                <SelectContent>
+                  {proposal?.items.map((item) => (
+                    <SelectItem key={item.id} value={item.product_name}>{item.product_name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground">Valor proposto (opcional)</label>
+              <Input type="number" placeholder="R$ 0,00" value={negotiateValue} onChange={(e) => setNegotiateValue(e.target.value)} className="mt-1" />
+            </div>
+            <div>
+              <label className="text-sm font-medium text-foreground">Sua proposta *</label>
+              <Textarea placeholder="Ex: Consigo fechar se o prazo de entrega for de 30 dias..." value={negotiateMessage} onChange={(e) => setNegotiateMessage(e.target.value)} rows={3} className="mt-1" />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setNegotiateOpen(false)}>Cancelar</Button>
+            <Button onClick={handleNegotiate} disabled={!negotiateMessage.trim() || submitting}>{submitting ? 'Enviando...' : 'Enviar Proposta'}</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
