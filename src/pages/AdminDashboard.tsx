@@ -84,6 +84,12 @@ export default function AdminDashboard() {
   useLeadsRealtime();
   const { signOut: _signOut, role } = useAuth();
   const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'franchise-view'>(() => getAdminTabFromSearch(location.search));
+
+  // Sync activeTab when URL changes externally (e.g. sidebar navigation)
+  useEffect(() => {
+    const tabFromUrl = getAdminTabFromSearch(location.search);
+    setActiveTab(tabFromUrl);
+  }, [location.search]);
   const [viewFranchiseId, setViewFranchiseId] = useState<string>('');
   const [timeRange, setTimeRange] = useState<TimeRange>('30');
 
