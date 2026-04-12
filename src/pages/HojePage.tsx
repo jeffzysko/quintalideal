@@ -478,12 +478,11 @@ export default function HojePage() {
                 )}
 
                 {/* ═══ 3 BLOCKS ═══ */}
-                <Tabs defaultValue="acoes" className="w-full">
+                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
                   <TabsList className="w-full grid grid-cols-3 mb-6 h-11">
                     <TabsTrigger value="acoes" className="text-xs sm:text-sm gap-1.5 data-[state=active]:shadow-sm">
                       <ListChecks className="w-3.5 h-3.5" />
-                      <span className="hidden xs:inline">Ações</span>
-                      <span className="xs:hidden">Ações</span>
+                      Ações
                       {urgentCount > 0 && (
                         <Badge variant="destructive" className="text-[9px] font-bold px-1 py-0 h-4 min-w-[16px]">
                           {urgentCount > 9 ? '9+' : urgentCount}
@@ -500,8 +499,18 @@ export default function HojePage() {
                     </TabsTrigger>
                   </TabsList>
 
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeTab}
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -8 }}
+                      transition={{ duration: 0.2, ease: 'easeOut' }}
+                    >
+
                   {/* ══ TAB 1: O QUE FAZER AGORA ══ */}
-                  <TabsContent value="acoes" className="space-y-6 mt-0">
+                  <TabsContent value="acoes" className="space-y-6 mt-0" forceMount={activeTab === 'acoes' ? true : undefined}>
+                    {activeTab === 'acoes' && (<>
                     {/* Overdue follow-ups */}
                     {overdueFollowups.length > 0 && (
                       <div>
