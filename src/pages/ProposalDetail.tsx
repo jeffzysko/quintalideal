@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
@@ -15,10 +15,8 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { cn } from '@/lib/utils';
-import { Copy, Share2, Eye, Clock, FileText, MessageCircle, Check, X, Edit, RefreshCw, CopyPlus, ChevronRight, Phone, AlertTriangle } from 'lucide-react';
-import { toWhatsAppPhone } from '@/lib/phone-utils';
+import { Copy, Share2, Eye, Clock, FileText, MessageCircle, Check, X, Edit, RefreshCw, CopyPlus, ChevronRight } from 'lucide-react';
 
 const formatCurrency = (v: number) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -35,7 +33,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 export default function ProposalDetail() {
   const { id } = useParams<{ id: string }>();
-  const { franchiseId } = useAuth();
+  useAuth();
   const navigate = useNavigate();
 
   const { data: proposal, isLoading, refetch } = useQuery({
