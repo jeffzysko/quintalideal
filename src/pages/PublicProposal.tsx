@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -9,9 +9,8 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Check, X, MessageCircle, Download, CreditCard, Truck, CalendarDays, Phone, User, FileText, AlertTriangle, RefreshCw, Droplets, Shield, Star } from 'lucide-react';
+import { Check, X, MessageCircle, Download, CreditCard, Truck, CalendarDays, Phone, User, FileText, AlertTriangle, RefreshCw, Droplets, Shield, Star, Sparkles, ArrowRight } from 'lucide-react';
 import { format, differenceInDays, differenceInHours, differenceInMinutes, isPast } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
@@ -70,13 +69,13 @@ interface ProposalData {
   } | null;
 }
 
-const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string }> = {
-  rascunho: { label: 'Rascunho', color: 'text-slate-600', bg: 'bg-slate-100' },
-  enviada: { label: 'Aguardando sua aprovação', color: 'text-amber-700', bg: 'bg-amber-50' },
-  visualizada: { label: 'Aguardando sua aprovação', color: 'text-amber-700', bg: 'bg-amber-50' },
-  em_negociacao: { label: 'Em negociação', color: 'text-[#08a1d6]', bg: 'bg-[#08a1d6]/10' },
-  aceita: { label: 'Proposta Aceita ✓', color: 'text-emerald-700', bg: 'bg-emerald-50' },
-  recusada: { label: 'Proposta Recusada', color: 'text-red-700', bg: 'bg-red-50' },
+const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: string }> = {
+  rascunho: { label: 'Rascunho', color: 'text-muted-foreground', bg: 'bg-muted', icon: '📝' },
+  enviada: { label: 'Aguardando aprovação', color: 'text-amber-700 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-500/10', icon: '⏳' },
+  visualizada: { label: 'Aguardando aprovação', color: 'text-amber-700 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-500/10', icon: '👁️' },
+  em_negociacao: { label: 'Em negociação', color: 'text-info', bg: 'bg-info/10', icon: '🤝' },
+  aceita: { label: 'Proposta Aceita ✓', color: 'text-success', bg: 'bg-success/10', icon: '✅' },
+  recusada: { label: 'Proposta Recusada', color: 'text-destructive', bg: 'bg-destructive/10', icon: '❌' },
 };
 
 const REFUSE_REASONS = [
@@ -87,6 +86,16 @@ const REFUSE_REASONS = [
   'Outro',
 ];
 
+/* ── Stagger container ── */
+const stagger = {
+  hidden: {},
+  show: { transition: { staggerChildren: 0.08 } },
+};
+const staggerItem = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
+};
+
 /* ── Countdown ── */
 function CountdownTimer({ validityDate }: { validityDate: string }) {
   const [now, setNow] = useState(new Date());
@@ -95,9 +104,10 @@ function CountdownTimer({ validityDate }: { validityDate: string }) {
   const target = new Date(validityDate + 'T23:59:59');
   if (isPast(target)) {
     return (
-      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex items-center gap-3 bg-red-50 border border-red-200 px-5 py-4 rounded-2xl">
-        <AlertTriangle className="w-5 h-5 text-red-500 shrink-0" />
-        <p className="text-red-700 text-sm font-medium">Esta proposta expirou e não está mais disponível para aceite.</p>
+      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+        className="flex items-center gap-3 bg-destructive/5 border border-destructive/20 px-5 py-4 rounded-2xl">
+        <AlertTriangle className="w-5 h-5 text-destructive shrink-0" />
+        <p className="text-destructive text-sm font-medium">Esta proposta expirou e não está mais disponível para aceite.</p>
       </motion.div>
     );
   }
@@ -107,52 +117,93 @@ function CountdownTimer({ validityDate }: { validityDate: string }) {
   const minutes = differenceInMinutes(target, now) % 60;
 
   return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
-      <div className="flex items-center justify-center gap-2 text-xs font-semibold text-amber-600 uppercase tracking-widest">
-        <CalendarDays className="w-3.5 h-3.5" />
-        <span>Proposta válida por</span>
-      </div>
-      <div className="flex items-center gap-3 justify-center">
-        {[
-          { value: days, label: 'dias' },
-          { value: hours, label: 'horas' },
-          { value: minutes, label: 'min' },
-        ].map(({ value, label }, i) => (
-          <div key={label} className="flex items-center gap-3">
-            <div className="flex flex-col items-center">
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#08a1d6] to-[#0d8ab8] flex items-center justify-center shadow-lg shadow-[#08a1d6]/20">
-                <span className="text-xl font-bold text-white">{String(value).padStart(2, '0')}</span>
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.3 }}
+      className="relative overflow-hidden rounded-2xl border border-border/50 bg-card p-6"
+    >
+      {/* Subtle animated gradient bg */}
+      <div className="absolute inset-0 opacity-[0.03]"
+        style={{ background: 'linear-gradient(135deg, hsl(207 90% 42%), hsl(322 85% 50%))' }} />
+
+      <div className="relative space-y-4">
+        <div className="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
+          <CalendarDays className="w-3.5 h-3.5" />
+          <span>Proposta válida por</span>
+        </div>
+        <div className="flex items-center gap-3 justify-center">
+          {[
+            { value: days, label: 'dias' },
+            { value: hours, label: 'horas' },
+            { value: minutes, label: 'min' },
+          ].map(({ value, label }, i) => (
+            <div key={label} className="flex items-center gap-3">
+              <div className="flex flex-col items-center">
+                <motion.div
+                  key={value}
+                  initial={{ rotateX: -90, opacity: 0 }}
+                  animate={{ rotateX: 0, opacity: 1 }}
+                  transition={{ type: 'spring', stiffness: 200, damping: 15 }}
+                  className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary-hover flex items-center justify-center shadow-lg"
+                  style={{ boxShadow: '0 8px 32px hsl(207 90% 42% / 0.25)' }}
+                >
+                  <span className="text-2xl font-black text-primary-foreground tabular-nums">
+                    {String(value).padStart(2, '0')}
+                  </span>
+                </motion.div>
+                <span className="text-[10px] text-muted-foreground mt-1.5 uppercase tracking-[0.15em] font-semibold">{label}</span>
               </div>
-              <span className="text-[10px] text-slate-500 mt-1 uppercase tracking-wider font-medium">{label}</span>
+              {i < 2 && <span className="text-xl font-black text-primary/40 -mt-5">:</span>}
             </div>
-            {i < 2 && <span className="text-lg font-bold text-[#08a1d6] -mt-4">:</span>}
-          </div>
-        ))}
+          ))}
+        </div>
+        <p className="text-[11px] text-muted-foreground/60 text-center">
+          Expira em {format(target, "dd/MM/yyyy 'às' HH:mm")}
+        </p>
       </div>
-      <p className="text-[11px] text-slate-400 text-center">
-        Expira em {format(target, "dd/MM/yyyy 'às' HH:mm")}
-      </p>
     </motion.div>
   );
 }
 
 /* ── Trust badges ── */
 function TrustBadges() {
+  const badges = [
+    { icon: Shield, label: 'Proposta segura', color: 'text-success', bg: 'bg-success/8 border-success/15' },
+    { icon: Star, label: 'Empresa verificada', color: 'text-warning', bg: 'bg-warning/8 border-warning/15' },
+    { icon: Droplets, label: 'Splash Piscinas', color: 'text-primary', bg: 'bg-primary/8 border-primary/15' },
+  ];
+
   return (
-    <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
-      <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-700 px-3.5 py-2 rounded-xl">
-        <Shield className="w-4 h-4" />
-        <span className="text-xs font-semibold">Proposta segura</span>
+    <motion.div
+      variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}
+      className="flex flex-wrap items-center justify-center gap-3"
+    >
+      {badges.map(({ icon: Icon, label, color, bg }) => (
+        <motion.div key={label} variants={staggerItem}
+          className={`flex items-center gap-2 ${bg} border px-4 py-2.5 rounded-full transition-transform hover:scale-105`}
+        >
+          <Icon className={`w-4 h-4 ${color}`} />
+          <span className={`text-xs font-bold ${color}`}>{label}</span>
+        </motion.div>
+      ))}
+    </motion.div>
+  );
+}
+
+/* ── Glassmorphism section card ── */
+function SectionCard({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 24 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-40px' }}
+      transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
+    >
+      <div className={`relative rounded-2xl border border-border/40 bg-card/80 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-300 ${className}`}>
+        {children}
       </div>
-      <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 px-3.5 py-2 rounded-xl">
-        <Star className="w-4 h-4" />
-        <span className="text-xs font-semibold">Empresa verificada</span>
-      </div>
-      <div className="flex items-center gap-2 bg-[#08a1d6]/10 border border-[#08a1d6]/20 text-[#08a1d6] px-3.5 py-2 rounded-xl">
-        <Droplets className="w-4 h-4" />
-        <span className="text-xs font-semibold">Splash Piscinas</span>
-      </div>
-    </div>
+    </motion.div>
   );
 }
 
@@ -227,21 +278,35 @@ export default function PublicProposal() {
   };
   const handlePrint = () => window.print();
 
+  /* ── Loading ── */
   if (loading) return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-white via-[#9bcdeb]/10 to-[#08a1d6]/5">
-      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center gap-4">
-        <img src={logoSplash} alt="Splash" className="w-20 h-auto" />
-        <div className="animate-spin w-8 h-8 border-3 border-[#08a1d6] border-t-transparent rounded-full" />
+    <div className="min-h-screen flex items-center justify-center bg-background">
+      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center gap-5">
+        <motion.img
+          src={logoSplash} alt="Splash" className="w-20 h-auto"
+          animate={{ scale: [1, 1.05, 1] }}
+          transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+        />
+        <div className="relative w-10 h-10">
+          <div className="absolute inset-0 rounded-full border-[3px] border-primary/20" />
+          <div className="absolute inset-0 rounded-full border-[3px] border-primary border-t-transparent animate-spin" />
+        </div>
+        <p className="text-sm text-muted-foreground font-medium">Carregando proposta...</p>
       </motion.div>
     </div>
   );
 
+  /* ── Error ── */
   if (error || !proposal) return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-white via-[#9bcdeb]/10 to-[#08a1d6]/5 px-6 text-center">
-      <img src={logoSplash} alt="Splash" className="w-24 h-auto mb-6" />
-      <FileText className="w-14 h-14 text-slate-300 mb-4" />
-      <h1 className="text-xl font-bold text-slate-800 mb-2">Proposta não encontrada</h1>
-      <p className="text-slate-500 text-sm">O link pode estar incorreto ou a proposta foi removida.</p>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-background px-6 text-center">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+        <img src={logoSplash} alt="Splash" className="w-24 h-auto mx-auto" />
+        <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto">
+          <FileText className="w-8 h-8 text-muted-foreground" />
+        </div>
+        <h1 className="text-xl font-bold text-foreground">Proposta não encontrada</h1>
+        <p className="text-muted-foreground text-sm max-w-xs mx-auto">O link pode estar incorreto ou a proposta foi removida.</p>
+      </motion.div>
     </div>
   );
 
@@ -252,342 +317,459 @@ export default function PublicProposal() {
     : proposal.global_discount;
   const proposalNumber = proposal.id.slice(0, 4).toUpperCase();
 
-  const fadeUp = {
-    initial: { opacity: 0, y: 24 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, margin: '-30px' },
-    transition: { duration: 0.5 },
-  };
-
   return (
     <>
-      <div className="min-h-screen bg-gradient-to-b from-white via-white to-[#9bcdeb]/5 print:bg-white">
-        {/* ── Branded Header ── */}
-        <header className="sticky top-0 z-10 backdrop-blur-xl bg-white/80 border-b border-slate-100 print:static">
+      <div className="min-h-screen bg-background print:bg-white">
+        {/* ── Animated background mesh ── */}
+        <div className="fixed inset-0 pointer-events-none overflow-hidden print:hidden">
+          <div className="absolute -top-[40%] -right-[20%] w-[80%] h-[80%] rounded-full opacity-[0.03]"
+            style={{ background: 'radial-gradient(circle, hsl(207 90% 52%), transparent 70%)' }} />
+          <div className="absolute -bottom-[30%] -left-[20%] w-[60%] h-[60%] rounded-full opacity-[0.02]"
+            style={{ background: 'radial-gradient(circle, hsl(322 85% 50%), transparent 70%)' }} />
+        </div>
+
+        {/* ── Sticky Header ── */}
+        <header className="sticky top-0 z-20 backdrop-blur-xl bg-background/80 border-b border-border/50 print:static">
           <div className="max-w-3xl mx-auto px-5 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <img src={logoSplash} alt="Splash Piscinas" className="h-9 w-auto" />
-              <div className="hidden sm:block h-6 w-px bg-slate-200" />
+              <motion.img
+                src={logoSplash} alt="Splash Piscinas" className="h-9 w-auto"
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+              />
+              <div className="hidden sm:block h-6 w-px bg-border" />
               <div className="hidden sm:block">
-                <p className="text-xs font-semibold text-slate-700 leading-tight">{proposal.franchise?.nome_franquia}</p>
-                {proposal.franchise?.cidade_base && <p className="text-[10px] text-slate-400">{proposal.franchise.cidade_base}</p>}
+                <p className="text-xs font-bold text-foreground leading-tight">{proposal.franchise?.nome_franquia}</p>
+                {proposal.franchise?.cidade_base && <p className="text-[10px] text-muted-foreground">{proposal.franchise.cidade_base}</p>}
               </div>
             </div>
-            <Badge className={`${statusConf.bg} ${statusConf.color} border-0 text-xs font-semibold px-3 py-1`}>
-              {statusConf.label}
-            </Badge>
+            <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
+              <Badge className={`${statusConf.bg} ${statusConf.color} border-0 text-xs font-bold px-3.5 py-1.5 rounded-full`}>
+                {statusConf.icon} {statusConf.label}
+              </Badge>
+            </motion.div>
           </div>
         </header>
 
-        <main className="max-w-3xl mx-auto px-5 py-8 space-y-8 pb-36 sm:pb-10 print:pb-0 print:space-y-5">
-          {/* ── Hero Section ── */}
-          <motion.div {...fadeUp} className="text-center space-y-5">
-            <div className="inline-flex items-center gap-2 bg-[#08a1d6]/8 text-[#08a1d6] px-4 py-1.5 rounded-full text-xs font-semibold">
-              <FileText className="w-3.5 h-3.5" />
-              PROPOSTA COMERCIAL #{proposalNumber}
-            </div>
-            <h2 className="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight leading-tight">
+        <main className="relative max-w-3xl mx-auto px-5 py-8 space-y-7 pb-36 sm:pb-10 print:pb-0 print:space-y-5">
+
+          {/* ═══════════ HERO ═══════════ */}
+          <motion.div
+            variants={stagger} initial="hidden" animate="show"
+            className="text-center space-y-5 pt-2"
+          >
+            <motion.div variants={staggerItem}
+              className="inline-flex items-center gap-2 bg-primary/8 text-primary px-4 py-1.5 rounded-full text-xs font-bold tracking-wider"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              PROPOSTA #{proposalNumber}
+            </motion.div>
+
+            <motion.h2 variants={staggerItem}
+              className="text-3xl sm:text-[2.75rem] font-black text-foreground tracking-tight leading-[1.1]"
+            >
               Olá, {proposal.client_name.split(' ')[0]}! 👋
-            </h2>
-            <p className="text-slate-500 text-sm sm:text-base max-w-md mx-auto">
-              Preparamos uma proposta exclusiva para você. Confira os detalhes abaixo.
-            </p>
-            <p className="text-xs text-slate-400">
+            </motion.h2>
+
+            <motion.p variants={staggerItem}
+              className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto leading-relaxed"
+            >
+              Preparamos uma proposta exclusiva para você.
+              <br className="hidden sm:block" />
+              Confira todos os detalhes abaixo.
+            </motion.p>
+
+            <motion.p variants={staggerItem} className="text-xs text-muted-foreground/50 font-medium">
               Emitida em {format(new Date(proposal.created_at), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
-            </p>
-            {proposal.validity_date && !expired && <CountdownTimer validityDate={proposal.validity_date} />}
-            {proposal.validity_date && expired && <CountdownTimer validityDate={proposal.validity_date} />}
+            </motion.p>
+
+            {proposal.validity_date && <CountdownTimer validityDate={proposal.validity_date} />}
           </motion.div>
 
-          {/* ── Success/action messages ── */}
-          {actionDone === 'accepted' && (
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-              className="bg-gradient-to-r from-emerald-50 to-emerald-100/50 border border-emerald-200 rounded-2xl p-6 text-center">
-              <div className="w-14 h-14 rounded-full bg-emerald-100 flex items-center justify-center mx-auto mb-3">
-                <Check className="w-7 h-7 text-emerald-600" />
-              </div>
-              <p className="font-bold text-emerald-800 text-lg">Proposta aceita com sucesso! 🎉</p>
-              <p className="text-sm text-emerald-700 mt-2">O vendedor foi notificado e entrará em contato em breve.</p>
-            </motion.div>
-          )}
-          {actionDone === 'refused' && (
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-              className="bg-red-50 border border-red-200 rounded-2xl p-6 text-center">
-              <div className="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-3">
-                <X className="w-7 h-7 text-red-600" />
-              </div>
-              <p className="font-bold text-red-800 text-lg">Proposta recusada</p>
-              <p className="text-sm text-red-700 mt-2">O vendedor foi notificado sobre sua decisão.</p>
-            </motion.div>
-          )}
-          {actionDone === 'question' && (
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-              className="bg-[#08a1d6]/5 border border-[#08a1d6]/20 rounded-2xl p-6 text-center">
-              <div className="w-14 h-14 rounded-full bg-[#08a1d6]/10 flex items-center justify-center mx-auto mb-3">
-                <MessageCircle className="w-7 h-7 text-[#08a1d6]" />
-              </div>
-              <p className="font-bold text-slate-800 text-lg">Dúvida enviada!</p>
-              <p className="text-sm text-slate-600 mt-2">O vendedor receberá sua mensagem e responderá em breve.</p>
-            </motion.div>
-          )}
-          {actionDone === 'negotiated' && (
-            <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }}
-              className="bg-[#08a1d6]/5 border border-[#08a1d6]/20 rounded-2xl p-6 text-center">
-              <div className="w-14 h-14 rounded-full bg-[#08a1d6]/10 flex items-center justify-center mx-auto mb-3">
-                <RefreshCw className="w-7 h-7 text-[#08a1d6]" />
-              </div>
-              <p className="font-bold text-slate-800 text-lg">Proposta de ajuste enviada!</p>
-              <p className="text-sm text-slate-600 mt-2">O vendedor analisará sua contraproposta e retornará em breve.</p>
-            </motion.div>
-          )}
+          {/* ═══════════ ACTION DONE MESSAGES ═══════════ */}
+          <AnimatePresence>
+            {actionDone === 'accepted' && (
+              <motion.div key="accepted" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ opacity: 0 }}
+                className="relative overflow-hidden rounded-2xl border border-success/20 p-6 text-center"
+                style={{ background: 'linear-gradient(135deg, hsl(152 70% 96%), hsl(152 70% 94%))' }}
+              >
+                <motion.div
+                  initial={{ scale: 0 }} animate={{ scale: 1 }}
+                  transition={{ type: 'spring', stiffness: 200, damping: 12, delay: 0.1 }}
+                  className="w-16 h-16 rounded-full bg-success/15 flex items-center justify-center mx-auto mb-4"
+                >
+                  <Check className="w-8 h-8 text-success" />
+                </motion.div>
+                <p className="font-black text-success text-lg">Proposta aceita com sucesso! 🎉</p>
+                <p className="text-sm text-success/80 mt-2">O vendedor foi notificado e entrará em contato em breve.</p>
+              </motion.div>
+            )}
+            {actionDone === 'refused' && (
+              <motion.div key="refused" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ opacity: 0 }}
+                className="bg-destructive/5 border border-destructive/20 rounded-2xl p-6 text-center">
+                <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center mx-auto mb-4">
+                  <X className="w-8 h-8 text-destructive" />
+                </div>
+                <p className="font-black text-destructive text-lg">Proposta recusada</p>
+                <p className="text-sm text-destructive/70 mt-2">O vendedor foi notificado sobre sua decisão.</p>
+              </motion.div>
+            )}
+            {actionDone === 'question' && (
+              <motion.div key="question" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ opacity: 0 }}
+                className="bg-primary/5 border border-primary/15 rounded-2xl p-6 text-center">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  <MessageCircle className="w-8 h-8 text-primary" />
+                </div>
+                <p className="font-black text-foreground text-lg">Dúvida enviada!</p>
+                <p className="text-sm text-muted-foreground mt-2">O vendedor receberá sua mensagem e responderá em breve.</p>
+              </motion.div>
+            )}
+            {actionDone === 'negotiated' && (
+              <motion.div key="negotiated" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ opacity: 0 }}
+                className="bg-primary/5 border border-primary/15 rounded-2xl p-6 text-center">
+                <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-4">
+                  <RefreshCw className="w-8 h-8 text-primary" />
+                </div>
+                <p className="font-black text-foreground text-lg">Proposta de ajuste enviada!</p>
+                <p className="text-sm text-muted-foreground mt-2">O vendedor analisará sua contraproposta e retornará em breve.</p>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-          {/* ── Seller Card ── */}
+          {/* ═══════════ SELLER CARD ═══════════ */}
           {proposal.seller && (
-            <motion.div {...fadeUp}>
-              <Card className="overflow-hidden border-0 shadow-lg shadow-slate-200/50 rounded-2xl">
-                <div className="h-1.5 bg-gradient-to-r from-[#e80685] via-[#08a1d6] to-[#9bcdeb]" />
-                <CardContent className="flex items-center gap-4 py-5 px-5">
-                  <Avatar className="w-14 h-14 ring-2 ring-[#08a1d6]/20 ring-offset-2">
+            <SectionCard className="overflow-hidden">
+              <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, hsl(322 85% 50%), hsl(207 90% 42%), hsl(140 20% 72%))' }} />
+              <div className="flex items-center gap-4 p-5">
+                <motion.div whileHover={{ scale: 1.05 }} transition={{ type: 'spring', stiffness: 300 }}>
+                  <Avatar className="w-14 h-14 ring-2 ring-primary/20 ring-offset-2 ring-offset-background">
                     <AvatarImage src={proposal.seller.avatar_url || undefined} />
-                    <AvatarFallback className="bg-gradient-to-br from-[#08a1d6] to-[#0d8ab8] text-white font-bold text-lg">
+                    <AvatarFallback className="bg-gradient-to-br from-primary to-primary-hover text-primary-foreground font-black text-lg">
                       {(proposal.seller.full_name || 'V')[0].toUpperCase()}
                     </AvatarFallback>
                   </Avatar>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-bold text-slate-800">{proposal.seller.full_name || 'Consultor'}</p>
-                    <p className="text-xs text-slate-500">{proposal.franchise?.nome_franquia} • Consultor comercial</p>
-                  </div>
-                  {sellerPhone && (
-                    <Button size="sm" className="shrink-0 bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-xl shadow-md shadow-green-200/50 print:hidden" asChild>
+                </motion.div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-bold text-foreground">{proposal.seller.full_name || 'Consultor'}</p>
+                  <p className="text-xs text-muted-foreground">{proposal.franchise?.nome_franquia} • Consultor comercial</p>
+                </div>
+                {sellerPhone && (
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button size="sm" className="shrink-0 bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-xl shadow-md print:hidden" asChild>
                       <a href={`https://wa.me/${toWhatsAppPhone(sellerPhone)}`} target="_blank" rel="noopener noreferrer">
                         <Phone className="w-4 h-4 mr-1.5" /> Falar
                       </a>
                     </Button>
-                  )}
-                </CardContent>
-              </Card>
-            </motion.div>
+                  </motion.div>
+                )}
+              </div>
+            </SectionCard>
           )}
 
-          {/* ── Video ── */}
+          {/* ═══════════ VIDEO ═══════════ */}
           {proposal.video_url && (
-            <motion.div {...fadeUp}>
-              <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl overflow-hidden">
-                <CardContent className="py-5 px-5 space-y-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-[#e80685]/10 flex items-center justify-center">
-                      <span className="text-sm">🎬</span>
-                    </div>
-                    <h3 className="font-semibold text-sm text-slate-800">Uma mensagem do seu consultor</h3>
+            <SectionCard>
+              <div className="p-5 space-y-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center">
+                    <span className="text-sm">🎬</span>
                   </div>
-                  <VideoEmbed url={proposal.video_url} />
-                </CardContent>
-              </Card>
-            </motion.div>
+                  <h3 className="font-bold text-sm text-foreground">Uma mensagem do seu consultor</h3>
+                </div>
+                <VideoEmbed url={proposal.video_url} />
+              </div>
+            </SectionCard>
           )}
 
-          {/* ── Client Data ── */}
-          <motion.div {...fadeUp}>
-            <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl">
-              <CardContent className="py-5 px-5 space-y-3">
-                <div className="flex items-center gap-2 mb-1">
-                  <div className="w-8 h-8 rounded-lg bg-[#08a1d6]/10 flex items-center justify-center">
-                    <User className="w-4 h-4 text-[#08a1d6]" />
+          {/* ═══════════ CLIENT DATA ═══════════ */}
+          <SectionCard delay={0.05}>
+            <div className="p-5 space-y-4">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-primary/8 flex items-center justify-center">
+                  <User className="w-4.5 h-4.5 text-primary" />
+                </div>
+                <h3 className="font-bold text-sm text-foreground">Dados do Cliente</h3>
+              </div>
+              <div className="h-px bg-border/50" />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="text-muted-foreground/70 text-[11px] uppercase tracking-[0.1em] font-semibold">Nome</span>
+                  <p className="font-semibold text-foreground mt-0.5">{proposal.client_name}</p>
+                </div>
+                {proposal.client_document && (
+                  <div>
+                    <span className="text-muted-foreground/70 text-[11px] uppercase tracking-[0.1em] font-semibold">
+                      {proposal.person_type === 'pj' ? 'CNPJ' : 'CPF'}
+                    </span>
+                    <p className="font-semibold text-foreground mt-0.5">{proposal.client_document}</p>
                   </div>
-                  <h3 className="font-semibold text-sm text-slate-800">Dados do Cliente</h3>
-                </div>
-                <Separator className="bg-slate-100" />
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                  <div><span className="text-slate-400 text-xs uppercase tracking-wide">Nome</span><p className="font-medium text-slate-800 mt-0.5">{proposal.client_name}</p></div>
-                  {proposal.client_document && <div><span className="text-slate-400 text-xs uppercase tracking-wide">{proposal.person_type === 'pj' ? 'CNPJ' : 'CPF'}</span><p className="font-medium text-slate-800 mt-0.5">{proposal.client_document}</p></div>}
-                  {proposal.client_address && <div className="sm:col-span-2"><span className="text-slate-400 text-xs uppercase tracking-wide">Endereço</span><p className="font-medium text-slate-800 mt-0.5">{proposal.client_address}</p></div>}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+                )}
+                {proposal.client_address && (
+                  <div className="sm:col-span-2">
+                    <span className="text-muted-foreground/70 text-[11px] uppercase tracking-[0.1em] font-semibold">Endereço</span>
+                    <p className="font-semibold text-foreground mt-0.5">{proposal.client_address}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          </SectionCard>
 
-          {/* ── Items ── */}
-          <motion.div {...fadeUp}>
-            <Card className="border-0 shadow-lg shadow-slate-200/50 rounded-2xl overflow-hidden">
-              <CardContent className="py-5 px-0">
-                <div className="flex items-center gap-2 px-5 mb-4">
-                  <div className="w-8 h-8 rounded-lg bg-[#08a1d6]/10 flex items-center justify-center">
-                    <FileText className="w-4 h-4 text-[#08a1d6]" />
-                  </div>
-                  <h3 className="font-semibold text-sm text-slate-800">Itens da Proposta</h3>
+          {/* ═══════════ ITEMS ═══════════ */}
+          <SectionCard delay={0.1} className="overflow-hidden">
+            <div className="p-5 pb-0">
+              <div className="flex items-center gap-2.5 mb-4">
+                <div className="w-9 h-9 rounded-xl bg-primary/8 flex items-center justify-center">
+                  <FileText className="w-4.5 h-4.5 text-primary" />
                 </div>
-                {/* Desktop table */}
-                <div className="hidden sm:block overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead><tr className="border-y bg-slate-50/80">
-                      <th className="text-left px-5 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wider">Item</th>
-                      <th className="text-center px-3 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wider">Qtd</th>
-                      <th className="text-right px-3 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wider">Unitário</th>
-                      <th className="text-right px-5 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wider">Subtotal</th>
-                    </tr></thead>
-                    <tbody>
-                      {proposal.items.map((item, i) => (
-                        <tr key={item.id} className={`border-b last:border-0 ${i % 2 === 0 ? '' : 'bg-slate-50/40'}`}>
-                          <td className="px-5 py-4">
-                            <p className="font-medium text-slate-800">{item.product_name}</p>
-                            {item.description && <p className="text-xs text-slate-400 mt-0.5">{item.description}</p>}
-                          </td>
-                          <td className="text-center px-3 py-4 text-slate-600">{item.quantity}</td>
-                          <td className="text-right px-3 py-4 text-slate-600">{formatCurrency(item.unit_price)}</td>
-                          <td className="text-right px-5 py-4 font-semibold text-slate-800">{formatCurrency(item.subtotal)}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-                {/* Mobile cards */}
-                <div className="sm:hidden space-y-3 px-5">
-                  {proposal.items.map((item) => (
-                    <div key={item.id} className="bg-slate-50/60 rounded-xl p-4 space-y-2">
-                      <p className="font-semibold text-slate-800 text-sm">{item.product_name}</p>
-                      {item.description && <p className="text-xs text-slate-400">{item.description}</p>}
-                      <div className="flex justify-between items-center">
-                        <span className="text-xs text-slate-500">{item.quantity}x {formatCurrency(item.unit_price)}</span>
-                        <span className="font-bold text-slate-800">{formatCurrency(item.subtotal)}</span>
-                      </div>
-                    </div>
+                <h3 className="font-bold text-sm text-foreground">Itens da Proposta</h3>
+                <Badge variant="secondary" className="ml-auto text-[10px] font-bold rounded-full px-2.5">
+                  {proposal.items.length} {proposal.items.length === 1 ? 'item' : 'itens'}
+                </Badge>
+              </div>
+            </div>
+
+            {/* Desktop table */}
+            <div className="hidden sm:block overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="border-y border-border/50 bg-muted/30">
+                    <th className="text-left px-5 py-3 font-bold text-muted-foreground text-[11px] uppercase tracking-[0.1em]">Item</th>
+                    <th className="text-center px-3 py-3 font-bold text-muted-foreground text-[11px] uppercase tracking-[0.1em]">Qtd</th>
+                    <th className="text-right px-3 py-3 font-bold text-muted-foreground text-[11px] uppercase tracking-[0.1em]">Unitário</th>
+                    <th className="text-right px-5 py-3 font-bold text-muted-foreground text-[11px] uppercase tracking-[0.1em]">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {proposal.items.map((item, i) => (
+                    <motion.tr
+                      key={item.id}
+                      initial={{ opacity: 0, x: -10 }}
+                      whileInView={{ opacity: 1, x: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ delay: i * 0.05 }}
+                      className={`border-b border-border/30 last:border-0 transition-colors hover:bg-muted/20 ${i % 2 === 0 ? '' : 'bg-muted/10'}`}
+                    >
+                      <td className="px-5 py-4">
+                        <p className="font-semibold text-foreground">{item.product_name}</p>
+                        {item.description && <p className="text-xs text-muted-foreground mt-0.5">{item.description}</p>}
+                      </td>
+                      <td className="text-center px-3 py-4 text-muted-foreground tabular-nums">{item.quantity}</td>
+                      <td className="text-right px-3 py-4 text-muted-foreground tabular-nums">{formatCurrency(item.unit_price)}</td>
+                      <td className="text-right px-5 py-4 font-bold text-foreground tabular-nums">{formatCurrency(item.subtotal)}</td>
+                    </motion.tr>
                   ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile cards */}
+            <motion.div
+              variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}
+              className="sm:hidden space-y-2.5 px-5"
+            >
+              {proposal.items.map((item) => (
+                <motion.div key={item.id} variants={staggerItem}
+                  className="rounded-xl border border-border/30 bg-muted/20 p-4 space-y-2 transition-all hover:border-primary/20 hover:bg-primary/3"
+                >
+                  <p className="font-bold text-foreground text-sm">{item.product_name}</p>
+                  {item.description && <p className="text-xs text-muted-foreground">{item.description}</p>}
+                  <div className="flex justify-between items-center pt-1">
+                    <span className="text-xs text-muted-foreground tabular-nums">{item.quantity}x {formatCurrency(item.unit_price)}</span>
+                    <span className="font-black text-foreground tabular-nums">{formatCurrency(item.subtotal)}</span>
+                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+
+            {/* ── TOTAL SECTION (Premium) ── */}
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="relative m-5 mt-4 rounded-2xl overflow-hidden"
+            >
+              {/* Gradient background */}
+              <div className="absolute inset-0 opacity-[0.06]"
+                style={{ background: 'linear-gradient(135deg, hsl(207 90% 42%), hsl(322 85% 50%))' }} />
+              <div className="absolute inset-0 bg-card/60 backdrop-blur-sm" />
+
+              <div className="relative p-5 space-y-3 border border-border/30 rounded-2xl">
+                <div className="flex justify-between text-sm">
+                  <span className="text-muted-foreground">Subtotal</span>
+                  <span className="text-foreground tabular-nums">{formatCurrency(proposal.subtotal)}</span>
                 </div>
-                {/* Totals */}
-                <div className="mt-5 mx-5 bg-gradient-to-r from-slate-50 to-[#08a1d6]/5 rounded-2xl p-5 space-y-2">
-                  <div className="flex justify-between text-sm"><span className="text-slate-500">Subtotal</span><span className="text-slate-700">{formatCurrency(proposal.subtotal)}</span></div>
-                  {discountAmount > 0 && <div className="flex justify-between text-sm"><span className="text-emerald-600">Desconto</span><span className="text-emerald-600 font-medium">-{formatCurrency(discountAmount)}</span></div>}
-                  <Separator className="my-2 bg-slate-200" />
-                  <div className="flex justify-between items-baseline">
-                    <span className="font-bold text-slate-800">Total</span>
-                    <span className="text-3xl font-extrabold bg-gradient-to-r from-[#08a1d6] to-[#e80685] bg-clip-text text-transparent">
+                {discountAmount > 0 && (
+                  <div className="flex justify-between text-sm">
+                    <span className="text-success font-medium">Desconto</span>
+                    <span className="text-success font-bold tabular-nums">-{formatCurrency(discountAmount)}</span>
+                  </div>
+                )}
+                <div className="h-px bg-border/50 my-1" />
+                <div className="flex justify-between items-end pt-1">
+                  <div>
+                    <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Total</span>
+                  </div>
+                  <motion.div
+                    initial={{ scale: 0.9, opacity: 0 }}
+                    whileInView={{ scale: 1, opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ type: 'spring', stiffness: 200, damping: 12 }}
+                  >
+                    <span className="text-3xl sm:text-4xl font-black tracking-tight"
+                      style={{
+                        background: 'linear-gradient(135deg, hsl(207 90% 42%), hsl(322 85% 50%))',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent',
+                      }}
+                    >
                       {formatCurrency(proposal.total)}
                     </span>
-                  </div>
+                  </motion.div>
                 </div>
-              </CardContent>
-            </Card>
-          </motion.div>
+              </div>
+            </motion.div>
+          </SectionCard>
 
-          {/* ── Commercial Conditions ── */}
-          <motion.div {...fadeUp}>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {proposal.payment_method && (
-                <Card className="border-0 shadow-md shadow-slate-200/50 rounded-2xl hover:shadow-lg transition-shadow">
-                  <CardContent className="py-5 px-4 text-center">
-                    <div className="w-10 h-10 rounded-xl bg-[#e80685]/10 flex items-center justify-center mx-auto mb-2">
-                      <CreditCard className="w-5 h-5 text-[#e80685]" />
-                    </div>
-                    <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Pagamento</p>
-                    <p className="font-bold text-sm text-slate-800 mt-1 capitalize">{proposal.payment_method}</p>
-                  </CardContent>
-                </Card>
-              )}
-              {proposal.delivery_deadline && (
-                <Card className="border-0 shadow-md shadow-slate-200/50 rounded-2xl hover:shadow-lg transition-shadow">
-                  <CardContent className="py-5 px-4 text-center">
-                    <div className="w-10 h-10 rounded-xl bg-[#08a1d6]/10 flex items-center justify-center mx-auto mb-2">
-                      <Truck className="w-5 h-5 text-[#08a1d6]" />
-                    </div>
-                    <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Entrega</p>
-                    <p className="font-bold text-sm text-slate-800 mt-1">{proposal.delivery_deadline}</p>
-                  </CardContent>
-                </Card>
-              )}
-              {proposal.validity_date && (
-                <Card className="border-0 shadow-md shadow-slate-200/50 rounded-2xl hover:shadow-lg transition-shadow">
-                  <CardContent className="py-5 px-4 text-center">
-                    <div className="w-10 h-10 rounded-xl bg-[#b1cbb0]/30 flex items-center justify-center mx-auto mb-2">
-                      <CalendarDays className="w-5 h-5 text-[#6a9c6a]" />
-                    </div>
-                    <p className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Válida até</p>
-                    <p className="font-bold text-sm text-slate-800 mt-1">{format(new Date(proposal.validity_date), "dd/MM/yyyy")}</p>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-            {proposal.payment_conditions && (
-              <Card className="border-0 shadow-md shadow-slate-200/50 rounded-2xl mt-3">
-                <CardContent className="py-4 px-5 text-sm text-slate-600">{proposal.payment_conditions}</CardContent>
-              </Card>
+          {/* ═══════════ CONDITIONS ═══════════ */}
+          <motion.div
+            variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}
+            className="grid grid-cols-1 sm:grid-cols-3 gap-3"
+          >
+            {proposal.payment_method && (
+              <motion.div variants={staggerItem}>
+                <div className="group relative rounded-2xl border border-border/40 bg-card/80 backdrop-blur-sm p-5 text-center
+                  transition-all duration-300 hover:border-secondary/30 hover:shadow-lg hover:-translate-y-0.5">
+                  <div className="w-11 h-11 rounded-xl bg-secondary/8 flex items-center justify-center mx-auto mb-3
+                    group-hover:scale-110 transition-transform duration-300">
+                    <CreditCard className="w-5 h-5 text-secondary" />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-bold">Pagamento</p>
+                  <p className="font-bold text-sm text-foreground mt-1 capitalize">{proposal.payment_method}</p>
+                </div>
+              </motion.div>
+            )}
+            {proposal.delivery_deadline && (
+              <motion.div variants={staggerItem}>
+                <div className="group relative rounded-2xl border border-border/40 bg-card/80 backdrop-blur-sm p-5 text-center
+                  transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:-translate-y-0.5">
+                  <div className="w-11 h-11 rounded-xl bg-primary/8 flex items-center justify-center mx-auto mb-3
+                    group-hover:scale-110 transition-transform duration-300">
+                    <Truck className="w-5 h-5 text-primary" />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-bold">Entrega</p>
+                  <p className="font-bold text-sm text-foreground mt-1">{proposal.delivery_deadline}</p>
+                </div>
+              </motion.div>
+            )}
+            {proposal.validity_date && (
+              <motion.div variants={staggerItem}>
+                <div className="group relative rounded-2xl border border-border/40 bg-card/80 backdrop-blur-sm p-5 text-center
+                  transition-all duration-300 hover:border-success/30 hover:shadow-lg hover:-translate-y-0.5">
+                  <div className="w-11 h-11 rounded-xl bg-success/8 flex items-center justify-center mx-auto mb-3
+                    group-hover:scale-110 transition-transform duration-300">
+                    <CalendarDays className="w-5 h-5 text-success" />
+                  </div>
+                  <p className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-bold">Válida até</p>
+                  <p className="font-bold text-sm text-foreground mt-1">{format(new Date(proposal.validity_date), "dd/MM/yyyy")}</p>
+                </div>
+              </motion.div>
             )}
           </motion.div>
 
-          {/* ── Observations ── */}
-          {proposal.observations && (
-            <motion.div {...fadeUp}>
-              <Card className="border-0 shadow-md shadow-slate-200/50 rounded-2xl">
-                <CardContent className="py-5 px-5">
-                  <h3 className="font-semibold text-sm text-slate-800 mb-2">Observações</h3>
-                  <p className="text-sm text-slate-500 whitespace-pre-wrap leading-relaxed">{proposal.observations}</p>
-                </CardContent>
-              </Card>
-            </motion.div>
+          {proposal.payment_conditions && (
+            <SectionCard>
+              <div className="p-5 text-sm text-muted-foreground leading-relaxed">{proposal.payment_conditions}</div>
+            </SectionCard>
           )}
 
-          {/* ── Desktop Actions ── */}
+          {/* ═══════════ OBSERVATIONS ═══════════ */}
+          {proposal.observations && (
+            <SectionCard>
+              <div className="p-5 space-y-2">
+                <h3 className="font-bold text-sm text-foreground">Observações</h3>
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">{proposal.observations}</p>
+              </div>
+            </SectionCard>
+          )}
+
+          {/* ═══════════ DESKTOP ACTIONS ═══════════ */}
           {canAct && !actionDone && (
-            <motion.div {...fadeUp} className="hidden sm:block print:hidden">
-              <Card className="border-0 shadow-xl shadow-slate-200/60 rounded-2xl overflow-hidden">
-                <div className="h-1 bg-gradient-to-r from-[#e80685] via-[#08a1d6] to-[#b1cbb0]" />
-                <CardContent className="py-6 px-6 space-y-4">
-                  <p className="text-center text-sm text-slate-500 font-medium">O que você gostaria de fazer?</p>
+            <motion.div
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="hidden sm:block print:hidden"
+            >
+              <div className="relative rounded-2xl overflow-hidden border border-border/40">
+                <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, hsl(322 85% 50%), hsl(207 90% 42%), hsl(140 20% 72%))' }} />
+                <div className="bg-card/80 backdrop-blur-sm p-7 space-y-5">
+                  <p className="text-center text-sm text-muted-foreground font-semibold">O que você gostaria de fazer?</p>
                   <div className="flex flex-wrap gap-3 justify-center">
-                    <Button onClick={() => setAcceptOpen(true)}
-                      className="gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white rounded-xl shadow-lg shadow-emerald-200/50 h-11 px-6">
-                      <Check className="w-4 h-4" /> Aceitar Proposta
-                    </Button>
+                    <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                      <Button onClick={() => setAcceptOpen(true)}
+                        className="gap-2 bg-gradient-to-r from-success to-success/80 hover:from-success/90 hover:to-success/70 text-success-foreground rounded-xl shadow-lg h-12 px-7 font-bold text-sm">
+                        <Check className="w-4 h-4" /> Aceitar Proposta
+                        <ArrowRight className="w-4 h-4 ml-1" />
+                      </Button>
+                    </motion.div>
                     <Button variant="outline" onClick={() => setNegotiateOpen(true)}
-                      className="gap-2 border-[#08a1d6]/30 text-[#08a1d6] hover:bg-[#08a1d6]/5 rounded-xl h-11 px-5">
+                      className="gap-2 border-primary/30 text-primary hover:bg-primary/5 rounded-xl h-12 px-5 font-semibold">
                       <RefreshCw className="w-4 h-4" /> Propor Ajuste
                     </Button>
                     <Button variant="outline" onClick={() => setRefuseOpen(true)}
-                      className="gap-2 border-red-200 text-red-600 hover:bg-red-50 rounded-xl h-11 px-5">
+                      className="gap-2 border-destructive/20 text-destructive hover:bg-destructive/5 rounded-xl h-12 px-5 font-semibold">
                       <X className="w-4 h-4" /> Recusar
                     </Button>
                     <Button variant="ghost" onClick={() => setQuestionOpen(true)}
-                      className="gap-2 text-slate-500 hover:text-slate-700 rounded-xl h-11">
+                      className="gap-2 text-muted-foreground hover:text-foreground rounded-xl h-12 font-semibold">
                       <MessageCircle className="w-4 h-4" /> Tenho uma dúvida
                     </Button>
-                    <Button variant="ghost" onClick={handlePrint} className="gap-2 text-slate-400 rounded-xl h-11">
+                    <Button variant="ghost" onClick={handlePrint}
+                      className="gap-2 text-muted-foreground/50 rounded-xl h-12">
                       <Download className="w-4 h-4" /> PDF
                     </Button>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </motion.div>
           )}
 
-          {/* ── Trust badges ── */}
-          <motion.div {...fadeUp}>
-            <TrustBadges />
-          </motion.div>
+          {/* ═══════════ TRUST BADGES ═══════════ */}
+          <TrustBadges />
 
-          {/* ── Footer ── */}
-          <motion.div {...fadeUp} className="text-center pb-4">
-            <img src={logoSplash} alt="Splash" className="h-7 mx-auto opacity-30 mb-2" />
-            <p className="text-[10px] text-slate-300">Proposta gerada pela plataforma Splash Piscinas</p>
+          {/* ═══════════ FOOTER ═══════════ */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            className="text-center pb-4 space-y-2"
+          >
+            <img src={logoSplash} alt="Splash" className="h-7 mx-auto opacity-20" />
+            <p className="text-[10px] text-muted-foreground/40 font-medium">Proposta gerada pela plataforma Splash Piscinas</p>
           </motion.div>
         </main>
 
-        {/* ── Mobile sticky bottom ── */}
+        {/* ═══════════ MOBILE BOTTOM BAR ═══════════ */}
         {canAct && !actionDone && (
-          <div className="fixed bottom-0 left-0 right-0 bg-white/95 backdrop-blur-xl border-t border-slate-100 p-4 sm:hidden print:hidden z-20" style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
+          <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-xl border-t border-border/50 p-4 sm:hidden print:hidden z-20"
+            style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
             <div className="flex gap-2">
-              <Button onClick={() => setAcceptOpen(true)}
-                className="flex-1 gap-1.5 h-12 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl shadow-lg shadow-emerald-200/50 font-semibold">
-                <Check className="w-4 h-4" /> Aceitar
-              </Button>
+              <motion.div className="flex-1" whileTap={{ scale: 0.97 }}>
+                <Button onClick={() => setAcceptOpen(true)}
+                  className="w-full gap-1.5 h-12 bg-gradient-to-r from-success to-success/80 text-success-foreground rounded-xl shadow-lg font-bold">
+                  <Check className="w-4 h-4" /> Aceitar
+                </Button>
+              </motion.div>
               <Button variant="outline" onClick={() => setNegotiateOpen(true)}
-                className="h-12 w-12 rounded-xl border-[#08a1d6]/30 text-[#08a1d6] p-0">
+                className="h-12 w-12 rounded-xl border-primary/30 text-primary p-0">
                 <RefreshCw className="w-5 h-5" />
               </Button>
               <Button variant="outline" onClick={() => setRefuseOpen(true)}
-                className="h-12 w-12 rounded-xl border-red-200 text-red-500 p-0">
+                className="h-12 w-12 rounded-xl border-destructive/20 text-destructive p-0">
                 <X className="w-5 h-5" />
               </Button>
               <Button variant="ghost" onClick={() => setQuestionOpen(true)}
-                className="h-12 w-12 rounded-xl text-slate-400 p-0">
+                className="h-12 w-12 rounded-xl text-muted-foreground p-0">
                 <MessageCircle className="w-5 h-5" />
               </Button>
             </div>
@@ -595,29 +777,30 @@ export default function PublicProposal() {
         )}
       </div>
 
-      {/* ── Accept Modal ── */}
+      {/* ═══════════ MODALS ═══════════ */}
+      {/* Accept */}
       <Dialog open={acceptOpen} onOpenChange={setAcceptOpen}>
         <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-lg">Confirmar aceite</DialogTitle>
+            <DialogTitle className="text-lg font-bold">Confirmar aceite</DialogTitle>
             <DialogDescription>Digite seu nome completo para confirmar a aceitação desta proposta.</DialogDescription>
           </DialogHeader>
           <Input placeholder="Seu nome completo" value={acceptName} onChange={(e) => setAcceptName(e.target.value)} className="rounded-xl" />
           <DialogFooter>
             <Button variant="outline" onClick={() => setAcceptOpen(false)} className="rounded-xl">Cancelar</Button>
             <Button onClick={handleAccept} disabled={!acceptName.trim() || submitting}
-              className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white rounded-xl">
+              className="bg-gradient-to-r from-success to-success/80 text-success-foreground rounded-xl font-bold">
               {submitting ? 'Enviando...' : 'Confirmar Aceite'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* ── Refuse Modal ── */}
+      {/* Refuse */}
       <Dialog open={refuseOpen} onOpenChange={setRefuseOpen}>
         <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-lg">Recusar proposta</DialogTitle>
+            <DialogTitle className="text-lg font-bold">Recusar proposta</DialogTitle>
             <DialogDescription>Nos ajude a melhorar. Qual o motivo da recusa?</DialogDescription>
           </DialogHeader>
           <div className="flex flex-wrap gap-2">
@@ -631,7 +814,7 @@ export default function PublicProposal() {
           )}
           <DialogFooter>
             <Button variant="outline" onClick={() => setRefuseOpen(false)} className="rounded-xl">Cancelar</Button>
-            <Button variant="destructive" onClick={handleRefuse} className="rounded-xl"
+            <Button variant="destructive" onClick={handleRefuse} className="rounded-xl font-bold"
               disabled={(!refuseReason || (refuseReason === 'Outro' && !customRefuseReason.trim())) || submitting}>
               {submitting ? 'Enviando...' : 'Confirmar Recusa'}
             </Button>
@@ -639,33 +822,34 @@ export default function PublicProposal() {
         </DialogContent>
       </Dialog>
 
-      {/* ── Question Modal ── */}
+      {/* Question */}
       <Dialog open={questionOpen} onOpenChange={setQuestionOpen}>
         <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-lg">💬 Enviar dúvida</DialogTitle>
+            <DialogTitle className="text-lg font-bold">💬 Enviar dúvida</DialogTitle>
             <DialogDescription>Escreva sua pergunta e o vendedor responderá em breve.</DialogDescription>
           </DialogHeader>
           <Textarea placeholder="Qual sua dúvida sobre esta proposta?" value={questionText} onChange={(e) => setQuestionText(e.target.value)} rows={4} className="rounded-xl" />
           <DialogFooter>
             <Button variant="outline" onClick={() => setQuestionOpen(false)} className="rounded-xl">Cancelar</Button>
-            <Button onClick={handleQuestion} disabled={!questionText.trim() || submitting} className="rounded-xl bg-[#08a1d6] hover:bg-[#0792c2] text-white">
+            <Button onClick={handleQuestion} disabled={!questionText.trim() || submitting}
+              className="rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold">
               {submitting ? 'Enviando...' : 'Enviar Dúvida'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* ── Negotiate Modal ── */}
+      {/* Negotiate */}
       <Dialog open={negotiateOpen} onOpenChange={setNegotiateOpen}>
         <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
-            <DialogTitle className="text-lg">🔄 Propor Ajuste</DialogTitle>
+            <DialogTitle className="text-lg font-bold">🔄 Propor Ajuste</DialogTitle>
             <DialogDescription>Selecione o item que deseja negociar e descreva sua contraproposta.</DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
             <div>
-              <label className="text-sm font-medium text-slate-700">Item (opcional)</label>
+              <label className="text-sm font-semibold text-foreground">Item (opcional)</label>
               <Select value={negotiateItem} onValueChange={setNegotiateItem}>
                 <SelectTrigger className="mt-1 rounded-xl"><SelectValue placeholder="Selecione um item..." /></SelectTrigger>
                 <SelectContent>
@@ -676,17 +860,18 @@ export default function PublicProposal() {
               </Select>
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700">Valor proposto (opcional)</label>
+              <label className="text-sm font-semibold text-foreground">Valor proposto (opcional)</label>
               <Input type="number" placeholder="R$ 0,00" value={negotiateValue} onChange={(e) => setNegotiateValue(e.target.value)} className="mt-1 rounded-xl" />
             </div>
             <div>
-              <label className="text-sm font-medium text-slate-700">Sua proposta *</label>
+              <label className="text-sm font-semibold text-foreground">Sua proposta *</label>
               <Textarea placeholder="Ex: Consigo fechar se o prazo de entrega for de 30 dias..." value={negotiateMessage} onChange={(e) => setNegotiateMessage(e.target.value)} rows={3} className="mt-1 rounded-xl" />
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setNegotiateOpen(false)} className="rounded-xl">Cancelar</Button>
-            <Button onClick={handleNegotiate} disabled={!negotiateMessage.trim() || submitting} className="rounded-xl bg-[#08a1d6] hover:bg-[#0792c2] text-white">
+            <Button onClick={handleNegotiate} disabled={!negotiateMessage.trim() || submitting}
+              className="rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold">
               {submitting ? 'Enviando...' : 'Enviar Proposta'}
             </Button>
           </DialogFooter>
