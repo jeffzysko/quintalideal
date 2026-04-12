@@ -722,6 +722,7 @@ export default function PublicProposal() {
 
           {/* ═══════════ CONDITIONS ═══════════ */}
           <motion.div
+            data-pdf-section
             variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}
             className="grid grid-cols-1 sm:grid-cols-3 gap-3"
           >
