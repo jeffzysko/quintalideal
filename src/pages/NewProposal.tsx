@@ -289,7 +289,7 @@ export default function NewProposal() {
             </Button>
             <Button size="sm" onClick={() => handleSubmit()} disabled={saving} className="h-8 px-2.5 sm:px-3 bg-primary hover:bg-primary/90">
               <FileText className="w-4 h-4" />
-              <span className="hidden xs:inline ml-1">{isMobile ? 'Criar' : 'Criar Proposta'}</span>
+              {!isMobile && <span className="ml-1">Criar Proposta</span>}
             </Button>
           </div>
         </div>
