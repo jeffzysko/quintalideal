@@ -16,7 +16,8 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { Copy, Share2, Eye, Clock, FileText, MessageCircle, Check, X, Edit, RefreshCw, CopyPlus, ChevronRight } from 'lucide-react';
+import { Copy, Share2, Eye, Clock, FileText, MessageCircle, Check, X, Edit, RefreshCw, CopyPlus, ChevronRight, Handshake, StickyNote } from 'lucide-react';
+import { ProposalScoreReadonly } from '@/components/proposals/ProposalScore';
 
 const formatCurrency = (v: number) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -76,7 +77,19 @@ export default function ProposalDetail() {
     enabled: !!id,
   });
 
+  const { data: negotiations } = useQuery({
+    queryKey: ['proposal-negotiations', id],
+    queryFn: async () => {
+      const { data, error } = await supabase.from('proposal_negotiations' as any).select('*').eq('proposal_id', id!).order('created_at', { ascending: false });
+      if (error) return [];
+      return (data || []) as any[];
+    },
+    enabled: !!id,
+  });
+
   const [answerText, setAnswerText] = useState<Record<string, string>>({});
+  const [internalNotes, setInternalNotes] = useState<string | null>(null);
+  const [savingNotes, setSavingNotes] = useState(false);
 
   if (isLoading) return (
     <PageTransition><div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" /></div></PageTransition>
@@ -84,6 +97,11 @@ export default function ProposalDetail() {
   if (!proposal) return (
     <PageTransition><div className="min-h-screen flex items-center justify-center"><p>Proposta não encontrada</p></div></PageTransition>
   );
+
+  // Initialize internal notes from proposal
+  if (internalNotes === null && proposal) {
+    setInternalNotes((proposal as any).internal_notes || '');
+  }
 
   const publicUrl = `${window.location.origin}/proposta/${proposal.public_token}`;
 
@@ -93,7 +111,9 @@ export default function ProposalDetail() {
   };
 
   const shareWhatsApp = () => {
-    const msg = encodeURIComponent(`Olá! Segue sua proposta comercial:\n\n${publicUrl}`);
+    const clientName = proposal.client_name || 'Cliente';
+    const validityText = proposal.validity_date ? `Ela é válida até ${format(new Date(proposal.validity_date), "dd/MM/yyyy")}.` : '';
+    const msg = encodeURIComponent(`Olá ${clientName}, segue o link da sua proposta comercial personalizada:\n\n${publicUrl}\n\n${validityText} Qualquer dúvida estou à disposição!`);
     window.open(`https://wa.me/?text=${msg}`, '_blank');
   };
 
@@ -151,6 +171,23 @@ export default function ProposalDetail() {
     toast.success('Resposta salva');
   };
 
+  const saveInternalNotes = async () => {
+    setSavingNotes(true);
+    await supabase.from('proposals').update({ internal_notes: internalNotes } as any).eq('id', proposal.id);
+    setSavingNotes(false);
+    toast.success('Notas internas salvas');
+  };
+
+  const resolveNegotiation = async (negId: string, status: string, notes?: string) => {
+    await supabase.from('proposal_negotiations' as any).update({
+      status,
+      resolved_at: new Date().toISOString(),
+      resolution_notes: notes || null,
+    }).eq('id', negId);
+    toast.success(status === 'accepted' ? 'Ajuste aceito' : 'Ajuste recusado');
+    refetch();
+  };
+
   const statusIdx = STATUS_PIPELINE.indexOf(proposal.status as any);
   const discountAmount = proposal.global_discount_type === 'percent'
     ? proposal.subtotal * (proposal.global_discount / 100)
@@ -168,6 +205,9 @@ export default function ProposalDetail() {
   }
   if (questions?.length) {
     questions.forEach(q => timeline.push({ date: q.asked_at, label: 'Dúvida enviada pelo cliente', icon: MessageCircle, color: 'text-amber-600' }));
+  }
+  if (negotiations?.length) {
+    negotiations.forEach((n: any) => timeline.push({ date: n.created_at, label: `Contraproposta do cliente: "${(n.client_message || '').slice(0, 50)}"`, icon: Handshake, color: 'text-blue-600' }));
   }
   if (proposal.accepted_at) timeline.push({ date: proposal.accepted_at, label: `Aceita por ${proposal.accepted_by_name}`, icon: Check, color: 'text-emerald-600' });
   if (proposal.refused_at) timeline.push({ date: proposal.refused_at, label: 'Recusada pelo cliente', icon: X, color: 'text-red-600' });
@@ -224,8 +264,27 @@ export default function ProposalDetail() {
             </CardContent>
           </Card>
 
+          {/* Score da Proposta */}
+          {items && items.length > 0 && (
+            <ProposalScoreReadonly
+              proposal={{
+                payment_method: proposal.payment_method,
+                payment_conditions: proposal.payment_conditions,
+                validity_date: proposal.validity_date,
+                delivery_deadline: proposal.delivery_deadline,
+                observations: proposal.observations,
+                global_discount: Number(proposal.global_discount),
+                video_url: (proposal as any).video_url,
+              }}
+              items={items.map(i => ({
+                product_name: i.product_name,
+                description: i.description,
+                discount: Number(i.discount),
+              }))}
+            />
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Metrics */}
             <Card className="shadow-sm border-border/50">
               <CardContent className="py-4 px-4 text-center">
                 <Eye className="w-5 h-5 text-primary mx-auto mb-1" />
@@ -265,6 +324,34 @@ export default function ProposalDetail() {
             </CardContent>
           </Card>
 
+          {/* Negotiations */}
+          {negotiations && negotiations.length > 0 && (
+            <Card className="shadow-sm border-border/50">
+              <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><Handshake className="w-4 h-4 text-primary" /> Negociações</CardTitle></CardHeader>
+              <CardContent className="space-y-4">
+                {negotiations.map((n: any) => (
+                  <div key={n.id} className="border rounded-lg p-3 space-y-2">
+                    {n.item_reference && <Badge variant="outline" className="text-xs">{n.item_reference}</Badge>}
+                    <p className="text-sm text-foreground">{n.client_message}</p>
+                    {n.proposed_value && <p className="text-sm text-primary font-medium">Valor proposto: {formatCurrency(n.proposed_value)}</p>}
+                    <p className="text-xs text-muted-foreground">{format(new Date(n.created_at), "dd/MM HH:mm")}</p>
+                    {n.status === 'pending' ? (
+                      <div className="flex gap-2 pt-1">
+                        <Button size="sm" onClick={() => resolveNegotiation(n.id, 'accepted')} className="gap-1"><Check className="w-3 h-3" /> Aceitar</Button>
+                        <Button size="sm" variant="destructive" onClick={() => resolveNegotiation(n.id, 'refused')} className="gap-1"><X className="w-3 h-3" /> Recusar</Button>
+                        <Button size="sm" variant="outline" onClick={duplicateProposal} className="gap-1"><Edit className="w-3 h-3" /> Editar e reenviar</Button>
+                      </div>
+                    ) : (
+                      <Badge variant={n.status === 'accepted' ? 'success' : 'destructive'} className="text-xs">
+                        {n.status === 'accepted' ? 'Aceito' : 'Recusado'}
+                      </Badge>
+                    )}
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          )}
+
           {/* Timeline */}
           <Card className="shadow-sm border-border/50">
             <CardHeader className="pb-2"><CardTitle className="text-sm">Timeline de Eventos</CardTitle></CardHeader>
@@ -298,11 +385,11 @@ export default function ProposalDetail() {
                     <p className="text-sm text-foreground">{q.question}</p>
                     <p className="text-xs text-muted-foreground">{format(new Date(q.asked_at), "dd/MM HH:mm")}</p>
                     {q.answer ? (
-                      <div className="bg-muted/30 rounded p-2 text-sm"><span className="font-medium">Resposta:</span> {q.answer}</div>
+                      <div className="bg-muted/30 rounded p-2 text-sm"><span className="font-medium">Nota interna:</span> {q.answer}</div>
                     ) : (
                       <div className="flex gap-2">
                         <Textarea
-                          placeholder="Escrever resposta..."
+                          placeholder="Anotar resposta (visível só internamente)..."
                           value={answerText[q.id] || ''}
                           onChange={(e) => setAnswerText(prev => ({ ...prev, [q.id]: e.target.value }))}
                           rows={2}
@@ -313,6 +400,36 @@ export default function ProposalDetail() {
                     )}
                   </div>
                 ))}
+              </CardContent>
+            </Card>
+          )}
+
+          {/* Internal Notes */}
+          <Card className="shadow-sm border-border/50">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm flex items-center gap-2"><StickyNote className="w-4 h-4 text-primary" /> Notas Internas</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <Textarea
+                placeholder="Anotações internas sobre esta negociação (visível apenas para a equipe)..."
+                value={internalNotes || ''}
+                onChange={(e) => setInternalNotes(e.target.value)}
+                rows={3}
+                className="text-sm"
+              />
+              <Button size="sm" variant="outline" onClick={saveInternalNotes} disabled={savingNotes}>
+                {savingNotes ? 'Salvando...' : 'Salvar notas'}
+              </Button>
+            </CardContent>
+          </Card>
+
+          {/* Aceite details */}
+          {proposal.accepted_at && (
+            <Card className="shadow-sm border-emerald-200 bg-emerald-50/50">
+              <CardHeader className="pb-2"><CardTitle className="text-sm text-emerald-800">✅ Certificado de Aceite</CardTitle></CardHeader>
+              <CardContent className="text-sm space-y-1">
+                <p><span className="text-muted-foreground">Aceito por:</span> <span className="font-medium">{proposal.accepted_by_name}</span></p>
+                <p><span className="text-muted-foreground">Data:</span> {format(new Date(proposal.accepted_at), "dd/MM/yyyy 'às' HH:mm", { locale: ptBR })}</p>
               </CardContent>
             </Card>
           )}
