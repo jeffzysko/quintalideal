@@ -16,6 +16,7 @@ import {
   TrendingUp,
   Webhook,
   LogOut,
+  FileText,
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -76,6 +77,7 @@ const ADMIN_NAV: SidebarNavItem[] = [
 
 const FRANCHISE_NAV: SidebarNavItem[] = [
   { title: 'Início', url: '/hoje', icon: Home },
+  { title: 'Propostas', url: '/propostas', icon: FileText, matchPaths: ['/propostas'] },
   { title: 'Notificações', url: '/notificacoes', icon: Bell },
 ];
 
