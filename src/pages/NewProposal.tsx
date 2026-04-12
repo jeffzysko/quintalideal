@@ -79,6 +79,7 @@ const initialForm: ProposalFormData = {
   global_discount: 0,
   global_discount_type: 'fixed',
   observations: '',
+  video_url: '',
 };
 
 export default function NewProposal() {
