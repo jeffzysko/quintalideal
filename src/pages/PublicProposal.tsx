@@ -648,6 +648,41 @@ export default function PublicProposal() {
         y += obsLines.length * 4 + 6;
       }
 
+      // ── FRANCHISE CONTACT INFO ──
+      if (proposal.franchise) {
+        checkPageBreak(30);
+        pdf.setFontSize(8);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(...brandBlue);
+        pdf.text('CONTATO', M, y + 3);
+        y += 8;
+
+        drawRoundedRect(M, y, CW, 24, 3, bgMuted, borderColor);
+
+        pdf.setFontSize(9.5);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(...textDark);
+        pdf.text(proposal.franchise.nome_franquia, M + 5, y + 7);
+
+        pdf.setFontSize(8.5);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(...textMuted);
+        const contactParts: string[] = [];
+        if (proposal.franchise.cidade_base) contactParts.push(proposal.franchise.cidade_base);
+        if (proposal.franchise.whatsapp) contactParts.push(`WhatsApp: ${proposal.franchise.whatsapp}`);
+        if (proposal.franchise.email) contactParts.push(proposal.franchise.email);
+
+        if (contactParts.length > 0) {
+          pdf.text(contactParts.join('   •   '), M + 5, y + 14);
+        }
+
+        pdf.setFontSize(7.5);
+        pdf.setTextColor(...textLight);
+        pdf.text('Entre em contato para dúvidas ou negociações sobre esta proposta.', M + 5, y + 20);
+
+        y += 30;
+      }
+
       // ── VERIFICATION FOOTER WITH QR CODE ──
       const verCode = generateVerificationCode(proposal.id, proposal.public_token);
       const proposalUrl = `${window.location.origin}/proposta/${proposal.public_token}`;
@@ -702,33 +737,11 @@ export default function PublicProposal() {
       pdf.setTextColor(...textLight);
       pdf.text('Este documento garante a autenticidade desta proposta. Verifique com a Splash Piscinas em caso de dúvida.', A4_W / 2, y, { align: 'center' });
 
-      // ── WATERMARK + PAGE NUMBERS (applied to all pages) ──
+      // ── PAGE NUMBERS (applied to all pages) ──
       const pageCount = pdf.getNumberOfPages();
-
-      // Preload logo for watermark
-      let watermarkReady = false;
-      if (logoImg.complete && logoImg.naturalWidth > 0) {
-        watermarkReady = true;
-      }
 
       for (let i = 1; i <= pageCount; i++) {
         pdf.setPage(i);
-
-        // Subtle watermark - logo in center of each page
-        if (watermarkReady) {
-          const wmH = 40;
-          const wmW = (logoImg.naturalWidth / logoImg.naturalHeight) * wmH;
-          const wmX = (A4_W - wmW) / 2;
-          const wmY = (A4_H - wmH) / 2;
-          // jsPDF doesn't support opacity directly on images, so we use a very light approach:
-          // Draw a semi-transparent white overlay, then the logo, then another overlay
-          // Actually, the GState API can do this:
-          const gState = new (pdf as any).GState({ opacity: 0.04 });
-          pdf.saveGraphicsState();
-          pdf.setGState(gState);
-          pdf.addImage(logoImg, 'PNG', wmX, wmY, wmW, wmH);
-          pdf.restoreGraphicsState();
-        }
 
         // Bottom gradient line
         pdf.setFillColor(...brandBlue);
