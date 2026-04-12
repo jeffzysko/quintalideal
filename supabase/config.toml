@@ -23,3 +23,6 @@ verify_jwt = false
 
 [functions.send-monthly-report]
 verify_jwt = false
+
+[functions.check-proposal-expiration]
+verify_jwt = false

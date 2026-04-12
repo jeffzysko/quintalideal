@@ -16,7 +16,9 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { Copy, Share2, Eye, Clock, FileText, MessageCircle, Check, X, Edit, RefreshCw, CopyPlus, ChevronRight, Handshake, StickyNote } from 'lucide-react';
+import { Copy, Share2, Eye, Clock, FileText, MessageCircle, Check, X, Edit, RefreshCw, CopyPlus, ChevronRight, Handshake, StickyNote, CalendarPlus } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ProposalScoreReadonly } from '@/components/proposals/ProposalScore';
 
 const formatCurrency = (v: number) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
@@ -90,6 +92,8 @@ export default function ProposalDetail() {
   const [answerText, setAnswerText] = useState<Record<string, string>>({});
   const [internalNotes, setInternalNotes] = useState<string | null>(null);
   const [savingNotes, setSavingNotes] = useState(false);
+  const [extendOpen, setExtendOpen] = useState(false);
+  const [extendDays, setExtendDays] = useState('7');
 
   if (isLoading) return (
     <PageTransition><div className="min-h-screen flex items-center justify-center"><div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" /></div></PageTransition>
@@ -176,6 +180,21 @@ export default function ProposalDetail() {
     await supabase.from('proposals').update({ internal_notes: internalNotes } as any).eq('id', proposal.id);
     setSavingNotes(false);
     toast.success('Notas internas salvas');
+  };
+
+  const extendValidity = async () => {
+    const days = parseInt(extendDays);
+    const baseDate = proposal.validity_date ? new Date(proposal.validity_date) : new Date();
+    const newDate = new Date(Math.max(baseDate.getTime(), Date.now()) + days * 86400000);
+    const newDateStr = newDate.toISOString().split('T')[0];
+    await supabase.from('proposals').update({ validity_date: newDateStr, updated_at: new Date().toISOString() } as any).eq('id', proposal.id);
+    // Reopen if it was refused due to expiration
+    if (proposal.status === 'recusada' && proposal.refused_reason === 'Proposta expirada automaticamente') {
+      await supabase.from('proposals').update({ status: 'enviada' as any, refused_at: null, refused_reason: null, updated_at: new Date().toISOString() } as any).eq('id', proposal.id);
+    }
+    setExtendOpen(false);
+    refetch();
+    toast.success(`Validade estendida até ${format(newDate, "dd/MM/yyyy")}`);
   };
 
   const resolveNegotiation = async (negId: string, status: string, notes?: string) => {
@@ -434,12 +453,65 @@ export default function ProposalDetail() {
             </Card>
           )}
 
+          {/* Validity info */}
+          {proposal.validity_date && (
+            <Card className="shadow-sm border-border/50">
+              <CardContent className="py-4 px-4 flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm">
+                  <CalendarPlus className="w-4 h-4 text-primary" />
+                  <span className="text-muted-foreground">Validade:</span>
+                  <span className="font-medium">{format(new Date(proposal.validity_date), "dd/MM/yyyy")}</span>
+                  {new Date(proposal.validity_date) < new Date() && (
+                    <Badge variant="destructive" className="text-xs ml-1">Expirada</Badge>
+                  )}
+                </div>
+                <Button size="sm" variant="outline" onClick={() => setExtendOpen(true)} className="gap-1.5">
+                  <CalendarPlus className="w-3.5 h-3.5" /> Estender
+                </Button>
+              </CardContent>
+            </Card>
+          )}
+
           {/* Actions */}
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" onClick={() => navigate(`/propostas/nova?edit=${proposal.id}`)} className="gap-1.5"><Edit className="w-4 h-4" /> Editar</Button>
             <Button variant="outline" onClick={copyLink} className="gap-1.5"><RefreshCw className="w-4 h-4" /> Reenviar link</Button>
             <Button variant="outline" onClick={duplicateProposal} className="gap-1.5"><CopyPlus className="w-4 h-4" /> Duplicar</Button>
+            {!proposal.validity_date && (
+              <Button variant="outline" onClick={() => setExtendOpen(true)} className="gap-1.5"><CalendarPlus className="w-4 h-4" /> Definir validade</Button>
+            )}
           </div>
+
+          {/* Extend Validity Dialog */}
+          <Dialog open={extendOpen} onOpenChange={setExtendOpen}>
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>Estender Validade</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-3 py-2">
+                <p className="text-sm text-muted-foreground">
+                  {proposal.validity_date
+                    ? `Validade atual: ${format(new Date(proposal.validity_date), "dd/MM/yyyy")}`
+                    : 'Nenhuma validade definida'}
+                </p>
+                <Select value={extendDays} onValueChange={setExtendDays}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="3">+ 3 dias</SelectItem>
+                    <SelectItem value="7">+ 7 dias</SelectItem>
+                    <SelectItem value="15">+ 15 dias</SelectItem>
+                    <SelectItem value="30">+ 30 dias</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setExtendOpen(false)}>Cancelar</Button>
+                <Button onClick={extendValidity}>Confirmar</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
     </PageTransition>
