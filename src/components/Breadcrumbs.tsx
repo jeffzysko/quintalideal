@@ -29,9 +29,10 @@ const ROUTE_LABELS: Record<string, string> = {
 
 interface BreadcrumbsProps {
   items?: BreadcrumbItemData[];
+  className?: string;
 }
 
-export function Breadcrumbs({ items }: BreadcrumbsProps) {
+export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
   const { pathname } = useLocation();
 
   const crumbs: BreadcrumbItemData[] = items || (() => {
