@@ -8,10 +8,19 @@ import {
   Radar,
   Bell,
   Workflow,
-  
+  BarChart3,
+  Target,
+  Activity,
+  Users,
+  Building2,
+  Globe,
+  Mail,
+  Eye,
+  Kanban,
+  TrendingUp,
 } from 'lucide-react';
 import { NavLink } from '@/components/NavLink';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import logoSplash from '@/assets/logo-splash.png';
 
@@ -34,11 +43,37 @@ interface SidebarNavItem {
   url: string;
   icon: typeof Home;
   matchPaths?: string[];
+  matchTab?: string; // matches ?tab= value
 }
+
+// ── Admin sub-tabs (shown under Painel Admin) ──
+const ADMIN_TABS: SidebarNavItem[] = [
+  { title: 'Inteligência', url: '/admin?tab=overview', icon: BarChart3, matchTab: 'overview' },
+  { title: 'Performance QI', url: '/admin?tab=performance-qi', icon: Target, matchTab: 'performance-qi' },
+  { title: 'Analytics', url: '/admin?tab=analytics', icon: Activity, matchTab: 'analytics' },
+  { title: 'Leads', url: '/admin?tab=leads', icon: Users, matchTab: 'leads' },
+  { title: 'Franquias', url: '/admin?tab=franchises', icon: Building2, matchTab: 'franchises' },
+  { title: 'Territórios', url: '/admin?tab=cities', icon: Globe, matchTab: 'cities' },
+];
+
+// Super-admin-only tabs
+const SUPER_ADMIN_TABS: SidebarNavItem[] = [
+  { title: 'Funil Geral', url: '/admin?tab=kanban', icon: Kanban, matchTab: 'kanban' },
+  { title: 'Usuários', url: '/admin?tab=users', icon: Users, matchTab: 'users' },
+  { title: 'E-mails', url: '/admin?tab=emails', icon: Mail, matchTab: 'emails' },
+  { title: 'Visão Franquia', url: '/admin?tab=franchise-view', icon: Eye, matchTab: 'franchise-view' },
+];
+
+// ── Franchise sub-tabs ──
+const FRANCHISE_TABS: SidebarNavItem[] = [
+  { title: 'Leads', url: '/franquia?tab=leads', icon: Users, matchTab: 'leads' },
+  { title: 'Funil', url: '/franquia?tab=funnel', icon: Workflow, matchTab: 'funnel' },
+  { title: 'Metas', url: '/franquia?tab=achievements', icon: TrendingUp, matchTab: 'achievements' },
+  { title: 'Relatórios', url: '/franquia?tab=reports', icon: BarChart3, matchTab: 'reports' },
+];
 
 const ADMIN_NAV: SidebarNavItem[] = [
   { title: 'Início', url: '/hoje', icon: Home },
-  { title: 'Painel Admin', url: '/admin', icon: LayoutDashboard, matchPaths: ['/admin'] },
   { title: 'Radar de Mercado', url: '/admin/radar', icon: Radar },
   { title: 'Mapa', url: '/mapa', icon: Map },
   { title: 'Ranking', url: '/ranking', icon: Trophy },
@@ -47,8 +82,6 @@ const ADMIN_NAV: SidebarNavItem[] = [
 
 const FRANCHISE_NAV: SidebarNavItem[] = [
   { title: 'Início', url: '/hoje', icon: Home },
-  { title: 'Painel', url: '/franquia', icon: LayoutDashboard, matchPaths: ['/franquia', '/painel'] },
-  { title: 'Funil', url: '/franquia?tab=funnel', icon: Workflow },
   { title: 'Mapa', url: '/mapa', icon: Map },
   { title: 'Ranking', url: '/ranking', icon: Trophy },
   { title: 'Notificações', url: '/notificacoes', icon: Bell },
@@ -64,16 +97,58 @@ export function AppSidebar() {
   const collapsed = state === 'collapsed';
   const { role } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
-  const mainNav = isAdmin ? ADMIN_NAV : FRANCHISE_NAV;
+  const isSuperAdmin = role === 'super_admin';
+
+  const currentTab = new URLSearchParams(location.search).get('tab');
 
   const isActive = (item: SidebarNavItem) => {
     const basePath = item.url.split('?')[0];
+    // Tab-based matching
+    if (item.matchTab) {
+      if (location.pathname !== basePath) return false;
+      // Default tab: active when no ?tab param
+      if (item.matchTab === 'overview' && !currentTab) return true;
+      if (item.matchTab === 'leads' && !currentTab && basePath === '/franquia') return true;
+      return currentTab === item.matchTab;
+    }
     if (location.pathname === basePath) return true;
     if (item.matchPaths) return item.matchPaths.some((p) => location.pathname.startsWith(p));
     return false;
   };
+
+  const handleNav = (url: string) => {
+    navigate(url);
+  };
+
+  const renderNavItem = (item: SidebarNavItem, indent = false) => {
+    const active = isActive(item);
+    return (
+      <SidebarMenuItem key={item.title + item.url}>
+        <SidebarMenuButton
+          asChild
+          isActive={active}
+          tooltip={collapsed ? item.title : undefined}
+        >
+          <button
+            onClick={() => handleNav(item.url)}
+            className={`w-full flex items-center hover:bg-muted/50 ${indent ? 'pl-4' : ''} ${active ? 'bg-primary/10 text-primary font-medium' : ''}`}
+          >
+            <item.icon className="mr-2 h-4 w-4 shrink-0" />
+            {!collapsed && <span className="truncate">{item.title}</span>}
+          </button>
+        </SidebarMenuButton>
+      </SidebarMenuItem>
+    );
+  };
+
+  // Build admin sub-tabs
+  const adminTabs = [
+    ...ADMIN_TABS,
+    ...(isSuperAdmin ? SUPER_ADMIN_TABS : []),
+  ];
 
   return (
     <Sidebar collapsible="icon" className="border-r border-border/40">
@@ -93,32 +168,27 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
+        {/* Main nav */}
         <SidebarGroup>
           <SidebarGroupLabel>Menu</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainNav.map((item) => {
-                const active = isActive(item);
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={active}
-                      tooltip={collapsed ? item.title : undefined}
-                    >
-                      <NavLink
-                        to={item.url}
-                        end={item.url === '/hoje'}
-                        className="hover:bg-muted/50"
-                        activeClassName="bg-primary/10 text-primary font-medium"
-                      >
-                        <item.icon className="mr-2 h-4 w-4 shrink-0" />
-                        {!collapsed && <span>{item.title}</span>}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
+              {(isAdmin ? ADMIN_NAV : FRANCHISE_NAV).map((item) => renderNavItem(item))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Dashboard sub-navigation */}
+        <SidebarGroup>
+          <SidebarGroupLabel>
+            {isAdmin ? 'Painel Admin' : 'Painel'}
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {isAdmin
+                ? adminTabs.map((item) => renderNavItem(item, false))
+                : FRANCHISE_TABS.map((item) => renderNavItem(item, false))
+              }
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
@@ -128,28 +198,7 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {BOTTOM_NAV.map((item) => {
-                const active = location.pathname === item.url;
-                return (
-                  <SidebarMenuItem key={item.title}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={active}
-                      tooltip={collapsed ? item.title : undefined}
-                    >
-                      <NavLink
-                        to={item.url}
-                        end
-                        className="hover:bg-muted/50"
-                        activeClassName="bg-primary/10 text-primary font-medium"
-                      >
-                        <item.icon className="mr-2 h-4 w-4 shrink-0" />
-                        {!collapsed && <span>{item.title}</span>}
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
+              {BOTTOM_NAV.map((item) => renderNavItem(item))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
