@@ -124,10 +124,10 @@ export function AppSidebar() {
         >
           <button
             onClick={() => handleNav(item.url)}
-            className={`w-full flex items-center hover:bg-muted/50 ${indent ? 'pl-4' : ''} ${active ? 'bg-primary/10 text-primary font-medium' : ''}`}
+            className={`w-full flex items-center gap-2 ${indent ? 'pl-4' : ''} ${active ? 'bg-primary/10 text-primary font-medium' : ''}`}
           >
             <item.icon className="h-4 w-4 shrink-0" />
-            {!collapsed && <span className="ml-2 truncate">{item.title}</span>}
+            <span className="truncate">{item.title}</span>
           </button>
         </SidebarMenuButton>
       </SidebarMenuItem>
