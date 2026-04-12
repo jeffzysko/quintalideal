@@ -13,6 +13,9 @@ export default {
       },
     },
     extend: {
+      screens: {
+        "xs": "420px",
+      },
       /* ─── Spacing Scale (4-base) ─── */
       spacing: {
         "0.5": "0.125rem",  /* 2px */
