@@ -14,7 +14,7 @@ interface Suggestion {
   type: 'warning' | 'tip' | 'success';
 }
 
-function calculateScore(form: ProposalFormData, subtotal: number): { score: number; suggestions: Suggestion[] } {
+function calculateScore(form: ProposalFormData, _subtotal: number): { score: number; suggestions: Suggestion[] } {
   let score = 0;
   const suggestions: Suggestion[] = [];
   const max = 100;
