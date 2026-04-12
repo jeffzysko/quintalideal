@@ -13,7 +13,7 @@ export function PanelHeader({ title, children }: PanelHeaderProps) {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className="sticky top-0 z-30 overflow-hidden"
+      className="sticky top-0 z-30 overflow-hidden md:hidden"
     >
       {/* Full-width blur backdrop — extends into safe area (Dynamic Island / notch) */}
       <div className="absolute inset-0 backdrop-blur-2xl bg-background/60" />
