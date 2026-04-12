@@ -80,6 +80,7 @@ const FRANCHISE_NAV: SidebarNavItem[] = [
 ];
 
 const BOTTOM_NAV: SidebarNavItem[] = [
+  { title: 'Integrações', url: '/perfil#integracoes', icon: Webhook },
   { title: 'Configurações', url: '/perfil', icon: Settings },
   { title: 'Suporte', url: '/suporte', icon: HelpCircle },
 ];
