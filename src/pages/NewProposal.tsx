@@ -4,6 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { PageHeader } from '@/components/PageHeader';
 
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion } from 'framer-motion';
@@ -266,20 +267,15 @@ export default function NewProposal() {
 
   return (
     <div className="min-h-screen bg-muted/30 pb-safe">
-      {/* Header */}
-      <div className="sticky top-0 z-20 bg-background/95 backdrop-blur-sm border-b border-border/40">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex items-center justify-between gap-2 sm:gap-4">
-          <div className="min-w-0 flex-1">
-            <h1 className="text-base sm:text-xl font-bold text-foreground flex items-center gap-2">
-              <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0" />
-              <span className="truncate">{isMobile ? 'Nova Proposta' : 'Nova Proposta Comercial'}</span>
-            </h1>
-            {lastSaved && (
-              <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5">Rascunho salvo às {lastSaved}</p>
-            )}
-          </div>
-          <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="h-8 px-2 sm:px-3">
+      {/* Header — glass style matching the rest of the system */}
+      <PageHeader
+        title={isMobile ? 'Nova Proposta' : 'Nova Proposta Comercial'}
+        subtitle={lastSaved ? `Rascunho salvo às ${lastSaved}` : undefined}
+        icon={<FileText className="w-4 h-4 text-primary" />}
+        fallbackPath="/propostas"
+        rightSlot={
+          <div className="flex items-center gap-1 sm:gap-1.5">
+            <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="h-8 px-2 sm:px-3 text-muted-foreground">
               <X className="w-4 h-4" />
               <span className="hidden sm:inline ml-1">Cancelar</span>
             </Button>
@@ -287,13 +283,13 @@ export default function NewProposal() {
               <Save className="w-4 h-4" />
               <span className="hidden sm:inline ml-1">Rascunho</span>
             </Button>
-            <Button size="sm" onClick={() => handleSubmit()} disabled={saving} className="h-8 px-2.5 sm:px-3 bg-primary hover:bg-primary/90">
+            <Button size="sm" onClick={() => handleSubmit()} disabled={saving} className="h-8 px-2.5 sm:px-3">
               <FileText className="w-4 h-4" />
-              {!isMobile && <span className="ml-1">Criar Proposta</span>}
+              {!isMobile && <span className="ml-1">Criar</span>}
             </Button>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
         <div className="flex gap-8">
