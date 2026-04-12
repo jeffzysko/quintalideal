@@ -60,12 +60,12 @@ export function PipelineSnapshot({ leads }: PipelineSnapshotProps) {
       <Card className="card-premium overflow-hidden">
         <CardContent className="p-0">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 pb-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-4 pb-3">
             <div className="flex items-center gap-2">
               <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">Pipeline</h4>
               <Badge variant="secondary" className="text-[10px] font-bold px-1.5 py-0">{leads.length}</Badge>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 flex-wrap">
               <span className="text-xs text-muted-foreground">
                 <span className="font-bold text-foreground">{activeTotal}</span> ativos
               </span>
@@ -94,27 +94,29 @@ export function PipelineSnapshot({ leads }: PipelineSnapshotProps) {
           </div>
 
           {/* Stage detail grid */}
-          <div className="grid grid-cols-5 gap-0 border-t border-border/30 mt-4">
-            {STAGE_ORDER.map((stage, i) => {
-              const pct = Math.round((counts[stage] / total) * 100);
-              return (
-                <motion.div
-                  key={stage}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2 + Math.min(i * 0.05, 0.15) }}
-                  className={cn(
-                    'flex flex-col items-center py-3 px-1',
-                    i < 4 && 'border-r border-border/20'
-                  )}
-                >
-                  <span className="text-sm mb-0.5">{STAGE_EMOJI[stage]}</span>
-                  <span className={cn('text-lg font-extrabold leading-none', STAGE_TEXT_COLORS[stage])}>{counts[stage]}</span>
-                  <span className="text-[9px] text-muted-foreground font-medium mt-1 text-center leading-tight">{STATUS_LABELS[stage]}</span>
-                  <span className="text-[9px] text-muted-foreground/60 font-mono">{pct}%</span>
-                </motion.div>
-              );
-            })}
+          <div className="overflow-x-auto scrollbar-none border-t border-border/30 mt-4">
+            <div className="grid grid-cols-5 min-w-[320px]">
+              {STAGE_ORDER.map((stage, i) => {
+                const pct = Math.round((counts[stage] / total) * 100);
+                return (
+                  <motion.div
+                    key={stage}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 + Math.min(i * 0.05, 0.15) }}
+                    className={cn(
+                      'flex flex-col items-center py-3 px-1',
+                      i < 4 && 'border-r border-border/20'
+                    )}
+                  >
+                    <span className="text-sm mb-0.5">{STAGE_EMOJI[stage]}</span>
+                    <span className={cn('text-lg font-extrabold leading-none', STAGE_TEXT_COLORS[stage])}>{counts[stage]}</span>
+                    <span className="text-[9px] sm:text-[10px] text-muted-foreground font-medium mt-1 text-center leading-tight">{STATUS_LABELS[stage]}</span>
+                    <span className="text-[9px] text-muted-foreground/60 font-mono">{pct}%</span>
+                  </motion.div>
+                );
+              })}
+            </div>
           </div>
 
           {/* Temperature summary */}
