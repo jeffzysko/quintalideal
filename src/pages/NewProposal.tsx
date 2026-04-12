@@ -80,8 +80,12 @@ const initialForm: ProposalFormData = {
 export default function NewProposal() {
   const { franchiseId, user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const editId = searchParams.get('edit');
   const isMobile = useIsMobile();
   const [form, setForm] = useState<ProposalFormData>(initialForm);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editLoaded, setEditLoaded] = useState(false);
   const [activeSection, setActiveSection] = useState('lead');
   const [saving, setSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<string | null>(null);
