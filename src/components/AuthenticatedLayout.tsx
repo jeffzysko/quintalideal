@@ -17,9 +17,12 @@ import { Button } from '@/components/ui/button';
  * - Mobile: no sidebar (BottomNav handles navigation)
  */
 export function AuthenticatedLayout() {
-  const { user } = useAuth();
+  const { user, role } = useAuth();
   const isMobile = useIsMobile();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+
+  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
 
   // Determine if footer should show
   const noFooterPaths = new Set(['/hoje']);
@@ -28,6 +31,12 @@ export function AuthenticatedLayout() {
   if (!user) {
     return <Outlet />;
   }
+
+  const topNavItems = [
+    ...(isAdmin ? [{ icon: Radar, label: 'Radar de Mercado', path: '/admin/radar' }] : []),
+    { icon: Map, label: 'Mapa', path: '/mapa' },
+    { icon: Trophy, label: 'Ranking', path: '/ranking' },
+  ];
 
   // Mobile: simple layout (BottomNav is rendered globally)
   if (isMobile) {
@@ -54,6 +63,21 @@ export function AuthenticatedLayout() {
               <Breadcrumbs />
             </div>
             <div className="flex items-center gap-1">
+              {topNavItems.map((item) => (
+                <Tooltip key={item.path}>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant={pathname === item.path ? 'secondary' : 'ghost'}
+                      size="icon"
+                      className="h-9 w-9"
+                      onClick={() => navigate(item.path)}
+                    >
+                      <item.icon className="h-4 w-4" />
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>{item.label}</TooltipContent>
+                </Tooltip>
+              ))}
               <NotificationBell />
               <UserAvatarMenu />
             </div>
