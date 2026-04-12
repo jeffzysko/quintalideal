@@ -262,7 +262,7 @@ export function AchievementsDashboard({ franchiseId, leads }: AchievementsDashbo
 
           {/* Month-over-month comparison */}
           {previousMonth && (
-            <div className="mt-3 flex items-center gap-4 text-xs">
+            <div className="mt-3 flex items-center gap-3 sm:gap-4 text-xs flex-wrap">
               <ComparisonPill
                 label="Leads"
                 current={currentMonth?.leads || 0}
