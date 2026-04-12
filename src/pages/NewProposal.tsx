@@ -78,7 +78,7 @@ const initialForm: ProposalFormData = {
 };
 
 export default function NewProposal() {
-  const { franchiseId, user, role } = useAuth();
+  const { franchiseId, user } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [form, setForm] = useState<ProposalFormData>(initialForm);
@@ -88,8 +88,6 @@ export default function NewProposal() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const draftRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
-
-  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
 
   const updateForm = useCallback((updates: Partial<ProposalFormData>) => {
     setForm(prev => ({ ...prev, ...updates }));
