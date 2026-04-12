@@ -83,6 +83,8 @@ function LazyFallback() {
   );
 }
 
+import { AuthenticatedLayout } from '@/components/AuthenticatedLayout';
+
 const NO_FOOTER_PATHS = new Set(['/', '/explorar']);
 
 function LayoutWithFooter() {
