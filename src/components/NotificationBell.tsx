@@ -159,11 +159,13 @@ export function NotificationBell() {
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <button
-          className="relative p-2.5 rounded-full hover:bg-muted/60 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring min-h-[44px] min-w-[44px] flex items-center justify-center"
+        <Button
+          variant="ghost"
+          size="icon"
+          className="relative h-9 w-9"
           aria-label={`Notificações${unreadCount > 0 ? ` (${unreadCount} não lidas)` : ''}`}
         >
-          <Bell className="w-5 h-5 text-muted-foreground" />
+          <Bell className="h-4 w-4" />
           <AnimatePresence>
             {unreadCount > 0 && (
               <motion.span
@@ -176,7 +178,7 @@ export function NotificationBell() {
               </motion.span>
             )}
           </AnimatePresence>
-        </button>
+        </Button>
       </PopoverTrigger>
       <PopoverContent align="end" sideOffset={8} className="w-80 sm:w-96 p-0 rounded-xl shadow-lg border-border/50">
         <div className="flex items-center justify-between px-4 py-3 border-b border-border/50">
