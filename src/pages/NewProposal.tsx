@@ -360,7 +360,7 @@ export default function NewProposal() {
       </Button>
       <Button size="sm" onClick={() => handleSubmit()} disabled={saving} className="h-8 px-2.5 sm:px-3">
         <FileText className="w-4 h-4" />
-        {!isMobile && <span className="ml-1">Criar</span>}
+        {!isMobile && <span className="ml-1">{isEditMode ? 'Salvar' : 'Criar'}</span>}
       </Button>
     </div>
   );
@@ -368,7 +368,7 @@ export default function NewProposal() {
   return (
     <div className="min-h-screen bg-background pb-bottomnav sm:pb-0">
       {/* Mobile header — same pattern as HojePage */}
-      <PanelHeader title="Nova Proposta">
+      <PanelHeader title={isEditMode ? "Editar Proposta" : "Nova Proposta"}>
         <BackButton fallback="/propostas" />
         {actionButtons}
       </PanelHeader>
