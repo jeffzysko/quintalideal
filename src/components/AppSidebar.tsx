@@ -14,6 +14,8 @@ import {
   Eye,
   Kanban,
   TrendingUp,
+  Webhook,
+  LogOut,
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
