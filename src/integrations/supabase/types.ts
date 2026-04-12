@@ -662,6 +662,50 @@ export type Database = {
           },
         ]
       }
+      proposal_negotiations: {
+        Row: {
+          client_message: string
+          created_at: string
+          id: string
+          item_reference: string | null
+          proposal_id: string
+          proposed_value: number | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          status: string
+        }
+        Insert: {
+          client_message: string
+          created_at?: string
+          id?: string
+          item_reference?: string | null
+          proposal_id: string
+          proposed_value?: number | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          status?: string
+        }
+        Update: {
+          client_message?: string
+          created_at?: string
+          id?: string
+          item_reference?: string | null
+          proposal_id?: string
+          proposed_value?: number | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_negotiations_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       proposal_questions: {
         Row: {
           answer: string | null
@@ -697,6 +741,48 @@ export type Database = {
           },
         ]
       }
+      proposal_templates: {
+        Row: {
+          created_at: string
+          created_by: string
+          delivery_deadline: string | null
+          franchise_id: string
+          id: string
+          items: Json
+          name: string
+          notes: string | null
+          payment_conditions: string | null
+          payment_method: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          delivery_deadline?: string | null
+          franchise_id: string
+          id?: string
+          items?: Json
+          name: string
+          notes?: string | null
+          payment_conditions?: string | null
+          payment_method?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          delivery_deadline?: string | null
+          franchise_id?: string
+          id?: string
+          items?: Json
+          name?: string
+          notes?: string | null
+          payment_conditions?: string | null
+          payment_method?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       proposal_views: {
         Row: {
           id: string
@@ -730,6 +816,9 @@ export type Database = {
         Row: {
           accepted_at: string | null
           accepted_by_name: string | null
+          accepted_geolocation: string | null
+          accepted_ip: string | null
+          accepted_user_agent: string | null
           client_address: string | null
           client_contact_name: string | null
           client_document: string | null
@@ -743,6 +832,7 @@ export type Database = {
           global_discount: number
           global_discount_type: string
           id: string
+          internal_notes: string | null
           lead_id: string | null
           observations: string | null
           payment_conditions: string | null
@@ -756,10 +846,14 @@ export type Database = {
           total: number
           updated_at: string
           validity_date: string | null
+          video_url: string | null
         }
         Insert: {
           accepted_at?: string | null
           accepted_by_name?: string | null
+          accepted_geolocation?: string | null
+          accepted_ip?: string | null
+          accepted_user_agent?: string | null
           client_address?: string | null
           client_contact_name?: string | null
           client_document?: string | null
@@ -773,6 +867,7 @@ export type Database = {
           global_discount?: number
           global_discount_type?: string
           id?: string
+          internal_notes?: string | null
           lead_id?: string | null
           observations?: string | null
           payment_conditions?: string | null
@@ -786,10 +881,14 @@ export type Database = {
           total?: number
           updated_at?: string
           validity_date?: string | null
+          video_url?: string | null
         }
         Update: {
           accepted_at?: string | null
           accepted_by_name?: string | null
+          accepted_geolocation?: string | null
+          accepted_ip?: string | null
+          accepted_user_agent?: string | null
           client_address?: string | null
           client_contact_name?: string | null
           client_document?: string | null
@@ -803,6 +902,7 @@ export type Database = {
           global_discount?: number
           global_discount_type?: string
           id?: string
+          internal_notes?: string | null
           lead_id?: string | null
           observations?: string | null
           payment_conditions?: string | null
@@ -816,6 +916,7 @@ export type Database = {
           total?: number
           updated_at?: string
           validity_date?: string | null
+          video_url?: string | null
         }
         Relationships: [
           {
@@ -1084,6 +1185,15 @@ export type Database = {
       }
       public_register_proposal_view: {
         Args: { _token: string; _user_agent?: string }
+        Returns: boolean
+      }
+      public_submit_negotiation: {
+        Args: {
+          _client_message: string
+          _item_reference: string
+          _proposed_value?: number
+          _token: string
+        }
         Returns: boolean
       }
     }
