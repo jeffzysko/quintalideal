@@ -186,6 +186,9 @@ function AppRouteTree() {
         />
       </Route>
 
+      {/* Public proposal page - NO footer, NO auth */}
+      <Route path="/proposta/:token" element={<PublicProposal />} />
+
       {/* Franchise dynamic landing - NO footer (quiz flow) */}
       <Route path="/:slug" element={<FranchiseLanding />} />
       <Route path="*" element={<NotFound />} />
