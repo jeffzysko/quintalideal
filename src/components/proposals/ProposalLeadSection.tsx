@@ -126,6 +126,13 @@ export function ProposalLeadSection({ updateForm, franchiseId }: Props) {
               </Button>
             </div>
           </div>
+        ) : skipped ? (
+          <div className="flex items-center justify-between p-3 rounded-xl bg-muted/50 border border-border/50">
+            <p className="text-sm text-muted-foreground">Proposta sem lead vinculado</p>
+            <Button variant="ghost" size="sm" onClick={() => setSkipped(false)} className="text-xs h-7">
+              Vincular lead
+            </Button>
+          </div>
         ) : (
           <div ref={containerRef} className="relative">
             <div className="relative">
@@ -168,9 +175,9 @@ export function ProposalLeadSection({ updateForm, franchiseId }: Props) {
             )}
           </div>
         )}
-        {!selectedLead && (
+        {!selectedLead && !skipped && (
           <button
-            onClick={() => updateForm({ lead_id: null })}
+            onClick={skipLead}
             className="text-xs text-muted-foreground hover:text-foreground transition-colors underline underline-offset-2"
           >
             Criar proposta sem vincular lead
