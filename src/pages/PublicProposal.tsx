@@ -10,12 +10,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Check, X, MessageCircle, Download, CreditCard, Truck, CalendarDays, Phone, User, FileText, AlertTriangle, RefreshCw, Droplets, Shield, Star, Sparkles, ArrowRight } from 'lucide-react';
+import { Check, X, MessageCircle, Download, CreditCard, Truck, CalendarDays, Phone, User, FileText, AlertTriangle, RefreshCw, Droplets, Shield, Star, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
 import { format, differenceInDays, differenceInHours, differenceInMinutes, isPast } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
 import { VideoEmbed } from '@/components/proposals/ProposalVideoSection';
 import logoSplash from '@/assets/logo-splash.png';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 
 const formatCurrency = (v: number) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -195,6 +197,7 @@ function TrustBadges() {
 function SectionCard({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
   return (
     <motion.div
+      data-pdf-section
       initial={{ opacity: 0, y: 24 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-40px' }}
@@ -276,7 +279,93 @@ export default function PublicProposal() {
     setSubmitting(false); setNegotiateOpen(false); setNegotiateMessage(''); setNegotiateItem(''); setNegotiateValue('');
     setActionDone('negotiated'); fetchProposal();
   };
-  const handlePrint = () => window.print();
+  const [exporting, setExporting] = useState(false);
+
+  const handleExportPDF = async () => {
+    if (!proposal) return;
+    setExporting(true);
+    try {
+      const contentEl = document.getElementById('proposal-pdf-content');
+      if (!contentEl) return;
+
+      const A4_W = 210, A4_H = 297, M = 15;
+      const CW = A4_W - M * 2;
+      const GAP = 4;
+
+      const sections = Array.from(contentEl.querySelectorAll('[data-pdf-section]')) as HTMLElement[];
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+      let curY = M;
+
+      // Add logo at top of first page
+      const logoImg = new Image();
+      logoImg.crossOrigin = 'anonymous';
+      logoImg.src = logoSplash;
+      await new Promise<void>((res) => { logoImg.onload = () => res(); logoImg.onerror = () => res(); });
+      if (logoImg.complete && logoImg.naturalWidth > 0) {
+        const logoH = 12;
+        const logoW = (logoImg.naturalWidth / logoImg.naturalHeight) * logoH;
+        pdf.addImage(logoImg, 'PNG', M, curY, logoW, logoH);
+        curY += logoH + 4;
+      }
+
+      // Title
+      pdf.setFontSize(18);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setTextColor(30, 30, 30);
+      pdf.text(`Proposta #${proposal.id.slice(0, 4).toUpperCase()}`, M, curY + 6);
+      curY += 12;
+
+      pdf.setFontSize(10);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(120, 120, 120);
+      pdf.text(`Emitida em ${format(new Date(proposal.created_at), "dd/MM/yyyy")} • ${proposal.franchise?.nome_franquia || ''}`, M, curY + 3);
+      curY += 10;
+
+      // Separator line
+      pdf.setDrawColor(220, 220, 220);
+      pdf.line(M, curY, A4_W - M, curY);
+      curY += 6;
+
+      for (const section of sections) {
+        const canvas = await html2canvas(section, {
+          scale: 2,
+          useCORS: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          windowWidth: 700,
+        });
+
+        const wPx = canvas.width / 2;
+        const hPx = canvas.height / 2;
+        const sf = CW / wPx;
+        const hMM = hPx * sf;
+
+        if (hMM > (A4_H - M - curY) && curY > M + 20) {
+          pdf.addPage();
+          curY = M;
+        }
+
+        const imgData = canvas.toDataURL('image/png');
+        pdf.addImage(imgData, 'PNG', M, curY, CW, hMM);
+        curY += hMM + GAP;
+      }
+
+      // Footer on last page
+      const pageCount = pdf.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        pdf.setPage(i);
+        pdf.setFontSize(8);
+        pdf.setTextColor(170, 170, 170);
+        pdf.text(`Splash Piscinas • Página ${i} de ${pageCount}`, A4_W / 2, A4_H - 8, { align: 'center' });
+      }
+
+      pdf.save(`proposta-${proposal.id.slice(0, 8)}.pdf`);
+    } catch (err) {
+      console.error('PDF export error:', err);
+    } finally {
+      setExporting(false);
+    }
+  };
 
   /* ── Loading ── */
   if (loading) return (
@@ -351,10 +440,11 @@ export default function PublicProposal() {
           </div>
         </header>
 
-        <main className="relative max-w-3xl mx-auto px-5 py-8 space-y-7 pb-36 sm:pb-10 print:pb-0 print:space-y-5">
+        <main id="proposal-pdf-content" className="relative max-w-3xl mx-auto px-5 py-8 space-y-7 pb-36 sm:pb-10 print:pb-0 print:space-y-5">
 
           {/* ═══════════ HERO ═══════════ */}
           <motion.div
+            data-pdf-section
             variants={stagger} initial="hidden" animate="show"
             className="text-center space-y-5 pt-2"
           >
@@ -632,6 +722,7 @@ export default function PublicProposal() {
 
           {/* ═══════════ CONDITIONS ═══════════ */}
           <motion.div
+            data-pdf-section
             variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}
             className="grid grid-cols-1 sm:grid-cols-3 gap-3"
           >
@@ -724,9 +815,9 @@ export default function PublicProposal() {
                       className="gap-2 text-muted-foreground hover:text-foreground rounded-xl h-12 font-semibold">
                       <MessageCircle className="w-4 h-4" /> Tenho uma dúvida
                     </Button>
-                    <Button variant="ghost" onClick={handlePrint}
+                    <Button variant="ghost" onClick={handleExportPDF} disabled={exporting}
                       className="gap-2 text-muted-foreground/50 rounded-xl h-12">
-                      <Download className="w-4 h-4" /> PDF
+                      {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />} PDF
                     </Button>
                   </div>
                 </div>
