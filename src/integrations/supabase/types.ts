@@ -662,8 +662,74 @@ export type Database = {
           },
         ]
       }
+      proposal_questions: {
+        Row: {
+          answer: string | null
+          answered_at: string | null
+          asked_at: string
+          id: string
+          proposal_id: string
+          question: string
+        }
+        Insert: {
+          answer?: string | null
+          answered_at?: string | null
+          asked_at?: string
+          id?: string
+          proposal_id: string
+          question: string
+        }
+        Update: {
+          answer?: string | null
+          answered_at?: string | null
+          asked_at?: string
+          id?: string
+          proposal_id?: string
+          question?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_questions_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      proposal_views: {
+        Row: {
+          id: string
+          proposal_id: string
+          user_agent: string | null
+          viewed_at: string
+        }
+        Insert: {
+          id?: string
+          proposal_id: string
+          user_agent?: string | null
+          viewed_at?: string
+        }
+        Update: {
+          id?: string
+          proposal_id?: string
+          user_agent?: string | null
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_views_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       proposals: {
         Row: {
+          accepted_at: string | null
+          accepted_by_name: string | null
           client_address: string | null
           client_contact_name: string | null
           client_document: string | null
@@ -682,6 +748,9 @@ export type Database = {
           payment_conditions: string | null
           payment_method: string | null
           person_type: string
+          public_token: string
+          refused_at: string | null
+          refused_reason: string | null
           status: Database["public"]["Enums"]["proposal_status"]
           subtotal: number
           total: number
@@ -689,6 +758,8 @@ export type Database = {
           validity_date: string | null
         }
         Insert: {
+          accepted_at?: string | null
+          accepted_by_name?: string | null
           client_address?: string | null
           client_contact_name?: string | null
           client_document?: string | null
@@ -707,6 +778,9 @@ export type Database = {
           payment_conditions?: string | null
           payment_method?: string | null
           person_type?: string
+          public_token?: string
+          refused_at?: string | null
+          refused_reason?: string | null
           status?: Database["public"]["Enums"]["proposal_status"]
           subtotal?: number
           total?: number
@@ -714,6 +788,8 @@ export type Database = {
           validity_date?: string | null
         }
         Update: {
+          accepted_at?: string | null
+          accepted_by_name?: string | null
           client_address?: string | null
           client_contact_name?: string | null
           client_document?: string | null
@@ -732,6 +808,9 @@ export type Database = {
           payment_conditions?: string | null
           payment_method?: string | null
           person_type?: string
+          public_token?: string
+          refused_at?: string | null
+          refused_reason?: string | null
           status?: Database["public"]["Enums"]["proposal_status"]
           subtotal?: number
           total?: number
@@ -1006,6 +1085,7 @@ export type Database = {
         | "em_negociacao"
         | "aceita"
         | "recusada"
+        | "visualizada"
       territory_match_status:
         | "matched_unique_franchise"
         | "matched_multiple_franchises"
@@ -1147,6 +1227,7 @@ export const Constants = {
         "em_negociacao",
         "aceita",
         "recusada",
+        "visualizada",
       ],
       territory_match_status: [
         "matched_unique_franchise",
