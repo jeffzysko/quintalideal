@@ -5,8 +5,12 @@ import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { PageHeader } from '@/components/PageHeader';
+import { PanelHeader } from '@/components/PanelHeader';
 import { PageTransition } from '@/components/PageTransition';
+import { BackButton } from '@/components/BackButton';
+import { NotificationBell } from '@/components/NotificationBell';
+import { UserAvatarMenu } from '@/components/UserAvatarMenu';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Plus, FileText, Clock, ChevronRight } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -23,8 +27,10 @@ const STATUS_MAP: Record<string, { label: string; classes: string }> = {
 const formatCurrency = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
 export default function ProposalsList() {
-  const { franchiseId } = useAuth();
+  const { franchiseId, role } = useAuth();
   const navigate = useNavigate();
+  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const basePath = isAdmin ? '/admin' : '/franquia';
 
   const { data: proposals, isLoading } = useQuery({
     queryKey: ['proposals', franchiseId],
@@ -42,51 +48,65 @@ export default function ProposalsList() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-muted/30 pb-safe">
-        <PageHeader
-          title="Propostas Comerciais"
-          subtitle="Gerencie suas propostas"
-          icon={<FileText className="w-4 h-4 text-primary" />}
-          fallbackPath="/painel"
-          rightSlot={
-            <Button onClick={() => navigate('/propostas/nova')} size="sm" className="h-8 sm:h-9">
-              <Plus className="w-4 h-4 mr-1" /> <span className="hidden sm:inline">Nova Proposta</span><span className="sm:hidden">Nova</span>
-            </Button>
-          }
-        />
+      <div className="min-h-screen bg-background pb-bottomnav sm:pb-0">
+        {/* Mobile header — matches PanelHeader pattern used by HojePage */}
+        <PanelHeader title="Propostas">
+          <BackButton fallback={basePath} />
+          <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
+          <NotificationBell />
+          <UserAvatarMenu />
+        </PanelHeader>
 
-        <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4 pb-20 sm:pb-6">
-          {isLoading ? (
-            <div className="space-y-3">
-              {[1, 2, 3].map(i => (
-                <div key={i} className="h-20 bg-muted animate-pulse rounded-xl" />
-              ))}
+        <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
+          {/* Desktop breadcrumbs + title */}
+          <div className="hidden md:flex items-center justify-between mb-5">
+            <div>
+              <Breadcrumbs />
+              <h1 className="text-page-title text-foreground mt-1">Propostas Comerciais</h1>
+              <p className="text-small text-muted-foreground mt-0.5">Gerencie suas propostas</p>
             </div>
-          ) : !proposals?.length ? (
-            <Card className="shadow-sm border-border/50">
-              <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-                <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
-                  <FileText className="w-7 h-7 text-primary" />
-                </div>
-                <h3 className="font-semibold text-foreground mb-1">Nenhuma proposta ainda</h3>
-                <p className="text-sm text-muted-foreground mb-5 max-w-xs">Crie sua primeira proposta comercial para enviar aos seus clientes</p>
-                <Button onClick={() => navigate('/propostas/nova')}>
-                  <Plus className="w-4 h-4 mr-1" /> Criar Proposta
-                </Button>
-              </CardContent>
-            </Card>
-          ) : (
-            <div className="space-y-3">
-              {proposals.map((p: any) => {
+            <Button onClick={() => navigate('/propostas/nova')} size="sm">
+              <Plus className="w-4 h-4 mr-1.5" /> Nova Proposta
+            </Button>
+          </div>
+
+          {/* Mobile title + action */}
+          <div className="flex items-center justify-between mb-4 md:hidden">
+            <h1 className="text-section-title text-foreground">Propostas</h1>
+            <Button onClick={() => navigate('/propostas/nova')} size="sm" className="h-9">
+              <Plus className="w-4 h-4 mr-1" /> Nova
+            </Button>
+          </div>
+
+          <div className="space-y-3">
+            {isLoading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="h-[72px] skeleton rounded-xl" />
+              ))
+            ) : !proposals?.length ? (
+              <Card className="shadow-sm border-border/50">
+                <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+                  <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
+                    <FileText className="w-7 h-7 text-primary" />
+                  </div>
+                  <h3 className="font-semibold text-foreground mb-1">Nenhuma proposta ainda</h3>
+                  <p className="text-sm text-muted-foreground mb-5 max-w-xs">Crie sua primeira proposta comercial para enviar aos seus clientes</p>
+                  <Button onClick={() => navigate('/propostas/nova')}>
+                    <Plus className="w-4 h-4 mr-1" /> Criar Proposta
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : (
+              proposals.map((p: any) => {
                 const status = STATUS_MAP[p.status] || STATUS_MAP.rascunho;
                 return (
                   <Card
                     key={p.id}
-                    className="shadow-sm hover:shadow-md transition-all cursor-pointer border-border/50 active:scale-[0.98]"
+                    className="shadow-sm hover:shadow-md transition-all cursor-pointer border-border/50 active:scale-[0.98] press-scale"
                     onClick={() => navigate(`/propostas/${p.id}`)}
                   >
                     <CardContent className="flex items-center gap-3 sm:gap-4 py-3.5 sm:py-4 px-4 sm:px-5">
-                      <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-xl icon-bg-blue flex items-center justify-center shrink-0">
                         <FileText className="w-5 h-5 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -108,9 +128,9 @@ export default function ProposalsList() {
                     </CardContent>
                   </Card>
                 );
-              })}
-            </div>
-          )}
+              })
+            )}
+          </div>
         </div>
       </div>
     </PageTransition>
