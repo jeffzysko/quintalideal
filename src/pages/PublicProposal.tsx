@@ -907,6 +907,7 @@ export default function PublicProposal() {
             </motion.div>
           )}
 
+          <TrustBadges />
           <VerificationFooter proposal={proposal} />
         </main>
 
