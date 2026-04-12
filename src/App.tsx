@@ -65,6 +65,8 @@ const HojePage = lazy(() => import("./pages/HojePage"));
 const NotificationPreferences = lazy(() => import("./pages/NotificationPreferences"));
 const ProposalsList = lazy(() => import("./pages/ProposalsList"));
 const NewProposal = lazy(() => import("./pages/NewProposal"));
+const ProposalDetail = lazy(() => import("./pages/ProposalDetail"));
+const PublicProposal = lazy(() => import("./pages/PublicProposal"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -155,8 +157,16 @@ function AppRouteTree() {
           element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><ProposalsList /></ProtectedRoute>}
         />
         <Route
+          path="/propostas"
+          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><ProposalsList /></ProtectedRoute>}
+        />
+        <Route
           path="/propostas/nova"
           element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><NewProposal /></ProtectedRoute>}
+        />
+        <Route
+          path="/propostas/:id"
+          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><ProposalDetail /></ProtectedRoute>}
         />
         <Route
           path="/painel/lead/:id"
@@ -175,6 +185,9 @@ function AppRouteTree() {
           element={<ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}><LeadDetail /></ProtectedRoute>}
         />
       </Route>
+
+      {/* Public proposal page - NO footer, NO auth */}
+      <Route path="/proposta/:token" element={<PublicProposal />} />
 
       {/* Franchise dynamic landing - NO footer (quiz flow) */}
       <Route path="/:slug" element={<FranchiseLanding />} />
