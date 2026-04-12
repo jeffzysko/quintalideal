@@ -184,6 +184,7 @@ export default function NewProposal() {
         global_discount: Number(proposal.global_discount) || 0,
         global_discount_type: (proposal.global_discount_type as 'fixed' | 'percent') || 'fixed',
         observations: proposal.observations || '',
+        video_url: (proposal as any).video_url || '',
       });
       setIsEditMode(true);
       setEditLoaded(true);
