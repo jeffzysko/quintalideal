@@ -18,6 +18,7 @@ import { VideoEmbed } from '@/components/proposals/ProposalVideoSection';
 import logoSplash from '@/assets/logo-splash.png';
 // html2canvas removed – PDF now uses native jsPDF vector drawing
 import { jsPDF } from 'jspdf';
+import QRCode from 'qrcode';
 
 const formatCurrency = (v: number) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
