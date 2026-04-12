@@ -405,8 +405,9 @@ export default function HojePage() {
     ]);
   }, [queryClient]);
 
-  // ── Action items (merged: overdue + today followups + stale leads) ──
+  // ── Action items ──
   const allFollowups = useMemo(() => [...overdueFollowups, ...todayFollowups], [overdueFollowups, todayFollowups]);
+  const [activeTab, setActiveTab] = useState('acoes');
 
   // ── Render ──
   return (
