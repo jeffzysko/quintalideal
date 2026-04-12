@@ -510,8 +510,7 @@ export default function HojePage() {
                     >
 
                   {/* ══ TAB 1: O QUE FAZER AGORA ══ */}
-                  <TabsContent value="acoes" className="space-y-6 mt-0" forceMount={activeTab === 'acoes' ? true : undefined}>
-                    {activeTab === 'acoes' && (<>
+                  <TabsContent value="acoes" className="space-y-6 mt-0">
                     {/* Overdue follow-ups */}
                     {overdueFollowups.length > 0 && (
                       <div>
