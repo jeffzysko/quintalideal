@@ -358,8 +358,35 @@ export default function NewProposal() {
     }
   };
 
+  const handleLoadTemplate = (template: any) => {
+    const items = (template.items as any[] || []).map((i: any) => ({
+      id: crypto.randomUUID(),
+      product_name: i.product_name || '',
+      description: i.description || '',
+      quantity: i.quantity || 1,
+      unit_price: i.unit_price || 0,
+      discount: i.discount || 0,
+    }));
+    updateForm({
+      items: items.length > 0 ? items : form.items,
+      payment_method: template.payment_method || form.payment_method,
+      payment_conditions: template.payment_conditions || form.payment_conditions,
+      delivery_deadline: template.delivery_deadline || form.delivery_deadline,
+      observations: template.notes || form.observations,
+    });
+    toast.success(`Template "${template.name}" carregado!`);
+  };
+
   const actionButtons = (
     <div className="flex items-center gap-1.5">
+      <Button variant="ghost" size="sm" onClick={() => setLoadTemplateOpen(true)} className="h-8 px-2 sm:px-3 text-muted-foreground" title="Carregar template">
+        <BookOpen className="w-4 h-4" />
+      </Button>
+      {form.client_name.trim() && (
+        <Button variant="ghost" size="sm" onClick={() => setSaveTemplateOpen(true)} className="h-8 px-2 sm:px-3 text-muted-foreground" title="Salvar como template">
+          <Sparkles className="w-4 h-4" />
+        </Button>
+      )}
       <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="h-8 px-2 sm:px-3 text-muted-foreground">
         <X className="w-4 h-4" />
         <span className="hidden sm:inline ml-1">Cancelar</span>
