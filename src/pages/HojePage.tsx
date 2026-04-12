@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useCallback } from 'react';
 import { PullToRefresh } from '@/components/PullToRefresh';
 import { SwipeableLeadCard } from '@/components/dashboard/SwipeableLeadCard';
 import { SwipeHint } from '@/components/dashboard/SwipeHint';
@@ -16,22 +16,17 @@ import { PanelHeader } from '@/components/PanelHeader';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { NotificationBell } from '@/components/NotificationBell';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { motion, AnimatePresence } from 'framer-motion';
-import { format, isToday, isTomorrow, isPast, differenceInHours, differenceInDays, formatDistanceToNow } from 'date-fns';
+import { motion } from 'framer-motion';
+import { format, isToday, isPast, differenceInDays, differenceInHours, formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
   CalendarClock, AlertTriangle, Phone, MessageCircle,
-  ChevronRight, Clock, Flame, Zap, CheckCircle2, Users,
-  TrendingUp, ArrowRight, Target, MapPin, Rocket, Inbox,
-  ListChecks, BarChart3, Lightbulb,
+  ChevronRight, Clock, CheckCircle2,
+  MapPin, Rocket, Inbox, Users,
 } from 'lucide-react';
-import { STATUS_LABELS, STATUS_COLORS, type LeadRow } from '@/lib/lead-constants';
-import { classifyLead } from '@/lib/leadScoring';
+import { type LeadRow } from '@/lib/lead-constants';
 import { cn } from '@/lib/utils';
-import { SmartSuggestions } from '@/components/dashboard/SmartSuggestions';
-import { QuickActionBar } from '@/components/dashboard/QuickActionBar';
-import { PipelineSnapshot } from '@/components/dashboard/PipelineSnapshot';
+import { toWhatsAppPhone } from '@/lib/phone-utils';
 
 // ── Types ──
 interface Followup {
@@ -40,13 +35,6 @@ interface Followup {
   note: string | null;
   scheduled_at: string;
   completed: boolean;
-}
-
-interface LeadActivity {
-  lead_id: string;
-  activity_type: string;
-  content: string | null;
-  created_at: string;
 }
 
 // ── Helpers ──
@@ -77,7 +65,6 @@ function formatScheduleLabel(dateStr: string): { label: string; urgency: 'overdu
   const date = new Date(dateStr);
   if (isPast(date) && !isToday(date)) return { label: `Atrasado · ${formatDistanceToNow(date, { locale: ptBR, addSuffix: true })}`, urgency: 'overdue' };
   if (isToday(date)) return { label: `Hoje às ${format(date, 'HH:mm')}`, urgency: 'today' };
-  if (isTomorrow(date)) return { label: `Amanhã às ${format(date, 'HH:mm')}`, urgency: 'tomorrow' };
   return { label: format(date, "dd/MM 'às' HH:mm", { locale: ptBR }), urgency: 'future' };
 }
 
@@ -88,55 +75,23 @@ const URGENCY_STYLES = {
   future: 'border-border/30 bg-card',
 };
 
-// ── Score bar (inline) ──
-function MiniScoreBar({ score }: { score: number }) {
-  const color = score >= 70 ? 'bg-emerald-500' : score >= 40 ? 'bg-amber-500' : 'bg-red-400';
-  return (
-    <div className="flex items-center gap-1.5 w-16">
-      <div className="flex-1 h-1 rounded-full bg-muted/60 overflow-hidden">
-        <div className={`h-full rounded-full ${color}`} style={{ width: `${score}%` }} />
-      </div>
-      <span className="text-[10px] font-bold tabular-nums">{score}%</span>
-    </div>
-  );
-}
-
 // ── Loading skeleton ──
 function PageSkeleton() {
   return (
-    <div className="space-y-6">
-      <div className="space-y-2">
-        <Skeleton className="h-8 w-64" />
-        <Skeleton className="h-4 w-48" />
-      </div>
-      <div className="grid grid-cols-4 gap-3">
-        {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-10 rounded-xl" />)}
-      </div>
-      {[1, 2, 3].map(i => (
-        <div key={i} className="space-y-3">
-          <Skeleton className="h-6 w-40" />
-          <Skeleton className="h-24 rounded-xl" />
-        </div>
-      ))}
+    <div className="space-y-4">
+      <Skeleton className="h-7 w-48" />
+      <Skeleton className="h-4 w-32" />
+      {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-16 rounded-xl" />)}
     </div>
   );
 }
 
-// ── Followup Row (reusable) ──
+// ── Followup Row ──
 function FollowupRow({
-  f,
-  index,
-  leadName,
-  basePath,
-  onComplete,
-  navigate,
+  f, index, leadName, basePath, onComplete, navigate,
 }: {
-  f: Followup;
-  index: number;
-  leadName: string;
-  basePath: string;
-  onComplete: (id: string) => void;
-  navigate: (path: string) => void;
+  f: Followup; index: number; leadName: string; basePath: string;
+  onComplete: (id: string) => void; navigate: (path: string) => void;
 }) {
   const parsed = parseFollowupType(f.note);
   const TypeIcon = parsed.type ? FOLLOWUP_ICONS[parsed.type] || CalendarClock : CalendarClock;
@@ -145,134 +100,139 @@ function FollowupRow({
 
   return (
     <motion.div
-      initial={{ opacity: 0, x: -12 }}
+      initial={{ opacity: 0, x: -8 }}
       animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: Math.min(index * 0.04, 0.15) }}
+      transition={{ delay: Math.min(index * 0.03, 0.12) }}
       className={cn(
         'flex items-center gap-3 p-3 rounded-xl border cursor-pointer transition-all hover:shadow-sm active:scale-[0.98]',
         URGENCY_STYLES[schedule.urgency]
       )}
       onClick={() => navigate(`${basePath}/${f.lead_id}`)}
     >
+      <Button
+        size="icon"
+        variant="ghost"
+        className="h-8 w-8 rounded-lg shrink-0"
+        aria-label="Marcar como concluído"
+        onClick={(e) => { e.stopPropagation(); onComplete(f.id); }}
+      >
+        <CheckCircle2 className="w-4.5 h-4.5 text-muted-foreground/50 hover:text-emerald-500 transition-colors" />
+      </Button>
       <div className={cn(
-        'w-9 h-9 rounded-lg flex items-center justify-center shrink-0',
+        'w-8 h-8 rounded-lg flex items-center justify-center shrink-0',
         schedule.urgency === 'overdue' ? 'bg-destructive/10' : 'icon-bg-blue'
       )}>
         <TypeIcon className={cn('w-4 h-4', schedule.urgency === 'overdue' ? 'text-destructive' : typeColor)} />
       </div>
       <div className="flex-1 min-w-0">
         <p className="text-sm font-semibold text-foreground truncate">{leadName}</p>
-        <p className={cn('text-[11px] font-medium', schedule.urgency === 'overdue' ? 'text-destructive' : 'text-primary')}>
+        <p className={cn('text-[11px] font-medium', schedule.urgency === 'overdue' ? 'text-destructive' : 'text-muted-foreground')}>
           {schedule.label}
         </p>
-        {parsed.text && <p className="text-[11px] text-muted-foreground truncate mt-0.5">{parsed.text}</p>}
+        {parsed.text && <p className="text-[11px] text-muted-foreground/70 truncate">{parsed.text}</p>}
       </div>
-      <Button
-        size="icon"
-        variant="ghost"
-        className="h-7 w-7 rounded-lg shrink-0"
-        aria-label="Marcar como concluído"
-        onClick={(e) => { e.stopPropagation(); onComplete(f.id); }}
-      >
-        <CheckCircle2 className="w-4 h-4 text-muted-foreground/60 hover:text-emerald-500" />
-      </Button>
-      <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
+      <ChevronRight className="w-4 h-4 text-muted-foreground/40 shrink-0" />
     </motion.div>
   );
 }
 
-// ── Lead Row (reusable for stale/new/hot) ──
-function LeadRow_({
-  lead,
-  index,
-  basePath,
-  navigate,
-  variant,
-  now,
+// ── Stale Lead Row (simplified) ──
+function StaleLeadRow({
+  lead, index, basePath, navigate, now,
 }: {
-  lead: LeadRow & { respostas_questionario?: Record<string, string> | null };
-  index: number;
-  basePath: string;
-  navigate: (path: string) => void;
-  variant: 'stale' | 'new' | 'hot';
-  now: Date;
+  lead: LeadRow; index: number; basePath: string;
+  navigate: (path: string) => void; now: Date;
 }) {
-  const temp = classifyLead((lead as any).respostas_questionario || null, lead.pontuacao_quintal);
+  const daysWaiting = differenceInDays(now, new Date(lead.created_at));
+  const hoursWaiting = differenceInHours(now, new Date(lead.created_at));
+  const waitLabel = daysWaiting > 0 ? `${daysWaiting}d` : `${hoursWaiting}h`;
 
-  const subtitle = (() => {
-    if (variant === 'stale') {
-      const daysWaiting = differenceInDays(now, new Date(lead.created_at));
-      const hoursWaiting = differenceInHours(now, new Date(lead.created_at));
-      const waitLabel = daysWaiting > 0 ? `${daysWaiting}d` : `${hoursWaiting}h`;
-      return <span className="text-amber-600 font-bold">⏱ {waitLabel} esperando</span>;
-    }
-    if (variant === 'new') {
-      return <span>{formatDistanceToNow(new Date(lead.created_at), { locale: ptBR, addSuffix: true })}</span>;
-    }
-    return (
-      <Badge className={`${STATUS_COLORS[lead.status_lead]} border text-[9px] px-1 py-0`} variant="secondary">
-        {STATUS_LABELS[lead.status_lead]}
-      </Badge>
-    );
-  })();
+  const handleWhatsApp = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!lead.telefone) return;
+    const fullPhone = toWhatsAppPhone(lead.telefone);
+    const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem?`);
+    window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
+  };
 
-  const avatarBg = variant === 'stale'
-    ? 'from-amber-500/15 to-amber-500/5'
-    : variant === 'new'
-      ? 'from-emerald-500/15 to-emerald-500/5'
-      : 'from-primary/20 to-primary/5';
-  const avatarColor = variant === 'stale' ? 'text-amber-600' : variant === 'new' ? 'text-emerald-600' : 'text-primary';
+  const handleCall = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!lead.telefone) return;
+    const phone = lead.telefone.replace(/\D/g, '');
+    window.open(`tel:+55${phone}`, '_self');
+  };
 
   return (
     <SwipeableLeadCard leadPhone={lead.telefone} leadName={lead.nome}>
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: Math.min(index * 0.03, 0.15) }}
-        className={cn(
-          'flex items-center gap-2.5 p-3 cursor-pointer hover:bg-muted/40 transition-colors active:scale-[0.98] border-l-[3px]',
-          temp.borderAccent
-        )}
+        transition={{ delay: Math.min(index * 0.03, 0.12) }}
+        className="flex items-center gap-3 p-3 cursor-pointer hover:bg-muted/40 transition-colors active:scale-[0.98]"
         onClick={() => navigate(`${basePath}/${lead.id}`)}
       >
-        <div className={cn('w-9 h-9 rounded-xl bg-gradient-to-br flex items-center justify-center shrink-0', avatarBg)}>
-          <span className={cn('text-xs font-bold', avatarColor)}>
+        <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500/15 to-amber-500/5 flex items-center justify-center shrink-0">
+          <span className="text-xs font-bold text-amber-600">
             {lead.nome ? lead.nome.charAt(0).toUpperCase() : '?'}
           </span>
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-[13px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
-          <div className="flex items-center gap-2 text-[10px] text-muted-foreground mt-0.5">
-            {lead.cidade && <span className="truncate max-w-[100px]">{lead.cidade}</span>}
-            {subtitle}
+          <p className="text-[11px] text-amber-600 font-semibold">⏱ {waitLabel} sem contato</p>
+        </div>
+        {lead.telefone && (
+          <div className="flex items-center gap-1 shrink-0">
+            <Button size="icon" variant="ghost" className="h-7 w-7 rounded-lg" onClick={handleWhatsApp} aria-label="WhatsApp">
+              <MessageCircle className="w-3.5 h-3.5 text-green-600" />
+            </Button>
+            <Button size="icon" variant="ghost" className="h-7 w-7 rounded-lg" onClick={handleCall} aria-label="Ligar">
+              <Phone className="w-3.5 h-3.5 text-emerald-600" />
+            </Button>
           </div>
-        </div>
-        <div className="flex items-center gap-1.5 shrink-0">
-          <Badge className={cn(temp.bgColor, temp.color, 'border text-[9px] font-semibold px-1.5 py-0')} variant="outline">
-            {temp.emoji} {temp.label}
-          </Badge>
-          <MiniScoreBar score={lead.pontuacao_quintal || 0} />
-        </div>
+        )}
+        <ChevronRight className="w-4 h-4 text-muted-foreground/40 shrink-0" />
       </motion.div>
     </SwipeableLeadCard>
   );
 }
 
-// ── Greeting (simplified) ──
+// ── Greeting ──
 function Greeting({ name }: { name: string | null }) {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
   const firstName = name?.split(' ')[0] || '';
 
   return (
-    <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
-      <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-foreground">
+    <motion.div initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} className="mb-6">
+      <h1 className="text-xl font-bold tracking-tight text-foreground">
         {greeting}{firstName ? `, ${firstName}` : ''} 👋
       </h1>
-      <p className="text-sm text-muted-foreground mt-1">
+      <p className="text-sm text-muted-foreground mt-0.5">
         {format(new Date(), "EEEE, dd 'de' MMMM", { locale: ptBR })}
       </p>
     </motion.div>
+  );
+}
+
+// ── Section Header ──
+function SectionHeader({ icon: Icon, title, count, variant = 'default' }: {
+  icon: typeof AlertTriangle; title: string; count?: number;
+  variant?: 'default' | 'danger' | 'warning';
+}) {
+  const bgMap = { default: 'icon-bg-blue', danger: 'bg-destructive/10', warning: 'icon-bg-amber' };
+  const colorMap = { default: 'text-primary', danger: 'text-destructive', warning: 'text-amber-600' };
+  return (
+    <div className="flex items-center gap-2 mb-2.5 mt-6 first:mt-0">
+      <div className={cn('w-7 h-7 rounded-lg flex items-center justify-center', bgMap[variant])}>
+        <Icon className={cn('w-3.5 h-3.5', colorMap[variant])} />
+      </div>
+      <h3 className="text-sm font-bold text-foreground">{title}</h3>
+      {count !== undefined && count > 0 && (
+        <Badge variant={variant === 'danger' ? 'destructive' : 'secondary'} className="text-[10px] font-bold px-1.5 py-0">
+          {count}
+        </Badge>
+      )}
+    </div>
   );
 }
 
@@ -300,13 +260,13 @@ export default function HojePage() {
     queryFn: async () => {
       let query = supabase
         .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, respostas_questionario, lead_origin')
+        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, lead_origin')
         .order('created_at', { ascending: false })
         .limit(500);
       if (!isAdmin && franchiseId) query = query.eq('franquia_id', franchiseId);
       const { data, error } = await query;
       if (error) throw error;
-      return (data || []) as (LeadRow & { respostas_questionario?: Record<string, string> | null })[];
+      return (data || []) as LeadRow[];
     },
     enabled: !authLoading && (!!franchiseId || isAdmin),
   });
@@ -324,22 +284,6 @@ export default function HojePage() {
       if (!isAdmin && franchiseId) query = query.eq('franchise_id', franchiseId);
       const { data } = await query;
       return (data || []) as Followup[];
-    },
-    enabled: !authLoading && (!!franchiseId || isAdmin),
-  });
-
-  // ── Recent activities ──
-  const { data: recentActivities = [] } = useQuery({
-    queryKey: ['hoje-activities', franchiseId, isAdmin],
-    queryFn: async () => {
-      const since = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
-      const { data } = await supabase
-        .from('lead_activities')
-        .select('lead_id, activity_type, content, created_at')
-        .gte('created_at', since)
-        .order('created_at', { ascending: false })
-        .limit(30);
-      return (data || []) as LeadActivity[];
     },
     enabled: !authLoading && (!!franchiseId || isAdmin),
   });
@@ -362,29 +306,17 @@ export default function HojePage() {
     followups.filter(f => isToday(new Date(f.scheduled_at))),
     [followups]);
 
-  const upcomingFollowups = useMemo(() =>
-    followups.filter(f => !isPast(new Date(f.scheduled_at)) && !isToday(new Date(f.scheduled_at))).slice(0, 5),
-    [followups]);
-
-  const newLeads = useMemo(() =>
-    leads.filter(l => l.status_lead === 'novo' && (nowMs - new Date(l.created_at).getTime()) < 24 * 60 * 60 * 1000),
-    [leads, nowMs]);
-
   const staleLeads = useMemo(() =>
     leads.filter(l => l.status_lead === 'novo' && (nowMs - new Date(l.created_at).getTime()) > 48 * 60 * 60 * 1000),
     [leads, nowMs]);
 
-  const hotLeads = useMemo(() =>
-    leads
-      .filter(l => ['novo', 'contatado', 'em_negociacao'].includes(l.status_lead) && (l.pontuacao_quintal || 0) >= 70)
-      .sort((a, b) => (b.pontuacao_quintal || 0) - (a.pontuacao_quintal || 0))
-      .slice(0, 5),
-    [leads]);
+  const newLeads = useMemo(() =>
+    leads.filter(l => l.status_lead === 'novo' && (nowMs - new Date(l.created_at).getTime()) < 48 * 60 * 60 * 1000),
+    [leads, nowMs]);
 
   const isLoading = authLoading || loadingLeads || loadingFollowups;
 
-  // Urgency counts for tab badges
-  const urgentCount = overdueFollowups.length + todayFollowups.length + staleLeads.length;
+  const totalTasks = overdueFollowups.length + todayFollowups.length + staleLeads.length + newLeads.length;
 
   // ── Mutations ──
   const toggleFollowup = useMutation({
@@ -401,13 +333,8 @@ export default function HojePage() {
     await Promise.all([
       queryClient.invalidateQueries({ queryKey: ['hoje-leads'] }),
       queryClient.invalidateQueries({ queryKey: ['hoje-followups'] }),
-      queryClient.invalidateQueries({ queryKey: ['hoje-activities'] }),
     ]);
   }, [queryClient]);
-
-  // ── Action items ──
-  const allFollowups = useMemo(() => [...overdueFollowups, ...todayFollowups], [overdueFollowups, todayFollowups]);
-  const [activeTab, setActiveTab] = useState('acoes');
 
   // ── Render ──
   return (
@@ -421,7 +348,7 @@ export default function HojePage() {
             <UserAvatarMenu />
           </PanelHeader>
 
-          <div className="max-w-3xl mx-auto px-4 sm:px-5 md:px-6 py-5 sm:py-8">
+          <div className="max-w-2xl mx-auto px-4 sm:px-5 py-5 sm:py-8">
             <Breadcrumbs className="md:hidden" items={[
               { label: isAdmin ? 'Admin' : 'Painel', href: isAdmin ? '/admin' : '/franquia' },
               { label: 'Hoje' },
@@ -440,338 +367,117 @@ export default function HojePage() {
 
                 <Greeting name={profile?.full_name || null} />
 
-                {/* ═══ QUICK ACTIONS ═══ */}
-                <QuickActionBar
-                  onNavigatePipeline={() => navigate(isAdmin ? '/admin?tab=kanban' : '/franquia?tab=funnel')}
-                  leads={leads}
-                  pendingFollowups={urgentCount}
-                />
-
-                {/* ═══ SUMMARY CHIPS ═══ */}
-                {(urgentCount > 0 || newLeads.length > 0 || hotLeads.length > 0) && (
-                  <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.15 }} className="flex flex-wrap gap-2 mb-6">
-                    {overdueFollowups.length > 0 && (
-                      <span className="inline-flex items-center gap-1 text-xs font-semibold text-destructive bg-destructive/10 px-2.5 py-1 rounded-lg">
-                        🚨 {overdueFollowups.length} atrasado{overdueFollowups.length > 1 ? 's' : ''}
-                      </span>
-                    )}
-                    {todayFollowups.length > 0 && (
-                      <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground bg-muted/50 px-2.5 py-1 rounded-lg border border-border/30">
-                        📋 {todayFollowups.length} follow-up{todayFollowups.length > 1 ? 's' : ''} hoje
-                      </span>
-                    )}
-                    {newLeads.length > 0 && (
-                      <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground bg-muted/50 px-2.5 py-1 rounded-lg border border-border/30">
-                        ✨ {newLeads.length} novo{newLeads.length > 1 ? 's' : ''}
-                      </span>
-                    )}
-                    {hotLeads.length > 0 && (
-                      <span className="inline-flex items-center gap-1 text-xs font-medium text-muted-foreground bg-muted/50 px-2.5 py-1 rounded-lg border border-border/30">
-                        🔥 {hotLeads.length} quente{hotLeads.length > 1 ? 's' : ''}
-                      </span>
-                    )}
-                    {staleLeads.length > 0 && (
-                      <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-700 bg-amber-500/10 px-2.5 py-1 rounded-lg">
-                        ⏰ {staleLeads.length} aguardando contato
-                      </span>
-                    )}
-                  </motion.div>
+                {/* ── Summary ── */}
+                {totalTasks > 0 && (
+                  <motion.p
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="text-sm text-muted-foreground mb-5 -mt-3"
+                  >
+                    Você tem <span className="font-semibold text-foreground">{totalTasks}</span> tarefa{totalTasks > 1 ? 's' : ''} pendente{totalTasks > 1 ? 's' : ''}
+                  </motion.p>
                 )}
 
-                {/* ═══ 3 BLOCKS ═══ */}
-                <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-                  <TabsList className="w-full grid grid-cols-3 mb-6 h-11">
-                    <TabsTrigger value="acoes" className="text-xs sm:text-sm gap-1.5 data-[state=active]:shadow-sm">
-                      <ListChecks className="w-3.5 h-3.5" />
-                      Ações
-                      {urgentCount > 0 && (
-                        <Badge variant="destructive" className="text-[9px] font-bold px-1 py-0 h-4 min-w-[16px]">
-                          {urgentCount > 9 ? '9+' : urgentCount}
-                        </Badge>
-                      )}
-                    </TabsTrigger>
-                    <TabsTrigger value="pipeline" className="text-xs sm:text-sm gap-1.5 data-[state=active]:shadow-sm">
-                      <BarChart3 className="w-3.5 h-3.5" />
-                      Pipeline
-                    </TabsTrigger>
-                    <TabsTrigger value="insights" className="text-xs sm:text-sm gap-1.5 data-[state=active]:shadow-sm">
-                      <Lightbulb className="w-3.5 h-3.5" />
-                      Insights
-                    </TabsTrigger>
-                  </TabsList>
-
-                  <AnimatePresence mode="wait">
-                    <motion.div
-                      key={activeTab}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -8 }}
-                      transition={{ duration: 0.2, ease: 'easeOut' }}
-                    >
-
-                  {/* ══ TAB 1: O QUE FAZER AGORA ══ */}
-                  <TabsContent value="acoes" className="space-y-6 mt-0">
-                    {/* Overdue follow-ups */}
-                    {overdueFollowups.length > 0 && (
-                      <div>
-                        <div className="flex items-center gap-2 mb-3">
-                          <div className="w-7 h-7 rounded-lg bg-destructive/10 flex items-center justify-center">
-                            <AlertTriangle className="w-3.5 h-3.5 text-destructive" />
-                          </div>
-                          <h3 className="text-sm font-bold text-foreground">Atrasados</h3>
-                          <Badge variant="destructive" className="text-[10px] font-bold px-1.5 py-0">{overdueFollowups.length}</Badge>
-                        </div>
-                        <div className="space-y-2">
-                          {overdueFollowups.map((f, i) => (
-                            <FollowupRow
-                              key={f.id}
-                              f={f}
-                              index={i}
-                              leadName={leadNameMap[f.lead_id] || 'Lead'}
-                              basePath={basePath}
-                              onComplete={(id) => toggleFollowup.mutate(id)}
-                              navigate={navigate}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Today follow-ups */}
-                    <div>
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="w-7 h-7 rounded-lg icon-bg-blue flex items-center justify-center">
-                          <CalendarClock className="w-3.5 h-3.5 text-primary" />
-                        </div>
-                        <h3 className="text-sm font-bold text-foreground">Follow-ups de hoje</h3>
-                        {todayFollowups.length > 0 && (
-                          <Badge variant="secondary" className="text-[10px] font-bold px-1.5 py-0">{todayFollowups.length}</Badge>
-                        )}
-                      </div>
-                      {todayFollowups.length === 0 ? (
-                        <Card className="card-premium">
-                          <CardContent className="flex items-center gap-3 py-5 px-4">
-                            <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
-                              <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                            </div>
-                            <div>
-                              <p className="text-sm font-semibold text-foreground">Nenhum follow-up para hoje</p>
-                              <p className="text-xs text-muted-foreground">Dia livre para prospectar!</p>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ) : (
-                        <div className="space-y-2">
-                          {todayFollowups.map((f, i) => (
-                            <FollowupRow
-                              key={f.id}
-                              f={f}
-                              index={i}
-                              leadName={leadNameMap[f.lead_id] || 'Lead'}
-                              basePath={basePath}
-                              onComplete={(id) => toggleFollowup.mutate(id)}
-                              navigate={navigate}
-                            />
-                          ))}
-                        </div>
-                      )}
+                {/* ── 1. Overdue follow-ups ── */}
+                {overdueFollowups.length > 0 && (
+                  <div>
+                    <SectionHeader icon={AlertTriangle} title="Atrasados" count={overdueFollowups.length} variant="danger" />
+                    <div className="space-y-2">
+                      {overdueFollowups.map((f, i) => (
+                        <FollowupRow
+                          key={f.id} f={f} index={i}
+                          leadName={leadNameMap[f.lead_id] || 'Lead'}
+                          basePath={basePath}
+                          onComplete={(id) => toggleFollowup.mutate(id)}
+                          navigate={navigate}
+                        />
+                      ))}
                     </div>
+                  </div>
+                )}
 
-                    {/* Stale leads */}
-                    {staleLeads.length > 0 && (
-                      <div>
-                        <div className="flex items-center gap-2 mb-3">
-                          <div className="w-7 h-7 rounded-lg icon-bg-amber flex items-center justify-center">
-                            <Clock className="w-3.5 h-3.5 text-amber-600" />
+                {/* ── 2. Today follow-ups ── */}
+                <div>
+                  <SectionHeader icon={CalendarClock} title="Follow-ups de hoje" count={todayFollowups.length} />
+                  {todayFollowups.length === 0 ? (
+                    <Card className="border-dashed">
+                      <CardContent className="flex items-center gap-3 py-4 px-4">
+                        <CheckCircle2 className="w-5 h-5 text-emerald-500 shrink-0" />
+                        <p className="text-sm text-muted-foreground">Nenhum follow-up para hoje</p>
+                      </CardContent>
+                    </Card>
+                  ) : (
+                    <div className="space-y-2">
+                      {todayFollowups.map((f, i) => (
+                        <FollowupRow
+                          key={f.id} f={f} index={i}
+                          leadName={leadNameMap[f.lead_id] || 'Lead'}
+                          basePath={basePath}
+                          onComplete={(id) => toggleFollowup.mutate(id)}
+                          navigate={navigate}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* ── 3. Stale leads (sem contato há 48h+) ── */}
+                {staleLeads.length > 0 && (
+                  <div>
+                    <SectionHeader icon={Clock} title="Sem contato" count={staleLeads.length} variant="warning" />
+                    <Card className="overflow-hidden">
+                      <CardContent className="p-0 divide-y divide-border/30">
+                        {staleLeads.slice(0, 8).map((lead, i) => (
+                          <div key={lead.id} className="relative">
+                            {i === 0 && <SwipeHint />}
+                            <StaleLeadRow lead={lead} index={i} basePath={basePath} navigate={navigate} now={now} />
                           </div>
-                          <h3 className="text-sm font-bold text-foreground">Aguardando contato</h3>
-                          <Badge variant="secondary" className="text-[10px] font-bold px-1.5 py-0">{staleLeads.length}</Badge>
+                        ))}
+                      </CardContent>
+                    </Card>
+                    {staleLeads.length > 8 && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full mt-2 text-xs text-muted-foreground gap-1"
+                        onClick={() => navigate(isAdmin ? '/admin?tab=leads' : '/franquia')}
+                      >
+                        Ver todos ({staleLeads.length})
+                      </Button>
+                    )}
+                  </div>
+                )}
+
+                {/* ── 4. New leads (< 48h) ── */}
+                {newLeads.length > 0 && (
+                  <div>
+                    <SectionHeader icon={Rocket} title="Novos leads" count={newLeads.length} />
+                    <Card className="overflow-hidden">
+                      <CardContent className="p-0 divide-y divide-border/30">
+                        {newLeads.slice(0, 5).map((lead, i) => (
+                          <StaleLeadRow key={lead.id} lead={lead} index={i} basePath={basePath} navigate={navigate} now={now} />
+                        ))}
+                      </CardContent>
+                    </Card>
+                  </div>
+                )}
+
+                {/* ── Empty state ── */}
+                {totalTasks === 0 && (
+                  <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
+                    <Card className="border-dashed">
+                      <CardContent className="flex flex-col items-center py-16 text-center">
+                        <div className="w-12 h-12 rounded-2xl icon-bg-blue flex items-center justify-center mb-3">
+                          <Rocket className="w-6 h-6 text-primary/60" />
                         </div>
-                        <Card className="card-premium overflow-hidden">
-                          <CardContent className="p-0 divide-y divide-border/30">
-                            {staleLeads.slice(0, 6).map((lead, i) => (
-                              <div key={lead.id} className="relative">
-                                {i === 0 && <SwipeHint />}
-                                <LeadRow_
-                                  lead={lead}
-                                  index={i}
-                                  basePath={basePath}
-                                  navigate={navigate}
-                                  variant="stale"
-                                  now={now}
-                                />
-                              </div>
-                            ))}
-                          </CardContent>
-                        </Card>
-                        {staleLeads.length > 6 && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="w-full mt-2 text-xs text-muted-foreground gap-1.5 rounded-xl"
-                            onClick={() => navigate(isAdmin ? '/admin?tab=leads' : '/franquia')}
-                          >
-                            Ver todos ({staleLeads.length}) <ArrowRight className="w-3.5 h-3.5" />
-                          </Button>
-                        )}
-                      </div>
-                    )}
-
-                    {/* New leads */}
-                    {newLeads.length > 0 && (
-                      <div>
-                        <div className="flex items-center gap-2 mb-3">
-                          <div className="w-7 h-7 rounded-lg icon-bg-green flex items-center justify-center">
-                            <Zap className="w-3.5 h-3.5 text-emerald-600" />
-                          </div>
-                          <h3 className="text-sm font-bold text-foreground">Novos leads</h3>
-                          <Badge variant="secondary" className="text-[10px] font-bold px-1.5 py-0">{newLeads.length}</Badge>
-                        </div>
-                        <Card className="card-premium overflow-hidden">
-                          <CardContent className="p-0 divide-y divide-border/30">
-                            {newLeads.slice(0, 5).map((lead, i) => (
-                              <LeadRow_
-                                key={lead.id}
-                                lead={lead}
-                                index={i}
-                                basePath={basePath}
-                                navigate={navigate}
-                                variant="new"
-                                now={now}
-                              />
-                            ))}
-                          </CardContent>
-                        </Card>
-                      </div>
-                    )}
-
-                    {/* Upcoming follow-ups */}
-                    {upcomingFollowups.length > 0 && (
-                      <div>
-                        <div className="flex items-center gap-2 mb-3">
-                          <div className="w-7 h-7 rounded-lg bg-muted/60 flex items-center justify-center">
-                            <Target className="w-3.5 h-3.5 text-muted-foreground" />
-                          </div>
-                          <h3 className="text-sm font-bold text-foreground">Próximos</h3>
-                          <Badge variant="secondary" className="text-[10px] font-bold px-1.5 py-0">{upcomingFollowups.length}</Badge>
-                        </div>
-                        <div className="space-y-2">
-                          {upcomingFollowups.map((f, i) => (
-                            <FollowupRow
-                              key={f.id}
-                              f={f}
-                              index={i}
-                              leadName={leadNameMap[f.lead_id] || 'Lead'}
-                              basePath={basePath}
-                              onComplete={(id) => toggleFollowup.mutate(id)}
-                              navigate={navigate}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Empty state */}
-                    {allFollowups.length === 0 && staleLeads.length === 0 && newLeads.length === 0 && upcomingFollowups.length === 0 && (
-                      <Card className="card-premium">
-                        <CardContent className="flex flex-col items-center py-12 text-center">
-                          <div className="w-14 h-14 rounded-2xl icon-bg-blue flex items-center justify-center mb-4">
-                            <Rocket className="w-7 h-7 text-primary/60" />
-                          </div>
-                          <h3 className="text-base font-semibold text-foreground mb-1">Tudo em dia!</h3>
-                          <p className="text-sm text-muted-foreground max-w-xs">
-                            Nenhuma ação pendente. Compartilhe seu link para receber novos leads.
-                          </p>
-                        </CardContent>
-                      </Card>
-                    )}
-                  </TabsContent>
-
-                  {/* ══ TAB 2: PIPELINE ══ */}
-                  <TabsContent value="pipeline" className="space-y-6 mt-0">
-                    {leads.length > 0 ? (
-                      <>
-                        <PipelineSnapshot leads={leads} />
-
-                        {/* Hot leads preview */}
-                        {hotLeads.length > 0 && (
-                          <div>
-                            <div className="flex items-center gap-2 mb-3">
-                              <div className="w-7 h-7 rounded-lg icon-bg-amber flex items-center justify-center">
-                                <Flame className="w-3.5 h-3.5 text-amber-600" />
-                              </div>
-                              <h3 className="text-sm font-bold text-foreground">Leads quentes</h3>
-                              <Badge variant="secondary" className="text-[10px] font-bold px-1.5 py-0">{hotLeads.length}</Badge>
-                            </div>
-                            <Card className="card-premium overflow-hidden">
-                              <CardContent className="p-0 divide-y divide-border/30">
-                                {hotLeads.map((lead, i) => (
-                                  <LeadRow_
-                                    key={lead.id}
-                                    lead={lead}
-                                    index={i}
-                                    basePath={basePath}
-                                    navigate={navigate}
-                                    variant="hot"
-                                    now={now}
-                                  />
-                                ))}
-                              </CardContent>
-                            </Card>
-                          </div>
-                        )}
-
-                        <Button
-                          variant="outline"
-                          className="w-full rounded-xl gap-2"
-                          onClick={() => navigate(isAdmin ? '/admin?tab=kanban' : '/franquia?tab=funnel')}
-                        >
-                          <TrendingUp className="w-4 h-4" />
-                          Ver funil completo
-                        </Button>
-                      </>
-                    ) : (
-                      <Card className="card-premium">
-                        <CardContent className="flex flex-col items-center py-12 text-center">
-                          <div className="w-14 h-14 rounded-2xl icon-bg-blue flex items-center justify-center mb-4">
-                            <BarChart3 className="w-7 h-7 text-primary/60" />
-                          </div>
-                          <h3 className="text-base font-semibold text-foreground mb-1">Pipeline vazio</h3>
-                          <p className="text-sm text-muted-foreground max-w-xs">
-                            Seus leads aparecerão aqui quando chegarem.
-                          </p>
-                        </CardContent>
-                      </Card>
-                    )}
-                  </TabsContent>
-
-                  {/* ══ TAB 3: INSIGHTS ══ */}
-                  <TabsContent value="insights" className="space-y-6 mt-0">
-                    <SmartSuggestions
-                      leads={leads}
-                      followups={followups}
-                      activities={recentActivities}
-                      basePath={basePath}
-                    />
-
-                    {leads.length === 0 && followups.length === 0 && (
-                      <Card className="card-premium">
-                        <CardContent className="flex flex-col items-center py-12 text-center">
-                          <div className="w-14 h-14 rounded-2xl icon-bg-violet flex items-center justify-center mb-4">
-                            <Lightbulb className="w-7 h-7 text-violet-500/60" />
-                          </div>
-                          <h3 className="text-base font-semibold text-foreground mb-1">Insights chegando</h3>
-                          <p className="text-sm text-muted-foreground max-w-xs">
-                            Conforme seus leads avançam, sugestões inteligentes aparecerão aqui.
-                          </p>
-                        </CardContent>
-                      </Card>
-                    )}
-                  </TabsContent>
-
-                    </motion.div>
-                  </AnimatePresence>
-                </Tabs>
+                        <h3 className="text-base font-semibold text-foreground mb-1">Tudo em dia!</h3>
+                        <p className="text-sm text-muted-foreground max-w-xs">
+                          Nenhuma tarefa pendente. Compartilhe seu link para receber novos leads.
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )}
               </>
             )}
           </div>
