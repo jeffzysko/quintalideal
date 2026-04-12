@@ -25,7 +25,7 @@ interface LeadResult {
   status_lead: string;
 }
 
-export function ProposalLeadSection({ form, updateForm, franchiseId }: Props) {
+export function ProposalLeadSection({ updateForm, franchiseId }: Props) {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<LeadResult[]>([]);
   const [searching, setSearching] = useState(false);
