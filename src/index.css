@@ -240,6 +240,10 @@
       padding-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px) + 0.5rem);
     }
   }
+
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
 }
 
 /* ─── Design System Utilities ─── */
