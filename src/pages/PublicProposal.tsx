@@ -107,19 +107,31 @@ function CountdownTimer({ validityDate }: { validityDate: string }) {
   const minutes = differenceInMinutes(target, now) % 60;
 
   return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-4 justify-center">
-      {[
-        { value: days, label: 'dias' },
-        { value: hours, label: 'horas' },
-        { value: minutes, label: 'min' },
-      ].map(({ value, label }) => (
-        <div key={label} className="flex flex-col items-center">
-          <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#08a1d6] to-[#0d8ab8] flex items-center justify-center shadow-lg shadow-[#08a1d6]/20">
-            <span className="text-xl font-bold text-white">{String(value).padStart(2, '0')}</span>
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-3">
+      <div className="flex items-center justify-center gap-2 text-xs font-semibold text-amber-600 uppercase tracking-widest">
+        <CalendarDays className="w-3.5 h-3.5" />
+        <span>Proposta válida por</span>
+      </div>
+      <div className="flex items-center gap-3 justify-center">
+        {[
+          { value: days, label: 'dias' },
+          { value: hours, label: 'horas' },
+          { value: minutes, label: 'min' },
+        ].map(({ value, label }, i) => (
+          <div key={label} className="flex items-center gap-3">
+            <div className="flex flex-col items-center">
+              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-[#08a1d6] to-[#0d8ab8] flex items-center justify-center shadow-lg shadow-[#08a1d6]/20">
+                <span className="text-xl font-bold text-white">{String(value).padStart(2, '0')}</span>
+              </div>
+              <span className="text-[10px] text-slate-500 mt-1 uppercase tracking-wider font-medium">{label}</span>
+            </div>
+            {i < 2 && <span className="text-lg font-bold text-[#08a1d6] -mt-4">:</span>}
           </div>
-          <span className="text-[10px] text-slate-500 mt-1 uppercase tracking-wider font-medium">{label}</span>
-        </div>
-      ))}
+        ))}
+      </div>
+      <p className="text-[11px] text-slate-400 text-center">
+        Expira em {format(target, "dd/MM/yyyy 'às' HH:mm")}
+      </p>
     </motion.div>
   );
 }
@@ -127,10 +139,19 @@ function CountdownTimer({ validityDate }: { validityDate: string }) {
 /* ── Trust badges ── */
 function TrustBadges() {
   return (
-    <div className="flex items-center justify-center gap-6 text-xs text-slate-400">
-      <span className="flex items-center gap-1"><Shield className="w-3.5 h-3.5" /> Proposta segura</span>
-      <span className="flex items-center gap-1"><Star className="w-3.5 h-3.5" /> Empresa verificada</span>
-      <span className="flex items-center gap-1"><Droplets className="w-3.5 h-3.5" /> Splash Piscinas</span>
+    <div className="flex flex-wrap items-center justify-center gap-4 sm:gap-6">
+      <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 text-emerald-700 px-3.5 py-2 rounded-xl">
+        <Shield className="w-4 h-4" />
+        <span className="text-xs font-semibold">Proposta segura</span>
+      </div>
+      <div className="flex items-center gap-2 bg-amber-50 border border-amber-200 text-amber-700 px-3.5 py-2 rounded-xl">
+        <Star className="w-4 h-4" />
+        <span className="text-xs font-semibold">Empresa verificada</span>
+      </div>
+      <div className="flex items-center gap-2 bg-[#08a1d6]/10 border border-[#08a1d6]/20 text-[#08a1d6] px-3.5 py-2 rounded-xl">
+        <Droplets className="w-4 h-4" />
+        <span className="text-xs font-semibold">Splash Piscinas</span>
+      </div>
     </div>
   );
 }
