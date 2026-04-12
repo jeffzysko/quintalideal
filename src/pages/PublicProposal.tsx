@@ -18,6 +18,7 @@ import { VideoEmbed } from '@/components/proposals/ProposalVideoSection';
 import logoSplash from '@/assets/logo-splash.png';
 // html2canvas removed – PDF now uses native jsPDF vector drawing
 import { jsPDF } from 'jspdf';
+import QRCode from 'qrcode';
 
 const formatCurrency = (v: number) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -427,7 +428,40 @@ export default function PublicProposal() {
       pdf.setDrawColor(...borderColor);
       pdf.setLineWidth(0.4);
       pdf.line(M, y, A4_W - M, y);
-      y += 8;
+      y += 6;
+
+      // ── SELLER / CONSULTANT SECTION ──
+      if (proposal.seller?.full_name) {
+        checkPageBreak(22);
+        drawRoundedRect(M, y, CW, 18, 3, bgMuted, borderColor);
+
+        // Avatar circle
+        const avatarCx = M + 14;
+        const avatarCy = y + 9;
+        pdf.setFillColor(...brandBlue);
+        pdf.circle(avatarCx, avatarCy, 5, 'F');
+        pdf.setFontSize(10);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(255, 255, 255);
+        const initial = (proposal.seller.full_name || 'V')[0].toUpperCase();
+        pdf.text(initial, avatarCx, avatarCy + 1, { align: 'center' });
+
+        // Seller info
+        const sellerX = M + 24;
+        pdf.setFontSize(9.5);
+        pdf.setFont('helvetica', 'bold');
+        pdf.setTextColor(...textDark);
+        pdf.text(proposal.seller.full_name, sellerX, y + 7.5);
+
+        pdf.setFontSize(7.5);
+        pdf.setFont('helvetica', 'normal');
+        pdf.setTextColor(...textMuted);
+        const sellerInfo: string[] = ['Consultor comercial'];
+        if (proposal.seller.telefone) sellerInfo.push(`Tel: ${proposal.seller.telefone}`);
+        pdf.text(sellerInfo.join('  •  '), sellerX, y + 13);
+
+        y += 24;
+      }
 
       // ── CLIENT SECTION ──
       checkPageBreak(40);
@@ -519,7 +553,6 @@ export default function PublicProposal() {
       // ── TOTALS ──
       checkPageBreak(35);
       const totalsX = M + CW * 0.55;
-      const totalsW = CW * 0.45;
 
       pdf.setDrawColor(...borderColor);
       pdf.setLineWidth(0.3);
@@ -544,6 +577,7 @@ export default function PublicProposal() {
       }
 
       // Total highlight box
+      const totalsW = CW * 0.45;
       drawRoundedRect(totalsX - 3, y, totalsW + 3, 14, 3, brandBlue);
       pdf.setFontSize(9);
       pdf.setFont('helvetica', 'bold');
@@ -614,35 +648,88 @@ export default function PublicProposal() {
         y += obsLines.length * 4 + 6;
       }
 
-      // ── VERIFICATION FOOTER ──
+      // ── VERIFICATION FOOTER WITH QR CODE ──
       const verCode = generateVerificationCode(proposal.id, proposal.public_token);
-      checkPageBreak(30);
+      const proposalUrl = `${window.location.origin}/proposta/${proposal.public_token}`;
+      checkPageBreak(42);
 
       pdf.setDrawColor(...borderColor);
       pdf.setLineWidth(0.3);
       pdf.line(M, y, A4_W - M, y);
       y += 6;
 
-      drawRoundedRect(M + CW * 0.25, y, CW * 0.5, 18, 3, bgMuted, borderColor);
+      // Generate QR Code
+      let qrDataUrl: string | null = null;
+      try {
+        qrDataUrl = await QRCode.toDataURL(proposalUrl, {
+          width: 200, margin: 1,
+          color: { dark: '#1e1e23', light: '#f5f7fa' },
+        });
+      } catch { /* QR generation failed, skip */ }
+
+      // Verification box with QR code side by side
+      const verBoxH = 30;
+      drawRoundedRect(M, y, CW, verBoxH, 3, bgMuted, borderColor);
+
+      // QR Code on the left
+      if (qrDataUrl) {
+        const qrSize = 22;
+        pdf.addImage(qrDataUrl, 'PNG', M + 5, y + (verBoxH - qrSize) / 2, qrSize, qrSize);
+      }
+
+      const textStartX = qrDataUrl ? M + 32 : M + 5;
+
       pdf.setFontSize(7);
       pdf.setFont('helvetica', 'bold');
       pdf.setTextColor(...textLight);
-      pdf.text('CÓDIGO DE VERIFICAÇÃO', A4_W / 2, y + 6, { align: 'center' });
+      pdf.text('CÓDIGO DE VERIFICAÇÃO', textStartX + (qrDataUrl ? 30 : (CW - 10) / 2), y + 7, { align: 'center' });
+
       pdf.setFontSize(13);
       pdf.setFont('courier', 'bold');
       pdf.setTextColor(...textDark);
-      pdf.text(verCode, A4_W / 2, y + 13.5, { align: 'center' });
-      y += 24;
+      pdf.text(verCode, textStartX + (qrDataUrl ? 30 : (CW - 10) / 2), y + 15, { align: 'center' });
+
+      pdf.setFontSize(6.5);
+      pdf.setFont('helvetica', 'normal');
+      pdf.setTextColor(...textLight);
+      pdf.text('Escaneie o QR Code para verificar', textStartX + (qrDataUrl ? 30 : (CW - 10) / 2), y + 21, { align: 'center' });
+      pdf.text('esta proposta online', textStartX + (qrDataUrl ? 30 : (CW - 10) / 2), y + 25, { align: 'center' });
+
+      y += verBoxH + 6;
 
       pdf.setFontSize(7);
       pdf.setFont('helvetica', 'normal');
       pdf.setTextColor(...textLight);
       pdf.text('Este documento garante a autenticidade desta proposta. Verifique com a Splash Piscinas em caso de dúvida.', A4_W / 2, y, { align: 'center' });
 
-      // ── PAGE NUMBERS ──
+      // ── WATERMARK + PAGE NUMBERS (applied to all pages) ──
       const pageCount = pdf.getNumberOfPages();
+
+      // Preload logo for watermark
+      let watermarkReady = false;
+      if (logoImg.complete && logoImg.naturalWidth > 0) {
+        watermarkReady = true;
+      }
+
       for (let i = 1; i <= pageCount; i++) {
         pdf.setPage(i);
+
+        // Subtle watermark - logo in center of each page
+        if (watermarkReady) {
+          const wmH = 40;
+          const wmW = (logoImg.naturalWidth / logoImg.naturalHeight) * wmH;
+          const wmX = (A4_W - wmW) / 2;
+          const wmY = (A4_H - wmH) / 2;
+          // jsPDF doesn't support opacity directly on images, so we use a very light approach:
+          // Draw a semi-transparent white overlay, then the logo, then another overlay
+          // Actually, the GState API can do this:
+          const gState = new (pdf as any).GState({ opacity: 0.04 });
+          pdf.saveGraphicsState();
+          pdf.setGState(gState);
+          pdf.addImage(logoImg, 'PNG', wmX, wmY, wmW, wmH);
+          pdf.restoreGraphicsState();
+        }
+
         // Bottom gradient line
         pdf.setFillColor(...brandBlue);
         pdf.rect(0, A4_H - 3, A4_W * 0.6, 3, 'F');
