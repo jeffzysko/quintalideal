@@ -11,7 +11,7 @@ import { SLAIndicator } from '@/components/franchise/SLAIndicator';
 import { MonthlyGoals } from '@/components/franchise/MonthlyGoals';
 import { LeadFollowups } from '@/components/franchise/LeadFollowups';
 import { toast } from 'sonner';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SITE_URL } from '@/lib/constants';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -78,13 +78,33 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   const { franchiseId: authFranchiseId, loading: authLoading } = useAuth();
   const franchiseId = overrideFranchiseId || authFranchiseId;
   const navigate = useNavigate();
+  const location = useLocation();
   const queryClient = useQueryClient();
 
   // Live updates: invalidates queries when leads for this franchise change
   useLeadsRealtime(franchiseId);
   const isMobile = useIsMobile();
   const [page, setPage] = useState(1);
-  const [activeTab, setActiveTab] = useState<'leads' | 'funnel' | 'reports' | 'achievements'>('leads');
+  
+  // Read tab from URL params
+  const getTabFromSearch = (search: string): 'leads' | 'funnel' | 'reports' | 'achievements' => {
+    const urlTab = new URLSearchParams(search).get('tab');
+    if (urlTab === 'funnel') return 'funnel';
+    if (urlTab === 'reports') return 'reports';
+    if (urlTab === 'achievements') return 'achievements';
+    return 'leads';
+  };
+  const activeTab = getTabFromSearch(location.search);
+  const setActiveTab = (tab: 'leads' | 'funnel' | 'reports' | 'achievements') => {
+    const params = new URLSearchParams(location.search);
+    if (tab === 'leads') {
+      params.delete('tab');
+    } else {
+      params.set('tab', tab);
+    }
+    const qs = params.toString();
+    navigate(`${location.pathname}${qs ? `?${qs}` : ''}`, { replace: true });
+  };
   const [timeRange, setTimeRange] = useState<TimeRange>('30');
 
   // ── Franchise info ──
@@ -331,8 +351,8 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
         </Card>
       ) : allLeads.length > 0 && <ConversionFunnel leads={allLeads} />}
 
-      {/* Tab switcher */}
-      <div className="flex gap-1 mb-6 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-full sm:w-fit overflow-x-auto scrollbar-none border border-border/30" role="tablist">
+      {/* Tab switcher — mobile only (desktop uses sidebar) */}
+      <div className="flex gap-1 mb-6 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-full overflow-x-auto scrollbar-none border border-border/30 md:hidden" role="tablist">
         {[
           { key: 'leads' as const, icon: Users, label: 'Leads', tour: 'tab-leads' },
           { key: 'funnel' as const, icon: Workflow, label: 'Funil', tour: 'tab-funnel' },
@@ -345,7 +365,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
             aria-selected={activeTab === tab.key}
             data-tour={tab.tour}
             onClick={() => setActiveTab(tab.key)}
-            className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex-1 sm:flex-none whitespace-nowrap min-h-[44px] flex items-center justify-center gap-2 active:scale-[0.97] ${activeTab === tab.key ? 'tab-active shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
+            className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex-1 whitespace-nowrap min-h-[44px] flex items-center justify-center gap-2 active:scale-[0.97] ${activeTab === tab.key ? 'tab-active shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
           >
             <tab.icon className={`w-[18px] h-[18px] ${activeTab === tab.key ? 'text-primary' : ''}`} />
             {tab.label}
