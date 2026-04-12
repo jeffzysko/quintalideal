@@ -192,6 +192,15 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {BOTTOM_NAV.map((item) => renderNavItem(item))}
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  tooltip={collapsed ? 'Sair' : undefined}
+                  onClick={() => void signOut()}
+                >
+                  <LogOut className="h-4 w-4 shrink-0 text-destructive" />
+                  <span className="truncate text-destructive">Sair</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
