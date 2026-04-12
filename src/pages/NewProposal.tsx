@@ -545,6 +545,16 @@ export default function NewProposal() {
             </motion.div>
 
             <motion.div
+              id="video"
+              ref={el => { sectionRefs.current.video = el; }}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.22 }}
+            >
+              <ProposalVideoSection videoUrl={form.video_url} onChange={(url) => updateForm({ video_url: url })} />
+            </motion.div>
+
+            <motion.div
               id="observations"
               ref={el => { sectionRefs.current.observations = el; }}
               initial={{ opacity: 0, y: 16 }}
@@ -553,9 +563,26 @@ export default function NewProposal() {
             >
               <ProposalObservationsSection form={form} updateForm={updateForm} />
             </motion.div>
+
+            {/* Score da Proposta */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <ProposalScore form={form} subtotal={subtotal} />
+            </motion.div>
           </div>
         </div>
       </div>
+
+      {/* Template Modals */}
+      {franchiseId && user && (
+        <>
+          <SaveTemplateModal open={saveTemplateOpen} onOpenChange={setSaveTemplateOpen} form={form} franchiseId={franchiseId} userId={user.id} />
+          <LoadTemplateModal open={loadTemplateOpen} onOpenChange={setLoadTemplateOpen} franchiseId={franchiseId} onSelect={handleLoadTemplate} />
+        </>
+      )}
     </div>
   );
 }
