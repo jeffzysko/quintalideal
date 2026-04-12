@@ -66,6 +66,7 @@ const SUPER_ADMIN_TABS: SidebarNavItem[] = [
 const FRANCHISE_TABS: SidebarNavItem[] = [
   { title: 'Leads', url: '/franquia?tab=leads', icon: Users, matchTab: 'leads' },
   { title: 'Funil', url: '/franquia?tab=funnel', icon: Workflow, matchTab: 'funnel' },
+  { title: 'Propostas', url: '/propostas', icon: FileText, matchPaths: ['/propostas'] },
   { title: 'Metas', url: '/franquia?tab=achievements', icon: TrendingUp, matchTab: 'achievements' },
   { title: 'Relatórios', url: '/franquia?tab=reports', icon: BarChart3, matchTab: 'reports' },
 ];
@@ -77,7 +78,6 @@ const ADMIN_NAV: SidebarNavItem[] = [
 
 const FRANCHISE_NAV: SidebarNavItem[] = [
   { title: 'Início', url: '/hoje', icon: Home },
-  { title: 'Propostas', url: '/propostas', icon: FileText, matchPaths: ['/propostas'] },
   { title: 'Notificações', url: '/notificacoes', icon: Bell },
 ];
 
@@ -163,23 +163,14 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        {/* Main nav */}
-        <SidebarGroup>
-          <SidebarGroupLabel>Menu</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {(isAdmin ? ADMIN_NAV : FRANCHISE_NAV).map((item) => renderNavItem(item))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        {/* Dashboard sub-navigation */}
+        {/* Unified navigation */}
         <SidebarGroup>
           <SidebarGroupLabel>
             {isAdmin ? 'Painel Admin' : 'Painel'}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
+              {(isAdmin ? ADMIN_NAV : FRANCHISE_NAV).map((item) => renderNavItem(item))}
               {isAdmin
                 ? adminTabs.map((item) => renderNavItem(item, false))
                 : FRANCHISE_TABS.map((item) => renderNavItem(item, false))
