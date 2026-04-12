@@ -4,7 +4,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { PageHeader } from '@/components/PageHeader';
+import { PanelHeader } from '@/components/PanelHeader';
+import { BackButton } from '@/components/BackButton';
+import { Breadcrumbs } from '@/components/Breadcrumbs';
 
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion } from 'framer-motion';
@@ -48,9 +50,9 @@ export interface ProposalFormData {
 }
 
 const SECTIONS = [
-  { id: 'lead', label: 'Vinculação de Lead', icon: Link2 },
-  { id: 'client', label: 'Dados do Cliente', icon: User },
-  { id: 'items', label: 'Itens da Proposta', icon: Package },
+  { id: 'lead', label: 'Lead', icon: Link2 },
+  { id: 'client', label: 'Cliente', icon: User },
+  { id: 'items', label: 'Itens', icon: Package },
   { id: 'payment', label: 'Pagamento', icon: CreditCard },
   { id: 'observations', label: 'Observações', icon: MessageSquare },
 ];
@@ -76,7 +78,7 @@ const initialForm: ProposalFormData = {
 };
 
 export default function NewProposal() {
-  const { franchiseId, user } = useAuth();
+  const { franchiseId, user, role } = useAuth();
   const navigate = useNavigate();
   const isMobile = useIsMobile();
   const [form, setForm] = useState<ProposalFormData>(initialForm);
@@ -87,14 +89,15 @@ export default function NewProposal() {
   const draftRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
 
+  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+
   const updateForm = useCallback((updates: Partial<ProposalFormData>) => {
     setForm(prev => ({ ...prev, ...updates }));
   }, []);
 
-  // Section completion check
   const sectionComplete = (id: string): boolean => {
     switch (id) {
-      case 'lead': return true; // optional
+      case 'lead': return true;
       case 'client': return form.client_name.trim().length > 0 && form.client_phone.trim().length > 0;
       case 'items': return form.items.length > 0 && form.items.every(i => i.product_name.trim().length > 0 && i.unit_price > 0);
       case 'payment': return !!form.validity_date;
@@ -103,7 +106,6 @@ export default function NewProposal() {
     }
   };
 
-  // Compute totals
   const itemSubtotals = form.items.map(i => (i.quantity * i.unit_price) - i.discount);
   const subtotal = itemSubtotals.reduce((a, b) => a + b, 0);
   const discountAmount = form.global_discount_type === 'percent'
@@ -115,10 +117,8 @@ export default function NewProposal() {
   useEffect(() => {
     draftRef.current = setInterval(async () => {
       if (!franchiseId || !user) return;
-      // Only auto-save if there's meaningful data
       if (!form.client_name.trim()) return;
       try {
-        // Save to localStorage as draft
         localStorage.setItem(`proposal_draft_${franchiseId}`, JSON.stringify(form));
         const now = new Date();
         setLastSaved(`${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`);
@@ -198,60 +198,64 @@ export default function NewProposal() {
       setFieldErrors(errs);
       if (errs.client_name || errs.client_phone || errs.client_email || errs.client_document) {
         scrollToSection('client');
-        toast.error('Verifique os dados do cliente');
       } else if (errs.items) {
         scrollToSection('items');
-        toast.error('Adicione ao menos um item à proposta');
       }
+      toast.error('Corrija os campos destacados');
       return;
     }
-    setFieldErrors({});
 
+    setFieldErrors({});
     setSaving(true);
+
     try {
       const finalStatus = statusOverride || form.status;
-      const { data, error } = await supabase.from('proposals').insert({
-        franchise_id: franchiseId,
-        lead_id: form.lead_id || null,
-        created_by: user.id,
-        person_type: form.person_type,
-        client_name: form.client_name,
-        client_document: form.client_document || null,
-        client_contact_name: form.client_contact_name || null,
-        client_phone: form.client_phone || null,
-        client_email: form.client_email || null,
-        client_address: form.client_address || null,
-        payment_method: form.payment_method || null,
-        payment_conditions: form.payment_conditions || null,
-        validity_date: form.validity_date || null,
-        delivery_deadline: form.delivery_deadline || null,
-        subtotal,
-        global_discount: form.global_discount,
-        global_discount_type: form.global_discount_type,
-        total,
-        status: finalStatus as any,
-        observations: form.observations || null,
-      }).select('id').single();
+
+      const { data, error } = await supabase
+        .from('proposals')
+        .insert({
+          franchise_id: franchiseId,
+          created_by: user.id,
+          lead_id: form.lead_id,
+          person_type: form.person_type,
+          client_name: form.client_name.trim(),
+          client_document: form.client_document.trim() || null,
+          client_contact_name: form.client_contact_name.trim() || null,
+          client_phone: form.client_phone.trim(),
+          client_email: form.client_email.trim() || null,
+          client_address: form.client_address.trim() || null,
+          payment_method: form.payment_method || null,
+          payment_conditions: form.payment_conditions.trim() || null,
+          validity_date: form.validity_date || null,
+          delivery_deadline: form.delivery_deadline.trim() || null,
+          observations: form.observations.trim() || null,
+          status: finalStatus as any,
+          global_discount: form.global_discount,
+          global_discount_type: form.global_discount_type,
+          subtotal,
+          total,
+        })
+        .select('id')
+        .single();
 
       if (error) throw error;
 
-      // Insert items
-      if (data && form.items.length > 0) {
+      if (form.items.length > 0 && data) {
         const itemsToInsert = form.items.map((item, idx) => ({
           proposal_id: data.id,
-          product_name: item.product_name,
-          description: item.description || null,
+          product_name: item.product_name.trim(),
+          description: item.description.trim() || null,
           quantity: item.quantity,
           unit_price: item.unit_price,
           discount: item.discount,
           subtotal: (item.quantity * item.unit_price) - item.discount,
           sort_order: idx,
         }));
+
         const { error: itemsError } = await supabase.from('proposal_items').insert(itemsToInsert);
         if (itemsError) throw itemsError;
       }
 
-      // Clear draft
       localStorage.removeItem(`proposal_draft_${franchiseId}`);
 
       toast.success('Proposta criada com sucesso!', {
@@ -265,38 +269,58 @@ export default function NewProposal() {
     }
   };
 
+  const actionButtons = (
+    <div className="flex items-center gap-1.5">
+      <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="h-8 px-2 sm:px-3 text-muted-foreground">
+        <X className="w-4 h-4" />
+        <span className="hidden sm:inline ml-1">Cancelar</span>
+      </Button>
+      <Button variant="outline" size="sm" onClick={handleSaveDraft} disabled={saving} className="h-8 px-2 sm:px-3">
+        <Save className="w-4 h-4" />
+        <span className="hidden sm:inline ml-1">Rascunho</span>
+      </Button>
+      <Button size="sm" onClick={() => handleSubmit()} disabled={saving} className="h-8 px-2.5 sm:px-3">
+        <FileText className="w-4 h-4" />
+        {!isMobile && <span className="ml-1">Criar</span>}
+      </Button>
+    </div>
+  );
+
   return (
-    <div className="min-h-screen bg-muted/30 pb-safe">
-      {/* Header — glass style matching the rest of the system */}
-      <PageHeader
-        title={isMobile ? 'Nova Proposta' : 'Nova Proposta Comercial'}
-        subtitle={lastSaved ? `Rascunho salvo às ${lastSaved}` : undefined}
-        icon={<FileText className="w-4 h-4 text-primary" />}
-        fallbackPath="/propostas"
-        rightSlot={
-          <div className="flex items-center gap-1 sm:gap-1.5">
-            <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="h-8 px-2 sm:px-3 text-muted-foreground">
-              <X className="w-4 h-4" />
-              <span className="hidden sm:inline ml-1">Cancelar</span>
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleSaveDraft} disabled={saving} className="h-8 px-2 sm:px-3">
-              <Save className="w-4 h-4" />
-              <span className="hidden sm:inline ml-1">Rascunho</span>
-            </Button>
-            <Button size="sm" onClick={() => handleSubmit()} disabled={saving} className="h-8 px-2.5 sm:px-3">
-              <FileText className="w-4 h-4" />
-              {!isMobile && <span className="ml-1">Criar</span>}
-            </Button>
-          </div>
-        }
-      />
+    <div className="min-h-screen bg-background pb-bottomnav sm:pb-0">
+      {/* Mobile header — same pattern as HojePage */}
+      <PanelHeader title="Nova Proposta">
+        <BackButton fallback="/propostas" />
+        {actionButtons}
+      </PanelHeader>
 
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
+        {/* Desktop header */}
+        <div className="hidden md:flex items-center justify-between mb-5">
+          <div>
+            <Breadcrumbs />
+            <h1 className="text-page-title text-foreground mt-1">Nova Proposta Comercial</h1>
+            {lastSaved && (
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Rascunho salvo às {lastSaved}
+              </p>
+            )}
+          </div>
+          {actionButtons}
+        </div>
+
+        {/* Mobile draft saved indicator */}
+        {isMobile && lastSaved && (
+          <p className="text-[11px] text-muted-foreground text-center mb-3">
+            Rascunho salvo às {lastSaved}
+          </p>
+        )}
+
         <div className="flex gap-8">
-          {/* Sidebar Navigation (desktop) */}
+          {/* Sidebar Navigation (desktop only) */}
           {!isMobile && (
-            <nav className="w-56 shrink-0">
-              <div className="sticky top-24 space-y-1">
+            <nav className="w-52 shrink-0">
+              <div className="sticky top-20 space-y-1">
                 {SECTIONS.map((section) => {
                   const isActive = activeSection === section.id;
                   const complete = sectionComplete(section.id);
@@ -305,18 +329,18 @@ export default function NewProposal() {
                       key={section.id}
                       onClick={() => scrollToSection(section.id)}
                       className={cn(
-                        'w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-all text-left',
+                        'w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-sm transition-all text-left',
                         isActive
                           ? 'bg-primary/10 text-primary font-medium shadow-sm'
                           : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                       )}
                     >
                       {complete ? (
-                        <div className="w-5 h-5 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
-                          <Check className="w-3 h-3 text-emerald-600" />
+                        <div className="w-5 h-5 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center shrink-0">
+                          <Check className="w-3 h-3 text-emerald-600 dark:text-emerald-400" />
                         </div>
                       ) : (
-                        <section.icon className="w-5 h-5 shrink-0" />
+                        <section.icon className="w-4 h-4 shrink-0" />
                       )}
                       <span className="truncate">{section.label}</span>
                     </button>
@@ -326,7 +350,7 @@ export default function NewProposal() {
             </nav>
           )}
 
-          {/* Mobile stepper */}
+          {/* Mobile stepper — sits above BottomNav */}
           {isMobile && (
             <div className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] left-0 right-0 z-20 bg-background/95 backdrop-blur-sm border-t border-border/40 px-2 py-1.5">
               <div className="flex justify-around">
@@ -341,13 +365,13 @@ export default function NewProposal() {
                     >
                       <div className={cn(
                         'w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold transition-all',
-                        complete ? 'bg-emerald-100 text-emerald-600' :
+                        complete ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' :
                         isActive ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
                       )}>
                         {complete ? <Check className="w-3 h-3" /> : idx + 1}
                       </div>
                       <span className={cn('text-[9px] leading-tight truncate max-w-[52px]', isActive ? 'text-primary font-medium' : 'text-muted-foreground')}>
-                        {section.label.split(' ')[0]}
+                        {section.label}
                       </span>
                     </button>
                   );
@@ -357,11 +381,11 @@ export default function NewProposal() {
           )}
 
           {/* Main form */}
-          <div className={cn('flex-1 min-w-0 space-y-4 sm:space-y-6', isMobile && 'pb-32')}>
+          <div className={cn('flex-1 min-w-0 space-y-4 sm:space-y-5', isMobile && 'pb-28')}>
             <motion.div
               id="lead"
               ref={el => { sectionRefs.current.lead = el; }}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.05 }}
             >
@@ -371,7 +395,7 @@ export default function NewProposal() {
             <motion.div
               id="client"
               ref={el => { sectionRefs.current.client = el; }}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
@@ -381,7 +405,7 @@ export default function NewProposal() {
             <motion.div
               id="items"
               ref={el => { sectionRefs.current.items = el; }}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
             >
@@ -397,7 +421,7 @@ export default function NewProposal() {
             <motion.div
               id="payment"
               ref={el => { sectionRefs.current.payment = el; }}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
             >
@@ -407,7 +431,7 @@ export default function NewProposal() {
             <motion.div
               id="observations"
               ref={el => { sectionRefs.current.observations = el; }}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25 }}
             >
