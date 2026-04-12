@@ -477,28 +477,7 @@ export default function AdminDashboard() {
             />
           )}
         </div>
-        {/* Mobile: Select dropdown */}
-        <div className="md:hidden mb-4">
-          <Select value={activeTab} onValueChange={(v) => handleAdminTabChange(v as typeof activeTab)}>
-            <SelectTrigger className="w-full bg-card border-border/50">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {TABS.map(tab => (
-                <SelectItem key={tab.key} value={tab.key}>
-                  <span className="flex items-center gap-2">
-                    <tab.icon className="w-4 h-4 text-muted-foreground" />
-                    {tab.label}
-                  </span>
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        {/* Desktop: tabs are in the sidebar, no need for tab bar here */}
-
-        {/* Mobile: Select dropdown */}
+        {/* Mobile: Select dropdown (desktop uses sidebar) */}
         <div className="md:hidden mb-4">
           <Select value={activeTab} onValueChange={(v) => handleAdminTabChange(v as typeof activeTab)}>
             <SelectTrigger className="w-full bg-card border-border/50">
