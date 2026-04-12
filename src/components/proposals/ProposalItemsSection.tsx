@@ -121,8 +121,13 @@ export function ProposalItemsSection({ form, updateForm, subtotal, discountAmoun
           );
         })}
 
-        <Button variant="outline" size="sm" onClick={addItem} className="w-full border-dashed">
-          <Plus className="w-4 h-4 mr-1" /> Adicionar Item
+        <Button variant="outline" onClick={addItem} className="w-full border-dashed border-2 border-primary/30 hover:border-primary hover:bg-primary/5 text-primary font-semibold py-6 rounded-xl transition-all">
+          <div className="flex flex-col items-center gap-1">
+            <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center">
+              <Plus className="w-5 h-5" />
+            </div>
+            <span className="text-sm">Adicionar novo item</span>
+          </div>
         </Button>
 
         {/* Totals */}
