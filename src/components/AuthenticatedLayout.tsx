@@ -83,12 +83,7 @@ export function AuthenticatedLayout() {
                   <TooltipContent>{item.label}</TooltipContent>
                 </Tooltip>
               ))}
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <span><NotificationBell /></span>
-                </TooltipTrigger>
-                <TooltipContent>Notificações</TooltipContent>
-              </Tooltip>
+              <NotificationBell />
               <UserAvatarMenu />
             </div>
           </header>
