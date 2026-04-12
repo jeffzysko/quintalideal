@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Users, TrendingUp, Clock, Eye, Inbox, Droplets, BarChart3, Link2, Copy, Check, Workflow, CalendarClock } from 'lucide-react';
+import { Users, TrendingUp, Clock, Eye, Inbox, Droplets, BarChart3, Link2, Copy, Check, Workflow, CalendarClock, FileText } from 'lucide-react';
 import { ConversionFunnel } from '@/components/franchise/ConversionFunnel';
 import { SLAIndicator } from '@/components/franchise/SLAIndicator';
 import { MonthlyGoals } from '@/components/franchise/MonthlyGoals';
@@ -372,7 +372,10 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
             role="tab"
             aria-selected={activeTab === tab.key}
             data-tour={tab.tour}
-            onClick={() => setActiveTab(tab.key)}
+            onClick={() => {
+              if (tab.key === 'propostas') { navigate('/propostas'); return; }
+              setActiveTab(tab.key as FranchiseTab);
+            }}
             className={`px-4 py-2.5 rounded-xl text-sm font-semibold transition-all flex-1 whitespace-nowrap min-h-[44px] flex items-center justify-center gap-2 active:scale-[0.97] ${activeTab === tab.key ? 'tab-active shadow-sm' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
           >
             <tab.icon className={`w-[18px] h-[18px] ${activeTab === tab.key ? 'text-primary' : ''}`} />
