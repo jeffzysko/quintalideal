@@ -11,7 +11,7 @@ import type { ProposalFormData } from '@/pages/NewProposal';
 import { cn } from '@/lib/utils';
 
 interface Props {
-  form: ProposalFormData;
+  form: Pick<ProposalFormData, 'lead_id'>;
   updateForm: (u: Partial<ProposalFormData>) => void;
   franchiseId: string | null;
 }

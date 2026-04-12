@@ -4,7 +4,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Breadcrumbs } from '@/components/Breadcrumbs';
+
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion } from 'framer-motion';
 import { Save, X, FileText, Check, User, Package, CreditCard, MessageSquare, Link2 } from 'lucide-react';
