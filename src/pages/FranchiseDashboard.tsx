@@ -86,16 +86,23 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   const isMobile = useIsMobile();
   const [page, setPage] = useState(1);
   
-  // Read tab from URL params
-  const getTabFromSearch = (search: string): 'leads' | 'funnel' | 'reports' | 'achievements' => {
+  // Read tab from URL params (or local state when embedded)
+  type FranchiseTab = 'leads' | 'funnel' | 'reports' | 'achievements';
+  const getTabFromSearch = (search: string): FranchiseTab => {
     const urlTab = new URLSearchParams(search).get('tab');
     if (urlTab === 'funnel') return 'funnel';
     if (urlTab === 'reports') return 'reports';
     if (urlTab === 'achievements') return 'achievements';
     return 'leads';
   };
-  const activeTab = getTabFromSearch(location.search);
-  const setActiveTab = (tab: 'leads' | 'funnel' | 'reports' | 'achievements') => {
+
+  const [localTab, setLocalTab] = useState<FranchiseTab>('leads');
+  const activeTab = embedded ? localTab : getTabFromSearch(location.search);
+  const setActiveTab = (tab: FranchiseTab) => {
+    if (embedded) {
+      setLocalTab(tab);
+      return;
+    }
     const params = new URLSearchParams(location.search);
     if (tab === 'leads') {
       params.delete('tab');
