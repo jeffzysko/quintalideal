@@ -378,7 +378,7 @@ export default function NewProposal() {
         <div className="hidden md:flex items-center justify-between mb-5">
           <div>
             <Breadcrumbs />
-            <h1 className="text-page-title text-foreground mt-1">Nova Proposta Comercial</h1>
+            <h1 className="text-page-title text-foreground mt-1">{isEditMode ? 'Editar Proposta Comercial' : 'Nova Proposta Comercial'}</h1>
             {lastSaved && (
               <p className="text-xs text-muted-foreground mt-0.5">
                 Rascunho salvo às {lastSaved}
