@@ -11,7 +11,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Check, X, MessageCircle, Download, CreditCard, Truck, CalendarDays, Phone, User, FileText, Timer, AlertTriangle, RefreshCw, Droplets, Shield, Star } from 'lucide-react';
+import { Check, X, MessageCircle, Download, CreditCard, Truck, CalendarDays, Phone, User, FileText, AlertTriangle, RefreshCw, Droplets, Shield, Star } from 'lucide-react';
 import { format, differenceInDays, differenceInHours, differenceInMinutes, isPast } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
@@ -235,7 +235,7 @@ export default function PublicProposal() {
     initial: { opacity: 0, y: 24 },
     whileInView: { opacity: 1, y: 0 },
     viewport: { once: true, margin: '-30px' },
-    transition: { duration: 0.5, ease: [.22, 1, .36, 1] },
+    transition: { duration: 0.5 },
   };
 
   return (
