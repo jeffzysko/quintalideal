@@ -10,7 +10,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion } from 'framer-motion';
-import { Save, X, FileText, Check, User, Package, CreditCard, MessageSquare, Link2 } from 'lucide-react';
+import { Save, X, FileText, Check, User, Package, CreditCard, MessageSquare, Link2, Video, BookOpen, Sparkles } from 'lucide-react';
 import { ProposalLeadSection } from '@/components/proposals/ProposalLeadSection';
 import { ProposalClientSection } from '@/components/proposals/ProposalClientSection';
 import { ProposalItemsSection } from '@/components/proposals/ProposalItemsSection';
@@ -19,6 +19,9 @@ import { ProposalObservationsSection } from '@/components/proposals/ProposalObse
 import { cn } from '@/lib/utils';
 import { isValidBRPhone, isValidEmail, unformatPhone } from '@/lib/validation';
 import { isValidCPF, isValidCNPJ } from '@/lib/document-utils';
+import { ProposalScore } from '@/components/proposals/ProposalScore';
+import { ProposalVideoSection } from '@/components/proposals/ProposalVideoSection';
+import { SaveTemplateModal, LoadTemplateModal } from '@/components/proposals/ProposalTemplateModal';
 
 export interface ProposalItem {
   id: string;
@@ -47,6 +50,7 @@ export interface ProposalFormData {
   global_discount: number;
   global_discount_type: 'fixed' | 'percent';
   observations: string;
+  video_url: string;
 }
 
 const SECTIONS = [
@@ -54,6 +58,7 @@ const SECTIONS = [
   { id: 'client', label: 'Cliente', icon: User },
   { id: 'items', label: 'Itens', icon: Package },
   { id: 'payment', label: 'Pagamento', icon: CreditCard },
+  { id: 'video', label: 'Vídeo', icon: Video },
   { id: 'observations', label: 'Observações', icon: MessageSquare },
 ];
 
@@ -75,6 +80,7 @@ const initialForm: ProposalFormData = {
   global_discount: 0,
   global_discount_type: 'fixed',
   observations: '',
+  video_url: '',
 };
 
 export default function NewProposal() {
@@ -92,6 +98,8 @@ export default function NewProposal() {
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const draftRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [saveTemplateOpen, setSaveTemplateOpen] = useState(false);
+  const [loadTemplateOpen, setLoadTemplateOpen] = useState(false);
 
   const updateForm = useCallback((updates: Partial<ProposalFormData>) => {
     setForm(prev => ({ ...prev, ...updates }));
@@ -179,6 +187,7 @@ export default function NewProposal() {
         global_discount: Number(proposal.global_discount) || 0,
         global_discount_type: (proposal.global_discount_type as 'fixed' | 'percent') || 'fixed',
         observations: proposal.observations || '',
+        video_url: (proposal as any).video_url || '',
       });
       setIsEditMode(true);
       setEditLoaded(true);
@@ -283,12 +292,13 @@ export default function NewProposal() {
         validity_date: form.validity_date || null,
         delivery_deadline: form.delivery_deadline.trim() || null,
         observations: form.observations.trim() || null,
+        video_url: form.video_url.trim() || null,
         status: finalStatus as any,
         global_discount: form.global_discount,
         global_discount_type: form.global_discount_type,
         subtotal,
         total,
-      };
+      } as any;
 
       let proposalId: string;
 
@@ -348,8 +358,35 @@ export default function NewProposal() {
     }
   };
 
+  const handleLoadTemplate = (template: any) => {
+    const items = (template.items as any[] || []).map((i: any) => ({
+      id: crypto.randomUUID(),
+      product_name: i.product_name || '',
+      description: i.description || '',
+      quantity: i.quantity || 1,
+      unit_price: i.unit_price || 0,
+      discount: i.discount || 0,
+    }));
+    updateForm({
+      items: items.length > 0 ? items : form.items,
+      payment_method: template.payment_method || form.payment_method,
+      payment_conditions: template.payment_conditions || form.payment_conditions,
+      delivery_deadline: template.delivery_deadline || form.delivery_deadline,
+      observations: template.notes || form.observations,
+    });
+    toast.success(`Template "${template.name}" carregado!`);
+  };
+
   const actionButtons = (
     <div className="flex items-center gap-1.5">
+      <Button variant="ghost" size="sm" onClick={() => setLoadTemplateOpen(true)} className="h-8 px-2 sm:px-3 text-muted-foreground" title="Carregar template">
+        <BookOpen className="w-4 h-4" />
+      </Button>
+      {form.client_name.trim() && (
+        <Button variant="ghost" size="sm" onClick={() => setSaveTemplateOpen(true)} className="h-8 px-2 sm:px-3 text-muted-foreground" title="Salvar como template">
+          <Sparkles className="w-4 h-4" />
+        </Button>
+      )}
       <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="h-8 px-2 sm:px-3 text-muted-foreground">
         <X className="w-4 h-4" />
         <span className="hidden sm:inline ml-1">Cancelar</span>
@@ -508,6 +545,16 @@ export default function NewProposal() {
             </motion.div>
 
             <motion.div
+              id="video"
+              ref={el => { sectionRefs.current.video = el; }}
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.22 }}
+            >
+              <ProposalVideoSection videoUrl={form.video_url} onChange={(url) => updateForm({ video_url: url })} />
+            </motion.div>
+
+            <motion.div
               id="observations"
               ref={el => { sectionRefs.current.observations = el; }}
               initial={{ opacity: 0, y: 16 }}
@@ -516,9 +563,26 @@ export default function NewProposal() {
             >
               <ProposalObservationsSection form={form} updateForm={updateForm} />
             </motion.div>
+
+            {/* Score da Proposta */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+            >
+              <ProposalScore form={form} subtotal={subtotal} />
+            </motion.div>
           </div>
         </div>
       </div>
+
+      {/* Template Modals */}
+      {franchiseId && user && (
+        <>
+          <SaveTemplateModal open={saveTemplateOpen} onOpenChange={setSaveTemplateOpen} form={form} franchiseId={franchiseId} userId={user.id} />
+          <LoadTemplateModal open={loadTemplateOpen} onOpenChange={setLoadTemplateOpen} franchiseId={franchiseId} onSelect={handleLoadTemplate} />
+        </>
+      )}
     </div>
   );
 }
