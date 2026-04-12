@@ -439,7 +439,7 @@ export default function PublicProposal() {
           </div>
         </header>
 
-        <main className="relative max-w-3xl mx-auto px-5 py-8 space-y-7 pb-36 sm:pb-10 print:pb-0 print:space-y-5">
+        <main id="proposal-pdf-content" className="relative max-w-3xl mx-auto px-5 py-8 space-y-7 pb-36 sm:pb-10 print:pb-0 print:space-y-5">
 
           {/* ═══════════ HERO ═══════════ */}
           <motion.div
