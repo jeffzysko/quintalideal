@@ -10,7 +10,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 
 import { useIsMobile } from '@/hooks/use-mobile';
 import { motion } from 'framer-motion';
-import { Save, X, FileText, Check, User, Package, CreditCard, MessageSquare, Link2, Video, BookTemplate, Sparkles } from 'lucide-react';
+import { Save, X, FileText, Check, User, Package, CreditCard, MessageSquare, Link2, Video, BookOpen, Sparkles } from 'lucide-react';
 import { ProposalLeadSection } from '@/components/proposals/ProposalLeadSection';
 import { ProposalClientSection } from '@/components/proposals/ProposalClientSection';
 import { ProposalItemsSection } from '@/components/proposals/ProposalItemsSection';
