@@ -496,25 +496,25 @@ export default function AdminDashboard() {
           </Select>
         </div>
 
-        {/* Desktop: Scrollable tab bar */}
-        <div className="hidden md:block mb-8">
-          <div className="overflow-x-auto scrollbar-hide -mx-1 px-1">
-            <div className="flex gap-1 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-fit border border-border/30" role="tablist">
+        {/* Desktop: tabs are in the sidebar, no need for tab bar here */}
+
+        {/* Mobile: Select dropdown */}
+        <div className="md:hidden mb-4">
+          <Select value={activeTab} onValueChange={(v) => handleAdminTabChange(v as typeof activeTab)}>
+            <SelectTrigger className="w-full bg-card border-border/50">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
               {TABS.map(tab => (
-                <button
-                  key={tab.key}
-                  role="tab"
-                  aria-selected={activeTab === tab.key}
-                  data-tour={`admin-tab-${tab.key}`}
-                  onClick={() => handleAdminTabChange(tab.key)}
-                  className={`flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all whitespace-nowrap ${activeTab === tab.key ? 'tab-active' : 'text-muted-foreground hover:text-foreground hover:bg-muted/60'}`}
-                >
-                  <tab.icon className={`w-4 h-4 shrink-0 ${activeTab === tab.key ? 'text-primary' : ''}`} />
-                  {tab.label}
-                </button>
+                <SelectItem key={tab.key} value={tab.key}>
+                  <span className="flex items-center gap-2">
+                    <tab.icon className="w-4 h-4 text-muted-foreground" />
+                    {tab.label}
+                  </span>
+                </SelectItem>
               ))}
-            </div>
-          </div>
+            </SelectContent>
+          </Select>
         </div>
 
         {activeTab === 'overview' && (
