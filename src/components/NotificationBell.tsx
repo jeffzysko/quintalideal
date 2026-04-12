@@ -273,5 +273,6 @@ export function NotificationBell() {
         )}
       </PopoverContent>
     </Popover>
+    </Tooltip>
   );
 }
