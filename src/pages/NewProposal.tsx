@@ -269,39 +269,58 @@ export default function NewProposal() {
 
     try {
       const finalStatus = statusOverride || form.status;
+      const proposalPayload = {
+        lead_id: form.lead_id,
+        person_type: form.person_type,
+        client_name: form.client_name.trim(),
+        client_document: form.client_document.trim() || null,
+        client_contact_name: form.client_contact_name.trim() || null,
+        client_phone: form.client_phone.trim(),
+        client_email: form.client_email.trim() || null,
+        client_address: form.client_address.trim() || null,
+        payment_method: form.payment_method || null,
+        payment_conditions: form.payment_conditions.trim() || null,
+        validity_date: form.validity_date || null,
+        delivery_deadline: form.delivery_deadline.trim() || null,
+        observations: form.observations.trim() || null,
+        status: finalStatus as any,
+        global_discount: form.global_discount,
+        global_discount_type: form.global_discount_type,
+        subtotal,
+        total,
+      };
 
-      const { data, error } = await supabase
-        .from('proposals')
-        .insert({
-          franchise_id: franchiseId,
-          created_by: user.id,
-          lead_id: form.lead_id,
-          person_type: form.person_type,
-          client_name: form.client_name.trim(),
-          client_document: form.client_document.trim() || null,
-          client_contact_name: form.client_contact_name.trim() || null,
-          client_phone: form.client_phone.trim(),
-          client_email: form.client_email.trim() || null,
-          client_address: form.client_address.trim() || null,
-          payment_method: form.payment_method || null,
-          payment_conditions: form.payment_conditions.trim() || null,
-          validity_date: form.validity_date || null,
-          delivery_deadline: form.delivery_deadline.trim() || null,
-          observations: form.observations.trim() || null,
-          status: finalStatus as any,
-          global_discount: form.global_discount,
-          global_discount_type: form.global_discount_type,
-          subtotal,
-          total,
-        })
-        .select('id')
-        .single();
+      let proposalId: string;
 
-      if (error) throw error;
+      if (isEditMode && editId) {
+        // Update existing proposal
+        const { error } = await supabase
+          .from('proposals')
+          .update(proposalPayload)
+          .eq('id', editId);
+        if (error) throw error;
+        proposalId = editId;
 
-      if (form.items.length > 0 && data) {
+        // Delete old items and re-insert
+        await supabase.from('proposal_items').delete().eq('proposal_id', editId);
+      } else {
+        // Create new proposal
+        const { data, error } = await supabase
+          .from('proposals')
+          .insert({
+            franchise_id: franchiseId,
+            created_by: user.id,
+            ...proposalPayload,
+          })
+          .select('id')
+          .single();
+        if (error) throw error;
+        proposalId = data.id;
+      }
+
+      if (form.items.length > 0) {
         const itemsToInsert = form.items.map((item, idx) => ({
-          proposal_id: data.id,
+          proposal_id: proposalId,
           product_name: item.product_name.trim(),
           description: item.description.trim() || null,
           quantity: item.quantity,
@@ -317,12 +336,13 @@ export default function NewProposal() {
 
       localStorage.removeItem(`proposal_draft_${franchiseId}`);
 
-      toast.success('Proposta criada com sucesso!', {
-        action: { label: 'Ver proposta', onClick: () => navigate(`/propostas/${data.id}`) },
+      const msg = isEditMode ? 'Proposta atualizada com sucesso!' : 'Proposta criada com sucesso!';
+      toast.success(msg, {
+        action: { label: 'Ver proposta', onClick: () => navigate(`/propostas/${proposalId}`) },
       });
-      navigate('/propostas');
+      navigate(`/propostas/${proposalId}`);
     } catch (err: any) {
-      toast.error('Erro ao criar proposta: ' + (err.message || 'Tente novamente'));
+      toast.error('Erro ao salvar proposta: ' + (err.message || 'Tente novamente'));
     } finally {
       setSaving(false);
     }
