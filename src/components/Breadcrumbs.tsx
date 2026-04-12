@@ -61,7 +61,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
   if (crumbs.length <= 1) return null;
 
   return (
-    <Breadcrumb className="mb-4 sm:mb-5 overflow-x-auto scrollbar-none">
+    <Breadcrumb className={cn("mb-4 sm:mb-5 overflow-x-auto scrollbar-none", className)}>
       <BreadcrumbList className="min-w-max flex-nowrap gap-1 whitespace-nowrap text-xs sm:gap-1.5">
         {crumbs.map((crumb, index) => {
           const isLast = index === crumbs.length - 1;
