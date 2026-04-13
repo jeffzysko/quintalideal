@@ -500,6 +500,9 @@ export default function PublicProposal() {
               <Button variant="outline" onClick={() => setNegotiateOpen(true)} className="h-12 w-12 rounded-xl border-primary/30 text-primary p-0"><RefreshCw className="w-5 h-5" /></Button>
               <Button variant="outline" onClick={() => setRefuseOpen(true)} className="h-12 w-12 rounded-xl border-destructive/20 text-destructive p-0"><X className="w-5 h-5" /></Button>
               <Button variant="ghost" onClick={() => setQuestionOpen(true)} className="h-12 w-12 rounded-xl text-muted-foreground p-0"><MessageCircle className="w-5 h-5" /></Button>
+              <Button variant="ghost" onClick={handleExportPDF} disabled={exporting} className="h-12 w-12 rounded-xl text-muted-foreground p-0">
+                {exporting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Download className="w-5 h-5" />}
+              </Button>
             </div>
           </div>
         )}
