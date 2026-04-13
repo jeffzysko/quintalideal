@@ -74,6 +74,8 @@ export function initWebVitals() {
               e.startTime - (firstEntry as PerformanceEntry & { startTime: number }).startTime < 5000) {
             clsSessionValue += e.value;
             clsSessionEntries.push(entry);
+            // Sliding window: keep only last 5 entries to prevent unbounded growth
+            if (clsSessionEntries.length > 5) clsSessionEntries = clsSessionEntries.slice(-5);
           } else {
             clsSessionValue = e.value;
             clsSessionEntries = [entry];
