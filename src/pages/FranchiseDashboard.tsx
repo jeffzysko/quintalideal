@@ -128,8 +128,39 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
     enabled: !!franchiseId,
   });
 
-  // ── All leads (bounded to last 12 months, batched for >1000 rows) ──
-  const { data: allLeads = [], isLoading: loadingKpis, isError: franchiseError, refetch: refetchFranchise } = useQuery({
+  // ── Lightweight KPI query (minimal columns for metrics, funnel, SLA, insights) ──
+  type KpiLead = { id: string; status_lead: string; created_at: string; updated_at: string; pontuacao_quintal: number | null; respostas_questionario: Record<string, string> | null };
+  const { data: kpiLeads = [], isLoading: loadingKpis } = useQuery({
+    queryKey: ['franchise-leads-kpi', franchiseId],
+    queryFn: async () => {
+      const twelveMonthsAgo = new Date();
+      twelveMonthsAgo.setFullYear(twelveMonthsAgo.getFullYear() - 1);
+      const BATCH = 1000;
+      const allData: KpiLead[] = [];
+      let from = 0;
+      while (true) {
+        const { data, error } = await supabase
+          .from('leads')
+          .select('id, status_lead, created_at, updated_at, pontuacao_quintal, respostas_questionario')
+          .eq('franquia_id', franchiseId!)
+          .gte('created_at', twelveMonthsAgo.toISOString())
+          .order('created_at', { ascending: false })
+          .range(from, from + BATCH - 1);
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+        allData.push(...(data as KpiLead[]));
+        if (data.length < BATCH) break;
+        from += BATCH;
+      }
+      return allData;
+    },
+    enabled: !!franchiseId,
+    staleTime: 3 * 60 * 1000,
+  });
+
+  // ── Full leads query (for Kanban, Reports, Achievements — deferred until tab is active) ──
+  const needsFullLeads = activeTab === 'leads' || activeTab === 'funnel' || activeTab === 'reports' || activeTab === 'achievements';
+  const { data: allLeads = [], isError: franchiseError, refetch: refetchFranchise } = useQuery({
     queryKey: ['franchise-leads-all', franchiseId],
     queryFn: async () => {
       const twelveMonthsAgo = new Date();
@@ -153,26 +184,39 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       }
       return allData;
     },
-    enabled: !!franchiseId,
+    enabled: !!franchiseId && needsFullLeads,
     staleTime: 3 * 60 * 1000,
   });
 
-  // ── Lead activities for SLA (filtered by franchise leads, last 6 months) ──
+  // ── Lead IDs for server-side filtering of activities ──
+  const kpiLeadIds = useMemo(() => kpiLeads.map(l => l.id), [kpiLeads]);
+
+  // ── Lead activities for SLA (filtered by lead_ids on server) ──
   const { data: leadActivities = [] } = useQuery({
-    queryKey: ['franchise-lead-activities', franchiseId],
+    queryKey: ['franchise-lead-activities', franchiseId, kpiLeadIds.length],
     queryFn: async () => {
       const sixMonthsAgo = new Date();
       sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-      const { data } = await supabase
-        .from('lead_activities')
-        .select('lead_id, activity_type, created_at')
-        .eq('activity_type', 'status_change')
-        .gte('created_at', sixMonthsAgo.toISOString())
-        .order('created_at', { ascending: true })
-        .limit(1000);
-      return (data || []) as { lead_id: string; activity_type: string; created_at: string; content: string | null }[];
+      
+      // Filter by lead_ids in batches to avoid URL length limits
+      const BATCH_SIZE = 200;
+      const allActivities: { lead_id: string; activity_type: string; created_at: string; content: string | null }[] = [];
+      
+      for (let i = 0; i < kpiLeadIds.length; i += BATCH_SIZE) {
+        const batch = kpiLeadIds.slice(i, i + BATCH_SIZE);
+        const { data } = await supabase
+          .from('lead_activities')
+          .select('lead_id, activity_type, created_at')
+          .eq('activity_type', 'status_change')
+          .in('lead_id', batch)
+          .gte('created_at', sixMonthsAgo.toISOString())
+          .order('created_at', { ascending: true });
+        if (data) allActivities.push(...(data as typeof allActivities));
+      }
+      
+      return allActivities;
     },
-    enabled: !!franchiseId,
+    enabled: !!franchiseId && kpiLeadIds.length > 0,
     staleTime: 5 * 60 * 1000,
   });
 
@@ -232,10 +276,10 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   const franchiseSlug = franchiseInfo?.slug_url || null;
   const franchiseName = franchiseInfo?.nome_franquia || '';
 
-  // ── Time-filtered KPIs with comparison ──
+  // ── Time-filtered KPIs with comparison (use lightweight kpiLeads) ──
   const { current: currentLeads, previous: previousLeads } = useMemo(
-    () => filterByTimeRange(allLeads, timeRange),
-    [allLeads, timeRange],
+    () => filterByTimeRange(kpiLeads as any[], timeRange),
+    [kpiLeads, timeRange],
   );
 
   const totalLeads = currentLeads.length;
@@ -249,21 +293,20 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   const prevSold = previousLeads.length > 0 ? previousLeads.filter(l => l.status_lead === 'vendido').length : undefined;
 
   const now = new Date();
-  const soldThisMonth = allLeads.filter(l => {
+  const soldThisMonth = kpiLeads.filter(l => {
     if (l.status_lead !== 'vendido') return false;
-    // Use updated_at (date the status was changed to "vendido") instead of created_at
-    const d = new Date((l as any).updated_at || l.created_at);
+    const d = new Date(l.updated_at || l.created_at);
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   }).length;
 
-  // Overdue leads alert
+  // Overdue leads alert (use kpiLeads)
   const overdueLeads = useMemo(() => {
     const nowMs = Date.now();
-    return allLeads.filter(l => {
+    return kpiLeads.filter(l => {
       if (l.status_lead !== 'novo') return false;
       return (nowMs - new Date(l.created_at).getTime()) > 48 * 60 * 60 * 1000;
     });
-  }, [allLeads]);
+  }, [kpiLeads]);
 
   const metrics: MetricCardProps[] = [
     { icon: Users, label: 'Total de Leads', value: totalLeads, previousValue: prevTotal, color: 'text-primary' },
@@ -334,7 +377,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
         </div>
       ) : franchiseId && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <SLAIndicator leads={allLeads} activities={leadActivities} />
+          <SLAIndicator leads={kpiLeads as any[]} activities={leadActivities} />
           <MonthlyGoals franchiseId={franchiseId} soldThisMonth={soldThisMonth} />
           <LeadFollowups franchiseId={franchiseId} />
         </div>
@@ -356,7 +399,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
             </div>
           </CardContent>
         </Card>
-      ) : allLeads.length > 0 && <ConversionFunnel leads={allLeads} />}
+      ) : kpiLeads.length > 0 && <ConversionFunnel leads={kpiLeads as any[]} />}
 
       {/* Tab switcher — mobile only (desktop uses sidebar) */}
       <div className="flex gap-1 mb-6 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-full overflow-x-auto scrollbar-none border border-border/30 md:hidden" role="tablist">
