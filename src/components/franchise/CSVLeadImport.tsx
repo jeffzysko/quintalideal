@@ -234,7 +234,7 @@ export function CSVLeadImport({ franchiseId, trigger, onSuccess }: CSVLeadImport
   const invalidCount = rows.filter(r => !r.valid).length;
 
   const downloadTemplate = () => {
-    const csv = 'nome,telefone,email,cidade,modelo_recomendado,observacoes\nJoão Silva,51999998888,joao@email.com,Porto Alegre,Tradicional,Indicação do vizinho\n';
+    const csv = 'nome,telefone,email,cidade,modelo_recomendado,observacoes\nJoão Silva,51999998888,joao@email.com,Porto Alegre,Retangular,Indicação do vizinho\n';
     const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

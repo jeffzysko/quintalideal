@@ -15,7 +15,7 @@ const PAYLOAD_EXAMPLE = `{
     "email": "joao@email.com",
     "cidade": "Porto Alegre",
     "pontuacao_quintal": 78,
-    "modelo_recomendado": "Atalaia",
+    "modelo_recomendado": "Supreme",
     "created_at": "2026-03-12T16:00:00.000Z"
   },
   "franquia": {
@@ -32,7 +32,7 @@ const TEST_PAYLOAD_EXAMPLE = `{
     "email": "teste@exemplo.com",
     "cidade": "Cidade Teste",
     "pontuacao_quintal": 75,
-    "modelo_recomendado": "Cancún",
+    "modelo_recomendado": "Retangular Plus",
     "created_at": "2026-03-12T16:00:00.000Z"
   },
   "franquia": {

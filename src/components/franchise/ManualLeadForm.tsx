@@ -17,8 +17,8 @@ import { classifyLead, LeadTemperature } from '@/lib/leadScoring';
 import { cn } from '@/lib/utils';
 
 const POOL_MODELS = [
-  'Tradicional', 'Nassau', 'Tortuga', 'Bonaire', 'Cancún',
-  'Atalaia', 'Farol da Barra', 'Tropical', 'Italiana', 'Navagio',
+  'Retangular', 'Borda Infinita', 'Prainha', 'Elegance', 'Retangular Plus',
+  'Supreme', 'Versátil', 'Confort', 'Family', 'Compacta Premium',
 ];
 
 const ORCAMENTO_OPTIONS = [
