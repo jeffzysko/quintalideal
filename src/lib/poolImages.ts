@@ -13,7 +13,7 @@ const DECK_DARK = '#b8956a';
 const GREEN = '#4ade80';       // green-400
 const SAND = '#fde68a';        // amber-200
 const BG = '#f0f9ff';          // sky-50
-const STONE = '#94a3b8';       // slate-400
+
 
 const traditionalSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 250">
   <rect width="400" height="250" fill="${BG}" rx="16"/>
