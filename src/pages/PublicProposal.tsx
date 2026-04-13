@@ -1150,7 +1150,7 @@ export default function PublicProposal() {
                     <CreditCard className="w-5 h-5 text-secondary" />
                   </div>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-bold">Pagamento</p>
-                  <p className="font-bold text-sm text-foreground mt-1 capitalize">{proposal.payment_method}</p>
+                  <p className="font-bold text-sm text-foreground mt-1">{getPaymentLabel(proposal.payment_method)}</p>
                 </div>
               </motion.div>
             )}
