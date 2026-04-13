@@ -311,6 +311,18 @@ Deno.serve(async (req) => {
       fireWebhook(supabase, assignedFranchiseId, {
         nome, telefone, email, cidade, pontuacaoQuintal, modeloRecomendado,
       }).catch((err) => console.error("Webhook error:", err));
+
+      // WhatsApp auto triggers (fire-and-forget, never block main flow)
+      try {
+        const autoUrl = `${supabaseUrl}/functions/v1/send-whatsapp-auto`;
+        const autoHeaders = { "Content-Type": "application/json", "Authorization": `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}` };
+        // Event 1: notify franchise
+        fetch(autoUrl, { method: "POST", headers: autoHeaders, body: JSON.stringify({ trigger_event: "lead_created", lead_id: insertedLeadId, franchise_id: assignedFranchiseId }) }).catch(e => console.error("WA lead_created error:", e));
+        // Event 2: welcome lead
+        fetch(autoUrl, { method: "POST", headers: autoHeaders, body: JSON.stringify({ trigger_event: "lead_welcome", lead_id: insertedLeadId, franchise_id: assignedFranchiseId }) }).catch(e => console.error("WA lead_welcome error:", e));
+      } catch (waErr) {
+        console.error("WhatsApp auto trigger error:", waErr);
+      }
     }
 
     return new Response(JSON.stringify({

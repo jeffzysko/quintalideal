@@ -88,10 +88,61 @@ Deno.serve(async (req) => {
       }
     }
 
+    // 3. WhatsApp: proposal_expiring (2 days before validity)
+    const twoDaysFromNow = new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000);
+    const twoDaysStr = twoDaysFromNow.toISOString().split("T")[0];
+    const { data: expiringIn2Days } = await supabase
+      .from("proposals")
+      .select("id, franchise_id")
+      .eq("validity_date", twoDaysStr)
+      .not("status", "in", '("aceita","recusada")');
+
+    let waExpiringCount = 0;
+    if (expiringIn2Days?.length) {
+      const autoUrl = `${supabaseUrl}/functions/v1/send-whatsapp-auto`;
+      const autoHeaders = { "Content-Type": "application/json", "Authorization": `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}` };
+      for (const p of expiringIn2Days) {
+        try {
+          await fetch(autoUrl, { method: "POST", headers: autoHeaders, body: JSON.stringify({ trigger_event: "proposal_expiring", proposal_id: p.id, franchise_id: p.franchise_id }) });
+          waExpiringCount++;
+        } catch (e) { console.error("WA proposal_expiring error:", e); }
+      }
+    }
+
+    // 4. WhatsApp: proposal_viewed_followup (24h after visualizada without advancement)
+    const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
+    const { data: viewedProposals } = await supabase
+      .from("proposals")
+      .select("id, franchise_id, updated_at")
+      .eq("status", "visualizada")
+      .lt("updated_at", twentyFourHoursAgo);
+
+    let waFollowupCount = 0;
+    if (viewedProposals?.length) {
+      const autoUrl = `${supabaseUrl}/functions/v1/send-whatsapp-auto`;
+      const autoHeaders = { "Content-Type": "application/json", "Authorization": `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}` };
+      for (const p of viewedProposals) {
+        // Check if we already sent this followup (dedup by checking whatsapp_messages)
+        const { data: alreadySent } = await supabase
+          .from("whatsapp_messages")
+          .select("id")
+          .eq("proposal_id", p.id)
+          .eq("template_key", "proposal_viewed_followup")
+          .limit(1);
+        if (alreadySent && alreadySent.length > 0) continue;
+        try {
+          await fetch(autoUrl, { method: "POST", headers: autoHeaders, body: JSON.stringify({ trigger_event: "proposal_viewed_followup", proposal_id: p.id, franchise_id: p.franchise_id }) });
+          waFollowupCount++;
+        } catch (e) { console.error("WA proposal_viewed_followup error:", e); }
+      }
+    }
+
     return new Response(
       JSON.stringify({
         expired: expiredCount,
         warnings: warningCount,
+        wa_expiring: waExpiringCount,
+        wa_followup: waFollowupCount,
         checked_at: now.toISOString(),
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
