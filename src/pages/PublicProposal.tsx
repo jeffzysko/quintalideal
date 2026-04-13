@@ -22,6 +22,19 @@ import QRCode from 'qrcode';
 
 const formatCurrency = (v: number) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
+const PAYMENT_LABELS: Record<string, string> = {
+  pix: 'Pix',
+  boleto: 'Boleto',
+  cartao: 'Cartão de Crédito',
+  transferencia: 'Transferência',
+  cfm: 'CFM',
+  cred_window: 'Cred Window',
+  compra_programada: 'Compra Programada',
+  financiamento_banco: 'Financiamento via Banco',
+  outro: 'Outro',
+};
+const getPaymentLabel = (v: string | null) => (v ? PAYMENT_LABELS[v] || v : '');
+
 interface ProposalData {
   id: string;
   public_token: string;
@@ -590,7 +603,7 @@ export default function PublicProposal() {
 
       // ── CONDITIONS ──
       const conditions: { label: string; value: string }[] = [];
-      if (proposal.payment_method) conditions.push({ label: 'Forma de Pagamento', value: proposal.payment_method });
+      if (proposal.payment_method) conditions.push({ label: 'Forma de Pagamento', value: getPaymentLabel(proposal.payment_method) });
       if (proposal.delivery_deadline) conditions.push({ label: 'Prazo de Entrega', value: proposal.delivery_deadline });
       if (proposal.validity_date) conditions.push({ label: 'Válida até', value: format(new Date(proposal.validity_date), "dd/MM/yyyy") });
 
@@ -1137,7 +1150,7 @@ export default function PublicProposal() {
                     <CreditCard className="w-5 h-5 text-secondary" />
                   </div>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-bold">Pagamento</p>
-                  <p className="font-bold text-sm text-foreground mt-1 capitalize">{proposal.payment_method}</p>
+                  <p className="font-bold text-sm text-foreground mt-1">{getPaymentLabel(proposal.payment_method)}</p>
                 </div>
               </motion.div>
             )}
