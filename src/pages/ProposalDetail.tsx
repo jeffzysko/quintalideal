@@ -249,8 +249,8 @@ export default function ProposalDetail() {
               <p className="text-sm text-muted-foreground">#{proposal.id.slice(0, 4).toUpperCase()} • {format(new Date(proposal.created_at), "dd MMM yyyy", { locale: ptBR })}</p>
             </div>
             <div className="flex gap-2 flex-wrap">
-              <Button size="sm" variant="outline" onClick={copyLink} className="gap-1.5"><Copy className="w-3.5 h-3.5" /> Copiar link</Button>
-              <Button size="sm" variant="outline" onClick={shareWhatsApp} className="gap-1.5"><Share2 className="w-3.5 h-3.5" /> WhatsApp</Button>
+              <Button size="sm" variant="outline" onClick={copyLink} className="gap-1.5 h-10"><Copy className="w-3.5 h-3.5" /> Copiar link</Button>
+              <Button size="sm" variant="outline" onClick={shareWhatsApp} className="gap-1.5 h-10"><Share2 className="w-3.5 h-3.5" /> WhatsApp</Button>
             </div>
           </div>
 
@@ -263,11 +263,11 @@ export default function ProposalDetail() {
                   const isPast = STATUS_PIPELINE.indexOf(s) <= statusIdx && proposal.status !== 'recusada';
                   return (
                     <div key={s} className="flex items-center">
-                      {i > 0 && <ChevronRight className="w-4 h-4 text-muted-foreground mx-1 shrink-0" />}
+                      {i > 0 && <ChevronRight className="w-4 h-4 text-muted-foreground mx-0.5 shrink-0" />}
                       <button
                         onClick={() => updateStatus(s)}
                         className={cn(
-                          'px-3 py-1.5 rounded-full text-xs font-medium transition-all whitespace-nowrap',
+                          'px-3.5 py-2 rounded-full text-xs font-medium transition-all whitespace-nowrap min-h-[36px] active:scale-[0.97]',
                           isActive ? STATUS_COLORS[s] + ' ring-2 ring-primary/30' : isPast ? 'bg-primary/5 text-primary/70' : 'bg-muted text-muted-foreground hover:bg-muted/80'
                         )}
                       >{STATUS_LABELS[s]}</button>
@@ -356,10 +356,10 @@ export default function ProposalDetail() {
                     {n.proposed_value && <p className="text-sm text-primary font-medium">Valor proposto: {formatCurrency(n.proposed_value)}</p>}
                     <p className="text-xs text-muted-foreground">{format(new Date(n.created_at), "dd/MM HH:mm")}</p>
                     {n.status === 'pending' ? (
-                      <div className="flex gap-2 pt-1">
-                        <Button size="sm" onClick={() => resolveNegotiation(n.id, 'accepted')} className="gap-1"><Check className="w-3 h-3" /> Aceitar</Button>
-                        <Button size="sm" variant="destructive" onClick={() => resolveNegotiation(n.id, 'refused')} className="gap-1"><X className="w-3 h-3" /> Recusar</Button>
-                        <Button size="sm" variant="outline" onClick={duplicateProposal} className="gap-1"><Edit className="w-3 h-3" /> Editar e reenviar</Button>
+                      <div className="flex flex-wrap gap-2 pt-1">
+                        <Button size="sm" onClick={() => resolveNegotiation(n.id, 'accepted')} className="gap-1.5 h-9"><Check className="w-3.5 h-3.5" /> Aceitar</Button>
+                        <Button size="sm" variant="destructive" onClick={() => resolveNegotiation(n.id, 'refused')} className="gap-1.5 h-9"><X className="w-3.5 h-3.5" /> Recusar</Button>
+                        <Button size="sm" variant="outline" onClick={duplicateProposal} className="gap-1.5 h-9"><Edit className="w-3.5 h-3.5" /> Editar e reenviar</Button>
                       </div>
                     ) : (
                       <Badge variant={n.status === 'accepted' ? 'success' : 'destructive'} className="text-xs">
@@ -415,7 +415,7 @@ export default function ProposalDetail() {
                           rows={2}
                           className="text-sm"
                         />
-                        <Button size="sm" onClick={() => saveAnswer(q.id)} disabled={!answerText[q.id]?.trim()}>Salvar</Button>
+                        <Button size="sm" onClick={() => saveAnswer(q.id)} disabled={!answerText[q.id]?.trim()} className="h-9 shrink-0 self-end">Salvar</Button>
                       </div>
                     )}
                   </div>
@@ -437,7 +437,7 @@ export default function ProposalDetail() {
                 rows={3}
                 className="text-sm"
               />
-              <Button size="sm" variant="outline" onClick={saveInternalNotes} disabled={savingNotes}>
+              <Button size="sm" variant="outline" onClick={saveInternalNotes} disabled={savingNotes} className="h-9">
                 {savingNotes ? 'Salvando...' : 'Salvar notas'}
               </Button>
             </CardContent>
@@ -475,15 +475,15 @@ export default function ProposalDetail() {
 
           {/* Actions */}
           <div className="flex flex-wrap gap-2">
-            <Button variant="outline" onClick={() => navigate(`/propostas/nova?edit=${proposal.id}`)} className="gap-1.5"><Edit className="w-4 h-4" /> Editar</Button>
-            <Button variant="outline" onClick={copyLink} className="gap-1.5"><RefreshCw className="w-4 h-4" /> Reenviar link</Button>
-            <Button variant="outline" onClick={duplicateProposal} className="gap-1.5"><CopyPlus className="w-4 h-4" /> Duplicar</Button>
+            <Button variant="outline" onClick={() => navigate(`/propostas/nova?edit=${proposal.id}`)} className="gap-1.5 h-10"><Edit className="w-4 h-4" /> Editar</Button>
+            <Button variant="outline" onClick={copyLink} className="gap-1.5 h-10"><RefreshCw className="w-4 h-4" /> Reenviar link</Button>
+            <Button variant="outline" onClick={duplicateProposal} className="gap-1.5 h-10"><CopyPlus className="w-4 h-4" /> Duplicar</Button>
             {!proposal.validity_date && (
-              <Button variant="outline" onClick={() => setExtendOpen(true)} className="gap-1.5"><CalendarPlus className="w-4 h-4" /> Definir validade</Button>
+              <Button variant="outline" onClick={() => setExtendOpen(true)} className="gap-1.5 h-10"><CalendarPlus className="w-4 h-4" /> Definir validade</Button>
             )}
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="outline" className="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30">
+                <Button variant="outline" className="gap-1.5 h-10 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30">
                   <Trash2 className="w-4 h-4" /> Excluir
                 </Button>
               </AlertDialogTrigger>
