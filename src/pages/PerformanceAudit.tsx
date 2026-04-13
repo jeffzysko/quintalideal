@@ -119,17 +119,17 @@ function calculateCategoryScore(items: { status: Status }[]): number {
 const SCORES = {
   webVitals: calculateCategoryScore(WEB_VITALS),
   bundle: calculateCategoryScore(BUNDLE_CHUNKS),
-  database: Math.round(100 - (DB_ISSUES.filter(i => i.severity === 'critical').length * 25 + DB_ISSUES.filter(i => i.severity === 'medium').length * 10 + DB_ISSUES.filter(i => i.severity === 'low').length * 3)),
-  runtime: Math.round(100 - (RUNTIME_ISSUES.filter(i => i.severity === 'critical').length * 25 + RUNTIME_ISSUES.filter(i => i.severity === 'medium').length * 12 + RUNTIME_ISSUES.filter(i => i.severity === 'low').length * 4)),
+  database: Math.round(100 - (DB_ISSUES.filter(i => i.severity === 'critical' && !i.done).length * 25 + DB_ISSUES.filter(i => i.severity === 'medium' && !i.done).length * 10 + DB_ISSUES.filter(i => i.severity === 'low' && !i.done).length * 3)),
+  runtime: Math.round(100 - (RUNTIME_ISSUES.filter(i => i.severity === 'critical' && !i.done).length * 25 + RUNTIME_ISSUES.filter(i => i.severity === 'medium' && !i.done).length * 12 + RUNTIME_ISSUES.filter(i => i.severity === 'low' && !i.done).length * 4)),
 };
 
 const OVERALL_SCORE = Math.round((SCORES.webVitals * 0.35 + SCORES.bundle * 0.30 + SCORES.database * 0.20 + SCORES.runtime * 0.15));
 
 const SUMMARY = {
-  critical: BUNDLE_CHUNKS.filter(c => c.status === 'fail').length + DB_ISSUES.filter(d => d.severity === 'critical').length + RUNTIME_ISSUES.filter(r => r.severity === 'critical').length,
-  warnings: BUNDLE_CHUNKS.filter(c => c.status === 'warn').length + DB_ISSUES.filter(d => d.severity === 'medium').length + RUNTIME_ISSUES.filter(r => r.severity === 'medium').length,
-  passed: WEB_VITALS.filter(v => v.status === 'pass').length + BUNDLE_CHUNKS.filter(c => c.status === 'pass').length,
-  improvements: ACTION_ITEMS.length,
+  critical: BUNDLE_CHUNKS.filter(c => c.status === 'fail').length + DB_ISSUES.filter(d => d.severity === 'critical' && !d.done).length + RUNTIME_ISSUES.filter(r => r.severity === 'critical' && !r.done).length,
+  warnings: BUNDLE_CHUNKS.filter(c => c.status === 'warn').length + DB_ISSUES.filter(d => d.severity === 'medium' && !d.done).length + RUNTIME_ISSUES.filter(r => r.severity === 'medium' && !r.done).length,
+  passed: WEB_VITALS.filter(v => v.status === 'pass').length + BUNDLE_CHUNKS.filter(c => c.status === 'pass').length + ACTION_ITEMS.filter(a => a.done).length,
+  improvements: ACTION_ITEMS.filter(a => !a.done).length,
 };
 
 // ═══════════════════════════════════════════════════════════
