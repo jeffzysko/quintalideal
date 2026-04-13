@@ -21,6 +21,7 @@ interface Franchise {
   responsavel: string | null;
   whatsapp: string | null;
   email: string | null;
+  endereco: string | null;
   ativa: boolean;
   created_at: string;
 }
@@ -33,6 +34,7 @@ interface FranchiseFormData {
   responsavel: string;
   whatsapp: string;
   email: string;
+  endereco: string;
 }
 
 const emptyForm: FranchiseFormData = {
@@ -43,6 +45,7 @@ const emptyForm: FranchiseFormData = {
   responsavel: '',
   whatsapp: '',
   email: '',
+  endereco: '',
 };
 
 export function AdminFranchiseManager() {
@@ -64,7 +67,7 @@ export function AdminFranchiseManager() {
   const load = async () => {
     const { data } = await supabase
       .from('franchises')
-      .select('id, nome_franquia, slug_url, cidade_base, cidades_atendidas, responsavel, whatsapp, email, ativa, created_at')
+      .select('id, nome_franquia, slug_url, cidade_base, cidades_atendidas, responsavel, whatsapp, email, endereco, ativa, created_at')
       .order('nome_franquia');
     setFranchises((data || []).map((f: any) => ({ ...f, cidades_atendidas: f.cidades_atendidas || [] })) as Franchise[]);
     setFranchises((data || []) as Franchise[]);
@@ -95,6 +98,7 @@ export function AdminFranchiseManager() {
       responsavel: f.responsavel || '',
       whatsapp: f.whatsapp || '',
       email: f.email || '',
+      endereco: f.endereco || '',
     });
     setDialogOpen(true);
   };
@@ -128,6 +132,7 @@ export function AdminFranchiseManager() {
             responsavel: form.responsavel.trim() || null,
             whatsapp: form.whatsapp.trim() || null,
             email: form.email.trim() || null,
+            endereco: form.endereco.trim() || null,
           } as any)
           .eq('id', editingId);
         if (error) throw error;
@@ -143,6 +148,7 @@ export function AdminFranchiseManager() {
             responsavel: form.responsavel.trim() || null,
             whatsapp: form.whatsapp.trim() || null,
             email: form.email.trim() || null,
+            endereco: form.endereco.trim() || null,
           } as any);
         if (error) throw error;
         toast.success('Franquia criada com sucesso!');
@@ -414,6 +420,14 @@ export function AdminFranchiseManager() {
                   placeholder="contato@franquia.com"
                 />
               </div>
+            </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Endereço</Label>
+              <Input
+                value={form.endereco}
+                onChange={e => setForm(prev => ({ ...prev, endereco: e.target.value }))}
+                placeholder="Rua Exemplo, 123 - Bairro"
+              />
             </div>
           </div>
           <DialogFooter>

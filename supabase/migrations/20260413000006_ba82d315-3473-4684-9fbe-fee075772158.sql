@@ -1,0 +1,1 @@
+ALTER TABLE public.franchises ADD COLUMN endereco text DEFAULT NULL;

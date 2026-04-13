@@ -64,6 +64,7 @@ interface ProposalData {
     whatsapp: string | null;
     email: string | null;
     cidade_base: string | null;
+    endereco: string | null;
   } | null;
   seller: {
     full_name: string | null;
@@ -650,14 +651,22 @@ export default function PublicProposal() {
 
       // ── FRANCHISE CONTACT INFO ──
       if (proposal.franchise) {
-        checkPageBreak(30);
+        const contactLines: string[] = [];
+        if (proposal.franchise.whatsapp) contactLines.push(`WhatsApp: ${proposal.franchise.whatsapp}`);
+        if (proposal.franchise.email) contactLines.push(`E-mail: ${proposal.franchise.email}`);
+        if (proposal.franchise.endereco) contactLines.push(proposal.franchise.endereco);
+        else if (proposal.franchise.cidade_base) contactLines.push(proposal.franchise.cidade_base);
+
+        const boxH = 16 + contactLines.length * 5 + 8;
+        checkPageBreak(boxH + 12);
+
         pdf.setFontSize(8);
         pdf.setFont('helvetica', 'bold');
         pdf.setTextColor(...brandBlue);
         pdf.text('CONTATO', M, y + 3);
         y += 8;
 
-        drawRoundedRect(M, y, CW, 24, 3, bgMuted, borderColor);
+        drawRoundedRect(M, y, CW, boxH, 3, bgMuted, borderColor);
 
         pdf.setFontSize(9.5);
         pdf.setFont('helvetica', 'bold');
@@ -667,20 +676,17 @@ export default function PublicProposal() {
         pdf.setFontSize(8.5);
         pdf.setFont('helvetica', 'normal');
         pdf.setTextColor(...textMuted);
-        const contactParts: string[] = [];
-        if (proposal.franchise.cidade_base) contactParts.push(proposal.franchise.cidade_base);
-        if (proposal.franchise.whatsapp) contactParts.push(`WhatsApp: ${proposal.franchise.whatsapp}`);
-        if (proposal.franchise.email) contactParts.push(proposal.franchise.email);
-
-        if (contactParts.length > 0) {
-          pdf.text(contactParts.join('   •   '), M + 5, y + 14);
-        }
+        let cY = y + 14;
+        contactLines.forEach(line => {
+          pdf.text(line, M + 5, cY);
+          cY += 5;
+        });
 
         pdf.setFontSize(7.5);
         pdf.setTextColor(...textLight);
-        pdf.text('Entre em contato para dúvidas ou negociações sobre esta proposta.', M + 5, y + 20);
+        pdf.text('Entre em contato para dúvidas ou negociações sobre esta proposta.', M + 5, cY + 2);
 
-        y += 30;
+        y += boxH + 6;
       }
 
       // ── VERIFICATION FOOTER WITH QR CODE ──
