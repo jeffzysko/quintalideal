@@ -390,24 +390,23 @@ export default function NewProposal() {
   };
 
   const actionButtons = (
-    <div className="flex items-center gap-1.5">
-      <Button variant="ghost" size="sm" onClick={() => setLoadTemplateOpen(true)} className="h-8 px-2 sm:px-3 text-muted-foreground" title="Carregar template">
+    <div className="flex items-center gap-1">
+      <Button variant="ghost" size="icon" onClick={() => setLoadTemplateOpen(true)} className="h-9 w-9 text-muted-foreground" title="Carregar template">
         <BookOpen className="w-4 h-4" />
       </Button>
       {form.client_name.trim() && (
-        <Button variant="ghost" size="sm" onClick={() => setSaveTemplateOpen(true)} className="h-8 px-2 sm:px-3 text-muted-foreground" title="Salvar como template">
+        <Button variant="ghost" size="icon" onClick={() => setSaveTemplateOpen(true)} className="h-9 w-9 text-muted-foreground" title="Salvar como template">
           <Sparkles className="w-4 h-4" />
         </Button>
       )}
-      <Button variant="ghost" size="sm" onClick={() => navigate(-1)} className="h-8 px-2 sm:px-3 text-muted-foreground">
+      <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-9 w-9 text-muted-foreground" title="Cancelar">
         <X className="w-4 h-4" />
-        <span className="hidden sm:inline ml-1">Cancelar</span>
       </Button>
-      <Button variant="outline" size="sm" onClick={handleSaveDraft} disabled={saving} className="h-8 px-2 sm:px-3">
+      <Button variant="outline" size="sm" onClick={handleSaveDraft} disabled={saving} className="h-9 px-2.5 sm:px-3">
         <Save className="w-4 h-4" />
         <span className="hidden sm:inline ml-1">Rascunho</span>
       </Button>
-      <Button size="sm" onClick={() => handleSubmit('enviada')} disabled={saving} className="h-8 px-2.5 sm:px-3 gap-1.5">
+      <Button size="sm" onClick={() => handleSubmit('enviada')} disabled={saving} className="h-9 px-3 sm:px-4 gap-1.5">
         <Link2 className="w-4 h-4" />
         {!isMobile && <span>{isEditMode ? 'Salvar e Enviar' : 'Criar e Enviar'}</span>}
       </Button>
@@ -480,7 +479,7 @@ export default function NewProposal() {
 
           {/* Mobile stepper — sits above BottomNav */}
           {isMobile && (
-            <div className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] left-0 right-0 z-20 bg-background/95 backdrop-blur-sm border-t border-border/40 px-2 py-1.5">
+            <div className="fixed bottom-[calc(3.5rem+env(safe-area-inset-bottom))] left-0 right-0 z-20 bg-background/95 backdrop-blur-xl border-t border-border/40 px-2 py-2">
               <div className="flex justify-around">
                 {SECTIONS.map((section, idx) => {
                   const isActive = activeSection === section.id;
@@ -489,14 +488,14 @@ export default function NewProposal() {
                     <button
                       key={section.id}
                       onClick={() => scrollToSection(section.id)}
-                      className="flex flex-col items-center gap-0.5 min-w-0 px-1 active:scale-95 transition-transform"
+                      className="flex flex-col items-center gap-0.5 min-w-0 px-1.5 py-0.5 active:scale-95 transition-transform min-h-[44px] justify-center"
                     >
                       <div className={cn(
-                        'w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-bold transition-all',
+                        'w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold transition-all',
                         complete ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' :
-                        isActive ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                        isActive ? 'bg-primary text-primary-foreground shadow-sm' : 'bg-muted text-muted-foreground'
                       )}>
-                        {complete ? <Check className="w-3 h-3" /> : idx + 1}
+                        {complete ? <Check className="w-3.5 h-3.5" /> : idx + 1}
                       </div>
                       <span className={cn('text-[9px] leading-tight truncate max-w-[52px]', isActive ? 'text-primary font-medium' : 'text-muted-foreground')}>
                         {section.label}

@@ -41,7 +41,7 @@ export function ProposalClientSection({ form, updateForm, errors = {} }: Props) 
             <button
               onClick={() => updateForm({ person_type: 'pf', client_document: '' })}
               className={cn(
-                'px-4 py-2 rounded-lg text-sm font-medium transition-all',
+                'px-5 py-2.5 rounded-lg text-sm font-medium transition-all min-h-[40px] active:scale-[0.97]',
                 !isPJ ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'
               )}
             >
@@ -50,7 +50,7 @@ export function ProposalClientSection({ form, updateForm, errors = {} }: Props) 
             <button
               onClick={() => updateForm({ person_type: 'pj', client_document: '' })}
               className={cn(
-                'px-4 py-2 rounded-lg text-sm font-medium transition-all',
+                'px-5 py-2.5 rounded-lg text-sm font-medium transition-all min-h-[40px] active:scale-[0.97]',
                 isPJ ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'
               )}
             >

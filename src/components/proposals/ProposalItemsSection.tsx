@@ -51,8 +51,8 @@ export function ProposalItemsSection({ form, updateForm, subtotal, discountAmoun
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Item {idx + 1}</span>
                 {form.items.length > 1 && (
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-muted-foreground hover:text-destructive" onClick={() => removeItem(item.id)}>
-                    <Trash2 className="w-3.5 h-3.5" />
+                  <Button variant="ghost" size="icon" className="h-9 w-9 text-muted-foreground hover:text-destructive active:scale-[0.95]" onClick={() => removeItem(item.id)}>
+                    <Trash2 className="w-4 h-4" />
                   </Button>
                 )}
               </div>

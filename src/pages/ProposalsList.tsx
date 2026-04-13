@@ -237,7 +237,7 @@ export default function ProposalsList() {
                   key={tab.key}
                   onClick={() => setStatusFilter(tab.key)}
                   className={cn(
-                    'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors border',
+                    'flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-medium whitespace-nowrap transition-colors border min-h-[36px] active:scale-[0.97]',
                     isActive
                       ? 'bg-primary text-primary-foreground border-primary'
                       : 'bg-background text-muted-foreground border-border hover:bg-accent'
@@ -312,11 +312,11 @@ export default function ProposalsList() {
                         </div>
                       </div>
                       {/* Action buttons */}
-                      <div className="flex items-center gap-1 shrink-0">
+                      <div className="flex items-center gap-0.5 shrink-0">
                         {canCopyLink && (
                           <button
                             onClick={(e) => copyLink(e, p.public_token)}
-                            className="p-2 rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
+                            className="p-2.5 rounded-xl hover:bg-accent text-muted-foreground hover:text-foreground transition-colors active:scale-[0.95] min-w-[40px] min-h-[40px] flex items-center justify-center"
                             title="Copiar link público"
                           >
                             <Link2 className="w-4 h-4" />
@@ -324,12 +324,12 @@ export default function ProposalsList() {
                         )}
                         <button
                           onClick={(e) => editProposal(e, p.id)}
-                          className="p-2 rounded-lg hover:bg-accent text-muted-foreground hover:text-foreground transition-colors"
+                          className="p-2.5 rounded-xl hover:bg-accent text-muted-foreground hover:text-foreground transition-colors active:scale-[0.95] min-w-[40px] min-h-[40px] flex items-center justify-center"
                           title="Editar proposta"
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
-                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                        <ChevronRight className="w-4 h-4 text-muted-foreground ml-0.5" />
                       </div>
                     </CardContent>
                   </Card>
