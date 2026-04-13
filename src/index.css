@@ -468,4 +468,15 @@
     0%, 100% { background-position: -200% 0; }
     50% { background-position: 200% 0; }
   }
+
+  /* ─── Page Transition (CSS-only, replaces framer-motion) ─── */
+  .page-transition {
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.25s ease-out, transform 0.25s ease-out;
+  }
+  .page-transition-entered {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
