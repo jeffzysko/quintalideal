@@ -11,8 +11,8 @@ import { trackMetaEvent } from '@/components/MetaPixel';
 import { type Lang, getQuizQuestions, t } from '@/lib/i18n';
 import { getPoolImage } from '@/lib/poolImages';
 
-// Pool images for preference step
-import { poolImages } from '@/lib/poolImages';
+// Pool feature images for preference step
+import { featureImages } from '@/lib/poolImages';
 
 const PhotoUpload = lazy(() => import('./PhotoUpload').then(m => ({ default: m.PhotoUpload })));
 const PhotoAnalysis = lazy(() => import('./PhotoAnalysis').then(m => ({ default: m.PhotoAnalysis })));
@@ -25,11 +25,11 @@ const ActionButtons = lazy(() => import('./ActionButtons').then(m => ({ default:
 
 type Step = 'hero' | 'photos' | 'photo-analysis' | 'pre-diagnosis' | 'quiz' | 'processing' | 'lead-form' | 'actions';
 
-// Preference step images — use SVG illustrations from poolImages
+// Preference step images — dedicated feature illustrations
 const PREF_IMAGES: Record<string, string> = {
-  prainha: poolImages['Prainha'] || '',
-  spa: poolImages['Compacta Premium'] || '',
-  simples: poolImages['Retangular'] || '',
+  prainha: featureImages.prainha,
+  spa: featureImages.spa,
+  simples: featureImages.simples,
 };
 
 interface QuizFlowProps {
