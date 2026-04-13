@@ -549,16 +549,19 @@ export default function PerformanceAudit() {
 
               <div className="space-y-3">
                 {filteredRuntimeIssues.map((issue) => (
-                  <Card key={issue.id} className="shadow-sm border-border/50">
+                  <Card key={issue.id} className={cn('shadow-sm border-border/50', issue.done && 'opacity-60')}>
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between gap-2 mb-2">
-                        <code className="text-xs font-mono text-foreground">{issue.file}</code>
-                        <SeverityBadge severity={issue.severity} />
+                        <code className={cn('text-xs font-mono', issue.done ? 'text-muted-foreground line-through' : 'text-foreground')}>{issue.file}</code>
+                        <div className="flex items-center gap-1.5">
+                          {issue.done && <Badge variant="outline" className="text-[10px] text-success border-success/30">Corrigido</Badge>}
+                          <SeverityBadge severity={issue.severity} />
+                        </div>
                       </div>
                       <p className="text-xs font-semibold text-foreground mb-1">{issue.type}</p>
                       <p className="text-[11px] text-muted-foreground mb-2">{issue.description}</p>
                       <div className="bg-muted/50 rounded-lg p-2.5">
-                        <p className="text-[11px] text-primary font-medium">💡 {issue.fix}</p>
+                        <p className="text-[11px] text-primary font-medium">{issue.done ? '✅' : '💡'} {issue.fix}</p>
                       </div>
                     </CardContent>
                   </Card>
