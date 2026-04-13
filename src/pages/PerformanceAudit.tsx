@@ -2,7 +2,6 @@ import { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -10,10 +9,10 @@ import { BackButton } from '@/components/BackButton';
 import { PanelHeader } from '@/components/PanelHeader';
 import { PageTransition } from '@/components/PageTransition';
 import {
-  Activity, AlertTriangle, BarChart3, CheckCircle2, Clock, Cpu,
-  Database, Download, FileCode, Gauge, HardDrive, Layers, MemoryStick,
-  Package, Server, Shield, TrendingDown, TrendingUp, Wifi, XCircle, Zap,
-  ChevronDown, ChevronUp, Filter, Search,
+  Activity, AlertTriangle, CheckCircle2, Cpu,
+  Database, Download, FileCode, Gauge,
+  Package, Shield, TrendingUp, XCircle, Zap,
+  ChevronDown, ChevronUp,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '@/lib/utils';
@@ -221,7 +220,7 @@ function RadarChart({ scores }: { scores: typeof SCORES }) {
     const val = scores[cat.key];
     return getPoint(i, (val / 100) * maxR);
   });
-  const dataPath = dataPoints.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ') + ' Z';
+  
 
   return (
     <div className="flex flex-col items-center">
