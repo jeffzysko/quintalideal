@@ -421,6 +421,14 @@ export function AdminFranchiseManager() {
                 />
               </div>
             </div>
+            <div className="space-y-1.5">
+              <Label className="text-xs font-medium">Endereço</Label>
+              <Input
+                value={form.endereco}
+                onChange={e => setForm(prev => ({ ...prev, endereco: e.target.value }))}
+                placeholder="Rua Exemplo, 123 - Bairro"
+              />
+            </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)} className="rounded-xl">Cancelar</Button>
