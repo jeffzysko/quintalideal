@@ -603,7 +603,7 @@ export default function PublicProposal() {
 
       // ── CONDITIONS ──
       const conditions: { label: string; value: string }[] = [];
-      if (proposal.payment_method) conditions.push({ label: 'Forma de Pagamento', value: proposal.payment_method });
+      if (proposal.payment_method) conditions.push({ label: 'Forma de Pagamento', value: getPaymentLabel(proposal.payment_method) });
       if (proposal.delivery_deadline) conditions.push({ label: 'Prazo de Entrega', value: proposal.delivery_deadline });
       if (proposal.validity_date) conditions.push({ label: 'Válida até', value: format(new Date(proposal.validity_date), "dd/MM/yyyy") });
 
