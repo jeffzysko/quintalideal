@@ -399,7 +399,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
             </div>
           </CardContent>
         </Card>
-      ) : allLeads.length > 0 && <ConversionFunnel leads={allLeads} />}
+      ) : kpiLeads.length > 0 && <ConversionFunnel leads={kpiLeads as any[]} />}
 
       {/* Tab switcher — mobile only (desktop uses sidebar) */}
       <div className="flex gap-1 mb-6 bg-muted/60 backdrop-blur-sm rounded-2xl p-1.5 w-full overflow-x-auto scrollbar-none border border-border/30 md:hidden" role="tablist">
