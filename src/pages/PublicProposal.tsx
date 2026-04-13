@@ -22,7 +22,19 @@ import QRCode from 'qrcode';
 
 const formatCurrency = (v: number) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
-interface ProposalData {
+const PAYMENT_LABELS: Record<string, string> = {
+  pix: 'Pix',
+  boleto: 'Boleto',
+  cartao: 'Cartão de Crédito',
+  transferencia: 'Transferência',
+  cfm: 'CFM',
+  cred_window: 'Cred Window',
+  compra_programada: 'Compra Programada',
+  financiamento_banco: 'Financiamento via Banco',
+  outro: 'Outro',
+};
+const getPaymentLabel = (v: string | null) => (v ? PAYMENT_LABELS[v] || v : '');
+
   id: string;
   public_token: string;
   client_name: string;
