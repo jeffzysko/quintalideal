@@ -24,6 +24,7 @@ import { WhatsAppTemplates } from '@/components/lead/WhatsAppTemplates';
 import { LeadValueEstimator } from '@/components/lead/LeadValueEstimator';
 import { ContactAttempts } from '@/components/lead/ContactAttempts';
 import { LeadPhotoUpload } from '@/components/lead/LeadPhotoUpload';
+import { LeadLinkedProposals } from '@/components/lead/LeadLinkedProposals';
 
 import { useAuth } from '@/hooks/useAuth';
 import { useIsMobile } from '@/hooks/use-mobile';
@@ -547,6 +548,11 @@ export default function LeadDetail() {
             </Card>
           </motion.div>
         )}
+
+        {/* Linked Proposals */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
+          <LeadLinkedProposals leadId={lead.id} leadName={lead.nome} />
+        </motion.div>
 
         {/* Tabbed Content */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
