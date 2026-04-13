@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Mail, UserPlus, Bell, KeyRound, ArrowRight, Zap, Send, BarChart3, AlertTriangle, FileText, RefreshCw } from 'lucide-react';
+import { Mail, UserPlus, Bell, KeyRound, ArrowRight, Zap, Send, BarChart3, AlertTriangle, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface EmailTemplate {
