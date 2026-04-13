@@ -25,7 +25,7 @@ const templates: EmailTemplate[] = [
     icon: <UserPlus className="w-4 h-4" />,
     category: 'convite',
     html: `<div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0">
-<div style="background:linear-gradient(135deg,#0ea5e9,#0284c7);padding:32px 24px;text-align:center">
+<div style="background:linear-gradient(135deg,#e80685,#08a1d6);padding:32px 24px;text-align:center">
 <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:700">Bem-vindo ao Quintal Ideal!</h1>
 <p style="color:#e0f2fe;margin:8px 0 0;font-size:14px">Plataforma Splash Piscinas</p>
 </div>
@@ -34,7 +34,7 @@ const templates: EmailTemplate[] = [
 <p style="color:#334155;font-size:16px;line-height:1.6;margin:0 0 16px">Você foi convidado(a) para acessar o painel da franquia <strong>{nome_franquia}</strong> na plataforma Quintal Ideal.</p>
 <p style="color:#334155;font-size:16px;line-height:1.6;margin:0 0 24px">Para começar, clique no botão abaixo e defina sua senha de acesso:</p>
 <div style="text-align:center;margin:32px 0">
-<a href="#" style="display:inline-block;background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:8px;font-weight:600;font-size:16px">Definir minha senha →</a>
+<a href="#" style="display:inline-block;background:linear-gradient(135deg,#e80685,#08a1d6);color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:8px;font-weight:600;font-size:16px">Definir minha senha →</a>
 </div>
 <p style="color:#94a3b8;font-size:13px;line-height:1.5;margin:24px 0 0">Se o botão acima não funcionar, copie e cole o link no seu navegador.</p>
 </div>
@@ -52,7 +52,7 @@ const templates: EmailTemplate[] = [
     icon: <Bell className="w-4 h-4" />,
     category: 'notificacao',
     html: `<div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden">
-<div style="background:linear-gradient(135deg,#0ea5e9,#0284c7);padding:32px 24px;text-align:center">
+<div style="background:linear-gradient(135deg,#e80685,#08a1d6);padding:32px 24px;text-align:center">
 <h1 style="color:#ffffff;margin:0;font-size:24px">🎯 Novo Lead Recebido!</h1>
 <p style="color:#e0f2fe;margin:8px 0 0;font-size:14px">{data_lead}</p>
 </div>
@@ -62,10 +62,10 @@ const templates: EmailTemplate[] = [
 <tr><td style="padding:12px 8px;border-bottom:1px solid #f1f5f9;color:#64748b;font-size:14px">📱 Telefone</td><td style="padding:12px 8px;border-bottom:1px solid #f1f5f9;font-weight:600;font-size:14px">{telefone}</td></tr>
 <tr><td style="padding:12px 8px;border-bottom:1px solid #f1f5f9;color:#64748b;font-size:14px">📍 Cidade</td><td style="padding:12px 8px;border-bottom:1px solid #f1f5f9;font-weight:600;font-size:14px">{cidade}</td></tr>
 <tr><td style="padding:12px 8px;border-bottom:1px solid #f1f5f9;color:#64748b;font-size:14px">🏊 Modelo</td><td style="padding:12px 8px;border-bottom:1px solid #f1f5f9;font-weight:600;font-size:14px">{modelo}</td></tr>
-<tr><td style="padding:12px 8px;color:#64748b;font-size:14px">📊 Índice</td><td style="padding:12px 8px;font-weight:700;font-size:18px;color:#0ea5e9">{pontuacao}%</td></tr>
+<tr><td style="padding:12px 8px;color:#64748b;font-size:14px">📊 Índice</td><td style="padding:12px 8px;font-weight:700;font-size:18px;color:#08a1d6">{pontuacao}%</td></tr>
 </table>
 <div style="text-align:center;margin-top:32px">
-<a href="https://quintalideal.com.br/franquia" style="display:inline-block;background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:600;font-size:16px">Ver detalhes na plataforma →</a>
+<a href="https://quintalideal.com.br/franquia" style="display:inline-block;background:linear-gradient(135deg,#e80685,#08a1d6);color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:600;font-size:16px">Ver detalhes na plataforma →</a>
 </div>
 <p style="text-align:center;color:#94a3b8;font-size:12px;margin-top:24px">Quintal Ideal Splash • Notificação automática de novo lead</p>
 </div>
@@ -80,7 +80,7 @@ const templates: EmailTemplate[] = [
     icon: <KeyRound className="w-4 h-4" />,
     category: 'autenticacao',
     html: `<div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0">
-<div style="background:linear-gradient(135deg,#0ea5e9,#0284c7);padding:32px 24px;text-align:center">
+<div style="background:linear-gradient(135deg,#e80685,#08a1d6);padding:32px 24px;text-align:center">
 <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:700">Redefinir Senha</h1>
 <p style="color:#e0f2fe;margin:8px 0 0;font-size:14px">Quintal Ideal Splash</p>
 </div>
@@ -88,7 +88,7 @@ const templates: EmailTemplate[] = [
 <p style="color:#334155;font-size:16px;line-height:1.6;margin:0 0 16px">Olá,</p>
 <p style="color:#334155;font-size:16px;line-height:1.6;margin:0 0 24px">Recebemos uma solicitação para redefinir a senha da sua conta. Clique no botão abaixo para criar uma nova senha:</p>
 <div style="text-align:center;margin:32px 0">
-<a href="#" style="display:inline-block;background:linear-gradient(135deg,#0ea5e9,#0284c7);color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:8px;font-weight:600;font-size:16px">Redefinir minha senha →</a>
+<a href="#" style="display:inline-block;background:linear-gradient(135deg,#e80685,#08a1d6);color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:8px;font-weight:600;font-size:16px">Redefinir minha senha →</a>
 </div>
 <p style="color:#94a3b8;font-size:13px;line-height:1.5;margin:24px 0 0">Se você não solicitou esta redefinição, ignore este e-mail. Sua senha permanecerá inalterada.</p>
 </div>
@@ -106,7 +106,7 @@ const templates: EmailTemplate[] = [
     icon: <Send className="w-4 h-4" />,
     category: 'transacional',
     html: `<div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06)">
-<div style="background:linear-gradient(135deg,#0284c7,#0369a1);padding:40px 32px;text-align:center">
+<div style="background:linear-gradient(135deg,#e80685,#08a1d6);padding:40px 32px;text-align:center">
 <div style="width:56px;height:56px;background:rgba(255,255,255,0.2);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px"><span style="font-size:28px">🏊</span></div>
 <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:700">Seu Resultado do Quintal Ideal!</h1>
 <p style="color:#e0f2fe;margin:8px 0 0;font-size:14px">Olá, {nome}! Aqui está o resultado da análise do seu quintal.</p>
@@ -114,8 +114,8 @@ const templates: EmailTemplate[] = [
 <div style="padding:32px;text-align:center">
 <div style="display:inline-block;background:#e0f2fe;border-radius:16px;padding:24px 40px">
 <p style="margin:0;font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:1px;font-weight:600">Índice do Quintal</p>
-<p style="margin:6px 0;font-size:48px;font-weight:800;color:#0369a1;letter-spacing:-2px">{pontuacao}%</p>
-<p style="margin:0;font-size:14px;font-weight:700;color:#0369a1">🏆 Quintal Excelente</p>
+<p style="margin:6px 0;font-size:48px;font-weight:800;color:#08a1d6;letter-spacing:-2px">{pontuacao}%</p>
+<p style="margin:0;font-size:14px;font-weight:700;color:#08a1d6">🏆 Quintal Excelente</p>
 </div>
 </div>
 <div style="padding:0 32px 24px">
@@ -133,7 +133,7 @@ const templates: EmailTemplate[] = [
 <a href="#" style="display:inline-block;background:#16a34a;color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:10px;font-weight:700;font-size:15px">💬 Falar no WhatsApp</a>
 </div>
 <div style="padding:24px 32px;background:#f8fafc;border-top:1px solid #e2e8f0;text-align:center">
-<p style="margin:0;color:#94a3b8;font-size:11px">Você recebeu este e-mail porque fez o teste do Quintal Ideal.<br/><a href="https://quintalideal.com.br" style="color:#0369a1;text-decoration:none;font-weight:500">quintalideal.com.br</a></p>
+<p style="margin:0;color:#94a3b8;font-size:11px">Você recebeu este e-mail porque fez o teste do Quintal Ideal.<br/><a href="https://quintalideal.com.br" style="color:#08a1d6;text-decoration:none;font-weight:500">quintalideal.com.br</a></p>
 </div>
 </div>`,
   },
@@ -146,7 +146,7 @@ const templates: EmailTemplate[] = [
     icon: <BarChart3 className="w-4 h-4" />,
     category: 'relatorio',
     html: `<div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06)">
-<div style="background:linear-gradient(135deg,#0284c7,#0369a1);padding:40px 32px;text-align:center">
+<div style="background:linear-gradient(135deg,#e80685,#08a1d6);padding:40px 32px;text-align:center">
 <div style="width:56px;height:56px;background:rgba(255,255,255,0.2);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px"><span style="font-size:28px">📊</span></div>
 <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:700">Relatório Mensal</h1>
 <p style="color:#e0f2fe;margin:8px 0 0;font-size:14px">{nome_franquia} • {mês_referência}</p>
@@ -160,7 +160,7 @@ const templates: EmailTemplate[] = [
 <tr><td style="padding:12px 8px;border-bottom:1px solid #f1f5f9;color:#64748b;font-size:14px">🆕 Novos</td><td style="padding:12px 8px;border-bottom:1px solid #f1f5f9;font-weight:600;text-align:right">{novos}</td></tr>
 <tr><td style="padding:12px 8px;border-bottom:1px solid #f1f5f9;color:#64748b;font-size:14px">📞 Contatados</td><td style="padding:12px 8px;border-bottom:1px solid #f1f5f9;font-weight:600;text-align:right">{contatados}</td></tr>
 <tr><td style="padding:12px 8px;border-bottom:1px solid #f1f5f9;color:#64748b;font-size:14px">✅ Vendidos</td><td style="padding:12px 8px;border-bottom:1px solid #f1f5f9;font-weight:600;text-align:right">{vendidos}</td></tr>
-<tr><td style="padding:12px 8px;color:#64748b;font-size:14px">📊 Taxa de Conversão</td><td style="padding:12px 8px;font-weight:700;font-size:18px;color:#0ea5e9;text-align:right">{taxa_conversao}%</td></tr>
+<tr><td style="padding:12px 8px;color:#64748b;font-size:14px">📊 Taxa de Conversão</td><td style="padding:12px 8px;font-weight:700;font-size:18px;color:#08a1d6;text-align:right">{taxa_conversao}%</td></tr>
 </table>
 </div>
 <div style="padding:0 32px 24px">
@@ -168,10 +168,10 @@ const templates: EmailTemplate[] = [
 <p style="margin:0;font-size:14px;color:#334155">{top_cidades}</p>
 </div>
 <div style="padding:8px 32px 32px;text-align:center">
-<a href="https://quintalideal.com.br/painel" style="display:inline-block;background:linear-gradient(135deg,#0284c7,#0369a1);color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:10px;font-weight:700;font-size:15px">Ver Painel Completo →</a>
+<a href="https://quintalideal.com.br/painel" style="display:inline-block;background:linear-gradient(135deg,#e80685,#08a1d6);color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:10px;font-weight:700;font-size:15px">Ver Painel Completo →</a>
 </div>
 <div style="padding:24px 32px;background:#f8fafc;border-top:1px solid #e2e8f0;text-align:center">
-<p style="margin:0;color:#94a3b8;font-size:11px">Relatório gerado automaticamente.<br/><a href="https://quintalideal.com.br" style="color:#0369a1;text-decoration:none;font-weight:500">quintalideal.com.br</a></p>
+<p style="margin:0;color:#94a3b8;font-size:11px">Relatório gerado automaticamente.<br/><a href="https://quintalideal.com.br" style="color:#08a1d6;text-decoration:none;font-weight:500">quintalideal.com.br</a></p>
 </div>
 </div>`,
   },
@@ -198,7 +198,7 @@ const templates: EmailTemplate[] = [
 <p style="margin:0;font-size:13px;color:#64748b;line-height:1.6"><strong>O lead foi salvo normalmente</strong> no painel. Verifique se a URL do webhook está correta.</p>
 </div>
 <div style="padding:0 24px 28px;text-align:center">
-<a href="https://quintalideal.com.br/perfil#integracoes" style="display:inline-block;background:linear-gradient(135deg,#0284c7,#0369a1);color:#fff;text-decoration:none;padding:12px 32px;border-radius:10px;font-weight:700;font-size:14px">Verificar configurações →</a>
+<a href="https://quintalideal.com.br/perfil#integracoes" style="display:inline-block;background:linear-gradient(135deg,#e80685,#08a1d6);color:#fff;text-decoration:none;padding:12px 32px;border-radius:10px;font-weight:700;font-size:14px">Verificar configurações →</a>
 </div>
 <div style="padding:20px 24px;background:#f8fafc;text-align:center;border-top:1px solid #e2e8f0">
 <p style="color:#94a3b8;font-size:12px;margin:0">Quintal Ideal Splash • Alerta automático</p>
@@ -214,7 +214,7 @@ const templates: EmailTemplate[] = [
     icon: <FileText className="w-4 h-4" />,
     category: 'transacional',
     html: `<div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06)">
-<div style="background:linear-gradient(135deg,#0284c7,#0369a1);padding:40px 32px;text-align:center">
+<div style="background:linear-gradient(135deg,#e80685,#08a1d6);padding:40px 32px;text-align:center">
 <div style="width:56px;height:56px;background:rgba(255,255,255,0.2);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px"><span style="font-size:28px">📋</span></div>
 <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:700">Nova Proposta Comercial!</h1>
 <p style="color:#e0f2fe;margin:8px 0 0;font-size:14px">Você recebeu uma proposta comercial. Confira todos os detalhes abaixo.</p>
@@ -226,14 +226,14 @@ const templates: EmailTemplate[] = [
 <div style="padding:0 32px 20px;text-align:center">
 <div style="display:inline-block;background:#e0f2fe;border-radius:16px;padding:20px 40px">
 <p style="margin:0;font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:1px;font-weight:600">Valor Total</p>
-<p style="margin:6px 0;font-size:36px;font-weight:800;color:#0369a1;letter-spacing:-1px">{valor_total}</p>
+<p style="margin:6px 0;font-size:36px;font-weight:800;color:#08a1d6;letter-spacing:-1px">{valor_total}</p>
 </div>
 </div>
 <div style="padding:0 32px 32px;text-align:center">
-<a href="{link_proposta}" style="display:inline-block;background:linear-gradient(135deg,#0284c7,#0369a1);color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:10px;font-weight:700;font-size:15px;box-shadow:0 4px 12px rgba(3,105,161,0.3)">Ver Proposta Completa →</a>
+<a href="{link_proposta}" style="display:inline-block;background:linear-gradient(135deg,#e80685,#08a1d6);color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:10px;font-weight:700;font-size:15px;box-shadow:0 4px 12px rgba(232,6,133,0.3)">Ver Proposta Completa →</a>
 </div>
 <div style="padding:24px 32px;background:#f8fafc;border-top:1px solid #e2e8f0;text-align:center">
-<p style="margin:0;color:#94a3b8;font-size:11px">Você recebeu este e-mail porque uma proposta comercial foi enviada para você.<br/><a href="https://quintalideal.com.br" style="color:#0369a1;text-decoration:none;font-weight:500">quintalideal.com.br</a></p>
+<p style="margin:0;color:#94a3b8;font-size:11px">Você recebeu este e-mail porque uma proposta comercial foi enviada para você.<br/><a href="https://quintalideal.com.br" style="color:#08a1d6;text-decoration:none;font-weight:500">quintalideal.com.br</a></p>
 </div>
 </div>`,
   },
@@ -246,7 +246,7 @@ const templates: EmailTemplate[] = [
     icon: <FileText className="w-4 h-4" />,
     category: 'transacional',
     html: `<div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06)">
-<div style="background:linear-gradient(135deg,#0284c7,#0369a1);padding:40px 32px;text-align:center">
+<div style="background:linear-gradient(135deg,#e80685,#08a1d6);padding:40px 32px;text-align:center">
 <div style="width:56px;height:56px;background:rgba(255,255,255,0.2);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px"><span style="font-size:28px">🔄</span></div>
 <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:700">Proposta Atualizada!</h1>
 <p style="color:#e0f2fe;margin:8px 0 0;font-size:14px">Uma proposta que você recebeu foi atualizada. Confira os novos detalhes.</p>
@@ -258,14 +258,14 @@ const templates: EmailTemplate[] = [
 <div style="padding:0 32px 20px;text-align:center">
 <div style="display:inline-block;background:#e0f2fe;border-radius:16px;padding:20px 40px">
 <p style="margin:0;font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:1px;font-weight:600">Novo Valor Total</p>
-<p style="margin:6px 0;font-size:36px;font-weight:800;color:#0369a1;letter-spacing:-1px">{valor_total}</p>
+<p style="margin:6px 0;font-size:36px;font-weight:800;color:#08a1d6;letter-spacing:-1px">{valor_total}</p>
 </div>
 </div>
 <div style="padding:0 32px 32px;text-align:center">
-<a href="{link_proposta}" style="display:inline-block;background:linear-gradient(135deg,#0284c7,#0369a1);color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:10px;font-weight:700;font-size:15px;box-shadow:0 4px 12px rgba(3,105,161,0.3)">Ver Proposta Atualizada →</a>
+<a href="{link_proposta}" style="display:inline-block;background:linear-gradient(135deg,#e80685,#08a1d6);color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:10px;font-weight:700;font-size:15px;box-shadow:0 4px 12px rgba(232,6,133,0.3)">Ver Proposta Atualizada →</a>
 </div>
 <div style="padding:24px 32px;background:#f8fafc;border-top:1px solid #e2e8f0;text-align:center">
-<p style="margin:0;color:#94a3b8;font-size:11px">Você recebeu este e-mail porque uma proposta comercial foi atualizada.<br/><a href="https://quintalideal.com.br" style="color:#0369a1;text-decoration:none;font-weight:500">quintalideal.com.br</a></p>
+<p style="margin:0;color:#94a3b8;font-size:11px">Você recebeu este e-mail porque uma proposta comercial foi atualizada.<br/><a href="https://quintalideal.com.br" style="color:#08a1d6;text-decoration:none;font-weight:500">quintalideal.com.br</a></p>
 </div>
 </div>`,
   },

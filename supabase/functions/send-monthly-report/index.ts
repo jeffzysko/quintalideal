@@ -59,7 +59,7 @@ function buildEmailHTML(report: FranchiseReport, monthLabel: string): string {
 <table width="600" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06);">
 
 <!-- Header -->
-<tr><td style="background:linear-gradient(135deg,#0369a1,#0ea5e9);padding:32px 40px;">
+<tr><td style="background:linear-gradient(135deg,#e80685,#08a1d6);padding:32px 40px;">
   <h1 style="margin:0;color:#ffffff;font-size:22px;font-weight:700;">📊 Relatório Mensal</h1>
   <p style="margin:8px 0 0;color:rgba(255,255,255,0.85);font-size:14px;">${monthLabel} · ${report.franchise_name}</p>
 </td></tr>
@@ -77,7 +77,7 @@ function buildEmailHTML(report: FranchiseReport, monthLabel: string): string {
   <table width="100%" cellpadding="0" cellspacing="0">
     <tr>
       <td width="33%" style="text-align:center;padding:12px;">
-        <div style="font-size:28px;font-weight:800;color:#0369a1;">${report.total_leads}</div>
+        <div style="font-size:28px;font-weight:800;color:#08a1d6;">${report.total_leads}</div>
         <div style="font-size:12px;color:#6b7280;margin-top:4px;">Total de Leads</div>
       </td>
       <td width="33%" style="text-align:center;padding:12px;">
@@ -121,9 +121,9 @@ function buildEmailHTML(report: FranchiseReport, monthLabel: string): string {
 
 <!-- Score -->
 <tr><td style="padding:0 40px 24px;">
-  <div style="background:#f0f9ff;border-radius:12px;padding:16px 20px;text-align:center;">
-    <div style="font-size:12px;color:#0369a1;font-weight:600;text-transform:uppercase;">Potencial Médio dos Quintais</div>
-    <div style="font-size:32px;font-weight:800;color:#0369a1;margin-top:4px;">${report.avg_score}%</div>
+  <div style="background:#fce4f0;border-radius:12px;padding:16px 20px;text-align:center;">
+    <div style="font-size:12px;color:#e80685;font-weight:600;text-transform:uppercase;">Potencial Médio dos Quintais</div>
+    <div style="font-size:32px;font-weight:800;color:#08a1d6;margin-top:4px;">${report.avg_score}%</div>
   </div>
 </td></tr>
 

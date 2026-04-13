@@ -7,14 +7,15 @@ const corsHeaders = {
 };
 
 const SENDER = "Quintal Ideal Splash <noreply@hallow.com.br>";
-const BRAND_BLUE = "#0369a1";
-const BRAND_BLUE_LIGHT = "#e0f2fe";
-const BRAND_GRADIENT = "linear-gradient(135deg, #0284c7, #0369a1)";
+const BRAND_PINK = "#e80685";
+const BRAND_BLUE = "#08a1d6";
+const BRAND_BLUE_LIGHT = "#d4eef9";
+const BRAND_GRADIENT = "linear-gradient(135deg, #e80685, #08a1d6)";
 const SITE_URL = "https://quintalideal.com.br";
 
 function getScoreClassification(score: number): { label: string; emoji: string; color: string } {
   if (score >= 80) return { label: "Quintal Excelente", emoji: "🏆", color: "#16a34a" };
-  if (score >= 60) return { label: "Bom Potencial", emoji: "✅", color: "#0369a1" };
+  if (score >= 60) return { label: "Bom Potencial", emoji: "✅", color: "#08a1d6" };
   if (score >= 40) return { label: "Potencial Moderado", emoji: "🔧", color: "#d97706" };
   return { label: "Precisa de Ajustes", emoji: "📋", color: "#dc2626" };
 }
@@ -97,7 +98,7 @@ function buildResultEmailHTML(
 
         <!-- Website CTA -->
         <tr><td style="padding:8px 32px 32px;text-align:center;">
-          <a href="${SITE_URL}" style="display:inline-block;background:${BRAND_GRADIENT};color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:10px;font-weight:700;font-size:15px;letter-spacing:0.2px;box-shadow:0 4px 12px rgba(3,105,161,0.3);">
+          <a href="${SITE_URL}" style="display:inline-block;background:${BRAND_GRADIENT};color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:10px;font-weight:700;font-size:15px;letter-spacing:0.2px;box-shadow:0 4px 12px rgba(232,6,133,0.3);">
             Explorar Modelos de Piscina →
           </a>
         </td></tr>
