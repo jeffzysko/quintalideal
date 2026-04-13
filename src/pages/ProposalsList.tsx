@@ -120,7 +120,7 @@ export default function ProposalsList() {
 
   const editProposal = (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    navigate(`/propostas/${id}/editar`);
+    navigate(`/propostas/nova?edit=${id}`);
   };
 
   // Count by status for tab badges
