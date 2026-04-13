@@ -1279,7 +1279,7 @@ export default function PublicProposal() {
       </Dialog>
 
       {/* Refuse */}
-      <Dialog open={refuseOpen} onOpenChange={setRefuseOpen}>
+      <Dialog open={refuseOpen} onOpenChange={(open) => { setRefuseOpen(open); if (!open) { setRefuseReason(''); setCustomRefuseReason(''); } }}>
         <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold">Recusar proposta</DialogTitle>
@@ -1305,7 +1305,7 @@ export default function PublicProposal() {
       </Dialog>
 
       {/* Question */}
-      <Dialog open={questionOpen} onOpenChange={setQuestionOpen}>
+      <Dialog open={questionOpen} onOpenChange={(open) => { setQuestionOpen(open); if (!open) setQuestionText(''); }}>
         <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold">💬 Enviar dúvida</DialogTitle>
@@ -1323,7 +1323,7 @@ export default function PublicProposal() {
       </Dialog>
 
       {/* Negotiate */}
-      <Dialog open={negotiateOpen} onOpenChange={setNegotiateOpen}>
+      <Dialog open={negotiateOpen} onOpenChange={(open) => { setNegotiateOpen(open); if (!open) { setNegotiateItem(''); setNegotiateValue(''); setNegotiateMessage(''); } }}>
         <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold">🔄 Propor Ajuste</DialogTitle>
