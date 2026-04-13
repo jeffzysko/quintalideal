@@ -1261,7 +1261,7 @@ export default function PublicProposal() {
 
       {/* ═══════════ MODALS ═══════════ */}
       {/* Accept */}
-      <Dialog open={acceptOpen} onOpenChange={setAcceptOpen}>
+      <Dialog open={acceptOpen} onOpenChange={(open) => { setAcceptOpen(open); if (!open) setAcceptName(''); }}>
         <DialogContent className="sm:max-w-md rounded-2xl">
           <DialogHeader>
             <DialogTitle className="text-lg font-bold">Confirmar aceite</DialogTitle>
