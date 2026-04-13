@@ -4,306 +4,30 @@ import { supabase } from '@/integrations/supabase/client';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Check, X, MessageCircle, Download, CreditCard, Truck, CalendarDays, Phone, User, FileText, AlertTriangle, RefreshCw, Droplets, Shield, Star, Sparkles, ArrowRight, Loader2, ShieldCheck, Copy, CheckCircle2 } from 'lucide-react';
-import { format, differenceInDays, differenceInHours, differenceInMinutes, isPast } from 'date-fns';
+import { Check, X, MessageCircle, Download, CreditCard, Truck, CalendarDays, Phone, User, FileText, RefreshCw, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
+import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
 import { VideoEmbed } from '@/components/proposals/ProposalVideoSection';
 import logoSplash from '@/assets/logo-splash.png';
-// jsPDF and QRCode are lazy-loaded in handleExportPDF for bundle optimization
 
-const formatCurrency = (v: number) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+import {
+  type ProposalData,
+  formatCurrency,
+  getPaymentLabel,
+  STATUS_CONFIG,
+  stagger,
+  staggerItem,
+  SectionCard,
+  VerificationFooter,
+  CountdownTimer,
+  TrustBadges,
+} from '@/components/proposals/public/ProposalShared';
 
-const PAYMENT_LABELS: Record<string, string> = {
-  pix: 'Pix',
-  boleto: 'Boleto',
-  cartao: 'Cartão de Crédito',
-  transferencia: 'Transferência',
-  cfm: 'CFM',
-  cred_window: 'Cred Window',
-  compra_programada: 'Compra Programada',
-  financiamento_banco: 'Financiamento via Banco',
-  outro: 'Outro',
-};
-const getPaymentLabel = (v: string | null) => (v ? PAYMENT_LABELS[v] || v : '');
-
-interface ProposalData {
-  id: string;
-  public_token: string;
-  client_name: string;
-  client_document: string | null;
-  client_phone: string | null;
-  client_email: string | null;
-  client_address: string | null;
-  client_contact_name: string | null;
-  person_type: string;
-  status: string;
-  subtotal: number;
-  total: number;
-  global_discount: number;
-  global_discount_type: string;
-  payment_method: string | null;
-  payment_conditions: string | null;
-  delivery_deadline: string | null;
-  validity_date: string | null;
-  observations: string | null;
-  created_at: string;
-  accepted_at: string | null;
-  accepted_by_name: string | null;
-  refused_at: string | null;
-  refused_reason: string | null;
-  franchise_id: string;
-  video_url?: string | null;
-  items: Array<{
-    id: string;
-    product_name: string;
-    description: string | null;
-    quantity: number;
-    unit_price: number;
-    discount: number;
-    subtotal: number;
-    sort_order: number;
-  }>;
-  franchise: {
-    nome_franquia: string;
-    whatsapp: string | null;
-    email: string | null;
-    cidade_base: string | null;
-    endereco: string | null;
-  } | null;
-  seller: {
-    full_name: string | null;
-    avatar_url: string | null;
-    telefone: string | null;
-  } | null;
-}
-
-const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; icon: string }> = {
-  rascunho: { label: 'Rascunho', color: 'text-muted-foreground', bg: 'bg-muted', icon: '📝' },
-  enviada: { label: 'Aguardando aprovação', color: 'text-amber-700 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-500/10', icon: '⏳' },
-  visualizada: { label: 'Aguardando aprovação', color: 'text-amber-700 dark:text-amber-400', bg: 'bg-amber-50 dark:bg-amber-500/10', icon: '👁️' },
-  em_negociacao: { label: 'Em negociação', color: 'text-info', bg: 'bg-info/10', icon: '🤝' },
-  aceita: { label: 'Proposta Aceita ✓', color: 'text-success', bg: 'bg-success/10', icon: '✅' },
-  recusada: { label: 'Proposta Recusada', color: 'text-destructive', bg: 'bg-destructive/10', icon: '❌' },
-};
-
-const REFUSE_REASONS = [
-  'Preço alto',
-  'Prazo inadequado',
-  'Optei por outro fornecedor',
-  'Não é o momento',
-  'Outro',
-];
-
-/* ── Stagger container ── */
-const stagger = {
-  hidden: {},
-  show: { transition: { staggerChildren: 0.08 } },
-};
-const staggerItem = {
-  hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] as const } },
-};
-
-/* ── Verification code generator ── */
-function generateVerificationCode(id: string, token: string): string {
-  // Deterministic hash from id + token
-  let hash = 0;
-  const str = id + token;
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
-    hash = hash & hash; // Convert to 32bit integer
-  }
-  const abs = Math.abs(hash);
-  const part1 = (abs % 10000).toString().padStart(4, '0');
-  const part2 = ((abs >>> 8) % 10000).toString().padStart(4, '0');
-  return `SPL-${part1}-${part2}`;
-}
-
-/* ── Verification Footer ── */
-function VerificationFooter({ proposal }: { proposal: ProposalData }) {
-  const [copied, setCopied] = useState(false);
-  const code = generateVerificationCode(proposal.id, proposal.public_token);
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(code);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  return (
-    <motion.div
-      data-pdf-section
-      initial={{ opacity: 0 }}
-      whileInView={{ opacity: 1 }}
-      viewport={{ once: true }}
-      className="space-y-5 pb-6"
-    >
-      {/* Verification card */}
-      <div className="relative rounded-2xl border border-border/40 bg-card/60 backdrop-blur-sm overflow-hidden">
-        <div className="h-0.5 w-full" style={{ background: 'linear-gradient(90deg, hsl(207 90% 42%), hsl(152 70% 45%), hsl(207 90% 42%))' }} />
-        <div className="p-5 space-y-4">
-          <div className="flex items-center justify-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-success" />
-            <h4 className="text-sm font-bold text-foreground">Código de Verificação</h4>
-          </div>
-
-          <div className="flex items-center justify-center gap-3">
-            <div className="bg-muted/50 border border-border/50 rounded-xl px-5 py-3">
-              <span className="font-mono text-lg font-black tracking-[0.15em] text-foreground">{code}</span>
-            </div>
-            <button
-              onClick={handleCopy}
-              className="p-2.5 rounded-xl bg-muted/50 border border-border/50 hover:bg-muted transition-colors print:hidden"
-              title="Copiar código"
-            >
-              {copied ? <CheckCircle2 className="w-4 h-4 text-success" /> : <Copy className="w-4 h-4 text-muted-foreground" />}
-            </button>
-          </div>
-
-          <div className="text-center space-y-1.5">
-            <p className="text-[11px] text-muted-foreground/70 leading-relaxed max-w-sm mx-auto">
-              Este código garante a autenticidade desta proposta.
-              Verifique diretamente com a <strong className="text-foreground/80">Splash Piscinas</strong> em caso de dúvida.
-            </p>
-            <div className="flex items-center justify-center gap-4 text-[10px] text-muted-foreground/50 font-medium">
-              <span>ID: #{proposal.id.slice(0, 8).toUpperCase()}</span>
-              <span>•</span>
-              <span>Emitida em {format(new Date(proposal.created_at), "dd/MM/yyyy")}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Logo footer */}
-      <div className="text-center space-y-2">
-        <img src={logoSplash} alt="Splash" className="h-7 mx-auto opacity-20" />
-        <p className="text-[10px] text-muted-foreground/40 font-medium">
-          Proposta gerada pela plataforma Splash Piscinas
-        </p>
-      </div>
-    </motion.div>
-  );
-}
-
-/* ── Countdown ── */
-function CountdownTimer({ validityDate }: { validityDate: string }) {
-  const [now, setNow] = useState(new Date());
-  useEffect(() => { const i = setInterval(() => setNow(new Date()), 1000); return () => clearInterval(i); }, []);
-
-  const target = new Date(validityDate + 'T23:59:59');
-  if (isPast(target)) {
-    return (
-      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
-        className="flex items-center gap-3 bg-destructive/5 border border-destructive/20 px-5 py-4 rounded-2xl">
-        <AlertTriangle className="w-5 h-5 text-destructive shrink-0" />
-        <p className="text-destructive text-sm font-medium">Esta proposta expirou e não está mais disponível para aceite.</p>
-      </motion.div>
-    );
-  }
-
-  const days = differenceInDays(target, now);
-  const hours = differenceInHours(target, now) % 24;
-  const minutes = differenceInMinutes(target, now) % 60;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.3 }}
-      className="relative overflow-hidden rounded-2xl border border-border/50 bg-card p-6"
-    >
-      {/* Subtle animated gradient bg */}
-      <div className="absolute inset-0 opacity-[0.03]"
-        style={{ background: 'linear-gradient(135deg, hsl(207 90% 42%), hsl(322 85% 50%))' }} />
-
-      <div className="relative space-y-4">
-        <div className="flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
-          <CalendarDays className="w-3.5 h-3.5" />
-          <span>Proposta válida por</span>
-        </div>
-        <div className="flex items-center gap-3 justify-center">
-          {[
-            { value: days, label: 'dias' },
-            { value: hours, label: 'horas' },
-            { value: minutes, label: 'min' },
-          ].map(({ value, label }, i) => (
-            <div key={label} className="flex items-center gap-3">
-              <div className="flex flex-col items-center">
-                <motion.div
-                  key={value}
-                  initial={{ rotateX: -90, opacity: 0 }}
-                  animate={{ rotateX: 0, opacity: 1 }}
-                  transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-                  className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-primary-hover flex items-center justify-center shadow-lg"
-                  style={{ boxShadow: '0 8px 32px hsl(207 90% 42% / 0.25)' }}
-                >
-                  <span className="text-2xl font-black text-primary-foreground tabular-nums">
-                    {String(value).padStart(2, '0')}
-                  </span>
-                </motion.div>
-                <span className="text-[10px] text-muted-foreground mt-1.5 uppercase tracking-[0.15em] font-semibold">{label}</span>
-              </div>
-              {i < 2 && <span className="text-xl font-black text-primary/40 -mt-5">:</span>}
-            </div>
-          ))}
-        </div>
-        <p className="text-[11px] text-muted-foreground/60 text-center">
-          Expira em {format(target, "dd/MM/yyyy 'às' HH:mm")}
-        </p>
-      </div>
-    </motion.div>
-  );
-}
-
-/* ── Trust badges ── */
-function TrustBadges() {
-  const badges = [
-    { icon: Shield, label: 'Proposta segura', color: 'text-success', bg: 'bg-success/8 border-success/15' },
-    { icon: Star, label: 'Empresa verificada', color: 'text-warning', bg: 'bg-warning/8 border-warning/15' },
-    { icon: Droplets, label: 'Splash Piscinas', color: 'text-primary', bg: 'bg-primary/8 border-primary/15' },
-  ];
-
-  return (
-    <motion.div
-      variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}
-      className="flex flex-wrap items-center justify-center gap-3"
-    >
-      {badges.map(({ icon: Icon, label, color, bg }) => (
-        <motion.div key={label} variants={staggerItem}
-          className={`flex items-center gap-2 ${bg} border px-4 py-2.5 rounded-full transition-transform hover:scale-105`}
-        >
-          <Icon className={`w-4 h-4 ${color}`} />
-          <span className={`text-xs font-bold ${color}`}>{label}</span>
-        </motion.div>
-      ))}
-    </motion.div>
-  );
-}
-
-/* ── Glassmorphism section card ── */
-function SectionCard({ children, className = '', delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
-  return (
-    <motion.div
-      data-pdf-section
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-40px' }}
-      transition={{ duration: 0.5, delay, ease: [0.22, 1, 0.36, 1] }}
-    >
-      <div className={`relative rounded-2xl border border-border/40 bg-card/80 backdrop-blur-sm shadow-md hover:shadow-lg transition-all duration-300 ${className}`}>
-        {children}
-      </div>
-    </motion.div>
-  );
-}
+import { AcceptDialog, RefuseDialog, QuestionDialog, NegotiateDialog } from '@/components/proposals/public/ProposalDialogs';
+import { exportProposalPDF } from '@/components/proposals/public/ProposalPDFExport';
+import { isPast as _isPast } from 'date-fns';
 
 export default function PublicProposal() {
   const { token } = useParams<{ token: string }>();
@@ -341,7 +65,7 @@ export default function PublicProposal() {
     supabase.rpc('public_register_proposal_view', { _token: token, _user_agent: navigator.userAgent });
   }, [token, proposal?.id]);
 
-  const expired = proposal?.validity_date ? isPast(new Date(proposal.validity_date + 'T23:59:59')) : false;
+  const expired = proposal?.validity_date ? _isPast(new Date(proposal.validity_date + 'T23:59:59')) : false;
   const isFinal = proposal?.status === 'aceita' || proposal?.status === 'recusada';
   const canAct = !expired && !isFinal;
 
@@ -374,409 +98,16 @@ export default function PublicProposal() {
     setSubmitting(false); setNegotiateOpen(false); setNegotiateMessage(''); setNegotiateItem(''); setNegotiateValue('');
     setActionDone('negotiated'); fetchProposal();
   };
-  const [exporting, setExporting] = useState(false);
 
+  const [exporting, setExporting] = useState(false);
   const handleExportPDF = async () => {
     if (!proposal) return;
     setExporting(true);
     try {
-      const [{ jsPDF }, QRCode] = await Promise.all([
-        import('jspdf'),
-        import('qrcode'),
-      ]);
-      const A4_W = 210, A4_H = 297, M = 18;
-      const CW = A4_W - M * 2;
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-      let y = M;
-
-      const brandBlue = [8, 161, 214] as const;   // #08a1d6
-      const brandPink = [232, 6, 133] as const;    // #e80685
-      const textDark = [30, 30, 35] as const;
-      const textMuted = [120, 125, 135] as const;
-      const textLight = [160, 165, 172] as const;
-      const borderColor = [225, 228, 232] as const;
-      const bgMuted = [245, 247, 250] as const;
-
-      const checkPageBreak = (needed: number) => {
-        if (y + needed > A4_H - M - 12) {
-          pdf.addPage();
-          y = M;
-        }
-      };
-
-      const drawRoundedRect = (x: number, ry: number, w: number, h: number, r: number, fill: readonly [number, number, number], stroke?: readonly [number, number, number]) => {
-        if (stroke) { pdf.setDrawColor(...stroke); pdf.setLineWidth(0.3); }
-        pdf.setFillColor(...fill);
-        pdf.roundedRect(x, ry, w, h, r, r, stroke ? 'FD' : 'F');
-      };
-
-      // ── HEADER with gradient line ──
-      pdf.setFillColor(...brandBlue);
-      pdf.rect(0, 0, A4_W, 2.5, 'F');
-      pdf.setFillColor(...brandPink);
-      pdf.rect(A4_W * 0.6, 0, A4_W * 0.4, 2.5, 'F');
-      y = 8;
-
-      // Logo
-      const logoImg = new Image();
-      logoImg.crossOrigin = 'anonymous';
-      logoImg.src = logoSplash;
-      await new Promise<void>((res) => { logoImg.onload = () => res(); logoImg.onerror = () => res(); });
-      if (logoImg.complete && logoImg.naturalWidth > 0) {
-        const logoH = 14;
-        const logoW = (logoImg.naturalWidth / logoImg.naturalHeight) * logoH;
-        pdf.addImage(logoImg, 'PNG', M, y, logoW, logoH);
-      }
-
-      // Right-aligned proposal info
-      pdf.setFontSize(9);
-      pdf.setFont('helvetica', 'normal');
-      pdf.setTextColor(...textMuted);
-      pdf.text(`Proposta #${proposal.id.slice(0, 4).toUpperCase()}`, A4_W - M, y + 4, { align: 'right' });
-      pdf.text(`Emitida em ${format(new Date(proposal.created_at), "dd/MM/yyyy")}`, A4_W - M, y + 9, { align: 'right' });
-      if (proposal.franchise?.nome_franquia) {
-        pdf.setFont('helvetica', 'bold');
-        pdf.text(proposal.franchise.nome_franquia, A4_W - M, y + 14, { align: 'right' });
-      }
-      y += 22;
-
-      // Separator
-      pdf.setDrawColor(...borderColor);
-      pdf.setLineWidth(0.4);
-      pdf.line(M, y, A4_W - M, y);
-      y += 6;
-
-      // ── SELLER / CONSULTANT SECTION ──
-      if (proposal.seller?.full_name) {
-        checkPageBreak(22);
-        drawRoundedRect(M, y, CW, 18, 3, bgMuted, borderColor);
-
-        // Avatar circle
-        const avatarCx = M + 14;
-        const avatarCy = y + 9;
-        pdf.setFillColor(...brandBlue);
-        pdf.circle(avatarCx, avatarCy, 5, 'F');
-        pdf.setFontSize(10);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor(255, 255, 255);
-        const initial = (proposal.seller.full_name || 'V')[0].toUpperCase();
-        pdf.text(initial, avatarCx, avatarCy + 1, { align: 'center' });
-
-        // Seller info
-        const sellerX = M + 24;
-        pdf.setFontSize(9.5);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor(...textDark);
-        pdf.text(proposal.seller.full_name, sellerX, y + 7.5);
-
-        pdf.setFontSize(7.5);
-        pdf.setFont('helvetica', 'normal');
-        pdf.setTextColor(...textMuted);
-        const sellerInfo: string[] = ['Consultor comercial'];
-        if (proposal.seller.telefone) sellerInfo.push(`Tel: ${proposal.seller.telefone}`);
-        pdf.text(sellerInfo.join('  •  '), sellerX, y + 13);
-
-        y += 24;
-      }
-
-      // ── CLIENT SECTION ──
-      checkPageBreak(40);
-      drawRoundedRect(M, y, CW, 32, 3, bgMuted, borderColor);
-
-      pdf.setFontSize(8);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(...brandBlue);
-      pdf.text('DADOS DO CLIENTE', M + 5, y + 6);
-
-      pdf.setFontSize(10);
-      pdf.setTextColor(...textDark);
-      pdf.setFont('helvetica', 'bold');
-      pdf.text(proposal.client_name, M + 5, y + 14);
-
-      pdf.setFontSize(8.5);
-      pdf.setFont('helvetica', 'normal');
-      pdf.setTextColor(...textMuted);
-      let clientY = y + 20;
-      const clientDetails: string[] = [];
-      if (proposal.client_document) clientDetails.push(`${proposal.person_type === 'pj' ? 'CNPJ' : 'CPF'}: ${proposal.client_document}`);
-      if (proposal.client_phone) clientDetails.push(`Tel: ${proposal.client_phone}`);
-      if (proposal.client_email) clientDetails.push(`Email: ${proposal.client_email}`);
-      if (clientDetails.length > 0) {
-        pdf.text(clientDetails.join('   •   '), M + 5, clientY);
-        clientY += 5;
-      }
-      if (proposal.client_address) {
-        pdf.text(proposal.client_address, M + 5, clientY);
-      }
-      y += 38;
-
-      // ── ITEMS TABLE ──
-      checkPageBreak(20 + proposal.items.length * 14);
-
-      pdf.setFontSize(8);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(...brandBlue);
-      pdf.text('ITENS DA PROPOSTA', M, y + 3);
-      y += 8;
-
-      // Table header
-      const colX = { item: M, qty: M + CW * 0.55, unit: M + CW * 0.70, sub: M + CW * 0.85 };
-      drawRoundedRect(M, y, CW, 8, 2, brandBlue);
-      pdf.setFontSize(7.5);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(255, 255, 255);
-      pdf.text('PRODUTO / SERVIÇO', colX.item + 4, y + 5.5);
-      pdf.text('QTD', colX.qty + 2, y + 5.5, { align: 'center' });
-      pdf.text('UNITÁRIO', colX.unit + (CW * 0.15 / 2), y + 5.5, { align: 'center' });
-      pdf.text('SUBTOTAL', A4_W - M - 4, y + 5.5, { align: 'right' });
-      y += 10;
-
-      // Table rows
-      proposal.items.forEach((item, i) => {
-        checkPageBreak(16);
-        const rowH = item.description ? 14 : 10;
-        if (i % 2 === 0) {
-          drawRoundedRect(M, y, CW, rowH, 1.5, bgMuted);
-        }
-
-        pdf.setFontSize(9);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor(...textDark);
-        pdf.text(item.product_name, colX.item + 4, y + 5.5);
-
-        if (item.description) {
-          pdf.setFontSize(7.5);
-          pdf.setFont('helvetica', 'normal');
-          pdf.setTextColor(...textLight);
-          const descLines = pdf.splitTextToSize(item.description, CW * 0.50);
-          pdf.text(descLines[0] || '', colX.item + 4, y + 10.5);
-        }
-
-        pdf.setFontSize(9);
-        pdf.setFont('helvetica', 'normal');
-        pdf.setTextColor(...textMuted);
-        pdf.text(String(item.quantity), colX.qty + 2, y + 5.5, { align: 'center' });
-        pdf.text(formatCurrency(item.unit_price), colX.unit + (CW * 0.15 / 2), y + 5.5, { align: 'center' });
-        pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor(...textDark);
-        pdf.text(formatCurrency(item.subtotal), A4_W - M - 4, y + 5.5, { align: 'right' });
-
-        y += rowH + 1.5;
-      });
-
-      y += 3;
-
-      // ── TOTALS ──
-      checkPageBreak(35);
-      const totalsX = M + CW * 0.55;
-
-      pdf.setDrawColor(...borderColor);
-      pdf.setLineWidth(0.3);
-      pdf.line(totalsX, y, A4_W - M, y);
-      y += 5;
-
-      pdf.setFontSize(9);
-      pdf.setFont('helvetica', 'normal');
-      pdf.setTextColor(...textMuted);
-      pdf.text('Subtotal', totalsX, y + 1);
-      pdf.setTextColor(...textDark);
-      pdf.text(formatCurrency(proposal.subtotal), A4_W - M - 4, y + 1, { align: 'right' });
-      y += 6;
-
-      if (discountAmount > 0) {
-        pdf.setTextColor(...textMuted);
-        pdf.text('Desconto', totalsX, y + 1);
-        pdf.setTextColor(34, 160, 90);
-        pdf.setFont('helvetica', 'bold');
-        pdf.text(`- ${formatCurrency(discountAmount)}`, A4_W - M - 4, y + 1, { align: 'right' });
-        y += 6;
-      }
-
-      // Total highlight box
-      const totalsW = CW * 0.45;
-      drawRoundedRect(totalsX - 3, y, totalsW + 3, 14, 3, brandBlue);
-      pdf.setFontSize(9);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(255, 255, 255);
-      pdf.text('TOTAL', totalsX + 2, y + 9);
-      pdf.setFontSize(14);
-      pdf.text(formatCurrency(proposal.total), A4_W - M - 4, y + 9.5, { align: 'right' });
-      y += 20;
-
-      // ── CONDITIONS ──
-      const conditions: { label: string; value: string }[] = [];
-      if (proposal.payment_method) conditions.push({ label: 'Forma de Pagamento', value: getPaymentLabel(proposal.payment_method) });
-      if (proposal.delivery_deadline) conditions.push({ label: 'Prazo de Entrega', value: proposal.delivery_deadline });
-      if (proposal.validity_date) conditions.push({ label: 'Válida até', value: format(new Date(proposal.validity_date), "dd/MM/yyyy") });
-
-      if (conditions.length > 0) {
-        checkPageBreak(22);
-        pdf.setFontSize(8);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor(...brandBlue);
-        pdf.text('CONDIÇÕES', M, y + 3);
-        y += 8;
-
-        const condW = (CW - (conditions.length - 1) * 4) / conditions.length;
-        conditions.forEach((c, i) => {
-          const cx = M + i * (condW + 4);
-          drawRoundedRect(cx, y, condW, 16, 2.5, bgMuted, borderColor);
-          pdf.setFontSize(7);
-          pdf.setFont('helvetica', 'bold');
-          pdf.setTextColor(...textLight);
-          pdf.text(c.label.toUpperCase(), cx + condW / 2, y + 6, { align: 'center' });
-          pdf.setFontSize(9);
-          pdf.setFont('helvetica', 'bold');
-          pdf.setTextColor(...textDark);
-          pdf.text(c.value, cx + condW / 2, y + 12, { align: 'center' });
-        });
-        y += 22;
-      }
-
-      if (proposal.payment_conditions) {
-        checkPageBreak(16);
-        pdf.setFontSize(8);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor(...brandBlue);
-        pdf.text('CONDIÇÕES DE PAGAMENTO', M, y + 3);
-        y += 7;
-        pdf.setFontSize(8.5);
-        pdf.setFont('helvetica', 'normal');
-        pdf.setTextColor(...textMuted);
-        const condLines = pdf.splitTextToSize(proposal.payment_conditions, CW);
-        pdf.text(condLines, M, y + 1);
-        y += condLines.length * 4 + 6;
-      }
-
-      // ── OBSERVATIONS ──
-      if (proposal.observations) {
-        checkPageBreak(20);
-        pdf.setFontSize(8);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor(...brandBlue);
-        pdf.text('OBSERVAÇÕES', M, y + 3);
-        y += 7;
-        pdf.setFontSize(8.5);
-        pdf.setFont('helvetica', 'normal');
-        pdf.setTextColor(...textMuted);
-        const obsLines = pdf.splitTextToSize(proposal.observations, CW);
-        pdf.text(obsLines, M, y + 1);
-        y += obsLines.length * 4 + 6;
-      }
-
-      // ── FRANCHISE CONTACT INFO ──
-      if (proposal.franchise) {
-        const contactLines: string[] = [];
-        if (proposal.franchise.whatsapp) contactLines.push(`WhatsApp: ${proposal.franchise.whatsapp}`);
-        if (proposal.franchise.email) contactLines.push(`E-mail: ${proposal.franchise.email}`);
-        if (proposal.franchise.endereco) contactLines.push(proposal.franchise.endereco);
-        else if (proposal.franchise.cidade_base) contactLines.push(proposal.franchise.cidade_base);
-
-        const boxH = 16 + contactLines.length * 5 + 8;
-        checkPageBreak(boxH + 12);
-
-        pdf.setFontSize(8);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor(...brandBlue);
-        pdf.text('CONTATO', M, y + 3);
-        y += 8;
-
-        drawRoundedRect(M, y, CW, boxH, 3, bgMuted, borderColor);
-
-        pdf.setFontSize(9.5);
-        pdf.setFont('helvetica', 'bold');
-        pdf.setTextColor(...textDark);
-        pdf.text(proposal.franchise.nome_franquia, M + 5, y + 7);
-
-        pdf.setFontSize(8.5);
-        pdf.setFont('helvetica', 'normal');
-        pdf.setTextColor(...textMuted);
-        let cY = y + 14;
-        contactLines.forEach(line => {
-          pdf.text(line, M + 5, cY);
-          cY += 5;
-        });
-
-        pdf.setFontSize(7.5);
-        pdf.setTextColor(...textLight);
-        pdf.text('Entre em contato para dúvidas ou negociações sobre esta proposta.', M + 5, cY + 2);
-
-        y += boxH + 6;
-      }
-
-      // ── VERIFICATION FOOTER WITH QR CODE ──
-      const verCode = generateVerificationCode(proposal.id, proposal.public_token);
-      const proposalUrl = `${window.location.origin}/proposta/${proposal.public_token}`;
-      checkPageBreak(42);
-
-      pdf.setDrawColor(...borderColor);
-      pdf.setLineWidth(0.3);
-      pdf.line(M, y, A4_W - M, y);
-      y += 6;
-
-      // Generate QR Code
-      let qrDataUrl: string | null = null;
-      try {
-        qrDataUrl = await QRCode.toDataURL(proposalUrl, {
-          width: 200, margin: 1,
-          color: { dark: '#1e1e23', light: '#f5f7fa' },
-        });
-      } catch { /* QR generation failed, skip */ }
-
-      // Verification box with QR code side by side
-      const verBoxH = 30;
-      drawRoundedRect(M, y, CW, verBoxH, 3, bgMuted, borderColor);
-
-      // QR Code on the left
-      if (qrDataUrl) {
-        const qrSize = 22;
-        pdf.addImage(qrDataUrl, 'PNG', M + 5, y + (verBoxH - qrSize) / 2, qrSize, qrSize);
-      }
-
-      const textStartX = qrDataUrl ? M + 32 : M + 5;
-
-      pdf.setFontSize(7);
-      pdf.setFont('helvetica', 'bold');
-      pdf.setTextColor(...textLight);
-      pdf.text('CÓDIGO DE VERIFICAÇÃO', textStartX + (qrDataUrl ? 30 : (CW - 10) / 2), y + 7, { align: 'center' });
-
-      pdf.setFontSize(13);
-      pdf.setFont('courier', 'bold');
-      pdf.setTextColor(...textDark);
-      pdf.text(verCode, textStartX + (qrDataUrl ? 30 : (CW - 10) / 2), y + 15, { align: 'center' });
-
-      pdf.setFontSize(6.5);
-      pdf.setFont('helvetica', 'normal');
-      pdf.setTextColor(...textLight);
-      pdf.text('Escaneie o QR Code para verificar', textStartX + (qrDataUrl ? 30 : (CW - 10) / 2), y + 21, { align: 'center' });
-      pdf.text('esta proposta online', textStartX + (qrDataUrl ? 30 : (CW - 10) / 2), y + 25, { align: 'center' });
-
-      y += verBoxH + 6;
-
-      pdf.setFontSize(7);
-      pdf.setFont('helvetica', 'normal');
-      pdf.setTextColor(...textLight);
-      pdf.text('Este documento garante a autenticidade desta proposta. Verifique com a Splash Piscinas em caso de dúvida.', A4_W / 2, y, { align: 'center' });
-
-      // ── PAGE NUMBERS (applied to all pages) ──
-      const pageCount = pdf.getNumberOfPages();
-
-      for (let i = 1; i <= pageCount; i++) {
-        pdf.setPage(i);
-
-        // Bottom gradient line
-        pdf.setFillColor(...brandBlue);
-        pdf.rect(0, A4_H - 3, A4_W * 0.6, 3, 'F');
-        pdf.setFillColor(...brandPink);
-        pdf.rect(A4_W * 0.6, A4_H - 3, A4_W * 0.4, 3, 'F');
-        // Page number
-        pdf.setFontSize(7.5);
-        pdf.setFont('helvetica', 'normal');
-        pdf.setTextColor(...textLight);
-        pdf.text(`Splash Piscinas  •  Página ${i} de ${pageCount}`, A4_W / 2, A4_H - 6, { align: 'center' });
-      }
-
-      pdf.save(`proposta-${proposal.id.slice(0, 8)}.pdf`);
+      const da = proposal.global_discount_type === 'percent'
+        ? proposal.subtotal * (proposal.global_discount / 100)
+        : proposal.global_discount;
+      await exportProposalPDF(proposal, da);
     } catch (err) {
       console.error('PDF export error:', err);
     } finally {
@@ -838,11 +169,7 @@ export default function PublicProposal() {
         <header className="sticky top-0 z-20 backdrop-blur-xl bg-background/80 border-b border-border/50 print:static">
           <div className="max-w-3xl mx-auto px-5 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <motion.img
-                src={logoSplash} alt="Splash Piscinas" className="h-9 w-auto"
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-              />
+              <motion.img src={logoSplash} alt="Splash Piscinas" className="h-9 w-auto" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} />
               <div className="hidden sm:block h-6 w-px bg-border" />
               <div className="hidden sm:block">
                 <p className="text-xs font-bold text-foreground leading-tight">{proposal.franchise?.nome_franquia}</p>
@@ -859,52 +186,31 @@ export default function PublicProposal() {
 
         <main id="proposal-pdf-content" className="relative max-w-3xl mx-auto px-5 py-8 space-y-7 pb-36 sm:pb-10 print:pb-0 print:space-y-5">
 
-          {/* ═══════════ HERO ═══════════ */}
-          <motion.div
-            data-pdf-section
-            variants={stagger} initial="hidden" animate="show"
-            className="text-center space-y-5 pt-2"
-          >
-            <motion.div variants={staggerItem}
-              className="inline-flex items-center gap-2 bg-primary/8 text-primary px-4 py-1.5 rounded-full text-xs font-bold tracking-wider"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              PROPOSTA #{proposalNumber}
+          {/* ═══ HERO ═══ */}
+          <motion.div data-pdf-section variants={stagger} initial="hidden" animate="show" className="text-center space-y-5 pt-2">
+            <motion.div variants={staggerItem} className="inline-flex items-center gap-2 bg-primary/8 text-primary px-4 py-1.5 rounded-full text-xs font-bold tracking-wider">
+              <Sparkles className="w-3.5 h-3.5" /> PROPOSTA #{proposalNumber}
             </motion.div>
-
-            <motion.h2 variants={staggerItem}
-              className="text-3xl sm:text-[2.75rem] font-black text-foreground tracking-tight leading-[1.1]"
-            >
+            <motion.h2 variants={staggerItem} className="text-3xl sm:text-[2.75rem] font-black text-foreground tracking-tight leading-[1.1]">
               Olá, {proposal.client_name.split(' ')[0]}! 👋
             </motion.h2>
-
-            <motion.p variants={staggerItem}
-              className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto leading-relaxed"
-            >
-              Preparamos uma proposta exclusiva para você.
-              <br className="hidden sm:block" />
-              Confira todos os detalhes abaixo.
+            <motion.p variants={staggerItem} className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto leading-relaxed">
+              Preparamos uma proposta exclusiva para você.<br className="hidden sm:block" />Confira todos os detalhes abaixo.
             </motion.p>
-
             <motion.p variants={staggerItem} className="text-xs text-muted-foreground/50 font-medium">
               Emitida em {format(new Date(proposal.created_at), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
             </motion.p>
-
             {proposal.validity_date && <CountdownTimer validityDate={proposal.validity_date} />}
           </motion.div>
 
-          {/* ═══════════ ACTION DONE MESSAGES ═══════════ */}
+          {/* ═══ ACTION DONE MESSAGES ═══ */}
           <AnimatePresence>
             {actionDone === 'accepted' && (
               <motion.div key="accepted" initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ opacity: 0 }}
                 className="relative overflow-hidden rounded-2xl border border-success/20 p-6 text-center"
-                style={{ background: 'linear-gradient(135deg, hsl(152 70% 96%), hsl(152 70% 94%))' }}
-              >
-                <motion.div
-                  initial={{ scale: 0 }} animate={{ scale: 1 }}
-                  transition={{ type: 'spring', stiffness: 200, damping: 12, delay: 0.1 }}
-                  className="w-16 h-16 rounded-full bg-success/15 flex items-center justify-center mx-auto mb-4"
-                >
+                style={{ background: 'linear-gradient(135deg, hsl(152 70% 96%), hsl(152 70% 94%))' }}>
+                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 200, damping: 12, delay: 0.1 }}
+                  className="w-16 h-16 rounded-full bg-success/15 flex items-center justify-center mx-auto mb-4">
                   <Check className="w-8 h-8 text-success" />
                 </motion.div>
                 <p className="font-black text-success text-lg">Proposta aceita com sucesso! 🎉</p>
@@ -943,7 +249,7 @@ export default function PublicProposal() {
             )}
           </AnimatePresence>
 
-          {/* ═══════════ SELLER CARD ═══════════ */}
+          {/* ═══ SELLER CARD ═══ */}
           {proposal.seller && (
             <SectionCard className="overflow-hidden">
               <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, hsl(322 85% 50%), hsl(207 90% 42%), hsl(140 20% 72%))' }} />
@@ -973,14 +279,12 @@ export default function PublicProposal() {
             </SectionCard>
           )}
 
-          {/* ═══════════ VIDEO ═══════════ */}
+          {/* ═══ VIDEO ═══ */}
           {proposal.video_url && (
             <SectionCard>
               <div className="p-5 space-y-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center">
-                    <span className="text-sm">🎬</span>
-                  </div>
+                  <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center"><span className="text-sm">🎬</span></div>
                   <h3 className="font-bold text-sm text-foreground">Uma mensagem do seu consultor</h3>
                 </div>
                 <VideoEmbed url={proposal.video_url} />
@@ -988,13 +292,11 @@ export default function PublicProposal() {
             </SectionCard>
           )}
 
-          {/* ═══════════ CLIENT DATA ═══════════ */}
+          {/* ═══ CLIENT DATA ═══ */}
           <SectionCard delay={0.05}>
             <div className="p-5 space-y-4">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-primary/8 flex items-center justify-center">
-                  <User className="w-4.5 h-4.5 text-primary" />
-                </div>
+                <div className="w-9 h-9 rounded-xl bg-primary/8 flex items-center justify-center"><User className="w-4.5 h-4.5 text-primary" /></div>
                 <h3 className="font-bold text-sm text-foreground">Dados do Cliente</h3>
               </div>
               <div className="h-px bg-border/50" />
@@ -1005,9 +307,7 @@ export default function PublicProposal() {
                 </div>
                 {proposal.client_document && (
                   <div>
-                    <span className="text-muted-foreground/70 text-[11px] uppercase tracking-[0.1em] font-semibold">
-                      {proposal.person_type === 'pj' ? 'CNPJ' : 'CPF'}
-                    </span>
+                    <span className="text-muted-foreground/70 text-[11px] uppercase tracking-[0.1em] font-semibold">{proposal.person_type === 'pj' ? 'CNPJ' : 'CPF'}</span>
                     <p className="font-semibold text-foreground mt-0.5">{proposal.client_document}</p>
                   </div>
                 )}
@@ -1021,20 +321,17 @@ export default function PublicProposal() {
             </div>
           </SectionCard>
 
-          {/* ═══════════ ITEMS ═══════════ */}
+          {/* ═══ ITEMS ═══ */}
           <SectionCard delay={0.1} className="overflow-hidden">
             <div className="p-5 pb-0">
               <div className="flex items-center gap-2.5 mb-4">
-                <div className="w-9 h-9 rounded-xl bg-primary/8 flex items-center justify-center">
-                  <FileText className="w-4.5 h-4.5 text-primary" />
-                </div>
+                <div className="w-9 h-9 rounded-xl bg-primary/8 flex items-center justify-center"><FileText className="w-4.5 h-4.5 text-primary" /></div>
                 <h3 className="font-bold text-sm text-foreground">Itens da Proposta</h3>
                 <Badge variant="secondary" className="ml-auto text-[10px] font-bold rounded-full px-2.5">
                   {proposal.items.length} {proposal.items.length === 1 ? 'item' : 'itens'}
                 </Badge>
               </div>
             </div>
-
             {/* Desktop table */}
             <div className="hidden sm:block overflow-x-auto">
               <table className="w-full text-sm">
@@ -1048,14 +345,8 @@ export default function PublicProposal() {
                 </thead>
                 <tbody>
                   {proposal.items.map((item, i) => (
-                    <motion.tr
-                      key={item.id}
-                      initial={{ opacity: 0, x: -10 }}
-                      whileInView={{ opacity: 1, x: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: i * 0.05 }}
-                      className={`border-b border-border/30 last:border-0 transition-colors hover:bg-muted/20 ${i % 2 === 0 ? '' : 'bg-muted/10'}`}
-                    >
+                    <motion.tr key={item.id} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}
+                      className={`border-b border-border/30 last:border-0 transition-colors hover:bg-muted/20 ${i % 2 === 0 ? '' : 'bg-muted/10'}`}>
                       <td className="px-5 py-4">
                         <p className="font-semibold text-foreground">{item.product_name}</p>
                         {item.description && <p className="text-xs text-muted-foreground mt-0.5">{item.description}</p>}
@@ -1068,16 +359,11 @@ export default function PublicProposal() {
                 </tbody>
               </table>
             </div>
-
             {/* Mobile cards */}
-            <motion.div
-              variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}
-              className="sm:hidden space-y-2.5 px-5"
-            >
+            <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }} className="sm:hidden space-y-2.5 px-5">
               {proposal.items.map((item) => (
                 <motion.div key={item.id} variants={staggerItem}
-                  className="rounded-xl border border-border/30 bg-muted/20 p-4 space-y-2 transition-all hover:border-primary/20 hover:bg-primary/3"
-                >
+                  className="rounded-xl border border-border/30 bg-muted/20 p-4 space-y-2 transition-all hover:border-primary/20 hover:bg-primary/3">
                   <p className="font-bold text-foreground text-sm">{item.product_name}</p>
                   {item.description && <p className="text-xs text-muted-foreground">{item.description}</p>}
                   <div className="flex justify-between items-center pt-1">
@@ -1087,19 +373,10 @@ export default function PublicProposal() {
                 </motion.div>
               ))}
             </motion.div>
-
-            {/* ── TOTAL SECTION (Premium) ── */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="relative m-5 mt-4 rounded-2xl overflow-hidden"
-            >
-              {/* Gradient background */}
-              <div className="absolute inset-0 opacity-[0.06]"
-                style={{ background: 'linear-gradient(135deg, hsl(207 90% 42%), hsl(322 85% 50%))' }} />
+            {/* Total section */}
+            <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="relative m-5 mt-4 rounded-2xl overflow-hidden">
+              <div className="absolute inset-0 opacity-[0.06]" style={{ background: 'linear-gradient(135deg, hsl(207 90% 42%), hsl(322 85% 50%))' }} />
               <div className="absolute inset-0 bg-card/60 backdrop-blur-sm" />
-
               <div className="relative p-5 space-y-3 border border-border/30 rounded-2xl">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
@@ -1113,22 +390,11 @@ export default function PublicProposal() {
                 )}
                 <div className="h-px bg-border/50 my-1" />
                 <div className="flex justify-between items-end pt-1">
-                  <div>
-                    <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Total</span>
-                  </div>
-                  <motion.div
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    whileInView={{ scale: 1, opacity: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ type: 'spring', stiffness: 200, damping: 12 }}
-                  >
+                  <span className="text-xs text-muted-foreground uppercase tracking-wider font-semibold">Total</span>
+                  <motion.div initial={{ scale: 0.9, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true }}
+                    transition={{ type: 'spring', stiffness: 200, damping: 12 }}>
                     <span className="text-3xl sm:text-4xl font-black tracking-tight"
-                      style={{
-                        background: 'linear-gradient(135deg, hsl(207 90% 42%), hsl(322 85% 50%))',
-                        WebkitBackgroundClip: 'text',
-                        WebkitTextFillColor: 'transparent',
-                      }}
-                    >
+                      style={{ background: 'linear-gradient(135deg, hsl(207 90% 42%), hsl(322 85% 50%))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                       {formatCurrency(proposal.total)}
                     </span>
                   </motion.div>
@@ -1137,18 +403,12 @@ export default function PublicProposal() {
             </motion.div>
           </SectionCard>
 
-          {/* ═══════════ CONDITIONS ═══════════ */}
-          <motion.div
-            data-pdf-section
-            variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }}
-            className="grid grid-cols-1 sm:grid-cols-3 gap-3"
-          >
+          {/* ═══ CONDITIONS ═══ */}
+          <motion.div data-pdf-section variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {proposal.payment_method && (
               <motion.div variants={staggerItem}>
-                <div className="group relative rounded-2xl border border-border/40 bg-card/80 backdrop-blur-sm p-5 text-center
-                  transition-all duration-300 hover:border-secondary/30 hover:shadow-lg hover:-translate-y-0.5">
-                  <div className="w-11 h-11 rounded-xl bg-secondary/8 flex items-center justify-center mx-auto mb-3
-                    group-hover:scale-110 transition-transform duration-300">
+                <div className="group relative rounded-2xl border border-border/40 bg-card/80 backdrop-blur-sm p-5 text-center transition-all duration-300 hover:border-secondary/30 hover:shadow-lg hover:-translate-y-0.5">
+                  <div className="w-11 h-11 rounded-xl bg-secondary/8 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
                     <CreditCard className="w-5 h-5 text-secondary" />
                   </div>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-bold">Pagamento</p>
@@ -1158,10 +418,8 @@ export default function PublicProposal() {
             )}
             {proposal.delivery_deadline && (
               <motion.div variants={staggerItem}>
-                <div className="group relative rounded-2xl border border-border/40 bg-card/80 backdrop-blur-sm p-5 text-center
-                  transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:-translate-y-0.5">
-                  <div className="w-11 h-11 rounded-xl bg-primary/8 flex items-center justify-center mx-auto mb-3
-                    group-hover:scale-110 transition-transform duration-300">
+                <div className="group relative rounded-2xl border border-border/40 bg-card/80 backdrop-blur-sm p-5 text-center transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:-translate-y-0.5">
+                  <div className="w-11 h-11 rounded-xl bg-primary/8 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
                     <Truck className="w-5 h-5 text-primary" />
                   </div>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-bold">Entrega</p>
@@ -1171,10 +429,8 @@ export default function PublicProposal() {
             )}
             {proposal.validity_date && (
               <motion.div variants={staggerItem}>
-                <div className="group relative rounded-2xl border border-border/40 bg-card/80 backdrop-blur-sm p-5 text-center
-                  transition-all duration-300 hover:border-success/30 hover:shadow-lg hover:-translate-y-0.5">
-                  <div className="w-11 h-11 rounded-xl bg-success/8 flex items-center justify-center mx-auto mb-3
-                    group-hover:scale-110 transition-transform duration-300">
+                <div className="group relative rounded-2xl border border-border/40 bg-card/80 backdrop-blur-sm p-5 text-center transition-all duration-300 hover:border-success/30 hover:shadow-lg hover:-translate-y-0.5">
+                  <div className="w-11 h-11 rounded-xl bg-success/8 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
                     <CalendarDays className="w-5 h-5 text-success" />
                   </div>
                   <p className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-bold">Válida até</p>
@@ -1185,12 +441,8 @@ export default function PublicProposal() {
           </motion.div>
 
           {proposal.payment_conditions && (
-            <SectionCard>
-              <div className="p-5 text-sm text-muted-foreground leading-relaxed">{proposal.payment_conditions}</div>
-            </SectionCard>
+            <SectionCard><div className="p-5 text-sm text-muted-foreground leading-relaxed">{proposal.payment_conditions}</div></SectionCard>
           )}
-
-          {/* ═══════════ OBSERVATIONS ═══════════ */}
           {proposal.observations && (
             <SectionCard>
               <div className="p-5 space-y-2">
@@ -1200,40 +452,29 @@ export default function PublicProposal() {
             </SectionCard>
           )}
 
-          {/* ═══════════ DESKTOP ACTIONS ═══════════ */}
+          {/* ═══ DESKTOP ACTIONS ═══ */}
           {canAct && !actionDone && (
-            <motion.div
-              initial={{ opacity: 0, y: 24 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="hidden sm:block print:hidden"
-            >
+            <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="hidden sm:block print:hidden">
               <div className="relative rounded-2xl overflow-hidden border border-border/40">
                 <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, hsl(322 85% 50%), hsl(207 90% 42%), hsl(140 20% 72%))' }} />
                 <div className="bg-card/80 backdrop-blur-sm p-7 space-y-5">
                   <p className="text-center text-sm text-muted-foreground font-semibold">O que você gostaria de fazer?</p>
                   <div className="flex flex-wrap gap-3 justify-center">
                     <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                      <Button onClick={() => setAcceptOpen(true)}
-                        className="gap-2 bg-gradient-to-r from-success to-success/80 hover:from-success/90 hover:to-success/70 text-success-foreground rounded-xl shadow-lg h-12 px-7 font-bold text-sm">
-                        <Check className="w-4 h-4" /> Aceitar Proposta
-                        <ArrowRight className="w-4 h-4 ml-1" />
+                      <Button onClick={() => setAcceptOpen(true)} className="gap-2 bg-gradient-to-r from-success to-success/80 hover:from-success/90 hover:to-success/70 text-success-foreground rounded-xl shadow-lg h-12 px-7 font-bold text-sm">
+                        <Check className="w-4 h-4" /> Aceitar Proposta <ArrowRight className="w-4 h-4 ml-1" />
                       </Button>
                     </motion.div>
-                    <Button variant="outline" onClick={() => setNegotiateOpen(true)}
-                      className="gap-2 border-primary/30 text-primary hover:bg-primary/5 rounded-xl h-12 px-5 font-semibold">
+                    <Button variant="outline" onClick={() => setNegotiateOpen(true)} className="gap-2 border-primary/30 text-primary hover:bg-primary/5 rounded-xl h-12 px-5 font-semibold">
                       <RefreshCw className="w-4 h-4" /> Propor Ajuste
                     </Button>
-                    <Button variant="outline" onClick={() => setRefuseOpen(true)}
-                      className="gap-2 border-destructive/20 text-destructive hover:bg-destructive/5 rounded-xl h-12 px-5 font-semibold">
+                    <Button variant="outline" onClick={() => setRefuseOpen(true)} className="gap-2 border-destructive/20 text-destructive hover:bg-destructive/5 rounded-xl h-12 px-5 font-semibold">
                       <X className="w-4 h-4" /> Recusar
                     </Button>
-                    <Button variant="ghost" onClick={() => setQuestionOpen(true)}
-                      className="gap-2 text-muted-foreground hover:text-foreground rounded-xl h-12 font-semibold">
+                    <Button variant="ghost" onClick={() => setQuestionOpen(true)} className="gap-2 text-muted-foreground hover:text-foreground rounded-xl h-12 font-semibold">
                       <MessageCircle className="w-4 h-4" /> Tenho uma dúvida
                     </Button>
-                    <Button variant="ghost" onClick={handleExportPDF} disabled={exporting}
-                      className="gap-2 text-muted-foreground/50 rounded-xl h-12">
+                    <Button variant="ghost" onClick={handleExportPDF} disabled={exporting} className="gap-2 text-muted-foreground/50 rounded-xl h-12">
                       {exporting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Download className="w-4 h-4" />} PDF
                     </Button>
                   </div>
@@ -1246,136 +487,30 @@ export default function PublicProposal() {
           <VerificationFooter proposal={proposal} />
         </main>
 
-        {/* ═══════════ MOBILE BOTTOM BAR ═══════════ */}
+        {/* ═══ MOBILE BOTTOM BAR ═══ */}
         {canAct && !actionDone && (
           <div className="fixed bottom-0 left-0 right-0 bg-background/95 backdrop-blur-xl border-t border-border/50 p-4 sm:hidden print:hidden z-20"
             style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
             <div className="flex gap-2">
               <motion.div className="flex-1" whileTap={{ scale: 0.97 }}>
-                <Button onClick={() => setAcceptOpen(true)}
-                  className="w-full gap-1.5 h-12 bg-gradient-to-r from-success to-success/80 text-success-foreground rounded-xl shadow-lg font-bold">
+                <Button onClick={() => setAcceptOpen(true)} className="w-full gap-1.5 h-12 bg-gradient-to-r from-success to-success/80 text-success-foreground rounded-xl shadow-lg font-bold">
                   <Check className="w-4 h-4" /> Aceitar
                 </Button>
               </motion.div>
-              <Button variant="outline" onClick={() => setNegotiateOpen(true)}
-                className="h-12 w-12 rounded-xl border-primary/30 text-primary p-0">
-                <RefreshCw className="w-5 h-5" />
-              </Button>
-              <Button variant="outline" onClick={() => setRefuseOpen(true)}
-                className="h-12 w-12 rounded-xl border-destructive/20 text-destructive p-0">
-                <X className="w-5 h-5" />
-              </Button>
-              <Button variant="ghost" onClick={() => setQuestionOpen(true)}
-                className="h-12 w-12 rounded-xl text-muted-foreground p-0">
-                <MessageCircle className="w-5 h-5" />
-              </Button>
+              <Button variant="outline" onClick={() => setNegotiateOpen(true)} className="h-12 w-12 rounded-xl border-primary/30 text-primary p-0"><RefreshCw className="w-5 h-5" /></Button>
+              <Button variant="outline" onClick={() => setRefuseOpen(true)} className="h-12 w-12 rounded-xl border-destructive/20 text-destructive p-0"><X className="w-5 h-5" /></Button>
+              <Button variant="ghost" onClick={() => setQuestionOpen(true)} className="h-12 w-12 rounded-xl text-muted-foreground p-0"><MessageCircle className="w-5 h-5" /></Button>
             </div>
           </div>
         )}
       </div>
 
-      {/* ═══════════ MODALS ═══════════ */}
-      {/* Accept */}
-      <Dialog open={acceptOpen} onOpenChange={(open) => { setAcceptOpen(open); if (!open) setAcceptName(''); }}>
-        <DialogContent className="sm:max-w-md rounded-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-bold">Confirmar aceite</DialogTitle>
-            <DialogDescription>Digite seu nome completo para confirmar a aceitação desta proposta.</DialogDescription>
-          </DialogHeader>
-          <Input placeholder="Seu nome completo" value={acceptName} onChange={(e) => setAcceptName(e.target.value)} className="rounded-xl" />
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setAcceptOpen(false)} className="rounded-xl">Cancelar</Button>
-            <Button onClick={handleAccept} disabled={!acceptName.trim() || submitting}
-              className="bg-gradient-to-r from-success to-success/80 text-success-foreground rounded-xl font-bold">
-              {submitting ? 'Enviando...' : 'Confirmar Aceite'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      {/* ═══ MODALS ═══ */}
+      <AcceptDialog open={acceptOpen} onOpenChange={setAcceptOpen} acceptName={acceptName} setAcceptName={setAcceptName} onAccept={handleAccept} submitting={submitting} />
+      <RefuseDialog open={refuseOpen} onOpenChange={setRefuseOpen} refuseReason={refuseReason} setRefuseReason={setRefuseReason} customRefuseReason={customRefuseReason} setCustomRefuseReason={setCustomRefuseReason} onRefuse={handleRefuse} submitting={submitting} />
+      <QuestionDialog open={questionOpen} onOpenChange={setQuestionOpen} questionText={questionText} setQuestionText={setQuestionText} onQuestion={handleQuestion} submitting={submitting} />
+      <NegotiateDialog open={negotiateOpen} onOpenChange={setNegotiateOpen} negotiateItem={negotiateItem} setNegotiateItem={setNegotiateItem} negotiateValue={negotiateValue} setNegotiateValue={setNegotiateValue} negotiateMessage={negotiateMessage} setNegotiateMessage={setNegotiateMessage} onNegotiate={handleNegotiate} submitting={submitting} items={proposal?.items || []} />
 
-      {/* Refuse */}
-      <Dialog open={refuseOpen} onOpenChange={(open) => { setRefuseOpen(open); if (!open) { setRefuseReason(''); setCustomRefuseReason(''); } }}>
-        <DialogContent className="sm:max-w-md rounded-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-bold">Recusar proposta</DialogTitle>
-            <DialogDescription>Nos ajude a melhorar. Qual o motivo da recusa?</DialogDescription>
-          </DialogHeader>
-          <div className="flex flex-wrap gap-2">
-            {REFUSE_REASONS.map((r) => (
-              <Button key={r} variant={refuseReason === r ? 'default' : 'outline'} size="sm" className="rounded-xl"
-                onClick={() => { setRefuseReason(r); if (r !== 'Outro') setCustomRefuseReason(''); }}>{r}</Button>
-            ))}
-          </div>
-          {refuseReason === 'Outro' && (
-            <Textarea placeholder="Descreva o motivo..." value={customRefuseReason} onChange={(e) => setCustomRefuseReason(e.target.value)} className="rounded-xl" />
-          )}
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setRefuseOpen(false)} className="rounded-xl">Cancelar</Button>
-            <Button variant="destructive" onClick={handleRefuse} className="rounded-xl font-bold"
-              disabled={(!refuseReason || (refuseReason === 'Outro' && !customRefuseReason.trim())) || submitting}>
-              {submitting ? 'Enviando...' : 'Confirmar Recusa'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Question */}
-      <Dialog open={questionOpen} onOpenChange={(open) => { setQuestionOpen(open); if (!open) setQuestionText(''); }}>
-        <DialogContent className="sm:max-w-md rounded-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-bold">💬 Enviar dúvida</DialogTitle>
-            <DialogDescription>Escreva sua pergunta e o vendedor responderá em breve.</DialogDescription>
-          </DialogHeader>
-          <Textarea placeholder="Qual sua dúvida sobre esta proposta?" value={questionText} onChange={(e) => setQuestionText(e.target.value)} rows={4} className="rounded-xl" />
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setQuestionOpen(false)} className="rounded-xl">Cancelar</Button>
-            <Button onClick={handleQuestion} disabled={!questionText.trim() || submitting}
-              className="rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold">
-              {submitting ? 'Enviando...' : 'Enviar Dúvida'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Negotiate */}
-      <Dialog open={negotiateOpen} onOpenChange={(open) => { setNegotiateOpen(open); if (!open) { setNegotiateItem(''); setNegotiateValue(''); setNegotiateMessage(''); } }}>
-        <DialogContent className="sm:max-w-md rounded-2xl">
-          <DialogHeader>
-            <DialogTitle className="text-lg font-bold">🔄 Propor Ajuste</DialogTitle>
-            <DialogDescription>Selecione o item que deseja negociar e descreva sua contraproposta.</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-3">
-            <div>
-              <label className="text-sm font-semibold text-foreground">Item (opcional)</label>
-              <Select value={negotiateItem} onValueChange={setNegotiateItem}>
-                <SelectTrigger className="mt-1 rounded-xl"><SelectValue placeholder="Selecione um item..." /></SelectTrigger>
-                <SelectContent>
-                  {proposal?.items.map((item) => (
-                    <SelectItem key={item.id} value={item.product_name}>{item.product_name}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label className="text-sm font-semibold text-foreground">Valor proposto (opcional)</label>
-              <Input type="number" placeholder="R$ 0,00" value={negotiateValue} onChange={(e) => setNegotiateValue(e.target.value)} className="mt-1 rounded-xl" />
-            </div>
-            <div>
-              <label className="text-sm font-semibold text-foreground">Sua proposta *</label>
-              <Textarea placeholder="Ex: Consigo fechar se o prazo de entrega for de 30 dias..." value={negotiateMessage} onChange={(e) => setNegotiateMessage(e.target.value)} rows={3} className="mt-1 rounded-xl" />
-            </div>
-          </div>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setNegotiateOpen(false)} className="rounded-xl">Cancelar</Button>
-            <Button onClick={handleNegotiate} disabled={!negotiateMessage.trim() || submitting}
-              className="rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold">
-              {submitting ? 'Enviando...' : 'Enviar Proposta'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* Print styles */}
       <style>{`
         @media print {
           body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }

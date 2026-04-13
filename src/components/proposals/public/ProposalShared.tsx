@@ -1,9 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Badge } from '@/components/ui/badge';
-import { Shield, Star, Droplets, CalendarDays, AlertTriangle, ShieldCheck, Copy, CheckCircle2, Sparkles } from 'lucide-react';
+import { Shield, Star, Droplets, CalendarDays, AlertTriangle, ShieldCheck, Copy, CheckCircle2 } from 'lucide-react';
 import { format, differenceInDays, differenceInHours, differenceInMinutes, isPast } from 'date-fns';
-import { ptBR } from 'date-fns/locale';
 
 export interface ProposalData {
   id: string;
