@@ -89,7 +89,7 @@ function buildProposalEmailHTML(
             <span style="font-size:28px">${emoji}</span>
           </div>
           <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:700">${title}</h1>
-          <p style="color:#e0f2fe;margin:8px 0 0;font-size:14px">${subtitle}</p>
+          <p style="color:#d4eef9;margin:8px 0 0;font-size:14px">${subtitle}</p>
         </td></tr>
         
         <!-- Greeting -->
@@ -100,7 +100,7 @@ function buildProposalEmailHTML(
 
         <!-- Total highlight -->
         <tr><td style="padding:0 32px 20px;text-align:center;">
-          <div style="display:inline-block;background:#e0f2fe;border-radius:16px;padding:20px 40px;">
+          <div style="display:inline-block;background:#fce4f0;border-radius:16px;padding:20px 40px;">
             <p style="margin:0;font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:1px;font-weight:600">Valor Total</p>
             <p style="margin:6px 0;font-size:36px;font-weight:800;color:${BRAND_BLUE};letter-spacing:-1px">${formatCurrency(proposalTotal)}</p>
           </div>
@@ -127,7 +127,7 @@ function buildProposalEmailHTML(
 
         <!-- CTA -->
         <tr><td style="padding:0 32px 32px;text-align:center;">
-          <a href="${proposalUrl}" style="display:inline-block;background:${BRAND_GRADIENT};color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:10px;font-weight:700;font-size:15px;box-shadow:0 4px 12px rgba(3,105,161,0.3);">
+          <a href="${proposalUrl}" style="display:inline-block;background:${BRAND_GRADIENT};color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:10px;font-weight:700;font-size:15px;box-shadow:0 4px 12px rgba(232,6,133,0.3);">
             Ver Proposta Completa →
           </a>
           ${whatsappButton}
