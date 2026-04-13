@@ -84,11 +84,28 @@ const initialForm: ProposalFormData = {
 };
 
 export default function NewProposal() {
-  const { franchiseId, user } = useAuth();
+  const { franchiseId: authFranchiseId, user, role } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const editId = searchParams.get('edit');
   const isMobile = useIsMobile();
+  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+
+  // For admins without a franchise, allow selecting one
+  const [selectedFranchiseId, setSelectedFranchiseId] = useState<string | null>(null);
+  const [franchiseOptions, setFranchiseOptions] = useState<{ id: string; nome_franquia: string }[]>([]);
+  const franchiseId = authFranchiseId || selectedFranchiseId;
+
+  // Load franchise options for admins without a franchise
+  useEffect(() => {
+    if (isAdmin && !authFranchiseId) {
+      supabase.from('franchises').select('id, nome_franquia').eq('ativa', true).order('nome_franquia').then(({ data }) => {
+        if (data) setFranchiseOptions(data);
+        if (data?.length === 1) setSelectedFranchiseId(data[0].id);
+      });
+    }
+  }, [isAdmin, authFranchiseId]);
+
   const [form, setForm] = useState<ProposalFormData>(initialForm);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editLoaded, setEditLoaded] = useState(false);
