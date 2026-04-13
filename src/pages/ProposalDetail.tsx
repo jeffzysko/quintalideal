@@ -108,7 +108,7 @@ export default function ProposalDetail() {
     setInternalNotes((proposal as any).internal_notes || '');
   }
 
-  const publicUrl = `${window.location.origin}/proposta/${proposal.public_token}`;
+  const publicUrl = `https://quintalideal.com.br/proposta/${proposal.public_token}`;
 
   const copyLink = () => {
     navigator.clipboard.writeText(publicUrl);
