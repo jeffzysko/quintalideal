@@ -93,7 +93,7 @@ function buildLeadEmailHTML(
 
         <!-- CTA -->
         <tr><td style="padding:8px 32px 32px;text-align:center;">
-          <a href="https://quintalideal.com.br/franquia" style="display:inline-block;background:${BRAND_GRADIENT};color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:10px;font-weight:700;font-size:15px;letter-spacing:0.2px;box-shadow:0 4px 12px rgba(3,105,161,0.3);">
+          <a href="https://quintalideal.com.br/franquia" style="display:inline-block;background:${BRAND_GRADIENT};color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:10px;font-weight:700;font-size:15px;letter-spacing:0.2px;box-shadow:0 4px 12px rgba(232,6,133,0.3);">
             Ver detalhes na plataforma →
           </a>
         </td></tr>

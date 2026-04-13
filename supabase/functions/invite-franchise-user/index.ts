@@ -44,7 +44,7 @@ function buildInviteEmailHTML(userName: string, franchiseName: string, resetPage
           
           <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
             <tr><td align="center" style="padding:8px 0 32px;">
-              <a href="${resetPageLink}" style="display:inline-block;background:${BRAND_GRADIENT};color:#ffffff;text-decoration:none;padding:16px 48px;border-radius:10px;font-weight:700;font-size:16px;letter-spacing:0.2px;box-shadow:0 4px 12px rgba(3,105,161,0.3);">
+              <a href="${resetPageLink}" style="display:inline-block;background:${BRAND_GRADIENT};color:#ffffff;text-decoration:none;padding:16px 48px;border-radius:10px;font-weight:700;font-size:16px;letter-spacing:0.2px;box-shadow:0 4px 12px rgba(232,6,133,0.3);">
                 Definir minha senha →
               </a>
             </td></tr>
