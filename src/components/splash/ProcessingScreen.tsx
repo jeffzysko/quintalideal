@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import logoSplash from '@/assets/logo-splash.png';
+import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
 import { CheckCircle2 } from 'lucide-react';
 import { type Lang, t } from '@/lib/i18n';
 
@@ -67,8 +67,8 @@ export function ProcessingScreen({ onDone, lang = 'pt' }: ProcessingScreenProps)
 
       <div className="text-center max-w-sm w-full relative z-10">
         <motion.img
-          src={logoSplash}
-          alt="Splash"
+          src={logoQuintalIdeal}
+          alt="Quintal Ideal"
           animate={{ opacity: [0.4, 0.7, 0.4] }}
           transition={{ duration: 2, repeat: Infinity }}
           className="mx-auto w-20 mb-10"

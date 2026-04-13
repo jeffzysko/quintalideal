@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
-import logoSplash from '@/assets/logo-splash.png';
+import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
 import { getYardClassification } from '@/lib/ranking';
 import { getPoolImage } from '@/lib/poolImages';
 import { type Lang, t } from '@/lib/i18n';
@@ -118,8 +118,8 @@ export function ResultScreen({ score, poolName, poolDescription, recommendedSize
 
       <div className="flex-1 flex flex-col items-center justify-start pt-6 sm:pt-10 px-4 sm:px-6 relative z-10">
         <motion.img
-          src={logoSplash}
-          alt="Splash Piscinas"
+          src={logoQuintalIdeal}
+          alt="Quintal Ideal"
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.7 }}
           transition={{ delay: 0.1 }}

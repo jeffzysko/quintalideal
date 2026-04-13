@@ -59,7 +59,7 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading, lang = 'pt', ste
       try {
         const result = await onCheckDuplicate(phoneDigits, cleanEmail);
         if (result.duplicate) {
-          const franchise = result.franchiseName || 'Splash Piscinas';
+          const franchise = result.franchiseName || 'Quintal Ideal';
           if (result.field === 'telefone') {
             setDuplicateMsg(
               `Olá! Identificamos que esse telefone já está cadastrado na franquia ${franchise}. A equipe da ${franchise} está pronta para te ajudar com o sonho da sua piscina! 🏊`

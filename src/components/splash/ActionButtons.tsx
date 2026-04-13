@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageCircle, Trophy, ArrowRight, Sparkles, Ruler, Waves, Droplets, Instagram, X, MapPin } from 'lucide-react';
-import logoSplash from '@/assets/logo-splash.png';
+import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
 import { getRankingGaucho, getYardClassification, getSharePhrase, getSocialComparison } from '@/lib/ranking';
 import { getPoolImage } from '@/lib/poolImages';
 import { ValorizationSimulator } from './ValorizationSimulator';
@@ -226,8 +226,8 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
       >
         <div className="relative z-10 px-4 sm:px-6 pt-5 sm:pt-8 pb-4 sm:pb-6 max-w-md mx-auto text-center">
           <motion.img
-            src={logoSplash}
-            alt="Splash Piscinas"
+            src={logoQuintalIdeal}
+            alt="Quintal Ideal"
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.7 }}
             className="mx-auto w-12 sm:w-14 mb-2 sm:mb-3"
@@ -585,7 +585,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
 
           {/* Trust footer */}
           <div className="text-center pt-4 space-y-2">
-            <img src={logoSplash} alt="Splash" className="mx-auto w-16 opacity-30" />
+            <img src={logoQuintalIdeal} alt="Quintal Ideal" className="mx-auto w-16 opacity-30" />
             <p className="text-[10px] text-muted-foreground/50">
               {t('action_footer', lang)}
             </p>

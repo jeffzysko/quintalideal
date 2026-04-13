@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import logoSplash from '@/assets/logo-splash.png';
+import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
 
 import {
   Sidebar,
@@ -150,7 +150,7 @@ export function AppSidebar() {
       <SidebarHeader className="p-3">
         <div className="flex items-center gap-2 overflow-hidden">
           <img
-            src={logoSplash}
+            src={logoQuintalIdeal}
             alt="Logo"
             className="h-8 w-8 shrink-0 object-contain"
           />

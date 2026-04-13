@@ -251,7 +251,7 @@ export function TrustBadges() {
   const badges = [
     { icon: Shield, label: 'Proposta segura', color: 'text-success', bg: 'bg-success/8 border-success/15' },
     { icon: Star, label: 'Empresa verificada', color: 'text-warning', bg: 'bg-warning/8 border-warning/15' },
-    { icon: Droplets, label: 'Splash Piscinas', color: 'text-primary', bg: 'bg-primary/8 border-primary/15' },
+    { icon: Droplets, label: 'Quintal Ideal', color: 'text-primary', bg: 'bg-primary/8 border-primary/15' },
   ];
 
   return (

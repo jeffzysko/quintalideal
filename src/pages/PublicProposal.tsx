@@ -11,7 +11,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
 import { VideoEmbed } from '@/components/proposals/ProposalVideoSection';
-import logoSplash from '@/assets/logo-splash.png';
+import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
 
 import {
   type ProposalData,
@@ -137,7 +137,7 @@ export default function PublicProposal() {
     <div className="min-h-screen flex items-center justify-center bg-background">
       <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="flex flex-col items-center gap-5">
         <motion.img
-          src={logoSplash} alt="Splash" className="w-20 h-auto"
+          src={logoQuintalIdeal} alt="Quintal Ideal" className="w-20 h-auto"
           animate={{ scale: [1, 1.05, 1] }}
           transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
         />
@@ -154,7 +154,7 @@ export default function PublicProposal() {
   if (error || !proposal) return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background px-6 text-center">
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
-        <img src={logoSplash} alt="Splash" className="w-24 h-auto mx-auto" />
+        <img src={logoQuintalIdeal} alt="Quintal Ideal" className="w-24 h-auto mx-auto" />
         <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto">
           <FileText className="w-8 h-8 text-muted-foreground" />
         </div>
@@ -186,7 +186,7 @@ export default function PublicProposal() {
         <header className="sticky top-0 z-20 backdrop-blur-xl bg-background/80 border-b border-border/50 print:static">
           <div className="max-w-3xl mx-auto px-5 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <motion.img src={logoSplash} alt="Splash Piscinas" className="h-9 w-auto" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} />
+              <motion.img src={logoQuintalIdeal} alt="Quintal Ideal" className="h-9 w-auto" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} />
               <div className="hidden sm:block h-6 w-px bg-border" />
               <div className="hidden sm:block">
                 <p className="text-xs font-bold text-foreground leading-tight">{proposal.franchise?.nome_franquia}</p>

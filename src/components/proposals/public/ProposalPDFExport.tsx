@@ -1,6 +1,6 @@
 import { type ProposalData, formatCurrency, getPaymentLabel, generateVerificationCode } from './ProposalShared';
 import { format } from 'date-fns';
-import logoSplash from '@/assets/logo-splash.png';
+import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
 
 export async function exportProposalPDF(proposal: ProposalData, discountAmount: number) {
   const [{ jsPDF }, QRCode] = await Promise.all([
@@ -44,7 +44,7 @@ export async function exportProposalPDF(proposal: ProposalData, discountAmount: 
   // Logo
   const logoImg = new Image();
   logoImg.crossOrigin = 'anonymous';
-  logoImg.src = logoSplash;
+  logoImg.src = logoQuintalIdeal;
   await new Promise<void>((res) => { logoImg.onload = () => res(); logoImg.onerror = () => res(); });
   if (logoImg.complete && logoImg.naturalWidth > 0) {
     const logoH = 14;

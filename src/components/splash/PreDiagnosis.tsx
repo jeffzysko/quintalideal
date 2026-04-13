@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Search, Ruler, TreePine, Sparkles } from 'lucide-react';
-import logoSplash from '@/assets/logo-splash.png';
+import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
 import { type Lang, t } from '@/lib/i18n';
 
 interface PreDiagnosisProps {
@@ -29,8 +29,8 @@ export function PreDiagnosis({ onContinue, lang = 'pt' }: PreDiagnosisProps) {
         className="text-center max-w-md w-full relative z-10"
       >
         <motion.img
-          src={logoSplash}
-          alt="Splash"
+          src={logoQuintalIdeal}
+          alt="Quintal Ideal"
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.6 }}
           transition={{ delay: 0.1 }}

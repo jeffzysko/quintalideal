@@ -4,7 +4,7 @@ import { Download, Check, Share, Plus, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { PageTransition } from '@/components/PageTransition';
-import logoSplash from '@/assets/logo-splash.webp';
+import logoQuintalIdeal from '@/assets/logo-splash.webp';
 
 function isIOS() {
   return /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -77,7 +77,7 @@ export default function InstallPage() {
             className="text-center mb-8"
           >
             <img
-              src={logoSplash}
+              src={logoQuintalIdeal}
               alt="Quintal Ideal"
               className="w-20 h-20 mx-auto mb-4 rounded-2xl shadow-lg"
             />
