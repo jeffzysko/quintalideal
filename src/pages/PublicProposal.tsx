@@ -469,7 +469,42 @@ export default function PublicProposal() {
             </SectionCard>
           )}
 
-          {/* ═══ DESKTOP ACTIONS ═══ */}
+          {/* ═══ ATTACHMENTS ═══ */}
+          {attachments.length > 0 && (
+            <SectionCard>
+              <div className="p-5 space-y-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 rounded-xl bg-primary/8 flex items-center justify-center">
+                    <Paperclip className="w-4.5 h-4.5 text-primary" />
+                  </div>
+                  <h3 className="font-bold text-sm text-foreground">Anexos</h3>
+                </div>
+                <div className="space-y-2">
+                  {attachments.map(att => {
+                    const { data } = supabase.storage.from('proposal-attachments').getPublicUrl(att.file_path);
+                    return (
+                      <a
+                        key={att.id}
+                        href={data.publicUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 rounded-xl border border-border/40 bg-muted/20 px-4 py-3 hover:bg-primary/5 hover:border-primary/30 transition-all group"
+                      >
+                        <Download className="w-4 h-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
+                        <span className="text-sm font-medium text-foreground truncate flex-1">{att.file_name}</span>
+                        <span className="text-[11px] text-muted-foreground shrink-0">
+                          {att.file_size < 1024 * 1024
+                            ? `${(att.file_size / 1024).toFixed(1)} KB`
+                            : `${(att.file_size / (1024 * 1024)).toFixed(1)} MB`}
+                        </span>
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+            </SectionCard>
+          )}
+
           {canAct && !actionDone && (
             <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="hidden sm:block print:hidden">
               <div className="relative rounded-2xl overflow-hidden border border-border/40">
