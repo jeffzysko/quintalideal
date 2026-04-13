@@ -41,7 +41,7 @@ const STATUS_TABS = [
 const formatCurrency = (v: number) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
 export default function ProposalsList() {
-  const { franchiseId, role, user } = useAuth();
+  const { franchiseId, role } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
