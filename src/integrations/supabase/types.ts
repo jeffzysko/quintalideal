@@ -1185,6 +1185,45 @@ export type Database = {
           },
         ]
       }
+      whatsapp_templates: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          label: string
+          message_text: string
+          template_key: string
+          updated_at: string
+          variables: string[]
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          label: string
+          message_text: string
+          template_key: string
+          updated_at?: string
+          variables?: string[]
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          label?: string
+          message_text?: string
+          template_key?: string
+          updated_at?: string
+          variables?: string[]
+        }
+        Relationships: []
+      }
     }
     Views: {
       franchise_safe: {
