@@ -25,11 +25,11 @@ const ActionButtons = lazy(() => import('./ActionButtons').then(m => ({ default:
 
 type Step = 'hero' | 'photos' | 'photo-analysis' | 'pre-diagnosis' | 'quiz' | 'processing' | 'lead-form' | 'actions';
 
-// Preference step images — use SVG illustrations from poolImages
+// Preference step images — dedicated feature illustrations
 const PREF_IMAGES: Record<string, string> = {
-  prainha: poolImages['Prainha'] || '',
-  spa: poolImages['Compacta Premium'] || '',
-  simples: poolImages['Retangular'] || '',
+  prainha: featureImages.prainha,
+  spa: featureImages.spa,
+  simples: featureImages.simples,
 };
 
 interface QuizFlowProps {
