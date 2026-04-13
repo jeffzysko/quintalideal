@@ -343,6 +343,21 @@ export default function NewProposal() {
 
       localStorage.removeItem(`proposal_draft_${franchiseId}`);
 
+      // Send email to client when status is "enviada" and client has email
+      if (finalStatus === 'enviada' && form.client_email.trim()) {
+        const emailType = isEditMode ? 'update' : 'new';
+        supabase.functions.invoke('send-proposal-email', {
+          body: { proposal_id: proposalId, type: emailType },
+        }).then(({ error }) => {
+          if (error) {
+            console.error('Erro ao enviar e-mail da proposta:', error);
+            toast.error('Proposta salva, mas houve um erro ao enviar o e-mail para o cliente.');
+          } else {
+            toast.success('📧 E-mail enviado para o cliente!');
+          }
+        });
+      }
+
       const msg = isEditMode ? 'Proposta atualizada com sucesso!' : 'Proposta criada com sucesso!';
       toast.success(msg, {
         action: { label: 'Ver proposta', onClick: () => navigate(`/propostas/${proposalId}`) },
