@@ -1,17 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
-import { MessageSquare, Paperclip } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { MessageSquare } from 'lucide-react';
 import type { ProposalFormData } from '@/pages/NewProposal';
+import { ProposalAttachments } from './ProposalAttachments';
 
 interface Props {
   form: ProposalFormData;
   updateForm: (u: Partial<ProposalFormData>) => void;
+  proposalId?: string | null;
+  franchiseId?: string;
 }
 
-export function ProposalObservationsSection({ form, updateForm }: Props) {
+export function ProposalObservationsSection({ form, updateForm, proposalId, franchiseId }: Props) {
   return (
     <Card className="shadow-sm border-border/50">
       <CardHeader className="pb-3">
@@ -31,14 +32,13 @@ export function ProposalObservationsSection({ form, updateForm }: Props) {
             rows={5}
           />
         </div>
-        <Tooltip>
-          <TooltipTrigger asChild>
-            <Button variant="outline" size="sm" disabled className="opacity-50">
-              <Paperclip className="w-4 h-4 mr-1" /> Anexar arquivos
-            </Button>
-          </TooltipTrigger>
-          <TooltipContent>Em breve</TooltipContent>
-        </Tooltip>
+        <div>
+          <Label className="text-sm mb-2 block">Anexos</Label>
+          <ProposalAttachments
+            proposalId={proposalId || null}
+            franchiseId={franchiseId || ''}
+          />
+        </div>
       </CardContent>
     </Card>
   );
