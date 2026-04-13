@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
+import { triggerWhatsAppAuto } from '@/lib/whatsapp-auto';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -425,6 +426,11 @@ export default function NewProposal() {
             toast.success('📧 E-mail enviado para o cliente!');
           }
         });
+      }
+
+      // Event 3: WhatsApp auto trigger when proposal is sent
+      if (finalStatus === 'enviada') {
+        triggerWhatsAppAuto({ trigger_event: 'proposal_sent', proposal_id: proposalId, franchise_id: franchiseId });
       }
 
       const msg = isEditMode ? 'Proposta atualizada com sucesso!' : 'Proposta criada com sucesso!';
