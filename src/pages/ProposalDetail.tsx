@@ -21,6 +21,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ProposalScoreReadonly } from '@/components/proposals/ProposalScore';
+import { ProposalAttachments } from '@/components/proposals/ProposalAttachments';
 
 const formatCurrency = (v: number) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -343,6 +344,16 @@ export default function ProposalDetail() {
               <div className="flex justify-between text-base font-bold"><span>Total</span><span className="text-primary">{formatCurrency(proposal.total)}</span></div>
             </CardContent>
           </Card>
+
+          {/* Attachments */}
+          {proposal && (
+            <Card className="shadow-sm border-border/50">
+              <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><FileText className="w-4 h-4 text-primary" /> Anexos</CardTitle></CardHeader>
+              <CardContent>
+                <ProposalAttachments proposalId={proposal.id} franchiseId={proposal.franchise_id} />
+              </CardContent>
+            </Card>
+          )}
 
           {/* Negotiations */}
           {negotiations && negotiations.length > 0 && (

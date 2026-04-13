@@ -618,6 +618,44 @@ export type Database = {
           },
         ]
       }
+      proposal_attachments: {
+        Row: {
+          content_type: string
+          created_at: string
+          file_name: string
+          file_path: string
+          file_size: number
+          id: string
+          proposal_id: string
+        }
+        Insert: {
+          content_type?: string
+          created_at?: string
+          file_name: string
+          file_path: string
+          file_size?: number
+          id?: string
+          proposal_id: string
+        }
+        Update: {
+          content_type?: string
+          created_at?: string
+          file_name?: string
+          file_path?: string
+          file_size?: number
+          id?: string
+          proposal_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_attachments_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       proposal_items: {
         Row: {
           created_at: string
