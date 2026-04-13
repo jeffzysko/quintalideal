@@ -35,7 +35,7 @@ interface WebVital { name: string; value: number; unit: string; target: number; 
 interface BundleChunk { name: string; rawKB: number; gzipKB: number; status: Status; issue?: string; fix?: string; }
 interface DbIssue { file: string; line: string; type: string; severity: Severity; impact: string; fix: string; done?: boolean; }
 interface RuntimeIssue { id: string; file: string; type: string; severity: Severity; description: string; fix: string; done?: boolean; }
-interface ActionItem { id: string; category: 'quick-win' | 'medium' | 'refactor'; title: string; impact: string; effort: string; description: string; code?: string; done?: boolean; }
+interface ActionItem { id: string; category: 'quick-win' | 'medium' | 'refactor' | 'low'; title: string; impact: string; effort: string; description: string; code?: string; done?: boolean; }
 
 // ── Web Vitals ──
 const WEB_VITALS: WebVital[] = [
