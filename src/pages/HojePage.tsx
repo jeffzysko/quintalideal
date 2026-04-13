@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useState, useEffect } from 'react';
 import { PullToRefresh } from '@/components/PullToRefresh';
 import { SwipeableLeadCard } from '@/components/dashboard/SwipeableLeadCard';
 import { SwipeHint } from '@/components/dashboard/SwipeHint';
