@@ -213,7 +213,7 @@ Deno.serve(async (req) => {
       proposal.validity_date,
     );
 
-    const subjectPrefix = type === "update" ? "🔄 Proposta Atualizada" : "📋 Nova Proposta Comercial";
+    const subjectPrefix = type === "update" ? "🔄 Orçamento Atualizado" : "📋 Orçamento";
     const subject = `${subjectPrefix} — ${franchise?.nome_franquia || "Quintal Ideal"}`;
 
     const resendResponse = await fetch("https://api.resend.com/emails", {
