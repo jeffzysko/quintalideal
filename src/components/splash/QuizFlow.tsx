@@ -11,8 +11,8 @@ import { trackMetaEvent } from '@/components/MetaPixel';
 import { type Lang, getQuizQuestions, t } from '@/lib/i18n';
 import { getPoolImage } from '@/lib/poolImages';
 
-// Pool images for preference step
-import { poolImages } from '@/lib/poolImages';
+// Pool feature images for preference step
+import { featureImages } from '@/lib/poolImages';
 
 const PhotoUpload = lazy(() => import('./PhotoUpload').then(m => ({ default: m.PhotoUpload })));
 const PhotoAnalysis = lazy(() => import('./PhotoAnalysis').then(m => ({ default: m.PhotoAnalysis })));
