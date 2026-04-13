@@ -16,8 +16,9 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { Copy, Share2, Eye, Clock, FileText, MessageCircle, Check, X, Edit, RefreshCw, CopyPlus, ChevronRight, Handshake, StickyNote, CalendarPlus } from 'lucide-react';
+import { Copy, Share2, Eye, Clock, FileText, MessageCircle, Check, X, Edit, RefreshCw, CopyPlus, ChevronRight, Handshake, StickyNote, CalendarPlus, Trash2 } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ProposalScoreReadonly } from '@/components/proposals/ProposalScore';
 
@@ -480,6 +481,42 @@ export default function ProposalDetail() {
             {!proposal.validity_date && (
               <Button variant="outline" onClick={() => setExtendOpen(true)} className="gap-1.5"><CalendarPlus className="w-4 h-4" /> Definir validade</Button>
             )}
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" className="gap-1.5 text-destructive hover:text-destructive hover:bg-destructive/10 border-destructive/30">
+                  <Trash2 className="w-4 h-4" /> Excluir
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Excluir proposta?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Essa ação é irreversível. A proposta para <strong>{proposal.client_name}</strong> será permanentemente excluída, incluindo todos os itens, visualizações e negociações associadas.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                  <AlertDialogAction
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    onClick={async () => {
+                      try {
+                        await supabase.from('proposal_items').delete().eq('proposal_id', proposal.id);
+                        await supabase.from('proposal_views').delete().eq('proposal_id', proposal.id);
+                        await supabase.from('proposal_questions').delete().eq('proposal_id', proposal.id);
+                        await supabase.from('proposal_negotiations').delete().eq('proposal_id', proposal.id);
+                        await supabase.from('proposals').delete().eq('id', proposal.id);
+                        toast.success('Proposta excluída com sucesso');
+                        navigate('/propostas');
+                      } catch {
+                        toast.error('Erro ao excluir proposta');
+                      }
+                    }}
+                  >
+                    Excluir permanentemente
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
           </div>
 
           {/* Extend Validity Dialog */}
