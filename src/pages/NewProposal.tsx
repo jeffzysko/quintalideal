@@ -249,7 +249,11 @@ export default function NewProposal() {
   };
 
   const handleSubmit = async (statusOverride?: string) => {
-    if (!franchiseId || !user) return;
+    if (!user) return;
+    if (!franchiseId) {
+      toast.error('Selecione uma franquia antes de salvar');
+      return;
+    }
 
     const errs: Record<string, string> = {};
     if (!form.client_name.trim()) errs.client_name = 'Nome é obrigatório';
