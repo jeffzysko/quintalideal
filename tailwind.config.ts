@@ -105,11 +105,11 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        splash: {
-          pink: "hsl(var(--splash-pink))",
-          blue: "hsl(var(--splash-blue))",
-          "light-blue": "hsl(var(--splash-light-blue, 207 60% 92%))",
-          sage: "hsl(var(--splash-sage, 140 20% 72%))",
+        brand: {
+          pink: "hsl(var(--brand-pink))",
+          blue: "hsl(var(--brand-blue))",
+          "light-blue": "hsl(var(--brand-blue-light, 207 60% 92%))",
+          sage: "hsl(var(--brand-sage, 140 20% 72%))",
         },
       },
       /* ─── Border Radius Scale ─── */
