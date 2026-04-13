@@ -26,6 +26,7 @@ import { ContactAttempts } from '@/components/lead/ContactAttempts';
 import { LeadPhotoUpload } from '@/components/lead/LeadPhotoUpload';
 import { LeadLinkedProposals } from '@/components/lead/LeadLinkedProposals';
 import { LeadWhatsAppHistory } from '@/components/lead/LeadWhatsAppHistory';
+import { WhatsAppTemplates } from '@/components/lead/WhatsAppTemplates';
 
 import { useAuth } from '@/hooks/useAuth';
 import { triggerWhatsAppAuto } from '@/lib/whatsapp-auto';
@@ -614,6 +615,15 @@ export default function LeadDetail() {
               {/* Timeline Tab */}
               <TabsContent value="timeline" className="mt-4">
                 <motion.div key="timeline" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="space-y-4">
+                  <WhatsAppTemplates
+                    leadName={lead.nome}
+                    leadPhone={lead.telefone}
+                    modeloRecomendado={lead.modelo_recomendado}
+                    cidade={lead.cidade}
+                    pontuacao={lead.pontuacao_quintal}
+                    statusLead={lead.status_lead}
+                    leadId={lead.id}
+                  />
                   <LeadTimeline leadId={lead.id} />
                   <LeadWhatsAppHistory leadId={lead.id} />
                 </motion.div>
