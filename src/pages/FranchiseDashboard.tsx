@@ -377,7 +377,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
         </div>
       ) : franchiseId && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <SLAIndicator leads={allLeads} activities={leadActivities} />
+          <SLAIndicator leads={kpiLeads as any[]} activities={leadActivities} />
           <MonthlyGoals franchiseId={franchiseId} soldThisMonth={soldThisMonth} />
           <LeadFollowups franchiseId={franchiseId} />
         </div>
