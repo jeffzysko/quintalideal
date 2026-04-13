@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Check, X, MessageCircle, Download, CreditCard, Truck, CalendarDays, Phone, User, FileText, RefreshCw, Sparkles, ArrowRight, Loader2 } from 'lucide-react';
+import { Check, X, MessageCircle, Download, CreditCard, Truck, CalendarDays, Phone, User, FileText, RefreshCw, Sparkles, ArrowRight, Loader2, Paperclip } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
@@ -48,6 +48,7 @@ export default function PublicProposal() {
   const [negotiateValue, setNegotiateValue] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [actionDone, setActionDone] = useState<'accepted' | 'refused' | 'question' | 'negotiated' | null>(null);
+  const [attachments, setAttachments] = useState<{ id: string; file_name: string; file_path: string; file_size: number; content_type: string }[]>([]);
 
   const fetchProposal = useCallback(async () => {
     if (!token) return;
@@ -59,6 +60,17 @@ export default function PublicProposal() {
   }, [token]);
 
   useEffect(() => { fetchProposal(); }, [fetchProposal]);
+
+  // Fetch attachments when proposal loads
+  useEffect(() => {
+    if (!proposal?.id) return;
+    supabase
+      .from('proposal_attachments')
+      .select('id, file_name, file_path, file_size, content_type')
+      .eq('proposal_id', proposal.id)
+      .order('created_at')
+      .then(({ data }) => { if (data) setAttachments(data); });
+  }, [proposal?.id]);
 
   useEffect(() => {
     if (!token || !proposal) return;
