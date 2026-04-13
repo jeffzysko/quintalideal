@@ -13,7 +13,7 @@ import { BackButton } from '@/components/BackButton';
 import { NotificationBell } from '@/components/NotificationBell';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { Plus, FileText, Clock, ChevronRight, Link2, Pencil, Search, DollarSign, Eye, CheckCircle2, XCircle } from 'lucide-react';
+import { Plus, FileText, Clock, ChevronRight, Link2, Pencil, Search, DollarSign, Eye, CheckCircle2 } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
