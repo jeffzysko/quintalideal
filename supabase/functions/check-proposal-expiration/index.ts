@@ -137,12 +137,74 @@ Deno.serve(async (req) => {
       }
     }
 
+    // 5. Process scheduled WhatsApp messages (business hours queue)
+    let waScheduledCount = 0;
+    const { data: scheduledMsgs } = await supabase
+      .from("whatsapp_messages")
+      .select("id, phone, message_text, template_key, franchise_id, lead_id, proposal_id")
+      .eq("status", "scheduled")
+      .lte("scheduled_for", now.toISOString())
+      .limit(50);
+
+    if (scheduledMsgs?.length) {
+      // Get Z-API config
+      const { data: waConfig } = await supabase
+        .from("whatsapp_config")
+        .select("instance_id, token, security_token, is_active")
+        .order("created_at", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+
+      if (waConfig?.is_active) {
+        const instanceId = waConfig.instance_id || Deno.env.get("ZAPI_INSTANCE_ID");
+        const zapiToken = waConfig.token || Deno.env.get("ZAPI_TOKEN");
+        const securityToken = waConfig.security_token || Deno.env.get("ZAPI_SECURITY_TOKEN");
+
+        if (instanceId && zapiToken) {
+          const zapiUrl = `https://api.z-api.io/instances/${instanceId}/token/${zapiToken}/send-text`;
+          const zapiHeaders: Record<string, string> = { "Content-Type": "application/json" };
+          if (securityToken) zapiHeaders["Client-Token"] = securityToken;
+
+          for (const msg of scheduledMsgs) {
+            try {
+              const resp = await fetch(zapiUrl, {
+                method: "POST",
+                headers: zapiHeaders,
+                body: JSON.stringify({ phone: msg.phone, message: msg.message_text }),
+              });
+              const result = await resp.json();
+              const ok = resp.ok && !result.error;
+
+              await supabase
+                .from("whatsapp_messages")
+                .update({
+                  status: ok ? "sent" : "failed",
+                  scheduled_for: null,
+                  zapi_message_id: result?.messageId || result?.zapiMessageId || null,
+                  error_message: ok ? null : JSON.stringify(result),
+                })
+                .eq("id", msg.id);
+
+              if (ok) waScheduledCount++;
+            } catch (e) {
+              console.error("Scheduled send error:", e);
+              await supabase
+                .from("whatsapp_messages")
+                .update({ status: "failed", scheduled_for: null, error_message: String(e) })
+                .eq("id", msg.id);
+            }
+          }
+        }
+      }
+    }
+
     return new Response(
       JSON.stringify({
         expired: expiredCount,
         warnings: warningCount,
         wa_expiring: waExpiringCount,
         wa_followup: waFollowupCount,
+        wa_scheduled: waScheduledCount,
         checked_at: now.toISOString(),
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
