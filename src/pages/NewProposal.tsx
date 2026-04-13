@@ -4,6 +4,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 import { PanelHeader } from '@/components/PanelHeader';
 import { BackButton } from '@/components/BackButton';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -84,11 +86,28 @@ const initialForm: ProposalFormData = {
 };
 
 export default function NewProposal() {
-  const { franchiseId, user } = useAuth();
+  const { franchiseId: authFranchiseId, user, role } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const editId = searchParams.get('edit');
   const isMobile = useIsMobile();
+  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+
+  // For admins without a franchise, allow selecting one
+  const [selectedFranchiseId, setSelectedFranchiseId] = useState<string | null>(null);
+  const [franchiseOptions, setFranchiseOptions] = useState<{ id: string; nome_franquia: string }[]>([]);
+  const franchiseId = authFranchiseId || selectedFranchiseId;
+
+  // Load franchise options for admins without a franchise
+  useEffect(() => {
+    if (isAdmin && !authFranchiseId) {
+      supabase.from('franchises').select('id, nome_franquia').eq('ativa', true).order('nome_franquia').then(({ data }) => {
+        if (data) setFranchiseOptions(data);
+        if (data?.length === 1) setSelectedFranchiseId(data[0].id);
+      });
+    }
+  }, [isAdmin, authFranchiseId]);
+
   const [form, setForm] = useState<ProposalFormData>(initialForm);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editLoaded, setEditLoaded] = useState(false);
@@ -230,7 +249,11 @@ export default function NewProposal() {
   };
 
   const handleSubmit = async (statusOverride?: string) => {
-    if (!franchiseId || !user) return;
+    if (!user) return;
+    if (!franchiseId) {
+      toast.error('Selecione uma franquia antes de salvar');
+      return;
+    }
 
     const errs: Record<string, string> = {};
     if (!form.client_name.trim()) errs.client_name = 'Nome é obrigatório';
@@ -509,6 +532,23 @@ export default function NewProposal() {
 
           {/* Main form */}
           <div className={cn('flex-1 min-w-0 space-y-4 sm:space-y-5', isMobile && 'pb-28')}>
+            {/* Admin franchise selector */}
+            {isAdmin && !authFranchiseId && franchiseOptions.length > 0 && (
+              <div className="p-4 rounded-xl border border-border bg-card">
+                <Label className="text-sm font-medium mb-2 block">Franquia responsável</Label>
+                <Select value={selectedFranchiseId || ''} onValueChange={setSelectedFranchiseId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione a franquia..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {franchiseOptions.map(f => (
+                      <SelectItem key={f.id} value={f.id}>{f.nome_franquia}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
             <motion.div
               id="lead"
               ref={el => { sectionRefs.current.lead = el; }}

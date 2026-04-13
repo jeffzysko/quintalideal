@@ -46,24 +46,26 @@ export default function ProposalsList() {
   const queryClient = useQueryClient();
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
   const basePath = isAdmin ? '/admin' : '/franquia';
+  const canQuery = !!franchiseId || isAdmin;
 
   const [statusFilter, setStatusFilter] = useState('todas');
   const [search, setSearch] = useState('');
 
-  const proposalsQueryKey = ['proposals', franchiseId];
+  const proposalsQueryKey = ['proposals', franchiseId, isAdmin];
 
   const { data: proposals, isLoading } = useQuery({
     queryKey: proposalsQueryKey,
     queryFn: async () => {
-      if (!franchiseId) return [];
-      const { data, error } = await supabase
+      let query = supabase
         .from('proposals')
         .select('id, client_name, status, total, created_at, public_token, updated_at')
         .order('created_at', { ascending: false });
+      // RLS handles filtering — admins see all, franchise users see own
+      const { data, error } = await query;
       if (error) throw error;
       return data || [];
     },
-    enabled: !!franchiseId,
+    enabled: canQuery,
   });
 
   // Realtime subscription to auto-refresh list
