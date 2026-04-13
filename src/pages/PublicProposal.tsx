@@ -35,7 +35,7 @@ const PAYMENT_LABELS: Record<string, string> = {
 };
 const getPaymentLabel = (v: string | null) => (v ? PAYMENT_LABELS[v] || v : '');
 
-  id: string;
+interface ProposalData {
   public_token: string;
   client_name: string;
   client_document: string | null;
