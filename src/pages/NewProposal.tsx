@@ -195,17 +195,14 @@ export default function NewProposal() {
     loadProposal();
   }, [editId, editLoaded, navigate]);
 
-  // Load draft on mount (only when not editing)
+  // Reset form on mount for new proposals (not edit mode)
   useEffect(() => {
-    if (!franchiseId || editId) return;
-    try {
-      const draft = localStorage.getItem(`proposal_draft_${franchiseId}`);
-      if (draft) {
-        const parsed = JSON.parse(draft);
-        setForm(prev => ({ ...prev, ...parsed }));
-      }
-    } catch { /* ignore */ }
-  }, [franchiseId, editId]);
+    if (editId) return;
+    setForm(initialForm);
+    setIsEditMode(false);
+    setEditLoaded(false);
+    setFieldErrors({});
+  }, [editId]);
 
   const scrollToSection = (id: string) => {
     setActiveSection(id);
