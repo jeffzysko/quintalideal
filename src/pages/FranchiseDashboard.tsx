@@ -188,22 +188,35 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
     staleTime: 3 * 60 * 1000,
   });
 
-  // ── Lead activities for SLA (filtered by franchise leads, last 6 months) ──
+  // ── Lead IDs for server-side filtering of activities ──
+  const kpiLeadIds = useMemo(() => kpiLeads.map(l => l.id), [kpiLeads]);
+
+  // ── Lead activities for SLA (filtered by lead_ids on server) ──
   const { data: leadActivities = [] } = useQuery({
-    queryKey: ['franchise-lead-activities', franchiseId],
+    queryKey: ['franchise-lead-activities', franchiseId, kpiLeadIds.length],
     queryFn: async () => {
       const sixMonthsAgo = new Date();
       sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
-      const { data } = await supabase
-        .from('lead_activities')
-        .select('lead_id, activity_type, created_at')
-        .eq('activity_type', 'status_change')
-        .gte('created_at', sixMonthsAgo.toISOString())
-        .order('created_at', { ascending: true })
-        .limit(1000);
-      return (data || []) as { lead_id: string; activity_type: string; created_at: string; content: string | null }[];
+      
+      // Filter by lead_ids in batches to avoid URL length limits
+      const BATCH_SIZE = 200;
+      const allActivities: { lead_id: string; activity_type: string; created_at: string; content: string | null }[] = [];
+      
+      for (let i = 0; i < kpiLeadIds.length; i += BATCH_SIZE) {
+        const batch = kpiLeadIds.slice(i, i + BATCH_SIZE);
+        const { data } = await supabase
+          .from('lead_activities')
+          .select('lead_id, activity_type, created_at')
+          .eq('activity_type', 'status_change')
+          .in('lead_id', batch)
+          .gte('created_at', sixMonthsAgo.toISOString())
+          .order('created_at', { ascending: true });
+        if (data) allActivities.push(...(data as typeof allActivities));
+      }
+      
+      return allActivities;
     },
-    enabled: !!franchiseId,
+    enabled: !!franchiseId && kpiLeadIds.length > 0,
     staleTime: 5 * 60 * 1000,
   });
 
