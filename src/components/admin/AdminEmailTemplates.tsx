@@ -205,6 +205,70 @@ const templates: EmailTemplate[] = [
 </div>
 </div>`,
   },
+  {
+    id: 'proposal-sent',
+    name: 'Proposta Comercial Enviada',
+    trigger: 'Vendedor clica em "Criar e Enviar" ou "Salvar e Enviar" uma proposta',
+    recipient: 'E-mail do cliente cadastrado na proposta',
+    subject: '📋 Nova Proposta Comercial — {nome_franquia}',
+    icon: <FileText className="w-4 h-4" />,
+    category: 'transacional',
+    html: `<div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06)">
+<div style="background:linear-gradient(135deg,#0284c7,#0369a1);padding:40px 32px;text-align:center">
+<div style="width:56px;height:56px;background:rgba(255,255,255,0.2);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px"><span style="font-size:28px">📋</span></div>
+<h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:700">Nova Proposta Comercial!</h1>
+<p style="color:#e0f2fe;margin:8px 0 0;font-size:14px">Você recebeu uma proposta comercial. Confira todos os detalhes abaixo.</p>
+</div>
+<div style="padding:32px 32px 16px">
+<p style="margin:0;font-size:16px;color:#334155;line-height:1.6">Olá, <strong>{nome_cliente}</strong>!</p>
+<p style="margin:8px 0 0;font-size:14px;color:#64748b">Enviada por: <strong>{nome_franquia}</strong></p>
+</div>
+<div style="padding:0 32px 20px;text-align:center">
+<div style="display:inline-block;background:#e0f2fe;border-radius:16px;padding:20px 40px">
+<p style="margin:0;font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:1px;font-weight:600">Valor Total</p>
+<p style="margin:6px 0;font-size:36px;font-weight:800;color:#0369a1;letter-spacing:-1px">{valor_total}</p>
+</div>
+</div>
+<div style="padding:0 32px 32px;text-align:center">
+<a href="{link_proposta}" style="display:inline-block;background:linear-gradient(135deg,#0284c7,#0369a1);color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:10px;font-weight:700;font-size:15px;box-shadow:0 4px 12px rgba(3,105,161,0.3)">Ver Proposta Completa →</a>
+</div>
+<div style="padding:24px 32px;background:#f8fafc;border-top:1px solid #e2e8f0;text-align:center">
+<p style="margin:0;color:#94a3b8;font-size:11px">Você recebeu este e-mail porque uma proposta comercial foi enviada para você.<br/><a href="https://quintalideal.com.br" style="color:#0369a1;text-decoration:none;font-weight:500">quintalideal.com.br</a></p>
+</div>
+</div>`,
+  },
+  {
+    id: 'proposal-updated',
+    name: 'Proposta Comercial Atualizada',
+    trigger: 'Vendedor edita e envia novamente uma proposta existente',
+    recipient: 'E-mail do cliente cadastrado na proposta',
+    subject: '🔄 Proposta Atualizada — {nome_franquia}',
+    icon: <FileText className="w-4 h-4" />,
+    category: 'transacional',
+    html: `<div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.06)">
+<div style="background:linear-gradient(135deg,#0284c7,#0369a1);padding:40px 32px;text-align:center">
+<div style="width:56px;height:56px;background:rgba(255,255,255,0.2);border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px"><span style="font-size:28px">🔄</span></div>
+<h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:700">Proposta Atualizada!</h1>
+<p style="color:#e0f2fe;margin:8px 0 0;font-size:14px">Uma proposta que você recebeu foi atualizada. Confira os novos detalhes.</p>
+</div>
+<div style="padding:32px 32px 16px">
+<p style="margin:0;font-size:16px;color:#334155;line-height:1.6">Olá, <strong>{nome_cliente}</strong>!</p>
+<p style="margin:8px 0 0;font-size:14px;color:#64748b">Atualizada por: <strong>{nome_franquia}</strong></p>
+</div>
+<div style="padding:0 32px 20px;text-align:center">
+<div style="display:inline-block;background:#e0f2fe;border-radius:16px;padding:20px 40px">
+<p style="margin:0;font-size:12px;color:#64748b;text-transform:uppercase;letter-spacing:1px;font-weight:600">Novo Valor Total</p>
+<p style="margin:6px 0;font-size:36px;font-weight:800;color:#0369a1;letter-spacing:-1px">{valor_total}</p>
+</div>
+</div>
+<div style="padding:0 32px 32px;text-align:center">
+<a href="{link_proposta}" style="display:inline-block;background:linear-gradient(135deg,#0284c7,#0369a1);color:#ffffff;text-decoration:none;padding:14px 40px;border-radius:10px;font-weight:700;font-size:15px;box-shadow:0 4px 12px rgba(3,105,161,0.3)">Ver Proposta Atualizada →</a>
+</div>
+<div style="padding:24px 32px;background:#f8fafc;border-top:1px solid #e2e8f0;text-align:center">
+<p style="margin:0;color:#94a3b8;font-size:11px">Você recebeu este e-mail porque uma proposta comercial foi atualizada.<br/><a href="https://quintalideal.com.br" style="color:#0369a1;text-decoration:none;font-weight:500">quintalideal.com.br</a></p>
+</div>
+</div>`,
+  },
 ];
 
 const categoryConfig: Record<string, { label: string; color: string }> = {
