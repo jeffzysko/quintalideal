@@ -569,37 +569,44 @@ export default function PerformanceAudit() {
                 <Zap className="w-4 h-4 text-primary" /> Plano de Ação Priorizado
               </h2>
 
-              {(['quick-win', 'medium', 'refactor'] as const).map(category => {
+              {(['quick-win', 'medium', 'refactor', 'low'] as const).map(category => {
                 const items = ACTION_ITEMS.filter(a => a.category === category);
+                if (items.length === 0) return null;
                 const config = {
-                  'quick-win': { label: '⚡ Quick Wins (1-2h)', color: 'text-success', bg: 'bg-success/10' },
-                  medium: { label: '🔧 Médio Prazo (1-3h)', color: 'text-warning', bg: 'bg-warning/10' },
-                  refactor: { label: '🏗️ Refactor (1+ dia)', color: 'text-primary', bg: 'bg-primary/10' },
+                  'quick-win': { label: '⚡ Quick Wins', color: 'text-success', bg: 'bg-success/10' },
+                  medium: { label: '🔧 Médio Prazo', color: 'text-warning', bg: 'bg-warning/10' },
+                  refactor: { label: '🏗️ Refactor', color: 'text-primary', bg: 'bg-primary/10' },
+                  low: { label: '📋 Baixa Prioridade', color: 'text-muted-foreground', bg: 'bg-muted' },
                 }[category];
+                const doneCount = items.filter(i => i.done).length;
 
                 return (
                   <div key={category}>
-                    <h3 className={cn('text-xs font-bold mb-3', config.color)}>{config.label}</h3>
+                    <h3 className={cn('text-xs font-bold mb-3 flex items-center gap-2', config.color)}>
+                      {config.label}
+                      <Badge variant="outline" className="text-[10px]">{doneCount}/{items.length} concluído</Badge>
+                    </h3>
                     <div className="space-y-2">
                       {items.map(item => {
                         const isExpanded = expandedAction === item.id;
                         return (
-                          <Card key={item.id} className="shadow-sm border-border/50">
+                          <Card key={item.id} className={cn('shadow-sm border-border/50', item.done && 'opacity-70')}>
                             <CardContent className="p-0">
                               <button
                                 className="w-full p-4 flex items-center gap-3 text-left"
                                 onClick={() => setExpandedAction(isExpanded ? null : item.id)}
                               >
-                                <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center shrink-0', config.bg)}>
-                                  <Zap className={cn('w-4 h-4', config.color)} />
+                                <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center shrink-0', item.done ? 'bg-success/10' : config.bg)}>
+                                  {item.done ? <CheckCircle2 className="w-4 h-4 text-success" /> : <Zap className={cn('w-4 h-4', config.color)} />}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                  <p className="text-xs font-semibold text-foreground">{item.title}</p>
+                                  <p className={cn('text-xs font-semibold', item.done ? 'text-muted-foreground line-through' : 'text-foreground')}>{item.title}</p>
                                   <div className="flex gap-3 mt-0.5">
                                     <span className="text-[10px] text-muted-foreground">Impacto: <strong>{item.impact}</strong></span>
                                     <span className="text-[10px] text-muted-foreground">Esforço: <strong>{item.effort}</strong></span>
                                   </div>
                                 </div>
+                                {item.done && <Badge variant="outline" className="text-[10px] text-success border-success/30 shrink-0">✅</Badge>}
                                 {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
                               </button>
                               <AnimatePresence>
