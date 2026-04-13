@@ -407,7 +407,7 @@ export default function ProposalDetail() {
                     {q.answer ? (
                       <div className="bg-muted/30 rounded p-2 text-sm"><span className="font-medium">Nota interna:</span> {q.answer}</div>
                     ) : (
-                      <div className="flex gap-2">
+                      <div className="flex flex-col sm:flex-row gap-2">
                         <Textarea
                           placeholder="Anotar resposta (visível só internamente)..."
                           value={answerText[q.id] || ''}
