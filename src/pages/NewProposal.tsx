@@ -612,7 +612,7 @@ export default function NewProposal() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25 }}
             >
-              <ProposalObservationsSection form={form} updateForm={updateForm} />
+              <ProposalObservationsSection form={form} updateForm={updateForm} proposalId={editId} franchiseId={franchiseId || undefined} />
             </motion.div>
 
             {/* Score da Proposta */}
