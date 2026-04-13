@@ -181,6 +181,10 @@ function AppRouteTree() {
           path="/admin/lead/:id"
           element={<ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}><LeadDetail /></ProtectedRoute>}
         />
+        <Route
+          path="/admin/performance"
+          element={<ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}><PerformanceAudit /></ProtectedRoute>}
+        />
       </Route>
 
       {/* Public proposal page - NO footer, NO auth */}
