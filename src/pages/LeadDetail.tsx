@@ -20,7 +20,7 @@ import { LeadTimeline } from '@/components/lead/LeadTimeline';
 import { LeadFollowups } from '@/components/franchise/LeadFollowups';
 import { PhotoLightbox } from '@/components/lead/PhotoLightbox';
 import { InactivityBadge } from '@/components/lead/InactivityBadge';
-import { WhatsAppTemplates } from '@/components/lead/WhatsAppTemplates';
+
 import { LeadValueEstimator } from '@/components/lead/LeadValueEstimator';
 import { ContactAttempts } from '@/components/lead/ContactAttempts';
 import { LeadPhotoUpload } from '@/components/lead/LeadPhotoUpload';
@@ -608,16 +608,6 @@ export default function LeadDetail() {
                       </CardContent>
                     </Card>
                   )}
-                  <WhatsAppTemplates
-                    leadName={lead.nome}
-                    leadPhone={lead.telefone}
-                    modeloRecomendado={lead.modelo_recomendado}
-                    cidade={lead.cidade}
-                    pontuacao={lead.pontuacao_quintal}
-                    statusLead={lead.status_lead}
-                    leadId={lead.id}
-                    franchiseId={franchiseId || lead.franquia_id}
-                  />
                 </motion.div>
               </TabsContent>
 
