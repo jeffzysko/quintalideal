@@ -215,14 +215,46 @@ export default function NewProposal() {
     loadProposal();
   }, [editId, editLoaded, navigate]);
 
+  // Pre-link lead from query params
+  useEffect(() => {
+    if (editId) return;
+    const leadIdParam = searchParams.get('lead_id');
+    const leadNameParam = searchParams.get('lead_name');
+    if (leadIdParam) {
+      setForm(prev => ({
+        ...prev,
+        lead_id: leadIdParam,
+        client_name: prev.client_name || leadNameParam || '',
+      }));
+      // Also load lead data for auto-fill
+      supabase
+        .from('leads')
+        .select('nome, telefone, email, cidade')
+        .eq('id', leadIdParam)
+        .single()
+        .then(({ data }) => {
+          if (data) {
+            setForm(prev => ({
+              ...prev,
+              client_name: prev.client_name || data.nome || '',
+              client_phone: prev.client_phone || data.telefone || '',
+              client_email: prev.client_email || data.email || '',
+              client_address: prev.client_address || (data.cidade ? `${data.cidade}` : ''),
+            }));
+          }
+        });
+    }
+  }, [editId, searchParams]);
+
   // Reset form on mount for new proposals (not edit mode)
   useEffect(() => {
     if (editId) return;
+    if (searchParams.get('lead_id')) return; // Don't reset if pre-linking
     setForm(initialForm);
     setIsEditMode(false);
     setEditLoaded(false);
     setFieldErrors({});
-  }, [editId]);
+  }, [editId, searchParams]);
 
   const scrollToSection = (id: string) => {
     setActiveSection(id);
