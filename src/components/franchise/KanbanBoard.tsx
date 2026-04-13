@@ -300,7 +300,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
 
         {currentStageLeads.length > 0 && (
           <div className="text-xs text-muted-foreground mb-3">
-            <span className="font-semibold text-foreground">{estimateLeadValue.name ? '' : ''}{currentStageLeads.reduce((sum, l) => sum + estimateLeadValue(l.respostas_questionario || null), 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 })}</span> em {currentStageLeads.length} leads
+            <span className="font-semibold text-foreground">{currentStageLeads.reduce((sum, l) => sum + estimateLeadValue(l.respostas_questionario || null), 0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', minimumFractionDigits: 2 })}</span> em {currentStageLeads.length} leads
           </div>
         )}
 
