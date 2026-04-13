@@ -12,9 +12,7 @@ import { type Lang, getQuizQuestions, t } from '@/lib/i18n';
 import { getPoolImage } from '@/lib/poolImages';
 
 // Pool images for preference step
-import tortugaImg from '@/assets/pools/tortuga.webp';
-import navagioImg from '@/assets/pools/navagio.webp';
-import tradicionalImg from '@/assets/pools/tradicional.webp';
+import { poolImages } from '@/lib/poolImages';
 
 const PhotoUpload = lazy(() => import('./PhotoUpload').then(m => ({ default: m.PhotoUpload })));
 const PhotoAnalysis = lazy(() => import('./PhotoAnalysis').then(m => ({ default: m.PhotoAnalysis })));
@@ -27,11 +25,11 @@ const ActionButtons = lazy(() => import('./ActionButtons').then(m => ({ default:
 
 type Step = 'hero' | 'photos' | 'photo-analysis' | 'pre-diagnosis' | 'quiz' | 'processing' | 'lead-form' | 'actions';
 
-// Preference step images
+// Preference step images — use SVG illustrations from poolImages
 const PREF_IMAGES: Record<string, string> = {
-  prainha: tortugaImg,
-  spa: navagioImg,
-  simples: tradicionalImg,
+  prainha: poolImages['Tortuga'] || '',
+  spa: poolImages['Navagio'] || '',
+  simples: poolImages['Tradicional'] || '',
 };
 
 interface QuizFlowProps {
