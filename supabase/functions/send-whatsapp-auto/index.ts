@@ -199,6 +199,38 @@ Deno.serve(async (req) => {
       return jsonResp({ skipped: true, reason: "Mensagem vazia" });
     }
 
+    // Duplicate protection: check if same event was sent in last 23h
+    const twentyThreeHoursAgo = new Date(Date.now() - 23 * 60 * 60 * 1000).toISOString();
+    let dupQuery = supabase
+      .from("whatsapp_messages")
+      .select("id")
+      .eq("template_key", trigger_event)
+      .eq("status", "sent")
+      .gte("created_at", twentyThreeHoursAgo);
+
+    if (resolvedLeadId) {
+      dupQuery = dupQuery.eq("lead_id", resolvedLeadId);
+    } else {
+      dupQuery = dupQuery.eq("phone", phone);
+    }
+
+    const { data: existingMsg } = await dupQuery.limit(1);
+    if (existingMsg && existingMsg.length > 0) {
+      // Log as skipped
+      await supabase.from("whatsapp_messages").insert({
+        franchise_id: resolvedFranchiseId,
+        lead_id: resolvedLeadId || null,
+        proposal_id: proposal_id || null,
+        phone,
+        template_key: trigger_event,
+        message_text: message,
+        status: "skipped",
+        error_message: "Duplicate prevented",
+        sent_by: null,
+      });
+      return jsonResp({ skipped: true, reason: "duplicate" });
+    }
+
     // Send via Z-API
     const zapiUrl = buildZapiUrl(instanceId, zapiToken, "send-text");
     const zapiHeaders: Record<string, string> = { "Content-Type": "application/json" };
