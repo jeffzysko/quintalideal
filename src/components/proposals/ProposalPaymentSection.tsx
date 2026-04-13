@@ -33,6 +33,10 @@ export function ProposalPaymentSection({ form, updateForm }: Props) {
                 <SelectItem value="boleto">Boleto</SelectItem>
                 <SelectItem value="cartao">Cartão de Crédito</SelectItem>
                 <SelectItem value="transferencia">Transferência</SelectItem>
+                <SelectItem value="cfm">CFM</SelectItem>
+                <SelectItem value="cred_window">Cred Window</SelectItem>
+                <SelectItem value="compra_programada">Compra Programada</SelectItem>
+                <SelectItem value="financiamento_banco">Financiamento via Banco</SelectItem>
                 <SelectItem value="outro">Outro</SelectItem>
               </SelectContent>
             </Select>
