@@ -1,4 +1,4 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useState, useEffect } from 'react';
 import { PullToRefresh } from '@/components/PullToRefresh';
 import { SwipeableLeadCard } from '@/components/dashboard/SwipeableLeadCard';
 import { SwipeHint } from '@/components/dashboard/SwipeHint';
@@ -329,11 +329,13 @@ export default function HojePage() {
   const { data: leads = [], isLoading: loadingLeads, isError: leadsError, refetch: refetchLeads } = useQuery({
     queryKey: ['hoje-leads', franchiseId, isAdmin],
     queryFn: async () => {
+      const oneWeekAgo = new Date();
+      oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
       let query = supabase
         .from('leads')
         .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, status_lead, created_at, franquia_id, telefone, email, lead_origin')
-        .order('created_at', { ascending: false })
-        .limit(500);
+        .in('status_lead', ['novo', 'contatado', 'em_negociacao'])
+        .order('created_at', { ascending: false });
       if (!isAdmin && franchiseId) query = query.eq('franquia_id', franchiseId);
       const { data, error } = await query;
       if (error) throw error;
@@ -369,7 +371,11 @@ export default function HojePage() {
     return map;
   }, [leads]);
 
-  const now = useMemo(() => new Date(), []);
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const interval = setInterval(() => setNow(new Date()), 60_000);
+    return () => clearInterval(interval);
+  }, []);
   const nowMs = now.getTime();
 
   const overdueFollowups = useMemo(() =>

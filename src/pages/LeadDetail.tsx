@@ -278,6 +278,13 @@ export default function LeadDetail() {
   const [autoSaved, setAutoSaved] = useState<string | null>(null);
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout>();
 
+  // Cleanup autoSaveTimeoutRef on unmount to prevent timer leaks
+  useEffect(() => {
+    return () => {
+      if (autoSaveTimeoutRef.current) clearTimeout(autoSaveTimeoutRef.current);
+    };
+  }, []);
+
   const autoSaveField = useCallback(async (field: 'status' | 'temperature', newValue: string) => {
     if (!lead) return;
     setAutoSaving(true);

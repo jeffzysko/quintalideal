@@ -76,11 +76,11 @@ const DB_ISSUES: DbIssue[] = [
 // ── Runtime Issues ──
 const RUNTIME_ISSUES: RuntimeIssue[] = [
   { id: 'r1', file: 'src/hooks/usePWA.tsx:69-73', type: 'Intervalo sem cleanup', severity: 'medium', description: 'setInterval para update check retorna cleanup mas dentro de .then() — o cleanup nunca é efetivamente chamado pelo useEffect.', fix: 'Mover o setInterval para fora do .then() ou usar um ref para guardar o intervalId e limpar no cleanup do useEffect.', done: true },
-  { id: 'r2', file: 'src/pages/LeadDetail.tsx:281', type: 'Ref de timeout sem cleanup', severity: 'low', description: 'autoSaveTimeoutRef não é limpo no unmount do componente.', fix: 'Adicionar cleanup no useEffect: return () => clearTimeout(autoSaveTimeoutRef.current).' },
+  { id: 'r2', file: 'src/pages/LeadDetail.tsx:281', type: 'Ref de timeout sem cleanup', severity: 'low', description: 'autoSaveTimeoutRef limpo no unmount via useEffect cleanup.', fix: 'Cleanup adicionado: return () => clearTimeout(autoSaveTimeoutRef.current).', done: true },
   { id: 'r3', file: 'src/components/franchise/KanbanBoard.tsx', type: 'Re-renders excessivos', severity: 'medium', description: 'LeadCard recria funções handleSaveNote/handleWhatsApp a cada render. memo() aplicado mas props mudam.', fix: 'Componentes extraídos para sub-módulos com props estáveis. Virtual scrolling reduz DOM nodes renderizados.', done: true },
-  { id: 'r4', file: 'src/pages/HojePage.tsx:372', type: 'Memo sem deps estáveis', severity: 'low', description: 'const now = useMemo(() => new Date(), []); — "now" nunca atualiza durante a sessão. Leads abertos por horas mostram stale data.', fix: 'Atualizar "now" a cada minuto via useEffect + setState, ou recalcular em re-fetch.' },
+  { id: 'r4', file: 'src/pages/HojePage.tsx:372', type: 'Memo sem deps estáveis', severity: 'low', description: '"now" agora atualiza a cada 60s via useState + useEffect interval.', fix: 'Substituído useMemo(() => new Date(), []) por state + intervalo de 1 minuto.', done: true },
   { id: 'r5', file: 'src/pages/PublicProposal.tsx', type: 'Componente monolítico (1389 linhas)', severity: 'medium', description: 'Arquivo único com toda a lógica da proposta pública.', fix: 'Extraído em ProposalShared, ProposalDialogs, ProposalPDFExport.', done: true },
-  { id: 'r6', file: 'src/lib/webVitals.ts:63-65', type: 'Variáveis closure retidas', severity: 'low', description: 'clsSessionEntries cresce indefinidamente durante a sessão. Não impacta muito, mas é um pattern a evitar.', fix: 'Limitar tamanho do array ou usar sliding window de 5 últimos entries.' },
+  { id: 'r6', file: 'src/lib/webVitals.ts:63-65', type: 'Variáveis closure retidas', severity: 'low', description: 'clsSessionEntries agora limitado a sliding window de 5 últimos entries.', fix: 'Array limitado com slice(-5) após cada push.', done: true },
   { id: 'r7', file: 'index.html:84', type: 'Imagem de skeleton sem fallback', severity: 'low', description: 'Logo referencia /src/assets/logo-splash.png com caminho relativo. Em build, path muda.', fix: 'Usar caminho público: /logo-splash.png (copiar para public/).' },
 ];
 
@@ -101,10 +101,10 @@ const ACTION_ITEMS: ActionItem[] = [
   // ── Pendências remanescentes ──
   { id: 'a13', category: 'medium', title: 'Separar query de KPIs no FranchiseDashboard', impact: '~40% redução payload KPIs', effort: '30 min', description: 'Query KPI leve com 6 colunas. Query completa só carrega quando tabs de Kanban/Reports/Achievements estão ativas.', done: true },
   { id: 'a14', category: 'medium', title: 'Filtrar lead_activities no servidor', impact: 'Reduz payload desnecessário', effort: '30 min', description: 'Filtro .in("lead_id", leadIds) implementado com batching de 200 IDs por request.', done: true },
-  { id: 'a15', category: 'low', title: 'Implementar batching em HojePage', impact: 'Evita truncamento com >500 leads', effort: '30 min', description: 'Trocar .limit(500) por batching ou filtro temporal (última semana).' },
-  { id: 'a16', category: 'low', title: 'Cleanup de autoSaveTimeoutRef em LeadDetail', impact: 'Previne leak de timer', effort: '5 min', description: 'Adicionar clearTimeout(autoSaveTimeoutRef.current) no cleanup do useEffect.' },
-  { id: 'a17', category: 'low', title: 'Atualizar "now" periodicamente em HojePage', impact: 'Evita dados stale em sessões longas', effort: '10 min', description: 'Substituir useMemo(() => new Date(), []) por state + intervalo de 1 minuto.' },
-  { id: 'a18', category: 'low', title: 'Limitar clsSessionEntries em webVitals', impact: 'Previne crescimento indefinido de array', effort: '5 min', description: 'Usar sliding window de 5 últimos entries ao invés de acumular indefinidamente.' },
+  { id: 'a15', category: 'low', title: 'Implementar batching em HojePage', impact: 'Evita truncamento com >500 leads', effort: '30 min', description: 'Removido .limit(500). Query agora filtra por status ativo (novo/contatado/em_negociacao) ao invés de limitar arbitrariamente.', done: true },
+  { id: 'a16', category: 'low', title: 'Cleanup de autoSaveTimeoutRef em LeadDetail', impact: 'Previne leak de timer', effort: '5 min', description: 'useEffect cleanup adicionado para clearTimeout no unmount.', done: true },
+  { id: 'a17', category: 'low', title: 'Atualizar "now" periodicamente em HojePage', impact: 'Evita dados stale em sessões longas', effort: '10 min', description: 'Substituído useMemo por useState + useEffect com intervalo de 60s.', done: true },
+  { id: 'a18', category: 'low', title: 'Limitar clsSessionEntries em webVitals', impact: 'Previne crescimento indefinido de array', effort: '5 min', description: 'Sliding window de 5 últimos entries implementado com slice(-5).', done: true },
 ];
 
 // ── Score Calculation ──
