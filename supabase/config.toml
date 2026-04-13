@@ -26,3 +26,6 @@ verify_jwt = false
 
 [functions.check-proposal-expiration]
 verify_jwt = false
+
+[functions.zapi-status]
+verify_jwt = false
