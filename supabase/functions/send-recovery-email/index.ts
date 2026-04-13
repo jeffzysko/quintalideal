@@ -7,8 +7,9 @@ const corsHeaders = {
 };
 
 const SENDER = "Quintal Ideal Splash <noreply@hallow.com.br>";
-const BRAND_BLUE = "#0369a1";
-const BRAND_GRADIENT = "linear-gradient(135deg, #0284c7, #0369a1)";
+const BRAND_PINK = "#e80685";
+const BRAND_BLUE = "#08a1d6";
+const BRAND_GRADIENT = "linear-gradient(135deg, #e80685, #08a1d6)";
 
 function buildRecoveryEmailHTML(recoveryLink: string): string {
   return `
