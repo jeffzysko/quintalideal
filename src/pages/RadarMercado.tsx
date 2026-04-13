@@ -494,7 +494,7 @@ export default function RadarMercado() {
           </SectionCard>
 
           {/* 4. CUSTOMER PROFILE */}
-          <SectionCard title="Perfil do Cliente Splash" icon={<Users className="w-4 h-4 text-primary" />} subtitle="Como os gaúchos querem usar a piscina" delay={0.6} className="h-full">
+          <SectionCard title="Perfil do Cliente" icon={<Users className="w-4 h-4 text-primary" />} subtitle="Como os gaúchos querem usar a piscina" delay={0.6} className="h-full">
             {customerProfile.length === 0 ? (
               <p className="text-muted-foreground text-center py-6 text-sm">Sem dados</p>
             ) : (
@@ -667,7 +667,7 @@ export default function RadarMercado() {
         >
           <div className="mx-auto w-16 h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent rounded mb-3" />
           <p className="text-[10px] text-muted-foreground/50">
-            Radar de Mercado Splash RS © {new Date().getFullYear()} · Dados em tempo real
+            Radar de Mercado RS © {new Date().getFullYear()} · Dados em tempo real
           </p>
         </motion.div>
       </div>

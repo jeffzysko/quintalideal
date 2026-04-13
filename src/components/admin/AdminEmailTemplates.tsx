@@ -27,7 +27,7 @@ const templates: EmailTemplate[] = [
     html: `<div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0">
 <div style="background:linear-gradient(135deg,#e80685,#08a1d6);padding:32px 24px;text-align:center">
 <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:700">Bem-vindo ao Quintal Ideal!</h1>
-<p style="color:#e0f2fe;margin:8px 0 0;font-size:14px">Plataforma Splash Piscinas</p>
+<p style="color:#e0f2fe;margin:8px 0 0;font-size:14px">Plataforma Quintal Ideal</p>
 </div>
 <div style="padding:32px 24px">
 <p style="color:#334155;font-size:16px;line-height:1.6;margin:0 0 16px">Olá <strong>{nome}</strong>,</p>
@@ -39,7 +39,7 @@ const templates: EmailTemplate[] = [
 <p style="color:#94a3b8;font-size:13px;line-height:1.5;margin:24px 0 0">Se o botão acima não funcionar, copie e cole o link no seu navegador.</p>
 </div>
 <div style="padding:20px 24px;background:#f8fafc;text-align:center;border-top:1px solid #e2e8f0">
-<p style="color:#94a3b8;font-size:12px;margin:0">Quintal Ideal Splash • quintalideal.com.br</p>
+<p style="color:#94a3b8;font-size:12px;margin:0">Quintal Ideal • quintalideal.com.br</p>
 </div>
 </div>`,
   },
@@ -67,7 +67,7 @@ const templates: EmailTemplate[] = [
 <div style="text-align:center;margin-top:32px">
 <a href="https://quintalideal.com.br/franquia" style="display:inline-block;background:linear-gradient(135deg,#e80685,#08a1d6);color:#ffffff;text-decoration:none;padding:14px 32px;border-radius:8px;font-weight:600;font-size:16px">Ver detalhes na plataforma →</a>
 </div>
-<p style="text-align:center;color:#94a3b8;font-size:12px;margin-top:24px">Quintal Ideal Splash • Notificação automática de novo lead</p>
+<p style="text-align:center;color:#94a3b8;font-size:12px;margin-top:24px">Quintal Ideal • Notificação automática de novo lead</p>
 </div>
 </div>`,
   },
@@ -82,7 +82,7 @@ const templates: EmailTemplate[] = [
     html: `<div style="font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;max-width:600px;margin:0 auto;background:#ffffff;border-radius:12px;overflow:hidden;border:1px solid #e2e8f0">
 <div style="background:linear-gradient(135deg,#e80685,#08a1d6);padding:32px 24px;text-align:center">
 <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:700">Redefinir Senha</h1>
-<p style="color:#e0f2fe;margin:8px 0 0;font-size:14px">Quintal Ideal Splash</p>
+<p style="color:#e0f2fe;margin:8px 0 0;font-size:14px">Quintal Ideal</p>
 </div>
 <div style="padding:32px 24px">
 <p style="color:#334155;font-size:16px;line-height:1.6;margin:0 0 16px">Olá,</p>
@@ -93,7 +93,7 @@ const templates: EmailTemplate[] = [
 <p style="color:#94a3b8;font-size:13px;line-height:1.5;margin:24px 0 0">Se você não solicitou esta redefinição, ignore este e-mail. Sua senha permanecerá inalterada.</p>
 </div>
 <div style="padding:20px 24px;background:#f8fafc;text-align:center;border-top:1px solid #e2e8f0">
-<p style="color:#94a3b8;font-size:12px;margin:0">Quintal Ideal Splash • quintalideal.com.br</p>
+<p style="color:#94a3b8;font-size:12px;margin:0">Quintal Ideal • quintalideal.com.br</p>
 </div>
 </div>`,
   },
@@ -201,7 +201,7 @@ const templates: EmailTemplate[] = [
 <a href="https://quintalideal.com.br/perfil#integracoes" style="display:inline-block;background:linear-gradient(135deg,#e80685,#08a1d6);color:#fff;text-decoration:none;padding:12px 32px;border-radius:10px;font-weight:700;font-size:14px">Verificar configurações →</a>
 </div>
 <div style="padding:20px 24px;background:#f8fafc;text-align:center;border-top:1px solid #e2e8f0">
-<p style="color:#94a3b8;font-size:12px;margin:0">Quintal Ideal Splash • Alerta automático</p>
+<p style="color:#94a3b8;font-size:12px;margin:0">Quintal Ideal • Alerta automático</p>
 </div>
 </div>`,
   },
@@ -328,7 +328,7 @@ export function AdminEmailTemplates() {
           </div>
           <div className="mt-4 pt-4 border-t border-border/50">
             <p className="text-xs text-muted-foreground">
-              <strong>Remetente:</strong> Quintal Ideal Splash &lt;noreply@hallow.com.br&gt; • Todos enviados via Resend
+              <strong>Remetente:</strong> Quintal Ideal &lt;noreply@hallow.com.br&gt; • Todos enviados via Resend
             </p>
           </div>
         </CardContent>

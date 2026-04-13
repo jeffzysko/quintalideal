@@ -334,7 +334,7 @@ export async function exportProposalPDF(proposal: ProposalData, discountAmount: 
   pdf.setFontSize(7);
   pdf.setFont('helvetica', 'normal');
   pdf.setTextColor(...textLight);
-  pdf.text('Este documento garante a autenticidade desta proposta. Verifique com a Splash Piscinas em caso de dúvida.', A4_W / 2, y, { align: 'center' });
+  pdf.text('Este documento garante a autenticidade desta proposta. Verifique com a Quintal Ideal em caso de dúvida.', A4_W / 2, y, { align: 'center' });
 
   // ── PAGE NUMBERS ──
   const pageCount = pdf.getNumberOfPages();
@@ -347,7 +347,7 @@ export async function exportProposalPDF(proposal: ProposalData, discountAmount: 
     pdf.setFontSize(7.5);
     pdf.setFont('helvetica', 'normal');
     pdf.setTextColor(...textLight);
-    pdf.text(`Splash Piscinas  •  Página ${i} de ${pageCount}`, A4_W / 2, A4_H - 6, { align: 'center' });
+    pdf.text(`Quintal Ideal  •  Página ${i} de ${pageCount}`, A4_W / 2, A4_H - 6, { align: 'center' });
   }
 
   pdf.save(`proposta-${proposal.id.slice(0, 8)}.pdf`);

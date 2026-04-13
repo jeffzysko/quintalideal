@@ -82,7 +82,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `meu-quintal-splash-${score}pct.png`;
+    a.download = `meu-quintal-ideal-${score}pct.png`;
     a.click();
     URL.revokeObjectURL(url);
     setShowInstaGuide(true);
@@ -139,7 +139,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
     ctx.fillText('ÍNDICE DO QUINTAL', 540, 200);
     ctx.fillStyle = '#ffffff';
     ctx.font = '800 36px Inter, sans-serif';
-    ctx.fillText('SPLASH PISCINAS', 540, 250);
+    ctx.fillText('QUINTAL IDEAL', 540, 250);
 
     ctx.beginPath(); ctx.arc(540, 560, 195, 0, Math.PI * 2);
     ctx.strokeStyle = 'rgba(255,255,255,0.08)'; ctx.lineWidth = 12; ctx.stroke();
@@ -157,7 +157,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
     ctx.font = '700 44px Inter, sans-serif'; ctx.fillStyle = '#ffffff';
     ctx.fillText(`Meu quintal tem ${score}%`, 540, 950);
     ctx.fillText('de potencial para', 540, 1010);
-    ctx.fillText('uma piscina Splash!', 540, 1070);
+    ctx.fillText('uma piscina ideal!', 540, 1070);
 
     const badgeY = 1150;
     ctx.fillStyle = 'rgba(255,215,0,0.12)';
@@ -205,7 +205,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
 
     ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.fillRect(0, 1860, 1080, 60);
     ctx.font = '400 18px Inter, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.3)';
-    ctx.fillText('© Splash Piscinas', 540, 1895);
+    ctx.fillText('© Quintal Ideal', 540, 1895);
 
     return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
   };
@@ -497,7 +497,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
           >
             <MapPin className="w-5 h-5 text-primary mx-auto mb-1.5" />
             <p className="text-xs text-muted-foreground mb-0.5">
-              {lang === 'es' ? 'Un especialista de tu región puede ayudarte ahora' : 'Um especialista da Splash da sua região pode te ajudar agora'}
+              {lang === 'es' ? 'Un especialista de tu región puede ayudarte ahora' : 'Um especialista Quintal Ideal da sua região pode te ajudar agora'}
             </p>
             <p className="text-sm font-bold text-foreground">{assignedFranchiseName}</p>
             {assignedCidadeBase && <p className="text-xs text-muted-foreground">{assignedCidadeBase}</p>}

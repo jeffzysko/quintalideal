@@ -71,7 +71,7 @@ describe('LeadForm', () => {
     const mockCheckDuplicate = vi.fn().mockResolvedValue({
       duplicate: true,
       field: 'telefone',
-      franchiseName: 'Splash Porto Alegre',
+      franchiseName: 'Quintal Ideal Porto Alegre',
     });
 
     render(<LeadForm onSubmit={mockOnSubmit} onCheckDuplicate={mockCheckDuplicate} />);
@@ -82,7 +82,7 @@ describe('LeadForm', () => {
     fireEvent.click(screen.getByText('Ver meu resultado'));
     
     await waitFor(() => {
-      expect(screen.getByText(/já está cadastrado na franquia Splash Porto Alegre/)).toBeInTheDocument();
+      expect(screen.getByText(/já está cadastrado na franquia Quintal Ideal Porto Alegre/)).toBeInTheDocument();
     });
     
     expect(mockOnSubmit).not.toHaveBeenCalled();

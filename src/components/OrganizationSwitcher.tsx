@@ -128,7 +128,7 @@ export function OrganizationSwitcher({ activeFranchiseId, onSwitch, compact }: O
             >
               <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
                 <span className="text-[10px] font-bold text-primary">
-                  {f.nome_franquia.replace('Splash ', '').charAt(0)}
+                  {f.nome_franquia.replace('Quintal Ideal ', '').charAt(0)}
                 </span>
               </div>
               <div className="flex-1 min-w-0">

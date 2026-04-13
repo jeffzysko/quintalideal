@@ -198,7 +198,7 @@ export default function Login() {
             </div>
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <Droplets className="w-3.5 h-3.5 text-primary/60" />
-              <span>Splash Piscinas</span>
+              <span>Quintal Ideal</span>
             </div>
           </div>
         </motion.div>

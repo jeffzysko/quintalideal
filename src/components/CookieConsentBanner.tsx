@@ -34,7 +34,7 @@ export function CookieConsentBanner() {
     localStorage.setItem(CONSENT_KEY, 'rejected');
     setVisible(false);
     // Disable analytics tracking by removing session
-    sessionStorage.removeItem('splash_session_id');
+    sessionStorage.removeItem('qi_session_id');
   };
 
   const handleDismiss = () => {

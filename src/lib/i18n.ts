@@ -170,7 +170,7 @@ const translations = {
   action_insta_step3: { pt: 'Selecione a <strong>imagem salva</strong> na sua galeria', es: 'Selecciona la <strong>imagen guardada</strong> en tu galería' },
   action_insta_step4: { pt: 'Publique e <strong>desafie seus amigos!</strong> 🎉', es: 'Publica y <strong>¡desafía a tus amigos!</strong> 🎉' },
   action_insta_ok: { pt: 'Entendi!', es: '¡Entendido!' },
-  action_footer: { pt: '© Splash Piscinas • Tecnologia para o seu quintal', es: '© Splash Piscinas • Tecnología para tu patio' },
+  action_footer: { pt: '© Quintal Ideal • Tecnologia para o seu quintal', es: '© Quintal Ideal • Tecnología para tu patio' },
 
   // ValorizationSimulator
   valor_title: { pt: 'Valorização do Imóvel', es: 'Valorización del Inmueble' },
@@ -184,7 +184,7 @@ const translations = {
 
   // WhatsApp message
   wa_message: {
-    pt: 'Olá! Fiz o teste do Índice do Quintal Splash e meu quintal tem {score}% de potencial ({label}). O modelo recomendado foi a {pool}. Gostaria de saber mais!',
+    pt: 'Olá! Fiz o teste do Índice do Quintal Ideal e meu quintal tem {score}% de potencial ({label}). O modelo recomendado foi a {pool}. Gostaria de saber mais!',
     es: '¡Hola! Hice el test del Índice del Patio Splash y mi patio tiene {score}% de potencial ({label}). El modelo recomendado fue {pool}. ¡Me gustaría saber más!',
   },
 } as const;

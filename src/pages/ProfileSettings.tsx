@@ -610,7 +610,7 @@ export default function ProfileSettings() {
                           <Input
                             id="franchiseEmail"
                             type="email"
-                            placeholder="franquia@splashpiscinas.com"
+                            placeholder="contato@quintalideal.com.br"
                             value={email}
                             onChange={e => { setEmail(e.target.value); setFormErrors(p => ({ ...p, email: '' })); }}
                             className="rounded-xl h-11 text-base sm:text-sm"

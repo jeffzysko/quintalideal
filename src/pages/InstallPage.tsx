@@ -4,7 +4,7 @@ import { Download, Check, Share, Plus, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { PageTransition } from '@/components/PageTransition';
-import logoQuintalIdeal from '@/assets/logo-splash.webp';
+import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
 
 function isIOS() {
   return /iPad|iPhone|iPod/.test(navigator.userAgent);
