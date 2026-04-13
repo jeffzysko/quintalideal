@@ -21,6 +21,7 @@ interface Franchise {
   responsavel: string | null;
   whatsapp: string | null;
   email: string | null;
+  endereco: string | null;
   ativa: boolean;
   created_at: string;
 }
@@ -33,6 +34,7 @@ interface FranchiseFormData {
   responsavel: string;
   whatsapp: string;
   email: string;
+  endereco: string;
 }
 
 const emptyForm: FranchiseFormData = {
@@ -43,6 +45,7 @@ const emptyForm: FranchiseFormData = {
   responsavel: '',
   whatsapp: '',
   email: '',
+  endereco: '',
 };
 
 export function AdminFranchiseManager() {
