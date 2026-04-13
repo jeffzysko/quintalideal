@@ -257,6 +257,7 @@ export default function ProposalsList() {
                 );
               })}
             </div>
+          </div>
 
           {/* Status tabs */}
           <div className="flex gap-1.5 overflow-x-auto pb-2 mb-4 scrollbar-hide">
