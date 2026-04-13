@@ -49,8 +49,6 @@ export interface ScoredModel {
 
 export interface RecommendedSize {
   label: string;
-  comprimento?: number;
-  largura?: number;
 }
 
 export interface PoolAlternativeV2 {
@@ -73,11 +71,10 @@ export interface RecommendationResultV2 {
   is_hot_lead: boolean;
   is_weak_recommendation: boolean;
   sales_script: string;
-  /** Legacy score for backward compat (0-100) */
   legacy_score: number;
 }
 
-// ── Normalization: map old quiz values to V2 input ──
+// ── Input Normalization ──
 
 export function normalizeQuizToV2(answers: Record<string, string>): QuizInputV2 {
   const spaceMap: Record<string, QuizInputV2['space_bucket']> = {
@@ -151,7 +148,7 @@ const SPACE_MAX_COMPRIMENTO: Record<QuizInputV2['space_bucket'], number> = {
 };
 
 const MODEL_MIN_SPACE: Record<string, number> = {
-  'Tortuga': 5.0, 'Atalaia': 7.0, 'Farol da Barra': 4.0,
+  'Prainha': 5.0, 'Supreme': 7.0, 'Versátil': 4.0,
 };
 
 // ── CAMADA A: Hard Filter ──
@@ -164,7 +161,7 @@ export function filterModels(models: PoolModelData[], input: QuizInputV2): PoolM
     const minSpace = MODEL_MIN_SPACE[m.nome_modelo];
     if (minSpace && minSpace > maxSpace) return false;
 
-    if (input.space_bucket === 'ate_3m' && input.pool_preference === 'prainha' && m.nome_modelo === 'Tortuga') {
+    if (input.space_bucket === 'ate_3m' && input.pool_preference === 'prainha' && m.nome_modelo === 'Prainha') {
       return false;
     }
 
@@ -202,11 +199,11 @@ function scoreBudget(model: PoolModelData, input: QuizInputV2): number {
 }
 
 const USAGE_AFFINITY: Record<QuizInputV2['usage_profile'], string[]> = {
-  'familia_grande': ['Tradicional', 'Bonaire', 'Tropical', 'Tortuga'],
-  'familia_pequena': ['Tradicional', 'Tropical', 'Italiana', 'Bonaire'],
-  'amigos': ['Cancún', 'Tropical', 'Atalaia', 'Tradicional'],
-  'casal': ['Navagio', 'Italiana', 'Tradicional', 'Bonaire'],
-  'premium': ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'],
+  'familia_grande': ['Retangular', 'Elegance', 'Confort', 'Prainha'],
+  'familia_pequena': ['Retangular', 'Confort', 'Family', 'Elegance'],
+  'amigos': ['Retangular Plus', 'Confort', 'Supreme', 'Retangular'],
+  'casal': ['Compacta Premium', 'Family', 'Retangular', 'Elegance'],
+  'premium': ['Supreme', 'Elegance', 'Compacta Premium', 'Retangular'],
 };
 
 function scoreUsage(model: PoolModelData, input: QuizInputV2): number {
@@ -216,9 +213,9 @@ function scoreUsage(model: PoolModelData, input: QuizInputV2): number {
 }
 
 const PREFERENCE_AFFINITY: Record<QuizInputV2['pool_preference'], string[]> = {
-  'prainha': ['Tortuga', 'Atalaia', 'Tradicional', 'Farol da Barra'],
-  'spa': ['Navagio', 'Tradicional', 'Atalaia', 'Bonaire'],
-  'classica': ['Italiana', 'Tropical', 'Cancún', 'Tradicional', 'Farol da Barra'],
+  'prainha': ['Prainha', 'Supreme', 'Retangular', 'Versátil'],
+  'spa': ['Compacta Premium', 'Retangular', 'Supreme', 'Elegance'],
+  'classica': ['Family', 'Confort', 'Retangular Plus', 'Retangular', 'Versátil'],
   'indeciso': [],
 };
 
@@ -234,10 +231,10 @@ function scorePreference(model: PoolModelData, input: QuizInputV2): number {
 // ── NEW: Objective Score (weight 12) ──
 
 const OBJECTIVE_AFFINITY: Record<QuizInputV2['objective_main'], string[]> = {
-  'valorizar': ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'],
-  'familia': ['Tradicional', 'Bonaire', 'Tropical', 'Tortuga', 'Cancún'],
-  'social': ['Cancún', 'Tropical', 'Atalaia', 'Tradicional', 'Tortuga'],
-  'relaxar': ['Navagio', 'Italiana', 'Tradicional', 'Bonaire'],
+  'valorizar': ['Supreme', 'Elegance', 'Compacta Premium', 'Retangular'],
+  'familia': ['Retangular', 'Elegance', 'Confort', 'Prainha', 'Retangular Plus'],
+  'social': ['Retangular Plus', 'Confort', 'Supreme', 'Retangular', 'Prainha'],
+  'relaxar': ['Compacta Premium', 'Family', 'Retangular', 'Elegance'],
 };
 
 function scoreObjective(model: PoolModelData, input: QuizInputV2): number {
@@ -267,11 +264,11 @@ function scoreIntent(model: PoolModelData, input: QuizInputV2): number {
 }
 
 const PROFILE_AFFINITY: Record<CustomerProfile, string[]> = {
-  'RELAXADOR': ['Navagio', 'Tradicional', 'Bonaire'],
-  'FAMILIA': ['Tradicional', 'Bonaire', 'Tropical', 'Tortuga'],
-  'SOCIAL': ['Cancún', 'Tropical', 'Atalaia', 'Tradicional'],
-  'PREMIUM': ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'],
-  'COMPACTO': ['Italiana', 'Navagio', 'Tropical', 'Cancún'],
+  'RELAXADOR': ['Compacta Premium', 'Retangular', 'Elegance'],
+  'FAMILIA': ['Retangular', 'Elegance', 'Confort', 'Prainha'],
+  'SOCIAL': ['Retangular Plus', 'Confort', 'Supreme', 'Retangular'],
+  'PREMIUM': ['Supreme', 'Elegance', 'Compacta Premium', 'Retangular'],
+  'COMPACTO': ['Family', 'Compacta Premium', 'Confort', 'Retangular Plus'],
 };
 
 function profileBonus(model: PoolModelData, profile: CustomerProfile): number {
@@ -282,21 +279,21 @@ function profileBonus(model: PoolModelData, profile: CustomerProfile): number {
 function specialBonus(model: PoolModelData, input: QuizInputV2): number {
   let bonus = 0;
 
-  // Rule 0: Nassau penalty — complex to install, deprioritize
-  if (model.nome_modelo === 'Nassau') bonus -= 15;
+  // Rule 0: Borda Infinita penalty — complex to install, deprioritize
+  if (model.nome_modelo === 'Borda Infinita') bonus -= 15;
 
-  // Rule 1: Navagio relax compacta
+  // Rule 1: Compacta Premium relax compacta
   if (
     (input.space_bucket === 'ate_3m' || input.space_bucket === '3_5m') &&
     input.objective_main === 'relaxar' &&
-    model.nome_modelo === 'Navagio'
+    model.nome_modelo === 'Compacta Premium'
   ) bonus += 20;
 
   // Rule 3: Premium grande
   if (
     input.space_bucket === '7m_plus' &&
     input.budget_range === '30_50k' &&
-    model.nome_modelo === 'Atalaia'
+    model.nome_modelo === 'Supreme'
   ) bonus += 15;
 
   // Rule 4: Sofisticação compacta
@@ -304,19 +301,19 @@ function specialBonus(model: PoolModelData, input: QuizInputV2): number {
     input.space_bucket === '3_5m' &&
     input.objective_main === 'valorizar' &&
     input.budget_range !== 'ate_18k' &&
-    ['Navagio', 'Bonaire'].includes(model.nome_modelo)
+    ['Compacta Premium', 'Elegance'].includes(model.nome_modelo)
   ) bonus += 10;
 
   // Rule 5: Família orçamento controlado
   if (
     (input.usage_profile === 'familia_pequena' || input.usage_profile === 'familia_grande') &&
     (input.budget_range === 'ate_18k' || input.budget_range === '18_30k') &&
-    ['Tradicional', 'Tropical', 'Italiana', 'Cancún'].includes(model.nome_modelo)
+    ['Retangular', 'Confort', 'Family', 'Retangular Plus'].includes(model.nome_modelo)
   ) bonus += 8;
 
   // Rule 6: Valorizar — boost premium models
   if (input.objective_main === 'valorizar') {
-    const premiumModels = ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'];
+    const premiumModels = ['Supreme', 'Elegance', 'Compacta Premium', 'Retangular'];
     if (premiumModels.includes(model.nome_modelo)) bonus += 10;
     if (model.possui_spa || model.possui_prainha) bonus += 5;
   }
@@ -387,53 +384,53 @@ export function getFitLevelEmoji(fitLevel: FitLevel): string {
 // ── Size Recommendation ──
 
 const MODEL_SIZES: Record<string, { space: string; sizes: string[] }[]> = {
-  'Tortuga': [
+  'Prainha': [
     { space: '5_7m', sizes: ['5,00 x 2,30m', '7,00 x 3,30m'] },
     { space: '7m_plus', sizes: ['7,00 x 3,30m', '9,00 x 3,30m', '10,00 x 3,30m'] },
   ],
-  'Tradicional': [
+  'Retangular': [
     { space: 'ate_3m', sizes: ['3,50 x 2,00m'] },
     { space: '3_5m', sizes: ['3,50 x 2,00m', '5,00 x 2,50m'] },
     { space: '5_7m', sizes: ['5,00 x 2,50m', '6,00 x 2,50m', '7,00 x 2,75m'] },
     { space: '7m_plus', sizes: ['7,00 x 2,75m', '8,00 x 2,75m', '9,00 x 2,75m'] },
   ],
-  'Italiana': [
+  'Family': [
     { space: 'ate_3m', sizes: ['2,50 x 1,80m', '3,00 x 2,00m'] },
     { space: '3_5m', sizes: ['3,00 x 2,00m', '4,00 x 2,40m'] },
     { space: '5_7m', sizes: ['5,00 x 2,50m', '6,00 x 2,80m'] },
     { space: '7m_plus', sizes: ['6,00 x 2,80m', '8,00 x 2,80m'] },
   ],
-  'Navagio': [
+  'Compacta Premium': [
     { space: 'ate_3m', sizes: ['3,25 x 2,25m'] },
     { space: '3_5m', sizes: ['3,25 x 2,25m'] },
   ],
-  'Nassau': [
+  'Borda Infinita': [
     { space: '3_5m', sizes: ['4,00 x 3,00m'] },
     { space: '5_7m', sizes: ['4,00 x 3,00m'] },
     { space: '7m_plus', sizes: ['4,00 x 3,00m'] },
   ],
-  'Bonaire': [
+  'Elegance': [
     { space: 'ate_3m', sizes: ['3,00 x 2,00m'] },
     { space: '3_5m', sizes: ['3,00 x 2,00m', '4,00 x 2,50m'] },
     { space: '5_7m', sizes: ['5,00 x 2,50m', '6,00 x 3,00m'] },
     { space: '7m_plus', sizes: ['6,00 x 3,00m', '8,00 x 3,00m'] },
   ],
-  'Cancún': [
+  'Retangular Plus': [
     { space: 'ate_3m', sizes: ['3,00 x 2,00m'] },
     { space: '3_5m', sizes: ['3,00 x 2,00m', '4,00 x 2,50m'] },
     { space: '5_7m', sizes: ['5,00 x 2,50m', '6,00 x 3,00m'] },
     { space: '7m_plus', sizes: ['6,00 x 3,00m', '8,00 x 3,50m', '10,00 x 3,50m'] },
   ],
-  'Tropical': [
+  'Confort': [
     { space: 'ate_3m', sizes: ['3,50 x 2,00m'] },
     { space: '3_5m', sizes: ['3,50 x 2,00m', '4,50 x 2,40m'] },
     { space: '5_7m', sizes: ['5,00 x 2,50m', '6,00 x 2,60m'] },
     { space: '7m_plus', sizes: ['6,00 x 2,60m', '8,00 x 2,80m', '10,00 x 2,80m'] },
   ],
-  'Atalaia': [
+  'Supreme': [
     { space: '7m_plus', sizes: ['7,00 x 4,00m', '9,00 x 4,00m'] },
   ],
-  'Farol da Barra': [
+  'Versátil': [
     { space: '3_5m', sizes: ['4,00 x 2,50m'] },
     { space: '5_7m', sizes: ['5,00 x 2,50m', '6,00 x 3,00m'] },
     { space: '7m_plus', sizes: ['6,00 x 3,00m', '8,00 x 3,50m', '10,00 x 3,50m'] },
@@ -539,16 +536,16 @@ const USAGE_LABELS_SCRIPT: Record<QuizInputV2['objective_main'], Record<string, 
 };
 
 const MODEL_BENEFITS: Record<string, Record<string, string>> = {
-  'Atalaia': { pt: 'entrega SPA e prainha integrados com acabamento premium', es: 'entrega SPA y playa integrados con acabado premium' },
-  'Nassau': { pt: 'tem borda infinita e prainha em um design sofisticado e compacto', es: 'tiene borde infinito y playa en un diseño sofisticado y compacto' },
-  'Navagio': { pt: 'é moderna, compacta e com porcelana inclusa em todas as versões', es: 'es moderna, compacta y con porcelana incluida en todas las versiones' },
-  'Tortuga': { pt: 'tem prainha integrada com ótimo aproveitamento do espaço', es: 'tiene playa integrada con excelente aprovechamiento del espacio' },
-  'Tradicional': { pt: 'oferece grande versatilidade e ampla gama de tamanhos e acabamentos', es: 'ofrece gran versatilidad y amplia gama de tamaños y acabados' },
-  'Bonaire': { pt: 'tem bordas pastilhadas e hidromassagem com visual diferenciado', es: 'tiene bordes pastillados e hidromasaje con visual diferenciado' },
-  'Italiana': { pt: 'é o modelo mais vendido do Brasil, com ótima adaptabilidade', es: 'es el modelo más vendido de Brasil, con excelente adaptabilidad' },
-  'Tropical': { pt: 'é completa para relaxar em família com boa amplitude de tamanhos', es: 'es completa para relajarse en familia con buena amplitud de tamaños' },
-  'Cancún': { pt: 'tem banco com hidro e escadas integrados, ideal para convivência', es: 'tiene banco con hidro y escaleras integrados, ideal para convivencia' },
-  'Farol da Barra': { pt: 'oferece ótimo custo-benefício com bom aproveitamento de espaço', es: 'ofrece excelente costo-beneficio con buen aprovechamiento de espacio' },
+  'Supreme': { pt: 'entrega SPA e prainha integrados com acabamento premium', es: 'entrega SPA y playa integrados con acabado premium' },
+  'Borda Infinita': { pt: 'tem borda infinita e prainha em um design sofisticado e compacto', es: 'tiene borde infinito y playa en un diseño sofisticado y compacto' },
+  'Compacta Premium': { pt: 'é moderna, compacta e com porcelana inclusa em todas as versões', es: 'es moderna, compacta y con porcelana incluida en todas las versiones' },
+  'Prainha': { pt: 'tem prainha integrada com ótimo aproveitamento do espaço', es: 'tiene playa integrada con excelente aprovechamiento del espacio' },
+  'Retangular': { pt: 'oferece grande versatilidade e ampla gama de tamanhos e acabamentos', es: 'ofrece gran versatilidad y amplia gama de tamaños y acabados' },
+  'Elegance': { pt: 'tem bordas pastilhadas e hidromassagem com visual diferenciado', es: 'tiene bordes pastillados e hidromasaje con visual diferenciado' },
+  'Family': { pt: 'é o modelo mais popular, com ótima adaptabilidade', es: 'es el modelo más popular, con excelente adaptabilidad' },
+  'Confort': { pt: 'é completa para relaxar em família com boa amplitude de tamanhos', es: 'es completa para relajarse en familia con buena amplitud de tamaños' },
+  'Retangular Plus': { pt: 'tem banco com hidro e escadas integrados, ideal para convivência', es: 'tiene banco con hidro y escaleras integrados, ideal para convivencia' },
+  'Versátil': { pt: 'oferece ótimo custo-benefício com bom aproveitamento de espaço', es: 'ofrece excelente costo-beneficio con buen aprovechamiento de espacio' },
 };
 
 export function generateSalesScript(leadName: string, input: QuizInputV2, modelName: string, lang: 'pt' | 'es' = 'pt'): string {

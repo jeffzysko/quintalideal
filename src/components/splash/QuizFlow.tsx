@@ -27,9 +27,9 @@ type Step = 'hero' | 'photos' | 'photo-analysis' | 'pre-diagnosis' | 'quiz' | 'p
 
 // Preference step images — use SVG illustrations from poolImages
 const PREF_IMAGES: Record<string, string> = {
-  prainha: poolImages['Tortuga'] || '',
-  spa: poolImages['Navagio'] || '',
-  simples: poolImages['Tradicional'] || '',
+  prainha: poolImages['Prainha'] || '',
+  spa: poolImages['Compacta Premium'] || '',
+  simples: poolImages['Retangular'] || '',
 };
 
 interface QuizFlowProps {

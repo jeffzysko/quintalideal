@@ -27,7 +27,7 @@ const baseAnswers = (overrides: Record<string, string> = {}): Record<string, str
 
 // ── Helper: mock pool model ──
 const mockModel = (overrides: Partial<PoolModelData> = {}): PoolModelData => ({
-  nome_modelo: 'Tradicional',
+  nome_modelo: 'Retangular',
   categoria_tamanho: 'media',
   tamanho: '5,00 x 2,50m',
   preco_min: 15000,
@@ -42,16 +42,16 @@ const mockModel = (overrides: Partial<PoolModelData> = {}): PoolModelData => ({
 });
 
 const allMockModels: PoolModelData[] = [
-  mockModel({ nome_modelo: 'Tradicional', preco_min: 12000, preco_max: 40000 }),
-  mockModel({ nome_modelo: 'Navagio', preco_min: 18000, preco_max: 25000, comprimento: 3.25, largura: 2.25 }),
-  mockModel({ nome_modelo: 'Nassau', preco_min: 25000, preco_max: 35000, possui_prainha: true, comprimento: 4, largura: 3 }),
-  mockModel({ nome_modelo: 'Italiana', preco_min: 10000, preco_max: 30000, comprimento: 3, largura: 2 }),
-  mockModel({ nome_modelo: 'Tortuga', preco_min: 20000, preco_max: 45000, possui_prainha: true, comprimento: 5, largura: 2.3 }),
-  mockModel({ nome_modelo: 'Atalaia', preco_min: 35000, preco_max: 50000, possui_spa: true, possui_prainha: true, comprimento: 7, largura: 4 }),
-  mockModel({ nome_modelo: 'Bonaire', preco_min: 14000, preco_max: 38000, possui_spa: true, comprimento: 3, largura: 2 }),
-  mockModel({ nome_modelo: 'Cancún', preco_min: 12000, preco_max: 35000, comprimento: 3, largura: 2 }),
-  mockModel({ nome_modelo: 'Tropical', preco_min: 11000, preco_max: 32000, comprimento: 3.5, largura: 2 }),
-  mockModel({ nome_modelo: 'Farol da Barra', preco_min: 15000, preco_max: 40000, comprimento: 4, largura: 2.5 }),
+  mockModel({ nome_modelo: 'Retangular', preco_min: 12000, preco_max: 40000 }),
+  mockModel({ nome_modelo: 'Compacta Premium', preco_min: 18000, preco_max: 25000, comprimento: 3.25, largura: 2.25 }),
+  mockModel({ nome_modelo: 'Borda Infinita', preco_min: 25000, preco_max: 35000, possui_prainha: true, comprimento: 4, largura: 3 }),
+  mockModel({ nome_modelo: 'Family', preco_min: 10000, preco_max: 30000, comprimento: 3, largura: 2 }),
+  mockModel({ nome_modelo: 'Prainha', preco_min: 20000, preco_max: 45000, possui_prainha: true, comprimento: 5, largura: 2.3 }),
+  mockModel({ nome_modelo: 'Supreme', preco_min: 35000, preco_max: 50000, possui_spa: true, possui_prainha: true, comprimento: 7, largura: 4 }),
+  mockModel({ nome_modelo: 'Elegance', preco_min: 14000, preco_max: 38000, possui_spa: true, comprimento: 3, largura: 2 }),
+  mockModel({ nome_modelo: 'Retangular Plus', preco_min: 12000, preco_max: 35000, comprimento: 3, largura: 2 }),
+  mockModel({ nome_modelo: 'Confort', preco_min: 11000, preco_max: 32000, comprimento: 3.5, largura: 2 }),
+  mockModel({ nome_modelo: 'Versátil', preco_min: 15000, preco_max: 40000, comprimento: 4, largura: 2.5 }),
 ];
 
 // ═══════════════════════════════════════════
@@ -170,19 +170,19 @@ describe('calculateModelScore', () => {
     expect(scored.score).toBeLessThanOrEqual(100);
   });
 
-  it('bonus valorizar para modelos premium (Atalaia > Italiana)', () => {
+  it('bonus valorizar para modelos premium (Supreme > Family)', () => {
     const input: QuizInputV2 = { space_bucket: '5_7m', home_status: 'casa_propria', purchase_intent: '2026', usage_profile: 'premium', budget_range: '30_50k', pool_preference: 'classica', objective_main: 'valorizar' };
-    const atalaia = calculateModelScore(allMockModels[5], input, 'PREMIUM'); // Atalaia
-    const italiana = calculateModelScore(allMockModels[3], input, 'PREMIUM'); // Italiana
-    expect(atalaia.specialBonus).toBeGreaterThan(italiana.specialBonus);
+    const supreme = calculateModelScore(allMockModels[5], input, 'PREMIUM'); // Supreme
+    const family = calculateModelScore(allMockModels[3], input, 'PREMIUM'); // Family
+    expect(supreme.specialBonus).toBeGreaterThan(family.specialBonus);
   });
 });
 
 describe('filterModels', () => {
-  it('exclui Tortuga para espaço ate_3m com prainha', () => {
+  it('exclui Prainha para espaço ate_3m com prainha', () => {
     const input: QuizInputV2 = { space_bucket: 'ate_3m', home_status: 'casa_propria', purchase_intent: '2026', usage_profile: 'casal', budget_range: '18_30k', pool_preference: 'prainha', objective_main: 'relaxar' };
     const filtered = filterModels(allMockModels, input);
-    expect(filtered.find(m => m.nome_modelo === 'Tortuga')).toBeUndefined();
+    expect(filtered.find(m => m.nome_modelo === 'Prainha')).toBeUndefined();
   });
 });
 
@@ -227,16 +227,15 @@ describe('recommendPoolsV2', () => {
   it('valorizar prioriza modelos premium', () => {
     const input: QuizInputV2 = { space_bucket: '3_5m', home_status: 'casa_propria', purchase_intent: '2026', usage_profile: 'premium', budget_range: '30_50k', pool_preference: 'classica', objective_main: 'valorizar' };
     const result = recommendPoolsV2(input, allMockModels);
-    const premiumModels = ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'];
+    const premiumModels = ['Supreme', 'Elegance', 'Compacta Premium', 'Retangular'];
     expect(premiumModels).toContain(result.primary_model.nome_modelo);
   });
 
-  it('Navagio priorizada para espaço pequeno + relaxar', () => {
+  it('Compacta Premium priorizada para espaço pequeno + relaxar', () => {
     const input: QuizInputV2 = { space_bucket: 'ate_3m', home_status: 'casa_propria', purchase_intent: '2026', usage_profile: 'casal', budget_range: '18_30k', pool_preference: 'spa', objective_main: 'relaxar' };
     const result = recommendPoolsV2(input, allMockModels);
-    // Navagio should be top or among alternatives
     const allNames = [result.primary_model.nome_modelo, ...result.alternatives.map(a => a.model.nome_modelo)];
-    expect(allNames).toContain('Navagio');
+    expect(allNames).toContain('Compacta Premium');
   });
   it('retorna is_hot_lead e sales_script', () => {
     const input: QuizInputV2 = { space_bucket: '5_7m', home_status: 'casa_propria', purchase_intent: '2026', usage_profile: 'familia_grande', budget_range: '18_30k', pool_preference: 'classica', objective_main: 'familia' };
@@ -275,16 +274,16 @@ describe('detectHotLead', () => {
 describe('generateSalesScript', () => {
   it('gera script com nome e modelo', () => {
     const input: QuizInputV2 = { space_bucket: '5_7m', home_status: 'casa_propria', purchase_intent: '2026', usage_profile: 'familia_grande', budget_range: '18_30k', pool_preference: 'classica', objective_main: 'familia' };
-    const script = generateSalesScript('João Silva', input, 'Tradicional');
+    const script = generateSalesScript('João Silva', input, 'Retangular');
     expect(script).toContain('João');
-    expect(script).toContain('Tradicional');
+    expect(script).toContain('Retangular');
     expect(script).toContain('família');
   });
 
   it('gera script em espanhol', () => {
     const input: QuizInputV2 = { space_bucket: '5_7m', home_status: 'casa_propria', purchase_intent: '2026', usage_profile: 'amigos', budget_range: '18_30k', pool_preference: 'classica', objective_main: 'social' };
-    const script = generateSalesScript('Carlos', input, 'Cancún', 'es');
+    const script = generateSalesScript('Carlos', input, 'Retangular Plus', 'es');
     expect(script).toContain('Carlos');
-    expect(script).toContain('Cancún');
+    expect(script).toContain('Retangular Plus');
   });
 });

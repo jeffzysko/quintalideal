@@ -56,44 +56,44 @@ export function calculateScore(answers: QuizAnswers): number {
 export function recommendSize(espaco: string, poolName: string): string {
   const sizeMap: Record<string, Record<string, string>> = {
     'ate-3': {
-      'Navagio': '3,25 x 2,25m',
-      'Italiana': '2,50 x 1,80m',
-      'Nassau': '4,00 x 3,00m',
-      'Bonaire': '3,00 x 2,00m',
-      'Cancún': '3,00 x 2,00m',
+      'Compacta Premium': '3,25 x 2,25m',
+      'Family': '2,50 x 1,80m',
+      'Borda Infinita': '4,00 x 3,00m',
+      'Elegance': '3,00 x 2,00m',
+      'Retangular Plus': '3,00 x 2,00m',
       'default': '3,00 x 2,00m',
     },
     '3-5': {
-      'Navagio': '3,25 x 2,25m',
-      'Italiana': '4,00 x 2,40m',
-      'Bonaire': '4,00 x 2,50m',
-      'Cancún': '4,00 x 2,50m',
-      'Nassau': '4,00 x 3,00m',
-      'Tortuga': '5,00 x 2,30m',
-      'Tradicional': '3,50 x 2,00m',
-      'Tropical': '3,50 x 2,00m',
+      'Compacta Premium': '3,25 x 2,25m',
+      'Family': '4,00 x 2,40m',
+      'Elegance': '4,00 x 2,50m',
+      'Retangular Plus': '4,00 x 2,50m',
+      'Borda Infinita': '4,00 x 3,00m',
+      'Prainha': '5,00 x 2,30m',
+      'Retangular': '3,50 x 2,00m',
+      'Confort': '3,50 x 2,00m',
       'default': '4,00 x 2,50m',
     },
     '5-7': {
-      'Tortuga': '7,00 x 3,30m',
-      'Bonaire': '6,00 x 3,00m',
-      'Farol da Barra': '6,00 x 3,00m',
-      'Tropical': '6,00 x 2,60m',
-      'Tradicional': '6,00 x 2,50m',
-      'Cancún': '6,00 x 3,00m',
-      'Italiana': '6,00 x 2,80m',
-      'Atalaia': '7,00 x 4,00m',
+      'Prainha': '7,00 x 3,30m',
+      'Elegance': '6,00 x 3,00m',
+      'Versátil': '6,00 x 3,00m',
+      'Confort': '6,00 x 2,60m',
+      'Retangular': '6,00 x 2,50m',
+      'Retangular Plus': '6,00 x 3,00m',
+      'Family': '6,00 x 2,80m',
+      'Supreme': '7,00 x 4,00m',
       'default': '6,00 x 3,00m',
     },
     'mais-7': {
-      'Tortuga': '9,00 x 3,30m',
-      'Atalaia': '9,00 x 4,00m',
-      'Cancún': '8,00 x 3,50m',
-      'Tradicional': '8,00 x 2,75m',
-      'Farol da Barra': '8,00 x 3,50m',
-      'Bonaire': '8,00 x 3,00m',
-      'Tropical': '8,00 x 2,80m',
-      'Italiana': '8,00 x 2,80m',
+      'Prainha': '9,00 x 3,30m',
+      'Supreme': '9,00 x 4,00m',
+      'Retangular Plus': '8,00 x 3,50m',
+      'Retangular': '8,00 x 2,75m',
+      'Versátil': '8,00 x 3,50m',
+      'Elegance': '8,00 x 3,00m',
+      'Confort': '8,00 x 2,80m',
+      'Family': '8,00 x 2,80m',
       'default': '8,00 x 3,00m',
     },
   };
@@ -125,9 +125,8 @@ export interface PoolPriceInfo {
  */
 export function isWithinBudget(poolName: string, orcamento: string, poolPrices: PoolPriceInfo[]): boolean {
   const pool = poolPrices.find(p => p.nome_modelo === poolName);
-  if (!pool || pool.preco_min == null || pool.preco_max == null) return true; // No price data = compatible
+  if (!pool || pool.preco_min == null || pool.preco_max == null) return true;
   const budget = getBudgetRange(orcamento);
-  // Pool fits if there's overlap between pool price range and budget range
   return pool.preco_min <= budget.max && pool.preco_max >= budget.min;
 }
 
@@ -140,40 +139,39 @@ export function recommendPool(answers: QuizAnswers, poolPrices: PoolPriceInfo[] 
   const isFamilyOrFriends = uso === 'familia-grande' || uso === 'amigos';
   const isHighBudget = orcamento === '30-50';
 
-  /** Returns the pool name if it fits the budget, otherwise the fallback */
   const pick = (name: string, fallback?: string): string => {
     if (isWithinBudget(name, orcamento, poolPrices)) return name;
     if (fallback && isWithinBudget(fallback, orcamento, poolPrices)) return fallback;
-    return name; // Return original if fallback also doesn't fit
+    return name;
   };
 
-  // Espaço pequeno (até 3m) — Tortuga não cabe (mín 5m)
+  // Espaço pequeno (até 3m) — Prainha não cabe (mín 5m)
   if (espaco === 'ate-3') {
-    if (pref === 'spa') return pick('Navagio');
-    if (pref === 'prainha') return pick('Italiana'); // Tortuga não tem tamanho para este espaço
-    return pick('Italiana');
+    if (pref === 'spa') return pick('Compacta Premium');
+    if (pref === 'prainha') return pick('Family');
+    return pick('Family');
   }
 
-  // Espaço pequeno-médio (3-5m) — Tortuga cabe a partir de 5m
+  // Espaço pequeno-médio (3-5m) — Prainha cabe a partir de 5m
   if (espaco === '3-5') {
-    if (pref === 'prainha') return pick('Tortuga', 'Italiana');
-    if (pref === 'spa') return pick('Navagio', 'Bonaire');
-    return pick('Italiana', 'Cancún');
+    if (pref === 'prainha') return pick('Prainha', 'Family');
+    if (pref === 'spa') return pick('Compacta Premium', 'Elegance');
+    return pick('Family', 'Retangular Plus');
   }
 
   // Espaço médio (5-7m)
   if (espaco === '5-7') {
-    if (pref === 'prainha') return pick('Tortuga');
-    if (pref === 'spa') return pick('Tradicional', 'Bonaire');
-    if (isFamilyOrFriends && isHighBudget) return pick('Bonaire', 'Tradicional');
-    if (isFamilyOrFriends) return pick('Tradicional', 'Tropical');
-    return pick('Tropical');
+    if (pref === 'prainha') return pick('Prainha');
+    if (pref === 'spa') return pick('Retangular', 'Elegance');
+    if (isFamilyOrFriends && isHighBudget) return pick('Elegance', 'Retangular');
+    if (isFamilyOrFriends) return pick('Retangular', 'Confort');
+    return pick('Confort');
   }
 
   // Espaço grande (mais de 7m)
-  if (pref === 'prainha') return pick('Tortuga');
-  if (pref === 'spa') return pick('Atalaia');
-  if (isHighBudget && isFamilyOrFriends) return pick('Atalaia', 'Cancún');
-  if (isFamilyOrFriends) return pick('Cancún');
-  return pick('Tradicional');
+  if (pref === 'prainha') return pick('Prainha');
+  if (pref === 'spa') return pick('Supreme');
+  if (isHighBudget && isFamilyOrFriends) return pick('Supreme', 'Retangular Plus');
+  if (isFamilyOrFriends) return pick('Retangular Plus');
+  return pick('Retangular');
 }
