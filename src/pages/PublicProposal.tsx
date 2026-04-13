@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import { triggerWhatsAppAuto } from '@/lib/whatsapp-auto';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -85,6 +86,10 @@ export default function PublicProposal() {
     if (!token || !acceptName.trim()) return;
     setSubmitting(true);
     await supabase.rpc('public_accept_proposal', { _token: token, _name: acceptName.trim(), _user_agent: navigator.userAgent });
+    // Event 6: WhatsApp auto trigger on proposal accepted
+    if (proposal?.id) {
+      triggerWhatsAppAuto({ trigger_event: 'proposal_accepted', proposal_id: proposal.id, franchise_id: proposal.franchise_id });
+    }
     setSubmitting(false); setAcceptOpen(false); setActionDone('accepted'); fetchProposal();
   };
   const handleRefuse = async () => {
