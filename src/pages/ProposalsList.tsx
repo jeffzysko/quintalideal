@@ -58,7 +58,7 @@ export default function ProposalsList() {
     queryFn: async () => {
       let query = supabase
         .from('proposals')
-        .select('id, client_name, status, total, created_at, public_token, updated_at')
+        .select('id, client_name, status, total, created_at, public_token, updated_at, lead_id')
         .order('created_at', { ascending: false });
       // RLS handles filtering — admins see all, franchise users see own
       const { data, error } = await query;
