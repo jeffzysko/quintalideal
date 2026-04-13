@@ -20,7 +20,7 @@ import { LeadTimeline } from '@/components/lead/LeadTimeline';
 import { LeadFollowups } from '@/components/franchise/LeadFollowups';
 import { PhotoLightbox } from '@/components/lead/PhotoLightbox';
 import { InactivityBadge } from '@/components/lead/InactivityBadge';
-import { WhatsAppTemplates } from '@/components/lead/WhatsAppTemplates';
+
 import { LeadValueEstimator } from '@/components/lead/LeadValueEstimator';
 import { ContactAttempts } from '@/components/lead/ContactAttempts';
 import { LeadPhotoUpload } from '@/components/lead/LeadPhotoUpload';
