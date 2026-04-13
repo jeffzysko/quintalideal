@@ -21,6 +21,10 @@ function buildZapiUrl(instanceId: string, token: string, endpoint: string) {
   return `https://api.z-api.io/instances/${instanceId}/token/${token}/${endpoint}`;
 }
 
+function replaceVars(template: string, vars: Record<string, string>): string {
+  return template.replace(/\{\{(\w+)\}\}/g, (_, key) => vars[key] ?? "");
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -35,13 +39,21 @@ Deno.serve(async (req) => {
     const { trigger_event, lead_id, proposal_id, franchise_id } = body;
 
     if (!trigger_event) {
-      return new Response(JSON.stringify({ error: "trigger_event é obrigatório" }), {
-        status: 400,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResp({ error: "trigger_event é obrigatório" }, 400);
     }
 
-    // Check is_active
+    // Check template exists and is active
+    const { data: tplRow } = await supabase
+      .from("whatsapp_templates")
+      .select("message_text, is_active")
+      .eq("template_key", trigger_event)
+      .maybeSingle();
+
+    if (tplRow && !tplRow.is_active) {
+      return jsonResp({ skipped: true, reason: `Template '${trigger_event}' desativado` });
+    }
+
+    // Check is_active (global Z-API toggle)
     const { data: config } = await supabase
       .from("whatsapp_config")
       .select("instance_id, token, security_token, is_active")
@@ -50,9 +62,7 @@ Deno.serve(async (req) => {
       .maybeSingle();
 
     if (!config?.is_active) {
-      return new Response(JSON.stringify({ skipped: true, reason: "WhatsApp desativado" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResp({ skipped: true, reason: "WhatsApp desativado" });
     }
 
     const instanceId = config.instance_id || Deno.env.get("ZAPI_INSTANCE_ID");
@@ -60,30 +70,25 @@ Deno.serve(async (req) => {
     const securityToken = config.security_token || Deno.env.get("ZAPI_SECURITY_TOKEN");
 
     if (!instanceId || !zapiToken) {
-      return new Response(JSON.stringify({ skipped: true, reason: "Z-API não configurada" }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return jsonResp({ skipped: true, reason: "Z-API não configurada" });
     }
 
     // Build context based on trigger_event
     let phone = "";
-    let message = "";
+    let vars: Record<string, string> = {};
     let resolvedFranchiseId = franchise_id || "";
     let resolvedLeadId = lead_id || "";
 
-    // Helper: fetch lead
     const fetchLead = async (lid: string) => {
       const { data } = await supabase.from("leads").select("nome, telefone, cidade, franquia_id, lead_origin, pontuacao_quintal, modelo_recomendado").eq("id", lid).maybeSingle();
       return data;
     };
 
-    // Helper: fetch franchise
     const fetchFranchise = async (fid: string) => {
       const { data } = await supabase.from("franchises").select("nome_franquia, whatsapp").eq("id", fid).maybeSingle();
       return data;
     };
 
-    // Helper: fetch proposal with lead
     const fetchProposal = async (pid: string) => {
       const { data } = await supabase.from("proposals").select("id, lead_id, franchise_id, client_name, client_phone, public_token, validity_date, status").eq("id", pid).maybeSingle();
       return data;
@@ -104,17 +109,15 @@ Deno.serve(async (req) => {
       const franchisePhone = franchise?.whatsapp ? formatWhatsAppPhone(franchise.whatsapp) : "";
 
       if (trigger_event === "lead_created") {
-        // Send to franchise
         if (!franchise?.whatsapp) return jsonResp({ skipped: true, reason: "Franquia sem WhatsApp" });
         phone = formatWhatsAppPhone(franchise.whatsapp);
         const origem = lead.lead_origin === "quiz" ? "Quiz Quintal Ideal" : "Manual";
-        message = `Novo lead recebido! 🏊\n*Nome:* ${lead.nome || "Sem nome"}\n*Telefone:* ${lead.telefone || "Não informado"}\n*Origem:* ${origem}\nAcesse o painel para iniciar o atendimento.`;
+        vars = { nome: lead.nome || "Sem nome", telefone: lead.telefone || "Não informado", origem };
       } else {
-        // lead_welcome — send to lead
         if (!lead.telefone) return jsonResp({ skipped: true, reason: "Lead sem telefone" });
         phone = formatWhatsAppPhone(lead.telefone);
         const waLink = franchisePhone ? `https://wa.me/${franchisePhone}` : "";
-        message = `Olá, ${lead.nome || ""}! 😊\nRecebemos seu interesse em um projeto de piscina e em breve um consultor da *${franchiseName}* vai entrar em contato.${waLink ? `\nSe preferir falar agora, é só clicar aqui:\n👉 ${waLink}` : ""}`;
+        vars = { nome: lead.nome || "", franquia: franchiseName, link_whatsapp: waLink };
       }
     } else if (
       trigger_event === "proposal_sent" ||
@@ -129,7 +132,6 @@ Deno.serve(async (req) => {
       resolvedFranchiseId = proposal.franchise_id;
       resolvedLeadId = proposal.lead_id || "";
 
-      // Get lead phone
       let leadPhone = proposal.client_phone || "";
       let leadName = proposal.client_name || "";
       if (proposal.lead_id) {
@@ -147,18 +149,15 @@ Deno.serve(async (req) => {
       const franchisePhone = franchise?.whatsapp ? formatWhatsAppPhone(franchise.whatsapp) : "";
       const waLink = franchisePhone ? `https://wa.me/${franchisePhone}` : "";
       const publicUrl = `https://quintalideal.com.br/proposta/${proposal.public_token}`;
+      const validityText = proposal.validity_date || "consulte";
 
-      if (trigger_event === "proposal_sent") {
-        const validityText = proposal.validity_date || "consulte";
-        message = `Olá, ${leadName}!\nSua proposta personalizada está pronta. Acesse o link para visualizar:\n👉 ${publicUrl}\nVálida até *${validityText}*.`;
-      } else if (trigger_event === "proposal_accepted") {
-        message = `Olá, ${leadName}! 🎉\nSua proposta foi aceita! Estamos muito felizes em ter você como cliente.\nNossa equipe entrará em contato em breve para os próximos passos.\n— *${franchiseName}*`;
-      } else if (trigger_event === "proposal_viewed_followup") {
-        message = `Olá, ${leadName}!\nVimos que você conferiu sua proposta. Ficou com alguma dúvida ou quer conversar sobre o projeto?\n${waLink ? `👉 ${waLink}\n` : ""}— *${franchiseName}*`;
-      } else if (trigger_event === "proposal_expiring") {
-        const validityText = proposal.validity_date || "";
-        message = `Olá, ${leadName}!\nSua proposta vence em *2 dias*, no dia *${validityText}*. Após essa data os valores podem ser alterados.\nPara garantir, fale com a gente:\n${waLink ? `👉 ${waLink}\n` : ""}— *${franchiseName}*`;
-      }
+      vars = {
+        nome: leadName,
+        franquia: franchiseName,
+        link_whatsapp: waLink,
+        link_proposta: publicUrl,
+        validade: validityText,
+      };
     } else if (trigger_event === "lead_negotiation") {
       if (!lead_id) return jsonResp({ skipped: true, reason: "lead_id ausente" });
       const lead = await fetchLead(lead_id);
@@ -175,13 +174,29 @@ Deno.serve(async (req) => {
       const franchiseName = franchise?.nome_franquia || "Quintal Ideal";
       const franchisePhone = franchise?.whatsapp ? formatWhatsAppPhone(franchise.whatsapp) : "";
       const waLink = franchisePhone ? `https://wa.me/${franchisePhone}` : "";
-      message = `Olá, ${lead.nome || ""}!\nEstamos à disposição para tirar qualquer dúvida sobre sua proposta ou ajustar algum detalhe do projeto.\n${waLink ? `👉 ${waLink}\n` : ""}— *${franchiseName}*`;
+      vars = { nome: lead.nome || "", franquia: franchiseName, link_whatsapp: waLink };
     } else {
       return jsonResp({ skipped: true, reason: `Evento desconhecido: ${trigger_event}` });
     }
 
-    if (!phone || !message) {
-      return jsonResp({ skipped: true, reason: "Telefone ou mensagem vazia" });
+    if (!phone) {
+      return jsonResp({ skipped: true, reason: "Telefone vazio" });
+    }
+
+    // Build message: use DB template if available, else fallback
+    let message = "";
+    if (tplRow?.message_text) {
+      message = replaceVars(tplRow.message_text, vars);
+    } else {
+      // Fallback hardcoded (should not happen if DB is seeded)
+      message = Object.entries(vars).reduce(
+        (msg, [k, v]) => msg + `${k}: ${v}\n`,
+        `[${trigger_event}]\n`
+      );
+    }
+
+    if (!message) {
+      return jsonResp({ skipped: true, reason: "Mensagem vazia" });
     }
 
     // Send via Z-API
@@ -228,8 +243,9 @@ Deno.serve(async (req) => {
     );
   }
 
-  function jsonResp(data: Record<string, unknown>) {
+  function jsonResp(data: Record<string, unknown>, status = 200) {
     return new Response(JSON.stringify(data), {
+      status,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
