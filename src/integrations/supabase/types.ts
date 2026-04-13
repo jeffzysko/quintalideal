@@ -1128,6 +1128,7 @@ export type Database = {
           message_text: string
           phone: string
           proposal_id: string | null
+          scheduled_for: string | null
           sent_by: string | null
           status: string
           template_key: string | null
@@ -1142,6 +1143,7 @@ export type Database = {
           message_text: string
           phone: string
           proposal_id?: string | null
+          scheduled_for?: string | null
           sent_by?: string | null
           status?: string
           template_key?: string | null
@@ -1156,6 +1158,7 @@ export type Database = {
           message_text?: string
           phone?: string
           proposal_id?: string | null
+          scheduled_for?: string | null
           sent_by?: string | null
           status?: string
           template_key?: string | null
