@@ -2,85 +2,25 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { MessageCircle, ChevronDown, ChevronUp, Save, RotateCcw, Zap, Users, FileText, Clock } from 'lucide-react';
+import { MessageCircle, ChevronDown, ChevronUp, Save, RotateCcw, Zap, Users, FileText, Clock, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { supabase } from '@/lib/supabase';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Switch } from '@/components/ui/switch';
 
-interface TemplateItem {
-  key: string;
+interface DbTemplate {
+  id: string;
+  template_key: string;
   label: string;
-  description: string;
-  category: 'lead' | 'proposal' | 'followup';
-  icon: React.ReactNode;
-  defaultMessage: string;
+  description: string | null;
+  category: string;
+  message_text: string;
   variables: string[];
+  is_active: boolean;
+  updated_at: string;
 }
-
-const TEMPLATES: TemplateItem[] = [
-  {
-    key: 'lead_created',
-    label: 'Novo lead (para franquia)',
-    description: 'Alerta enviado à franquia quando um novo lead é gerado.',
-    category: 'lead',
-    icon: <Users className="w-4 h-4" />,
-    defaultMessage: `Novo lead recebido! 🏊\n*Nome:* {{nome}}\n*Telefone:* {{telefone}}\n*Origem:* {{origem}}\nAcesse o painel para iniciar o atendimento.`,
-    variables: ['nome', 'telefone', 'origem'],
-  },
-  {
-    key: 'lead_welcome',
-    label: 'Boas-vindas ao lead',
-    description: 'Mensagem automática enviada ao lead após preencher o quiz.',
-    category: 'lead',
-    icon: <MessageCircle className="w-4 h-4" />,
-    defaultMessage: `Olá, {{nome}}! 😊\nRecebemos seu interesse em um projeto de piscina e em breve um consultor da *{{franquia}}* vai entrar em contato.\nSe preferir falar agora, é só clicar aqui:\n👉 {{link_whatsapp}}`,
-    variables: ['nome', 'franquia', 'link_whatsapp'],
-  },
-  {
-    key: 'lead_negotiation',
-    label: 'Lead em negociação',
-    description: 'Mensagem enviada ao lead quando muda para "Em Negociação".',
-    category: 'followup',
-    icon: <Zap className="w-4 h-4" />,
-    defaultMessage: `Olá, {{nome}}!\nEstamos à disposição para tirar qualquer dúvida sobre sua proposta ou ajustar algum detalhe do projeto.\n👉 {{link_whatsapp}}\n— *{{franquia}}*`,
-    variables: ['nome', 'franquia', 'link_whatsapp'],
-  },
-  {
-    key: 'proposal_sent',
-    label: 'Proposta enviada',
-    description: 'Mensagem enviada ao cliente quando a proposta é criada.',
-    category: 'proposal',
-    icon: <FileText className="w-4 h-4" />,
-    defaultMessage: `Olá, {{nome}}!\nSua proposta personalizada está pronta. Acesse o link para visualizar:\n👉 {{link_proposta}}\nVálida até *{{validade}}*.`,
-    variables: ['nome', 'link_proposta', 'validade'],
-  },
-  {
-    key: 'proposal_accepted',
-    label: 'Proposta aceita',
-    description: 'Mensagem de confirmação enviada ao cliente após aceitar.',
-    category: 'proposal',
-    icon: <FileText className="w-4 h-4" />,
-    defaultMessage: `Olá, {{nome}}! 🎉\nSua proposta foi aceita! Estamos muito felizes em ter você como cliente.\nNossa equipe entrará em contato em breve para os próximos passos.\n— *{{franquia}}*`,
-    variables: ['nome', 'franquia'],
-  },
-  {
-    key: 'proposal_viewed_followup',
-    label: 'Follow-up após visualização',
-    description: 'Enviada 24h após o cliente visualizar a proposta sem responder.',
-    category: 'followup',
-    icon: <Clock className="w-4 h-4" />,
-    defaultMessage: `Olá, {{nome}}!\nVimos que você conferiu sua proposta. Ficou com alguma dúvida ou quer conversar sobre o projeto?\n👉 {{link_whatsapp}}\n— *{{franquia}}*`,
-    variables: ['nome', 'franquia', 'link_whatsapp'],
-  },
-  {
-    key: 'proposal_expiring',
-    label: 'Proposta vencendo',
-    description: 'Lembrete enviado 2 dias antes da validade da proposta.',
-    category: 'followup',
-    icon: <Clock className="w-4 h-4" />,
-    defaultMessage: `Olá, {{nome}}!\nSua proposta vence em *2 dias*, no dia *{{validade}}*. Após essa data os valores podem ser alterados.\nPara garantir, fale com a gente:\n👉 {{link_whatsapp}}\n— *{{franquia}}*`,
-    variables: ['nome', 'validade', 'franquia', 'link_whatsapp'],
-  },
-];
 
 const categoryConfig: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
   lead: { label: 'Lead', color: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20', icon: <Users className="w-3 h-3" /> },
@@ -88,50 +28,96 @@ const categoryConfig: Record<string, { label: string; color: string; icon: React
   followup: { label: 'Follow-up', color: 'bg-amber-500/10 text-amber-600 border-amber-500/20', icon: <Clock className="w-3 h-3" /> },
 };
 
+const iconMap: Record<string, React.ReactNode> = {
+  lead_created: <Users className="w-4 h-4" />,
+  lead_welcome: <MessageCircle className="w-4 h-4" />,
+  lead_negotiation: <Zap className="w-4 h-4" />,
+  proposal_sent: <FileText className="w-4 h-4" />,
+  proposal_accepted: <FileText className="w-4 h-4" />,
+  proposal_viewed_followup: <Clock className="w-4 h-4" />,
+  proposal_expiring: <Clock className="w-4 h-4" />,
+};
+
+const FLOW_ORDER = ['lead_created', 'lead_welcome', 'proposal_sent', 'proposal_viewed_followup', 'proposal_expiring', 'proposal_accepted', 'lead_negotiation'];
+
 export function AdminWhatsAppTemplates() {
+  const queryClient = useQueryClient();
   const [editingKey, setEditingKey] = useState<string | null>(null);
   const [editedMessages, setEditedMessages] = useState<Record<string, string>>({});
 
-  const handleEdit = (key: string, defaultMsg: string) => {
+  const { data: templates = [], isLoading } = useQuery({
+    queryKey: ['whatsapp-templates'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('whatsapp_templates')
+        .select('*')
+        .order('created_at', { ascending: true });
+      if (error) throw error;
+      return (data || []) as DbTemplate[];
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async ({ id, message_text }: { id: string; message_text: string }) => {
+      const { error } = await supabase
+        .from('whatsapp_templates')
+        .update({ message_text })
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['whatsapp-templates'] });
+      toast.success('Template salvo com sucesso!');
+      setEditingKey(null);
+    },
+    onError: () => toast.error('Erro ao salvar template.'),
+  });
+
+  const toggleMutation = useMutation({
+    mutationFn: async ({ id, is_active }: { id: string; is_active: boolean }) => {
+      const { error } = await supabase
+        .from('whatsapp_templates')
+        .update({ is_active })
+        .eq('id', id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['whatsapp-templates'] });
+    },
+    onError: () => toast.error('Erro ao atualizar status.'),
+  });
+
+  const handleEdit = (key: string, currentMsg: string) => {
     if (editingKey === key) {
       setEditingKey(null);
       return;
     }
     setEditingKey(key);
     if (!editedMessages[key]) {
-      setEditedMessages(prev => ({ ...prev, [key]: defaultMsg }));
+      setEditedMessages(prev => ({ ...prev, [key]: currentMsg }));
     }
   };
 
-  const handleSave = (key: string) => {
-    // For now, save to localStorage as a preview. Future: save to DB.
-    const msg = editedMessages[key];
+  const handleSave = (tpl: DbTemplate) => {
+    const msg = editedMessages[tpl.template_key];
     if (msg) {
-      const stored = JSON.parse(localStorage.getItem('wa_template_overrides') || '{}');
-      stored[key] = msg;
-      localStorage.setItem('wa_template_overrides', JSON.stringify(stored));
-      toast.success('Template salvo localmente! (Preview)');
+      updateMutation.mutate({ id: tpl.id, message_text: msg });
     }
-    setEditingKey(null);
   };
 
-  const handleReset = (key: string, defaultMsg: string) => {
-    setEditedMessages(prev => ({ ...prev, [key]: defaultMsg }));
-    const stored = JSON.parse(localStorage.getItem('wa_template_overrides') || '{}');
-    delete stored[key];
-    localStorage.setItem('wa_template_overrides', JSON.stringify(stored));
-    toast.info('Template restaurado ao padrão.');
+  const handleReset = (tpl: DbTemplate, defaultMsg: string) => {
+    setEditedMessages(prev => ({ ...prev, [tpl.template_key]: defaultMsg }));
   };
 
-  // Load overrides from localStorage on init
-  const getMessageText = (key: string, defaultMsg: string) => {
-    if (editedMessages[key]) return editedMessages[key];
-    try {
-      const stored = JSON.parse(localStorage.getItem('wa_template_overrides') || '{}');
-      if (stored[key]) return stored[key];
-    } catch {}
-    return defaultMsg;
-  };
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-20 w-full rounded-xl" />
+        ))}
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -143,11 +129,11 @@ export function AdminWhatsAppTemplates() {
             Templates WhatsApp
           </h2>
           <p className="text-xs text-muted-foreground mt-1">
-            Visualize e edite as mensagens automáticas enviadas via Z-API. Ao editar, a mensagem atualizada será utilizada nos próximos disparos.
+            Visualize e edite as mensagens automáticas enviadas via Z-API. As alterações são aplicadas imediatamente nos próximos disparos.
           </p>
         </div>
         <span className="text-xs bg-success/10 text-success px-2 py-1 rounded-full font-medium">
-          {TEMPLATES.length} templates
+          {templates.length} templates
         </span>
       </div>
 
@@ -160,13 +146,13 @@ export function AdminWhatsAppTemplates() {
         </CardHeader>
         <CardContent className="px-4 pb-4">
           <div className="flex flex-wrap items-center gap-2 text-[10px] font-medium">
-            {['lead_created', 'lead_welcome', 'proposal_sent', 'proposal_viewed_followup', 'proposal_expiring', 'proposal_accepted', 'lead_negotiation'].map((key, i, arr) => {
-              const tpl = TEMPLATES.find(t => t.key === key);
+            {FLOW_ORDER.map((key, i, arr) => {
+              const tpl = templates.find(t => t.template_key === key);
               if (!tpl) return null;
-              const cat = categoryConfig[tpl.category];
+              const cat = categoryConfig[tpl.category] || categoryConfig.lead;
               return (
                 <span key={key} className="flex items-center gap-1.5">
-                  <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full border ${cat.color}`}>
+                  <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full border ${cat.color} ${!tpl.is_active ? 'opacity-40 line-through' : ''}`}>
                     {cat.icon}
                     {tpl.label}
                   </span>
@@ -180,20 +166,20 @@ export function AdminWhatsAppTemplates() {
 
       {/* Template cards */}
       <div className="space-y-3">
-        {TEMPLATES.map((tpl) => {
-          const cat = categoryConfig[tpl.category];
-          const isEditing = editingKey === tpl.key;
-          const currentMsg = getMessageText(tpl.key, tpl.defaultMessage);
+        {templates.map((tpl) => {
+          const cat = categoryConfig[tpl.category] || categoryConfig.lead;
+          const isEditing = editingKey === tpl.template_key;
+          const currentMsg = editedMessages[tpl.template_key] || tpl.message_text;
 
           return (
-            <Card key={tpl.key} className="border-border/50 overflow-hidden">
-              <button
-                onClick={() => handleEdit(tpl.key, tpl.defaultMessage)}
-                className="w-full text-left px-4 py-3 flex items-center justify-between hover:bg-muted/30 transition-colors"
-              >
-                <div className="flex items-center gap-3 min-w-0">
+            <Card key={tpl.id} className={`border-border/50 overflow-hidden ${!tpl.is_active ? 'opacity-60' : ''}`}>
+              <div className="w-full text-left px-4 py-3 flex items-center justify-between">
+                <button
+                  onClick={() => handleEdit(tpl.template_key, tpl.message_text)}
+                  className="flex items-center gap-3 min-w-0 flex-1 text-left"
+                >
                   <div className="shrink-0 w-8 h-8 rounded-lg bg-success/10 flex items-center justify-center text-success">
-                    {tpl.icon}
+                    {iconMap[tpl.template_key] || <MessageCircle className="w-4 h-4" />}
                   </div>
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
@@ -204,9 +190,18 @@ export function AdminWhatsAppTemplates() {
                     </div>
                     <p className="text-[11px] text-muted-foreground truncate">{tpl.description}</p>
                   </div>
+                </button>
+                <div className="flex items-center gap-3 shrink-0 ml-2">
+                  <Switch
+                    checked={tpl.is_active}
+                    onCheckedChange={(val) => toggleMutation.mutate({ id: tpl.id, is_active: val })}
+                    aria-label={`Ativar ${tpl.label}`}
+                  />
+                  <button onClick={() => handleEdit(tpl.template_key, tpl.message_text)}>
+                    {isEditing ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                  </button>
                 </div>
-                {isEditing ? <ChevronUp className="w-4 h-4 text-muted-foreground shrink-0" /> : <ChevronDown className="w-4 h-4 text-muted-foreground shrink-0" />}
-              </button>
+              </div>
 
               <AnimatePresence>
                 {isEditing && (
@@ -228,21 +223,19 @@ export function AdminWhatsAppTemplates() {
                         ))}
                       </div>
 
-                      {/* Preview / Edit area */}
                       <Textarea
                         value={currentMsg}
-                        onChange={(e) => setEditedMessages(prev => ({ ...prev, [tpl.key]: e.target.value }))}
+                        onChange={(e) => setEditedMessages(prev => ({ ...prev, [tpl.template_key]: e.target.value }))}
                         className="min-h-[140px] text-xs font-mono leading-relaxed resize-y"
                         placeholder="Escreva o template..."
                       />
 
-                      {/* Actions */}
                       <div className="flex items-center gap-2 justify-end">
                         <Button
                           variant="ghost"
                           size="sm"
                           className="gap-1 text-xs"
-                          onClick={() => handleReset(tpl.key, tpl.defaultMessage)}
+                          onClick={() => handleReset(tpl, tpl.message_text)}
                         >
                           <RotateCcw className="w-3.5 h-3.5" />
                           Restaurar padrão
@@ -250,10 +243,14 @@ export function AdminWhatsAppTemplates() {
                         <Button
                           size="sm"
                           className="gap-1 text-xs bg-success hover:bg-success/90 text-success-foreground"
-                          onClick={() => handleSave(tpl.key)}
+                          onClick={() => handleSave(tpl)}
+                          disabled={updateMutation.isPending}
                         >
-                          <Save className="w-3.5 h-3.5" />
-                          Salvar
+                          {updateMutation.isPending ? (
+                            <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Salvando...</>
+                          ) : (
+                            <><Save className="w-3.5 h-3.5" /> Salvar</>
+                          )}
                         </Button>
                       </div>
                     </div>
@@ -269,9 +266,9 @@ export function AdminWhatsAppTemplates() {
       <Card className="border-dashed border-border/50 bg-muted/20">
         <CardContent className="p-4">
           <p className="text-xs text-muted-foreground leading-relaxed">
-            <strong>Como funciona:</strong> As mensagens são disparadas automaticamente via Z-API quando o evento correspondente ocorre (ex: novo lead, proposta enviada). 
+            <strong>Como funciona:</strong> As mensagens são disparadas automaticamente via Z-API quando o evento correspondente ocorre. 
             As variáveis entre <code className="bg-muted px-1 rounded font-mono text-[10px]">{`{{variavel}}`}</code> são substituídas pelos dados reais no momento do envio.
-            Para ativar/desativar os envios, acesse as <strong>Configurações de WhatsApp</strong>.
+            Use o toggle para ativar/desativar templates individualmente. Para configurar as credenciais Z-API, acesse as <strong>Configurações de WhatsApp</strong>.
           </p>
         </CardContent>
       </Card>
