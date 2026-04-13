@@ -132,6 +132,7 @@ export function AdminFranchiseManager() {
             responsavel: form.responsavel.trim() || null,
             whatsapp: form.whatsapp.trim() || null,
             email: form.email.trim() || null,
+            endereco: form.endereco.trim() || null,
           } as any)
           .eq('id', editingId);
         if (error) throw error;
@@ -147,6 +148,7 @@ export function AdminFranchiseManager() {
             responsavel: form.responsavel.trim() || null,
             whatsapp: form.whatsapp.trim() || null,
             email: form.email.trim() || null,
+            endereco: form.endereco.trim() || null,
           } as any);
         if (error) throw error;
         toast.success('Franquia criada com sucesso!');
