@@ -29,10 +29,10 @@ export default defineConfig(({ mode }) => ({
       ],
       manifest: {
         id: "/login",
-        name: "Quintal Ideal Splash",
+        name: "Quintal Ideal",
         short_name: "Quintal Ideal",
         description:
-          "Descubra o potencial do seu quintal para ter uma piscina Splash. Gerencie leads e vendas.",
+          "Descubra o potencial do seu quintal para ter uma piscina. Gerencie leads e vendas.",
         start_url: "/login",
         scope: "/",
         display: "standalone",
