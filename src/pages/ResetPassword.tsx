@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, ArrowRight, ArrowLeft, CheckCircle2, AlertCircle, Check, X, Eye, EyeOff } from 'lucide-react';
-import logoSplash from '@/assets/logo-splash.png';
+import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
 
 /* ── Password validation rules ── */
 const PASSWORD_RULES = [
@@ -206,7 +206,7 @@ export default function ResetPassword() {
           animate={{ opacity: 1, y: 0 }}
           className="relative z-10 w-full max-w-sm mx-4 text-center"
         >
-          <img src={logoSplash} alt="Splash Piscinas" className="mx-auto w-28 mb-6 drop-shadow-lg" />
+          <img src={logoQuintalIdeal} alt="Quintal Ideal" className="mx-auto w-28 mb-6 drop-shadow-lg" />
           <div className="glass-card rounded-2xl p-6">
             <AlertCircle className="w-10 h-10 text-destructive mx-auto mb-3" />
             <h1 className="text-lg font-bold text-foreground mb-2">Link inválido ou expirado</h1>
@@ -241,7 +241,7 @@ export default function ResetPassword() {
         className="relative z-10 w-full max-w-sm mx-4"
       >
         <motion.div className="text-center mb-8">
-          <img src={logoSplash} alt="Splash Piscinas" className="mx-auto w-36 mb-3 drop-shadow-lg" />
+          <img src={logoQuintalIdeal} alt="Quintal Ideal" className="mx-auto w-36 mb-3 drop-shadow-lg" />
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: '4rem' }}

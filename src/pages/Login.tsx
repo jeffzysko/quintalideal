@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Lock, Mail, ArrowRight, Droplets, Shield, Eye, EyeOff } from 'lucide-react';
-import logoSplash from '@/assets/logo-splash.png';
+import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
 
 export default function Login() {
   const { signIn } = useAuth();
@@ -73,8 +73,8 @@ export default function Login() {
           className="text-center mb-8"
         >
           <motion.img
-            src={logoSplash}
-            alt="Splash Piscinas"
+            src={logoQuintalIdeal}
+            alt="Quintal Ideal"
             className="mx-auto w-36 mb-3 drop-shadow-lg"
             animate={{ y: [0, -4, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
@@ -198,7 +198,7 @@ export default function Login() {
             </div>
             <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
               <Droplets className="w-3.5 h-3.5 text-primary/60" />
-              <span>Splash Piscinas</span>
+              <span>Quintal Ideal</span>
             </div>
           </div>
         </motion.div>

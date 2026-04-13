@@ -66,7 +66,7 @@ export default function FranchiseLanding() {
             ? 'Esta franquia está temporariamente indisponível. Tente novamente mais tarde.'
             : 'Não encontramos a página que você procura. Verifique o link e tente novamente.'}
         </p>
-        <p className="text-sm text-muted-foreground">Entre em contato com a Splash Piscinas para mais informações.</p>
+        <p className="text-sm text-muted-foreground">Entre em contato com a Quintal Ideal para mais informações.</p>
         <Button onClick={() => navigate('/')} className="gap-2 mt-2">
           <Home className="w-4 h-4" /> Voltar ao início
         </Button>

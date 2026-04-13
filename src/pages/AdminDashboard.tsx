@@ -396,7 +396,7 @@ export default function AdminDashboard() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `leads-splash-${new Date().toISOString().slice(0, 10)}.csv`;
+      a.download = `leads-quintal-ideal-${new Date().toISOString().slice(0, 10)}.csv`;
       a.click();
       URL.revokeObjectURL(url);
     } catch (_err) {

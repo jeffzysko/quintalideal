@@ -7,7 +7,7 @@ export interface YardClassification {
 
 export function getYardClassification(score: number): YardClassification {
   if (score >= 86) return { emoji: '🏝️', label: 'Quintal Premium', level: 'premium', color: '#ffd700' };
-  if (score >= 71) return { emoji: '🌴', label: 'Quintal Pronto para Splash', level: 'pronto', color: '#00e5ff' };
+  if (score >= 71) return { emoji: '🌴', label: 'Quintal Pronto para Piscina', level: 'pronto', color: '#00e5ff' };
   if (score >= 56) return { emoji: '🌿', label: 'Quintal Promissor', level: 'promissor', color: '#76ff03' };
   return { emoji: '🌱', label: 'Quintal Iniciante', level: 'iniciante', color: '#90caf9' };
 }
@@ -31,9 +31,9 @@ export function getSharePhrase(score: number): string {
       'Meu quintal está entre os melhores do RS!',
     ],
     pronto: [
-      'Meu quintal está pronto para uma Splash! 🌴',
+      'Meu quintal está pronto para uma piscina! 🌴',
       'Descobri o potencial incrível do meu quintal!',
-      'Será que seu quintal aguenta uma Splash?',
+      'Será que seu quintal aguenta uma piscina?',
     ],
     promissor: [
       'Meu quintal tem futuro! 🌿',

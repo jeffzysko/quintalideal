@@ -363,7 +363,7 @@ export function AdminFranchiseManager() {
                     ...(!editingId ? { slug_url: generateSlug(val) } : {}),
                   }));
                 }}
-                placeholder="Splash Piscinas Porto Alegre"
+                placeholder="Quintal Ideal Porto Alegre"
               />
             </div>
             <div className="space-y-1.5">

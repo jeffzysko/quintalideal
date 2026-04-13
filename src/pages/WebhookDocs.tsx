@@ -19,7 +19,7 @@ const PAYLOAD_EXAMPLE = `{
     "created_at": "2026-03-12T16:00:00.000Z"
   },
   "franquia": {
-    "nome": "Splash Porto Alegre - Zona Sul",
+    "nome": "Quintal Ideal Porto Alegre - Zona Sul",
     "slug": "porto-alegre-zona-sul"
   }
 }`;
@@ -36,7 +36,7 @@ const TEST_PAYLOAD_EXAMPLE = `{
     "created_at": "2026-03-12T16:00:00.000Z"
   },
   "franquia": {
-    "nome": "Splash Exemplo",
+    "nome": "Quintal Ideal Exemplo",
     "slug": "exemplo"
   }
 }`;

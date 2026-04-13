@@ -38,14 +38,14 @@ function buildTemplates(props: WhatsAppTemplatesProps): Template[] {
       label: 'Primeiro contato',
       emoji: '👋',
       stage: ['novo'],
-      message: `Oi ${nome}! Aqui é [seu nome] da Splash Piscinas em ${cidade} 😊\n\nVi o resultado do seu Quintal Ideal${score > 70 ? ', seu espaço tem um potencial incrível!' : '!'}\n\nMe conta: o que te motivou a fazer o teste? Quero entender pra te ajudar da melhor forma 🤔`,
+      message: `Oi ${nome}! Aqui é [seu nome] da Quintal Ideal em ${cidade} 😊\n\nVi o resultado do seu Quintal Ideal${score > 70 ? ', seu espaço tem um potencial incrível!' : '!'}\n\nMe conta: o que te motivou a fazer o teste? Quero entender pra te ajudar da melhor forma 🤔`,
     },
     {
       id: 'primeiro_contato_curto',
       label: 'Contato rápido',
       emoji: '⚡',
       stage: ['novo'],
-      message: `Oi ${nome}! Sou da Splash Piscinas 😊\n\nVi que você testou seu quintal e o resultado ficou ótimo! Qual é o sonho pro seu espaço?`,
+      message: `Oi ${nome}! Sou da Quintal Ideal 😊\n\nVi que você testou seu quintal e o resultado ficou ótimo! Qual é o sonho pro seu espaço?`,
     },
     {
       id: 'aprofundar',
@@ -87,14 +87,14 @@ function buildTemplates(props: WhatsAppTemplatesProps): Template[] {
       label: 'Resgate suave',
       emoji: '💬',
       stage: ['contatado', 'em_negociacao'],
-      message: `Oi ${nome}! Tudo bem por aí? 😊\n\nLembrei de você porque tivemos uma novidade aqui na Splash que combina com o que conversamos.\n\nPosso te contar em 2 minutinhos? Sem compromisso!`,
+      message: `Oi ${nome}! Tudo bem por aí? 😊\n\nLembrei de você porque tivemos uma novidade aqui na Quintal Ideal que combina com o que conversamos.\n\nPosso te contar em 2 minutinhos? Sem compromisso!`,
     },
     {
       id: 'resgate_valor',
       label: 'Resgate com valor',
       emoji: '📈',
       stage: ['contatado', 'em_negociacao'],
-      message: `${nome}, tudo bem? Aqui é [seu nome] da Splash 😊\n\nSaiu um estudo mostrando que imóveis com piscina em ${cidade} valorizaram 15-20% nos últimos anos. Lembrei na hora do seu quintal!\n\nQuer que eu faça uma estimativa pro seu caso?`,
+      message: `${nome}, tudo bem? Aqui é [seu nome] da Quintal Ideal 😊\n\nSaiu um estudo mostrando que imóveis com piscina em ${cidade} valorizaram 15-20% nos últimos anos. Lembrei na hora do seu quintal!\n\nQuer que eu faça uma estimativa pro seu caso?`,
     },
     {
       id: 'pos_venda',

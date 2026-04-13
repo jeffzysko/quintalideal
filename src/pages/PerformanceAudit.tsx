@@ -22,7 +22,7 @@ import { cn } from '@/lib/utils';
 // ═══════════════════════════════════════════════════════════
 
 const AUDIT_META = {
-  systemName: 'Quintal Ideal Splash',
+  systemName: 'Quintal Ideal',
   version: '2.0',
   timestamp: '2026-04-13T18:00:00Z',
   buildTime: '18.2s',
@@ -81,7 +81,7 @@ const RUNTIME_ISSUES: RuntimeIssue[] = [
   { id: 'r4', file: 'src/pages/HojePage.tsx:372', type: 'Memo sem deps estáveis', severity: 'low', description: '"now" agora atualiza a cada 60s via useState + useEffect interval.', fix: 'Substituído useMemo(() => new Date(), []) por state + intervalo de 1 minuto.', done: true },
   { id: 'r5', file: 'src/pages/PublicProposal.tsx', type: 'Componente monolítico (1389 linhas)', severity: 'medium', description: 'Arquivo único com toda a lógica da proposta pública.', fix: 'Extraído em ProposalShared, ProposalDialogs, ProposalPDFExport.', done: true },
   { id: 'r6', file: 'src/lib/webVitals.ts:63-65', type: 'Variáveis closure retidas', severity: 'low', description: 'clsSessionEntries agora limitado a sliding window de 5 últimos entries.', fix: 'Array limitado com slice(-5) após cada push.', done: true },
-  { id: 'r7', file: 'index.html:84', type: 'Imagem de skeleton sem fallback', severity: 'low', description: 'Logo referencia /src/assets/logo-splash.png com caminho relativo. Em build, path muda.', fix: 'Usar caminho público: /logo-splash.png (copiar para public/).' },
+  { id: 'r7', file: 'index.html:84', type: 'Imagem de skeleton sem fallback', severity: 'low', description: 'Logo referencia /src/assets/logo-quintal-ideal.png com caminho relativo. Em build, path muda.', fix: 'Usar caminho público: /logo-quintal-ideal.png (copiar para public/).' },
 ];
 
 // ── Action Plan ──

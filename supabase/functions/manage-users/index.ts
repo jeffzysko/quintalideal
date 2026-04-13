@@ -6,7 +6,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SENDER = "Quintal Ideal Splash <noreply@hallow.com.br>";
+const SENDER = "Quintal Ideal <noreply@hallow.com.br>";
 const BRAND_BLUE = "#0369a1";
 const BRAND_GRADIENT = "linear-gradient(135deg, #0284c7, #0369a1)";
 
@@ -47,7 +47,7 @@ function buildInviteEmailHTML(userName: string, roleName: string, resetPageLink:
         </td></tr>
         <tr><td style="padding:24px 32px;background:#f8fafc;border-top:1px solid #e2e8f0;text-align:center;">
           <p style="margin:0;color:#94a3b8;font-size:11px;">
-            Quintal Ideal Splash • <a href="https://quintalideal.com.br" style="color:${BRAND_BLUE};text-decoration:none;">quintalideal.com.br</a>
+            Quintal Ideal • <a href="https://quintalideal.com.br" style="color:${BRAND_BLUE};text-decoration:none;">quintalideal.com.br</a>
           </p>
         </td></tr>
       </table>

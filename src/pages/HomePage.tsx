@@ -4,7 +4,7 @@ import { LazyMotion, domAnimation, m, AnimatePresence } from 'framer-motion';
 import { Search, MapPin, Droplets, Shield, Clock, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/lib/supabase';
-import logoSplash from '@/assets/logo-splash.png';
+import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
 import heroPool from '@/assets/hero-pool.webp';
 import { cidades, type CityOption } from '@/lib/cities';
 
@@ -134,8 +134,8 @@ export default function HomePage() {
         {/* Content */}
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-5 pb-10 sm:py-10 max-w-lg mx-auto w-full" style={{ marginTop: '-3vh' }}>
           <m.img
-            src={logoSplash}
-            alt="Splash Piscinas"
+            src={logoQuintalIdeal}
+            alt="Quintal Ideal"
             initial={{ opacity: 0, scale: 0.85 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
@@ -160,7 +160,7 @@ export default function HomePage() {
             transition={{ delay: 0.55 }}
             className="text-center text-[13px] sm:text-sm md:text-base text-white/55 mb-6 sm:mb-8 max-w-xs mx-auto leading-relaxed"
           >
-            Digite sua cidade para encontrar a unidade Splash mais próxima e fazer o quiz do seu quintal.
+            Digite sua cidade para encontrar a unidade Quintal Ideal mais próxima e fazer o quiz do seu quintal.
           </m.p>
 
           {/* City search */}

@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Trophy, MapPin, Droplets, Share2, Star, ArrowLeft, Sparkles, Crown, Flame } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import logoSplash from '@/assets/logo-splash.png';
+import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
 import { useNavigate, Link } from 'react-router-dom';
 import { PageTransition } from '@/components/PageTransition';
 import { toast } from 'sonner';
@@ -119,8 +119,8 @@ export default function RankingQuintais() {
             className="text-center"
           >
             <motion.img
-              src={logoSplash}
-              alt="Splash Piscinas"
+              src={logoQuintalIdeal}
+              alt="Quintal Ideal"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 0.8, scale: 1 }}
               transition={{ delay: 0.1 }}

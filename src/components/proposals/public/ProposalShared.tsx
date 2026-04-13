@@ -166,7 +166,7 @@ export function VerificationFooter({ proposal }: { proposal: ProposalData }) {
           <div className="text-center space-y-1.5">
             <p className="text-[11px] text-muted-foreground/70 leading-relaxed max-w-sm mx-auto">
               Este código garante a autenticidade desta proposta.
-              Verifique diretamente com a <strong className="text-foreground/80">Splash Piscinas</strong> em caso de dúvida.
+              Verifique diretamente com a <strong className="text-foreground/80">Quintal Ideal</strong> em caso de dúvida.
             </p>
             <div className="flex items-center justify-center gap-4 text-[10px] text-muted-foreground/50 font-medium">
               <span>ID: #{proposal.id.slice(0, 8).toUpperCase()}</span>
@@ -251,7 +251,7 @@ export function TrustBadges() {
   const badges = [
     { icon: Shield, label: 'Proposta segura', color: 'text-success', bg: 'bg-success/8 border-success/15' },
     { icon: Star, label: 'Empresa verificada', color: 'text-warning', bg: 'bg-warning/8 border-warning/15' },
-    { icon: Droplets, label: 'Splash Piscinas', color: 'text-primary', bg: 'bg-primary/8 border-primary/15' },
+    { icon: Droplets, label: 'Quintal Ideal', color: 'text-primary', bg: 'bg-primary/8 border-primary/15' },
   ];
 
   return (

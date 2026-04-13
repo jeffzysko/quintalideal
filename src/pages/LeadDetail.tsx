@@ -498,7 +498,7 @@ export default function LeadDetail() {
                     className="bg-success hover:bg-success/90 text-success-foreground text-xs h-8 gap-1.5 w-full sm:w-auto"
                     onClick={() => {
                       const fullPhone = toWhatsAppPhone(lead.telefone || '');
-                      const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem? Vi que você fez o teste do Índice do Quintal Splash!`);
+                      const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem? Vi que você fez o teste do Índice do Quintal Ideal!`);
                       window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
                     }}
                   >

@@ -3,10 +3,10 @@ import { getConsentStatus } from '@/components/CookieConsentBanner';
 
 // Generate a unique session ID per browser session
 function getSessionId(): string {
-  let sid = sessionStorage.getItem('splash_session_id');
+  let sid = sessionStorage.getItem('qi_session_id');
   if (!sid) {
     sid = crypto.randomUUID();
-    sessionStorage.setItem('splash_session_id', sid);
+    sessionStorage.setItem('qi_session_id', sid);
   }
   return sid;
 }

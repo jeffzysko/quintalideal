@@ -32,7 +32,7 @@ export function Footer() {
           <div className="flex items-center gap-3 mb-4">
             <img src={logoHallow} alt="Hallow Comunicação" className="w-16 opacity-40 brightness-0 dark:invert" />
             <p className="text-[11px] text-muted-foreground leading-snug flex-1">
-              Quintal Ideal é uma iniciativa da Hallow Comunicação juntamente com a iGUi Santo Antônio.
+              Quintal Ideal — Descubra o potencial do seu quintal.
             </p>
           </div>
 
@@ -42,7 +42,7 @@ export function Footer() {
             <FooterInlineLink to="/privacidade" label="Privacidade" />
             <FooterInlineLink to="/suporte" label="Suporte" />
             <a
-              href="https://www.instagram.com/iguisantoantonio"
+              href="https://www.instagram.com/quintalideal"
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1"
@@ -91,7 +91,7 @@ function BrandBlock() {
     <div className="col-span-1 flex flex-col items-start gap-3">
       <img src={logoHallow} alt="Hallow Comunicação" className="w-20 opacity-40 brightness-0 dark:invert" />
       <p className="text-xs text-muted-foreground leading-relaxed max-w-[220px]">
-        Quintal Ideal é uma iniciativa da Hallow Comunicação juntamente com a iGUi Santo Antônio.
+        Quintal Ideal — Descubra o potencial do seu quintal.
       </p>
     </div>
   );
@@ -125,13 +125,13 @@ function SocialBlock() {
     <div className="flex flex-col gap-2">
       <SectionTitle>Redes</SectionTitle>
       <a
-        href="https://www.instagram.com/iguisantoantonio"
+        href="https://www.instagram.com/quintalideal"
         target="_blank"
         rel="noopener noreferrer"
         className="flex items-center gap-2 text-xs text-muted-foreground hover:text-foreground transition-colors group"
       >
         <Instagram className="w-3.5 h-3.5 group-hover:text-pink-500 transition-colors" />
-        @iguisantoantonio
+        @quintalideal
       </a>
     </div>
   );

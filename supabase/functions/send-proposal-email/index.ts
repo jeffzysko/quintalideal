@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")!;
-const SENDER = "Quintal Ideal Splash <noreply@hallow.com.br>";
+const SENDER = "Quintal Ideal <noreply@hallow.com.br>";
 const BRAND_PINK = "#e80685";
 const BRAND_BLUE = "#08a1d6";
 const BRAND_GRADIENT = "linear-gradient(135deg, #e80685, #08a1d6)";
