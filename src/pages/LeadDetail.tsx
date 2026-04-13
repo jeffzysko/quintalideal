@@ -27,6 +27,7 @@ import { LeadPhotoUpload } from '@/components/lead/LeadPhotoUpload';
 import { LeadLinkedProposals } from '@/components/lead/LeadLinkedProposals';
 
 import { useAuth } from '@/hooks/useAuth';
+import { triggerWhatsAppAuto } from '@/lib/whatsapp-auto';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { classifyLead, type LeadTemperature } from '@/lib/leadScoring';
 import { toast } from 'sonner';
@@ -306,6 +307,10 @@ export default function LeadDetail() {
       }
       const { error } = await supabase.from('leads').update({ status_lead: newValue as any }).eq('id', lead.id);
       if (error) { toast.error('Erro ao salvar status'); setAutoSaving(false); return; }
+      // Event 7: WhatsApp auto trigger for em_negociacao
+      if (newValue === 'em_negociacao') {
+        triggerWhatsAppAuto({ trigger_event: 'lead_negotiation', lead_id: lead.id, franchise_id: lead.franquia_id || undefined });
+      }
     }
 
     if (field === 'temperature') {
