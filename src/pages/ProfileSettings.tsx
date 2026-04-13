@@ -10,7 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff, Camera, MapPin, Shield, Puzzle, Bell, Workflow, Users, Clock, Globe } from 'lucide-react';
+import { Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff, Camera, MapPin, Shield, Puzzle, Bell, Workflow, Users, Clock, Globe, MessageSquare } from 'lucide-react';
 import { BackButton } from '@/components/BackButton';
 import { NotificationBell } from '@/components/NotificationBell';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
@@ -18,6 +18,7 @@ import { FranchiseUsersSection } from '@/components/franchise/FranchiseUsersSect
 import { FranchiseContactSettings } from '@/components/franchise/FranchiseContactSettings';
 import { PushPermissionCard } from '@/components/notifications/PushPermissionCard';
 import { toast } from 'sonner';
+import { WhatsAppSettings } from '@/components/admin/WhatsAppSettings';
 
 import { motion } from 'framer-motion';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -82,6 +83,7 @@ export default function ProfileSettings() {
     if (location.hash === '#franquia') return 'franquia';
     if (location.hash === '#notificacoes') return 'notificacoes';
     if (location.hash === '#automacoes') return 'automacoes';
+    if (location.hash === '#whatsapp') return 'whatsapp';
     return 'pessoal';
   };
 
@@ -473,6 +475,16 @@ export default function ProfileSettings() {
                 <span className="hidden sm:inline">Automações</span>
                 <span className="sm:hidden">Auto.</span>
               </TabsTrigger>
+              {isAdmin && (
+                <TabsTrigger
+                  value="whatsapp"
+                  className="flex-1 min-w-0 gap-1.5 rounded-lg text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-2.5 py-2.5 whitespace-nowrap active:scale-95"
+                >
+                  <MessageSquare className="w-3.5 h-3.5 shrink-0" />
+                  <span className="hidden sm:inline">WhatsApp</span>
+                  <span className="sm:hidden">Whats</span>
+                </TabsTrigger>
+              )}
             </TabsList>
 
             {/* ──── TAB: PESSOAL ──── */}
@@ -808,6 +820,13 @@ export default function ProfileSettings() {
                 </CardContent>
               </Card>
             </TabsContent>
+
+            {/* ──── TAB: WHATSAPP ──── */}
+            {isAdmin && (
+              <TabsContent value="whatsapp" className="mt-5 space-y-5">
+                <WhatsAppSettings />
+              </TabsContent>
+            )}
           </Tabs>
         </motion.div>
       </div>

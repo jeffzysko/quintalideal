@@ -75,13 +75,30 @@ Deno.serve(async (req) => {
       .from("whatsapp_config")
       .select("instance_id, token, security_token, is_active")
       .eq("franchise_id", franchise_id)
-      .eq("is_active", true)
       .maybeSingle();
 
-    // Use franchise config if available (Fase 2), otherwise use central credentials (Fase 1)
-    const instanceId = franchiseConfig?.instance_id || Deno.env.get("ZAPI_INSTANCE_ID");
-    const zapiToken = franchiseConfig?.token || Deno.env.get("ZAPI_TOKEN");
-    const securityToken = franchiseConfig?.security_token || Deno.env.get("ZAPI_SECURITY_TOKEN");
+    // Check if ANY config exists and is inactive → block sending
+    if (franchiseConfig && !franchiseConfig.is_active) {
+      // Also check central config
+      const { data: centralConfig } = await serviceClient
+        .from("whatsapp_config")
+        .select("is_active")
+        .order("created_at", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+      if (centralConfig && !centralConfig.is_active) {
+        return new Response(
+          JSON.stringify({ error: "Envios de WhatsApp estão desativados." }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
+
+    // Use franchise config if available and active (Fase 2), otherwise use central credentials (Fase 1)
+    const activeConfig = franchiseConfig?.is_active ? franchiseConfig : null;
+    const instanceId = activeConfig?.instance_id || Deno.env.get("ZAPI_INSTANCE_ID");
+    const zapiToken = activeConfig?.token || Deno.env.get("ZAPI_TOKEN");
+    const securityToken = activeConfig?.security_token || Deno.env.get("ZAPI_SECURITY_TOKEN");
 
     if (!instanceId || !zapiToken) {
       return new Response(
