@@ -128,19 +128,50 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
     enabled: !!franchiseId,
   });
 
-  // ── Lightweight KPI query (minimal columns for aggregation/funnel/SLA) ──
-  const { data: allLeads = [], isLoading: loadingKpis, isError: franchiseError, refetch: refetchFranchise } = useQuery({
+  // ── Lightweight KPI query (minimal columns for metrics, funnel, SLA, insights) ──
+  type KpiLead = { id: string; status_lead: string; created_at: string; updated_at: string; pontuacao_quintal: number | null; respostas_questionario: Record<string, string> | null };
+  const { data: kpiLeads = [], isLoading: loadingKpis } = useQuery({
     queryKey: ['franchise-leads-kpi', franchiseId],
     queryFn: async () => {
       const twelveMonthsAgo = new Date();
       twelveMonthsAgo.setFullYear(twelveMonthsAgo.getFullYear() - 1);
       const BATCH = 1000;
-      const allData: { id: string; status_lead: string; created_at: string; updated_at: string; pontuacao_quintal: number | null; respostas_questionario: Record<string, string> | null; modelo_recomendado: string | null; modelo_vendido: string | null }[] = [];
+      const allData: KpiLead[] = [];
       let from = 0;
       while (true) {
         const { data, error } = await supabase
           .from('leads')
-          .select('id, status_lead, created_at, updated_at, pontuacao_quintal, respostas_questionario, modelo_recomendado, modelo_vendido')
+          .select('id, status_lead, created_at, updated_at, pontuacao_quintal, respostas_questionario')
+          .eq('franquia_id', franchiseId!)
+          .gte('created_at', twelveMonthsAgo.toISOString())
+          .order('created_at', { ascending: false })
+          .range(from, from + BATCH - 1);
+        if (error) throw error;
+        if (!data || data.length === 0) break;
+        allData.push(...(data as KpiLead[]));
+        if (data.length < BATCH) break;
+        from += BATCH;
+      }
+      return allData;
+    },
+    enabled: !!franchiseId,
+    staleTime: 3 * 60 * 1000,
+  });
+
+  // ── Full leads query (for Kanban, Reports, Achievements — deferred until tab is active) ──
+  const needsFullLeads = activeTab === 'leads' || activeTab === 'funnel' || activeTab === 'reports' || activeTab === 'achievements';
+  const { data: allLeads = [], isError: franchiseError, refetch: refetchFranchise } = useQuery({
+    queryKey: ['franchise-leads-all', franchiseId],
+    queryFn: async () => {
+      const twelveMonthsAgo = new Date();
+      twelveMonthsAgo.setFullYear(twelveMonthsAgo.getFullYear() - 1);
+      const BATCH = 1000;
+      const allData: (LeadRow & { respostas_questionario?: Record<string, string> | null })[] = [];
+      let from = 0;
+      while (true) {
+        const { data, error } = await supabase
+          .from('leads')
+          .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, updated_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin, respostas_questionario, utm_source, utm_medium, utm_campaign')
           .eq('franquia_id', franchiseId!)
           .gte('created_at', twelveMonthsAgo.toISOString())
           .order('created_at', { ascending: false })
@@ -153,7 +184,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
       }
       return allData;
     },
-    enabled: !!franchiseId,
+    enabled: !!franchiseId && needsFullLeads,
     staleTime: 3 * 60 * 1000,
   });
 
