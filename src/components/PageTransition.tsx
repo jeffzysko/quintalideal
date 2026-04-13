@@ -1,28 +1,27 @@
-import { motion } from 'framer-motion';
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useRef } from 'react';
 
 interface PageTransitionProps {
   children: ReactNode;
   className?: string;
 }
 
-const variants = {
-  initial: { opacity: 0, y: 8 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -8 },
-};
-
 export function PageTransition({ children, className }: PageTransitionProps) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    // Force reflow then add the "entered" class
+    el.getBoundingClientRect();
+    el.classList.add('page-transition-entered');
+  }, []);
+
   return (
-    <motion.div
-      variants={variants}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      transition={{ duration: 0.25, ease: 'easeOut' }}
-      className={className}
+    <div
+      ref={ref}
+      className={`page-transition ${className || ''}`}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }

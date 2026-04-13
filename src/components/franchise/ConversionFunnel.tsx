@@ -1,6 +1,5 @@
-import { useMemo, memo } from 'react';
+import { useMemo, memo, useEffect, useRef } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { motion } from 'framer-motion';
 import { TrendingDown } from 'lucide-react';
 import { STATUS_LABELS, STATUS_CHART_COLORS, type LeadRow } from '@/lib/lead-constants';
 
@@ -10,13 +9,36 @@ interface ConversionFunnelProps {
 
 const FUNNEL_STEPS = ['novo', 'contatado', 'em_negociacao', 'vendido'] as const;
 
+function AnimatedBar({ targetWidth, color, delay }: { targetWidth: number; color: string; delay: number }) {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const timeout = setTimeout(() => {
+      el.style.width = `${targetWidth}%`;
+    }, delay * 1000);
+    return () => clearTimeout(timeout);
+  }, [targetWidth, delay]);
+
+  return (
+    <div
+      ref={ref}
+      className="h-full rounded-xl transition-[width] duration-600 ease-out"
+      style={{
+        width: '0%',
+        backgroundColor: `${color}20`,
+        borderLeft: `3px solid ${color}`,
+      }}
+    />
+  );
+}
+
 export const ConversionFunnel = memo(function ConversionFunnel({ leads }: ConversionFunnelProps) {
   const funnel = useMemo(() => {
     const total = leads.length;
     if (total === 0) return [];
 
-    // Funnel: each step includes itself + all subsequent steps
-    // novo = all leads, contatado = contatado + em_negociacao + vendido, etc.
     const statusOrder: Record<string, number> = {
       novo: 0,
       contatado: 1,
@@ -69,12 +91,12 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
         <div className="space-y-3 sm:space-y-4">
           {funnel.map((step, i) => {
             const barWidth = Math.max((step.count / maxCount) * 100, 8);
+            const delay = 0.2 + Math.min(i * 0.1, 0.15);
             return (
-              <motion.div
+              <div
                 key={step.key}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: Math.min(i * 0.08, 0.15) }}
+                className="animate-fade-in"
+                style={{ animationDelay: `${Math.min(i * 80, 150)}ms`, animationFillMode: 'both' }}
               >
                 {/* Mobile: stacked layout */}
                 <div className="sm:hidden">
@@ -92,13 +114,7 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
                     </div>
                   </div>
                   <div className="h-10 rounded-xl bg-muted/40 overflow-hidden relative">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${barWidth}%` }}
-                      transition={{ delay: 0.2 + Math.min(i * 0.1, 0.15), duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                      className="h-full rounded-xl"
-                      style={{ backgroundColor: `${step.color}20`, borderLeft: `3px solid ${step.color}` }}
-                    />
+                    <AnimatedBar targetWidth={barWidth} color={step.color} delay={delay} />
                     <span
                       className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold"
                       style={{ color: step.color }}
@@ -119,13 +135,7 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
 
                   <div className="flex-1 relative">
                     <div className="h-10 rounded-xl bg-muted/40 overflow-hidden relative">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${barWidth}%` }}
-                        transition={{ delay: 0.2 + Math.min(i * 0.1, 0.15), duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-                        className="h-full rounded-xl"
-                        style={{ backgroundColor: `${step.color}20`, borderLeft: `3px solid ${step.color}` }}
-                      />
+                      <AnimatedBar targetWidth={barWidth} color={step.color} delay={delay} />
                       <span
                         className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold"
                         style={{ color: step.color }}
@@ -147,12 +157,11 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
                     )}
                   </div>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </div>
 
-        {/* Summary line */}
         <div className="mt-4 pt-3 border-t border-border/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1 text-xs text-muted-foreground">
           <span>Taxa geral: <strong className="text-foreground">{funnel.length > 0 && funnel[0].count > 0 ? Math.round((funnel[funnel.length - 1].count / funnel[0].count) * 100) : 0}%</strong> (lead → venda)</span>
           <span>{leads.length} lead{leads.length !== 1 ? 's' : ''} no total</span>

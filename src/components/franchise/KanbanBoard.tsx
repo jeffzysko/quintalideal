@@ -29,7 +29,7 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerClose } from '@
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
-import { motion, AnimatePresence } from 'framer-motion';
+
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -305,16 +305,10 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
         )}
 
         <div className="space-y-2.5">
-          <AnimatePresence mode="popLayout">
             {currentStageLeads.length === 0 ? (
-              <motion.div
-                key="empty"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="rounded-xl border-2 border-dashed border-border/30 p-12 text-center"
-              >
+              <div className="rounded-xl border-2 border-dashed border-border/30 p-12 text-center animate-fade-in">
                 <p className="text-sm text-muted-foreground">Nenhum lead nesta etapa</p>
-              </motion.div>
+              </div>
             ) : (
               currentStageLeads.map((lead) => (
                 <SwipeableLeadCard key={lead.id} leadPhone={lead.telefone} leadName={lead.nome}>
@@ -327,7 +321,6 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
                 </SwipeableLeadCard>
               ))
             )}
-          </AnimatePresence>
         </div>
 
         <StageChangeDrawer
@@ -541,11 +534,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       </div>
 
       {!kanbanTipDismissed && (
-        <motion.div
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center gap-3 px-4 py-2.5 mb-4 rounded-xl border border-primary/20 bg-primary/5"
-        >
+        <div className="flex items-center gap-3 px-4 py-2.5 mb-4 rounded-xl border border-primary/20 bg-primary/5 animate-fade-in">
           <span className="text-sm">💡</span>
           <p className="text-xs text-foreground flex-1">
             <span className="font-semibold">Dica:</span> Arraste os cards entre as colunas para mudar o status do lead.
@@ -558,7 +547,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
           >
             Entendi
           </Button>
-        </motion.div>
+        </div>
       )}
 
       <DndContext
