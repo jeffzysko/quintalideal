@@ -263,10 +263,10 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   const franchiseSlug = franchiseInfo?.slug_url || null;
   const franchiseName = franchiseInfo?.nome_franquia || '';
 
-  // ── Time-filtered KPIs with comparison ──
+  // ── Time-filtered KPIs with comparison (use lightweight kpiLeads) ──
   const { current: currentLeads, previous: previousLeads } = useMemo(
-    () => filterByTimeRange(allLeads, timeRange),
-    [allLeads, timeRange],
+    () => filterByTimeRange(kpiLeads as any[], timeRange),
+    [kpiLeads, timeRange],
   );
 
   const totalLeads = currentLeads.length;
@@ -280,21 +280,20 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   const prevSold = previousLeads.length > 0 ? previousLeads.filter(l => l.status_lead === 'vendido').length : undefined;
 
   const now = new Date();
-  const soldThisMonth = allLeads.filter(l => {
+  const soldThisMonth = kpiLeads.filter(l => {
     if (l.status_lead !== 'vendido') return false;
-    // Use updated_at (date the status was changed to "vendido") instead of created_at
-    const d = new Date((l as any).updated_at || l.created_at);
+    const d = new Date(l.updated_at || l.created_at);
     return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
   }).length;
 
-  // Overdue leads alert
+  // Overdue leads alert (use kpiLeads)
   const overdueLeads = useMemo(() => {
     const nowMs = Date.now();
-    return allLeads.filter(l => {
+    return kpiLeads.filter(l => {
       if (l.status_lead !== 'novo') return false;
       return (nowMs - new Date(l.created_at).getTime()) > 48 * 60 * 60 * 1000;
     });
-  }, [allLeads]);
+  }, [kpiLeads]);
 
   const metrics: MetricCardProps[] = [
     { icon: Users, label: 'Total de Leads', value: totalLeads, previousValue: prevTotal, color: 'text-primary' },
