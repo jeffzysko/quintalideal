@@ -231,6 +231,35 @@ Deno.serve(async (req) => {
       return jsonResp({ skipped: true, reason: "duplicate" });
     }
 
+    // Business hours check (08:00-20:00 Brasília)
+    const nowBrasilia = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
+    const hour = nowBrasilia.getHours();
+    if (hour < 8 || hour >= 20) {
+      // Schedule for next available 08:00
+      const scheduled = new Date(nowBrasilia);
+      if (hour >= 20) {
+        scheduled.setDate(scheduled.getDate() + 1);
+      }
+      scheduled.setHours(8, 0, 0, 0);
+      // Convert back to UTC-ish by creating proper ISO
+      const offsetMs = scheduled.getTime() - nowBrasilia.getTime() + Date.now();
+      const scheduledUtc = new Date(offsetMs);
+
+      await supabase.from("whatsapp_messages").insert({
+        franchise_id: resolvedFranchiseId,
+        lead_id: resolvedLeadId || null,
+        proposal_id: proposal_id || null,
+        phone,
+        template_key: trigger_event,
+        message_text: message,
+        status: "scheduled",
+        scheduled_for: scheduledUtc.toISOString(),
+        error_message: null,
+        sent_by: null,
+      });
+      return jsonResp({ skipped: true, reason: "outside_business_hours", scheduled_for: scheduledUtc.toISOString() });
+    }
+
     // Send via Z-API
     const zapiUrl = buildZapiUrl(instanceId, zapiToken, "send-text");
     const zapiHeaders: Record<string, string> = { "Content-Type": "application/json" };
