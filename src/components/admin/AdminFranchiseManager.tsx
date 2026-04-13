@@ -67,7 +67,7 @@ export function AdminFranchiseManager() {
   const load = async () => {
     const { data } = await supabase
       .from('franchises')
-      .select('id, nome_franquia, slug_url, cidade_base, cidades_atendidas, responsavel, whatsapp, email, ativa, created_at')
+      .select('id, nome_franquia, slug_url, cidade_base, cidades_atendidas, responsavel, whatsapp, email, endereco, ativa, created_at')
       .order('nome_franquia');
     setFranchises((data || []).map((f: any) => ({ ...f, cidades_atendidas: f.cidades_atendidas || [] })) as Franchise[]);
     setFranchises((data || []) as Franchise[]);
@@ -98,6 +98,7 @@ export function AdminFranchiseManager() {
       responsavel: f.responsavel || '',
       whatsapp: f.whatsapp || '',
       email: f.email || '',
+      endereco: f.endereco || '',
     });
     setDialogOpen(true);
   };
