@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { MessageCircle, Copy, Send, ChevronDown, ChevronUp, Check } from 'lucide-react';
+import { MessageCircle, Copy, Send, ChevronDown, ChevronUp, Check, Zap, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
+import { useWhatsAppSend } from '@/hooks/useWhatsAppSend';
 
 interface WhatsAppTemplatesProps {
   leadName: string | null;
@@ -13,6 +14,8 @@ interface WhatsAppTemplatesProps {
   cidade: string | null;
   pontuacao: number | null;
   statusLead: string;
+  leadId?: string;
+  franchiseId?: string | null;
 }
 
 interface Template {
@@ -106,6 +109,8 @@ function buildTemplates(props: WhatsAppTemplatesProps): Template[] {
 export function WhatsAppTemplates(props: WhatsAppTemplatesProps) {
   const [expanded, setExpanded] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [sendingId, setSendingId] = useState<string | null>(null);
+  const { sendViaZapi, sending } = useWhatsAppSend();
   const templates = buildTemplates(props);
 
   const relevant = templates.filter(t => t.stage.includes(props.statusLead));
@@ -121,12 +126,27 @@ export function WhatsAppTemplates(props: WhatsAppTemplatesProps) {
     window.open(`https://wa.me/${fullPhone}?text=${encoded}`, '_blank');
   };
 
+  const sendViaApi = async (tplId: string, message: string) => {
+    if (!props.franchiseId || !props.leadPhone) return;
+    setSendingId(tplId);
+    await sendViaZapi({
+      phone: props.leadPhone,
+      message,
+      template_key: tplId,
+      lead_id: props.leadId,
+      franchise_id: props.franchiseId,
+    });
+    setSendingId(null);
+  };
+
   const copyMessage = (id: string, message: string) => {
     navigator.clipboard.writeText(message);
     setCopiedId(id);
     toast.success('Mensagem copiada!');
     setTimeout(() => setCopiedId(null), 2000);
   };
+
+  const canSendViaApi = !!props.franchiseId;
 
   return (
     <Card className="glass-card">
@@ -164,28 +184,36 @@ export function WhatsAppTemplates(props: WhatsAppTemplatesProps) {
                   <div className="flex flex-col sm:flex-row items-stretch gap-2">
                     <Button
                       variant="outline"
-                      className="h-11 flex-1 text-sm sm:text-xs gap-2 active:scale-[0.97] transition-transform"
+                      className="h-9 flex-1 text-xs gap-1.5 active:scale-[0.97] transition-transform"
                       onClick={() => copyMessage(tpl.id, tpl.message)}
                     >
                       {copiedId === tpl.id ? (
-                        <>
-                          <Check className="w-4 h-4 text-success" />
-                          Copiada!
-                        </>
+                        <><Check className="w-3.5 h-3.5 text-success" /> Copiada!</>
                       ) : (
-                        <>
-                          <Copy className="w-4 h-4" />
-                          Copiar
-                        </>
+                        <><Copy className="w-3.5 h-3.5" /> Copiar</>
                       )}
                     </Button>
                     <Button
-                      className="h-11 flex-1 text-sm sm:text-xs bg-success hover:bg-success/90 text-success-foreground gap-2 active:scale-[0.97] transition-transform"
+                      variant="outline"
+                      className="h-9 flex-1 text-xs gap-1.5 active:scale-[0.97] transition-transform"
                       onClick={() => sendWhatsApp(tpl.message)}
                     >
-                      <Send className="w-4 h-4" />
-                      Enviar WhatsApp
+                      <Send className="w-3.5 h-3.5" />
+                      wa.me
                     </Button>
+                    {canSendViaApi && (
+                      <Button
+                        className="h-9 flex-1 text-xs bg-success hover:bg-success/90 text-success-foreground gap-1.5 active:scale-[0.97] transition-transform"
+                        onClick={() => sendViaApi(tpl.id, tpl.message)}
+                        disabled={sending && sendingId === tpl.id}
+                      >
+                        {sending && sendingId === tpl.id ? (
+                          <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Enviando...</>
+                        ) : (
+                          <><Zap className="w-3.5 h-3.5" /> Enviar Z-API</>
+                        )}
+                      </Button>
+                    )}
                   </div>
                 </div>
               </motion.div>

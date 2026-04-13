@@ -1085,6 +1085,106 @@ export type Database = {
           },
         ]
       }
+      whatsapp_config: {
+        Row: {
+          created_at: string
+          franchise_id: string
+          id: string
+          instance_id: string | null
+          is_active: boolean
+          security_token: string | null
+          token: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          franchise_id: string
+          id?: string
+          instance_id?: string | null
+          is_active?: boolean
+          security_token?: string | null
+          token?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          franchise_id?: string
+          id?: string
+          instance_id?: string | null
+          is_active?: boolean
+          security_token?: string | null
+          token?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      whatsapp_messages: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          franchise_id: string
+          id: string
+          lead_id: string | null
+          message_text: string
+          phone: string
+          proposal_id: string | null
+          sent_by: string | null
+          status: string
+          template_key: string | null
+          zapi_message_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          franchise_id: string
+          id?: string
+          lead_id?: string | null
+          message_text: string
+          phone: string
+          proposal_id?: string | null
+          sent_by?: string | null
+          status?: string
+          template_key?: string | null
+          zapi_message_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          franchise_id?: string
+          id?: string
+          lead_id?: string | null
+          message_text?: string
+          phone?: string
+          proposal_id?: string | null
+          sent_by?: string | null
+          status?: string
+          template_key?: string | null
+          zapi_message_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_messages_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_messages_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_map"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_messages_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       franchise_safe: {
