@@ -101,10 +101,10 @@ const ACTION_ITEMS: ActionItem[] = [
   // ── Pendências remanescentes ──
   { id: 'a13', category: 'medium', title: 'Separar query de KPIs no FranchiseDashboard', impact: '~40% redução payload KPIs', effort: '30 min', description: 'Query KPI leve com 6 colunas. Query completa só carrega quando tabs de Kanban/Reports/Achievements estão ativas.', done: true },
   { id: 'a14', category: 'medium', title: 'Filtrar lead_activities no servidor', impact: 'Reduz payload desnecessário', effort: '30 min', description: 'Filtro .in("lead_id", leadIds) implementado com batching de 200 IDs por request.', done: true },
-  { id: 'a15', category: 'low', title: 'Implementar batching em HojePage', impact: 'Evita truncamento com >500 leads', effort: '30 min', description: 'Trocar .limit(500) por batching ou filtro temporal (última semana).' },
-  { id: 'a16', category: 'low', title: 'Cleanup de autoSaveTimeoutRef em LeadDetail', impact: 'Previne leak de timer', effort: '5 min', description: 'Adicionar clearTimeout(autoSaveTimeoutRef.current) no cleanup do useEffect.' },
-  { id: 'a17', category: 'low', title: 'Atualizar "now" periodicamente em HojePage', impact: 'Evita dados stale em sessões longas', effort: '10 min', description: 'Substituir useMemo(() => new Date(), []) por state + intervalo de 1 minuto.' },
-  { id: 'a18', category: 'low', title: 'Limitar clsSessionEntries em webVitals', impact: 'Previne crescimento indefinido de array', effort: '5 min', description: 'Usar sliding window de 5 últimos entries ao invés de acumular indefinidamente.' },
+  { id: 'a15', category: 'low', title: 'Implementar batching em HojePage', impact: 'Evita truncamento com >500 leads', effort: '30 min', description: 'Removido .limit(500). Query agora filtra por status ativo (novo/contatado/em_negociacao) ao invés de limitar arbitrariamente.', done: true },
+  { id: 'a16', category: 'low', title: 'Cleanup de autoSaveTimeoutRef em LeadDetail', impact: 'Previne leak de timer', effort: '5 min', description: 'useEffect cleanup adicionado para clearTimeout no unmount.', done: true },
+  { id: 'a17', category: 'low', title: 'Atualizar "now" periodicamente em HojePage', impact: 'Evita dados stale em sessões longas', effort: '10 min', description: 'Substituído useMemo por useState + useEffect com intervalo de 60s.', done: true },
+  { id: 'a18', category: 'low', title: 'Limitar clsSessionEntries em webVitals', impact: 'Previne crescimento indefinido de array', effort: '5 min', description: 'Sliding window de 5 últimos entries implementado com slice(-5).', done: true },
 ];
 
 // ── Score Calculation ──
