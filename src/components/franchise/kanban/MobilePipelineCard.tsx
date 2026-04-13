@@ -9,7 +9,6 @@ import { toWhatsAppPhone } from '@/lib/phone-utils';
 import { MapPin, MessageCircle, StickyNote, ChevronRight, Send } from 'lucide-react';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/hooks/useAuth';
-import { motion, AnimatePresence } from 'framer-motion';
 import type { LeadWithQuiz } from './types';
 
 export const MobilePipelineCard = memo(function MobilePipelineCard({
@@ -53,11 +52,8 @@ export const MobilePipelineCard = memo(function MobilePipelineCard({
   const scoreColor = (lead.pontuacao_quintal || 0) >= 70 ? 'bg-emerald-500' : (lead.pontuacao_quintal || 0) >= 40 ? 'bg-amber-500' : 'bg-red-400';
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -8 }}
-      className={`bg-card border border-border/50 rounded-xl overflow-hidden shadow-xs border-l-[3px] ${borderAccent}`}
+    <div
+      className={`bg-card border border-border/50 rounded-xl overflow-hidden shadow-xs border-l-[3px] ${borderAccent} animate-fade-in`}
     >
       <div
         className="p-3.5 cursor-pointer"
@@ -107,40 +103,39 @@ export const MobilePipelineCard = memo(function MobilePipelineCard({
         )}
       </div>
 
-      <AnimatePresence>
-        {noteOpen && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden border-t border-border/30"
-          >
-            <div className="p-3 space-y-2">
-              <Textarea
-                value={noteText}
-                onChange={(e) => setNoteText(e.target.value)}
-                placeholder="Escreva uma nota rápida..."
-                className="text-base md:text-xs min-h-[50px] resize-none"
-                autoFocus
-              />
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  className="flex-1 h-8 text-xs gap-1"
-                  disabled={!noteText.trim() || savingNote}
-                  onClick={handleSaveNote}
-                >
-                  <Send className="w-3 h-3" />
-                  {savingNote ? 'Salvando...' : 'Salvar'}
-                </Button>
-                <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={() => { setNoteOpen(false); setNoteText(''); }}>
-                  Cancelar
-                </Button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Note section with CSS transition */}
+      <div
+        className="overflow-hidden border-t border-border/30 transition-all duration-200 ease-out"
+        style={{
+          maxHeight: noteOpen ? '200px' : '0px',
+          opacity: noteOpen ? 1 : 0,
+          borderTopWidth: noteOpen ? '1px' : '0px',
+        }}
+      >
+        <div className="p-3 space-y-2">
+          <Textarea
+            value={noteText}
+            onChange={(e) => setNoteText(e.target.value)}
+            placeholder="Escreva uma nota rápida..."
+            className="text-base md:text-xs min-h-[50px] resize-none"
+            autoFocus={noteOpen}
+          />
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              className="flex-1 h-8 text-xs gap-1"
+              disabled={!noteText.trim() || savingNote}
+              onClick={handleSaveNote}
+            >
+              <Send className="w-3 h-3" />
+              {savingNote ? 'Salvando...' : 'Salvar'}
+            </Button>
+            <Button size="sm" variant="ghost" className="h-8 text-xs" onClick={() => { setNoteOpen(false); setNoteText(''); }}>
+              Cancelar
+            </Button>
+          </div>
+        </div>
+      </div>
 
       <div className="flex items-center border-t border-border/30 divide-x divide-border/30">
         {lead.telefone && (
@@ -177,6 +172,6 @@ export const MobilePipelineCard = memo(function MobilePipelineCard({
           Mover
         </button>
       </div>
-    </motion.div>
+    </div>
   );
 });
