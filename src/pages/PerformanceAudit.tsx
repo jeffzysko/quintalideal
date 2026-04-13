@@ -514,19 +514,22 @@ export default function PerformanceAudit() {
 
               <div className="space-y-3">
                 {filteredDbIssues.map((issue, i) => (
-                  <Card key={i} className={cn('shadow-sm border-border/50', issue.severity === 'critical' && 'border-destructive/30 bg-destructive/5')}>
+                  <Card key={i} className={cn('shadow-sm border-border/50', issue.severity === 'critical' && !issue.done && 'border-destructive/30 bg-destructive/5', issue.done && 'opacity-60')}>
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between gap-2 mb-2">
                         <div className="flex items-center gap-2">
-                          <FileCode className="w-4 h-4 text-muted-foreground shrink-0" />
-                          <code className="text-xs font-mono text-foreground">{issue.file}:{issue.line}</code>
+                          {issue.done ? <CheckCircle2 className="w-4 h-4 text-success shrink-0" /> : <FileCode className="w-4 h-4 text-muted-foreground shrink-0" />}
+                          <code className={cn('text-xs font-mono', issue.done ? 'text-muted-foreground line-through' : 'text-foreground')}>{issue.file}:{issue.line}</code>
                         </div>
-                        <SeverityBadge severity={issue.severity} />
+                        <div className="flex items-center gap-1.5">
+                          {issue.done && <Badge variant="outline" className="text-[10px] text-success border-success/30">Corrigido</Badge>}
+                          <SeverityBadge severity={issue.severity} />
+                        </div>
                       </div>
                       <p className="text-xs font-semibold text-foreground mb-1">{issue.type}</p>
                       <p className="text-[11px] text-muted-foreground mb-2">{issue.impact}</p>
                       <div className="bg-muted/50 rounded-lg p-2.5">
-                        <p className="text-[11px] text-primary font-medium">💡 {issue.fix}</p>
+                        <p className="text-[11px] text-primary font-medium">{issue.done ? '✅' : '💡'} {issue.fix}</p>
                       </div>
                     </CardContent>
                   </Card>
