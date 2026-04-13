@@ -58,7 +58,7 @@ export default function ProposalsList() {
       if (!franchiseId) return [];
       const { data, error } = await supabase
         .from('proposals')
-        .select('*')
+        .select('id, client_name, status, total, created_at, public_token, updated_at')
         .order('created_at', { ascending: false });
       if (error) throw error;
       return data || [];
@@ -72,7 +72,7 @@ export default function ProposalsList() {
       .channel('proposals-list-changes')
       .on(
         'postgres_changes',
-        { event: '*', schema: 'public', table: 'proposals' },
+        { event: '*', schema: 'public', table: 'proposals', filter: franchiseId ? `franchise_id=eq.${franchiseId}` : undefined },
         () => {
           queryClient.invalidateQueries({ queryKey: proposalsQueryKey });
         }

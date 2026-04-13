@@ -863,8 +863,8 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       return;
     }
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
+    const currentUser = authUser;
+    if (currentUser) {
       await supabase.from('lead_activities').insert({
         lead_id: leadId,
         user_id: user.id,

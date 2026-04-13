@@ -16,9 +16,7 @@ import { ptBR } from 'date-fns/locale';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
 import { VideoEmbed } from '@/components/proposals/ProposalVideoSection';
 import logoSplash from '@/assets/logo-splash.png';
-// html2canvas removed – PDF now uses native jsPDF vector drawing
-import { jsPDF } from 'jspdf';
-import QRCode from 'qrcode';
+// jsPDF and QRCode are lazy-loaded in handleExportPDF for bundle optimization
 
 const formatCurrency = (v: number) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
 
@@ -382,6 +380,10 @@ export default function PublicProposal() {
     if (!proposal) return;
     setExporting(true);
     try {
+      const [{ jsPDF }, QRCode] = await Promise.all([
+        import('jspdf'),
+        import('qrcode'),
+      ]);
       const A4_W = 210, A4_H = 297, M = 18;
       const CW = A4_W - M * 2;
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
