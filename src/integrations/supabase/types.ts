@@ -167,6 +167,7 @@ export type Database = {
           cidades_atendidas: string[] | null
           created_at: string
           email: string | null
+          endereco: string | null
           id: string
           last_accessed_at: string | null
           last_lead_activity_at: string | null
@@ -184,6 +185,7 @@ export type Database = {
           cidades_atendidas?: string[] | null
           created_at?: string
           email?: string | null
+          endereco?: string | null
           id?: string
           last_accessed_at?: string | null
           last_lead_activity_at?: string | null
@@ -201,6 +203,7 @@ export type Database = {
           cidades_atendidas?: string[] | null
           created_at?: string
           email?: string | null
+          endereco?: string | null
           id?: string
           last_accessed_at?: string | null
           last_lead_activity_at?: string | null
