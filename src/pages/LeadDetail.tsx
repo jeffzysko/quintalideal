@@ -608,16 +608,6 @@ export default function LeadDetail() {
                       </CardContent>
                     </Card>
                   )}
-                  <WhatsAppTemplates
-                    leadName={lead.nome}
-                    leadPhone={lead.telefone}
-                    modeloRecomendado={lead.modelo_recomendado}
-                    cidade={lead.cidade}
-                    pontuacao={lead.pontuacao_quintal}
-                    statusLead={lead.status_lead}
-                    leadId={lead.id}
-                    franchiseId={franchiseId || lead.franquia_id}
-                  />
                 </motion.div>
               </TabsContent>
 
