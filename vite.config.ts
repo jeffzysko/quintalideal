@@ -100,7 +100,17 @@ export default defineConfig(({ mode }) => ({
       },
       workbox: {
         importScripts: ["/push-sw.js"],
-        globPatterns: ["**/*.{js,css,html,ico,png,svg,webp,woff,woff2}"],
+        globPatterns: ["**/*.{js,css,html,ico,woff2}"],
+        globIgnores: [
+          "**/Admin*",
+          "**/Kanban*",
+          "**/PublicProposal*",
+          "**/PerformanceAudit*",
+          "**/og-image*",
+          "**/vendor-charts*",
+          "**/vendor-maps*",
+          "**/vendor-dnd*",
+        ],
         navigateFallback: "/index.html",
         navigateFallbackDenylist: [/^\/~oauth/, /^\/api/],
         skipWaiting: false,
