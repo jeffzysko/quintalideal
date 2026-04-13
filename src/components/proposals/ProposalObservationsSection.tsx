@@ -3,16 +3,17 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { MessageSquare } from 'lucide-react';
 import type { ProposalFormData } from '@/pages/NewProposal';
-import { ProposalAttachments } from './ProposalAttachments';
+import { ProposalAttachments, type PendingAttachment } from './ProposalAttachments';
 
 interface Props {
   form: ProposalFormData;
   updateForm: (u: Partial<ProposalFormData>) => void;
   proposalId?: string | null;
   franchiseId?: string;
+  onPendingAttachmentsChange?: (pending: PendingAttachment[]) => void;
 }
 
-export function ProposalObservationsSection({ form, updateForm, proposalId, franchiseId }: Props) {
+export function ProposalObservationsSection({ form, updateForm, proposalId, franchiseId, onPendingAttachmentsChange }: Props) {
   return (
     <Card className="shadow-sm border-border/50">
       <CardHeader className="pb-3">
@@ -37,6 +38,7 @@ export function ProposalObservationsSection({ form, updateForm, proposalId, fran
           <ProposalAttachments
             proposalId={proposalId || null}
             franchiseId={franchiseId || ''}
+            onPendingChange={onPendingAttachmentsChange}
           />
         </div>
       </CardContent>
