@@ -21,13 +21,13 @@
     --popover: 0 0% 100%;
     --popover-foreground: 220 30% 10%;
 
-    /* Primary: Splash Blue */
+    /* Primary: Brand Blue */
     --primary: 207 90% 42%;
     --primary-foreground: 0 0% 100%;
     --primary-hover: 207 90% 36%;
     --primary-active: 207 90% 30%;
 
-    /* Secondary: Splash Pink */
+    /* Secondary: Brand Pink */
     --secondary: 322 85% 50%;
     --secondary-foreground: 0 0% 100%;
 
@@ -76,13 +76,13 @@
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.08), 0 4px 6px -4px rgb(0 0 0 / 0.04);
     --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.08), 0 8px 10px -6px rgb(0 0 0 / 0.03);
 
-    /* ─── Splash brand tokens ─── */
-    --splash-blue: 207 90% 42%;
-    --splash-blue-dark: 207 90% 25%;
-    --splash-blue-light: 207 60% 92%;
-    --splash-pink: 322 85% 50%;
-    --splash-gray: 220 10% 46%;
-    --splash-gray-light: 220 15% 96%;
+    /* ─── Brand tokens ─── */
+    --brand-blue: 207 90% 42%;
+    --brand-blue-dark: 207 90% 25%;
+    --brand-blue-light: 207 60% 92%;
+    --brand-pink: 322 85% 50%;
+    --brand-gray: 220 10% 46%;
+    --brand-gray-light: 220 15% 96%;
 
     /* ─── Sidebar ─── */
     --sidebar-background: 220 30% 8%;
