@@ -119,6 +119,7 @@ export default function NewProposal() {
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const [saveTemplateOpen, setSaveTemplateOpen] = useState(false);
   const [loadTemplateOpen, setLoadTemplateOpen] = useState(false);
+  const pendingAttachmentsRef = useRef<{ file_name: string; file_path: string; file_size: number; content_type: string }[]>([]);
 
   const updateForm = useCallback((updates: Partial<ProposalFormData>) => {
     setForm(prev => ({ ...prev, ...updates }));
@@ -362,6 +363,19 @@ export default function NewProposal() {
 
         const { error: itemsError } = await supabase.from('proposal_items').insert(itemsToInsert);
         if (itemsError) throw itemsError;
+      }
+
+      // Save pending attachments
+      if (pendingAttachmentsRef.current.length > 0) {
+        const attachmentsToInsert = pendingAttachmentsRef.current.map(att => ({
+          proposal_id: proposalId,
+          file_name: att.file_name,
+          file_path: att.file_path,
+          file_size: att.file_size,
+          content_type: att.content_type,
+        }));
+        await supabase.from('proposal_attachments').insert(attachmentsToInsert);
+        pendingAttachmentsRef.current = [];
       }
 
       localStorage.removeItem(`proposal_draft_${franchiseId}`);
@@ -612,7 +626,13 @@ export default function NewProposal() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25 }}
             >
-              <ProposalObservationsSection form={form} updateForm={updateForm} proposalId={editId} franchiseId={franchiseId || undefined} />
+              <ProposalObservationsSection
+                form={form}
+                updateForm={updateForm}
+                proposalId={editId}
+                franchiseId={franchiseId || undefined}
+                onPendingAttachmentsChange={(pending) => { pendingAttachmentsRef.current = pending; }}
+              />
             </motion.div>
 
             {/* Score da Proposta */}
