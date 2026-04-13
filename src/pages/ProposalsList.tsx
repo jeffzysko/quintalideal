@@ -13,7 +13,7 @@ import { BackButton } from '@/components/BackButton';
 import { NotificationBell } from '@/components/NotificationBell';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
-import { Plus, FileText, Clock, ChevronRight, Link2, Pencil, Search, DollarSign, Eye, CheckCircle2 } from 'lucide-react';
+import { Plus, FileText, Clock, ChevronRight, Link2, Pencil, Search, DollarSign, Eye, CheckCircle2, UserCheck, UserX } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -49,6 +49,7 @@ export default function ProposalsList() {
   const canQuery = !!franchiseId || isAdmin;
 
   const [statusFilter, setStatusFilter] = useState('todas');
+  const [leadFilter, setLeadFilter] = useState<'todas' | 'com_lead' | 'avulsa'>('todas');
   const [search, setSearch] = useState('');
 
   const proposalsQueryKey = ['proposals', franchiseId, isAdmin];
@@ -58,7 +59,7 @@ export default function ProposalsList() {
     queryFn: async () => {
       let query = supabase
         .from('proposals')
-        .select('id, client_name, status, total, created_at, public_token, updated_at')
+        .select('id, client_name, status, total, created_at, public_token, updated_at, lead_id')
         .order('created_at', { ascending: false });
       // RLS handles filtering — admins see all, franchise users see own
       const { data, error } = await query;
@@ -93,12 +94,17 @@ export default function ProposalsList() {
     if (statusFilter !== 'todas') {
       list = list.filter((p: any) => p.status === statusFilter);
     }
+    if (leadFilter === 'com_lead') {
+      list = list.filter((p: any) => !!p.lead_id);
+    } else if (leadFilter === 'avulsa') {
+      list = list.filter((p: any) => !p.lead_id);
+    }
     if (search.trim()) {
       const q = search.toLowerCase().trim();
       list = list.filter((p: any) => p.client_name?.toLowerCase().includes(q));
     }
     return list;
-  }, [proposals, statusFilter, search]);
+  }, [proposals, statusFilter, leadFilter, search]);
 
   // Stats
   const stats = useMemo(() => {
@@ -227,6 +233,30 @@ export default function ProposalsList() {
                 className="pl-9 h-10"
               />
             </div>
+            <div className="flex gap-1.5">
+              {[
+                { key: 'todas' as const, label: 'Todas', icon: null },
+                { key: 'com_lead' as const, label: 'Com lead', icon: UserCheck },
+                { key: 'avulsa' as const, label: 'Avulsa', icon: UserX },
+              ].map((opt) => {
+                const isActive = leadFilter === opt.key;
+                return (
+                  <button
+                    key={opt.key}
+                    onClick={() => setLeadFilter(opt.key)}
+                    className={cn(
+                      'flex items-center gap-1 px-3 py-2 rounded-lg text-xs font-medium whitespace-nowrap transition-colors border min-h-[36px] active:scale-[0.97]',
+                      isActive
+                        ? 'bg-accent text-foreground border-border'
+                        : 'bg-background text-muted-foreground border-border/50 hover:bg-accent/50'
+                    )}
+                  >
+                    {opt.icon && <opt.icon className="w-3.5 h-3.5" />}
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Status tabs */}
@@ -311,6 +341,17 @@ export default function ProposalsList() {
                             {format(new Date(p.created_at), "dd MMM yyyy", { locale: ptBR })}
                           </span>
                           <span className="font-semibold text-foreground">{formatCurrency(p.total)}</span>
+                          {p.lead_id ? (
+                            <span className="flex items-center gap-0.5 text-primary">
+                              <UserCheck className="w-3 h-3" />
+                              <span className="text-[10px]">Lead</span>
+                            </span>
+                          ) : (
+                            <span className="flex items-center gap-0.5 text-muted-foreground/60">
+                              <UserX className="w-3 h-3" />
+                              <span className="text-[10px]">Avulsa</span>
+                            </span>
+                          )}
                         </div>
                       </div>
                       {/* Action buttons */}
