@@ -130,7 +130,7 @@ function ScoreRing({ score }: { score: number }) {
 }
 
 export default function LeadDetail() {
-  const { franchiseId } = useAuth();
+  const { franchiseId, user } = useAuth();
   const isMobile = useIsMobile();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -215,13 +215,12 @@ export default function LeadDetail() {
     setSaving(true);
 
     if (status !== lead.status_lead) {
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      if (currentUser) {
+      if (user) {
         const oldLabel = statusConfig[lead.status_lead]?.label || lead.status_lead;
         const newLabel = statusConfig[status]?.label || status;
         await supabase.from('lead_activities').insert({
           lead_id: lead.id,
-          user_id: currentUser.id,
+          user_id: user.id,
           activity_type: 'status_change',
           content: `Status alterado de "${oldLabel}" para "${newLabel}"`,
         });
@@ -238,12 +237,11 @@ export default function LeadDetail() {
 
     const tempChanged = tempOverride !== oldTemp;
     if (tempChanged) {
-      const { data: { user: currentUser } } = await supabase.auth.getUser();
-      if (currentUser) {
+      if (user) {
         const TEMP_LABELS: Record<string, string> = { quente: '🔥 Quente', morno: '☀️ Morno', frio: '❄️ Frio', '': '🤖 Automático' };
         await supabase.from('lead_activities').insert({
           lead_id: lead.id,
-          user_id: currentUser.id,
+          user_id: user.id,
           activity_type: 'temperature_change',
           content: `Temperatura alterada de "${TEMP_LABELS[oldTemp] || '🤖 Automático'}" para "${TEMP_LABELS[tempOverride] || '🤖 Automático'}"`,
         });
@@ -285,7 +283,7 @@ export default function LeadDetail() {
     setAutoSaving(true);
 
     const currentRespostas = { ...(lead.respostas_questionario || {}) } as Record<string, string>;
-    const { data: { user: currentUser } } = await supabase.auth.getUser();
+    const currentUser = user;
 
     if (field === 'status') {
       if (newValue !== lead.status_lead && currentUser) {

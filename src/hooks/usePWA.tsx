@@ -50,6 +50,7 @@ export function usePWA() {
   // Listen for SW updates – poll periodically for standalone apps
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return;
+    let interval: ReturnType<typeof setInterval>;
 
     navigator.serviceWorker.ready.then((reg) => {
       setRegistration(reg);
@@ -66,12 +67,12 @@ export function usePWA() {
       });
 
       // Check for updates periodically (every 30 min) for standalone users
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         reg.update().catch(() => {});
       }, 30 * 60 * 1000);
-
-      return () => clearInterval(interval);
     });
+
+    return () => clearInterval(interval);
   }, []);
 
   const promptInstall = useCallback(async () => {

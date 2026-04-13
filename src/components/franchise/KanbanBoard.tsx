@@ -741,6 +741,7 @@ function StageChangeDrawer({
 
 // ── Main Board ──
 export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: KanbanBoardProps) {
+  const { user: authUser } = useAuth();
   const isMobile = useIsMobile();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overColumnId, setOverColumnId] = useState<string | null>(null);
@@ -863,11 +864,11 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       return;
     }
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
+    const currentUser = authUser;
+    if (currentUser) {
       await supabase.from('lead_activities').insert({
         lead_id: leadId,
-        user_id: user.id,
+        user_id: currentUser.id,
         activity_type: 'status_change',
         content: `${STATUS_LABELS[oldStatus]} → ${STATUS_LABELS[newStatus]}`,
       });
