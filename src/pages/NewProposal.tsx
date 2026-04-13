@@ -4,6 +4,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
 import { PanelHeader } from '@/components/PanelHeader';
 import { BackButton } from '@/components/BackButton';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -526,6 +528,23 @@ export default function NewProposal() {
 
           {/* Main form */}
           <div className={cn('flex-1 min-w-0 space-y-4 sm:space-y-5', isMobile && 'pb-28')}>
+            {/* Admin franchise selector */}
+            {isAdmin && !authFranchiseId && franchiseOptions.length > 0 && (
+              <div className="p-4 rounded-xl border border-border bg-card">
+                <Label className="text-sm font-medium mb-2 block">Franquia responsável</Label>
+                <Select value={selectedFranchiseId || ''} onValueChange={setSelectedFranchiseId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Selecione a franquia..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {franchiseOptions.map(f => (
+                      <SelectItem key={f.id} value={f.id}>{f.nome_franquia}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
             <motion.div
               id="lead"
               ref={el => { sectionRefs.current.lead = el; }}
