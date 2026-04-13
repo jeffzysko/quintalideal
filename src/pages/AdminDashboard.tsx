@@ -439,6 +439,7 @@ export default function AdminDashboard() {
     ...(isSuperAdmin ? [
       { key: 'users' as const, icon: Users, label: 'Usuários' },
       { key: 'emails' as const, icon: Mail, label: 'E-mails' },
+      { key: 'whatsapp' as const, icon: MessageCircle, label: 'WhatsApp' },
       { key: 'franchise-view' as const, icon: Eye, label: 'Visão Franquia' },
     ] : []),
   ];
@@ -654,6 +655,7 @@ export default function AdminDashboard() {
         {activeTab === 'cities' && <Suspense fallback={<TabFallback />}><AdminCityManager /></Suspense>}
         {activeTab === 'users' && <Suspense fallback={<TabFallback />}><AdminUserManager /></Suspense>}
         {activeTab === 'emails' && <Suspense fallback={<TabFallback />}><AdminEmailTemplates /></Suspense>}
+        {activeTab === 'whatsapp' && <Suspense fallback={<TabFallback />}><AdminWhatsAppTemplates /></Suspense>}
 
         {activeTab === 'franchise-view' && (
           <Suspense fallback={<TabFallback />}>
