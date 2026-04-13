@@ -6,7 +6,7 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
-const SENDER = "Quintal Ideal Splash <noreply@hallow.com.br>";
+const SENDER = "Quintal Ideal <noreply@hallow.com.br>";
 const BRAND_PINK = "#e80685";
 const BRAND_BLUE = "#08a1d6";
 const BRAND_GRADIENT = "linear-gradient(135deg, #e80685, #08a1d6)";
@@ -27,7 +27,7 @@ function buildInviteEmailHTML(userName: string, franchiseName: string, resetPage
             <span style="font-size:28px;">🏊</span>
           </div>
           <h1 style="color:#ffffff;margin:0;font-size:22px;font-weight:700;letter-spacing:-0.3px;">Bem-vindo ao Quintal Ideal!</h1>
-          <p style="color:#e0f2fe;margin:8px 0 0;font-size:13px;font-weight:500;">Plataforma Splash Piscinas</p>
+          <p style="color:#e0f2fe;margin:8px 0 0;font-size:13px;font-weight:500;">Plataforma Quintal Ideal</p>
         </td></tr>
 
         <!-- Body -->
@@ -70,7 +70,7 @@ function buildInviteEmailHTML(userName: string, franchiseName: string, resetPage
         <!-- Footer -->
         <tr><td style="padding:24px 32px;background:#f8fafc;border-top:1px solid #e2e8f0;text-align:center;">
           <p style="margin:0;color:#94a3b8;font-size:11px;line-height:1.6;">
-            Quintal Ideal Splash • Convite de acesso<br/>
+            Quintal Ideal • Convite de acesso<br/>
             <a href="https://quintalideal.com.br" style="color:${BRAND_BLUE};text-decoration:none;font-weight:500;">quintalideal.com.br</a>
           </p>
         </td></tr>

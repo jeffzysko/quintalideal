@@ -185,7 +185,7 @@ const translations = {
   // WhatsApp message
   wa_message: {
     pt: 'Olá! Fiz o teste do Índice do Quintal Ideal e meu quintal tem {score}% de potencial ({label}). O modelo recomendado foi a {pool}. Gostaria de saber mais!',
-    es: '¡Hola! Hice el test del Índice del Patio Splash y mi patio tiene {score}% de potencial ({label}). El modelo recomendado fue {pool}. ¡Me gustaría saber más!',
+    es: '¡Hola! Hice el test del Índice del Patio Ideal y mi patio tiene {score}% de potencial ({label}). El modelo recomendado fue {pool}. ¡Me gustaría saber más!',
   },
 } as const;
 

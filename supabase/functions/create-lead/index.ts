@@ -525,7 +525,7 @@ async function sendWebhookFailureAlert(
         </td></tr>
         <tr><td style="padding:20px 32px;background:#f8fafc;border-top:1px solid #e2e8f0;text-align:center;">
           <p style="margin:0;color:#94a3b8;font-size:11px;">
-            Quintal Ideal Splash • Alerta automático<br/>
+            Quintal Ideal • Alerta automático<br/>
             <a href="https://quintalideal.com.br" style="color:#0369a1;text-decoration:none;">quintalideal.com.br</a>
           </p>
         </td></tr>
@@ -542,7 +542,7 @@ async function sendWebhookFailureAlert(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: "Quintal Ideal Splash <noreply@hallow.com.br>",
+      from: "Quintal Ideal <noreply@hallow.com.br>",
       to: [franchise.email],
       subject: `⚠️ Falha no Webhook — Lead ${leadName} não foi entregue ao CRM`,
       html,

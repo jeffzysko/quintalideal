@@ -146,7 +146,7 @@ function buildEmailHTML(report: FranchiseReport, monthLabel: string): string {
 
 <!-- Footer -->
 <tr><td style="background:#f8fafc;padding:24px 40px;text-align:center;">
-  <p style="margin:0;font-size:12px;color:#9ca3af;">Splash Piscinas · Relatório gerado automaticamente</p>
+  <p style="margin:0;font-size:12px;color:#9ca3af;">Quintal Ideal · Relatório gerado automaticamente</p>
   <p style="margin:4px 0 0;font-size:11px;color:#d1d5db;">Este e-mail é enviado no 1º dia útil de cada mês</p>
 </td></tr>
 
@@ -254,7 +254,7 @@ Deno.serve(async (req) => {
           method: "POST",
           headers: { Authorization: `Bearer ${resendKey}`, "Content-Type": "application/json" },
           body: JSON.stringify({
-            from: "Splash Piscinas <relatorios@hallow.com.br>",
+            from: "Quintal Ideal <relatorios@hallow.com.br>",
             to: [report.email],
             subject: `📊 Relatório Mensal – ${reportMonth.label} | ${report.franchise_name}`,
             html,

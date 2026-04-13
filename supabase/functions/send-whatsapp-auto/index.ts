@@ -100,7 +100,7 @@ Deno.serve(async (req) => {
       resolvedLeadId = lead_id;
 
       const franchise = await fetchFranchise(fid);
-      const franchiseName = franchise?.nome_franquia || "Splash Piscinas";
+      const franchiseName = franchise?.nome_franquia || "Quintal Ideal";
       const franchisePhone = franchise?.whatsapp ? formatWhatsAppPhone(franchise.whatsapp) : "";
 
       if (trigger_event === "lead_created") {
@@ -143,7 +143,7 @@ Deno.serve(async (req) => {
       phone = formatWhatsAppPhone(leadPhone);
 
       const franchise = await fetchFranchise(proposal.franchise_id);
-      const franchiseName = franchise?.nome_franquia || "Splash Piscinas";
+      const franchiseName = franchise?.nome_franquia || "Quintal Ideal";
       const franchisePhone = franchise?.whatsapp ? formatWhatsAppPhone(franchise.whatsapp) : "";
       const waLink = franchisePhone ? `https://wa.me/${franchisePhone}` : "";
       const publicUrl = `https://quintalideal.com.br/proposta/${proposal.public_token}`;
@@ -172,7 +172,7 @@ Deno.serve(async (req) => {
 
       phone = formatWhatsAppPhone(lead.telefone);
       const franchise = await fetchFranchise(fid);
-      const franchiseName = franchise?.nome_franquia || "Splash Piscinas";
+      const franchiseName = franchise?.nome_franquia || "Quintal Ideal";
       const franchisePhone = franchise?.whatsapp ? formatWhatsAppPhone(franchise.whatsapp) : "";
       const waLink = franchisePhone ? `https://wa.me/${franchisePhone}` : "";
       message = `Olá, ${lead.nome || ""}!\nEstamos à disposição para tirar qualquer dúvida sobre sua proposta ou ajustar algum detalhe do projeto.\n${waLink ? `👉 ${waLink}\n` : ""}— *${franchiseName}*`;
