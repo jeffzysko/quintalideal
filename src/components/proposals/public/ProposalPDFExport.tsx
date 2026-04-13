@@ -295,7 +295,7 @@ export async function exportProposalPDF(proposal: ProposalData, discountAmount: 
 
   // ── VERIFICATION FOOTER WITH QR CODE ──
   const verCode = generateVerificationCode(proposal.id, proposal.public_token);
-  const proposalUrl = `${window.location.origin}/proposta/${proposal.public_token}`;
+  const proposalUrl = `https://quintalideal.com.br/proposta/${proposal.public_token}`;
   checkPageBreak(42);
   pdf.setDrawColor(...borderColor);
   pdf.setLineWidth(0.3);

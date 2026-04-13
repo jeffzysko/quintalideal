@@ -114,7 +114,7 @@ export default function ProposalsList() {
 
   const copyLink = (e: React.MouseEvent, publicToken: string) => {
     e.stopPropagation();
-    const url = `${window.location.origin}/proposta/${publicToken}`;
+    const url = `https://quintalideal.com.br/proposta/${publicToken}`;
     navigator.clipboard.writeText(url).then(() => {
       toast.success('Link copiado!');
     });
