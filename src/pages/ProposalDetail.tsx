@@ -345,6 +345,16 @@ export default function ProposalDetail() {
             </CardContent>
           </Card>
 
+          {/* Attachments */}
+          {proposal && (
+            <Card className="shadow-sm border-border/50">
+              <CardHeader className="pb-2"><CardTitle className="text-sm flex items-center gap-2"><FileText className="w-4 h-4 text-primary" /> Anexos</CardTitle></CardHeader>
+              <CardContent>
+                <ProposalAttachments proposalId={proposal.id} franchiseId={proposal.franchise_id} />
+              </CardContent>
+            </Card>
+          )}
+
           {/* Negotiations */}
           {negotiations && negotiations.length > 0 && (
             <Card className="shadow-sm border-border/50">
