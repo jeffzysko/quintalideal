@@ -29,7 +29,7 @@ describe('LeadForm', () => {
   it('shows validation errors when submitted empty', async () => {
     render(<LeadForm onSubmit={mockOnSubmit} />);
     
-    const submitButton = screen.getByText('Ver meu resultado');
+    const submitButton = screen.getByText('Descobrir minha piscina ideal');
     fireEvent.click(submitButton);
 
     await waitFor(() => {
@@ -56,7 +56,7 @@ describe('LeadForm', () => {
     await userEvent.type(screen.getByPlaceholderText('(51) 99999-9999'), '51999999999');
     await userEvent.type(screen.getByPlaceholderText('seu@email.com'), 'joao@test.com');
     
-    fireEvent.click(screen.getByText('Ver meu resultado'));
+    fireEvent.click(screen.getByText('Descobrir minha piscina ideal'));
     
     await waitFor(() => {
       expect(mockOnSubmit).toHaveBeenCalledWith({
@@ -79,7 +79,7 @@ describe('LeadForm', () => {
     await userEvent.type(screen.getByPlaceholderText('Seu nome completo'), 'João Silva');
     await userEvent.type(screen.getByPlaceholderText('(51) 99999-9999'), '51999999999');
     
-    fireEvent.click(screen.getByText('Ver meu resultado'));
+    fireEvent.click(screen.getByText('Descobrir minha piscina ideal'));
     
     await waitFor(() => {
       expect(screen.getByText(/já está cadastrado na franquia Quintal Ideal Porto Alegre/)).toBeInTheDocument();
