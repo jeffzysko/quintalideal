@@ -226,8 +226,6 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
   // Mobile pipeline view
   if (isMobile) {
     const currentStageLeads = columnData[mobileStage] || [];
-    const stageValue = currentStageLeads.reduce((sum, l) => sum + estimateLeadValue(l.respostas_questionario || null), 0);
-
     return (
       <>
         <PipelineSummary leads={filteredLeads} franchiseMap={franchiseMap} />
