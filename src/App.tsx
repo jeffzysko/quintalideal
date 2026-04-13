@@ -67,6 +67,7 @@ const ProposalsList = lazy(() => import("./pages/ProposalsList"));
 const NewProposal = lazy(() => import("./pages/NewProposal"));
 const ProposalDetail = lazy(() => import("./pages/ProposalDetail"));
 const PublicProposal = lazy(() => import("./pages/PublicProposal"));
+const PerformanceAudit = lazy(() => import("./pages/PerformanceAudit"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
