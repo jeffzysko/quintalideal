@@ -124,7 +124,7 @@ export default function RankingQuintais() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 0.8, scale: 1 }}
               transition={{ delay: 0.1 }}
-              className="mx-auto w-12 md:w-14 mb-4"
+              className="mx-auto w-28 md:w-36 mb-4 brightness-0 invert"
             />
 
             <motion.div

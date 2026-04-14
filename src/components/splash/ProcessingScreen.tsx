@@ -71,7 +71,7 @@ export function ProcessingScreen({ onDone, lang = 'pt' }: ProcessingScreenProps)
           alt="Quintal Ideal"
           animate={{ opacity: [0.4, 0.7, 0.4] }}
           transition={{ duration: 2, repeat: Infinity }}
-          className="mx-auto w-20 mb-10"
+          className="mx-auto w-36 mb-10 brightness-0 invert"
         />
 
         <motion.div
