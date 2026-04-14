@@ -52,7 +52,7 @@ export function PageHeader({ title, subtitle, icon, fallbackPath, rightSlot }: P
                 <motion.img
                   src={logoQuintalIdeal}
                   alt="Quintal Ideal"
-                  className="h-7 md:h-9 shrink-0 hidden sm:block"
+                  className="h-7 md:h-9 shrink-0 hidden sm:block dark:brightness-0 dark:invert"
                   style={{ filter: 'drop-shadow(0 0 8px hsl(var(--primary) / 0.4))' }}
                   animate={{
                     filter: [
