@@ -43,70 +43,70 @@ describe('calculateScore', () => {
 });
 
 describe('recommendPool', () => {
-  it('recommends Family for small space with prainha (Prainha too large)', () => {
-    expect(recommendPool(base({ espaco: 'ate-3' }))).toBe('Family');
+  it('recommends Italiana for small space with prainha (Tortuga too large)', () => {
+    expect(recommendPool(base({ espaco: 'ate-3' }))).toBe('Italiana');
   });
 
-  it('recommends Compacta Premium for small space with spa', () => {
-    expect(recommendPool(base({ espaco: '3-5', preferencia: 'spa', uso: 'casal' }))).toBe('Compacta Premium');
+  it('recommends Navagio for small space with spa', () => {
+    expect(recommendPool(base({ espaco: '3-5', preferencia: 'spa', uso: 'casal' }))).toBe('Navagio');
   });
 
-  it('recommends Family for small space with other preference', () => {
-    expect(recommendPool(base({ espaco: 'ate-3', preferencia: 'simples', uso: 'casal' }))).toBe('Family');
+  it('recommends Italiana for small space with other preference', () => {
+    expect(recommendPool(base({ espaco: 'ate-3', preferencia: 'simples', uso: 'casal' }))).toBe('Italiana');
   });
 
-  it('recommends Prainha for medium space with prainha', () => {
-    expect(recommendPool(base({ espaco: '5-7', preferencia: 'prainha' }))).toBe('Prainha');
+  it('recommends Tortuga for medium space with prainha', () => {
+    expect(recommendPool(base({ espaco: '5-7', preferencia: 'prainha' }))).toBe('Tortuga');
   });
 
-  it('recommends Retangular for medium space with spa', () => {
-    expect(recommendPool(base({ espaco: '5-7', preferencia: 'spa', uso: 'casal' }))).toBe('Retangular');
+  it('recommends Tradicional for medium space with spa', () => {
+    expect(recommendPool(base({ espaco: '5-7', preferencia: 'spa', uso: 'casal' }))).toBe('Tradicional');
   });
 
-  it('recommends Elegance for medium space + high budget + family', () => {
-    expect(recommendPool(base({ espaco: '5-7', preferencia: 'simples', orcamento: '30-50' }))).toBe('Elegance');
+  it('recommends Bonaire for medium space + high budget + family', () => {
+    expect(recommendPool(base({ espaco: '5-7', preferencia: 'simples', orcamento: '30-50' }))).toBe('Bonaire');
   });
 
-  it('recommends Retangular for medium space + family without high budget', () => {
-    expect(recommendPool(base({ espaco: '5-7', preferencia: 'simples', orcamento: '18-30' }))).toBe('Retangular');
+  it('recommends Tradicional for medium space + family without high budget', () => {
+    expect(recommendPool(base({ espaco: '5-7', preferencia: 'simples', orcamento: '18-30' }))).toBe('Tradicional');
   });
 
-  it('recommends Confort for medium space with casal', () => {
-    expect(recommendPool(base({ espaco: '5-7', preferencia: 'nao-sei', uso: 'casal', orcamento: '18-30' }))).toBe('Confort');
+  it('recommends Tropical for medium space with casal', () => {
+    expect(recommendPool(base({ espaco: '5-7', preferencia: 'nao-sei', uso: 'casal', orcamento: '18-30' }))).toBe('Tropical');
   });
 
-  it('recommends Prainha for large space with prainha', () => {
-    expect(recommendPool(base())).toBe('Prainha');
+  it('recommends Tortuga for large space with prainha', () => {
+    expect(recommendPool(base())).toBe('Tortuga');
   });
 
-  it('recommends Supreme for large space with spa', () => {
-    expect(recommendPool(base({ preferencia: 'spa', uso: 'casal' }))).toBe('Supreme');
+  it('recommends Atalaia for large space with spa', () => {
+    expect(recommendPool(base({ preferencia: 'spa', uso: 'casal' }))).toBe('Atalaia');
   });
 
-  it('recommends Supreme for large space + high budget + family', () => {
-    expect(recommendPool(base({ preferencia: 'simples', orcamento: '30-50' }))).toBe('Supreme');
+  it('recommends Atalaia for large space + high budget + family', () => {
+    expect(recommendPool(base({ preferencia: 'simples', orcamento: '30-50' }))).toBe('Atalaia');
   });
 
-  it('recommends Retangular Plus for large space + family without high budget', () => {
-    expect(recommendPool(base({ preferencia: 'simples', orcamento: '18-30' }))).toBe('Retangular Plus');
+  it('recommends Cancún for large space + family without high budget', () => {
+    expect(recommendPool(base({ preferencia: 'simples', orcamento: '18-30' }))).toBe('Cancún');
   });
 
-  it('recommends Retangular for large space + casal', () => {
-    expect(recommendPool(base({ preferencia: 'simples', uso: 'casal', orcamento: '18-30' }))).toBe('Retangular');
+  it('recommends Tradicional for large space + casal', () => {
+    expect(recommendPool(base({ preferencia: 'simples', uso: 'casal', orcamento: '18-30' }))).toBe('Tradicional');
   });
 
   it('falls back when pool exceeds budget', () => {
     const prices: PoolPriceInfo[] = [
-      { nome_modelo: 'Retangular', preco_min: 25000, preco_max: 45000 },
-      { nome_modelo: 'Elegance', preco_min: 18000, preco_max: 30000 },
+      { nome_modelo: 'Tradicional', preco_min: 25000, preco_max: 45000 },
+      { nome_modelo: 'Bonaire', preco_min: 18000, preco_max: 30000 },
     ];
-    expect(recommendPool(base({ espaco: '5-7', preferencia: 'spa', uso: 'casal', orcamento: 'ate-18' }), prices)).toBe('Elegance');
+    expect(recommendPool(base({ espaco: '5-7', preferencia: 'spa', uso: 'casal', orcamento: 'ate-18' }), prices)).toBe('Bonaire');
   });
 });
 
 describe('recommendSize', () => {
   it('returns correct size for known model', () => {
-    expect(recommendSize('5-7', 'Prainha')).toBe('7,00 x 3,30m');
+    expect(recommendSize('5-7', 'Tortuga')).toBe('7,00 x 3,30m');
   });
 
   it('returns default for unknown model', () => {
@@ -116,11 +116,11 @@ describe('recommendSize', () => {
 
 describe('isWithinBudget', () => {
   const prices: PoolPriceInfo[] = [
-    { nome_modelo: 'Retangular', preco_min: 15000, preco_max: 35000 },
+    { nome_modelo: 'Tradicional', preco_min: 15000, preco_max: 35000 },
   ];
 
   it('returns true for overlapping ranges', () => {
-    expect(isWithinBudget('Retangular', '18-30', prices)).toBe(true);
+    expect(isWithinBudget('Tradicional', '18-30', prices)).toBe(true);
   });
 
   it('returns true for unknown model', () => {

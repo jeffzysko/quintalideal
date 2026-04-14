@@ -148,7 +148,7 @@ const SPACE_MAX_COMPRIMENTO: Record<QuizInputV2['space_bucket'], number> = {
 };
 
 const MODEL_MIN_SPACE: Record<string, number> = {
-  'Prainha': 5.0, 'Supreme': 7.0, 'Versátil': 4.0,
+  'Tortuga': 5.0, 'Atalaia': 7.0, 'Farol da Barra': 4.0,
 };
 
 // ── CAMADA A: Hard Filter ──
@@ -161,7 +161,7 @@ export function filterModels(models: PoolModelData[], input: QuizInputV2): PoolM
     const minSpace = MODEL_MIN_SPACE[m.nome_modelo];
     if (minSpace && minSpace > maxSpace) return false;
 
-    if (input.space_bucket === 'ate_3m' && input.pool_preference === 'prainha' && m.nome_modelo === 'Prainha') {
+    if (input.space_bucket === 'ate_3m' && input.pool_preference === 'prainha' && m.nome_modelo === 'Tortuga') {
       return false;
     }
 
@@ -199,11 +199,11 @@ function scoreBudget(model: PoolModelData, input: QuizInputV2): number {
 }
 
 const USAGE_AFFINITY: Record<QuizInputV2['usage_profile'], string[]> = {
-  'familia_grande': ['Retangular', 'Elegance', 'Confort', 'Prainha'],
-  'familia_pequena': ['Retangular', 'Confort', 'Family', 'Elegance'],
-  'amigos': ['Retangular Plus', 'Confort', 'Supreme', 'Retangular'],
-  'casal': ['Compacta Premium', 'Family', 'Retangular', 'Elegance'],
-  'premium': ['Supreme', 'Elegance', 'Compacta Premium', 'Retangular'],
+  'familia_grande': ['Tradicional', 'Bonaire', 'Tropical', 'Tortuga'],
+  'familia_pequena': ['Tradicional', 'Tropical', 'Italiana', 'Bonaire'],
+  'amigos': ['Cancún', 'Tropical', 'Atalaia', 'Tradicional'],
+  'casal': ['Navagio', 'Italiana', 'Tradicional', 'Bonaire'],
+  'premium': ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'],
 };
 
 function scoreUsage(model: PoolModelData, input: QuizInputV2): number {
@@ -213,9 +213,9 @@ function scoreUsage(model: PoolModelData, input: QuizInputV2): number {
 }
 
 const PREFERENCE_AFFINITY: Record<QuizInputV2['pool_preference'], string[]> = {
-  'prainha': ['Prainha', 'Supreme', 'Retangular', 'Versátil'],
-  'spa': ['Compacta Premium', 'Retangular', 'Supreme', 'Elegance'],
-  'classica': ['Family', 'Confort', 'Retangular Plus', 'Retangular', 'Versátil'],
+  'prainha': ['Tortuga', 'Atalaia', 'Tradicional', 'Farol da Barra'],
+  'spa': ['Navagio', 'Tradicional', 'Atalaia', 'Bonaire'],
+  'classica': ['Italiana', 'Tropical', 'Cancún', 'Tradicional', 'Farol da Barra'],
   'indeciso': [],
 };
 
@@ -231,10 +231,10 @@ function scorePreference(model: PoolModelData, input: QuizInputV2): number {
 // ── NEW: Objective Score (weight 12) ──
 
 const OBJECTIVE_AFFINITY: Record<QuizInputV2['objective_main'], string[]> = {
-  'valorizar': ['Supreme', 'Elegance', 'Compacta Premium', 'Retangular'],
-  'familia': ['Retangular', 'Elegance', 'Confort', 'Prainha', 'Retangular Plus'],
-  'social': ['Retangular Plus', 'Confort', 'Supreme', 'Retangular', 'Prainha'],
-  'relaxar': ['Compacta Premium', 'Family', 'Retangular', 'Elegance'],
+  'valorizar': ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'],
+  'familia': ['Tradicional', 'Bonaire', 'Tropical', 'Tortuga', 'Cancún'],
+  'social': ['Cancún', 'Tropical', 'Atalaia', 'Tradicional', 'Tortuga'],
+  'relaxar': ['Navagio', 'Italiana', 'Tradicional', 'Bonaire'],
 };
 
 function scoreObjective(model: PoolModelData, input: QuizInputV2): number {
@@ -264,11 +264,11 @@ function scoreIntent(model: PoolModelData, input: QuizInputV2): number {
 }
 
 const PROFILE_AFFINITY: Record<CustomerProfile, string[]> = {
-  'RELAXADOR': ['Compacta Premium', 'Retangular', 'Elegance'],
-  'FAMILIA': ['Retangular', 'Elegance', 'Confort', 'Prainha'],
-  'SOCIAL': ['Retangular Plus', 'Confort', 'Supreme', 'Retangular'],
-  'PREMIUM': ['Supreme', 'Elegance', 'Compacta Premium', 'Retangular'],
-  'COMPACTO': ['Family', 'Compacta Premium', 'Confort', 'Retangular Plus'],
+  'RELAXADOR': ['Navagio', 'Tradicional', 'Bonaire'],
+  'FAMILIA': ['Tradicional', 'Bonaire', 'Tropical', 'Tortuga'],
+  'SOCIAL': ['Cancún', 'Tropical', 'Atalaia', 'Tradicional'],
+  'PREMIUM': ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'],
+  'COMPACTO': ['Italiana', 'Navagio', 'Tropical', 'Cancún'],
 };
 
 function profileBonus(model: PoolModelData, profile: CustomerProfile): number {
@@ -286,14 +286,14 @@ function specialBonus(model: PoolModelData, input: QuizInputV2): number {
   if (
     (input.space_bucket === 'ate_3m' || input.space_bucket === '3_5m') &&
     input.objective_main === 'relaxar' &&
-    model.nome_modelo === 'Compacta Premium'
+    model.nome_modelo === 'Navagio'
   ) bonus += 20;
 
   // Rule 3: Premium grande
   if (
     input.space_bucket === '7m_plus' &&
     input.budget_range === '30_50k' &&
-    model.nome_modelo === 'Supreme'
+    model.nome_modelo === 'Atalaia'
   ) bonus += 15;
 
   // Rule 4: Sofisticação compacta
@@ -301,19 +301,19 @@ function specialBonus(model: PoolModelData, input: QuizInputV2): number {
     input.space_bucket === '3_5m' &&
     input.objective_main === 'valorizar' &&
     input.budget_range !== 'ate_18k' &&
-    ['Compacta Premium', 'Elegance'].includes(model.nome_modelo)
+    ['Navagio', 'Bonaire'].includes(model.nome_modelo)
   ) bonus += 10;
 
   // Rule 5: Família orçamento controlado
   if (
     (input.usage_profile === 'familia_pequena' || input.usage_profile === 'familia_grande') &&
     (input.budget_range === 'ate_18k' || input.budget_range === '18_30k') &&
-    ['Retangular', 'Confort', 'Family', 'Retangular Plus'].includes(model.nome_modelo)
+    ['Tradicional', 'Tropical', 'Italiana', 'Cancún'].includes(model.nome_modelo)
   ) bonus += 8;
 
   // Rule 6: Valorizar — boost premium models
   if (input.objective_main === 'valorizar') {
-    const premiumModels = ['Supreme', 'Elegance', 'Compacta Premium', 'Retangular'];
+    const premiumModels = ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'];
     if (premiumModels.includes(model.nome_modelo)) bonus += 10;
     if (model.possui_spa || model.possui_prainha) bonus += 5;
   }
@@ -384,53 +384,53 @@ export function getFitLevelEmoji(fitLevel: FitLevel): string {
 // ── Size Recommendation ──
 
 const MODEL_SIZES: Record<string, { space: string; sizes: string[] }[]> = {
-  'Prainha': [
+  'Tortuga': [
     { space: '5_7m', sizes: ['5,00 x 2,30m', '7,00 x 3,30m'] },
     { space: '7m_plus', sizes: ['7,00 x 3,30m', '9,00 x 3,30m', '10,00 x 3,30m'] },
   ],
-  'Retangular': [
+  'Tradicional': [
     { space: 'ate_3m', sizes: ['3,50 x 2,00m'] },
     { space: '3_5m', sizes: ['3,50 x 2,00m', '5,00 x 2,50m'] },
     { space: '5_7m', sizes: ['5,00 x 2,50m', '6,00 x 2,50m', '7,00 x 2,75m'] },
     { space: '7m_plus', sizes: ['7,00 x 2,75m', '8,00 x 2,75m', '9,00 x 2,75m'] },
   ],
-  'Family': [
+  'Italiana': [
     { space: 'ate_3m', sizes: ['2,50 x 1,80m', '3,00 x 2,00m'] },
     { space: '3_5m', sizes: ['3,00 x 2,00m', '4,00 x 2,40m'] },
     { space: '5_7m', sizes: ['5,00 x 2,50m', '6,00 x 2,80m'] },
     { space: '7m_plus', sizes: ['6,00 x 2,80m', '8,00 x 2,80m'] },
   ],
-  'Compacta Premium': [
+  'Navagio': [
     { space: 'ate_3m', sizes: ['3,25 x 2,25m'] },
     { space: '3_5m', sizes: ['3,25 x 2,25m'] },
   ],
-  'Borda Infinita': [
+  'Nassau': [
     { space: '3_5m', sizes: ['4,00 x 3,00m'] },
     { space: '5_7m', sizes: ['4,00 x 3,00m'] },
     { space: '7m_plus', sizes: ['4,00 x 3,00m'] },
   ],
-  'Elegance': [
+  'Bonaire': [
     { space: 'ate_3m', sizes: ['3,00 x 2,00m'] },
     { space: '3_5m', sizes: ['3,00 x 2,00m', '4,00 x 2,50m'] },
     { space: '5_7m', sizes: ['5,00 x 2,50m', '6,00 x 3,00m'] },
     { space: '7m_plus', sizes: ['6,00 x 3,00m', '8,00 x 3,00m'] },
   ],
-  'Retangular Plus': [
+  'Cancún': [
     { space: 'ate_3m', sizes: ['3,00 x 2,00m'] },
     { space: '3_5m', sizes: ['3,00 x 2,00m', '4,00 x 2,50m'] },
     { space: '5_7m', sizes: ['5,00 x 2,50m', '6,00 x 3,00m'] },
     { space: '7m_plus', sizes: ['6,00 x 3,00m', '8,00 x 3,50m', '10,00 x 3,50m'] },
   ],
-  'Confort': [
+  'Tropical': [
     { space: 'ate_3m', sizes: ['3,50 x 2,00m'] },
     { space: '3_5m', sizes: ['3,50 x 2,00m', '4,50 x 2,40m'] },
     { space: '5_7m', sizes: ['5,00 x 2,50m', '6,00 x 2,60m'] },
     { space: '7m_plus', sizes: ['6,00 x 2,60m', '8,00 x 2,80m', '10,00 x 2,80m'] },
   ],
-  'Supreme': [
+  'Atalaia': [
     { space: '7m_plus', sizes: ['7,00 x 4,00m', '9,00 x 4,00m'] },
   ],
-  'Versátil': [
+  'Farol da Barra': [
     { space: '3_5m', sizes: ['4,00 x 2,50m'] },
     { space: '5_7m', sizes: ['5,00 x 2,50m', '6,00 x 3,00m'] },
     { space: '7m_plus', sizes: ['6,00 x 3,00m', '8,00 x 3,50m', '10,00 x 3,50m'] },
