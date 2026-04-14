@@ -571,8 +571,8 @@ export default function NewProposal() {
                       )}>
                         {complete ? <Check className="w-3.5 h-3.5" /> : idx + 1}
                       </div>
-                      <span className={cn('text-[9px] leading-tight truncate max-w-[52px]', isActive ? 'text-primary font-medium' : 'text-muted-foreground')}>
-                        {section.label}
+                      <span className={cn('text-[9px] leading-tight', isActive ? 'text-primary font-medium' : 'text-muted-foreground')}>
+                        {section.mobileLabel}
                       </span>
                     </button>
                   );
