@@ -57,12 +57,12 @@ export interface ProposalFormData {
 }
 
 const SECTIONS = [
-  { id: 'lead', label: 'Lead', icon: Link2 },
-  { id: 'client', label: 'Cliente', icon: User },
-  { id: 'items', label: 'Itens', icon: Package },
-  { id: 'payment', label: 'Pagamento', icon: CreditCard },
-  { id: 'video', label: 'Vídeo', icon: Video },
-  { id: 'observations', label: 'Observações', icon: MessageSquare },
+  { id: 'lead', label: 'Lead', mobileLabel: 'Lead', icon: Link2 },
+  { id: 'client', label: 'Cliente', mobileLabel: 'Cliente', icon: User },
+  { id: 'items', label: 'Itens', mobileLabel: 'Itens', icon: Package },
+  { id: 'payment', label: 'Pagamento', mobileLabel: 'Pgto', icon: CreditCard },
+  { id: 'video', label: 'Vídeo', mobileLabel: 'Vídeo', icon: Video },
+  { id: 'observations', label: 'Observações', mobileLabel: 'Obs.', icon: MessageSquare },
 ];
 
 const initialForm: ProposalFormData = {
@@ -465,25 +465,24 @@ export default function NewProposal() {
   };
 
   const actionButtons = (
-    <div className="flex items-center gap-1">
-      <Button variant="ghost" size="icon" onClick={() => setLoadTemplateOpen(true)} className="h-9 w-9 text-muted-foreground" title="Carregar template">
+    <div className="flex items-center gap-0.5">
+      <Button variant="ghost" size="icon" onClick={() => setLoadTemplateOpen(true)} className="h-8 w-8 sm:h-9 sm:w-9 text-muted-foreground" title="Carregar template">
         <BookOpen className="w-4 h-4" />
       </Button>
       {form.client_name.trim() && (
-        <Button variant="ghost" size="icon" onClick={() => setSaveTemplateOpen(true)} className="h-9 w-9 text-muted-foreground" title="Salvar como template">
+        <Button variant="ghost" size="icon" onClick={() => setSaveTemplateOpen(true)} className="h-8 w-8 sm:h-9 sm:w-9 text-muted-foreground" title="Salvar como template">
           <Sparkles className="w-4 h-4" />
         </Button>
       )}
-      <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-9 w-9 text-muted-foreground" title="Cancelar">
+      <Button variant="ghost" size="icon" onClick={() => navigate(-1)} className="h-8 w-8 sm:h-9 sm:w-9 text-muted-foreground" title="Cancelar">
         <X className="w-4 h-4" />
       </Button>
-      <Button variant="outline" size="sm" onClick={handleSaveDraft} disabled={saving} className="h-9 px-2.5 sm:px-3">
+      <Button variant="outline" size="icon" onClick={handleSaveDraft} disabled={saving} className="h-8 w-8 sm:h-9 sm:w-9" title="Salvar rascunho">
         <Save className="w-4 h-4" />
-        <span className="hidden sm:inline ml-1">Rascunho</span>
       </Button>
-      <Button size="sm" onClick={() => handleSubmit('enviada')} disabled={saving} className="h-9 px-3 sm:px-4 gap-1.5">
+      <Button size="sm" onClick={() => handleSubmit('enviada')} disabled={saving} className="h-8 sm:h-9 px-2.5 sm:px-4 gap-1">
         <Link2 className="w-4 h-4" />
-        {!isMobile && <span>{isEditMode ? 'Salvar e Enviar' : 'Criar e Enviar'}</span>}
+        <span className="hidden sm:inline">{isEditMode ? 'Salvar e Enviar' : 'Criar e Enviar'}</span>
       </Button>
     </div>
   );
@@ -572,8 +571,8 @@ export default function NewProposal() {
                       )}>
                         {complete ? <Check className="w-3.5 h-3.5" /> : idx + 1}
                       </div>
-                      <span className={cn('text-[9px] leading-tight truncate max-w-[52px]', isActive ? 'text-primary font-medium' : 'text-muted-foreground')}>
-                        {section.label}
+                      <span className={cn('text-[9px] leading-tight', isActive ? 'text-primary font-medium' : 'text-muted-foreground')}>
+                        {section.mobileLabel}
                       </span>
                     </button>
                   );

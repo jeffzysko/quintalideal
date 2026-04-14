@@ -324,42 +324,44 @@ export default function ProposalsList() {
                     className="shadow-sm hover:shadow-md transition-all cursor-pointer border-border/50 active:scale-[0.98] press-scale"
                     onClick={() => navigate(`/propostas/${p.id}`)}
                   >
-                    <CardContent className="flex items-center gap-3 sm:gap-4 py-3.5 sm:py-4 px-4 sm:px-5">
-                      <div className="w-10 h-10 rounded-xl icon-bg-blue flex items-center justify-center shrink-0">
-                        <FileText className="w-5 h-5 text-primary" />
+                    <CardContent className="flex items-center gap-2.5 sm:gap-4 py-3.5 sm:py-4 px-3 sm:px-5">
+                      <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl icon-bg-blue flex items-center justify-center shrink-0">
+                        <FileText className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-0.5">
+                        <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-0.5">
                           <p className="font-medium text-sm text-foreground truncate">{p.client_name}</p>
                           <Badge variant="outline" className={cn('text-[10px] shrink-0 border-0', status.classes)}>
                             {status.label}
                           </Badge>
                         </div>
-                        <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-2 sm:gap-3 text-xs text-muted-foreground">
                           <span className="flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {format(new Date(p.created_at), "dd MMM yyyy", { locale: ptBR })}
                           </span>
                           <span className="font-semibold text-foreground">{formatCurrency(p.total)}</span>
-                          {p.lead_id ? (
-                            <span className="flex items-center gap-0.5 text-primary">
-                              <UserCheck className="w-3 h-3" />
-                              <span className="text-[10px]">Lead</span>
-                            </span>
-                          ) : (
-                            <span className="flex items-center gap-0.5 text-muted-foreground/60">
-                              <UserX className="w-3 h-3" />
-                              <span className="text-[10px]">Avulsa</span>
-                            </span>
-                          )}
+                          <span className="hidden xs:flex items-center gap-0.5">
+                            {p.lead_id ? (
+                              <>
+                                <UserCheck className="w-3 h-3 text-primary" />
+                                <span className="text-[10px] text-primary">Lead</span>
+                              </>
+                            ) : (
+                              <>
+                                <UserX className="w-3 h-3 text-muted-foreground/60" />
+                                <span className="text-[10px] text-muted-foreground/60">Avulsa</span>
+                              </>
+                            )}
+                          </span>
                         </div>
                       </div>
                       {/* Action buttons */}
-                      <div className="flex items-center gap-0.5 shrink-0">
+                      <div className="flex items-center gap-0 shrink-0">
                         {canCopyLink && (
                           <button
                             onClick={(e) => copyLink(e, p.public_token)}
-                            className="p-2.5 rounded-xl hover:bg-accent text-muted-foreground hover:text-foreground transition-colors active:scale-[0.95] min-w-[40px] min-h-[40px] flex items-center justify-center"
+                            className="p-2 rounded-xl hover:bg-accent text-muted-foreground hover:text-foreground transition-colors active:scale-[0.95] min-w-[36px] min-h-[36px] sm:min-w-[40px] sm:min-h-[40px] flex items-center justify-center"
                             title="Copiar link público"
                           >
                             <Link2 className="w-4 h-4" />
@@ -367,12 +369,12 @@ export default function ProposalsList() {
                         )}
                         <button
                           onClick={(e) => editProposal(e, p.id)}
-                          className="p-2.5 rounded-xl hover:bg-accent text-muted-foreground hover:text-foreground transition-colors active:scale-[0.95] min-w-[40px] min-h-[40px] flex items-center justify-center"
+                          className="p-2 rounded-xl hover:bg-accent text-muted-foreground hover:text-foreground transition-colors active:scale-[0.95] min-w-[36px] min-h-[36px] sm:min-w-[40px] sm:min-h-[40px] flex items-center justify-center"
                           title="Editar proposta"
                         >
                           <Pencil className="w-4 h-4" />
                         </button>
-                        <ChevronRight className="w-4 h-4 text-muted-foreground ml-0.5" />
+                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
                       </div>
                     </CardContent>
                   </Card>
