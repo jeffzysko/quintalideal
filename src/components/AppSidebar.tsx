@@ -1,6 +1,7 @@
 import {
   Home,
   Settings,
+  MessageCircle,
   HelpCircle,
   Bell,
   Workflow,
