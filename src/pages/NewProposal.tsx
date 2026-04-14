@@ -57,12 +57,12 @@ export interface ProposalFormData {
 }
 
 const SECTIONS = [
-  { id: 'lead', label: 'Lead', icon: Link2 },
-  { id: 'client', label: 'Cliente', icon: User },
-  { id: 'items', label: 'Itens', icon: Package },
-  { id: 'payment', label: 'Pagamento', icon: CreditCard },
-  { id: 'video', label: 'Vídeo', icon: Video },
-  { id: 'observations', label: 'Observações', icon: MessageSquare },
+  { id: 'lead', label: 'Lead', mobileLabel: 'Lead', icon: Link2 },
+  { id: 'client', label: 'Cliente', mobileLabel: 'Cliente', icon: User },
+  { id: 'items', label: 'Itens', mobileLabel: 'Itens', icon: Package },
+  { id: 'payment', label: 'Pagamento', mobileLabel: 'Pgto', icon: CreditCard },
+  { id: 'video', label: 'Vídeo', mobileLabel: 'Vídeo', icon: Video },
+  { id: 'observations', label: 'Observações', mobileLabel: 'Obs.', icon: MessageSquare },
 ];
 
 const initialForm: ProposalFormData = {
