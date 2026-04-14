@@ -1,7 +1,7 @@
 // Pool model photos — real product images
 import tradicionalImg from '@/assets/pools/tradicional.jpg';
 import italianaImg from '@/assets/pools/italiana.jpg';
-import nassauImg from '@/assets/pools/nassau.jpg';
+import nassauImg from '@/assets/pools/nassau.png';
 import navagioImg from '@/assets/pools/navagio.webp';
 import tortugaImg from '@/assets/pools/tortuga.jpg';
 import bonaireImg from '@/assets/pools/bonaire.png';
