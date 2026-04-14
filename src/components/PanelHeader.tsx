@@ -46,10 +46,8 @@ export function PanelHeader({ title, children }: PanelHeaderProps) {
           <div className="h-14 md:h-16 flex items-center justify-between px-3 sm:px-4 md:px-6">
             {/* Left: Logo + title */}
             <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-              <motion.img
-                src={logoQuintalIdeal}
-                alt="Quintal Ideal"
-                className="h-7 md:h-9 shrink-0"
+              <motion.div
+                className="shrink-0"
                 style={{ filter: 'drop-shadow(0 0 8px hsl(var(--primary) / 0.4))' }}
                 animate={{
                   filter: [
@@ -59,7 +57,13 @@ export function PanelHeader({ title, children }: PanelHeaderProps) {
                   ],
                 }}
                 transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-              />
+              >
+                <img
+                  src={logoQuintalIdeal}
+                  alt="Quintal Ideal"
+                  className="h-7 md:h-9 w-auto dark:brightness-0 dark:invert"
+                />
+              </motion.div>
               {title && (
                 <>
                   <div className="h-5 w-px bg-border/40 hidden sm:block" />
