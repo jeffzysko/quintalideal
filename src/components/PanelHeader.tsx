@@ -43,11 +43,11 @@ export function PanelHeader({ title, children }: PanelHeaderProps) {
             boxShadow: '0 8px 32px -8px hsl(var(--primary) / 0.08), 0 4px 16px -4px rgba(0,0,0,0.1), inset 0 1px 0 0 hsl(0 0% 100% / 0.06)',
           }}
         >
-          <div className="h-14 md:h-16 flex items-center justify-between px-3 sm:px-4 md:px-6">
+          <div className="h-14 md:h-16 flex items-center justify-between px-3 sm:px-4 md:px-6 gap-2">
             {/* Left: Logo + title */}
-            <div className="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div className="flex items-center gap-2 sm:gap-3 min-w-0 shrink-0">
               <motion.div
-                className="shrink-0"
+                className="shrink-0 hidden xs:block"
                 style={{ filter: 'drop-shadow(0 0 8px hsl(var(--primary) / 0.4))' }}
                 animate={{
                   filter: [
@@ -61,21 +61,18 @@ export function PanelHeader({ title, children }: PanelHeaderProps) {
                 <img
                   src={logoQuintalIdeal}
                   alt="Quintal Ideal"
-                  className="h-7 md:h-9 w-auto dark:brightness-0 dark:invert"
+                  className="h-6 sm:h-7 md:h-9 w-auto dark:brightness-0 dark:invert"
                 />
               </motion.div>
               {title && (
-                <>
-                  <div className="h-5 w-px bg-border/40 hidden sm:block" />
-                  <span className="text-sm font-semibold text-foreground tracking-tight truncate hidden sm:block">
-                    {title}
-                  </span>
-                </>
+                <span className="text-sm font-semibold text-foreground tracking-tight truncate">
+                  {title}
+                </span>
               )}
             </div>
 
             {/* Right: Actions */}
-            <nav className="flex items-center gap-0.5 sm:gap-1">
+            <nav className="flex items-center gap-0.5 shrink-0">
               {children}
             </nav>
           </div>
