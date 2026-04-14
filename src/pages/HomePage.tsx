@@ -160,7 +160,7 @@ export default function HomePage() {
             transition={{ delay: 0.55 }}
             className="text-center text-[13px] sm:text-sm md:text-base text-white/55 mb-6 sm:mb-8 max-w-xs mx-auto leading-relaxed"
           >
-            Digite sua cidade para encontrar a unidade Quintal Ideal mais próxima e fazer o quiz do seu quintal.
+            Digite sua cidade para encontrar a unidade parceira mais próxima para fazer o quiz do seu quintal.
           </m.p>
 
           {/* City search */}
