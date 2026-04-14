@@ -49,10 +49,8 @@ export function PageHeader({ title, subtitle, icon, fallbackPath, rightSlot }: P
               <div className="flex items-center gap-2 md:gap-3 min-w-0">
                 <BackButton fallback={fallbackPath} />
 
-                <motion.img
-                  src={logoQuintalIdeal}
-                  alt="Quintal Ideal"
-                  className="h-7 md:h-9 shrink-0 hidden sm:block dark:brightness-0 dark:invert"
+                <motion.div
+                  className="hidden sm:block shrink-0"
                   style={{ filter: 'drop-shadow(0 0 8px hsl(var(--primary) / 0.4))' }}
                   animate={{
                     filter: [
@@ -62,7 +60,13 @@ export function PageHeader({ title, subtitle, icon, fallbackPath, rightSlot }: P
                     ],
                   }}
                   transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                />
+                >
+                  <img
+                    src={logoQuintalIdeal}
+                    alt="Quintal Ideal"
+                    className="h-7 md:h-9 w-auto dark:brightness-0 dark:invert"
+                  />
+                </motion.div>
 
                 <div className="h-5 w-px bg-border/40 hidden sm:block" />
 
