@@ -206,7 +206,7 @@ export default function ResetPassword() {
           animate={{ opacity: 1, y: 0 }}
           className="relative z-10 w-full max-w-sm mx-4 text-center"
         >
-          <img src={logoQuintalIdeal} alt="Quintal Ideal" className="mx-auto w-40 mb-6 drop-shadow-lg brightness-0 invert" />
+          <img src={logoQuintalIdeal} alt="Quintal Ideal" className="mx-auto w-40 mb-6 drop-shadow-lg dark:brightness-0 dark:invert" />
           <div className="glass-card rounded-2xl p-6">
             <AlertCircle className="w-10 h-10 text-destructive mx-auto mb-3" />
             <h1 className="text-lg font-bold text-foreground mb-2">Link inválido ou expirado</h1>
@@ -241,7 +241,7 @@ export default function ResetPassword() {
         className="relative z-10 w-full max-w-sm mx-4"
       >
         <motion.div className="text-center mb-8">
-          <img src={logoQuintalIdeal} alt="Quintal Ideal" className="mx-auto w-48 mb-3 drop-shadow-lg brightness-0 invert" />
+          <img src={logoQuintalIdeal} alt="Quintal Ideal" className="mx-auto w-48 mb-3 drop-shadow-lg dark:brightness-0 dark:invert" />
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: '4rem' }}
