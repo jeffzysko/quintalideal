@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Mail, ArrowLeft, ArrowRight, CheckCircle2 } from 'lucide-react';
-import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
+import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 
 export default function ForgotPassword() {
   const navigate = useNavigate();
@@ -79,7 +79,7 @@ export default function ForgotPassword() {
         className="relative z-10 w-full max-w-sm mx-4"
       >
         <motion.div className="text-center mb-8">
-          <img src={logoQuintalIdeal} alt="Quintal Ideal" className="mx-auto w-36 mb-3 drop-shadow-lg" />
+          <img src={logoQuintalIdeal} alt="Quintal Ideal" className="mx-auto w-48 mb-3 drop-shadow-lg brightness-0 invert" />
         </motion.div>
 
         <motion.div

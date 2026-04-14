@@ -4,7 +4,7 @@ import { Download, Check, Share, Plus, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { PageTransition } from '@/components/PageTransition';
-import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
+import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 
 function isIOS() {
   return /iPad|iPhone|iPod/.test(navigator.userAgent);
@@ -79,7 +79,7 @@ export default function InstallPage() {
             <img
               src={logoQuintalIdeal}
               alt="Quintal Ideal"
-              className="w-20 h-20 mx-auto mb-4 rounded-2xl shadow-lg"
+              className="w-44 mx-auto mb-4"
             />
             <h1 className="text-2xl font-extrabold tracking-tight text-foreground mb-2">
               Instalar Quintal Ideal

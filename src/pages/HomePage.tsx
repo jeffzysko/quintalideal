@@ -4,7 +4,7 @@ import { LazyMotion, domAnimation, m, AnimatePresence } from 'framer-motion';
 import { Search, MapPin, Droplets, Shield, Clock, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/lib/supabase';
-import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
+import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 import heroPool from '@/assets/hero-pool.webp';
 import { cidades, type CityOption } from '@/lib/cities';
 
@@ -139,7 +139,7 @@ export default function HomePage() {
             initial={{ opacity: 0, scale: 0.85 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="mx-auto mb-5 sm:mb-6 w-28 sm:w-36 md:w-44 h-auto drop-shadow-2xl"
+            className="mx-auto mb-5 sm:mb-6 w-36 sm:w-44 md:w-52 h-auto drop-shadow-2xl brightness-0 invert"
           />
 
           <m.h1

@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
-import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
+import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 
 import {
   Sidebar,
@@ -151,14 +151,9 @@ export function AppSidebar() {
         <div className="flex items-center gap-2 overflow-hidden">
           <img
             src={logoQuintalIdeal}
-            alt="Logo"
-            className="h-8 w-8 shrink-0 object-contain"
+            alt="Quintal Ideal"
+            className="h-8 shrink-0 object-contain brightness-0 invert"
           />
-          {!collapsed && (
-             <span className="text-sm font-bold tracking-tight text-sidebar-foreground truncate">
-              Quintal Ideal
-            </span>
-          )}
         </div>
       </SidebarHeader>
 

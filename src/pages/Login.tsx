@@ -6,7 +6,7 @@ import { Label } from '@/components/ui/label';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Lock, Mail, ArrowRight, Droplets, Shield, Eye, EyeOff } from 'lucide-react';
-import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
+import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 
 export default function Login() {
   const { signIn } = useAuth();
@@ -75,7 +75,7 @@ export default function Login() {
           <motion.img
             src={logoQuintalIdeal}
             alt="Quintal Ideal"
-            className="mx-auto w-36 mb-3 drop-shadow-lg"
+            className="mx-auto w-48 mb-3 drop-shadow-lg brightness-0 invert"
             animate={{ y: [0, -4, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
           />

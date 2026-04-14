@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Sparkles, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
-import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
+import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 import { getYardClassification } from '@/lib/ranking';
 import { getPoolImage } from '@/lib/poolImages';
 import { type Lang, t } from '@/lib/i18n';
@@ -123,7 +123,7 @@ export function ResultScreen({ score, poolName, poolDescription, recommendedSize
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.7 }}
           transition={{ delay: 0.1 }}
-          className="mx-auto w-20 mb-6"
+          className="mx-auto w-36 mb-6 brightness-0 invert"
           loading="lazy"
         />
 

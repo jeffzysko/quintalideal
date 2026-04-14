@@ -5,7 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Trophy, MapPin, Droplets, Share2, Star, ArrowLeft, Sparkles, Crown, Flame } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
+import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 import { useNavigate, Link } from 'react-router-dom';
 import { PageTransition } from '@/components/PageTransition';
 import { toast } from 'sonner';
@@ -124,7 +124,7 @@ export default function RankingQuintais() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 0.8, scale: 1 }}
               transition={{ delay: 0.1 }}
-              className="mx-auto w-12 md:w-14 mb-4"
+              className="mx-auto w-28 md:w-36 mb-4 brightness-0 invert"
             />
 
             <motion.div
