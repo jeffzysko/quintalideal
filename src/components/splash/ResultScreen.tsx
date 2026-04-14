@@ -123,7 +123,7 @@ export function ResultScreen({ score, poolName, poolDescription, recommendedSize
           initial={{ opacity: 0 }}
           animate={{ opacity: 0.7 }}
           transition={{ delay: 0.1 }}
-          className="mx-auto w-20 mb-6"
+          className="mx-auto w-36 mb-6 brightness-0 invert"
           loading="lazy"
         />
 
