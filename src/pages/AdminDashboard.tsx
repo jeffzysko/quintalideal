@@ -449,24 +449,37 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-background pb-bottomnav">
       <AdminWelcomeWizard />
       <PanelHeader title="Fábrica">
-        {[
-          { icon: CalendarClock, label: 'Hoje', action: () => navigate('/hoje') },
-          { icon: Target, label: 'Radar', action: () => navigate('/admin/radar') },
-          { icon: MapPin, label: 'Mapa', action: () => navigate('/mapa') },
-          { icon: Download, label: 'CSV', action: exportCSV },
-        ].map((item) => (
-          <button
-            key={item.label}
-            onClick={item.action}
-            className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors min-h-[44px] min-w-[44px]"
-            aria-label={item.label}
-          >
-            <item.icon className="w-4 h-4" />
-            <span className="hidden sm:inline">{item.label}</span>
-          </button>
-        ))}
+        <button
+          onClick={() => navigate('/hoje')}
+          className="inline-flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors min-h-[44px] min-w-[44px]"
+          aria-label="Hoje"
+        >
+          <CalendarClock className="w-4 h-4" />
+        </button>
+        {/* Hide secondary actions on very small screens */}
+        <button
+          onClick={() => navigate('/admin/radar')}
+          className="hidden xs:inline-flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors min-h-[44px] min-w-[44px]"
+          aria-label="Radar"
+        >
+          <Target className="w-4 h-4" />
+        </button>
+        <button
+          onClick={() => navigate('/mapa')}
+          className="hidden xs:inline-flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors min-h-[44px] min-w-[44px]"
+          aria-label="Mapa"
+        >
+          <MapPin className="w-4 h-4" />
+        </button>
+        <button
+          onClick={exportCSV}
+          className="hidden xs:inline-flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors min-h-[44px] min-w-[44px]"
+          aria-label="CSV"
+        >
+          <Download className="w-4 h-4" />
+        </button>
         
-        <div className="h-5 w-px bg-border/40 mx-0.5 sm:mx-1" />
+        <div className="h-5 w-px bg-border/40 mx-0.5 hidden xs:block" />
         <NotificationBell />
         <UserAvatarMenu />
       </PanelHeader>
