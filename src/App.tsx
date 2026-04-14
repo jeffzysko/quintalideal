@@ -203,7 +203,7 @@ function AppRoutes() {
   return (
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem disableTransitionOnChange>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
           <AuthProvider>
             <TooltipProvider>
               <Toaster />
