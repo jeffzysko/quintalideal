@@ -43,11 +43,11 @@ export function PanelHeader({ title, children }: PanelHeaderProps) {
             boxShadow: '0 8px 32px -8px hsl(var(--primary) / 0.08), 0 4px 16px -4px rgba(0,0,0,0.1), inset 0 1px 0 0 hsl(0 0% 100% / 0.06)',
           }}
         >
-          <div className="h-14 md:h-16 flex items-center justify-between px-3 sm:px-4 md:px-6 gap-2">
+          <div className="h-14 md:h-16 flex items-center justify-between px-2.5 sm:px-4 md:px-6 gap-1.5 sm:gap-2">
             {/* Left: Logo + title */}
-            <div className="flex items-center gap-2 sm:gap-3 min-w-0 shrink-0">
+            <div className="flex items-center gap-1.5 sm:gap-3 min-w-0">
               <motion.div
-                className="shrink-0 hidden xs:block"
+                className="shrink-0 hidden sm:block"
                 style={{ filter: 'drop-shadow(0 0 8px hsl(var(--primary) / 0.4))' }}
                 animate={{
                   filter: [
@@ -72,7 +72,7 @@ export function PanelHeader({ title, children }: PanelHeaderProps) {
             </div>
 
             {/* Right: Actions */}
-            <nav className="flex items-center gap-0.5 shrink-0">
+            <nav className="flex items-center gap-0.5 shrink-0 overflow-x-auto scrollbar-none">
               {children}
             </nav>
           </div>
