@@ -94,7 +94,7 @@ Deno.serve(async (req) => {
         email: "teste@exemplo.com",
         cidade: "Cidade Teste",
         pontuacao_quintal: 75,
-        modelo_recomendado: "Retangular Plus",
+        modelo_recomendado: "Cancún",
         created_at: new Date().toISOString(),
       },
       franquia: {

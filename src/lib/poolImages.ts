@@ -111,16 +111,16 @@ const compactaPremiumSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0
 </svg>`;
 
 export const poolImages: Record<string, string> = {
-  'Retangular': svgToDataUrl(retangularSvg),
-  'Borda Infinita': svgToDataUrl(bordaInfinitaSvg),
-  'Prainha': svgToDataUrl(prainhaSvg),
-  'Elegance': svgToDataUrl(eleganceSvg),
-  'Retangular Plus': svgToDataUrl(retangularPlusSvg),
-  'Supreme': svgToDataUrl(supremeSvg),
-  'Versátil': svgToDataUrl(versatilSvg),
-  'Confort': svgToDataUrl(confortSvg),
-  'Family': svgToDataUrl(familySvg),
-  'Compacta Premium': svgToDataUrl(compactaPremiumSvg),
+  'Tradicional': svgToDataUrl(retangularSvg),
+  'Nassau': svgToDataUrl(bordaInfinitaSvg),
+  'Tortuga': svgToDataUrl(prainhaSvg),
+  'Bonaire': svgToDataUrl(eleganceSvg),
+  'Cancún': svgToDataUrl(retangularPlusSvg),
+  'Atalaia': svgToDataUrl(supremeSvg),
+  'Farol da Barra': svgToDataUrl(versatilSvg),
+  'Tropical': svgToDataUrl(confortSvg),
+  'Italiana': svgToDataUrl(familySvg),
+  'Navagio': svgToDataUrl(compactaPremiumSvg),
 };
 
 // --- Feature illustrations for quiz preference step ---

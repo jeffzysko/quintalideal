@@ -199,11 +199,11 @@ function scoreBudget(model: PoolModelData, input: QuizInputV2): number {
 }
 
 const USAGE_AFFINITY: Record<QuizInputV2['usage_profile'], string[]> = {
-  'familia_grande': ['Retangular', 'Elegance', 'Confort', 'Prainha'],
-  'familia_pequena': ['Retangular', 'Confort', 'Family', 'Elegance'],
-  'amigos': ['Retangular Plus', 'Confort', 'Supreme', 'Retangular'],
-  'casal': ['Compacta Premium', 'Family', 'Retangular', 'Elegance'],
-  'premium': ['Supreme', 'Elegance', 'Compacta Premium', 'Retangular'],
+  'familia_grande': ['Tradicional', 'Bonaire', 'Tropical', 'Tortuga'],
+  'familia_pequena': ['Tradicional', 'Tropical', 'Italiana', 'Bonaire'],
+  'amigos': ['Cancún', 'Tropical', 'Atalaia', 'Tradicional'],
+  'casal': ['Navagio', 'Italiana', 'Tradicional', 'Bonaire'],
+  'premium': ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'],
 };
 
 function scoreUsage(model: PoolModelData, input: QuizInputV2): number {
@@ -213,9 +213,9 @@ function scoreUsage(model: PoolModelData, input: QuizInputV2): number {
 }
 
 const PREFERENCE_AFFINITY: Record<QuizInputV2['pool_preference'], string[]> = {
-  'prainha': ['Prainha', 'Supreme', 'Retangular', 'Versátil'],
-  'spa': ['Compacta Premium', 'Retangular', 'Supreme', 'Elegance'],
-  'classica': ['Family', 'Confort', 'Retangular Plus', 'Retangular', 'Versátil'],
+  'prainha': ['Tortuga', 'Atalaia', 'Tradicional', 'Farol da Barra'],
+  'spa': ['Navagio', 'Tradicional', 'Atalaia', 'Bonaire'],
+  'classica': ['Italiana', 'Tropical', 'Cancún', 'Tradicional', 'Farol da Barra'],
   'indeciso': [],
 };
 
@@ -231,10 +231,10 @@ function scorePreference(model: PoolModelData, input: QuizInputV2): number {
 // ── NEW: Objective Score (weight 12) ──
 
 const OBJECTIVE_AFFINITY: Record<QuizInputV2['objective_main'], string[]> = {
-  'valorizar': ['Supreme', 'Elegance', 'Compacta Premium', 'Retangular'],
-  'familia': ['Retangular', 'Elegance', 'Confort', 'Prainha', 'Retangular Plus'],
-  'social': ['Retangular Plus', 'Confort', 'Supreme', 'Retangular', 'Prainha'],
-  'relaxar': ['Compacta Premium', 'Family', 'Retangular', 'Elegance'],
+  'valorizar': ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'],
+  'familia': ['Tradicional', 'Bonaire', 'Tropical', 'Tortuga', 'Cancún'],
+  'social': ['Cancún', 'Tropical', 'Atalaia', 'Tradicional', 'Tortuga'],
+  'relaxar': ['Navagio', 'Italiana', 'Tradicional', 'Bonaire'],
 };
 
 function scoreObjective(model: PoolModelData, input: QuizInputV2): number {
@@ -264,11 +264,11 @@ function scoreIntent(model: PoolModelData, input: QuizInputV2): number {
 }
 
 const PROFILE_AFFINITY: Record<CustomerProfile, string[]> = {
-  'RELAXADOR': ['Compacta Premium', 'Retangular', 'Elegance'],
-  'FAMILIA': ['Retangular', 'Elegance', 'Confort', 'Prainha'],
-  'SOCIAL': ['Retangular Plus', 'Confort', 'Supreme', 'Retangular'],
-  'PREMIUM': ['Supreme', 'Elegance', 'Compacta Premium', 'Retangular'],
-  'COMPACTO': ['Family', 'Compacta Premium', 'Confort', 'Retangular Plus'],
+  'RELAXADOR': ['Navagio', 'Tradicional', 'Bonaire'],
+  'FAMILIA': ['Tradicional', 'Bonaire', 'Tropical', 'Tortuga'],
+  'SOCIAL': ['Cancún', 'Tropical', 'Atalaia', 'Tradicional'],
+  'PREMIUM': ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'],
+  'COMPACTO': ['Italiana', 'Navagio', 'Tropical', 'Cancún'],
 };
 
 function profileBonus(model: PoolModelData, profile: CustomerProfile): number {
