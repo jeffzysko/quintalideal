@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Search, Ruler, TreePine, Sparkles } from 'lucide-react';
-import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
+import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 import { type Lang, t } from '@/lib/i18n';
 
 interface PreDiagnosisProps {
@@ -32,9 +32,9 @@ export function PreDiagnosis({ onContinue, lang = 'pt' }: PreDiagnosisProps) {
           src={logoQuintalIdeal}
           alt="Quintal Ideal"
           initial={{ opacity: 0 }}
-          animate={{ opacity: 0.6 }}
+          animate={{ opacity: 0.8 }}
           transition={{ delay: 0.1 }}
-          className="mx-auto w-20 mb-8"
+          className="mx-auto w-44 mb-8 brightness-0 invert"
         />
 
         <motion.div
