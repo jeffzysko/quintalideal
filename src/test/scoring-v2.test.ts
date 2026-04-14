@@ -170,19 +170,19 @@ describe('calculateModelScore', () => {
     expect(scored.score).toBeLessThanOrEqual(100);
   });
 
-  it('bonus valorizar para modelos premium (Supreme > Family)', () => {
+  it('bonus valorizar para modelos premium (Atalaia > Italiana)', () => {
     const input: QuizInputV2 = { space_bucket: '5_7m', home_status: 'casa_propria', purchase_intent: '2026', usage_profile: 'premium', budget_range: '30_50k', pool_preference: 'classica', objective_main: 'valorizar' };
-    const supreme = calculateModelScore(allMockModels[5], input, 'PREMIUM'); // Supreme
-    const family = calculateModelScore(allMockModels[3], input, 'PREMIUM'); // Family
-    expect(supreme.specialBonus).toBeGreaterThan(family.specialBonus);
+    const atalaia = calculateModelScore(allMockModels[5], input, 'PREMIUM'); // Atalaia
+    const italiana = calculateModelScore(allMockModels[3], input, 'PREMIUM'); // Italiana
+    expect(atalaia.specialBonus).toBeGreaterThan(italiana.specialBonus);
   });
 });
 
 describe('filterModels', () => {
-  it('exclui Prainha para espaço ate_3m com prainha', () => {
+  it('exclui Tortuga para espaço ate_3m com prainha', () => {
     const input: QuizInputV2 = { space_bucket: 'ate_3m', home_status: 'casa_propria', purchase_intent: '2026', usage_profile: 'casal', budget_range: '18_30k', pool_preference: 'prainha', objective_main: 'relaxar' };
     const filtered = filterModels(allMockModels, input);
-    expect(filtered.find(m => m.nome_modelo === 'Prainha')).toBeUndefined();
+    expect(filtered.find(m => m.nome_modelo === 'Tortuga')).toBeUndefined();
   });
 });
 
@@ -227,15 +227,15 @@ describe('recommendPoolsV2', () => {
   it('valorizar prioriza modelos premium', () => {
     const input: QuizInputV2 = { space_bucket: '3_5m', home_status: 'casa_propria', purchase_intent: '2026', usage_profile: 'premium', budget_range: '30_50k', pool_preference: 'classica', objective_main: 'valorizar' };
     const result = recommendPoolsV2(input, allMockModels);
-    const premiumModels = ['Supreme', 'Elegance', 'Compacta Premium', 'Retangular'];
+    const premiumModels = ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'];
     expect(premiumModels).toContain(result.primary_model.nome_modelo);
   });
 
-  it('Compacta Premium priorizada para espaço pequeno + relaxar', () => {
+  it('Navagio priorizada para espaço pequeno + relaxar', () => {
     const input: QuizInputV2 = { space_bucket: 'ate_3m', home_status: 'casa_propria', purchase_intent: '2026', usage_profile: 'casal', budget_range: '18_30k', pool_preference: 'spa', objective_main: 'relaxar' };
     const result = recommendPoolsV2(input, allMockModels);
     const allNames = [result.primary_model.nome_modelo, ...result.alternatives.map(a => a.model.nome_modelo)];
-    expect(allNames).toContain('Compacta Premium');
+    expect(allNames).toContain('Navagio');
   });
   it('retorna is_hot_lead e sales_script', () => {
     const input: QuizInputV2 = { space_bucket: '5_7m', home_status: 'casa_propria', purchase_intent: '2026', usage_profile: 'familia_grande', budget_range: '18_30k', pool_preference: 'classica', objective_main: 'familia' };
@@ -274,16 +274,16 @@ describe('detectHotLead', () => {
 describe('generateSalesScript', () => {
   it('gera script com nome e modelo', () => {
     const input: QuizInputV2 = { space_bucket: '5_7m', home_status: 'casa_propria', purchase_intent: '2026', usage_profile: 'familia_grande', budget_range: '18_30k', pool_preference: 'classica', objective_main: 'familia' };
-    const script = generateSalesScript('João Silva', input, 'Retangular');
+    const script = generateSalesScript('João Silva', input, 'Tradicional');
     expect(script).toContain('João');
-    expect(script).toContain('Retangular');
+    expect(script).toContain('Tradicional');
     expect(script).toContain('família');
   });
 
   it('gera script em espanhol', () => {
     const input: QuizInputV2 = { space_bucket: '5_7m', home_status: 'casa_propria', purchase_intent: '2026', usage_profile: 'amigos', budget_range: '18_30k', pool_preference: 'classica', objective_main: 'social' };
-    const script = generateSalesScript('Carlos', input, 'Retangular Plus', 'es');
+    const script = generateSalesScript('Carlos', input, 'Cancún', 'es');
     expect(script).toContain('Carlos');
-    expect(script).toContain('Retangular Plus');
+    expect(script).toContain('Cancún');
   });
 });
