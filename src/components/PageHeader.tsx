@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
 import { BackButton } from '@/components/BackButton';
-import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
+import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 
 interface PageHeaderProps {
   title: string;

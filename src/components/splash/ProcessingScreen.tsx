@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
+import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 import { CheckCircle2 } from 'lucide-react';
 import { type Lang, t } from '@/lib/i18n';
 

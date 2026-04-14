@@ -1,6 +1,6 @@
 import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
-import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
+import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 
 interface PanelHeaderProps {
   title?: string;

@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Lock, ArrowRight, ArrowLeft, CheckCircle2, AlertCircle, Check, X, Eye, EyeOff } from 'lucide-react';
-import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
+import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 
 /* ── Password validation rules ── */
 const PASSWORD_RULES = [

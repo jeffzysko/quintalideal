@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { ArrowLeft, Droplets } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import logoQuintalIdeal from '@/assets/logo-quintal-ideal.png';
+import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 
 const NotFound = () => {
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ const NotFound = () => {
         className="relative z-10 w-full max-w-sm mx-4 text-center"
       >
         <motion.div className="text-center mb-8">
-          <img src={logoQuintalIdeal} alt="Quintal Ideal" className="mx-auto w-28 mb-3 drop-shadow-lg" />
+          <img src={logoQuintalIdeal} alt="Quintal Ideal" className="mx-auto w-40 mb-3 drop-shadow-lg brightness-0 invert" />
         </motion.div>
 
         <div className="glass-card rounded-2xl p-6 sm:p-8">
