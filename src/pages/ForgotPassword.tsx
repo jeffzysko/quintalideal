@@ -79,7 +79,7 @@ export default function ForgotPassword() {
         className="relative z-10 w-full max-w-sm mx-4"
       >
         <motion.div className="text-center mb-8">
-          <img src={logoQuintalIdeal} alt="Quintal Ideal" className="mx-auto w-48 mb-3 drop-shadow-lg brightness-0 invert" />
+          <img src={logoQuintalIdeal} alt="Quintal Ideal" className="mx-auto w-48 mb-3 drop-shadow-lg dark:brightness-0 dark:invert" />
         </motion.div>
 
         <motion.div

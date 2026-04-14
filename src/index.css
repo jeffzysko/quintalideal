@@ -97,24 +97,29 @@
   }
 
   .dark {
-    --background: 220 60% 8%;
-    --background-elevated: 214 68% 14%;
-    --foreground: 0 0% 100%;
+    /* ─── Backgrounds ─── */
+    --background: 220 55% 7%;
+    --background-elevated: 216 50% 12%;
+    --foreground: 210 20% 96%;
 
-    --card: 216 64% 20%;
-    --card-foreground: 0 0% 100%;
+    /* ─── Surfaces ─── */
+    --card: 216 48% 15%;
+    --card-foreground: 210 20% 96%;
 
-    --popover: 214 68% 14%;
-    --popover-foreground: 220 20% 95%;
+    --popover: 216 48% 13%;
+    --popover-foreground: 210 20% 96%;
 
-    --primary: 223 100% 59%;
+    /* ─── Primary (Brand Blue) ─── */
+    --primary: 223 100% 62%;
     --primary-foreground: 0 0% 100%;
-    --primary-hover: 223 100% 65%;
-    --primary-active: 223 100% 52%;
+    --primary-hover: 223 100% 68%;
+    --primary-active: 223 100% 55%;
 
+    /* ─── Secondary (Cyan Accent) ─── */
     --secondary: 178 100% 43%;
-    --secondary-foreground: 214 68% 14%;
+    --secondary-foreground: 220 55% 7%;
 
+    /* ─── Semantic ─── */
     --success: 142 71% 45%;
     --success-foreground: 0 0% 100%;
     --warning: 38 92% 55%;
@@ -124,32 +129,35 @@
     --info: 217 91% 60%;
     --info-foreground: 0 0% 100%;
 
-    --gray-50: 220 60% 8%;
-    --gray-100: 214 60% 14%;
-    --gray-200: 216 50% 18%;
-    --gray-300: 220 40% 26%;
-    --gray-400: 220 25% 38%;
-    --gray-500: 220 15% 50%;
-    --gray-600: 220 12% 64%;
-    --gray-700: 220 13% 76%;
-    --gray-800: 220 14% 86%;
-    --gray-900: 220 16% 94%;
+    /* ─── Neutral scale (inverted for dark) ─── */
+    --gray-50: 220 55% 7%;
+    --gray-100: 216 50% 12%;
+    --gray-200: 216 45% 17%;
+    --gray-300: 220 35% 24%;
+    --gray-400: 220 20% 36%;
+    --gray-500: 220 12% 50%;
+    --gray-600: 220 10% 64%;
+    --gray-700: 220 10% 76%;
+    --gray-800: 220 12% 86%;
+    --gray-900: 220 14% 94%;
 
-    --muted: 214 55% 15%;
-    --muted-foreground: 220 12% 58%;
-    --accent: 178 80% 18%;
-    --accent-foreground: 178 87% 56%;
-    --border: 225 35% 20%;
-    --input: 214 68% 14%;
+    /* ─── UI tokens ─── */
+    --muted: 216 40% 14%;
+    --muted-foreground: 220 10% 64%;
+    --accent: 178 60% 14%;
+    --accent-foreground: 178 90% 58%;
+    --border: 220 30% 18%;
+    --input: 216 45% 13%;
     --ring: 178 100% 43%;
 
-    --sidebar-background: 220 60% 6%;
-    --sidebar-foreground: 220 15% 92%;
+    /* ─── Sidebar ─── */
+    --sidebar-background: 220 55% 5%;
+    --sidebar-foreground: 210 15% 90%;
     --sidebar-primary: 178 100% 43%;
-    --sidebar-primary-foreground: 214 68% 14%;
-    --sidebar-accent: 214 55% 15%;
-    --sidebar-accent-foreground: 220 15% 92%;
-    --sidebar-border: 225 35% 18%;
+    --sidebar-primary-foreground: 220 55% 7%;
+    --sidebar-accent: 216 40% 14%;
+    --sidebar-accent-foreground: 210 15% 90%;
+    --sidebar-border: 220 30% 15%;
     --sidebar-ring: 178 100% 43%;
   }
 }

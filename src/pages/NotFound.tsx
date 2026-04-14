@@ -25,7 +25,7 @@ const NotFound = () => {
         className="relative z-10 w-full max-w-sm mx-4 text-center"
       >
         <motion.div className="text-center mb-8">
-          <img src={logoQuintalIdeal} alt="Quintal Ideal" className="mx-auto w-40 mb-3 drop-shadow-lg brightness-0 invert" />
+          <img src={logoQuintalIdeal} alt="Quintal Ideal" className="mx-auto w-40 mb-3 drop-shadow-lg dark:brightness-0 dark:invert" />
         </motion.div>
 
         <div className="glass-card rounded-2xl p-6 sm:p-8">
