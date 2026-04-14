@@ -75,7 +75,7 @@ export default function Login() {
           <motion.img
             src={logoQuintalIdeal}
             alt="Quintal Ideal"
-            className="mx-auto w-48 mb-3 drop-shadow-lg brightness-0 invert"
+            className="mx-auto w-48 mb-3 drop-shadow-lg dark:brightness-0 dark:invert"
             animate={{ y: [0, -4, 0] }}
             transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
           />
