@@ -79,7 +79,7 @@ export default function InstallPage() {
             <img
               src={logoQuintalIdeal}
               alt="Quintal Ideal"
-              className="w-44 mx-auto mb-4"
+              className="w-44 mx-auto mb-4 dark:brightness-0 dark:invert"
             />
             <h1 className="text-2xl font-extrabold tracking-tight text-foreground mb-2">
               Instalar Quintal Ideal
