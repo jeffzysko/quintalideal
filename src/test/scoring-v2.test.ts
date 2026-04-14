@@ -27,7 +27,7 @@ const baseAnswers = (overrides: Record<string, string> = {}): Record<string, str
 
 // ── Helper: mock pool model ──
 const mockModel = (overrides: Partial<PoolModelData> = {}): PoolModelData => ({
-  nome_modelo: 'Retangular',
+  nome_modelo: 'Tradicional',
   categoria_tamanho: 'media',
   tamanho: '5,00 x 2,50m',
   preco_min: 15000,
@@ -42,16 +42,16 @@ const mockModel = (overrides: Partial<PoolModelData> = {}): PoolModelData => ({
 });
 
 const allMockModels: PoolModelData[] = [
-  mockModel({ nome_modelo: 'Retangular', preco_min: 12000, preco_max: 40000 }),
-  mockModel({ nome_modelo: 'Compacta Premium', preco_min: 18000, preco_max: 25000, comprimento: 3.25, largura: 2.25 }),
-  mockModel({ nome_modelo: 'Borda Infinita', preco_min: 25000, preco_max: 35000, possui_prainha: true, comprimento: 4, largura: 3 }),
-  mockModel({ nome_modelo: 'Family', preco_min: 10000, preco_max: 30000, comprimento: 3, largura: 2 }),
-  mockModel({ nome_modelo: 'Prainha', preco_min: 20000, preco_max: 45000, possui_prainha: true, comprimento: 5, largura: 2.3 }),
-  mockModel({ nome_modelo: 'Supreme', preco_min: 35000, preco_max: 50000, possui_spa: true, possui_prainha: true, comprimento: 7, largura: 4 }),
-  mockModel({ nome_modelo: 'Elegance', preco_min: 14000, preco_max: 38000, possui_spa: true, comprimento: 3, largura: 2 }),
-  mockModel({ nome_modelo: 'Retangular Plus', preco_min: 12000, preco_max: 35000, comprimento: 3, largura: 2 }),
-  mockModel({ nome_modelo: 'Confort', preco_min: 11000, preco_max: 32000, comprimento: 3.5, largura: 2 }),
-  mockModel({ nome_modelo: 'Versátil', preco_min: 15000, preco_max: 40000, comprimento: 4, largura: 2.5 }),
+  mockModel({ nome_modelo: 'Tradicional', preco_min: 12000, preco_max: 40000 }),
+  mockModel({ nome_modelo: 'Navagio', preco_min: 18000, preco_max: 25000, comprimento: 3.25, largura: 2.25 }),
+  mockModel({ nome_modelo: 'Nassau', preco_min: 25000, preco_max: 35000, possui_prainha: true, comprimento: 4, largura: 3 }),
+  mockModel({ nome_modelo: 'Italiana', preco_min: 10000, preco_max: 30000, comprimento: 3, largura: 2 }),
+  mockModel({ nome_modelo: 'Tortuga', preco_min: 20000, preco_max: 45000, possui_prainha: true, comprimento: 5, largura: 2.3 }),
+  mockModel({ nome_modelo: 'Atalaia', preco_min: 35000, preco_max: 50000, possui_spa: true, possui_prainha: true, comprimento: 7, largura: 4 }),
+  mockModel({ nome_modelo: 'Bonaire', preco_min: 14000, preco_max: 38000, possui_spa: true, comprimento: 3, largura: 2 }),
+  mockModel({ nome_modelo: 'Cancún', preco_min: 12000, preco_max: 35000, comprimento: 3, largura: 2 }),
+  mockModel({ nome_modelo: 'Tropical', preco_min: 11000, preco_max: 32000, comprimento: 3.5, largura: 2 }),
+  mockModel({ nome_modelo: 'Farol da Barra', preco_min: 15000, preco_max: 40000, comprimento: 4, largura: 2.5 }),
 ];
 
 // ═══════════════════════════════════════════
