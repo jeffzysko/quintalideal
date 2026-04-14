@@ -1,6 +1,7 @@
 import {
   Home,
   Settings,
+  MessageCircle,
   HelpCircle,
   Bell,
   Workflow,
@@ -59,6 +60,7 @@ const SUPER_ADMIN_TABS: SidebarNavItem[] = [
   { title: 'Funil Geral', url: '/admin?tab=kanban', icon: Kanban, matchTab: 'kanban' },
   { title: 'Usuários', url: '/admin?tab=users', icon: Users, matchTab: 'users' },
   { title: 'E-mails', url: '/admin?tab=emails', icon: Mail, matchTab: 'emails' },
+  { title: 'WhatsApp', url: '/admin?tab=whatsapp', icon: MessageCircle, matchTab: 'whatsapp' },
   { title: 'Visão Franquia', url: '/admin?tab=franchise-view', icon: Eye, matchTab: 'franchise-view' },
 ];
 
