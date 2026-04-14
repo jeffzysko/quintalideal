@@ -71,7 +71,7 @@ export const AdminCityRanking = memo(function AdminCityRanking({ leads }: AdminC
                 </div>
                 <div className="w-20 bg-muted rounded-full h-2 overflow-hidden shrink-0">
                   <div
-                    className="h-full progress-gradient-pink rounded-full transition-all duration-500"
+                    className="h-full progress-gradient-cyan rounded-full transition-all duration-500"
                     style={{ width: `${(city.count / maxCount) * 100}%` }}
                   />
                 </div>
