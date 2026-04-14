@@ -106,10 +106,11 @@ export default {
           ring: "hsl(var(--sidebar-ring))",
         },
         brand: {
-          pink: "hsl(var(--brand-pink))",
+          cyan: "hsl(var(--brand-cyan, 178 100% 43%))",
+          "cyan-light": "hsl(var(--brand-cyan-light, 178 92% 74%))",
           blue: "hsl(var(--brand-blue))",
-          "light-blue": "hsl(var(--brand-blue-light, 207 60% 92%))",
-          sage: "hsl(var(--brand-sage, 140 20% 72%))",
+          "blue-dark": "hsl(var(--brand-blue-dark, 214 68% 14%))",
+          "light-blue": "hsl(var(--brand-blue-light, 223 100% 93%))",
         },
       },
       /* ─── Border Radius Scale ─── */
