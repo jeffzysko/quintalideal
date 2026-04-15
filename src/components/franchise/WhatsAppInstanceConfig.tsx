@@ -75,7 +75,7 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
     setLoading(true);
     const { data } = await supabase
       .from('franchises')
-      .select('whatsapp_plan_active, zapi_instance_active, zapi_phone_number, whatsapp_plan_expires_at, stripe_subscription_id')
+      .select('whatsapp_plan_active, zapi_instance_active, zapi_phone_number, whatsapp_plan_expires_at, stripe_subscription_id, orcamento_plan_active, orcamento_stripe_subscription_id')
       .eq('id', franchiseId)
       .maybeSingle();
 
