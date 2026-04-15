@@ -1,4 +1,7 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { differenceInDays, format, isBefore } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import { AlertTriangle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,6 +23,7 @@ interface FranchiseWAConfig {
   zapi_instance_active: boolean;
   whatsapp_plan_active: boolean;
   zapi_phone_number: string | null;
+  whatsapp_plan_expires_at: string | null;
 }
 
 export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigProps) {
@@ -60,7 +64,7 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
     setLoading(true);
     const { data } = await supabase
       .from('franchises')
-      .select('whatsapp_mode, zapi_instance_id, zapi_token, zapi_client_token, zapi_instance_active, whatsapp_plan_active, zapi_phone_number')
+      .select('whatsapp_mode, zapi_instance_id, zapi_token, zapi_client_token, zapi_instance_active, whatsapp_plan_active, zapi_phone_number, whatsapp_plan_expires_at')
       .eq('id', franchiseId)
       .maybeSingle();
 
@@ -253,6 +257,21 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
     await handleTestAndShowQr();
   };
 
+  // Plan expiration alerts
+  const expirationAlert = useMemo(() => {
+    if (!config?.whatsapp_plan_active || !config?.whatsapp_plan_expires_at) return null;
+    const now = new Date();
+    const exp = new Date(config.whatsapp_plan_expires_at);
+    if (isBefore(exp, now)) {
+      return { type: 'expired' as const, message: 'Seu plano WhatsApp expirou. Suas mensagens estão sendo enviadas pelo número da plataforma.' };
+    }
+    const days = differenceInDays(exp, now);
+    if (days <= 7) {
+      return { type: 'expiring' as const, message: `Seu plano WhatsApp vence em ${days} dia${days !== 1 ? 's' : ''} (${format(exp, 'dd/MM/yyyy', { locale: ptBR })}). Entre em contato para renovar.` };
+    }
+    return null;
+  }, [config]);
+
   if (loading) return null;
   if (!config) return null;
 
@@ -329,6 +348,19 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
   // Estado C: Modo próprio ativo
   return (
     <div className="space-y-5">
+      {/* Plan expiration banners */}
+      {expirationAlert?.type === 'expired' && (
+        <div className="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/10 p-3">
+          <AlertTriangle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+          <p className="text-xs text-destructive font-medium">{expirationAlert.message}</p>
+        </div>
+      )}
+      {expirationAlert?.type === 'expiring' && (
+        <div className="flex items-start gap-2 rounded-xl border border-warning/30 bg-warning/10 p-3">
+          <AlertTriangle className="w-4 h-4 text-warning-foreground mt-0.5 shrink-0" />
+          <p className="text-xs text-warning-foreground font-medium">{expirationAlert.message}</p>
+        </div>
+      )}
       <Card className="card-premium">
         <CardHeader>
           <CardTitle className="text-sm font-semibold flex items-center gap-2">

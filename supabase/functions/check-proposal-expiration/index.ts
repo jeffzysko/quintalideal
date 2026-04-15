@@ -229,6 +229,26 @@ Deno.serve(async (req) => {
       }
     }
 
+    // 6. Auto-expire WhatsApp plans
+    let waPlansExpired = 0;
+    const { data: expiredPlans } = await supabase
+      .from("franchises")
+      .select("id, nome_franquia")
+      .eq("whatsapp_plan_active", true)
+      .lt("whatsapp_plan_expires_at", now.toISOString())
+      .not("whatsapp_plan_expires_at", "is", null);
+
+    if (expiredPlans?.length) {
+      for (const f of expiredPlans) {
+        await supabase
+          .from("franchises")
+          .update({ whatsapp_plan_active: false, whatsapp_mode: "platform", zapi_instance_active: false })
+          .eq("id", f.id);
+        console.log(`WhatsApp plan expired for franchise: ${f.nome_franquia} (${f.id})`);
+        waPlansExpired++;
+      }
+    }
+
     return new Response(
       JSON.stringify({
         expired: expiredCount,
@@ -236,6 +256,7 @@ Deno.serve(async (req) => {
         wa_expiring: waExpiringCount,
         wa_followup: waFollowupCount,
         wa_scheduled: waScheduledCount,
+        wa_plans_expired: waPlansExpired,
         checked_at: now.toISOString(),
       }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
