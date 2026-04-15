@@ -10,6 +10,13 @@ const corsHeaders = {
  * Edge function for franchise WhatsApp instance management (Partner model).
  * Franchisees never see credentials — they only trigger actions by franchiseId.
  * Credentials are read server-side from the franchises table.
+ *
+ * Actions:
+ * - create: Creates a new Z-API instance (admin only, requires ZAPI_PARTNER_TOKEN)
+ * - delete: Deletes a Z-API instance (admin only, requires ZAPI_PARTNER_TOKEN)
+ * - qr_code: Gets QR code for connecting WhatsApp
+ * - disconnect: Disconnects the WhatsApp session
+ * - status (default): Checks connection status
  */
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -54,6 +61,8 @@ Deno.serve(async (req) => {
       });
     }
 
+    const isAdmin = roleData.role === "admin_fabrica" || roleData.role === "super_admin";
+
     const body = await req.json();
     const { action, franchiseId } = body;
 
@@ -80,7 +89,112 @@ Deno.serve(async (req) => {
       }
     }
 
-    // Load credentials from franchises table (never exposed to frontend)
+    // ─── Action: CREATE (admin only, requires Partner Token) ───
+    if (action === "create") {
+      if (!isAdmin) {
+        return new Response(JSON.stringify({ error: "Forbidden: admin only" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      const partnerToken = Deno.env.get("ZAPI_PARTNER_TOKEN");
+      if (!partnerToken) {
+        console.error("[zapi-instance] ZAPI_PARTNER_TOKEN not configured");
+        return new Response(
+          JSON.stringify({ error: "ZAPI_PARTNER_TOKEN não configurado. Configure o secret e tente novamente." }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      const createResp = await fetch("https://api.z-api.io/partner/create-instance", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${partnerToken}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name: `quintal-franchise-${franchiseId}` }),
+      });
+
+      const createData = await createResp.json();
+
+      if (!createResp.ok || !createData.id) {
+        console.error("[zapi-instance] Failed to create instance:", createData);
+        return new Response(
+          JSON.stringify({ error: "Falha ao criar instância na Z-API", details: createData }),
+          { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // Save instance credentials to DB (never exposed to frontend)
+      await supabase
+        .from("franchises")
+        .update({
+          zapi_instance_id: createData.id,
+          zapi_token: createData.token,
+        })
+        .eq("id", franchiseId);
+
+      console.log(`[zapi-instance] Created instance for franchise ${franchiseId}: ${createData.id}`);
+      return new Response(
+        JSON.stringify({ success: true }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // ─── Action: DELETE (admin only, requires Partner Token) ───
+    if (action === "delete") {
+      if (!isAdmin) {
+        return new Response(JSON.stringify({ error: "Forbidden: admin only" }), {
+          status: 403,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+
+      // Load current instance ID
+      const { data: franchise } = await supabase
+        .from("franchises")
+        .select("zapi_instance_id")
+        .eq("id", franchiseId)
+        .maybeSingle();
+
+      if (franchise?.zapi_instance_id) {
+        const partnerToken = Deno.env.get("ZAPI_PARTNER_TOKEN");
+        if (partnerToken) {
+          const delResp = await fetch(
+            `https://api.z-api.io/partner/delete-instance/${franchise.zapi_instance_id}`,
+            {
+              method: "DELETE",
+              headers: { "Authorization": `Bearer ${partnerToken}` },
+            }
+          );
+          const delText = await delResp.text();
+          console.log(`[zapi-instance] Delete response for ${franchise.zapi_instance_id}:`, delResp.status, delText);
+        } else {
+          console.warn("[zapi-instance] ZAPI_PARTNER_TOKEN not set, skipping Z-API delete call");
+        }
+      }
+
+      // Clear credentials from DB
+      await supabase
+        .from("franchises")
+        .update({
+          zapi_instance_id: null,
+          zapi_token: null,
+          zapi_client_token: null,
+          zapi_phone_number: null,
+          zapi_instance_active: false,
+        })
+        .eq("id", franchiseId);
+
+      console.log(`[zapi-instance] Deleted instance for franchise ${franchiseId}`);
+      return new Response(
+        JSON.stringify({ success: true }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // ─── Load credentials for remaining actions ───
     const { data: franchise } = await supabase
       .from("franchises")
       .select("zapi_instance_id, zapi_token, zapi_client_token, whatsapp_plan_active, zapi_instance_active")
