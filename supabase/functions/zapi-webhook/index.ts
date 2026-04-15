@@ -10,6 +10,7 @@
 // =============================================================================
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+import { logError } from "../_shared/error-monitor.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
