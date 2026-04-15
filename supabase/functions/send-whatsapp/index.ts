@@ -156,6 +156,15 @@ Deno.serve(async (req) => {
       sent_by: userId,
     });
 
+    // Log usage event (async, non-blocking)
+    if (success) {
+      serviceClient.from("usage_logs").insert({
+        franchise_id,
+        event_type: "whatsapp_message_sent",
+        metadata: { lead_id: lead_id || null, proposal_id: proposal_id || null, template_key: template_key || null },
+      }).then(() => {}).catch(() => {});
+    }
+
     if (!success) {
       console.error("Z-API error:", zapiResult);
       return new Response(
