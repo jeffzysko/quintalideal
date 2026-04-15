@@ -109,7 +109,7 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
     setCheckoutLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-        body: { franchiseId },
+        body: { franchiseId, plan: 'whatsapp' },
       });
       if (error) throw error;
       if (data?.url) {
@@ -124,11 +124,11 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
     }
   };
 
-  const handlePortal = async () => {
+  const handlePortal = async (planType: 'whatsapp' | 'orcamento' = 'whatsapp') => {
     setPortalLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('create-portal-session', {
-        body: { franchiseId },
+        body: { franchiseId, planType },
       });
       if (error) throw error;
       if (data?.url) {
