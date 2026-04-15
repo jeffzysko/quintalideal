@@ -173,6 +173,10 @@ export type Database = {
           last_lead_activity_at: string | null
           meta_pixel_id: string | null
           nome_franquia: string
+          orcamento_plan_active: boolean
+          orcamento_stripe_customer_id: string | null
+          orcamento_stripe_subscription_id: string | null
+          orcamento_stripe_subscription_status: string | null
           responsavel: string | null
           slug_url: string
           stripe_customer_id: string | null
@@ -203,6 +207,10 @@ export type Database = {
           last_lead_activity_at?: string | null
           meta_pixel_id?: string | null
           nome_franquia: string
+          orcamento_plan_active?: boolean
+          orcamento_stripe_customer_id?: string | null
+          orcamento_stripe_subscription_id?: string | null
+          orcamento_stripe_subscription_status?: string | null
           responsavel?: string | null
           slug_url: string
           stripe_customer_id?: string | null
@@ -233,6 +241,10 @@ export type Database = {
           last_lead_activity_at?: string | null
           meta_pixel_id?: string | null
           nome_franquia?: string
+          orcamento_plan_active?: boolean
+          orcamento_stripe_customer_id?: string | null
+          orcamento_stripe_subscription_id?: string | null
+          orcamento_stripe_subscription_status?: string | null
           responsavel?: string | null
           slug_url?: string
           stripe_customer_id?: string | null
@@ -1381,6 +1393,10 @@ export type Database = {
         }[]
       }
       get_user_franquia_id: { Args: { _user_id: string }; Returns: string }
+      has_orcamento_access: {
+        Args: { _franchise_id: string }
+        Returns: boolean
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
