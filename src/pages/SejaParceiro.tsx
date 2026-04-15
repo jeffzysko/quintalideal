@@ -405,9 +405,9 @@ export default function SejaParceiro() {
                 transition={{ delay: 0.8, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 style={{ transformOrigin: 'left' }}
               />
-            </span>{' '}
-            <br className="hidden sm:block" />
-            e venda mais piscinas
+            </span>{' '}e venda
+            <br />
+            mais piscinas
           </motion.h1>
 
           <motion.p
@@ -462,7 +462,7 @@ export default function SejaParceiro() {
 
           {/* Social proof counters with glow */}
           <motion.div
-            className="flex flex-wrap justify-center gap-1 sm:gap-2 mb-6"
+            className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-8"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9 }}
@@ -487,7 +487,7 @@ export default function SejaParceiro() {
 
           {/* Trust strip */}
           <motion.div
-            className="flex flex-wrap justify-center gap-5"
+            className="flex flex-wrap justify-center gap-5 mb-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1.1 }}
