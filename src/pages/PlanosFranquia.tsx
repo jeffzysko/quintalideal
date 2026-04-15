@@ -88,13 +88,6 @@ export default function PlanosFranquia() {
   const orcamentoStandalone = (orcamentoActive || orcamentoTrialing) && !whatsappActive;
   const noPlan = !whatsappActive && !orcamentoActive && !orcamentoTrialing;
 
-  const trialDaysLeft = useMemo(() => {
-    // We don't have trial_end from Stripe directly on the table,
-    // but trialing status means trial is active. Show generic message.
-    if (orcamentoTrialing) return null; // We'll show "Em teste gratuito" badge
-    return null;
-  }, [orcamentoTrialing]);
-
   const handleCheckout = async (planType: 'whatsapp' | 'orcamento') => {
     if (!franchiseId) return;
     setLoadingPlan(planType);
