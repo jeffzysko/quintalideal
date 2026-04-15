@@ -433,6 +433,12 @@ export default function NewProposal() {
       // Event 3: WhatsApp auto trigger when proposal is sent
       if (finalStatus === 'enviada') {
         triggerWhatsAppAuto({ trigger_event: 'proposal_sent', proposal_id: proposalId, franchise_id: franchiseId });
+        // Log usage event (async, non-blocking)
+        supabase.from('usage_logs' as any).insert({
+          franchise_id: franchiseId,
+          event_type: 'orcamento_sent',
+          metadata: { proposal_id: proposalId },
+        }).then(() => {}).catch(() => {});
       }
 
       const msg = isEditMode ? 'Proposta atualizada com sucesso!' : 'Proposta criada com sucesso!';
