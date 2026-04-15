@@ -89,6 +89,10 @@ export default function PlanosFranquia() {
   const orcamentoViaWhatsApp = whatsappActive && orcamentoActive && !orcamentoTrialing;
   const orcamentoStandalone = (orcamentoActive || orcamentoTrialing) && !whatsappActive;
   const noPlan = !whatsappActive && !orcamentoActive && !orcamentoTrialing;
+  const hasAnyPlan = !noPlan;
+
+  const navigate = useNavigate();
+  const { data: metrics } = useFranchiseMetrics(hasAnyPlan ? franchiseId : null);
 
   const handleCheckout = async (planType: 'whatsapp' | 'orcamento') => {
     if (!franchiseId) return;
