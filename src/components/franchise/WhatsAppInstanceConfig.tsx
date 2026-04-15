@@ -391,9 +391,6 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
                 Reconectar WhatsApp
               </Button>
             )}
-          </CardContent>
-        </Card>
-            )}
 
             {state.stripe_subscription_id && (
               <Button
