@@ -78,6 +78,48 @@ export type Database = {
           },
         ]
       }
+      franchise_applications: {
+        Row: {
+          admin_notes: string | null
+          cidade_base: string
+          created_at: string
+          email: string
+          id: string
+          nome_franquia: string
+          nome_responsavel: string
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          whatsapp_responsavel: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          cidade_base: string
+          created_at?: string
+          email: string
+          id?: string
+          nome_franquia: string
+          nome_responsavel: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          whatsapp_responsavel: string
+        }
+        Update: {
+          admin_notes?: string | null
+          cidade_base?: string
+          created_at?: string
+          email?: string
+          id?: string
+          nome_franquia?: string
+          nome_responsavel?: string
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          whatsapp_responsavel?: string
+        }
+        Relationships: []
+      }
       franchise_covered_cities: {
         Row: {
           city_name: string
