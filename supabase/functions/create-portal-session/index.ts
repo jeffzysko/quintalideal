@@ -36,7 +36,10 @@ Deno.serve(async (req) => {
     }
     const userId = claims.claims.sub as string;
 
-    const { franchiseId } = await req.json();
+    const body = await req.json();
+    const { franchiseId, planType } = body;
+    const plan: "whatsapp" | "orcamento" = planType === "orcamento" ? "orcamento" : "whatsapp";
+
     if (!franchiseId) {
       return new Response(JSON.stringify({ error: "franchiseId is required" }), {
         status: 400,
@@ -58,14 +61,18 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Get franchise stripe_customer_id
+    // Get franchise customer IDs
     const { data: franchise } = await supabase
       .from("franchises")
-      .select("stripe_customer_id")
+      .select("stripe_customer_id, orcamento_stripe_customer_id")
       .eq("id", franchiseId)
       .maybeSingle();
 
-    if (!franchise?.stripe_customer_id) {
+    const customerId = plan === "orcamento"
+      ? (franchise as any)?.orcamento_stripe_customer_id
+      : franchise?.stripe_customer_id;
+
+    if (!customerId) {
       return new Response(
         JSON.stringify({ error: "Nenhuma assinatura encontrada" }),
         { status: 404, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -75,6 +82,10 @@ Deno.serve(async (req) => {
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY")!;
     const platformUrl = Deno.env.get("PLATFORM_URL") || "https://quintalideal.lovable.app";
 
+    const returnUrl = plan === "orcamento"
+      ? `${platformUrl}/propostas`
+      : `${platformUrl}/settings?tab=whatsapp`;
+
     // Create Billing Portal Session
     const portalRes = await fetch("https://api.stripe.com/v1/billing_portal/sessions", {
       method: "POST",
@@ -83,8 +94,8 @@ Deno.serve(async (req) => {
         "Content-Type": "application/x-www-form-urlencoded",
       },
       body: new URLSearchParams({
-        customer: franchise.stripe_customer_id,
-        return_url: `${platformUrl}/settings?tab=whatsapp`,
+        customer: customerId,
+        return_url: returnUrl,
       }),
     });
 
