@@ -183,6 +183,7 @@ export type Database = {
           zapi_client_token: string | null
           zapi_instance_active: boolean
           zapi_instance_id: string | null
+          zapi_phone_number: string | null
           zapi_token: string | null
         }
         Insert: {
@@ -207,6 +208,7 @@ export type Database = {
           zapi_client_token?: string | null
           zapi_instance_active?: boolean
           zapi_instance_id?: string | null
+          zapi_phone_number?: string | null
           zapi_token?: string | null
         }
         Update: {
@@ -231,6 +233,7 @@ export type Database = {
           zapi_client_token?: string | null
           zapi_instance_active?: boolean
           zapi_instance_id?: string | null
+          zapi_phone_number?: string | null
           zapi_token?: string | null
         }
         Relationships: []

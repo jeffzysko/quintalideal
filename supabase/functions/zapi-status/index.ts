@@ -49,7 +49,8 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Check if custom credentials were sent in the body (for franchise testing their own instance)
+    // Parse body
+    let action = "status";
     let customInstanceId: string | null = null;
     let customToken: string | null = null;
     let customSecurityToken: string | null = null;
@@ -57,6 +58,7 @@ Deno.serve(async (req) => {
     if (req.method === "POST") {
       try {
         const body = await req.json();
+        action = body.action || "status";
         customInstanceId = body.instance_id || null;
         customToken = body.token || null;
         customSecurityToken = body.security_token || null;
@@ -90,19 +92,33 @@ Deno.serve(async (req) => {
       securityToken = config.security_token;
     }
 
-    const url = `https://api.z-api.io/instances/${instanceId}/token/${zapiToken}/status`;
     const headers: Record<string, string> = {};
     if (securityToken) {
       headers["Client-Token"] = securityToken;
     }
 
+    // Handle action: qr_code
+    if (action === "qr_code") {
+      const qrUrl = `https://api.z-api.io/instances/${instanceId}/token/${zapiToken}/qr-code/image`;
+      const qrResp = await fetch(qrUrl, { headers });
+      const qrData = await qrResp.json();
+
+      return new Response(
+        JSON.stringify(qrData),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      );
+    }
+
+    // Default action: status
+    const url = `https://api.z-api.io/instances/${instanceId}/token/${zapiToken}/status`;
     const resp = await fetch(url, { headers });
     const data = await resp.json();
 
     const connected = data?.connected === true || data?.status === "CONNECTED";
+    const phone = data?.phone || data?.smartPhone || null;
 
     return new Response(
-      JSON.stringify({ connected, raw: data }),
+      JSON.stringify({ connected, phone, raw: data }),
       { headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (err) {
