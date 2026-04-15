@@ -410,6 +410,37 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
         </Card>
       )}
 
+      {/* Orcamento plan info */}
+      {state.whatsapp_plan_active && (
+        <div className="flex items-center gap-2 rounded-xl border border-success/30 bg-success/10 p-3">
+          <CheckCircle className="w-4 h-4 text-success shrink-0" />
+          <p className="text-xs text-foreground font-medium">
+            ✅ Orçamento Personalizado incluso no seu plano WhatsApp Próprio
+          </p>
+        </div>
+      )}
+
+      {!state.whatsapp_plan_active && state.orcamento_plan_active && state.orcamento_stripe_subscription_id && (
+        <Card className="card-premium">
+          <CardContent className="flex items-center justify-between py-3 px-4">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-success" />
+              <p className="text-xs font-medium text-foreground">Plano Orçamento Personalizado ativo</p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePortal('orcamento')}
+              disabled={portalLoading}
+              className="gap-2 text-xs rounded-xl"
+            >
+              {portalLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CreditCard className="w-3.5 h-3.5" />}
+              Gerenciar assinatura
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
       {/* QR Code Card — shown for pending/disconnected states */}
       {showQr && (viewState === 'pending' || viewState === 'disconnected') && (
         <Card className="card-premium">
