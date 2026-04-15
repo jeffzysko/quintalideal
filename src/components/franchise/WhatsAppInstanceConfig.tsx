@@ -1,13 +1,10 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { differenceInDays, format, isBefore } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { AlertTriangle } from 'lucide-react';
+import { AlertTriangle, Wifi, WifiOff, Smartphone, Crown, QrCode, RefreshCw, CheckCircle, Loader2, Unplug } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Save, Eye, EyeOff, Loader2, Wifi, WifiOff, Zap, ArrowLeft, Smartphone, Crown, QrCode, RefreshCw, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 
@@ -15,40 +12,30 @@ interface WhatsAppInstanceConfigProps {
   franchiseId: string;
 }
 
-interface FranchiseWAConfig {
-  whatsapp_mode: string;
-  zapi_instance_id: string | null;
-  zapi_token: string | null;
-  zapi_client_token: string | null;
-  zapi_instance_active: boolean;
+interface FranchiseWAState {
   whatsapp_plan_active: boolean;
+  zapi_instance_active: boolean;
   zapi_phone_number: string | null;
   whatsapp_plan_expires_at: string | null;
 }
 
+type ViewState = 'inactive' | 'pending' | 'connected' | 'disconnected';
+
 export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigProps) {
-  const [config, setConfig] = useState<FranchiseWAConfig | null>(null);
+  const [state, setState] = useState<FranchiseWAState | null>(null);
   const [loading, setLoading] = useState(true);
-  const [saving, setSaving] = useState(false);
-  const [testing, setTesting] = useState(false);
 
-  const [instanceId, setInstanceId] = useState('');
-  const [token, setToken] = useState('');
-  const [clientToken, setClientToken] = useState('');
-
-  const [showInstance, setShowInstance] = useState(false);
-  const [showToken, setShowToken] = useState(false);
-  const [showClient, setShowClient] = useState(false);
-
-  // QR Code state
+  // QR Code
   const [qrCodeData, setQrCodeData] = useState<string | null>(null);
-  const [showQrCode, setShowQrCode] = useState(false);
+  const [showQr, setShowQr] = useState(false);
   const [loadingQr, setLoadingQr] = useState(false);
-  const [pollingStatus, setPollingStatus] = useState(false);
+  const [checkingStatus, setCheckingStatus] = useState(false);
+  const [disconnecting, setDisconnecting] = useState(false);
+  const [pollingActive, setPollingActive] = useState(false);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
-    loadConfig();
+    loadState();
     return () => stopPolling();
   }, [franchiseId]);
 
@@ -57,211 +44,33 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
       clearInterval(pollingRef.current);
       pollingRef.current = null;
     }
-    setPollingStatus(false);
+    setPollingActive(false);
   };
 
-  const loadConfig = async () => {
+  const loadState = async () => {
     setLoading(true);
     const { data } = await supabase
       .from('franchises')
-      .select('whatsapp_mode, zapi_instance_id, zapi_token, zapi_client_token, zapi_instance_active, whatsapp_plan_active, zapi_phone_number, whatsapp_plan_expires_at')
+      .select('whatsapp_plan_active, zapi_instance_active, zapi_phone_number, whatsapp_plan_expires_at')
       .eq('id', franchiseId)
       .maybeSingle();
 
-    if (data) {
-      setConfig(data as FranchiseWAConfig);
-      setInstanceId(data.zapi_instance_id || '');
-      setToken(data.zapi_token || '');
-      setClientToken(data.zapi_client_token || '');
-    }
+    if (data) setState(data as FranchiseWAState);
     setLoading(false);
   };
 
-  const handleSave = async () => {
-    if (!instanceId.trim() || !token.trim()) {
-      toast.error('Instance ID e Token são obrigatórios.');
-      return;
-    }
-    setSaving(true);
-    const { error } = await supabase
-      .from('franchises')
-      .update({
-        zapi_instance_id: instanceId,
-        zapi_token: token,
-        zapi_client_token: clientToken || null,
-      })
-      .eq('id', franchiseId);
+  const viewState = useMemo((): ViewState => {
+    if (!state) return 'inactive';
+    if (!state.whatsapp_plan_active) return 'inactive';
+    if (state.zapi_instance_active) return 'connected';
+    // Plan active but not connected — check if it was previously connected (has phone)
+    return state.zapi_phone_number ? 'disconnected' : 'pending';
+  }, [state]);
 
-    if (error) {
-      toast.error('Erro ao salvar credenciais.');
-    } else {
-      toast.success('Credenciais salvas com sucesso!');
-      await loadConfig();
-      // After saving, test connection and show QR if needed
-      await handleTestAndShowQr();
-    }
-    setSaving(false);
-  };
-
-  const handleTestAndShowQr = async () => {
-    if (!instanceId || !token) return;
-    setTesting(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('zapi-status', {
-        body: {
-          action: 'status',
-          instance_id: instanceId,
-          token: token,
-          security_token: clientToken || null,
-        },
-      });
-
-      if (error) throw error;
-
-      const connected = data?.connected === true;
-      if (connected) {
-        await markConnected(data?.phone);
-      } else {
-        // Not connected — show QR code
-        await fetchQrCode();
-        startPolling();
-      }
-    } catch {
-      toast.error('Erro ao verificar status. Verifique as credenciais.');
-    } finally {
-      setTesting(false);
-    }
-  };
-
-  const markConnected = async (phone?: string) => {
-    stopPolling();
-    setShowQrCode(false);
-    setQrCodeData(null);
-
-    await supabase
-      .from('franchises')
-      .update({
-        zapi_instance_active: true,
-        whatsapp_mode: 'own',
-        zapi_phone_number: phone || null,
-      })
-      .eq('id', franchiseId);
-
-    toast.success('WhatsApp conectado com sucesso! ✅');
-    await loadConfig();
-  };
-
-  const fetchQrCode = useCallback(async () => {
-    if (!instanceId || !token) return;
-    setLoadingQr(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('zapi-status', {
-        body: {
-          action: 'qr_code',
-          instance_id: instanceId,
-          token: token,
-          security_token: clientToken || null,
-        },
-      });
-
-      if (error) throw error;
-
-      if (data?.value) {
-        setQrCodeData(`data:image/png;base64,${data.value}`);
-        setShowQrCode(true);
-      } else if (data?.url) {
-        setQrCodeData(data.url);
-        setShowQrCode(true);
-      } else {
-        toast.error('QR Code não disponível. Tente novamente.');
-      }
-    } catch {
-      toast.error('Erro ao buscar QR Code.');
-    } finally {
-      setLoadingQr(false);
-    }
-  }, [instanceId, token, clientToken]);
-
-  const checkStatus = useCallback(async () => {
-    if (!instanceId || !token) return;
-    try {
-      const { data, error } = await supabase.functions.invoke('zapi-status', {
-        body: {
-          action: 'status',
-          instance_id: instanceId,
-          token: token,
-          security_token: clientToken || null,
-        },
-      });
-
-      if (error) return;
-
-      if (data?.connected === true) {
-        await markConnected(data?.phone);
-      }
-    } catch {
-      // silent
-    }
-  }, [instanceId, token, clientToken, franchiseId]);
-
-  const startPolling = () => {
-    stopPolling();
-    setPollingStatus(true);
-    pollingRef.current = setInterval(() => {
-      checkStatus();
-    }, 7000);
-  };
-
-  const handleManualCheckStatus = async () => {
-    setTesting(true);
-    await checkStatus();
-    setTesting(false);
-  };
-
-  const handleActivateOwnMode = async () => {
-    const { error } = await supabase
-      .from('franchises')
-      .update({ whatsapp_mode: 'own' })
-      .eq('id', franchiseId);
-
-    if (error) {
-      toast.error('Erro ao ativar modo próprio.');
-    } else {
-      toast.success('Modo próprio ativado! Configure suas credenciais abaixo.');
-      await loadConfig();
-    }
-  };
-
-  const handleSwitchToPlatform = async () => {
-    stopPolling();
-    const { error } = await supabase
-      .from('franchises')
-      .update({ whatsapp_mode: 'platform', zapi_instance_active: false })
-      .eq('id', franchiseId);
-
-    if (error) {
-      toast.error('Erro ao voltar para modo plataforma.');
-    } else {
-      toast.success('Voltando a usar o número da plataforma.');
-      setShowQrCode(false);
-      setQrCodeData(null);
-      await loadConfig();
-    }
-  };
-
-  const handleTestConnection = async () => {
-    if (!instanceId || !token) {
-      toast.error('Preencha Instance ID e Token antes de testar.');
-      return;
-    }
-    await handleTestAndShowQr();
-  };
-
-  // Plan expiration alerts
   const expirationAlert = useMemo(() => {
-    if (!config?.whatsapp_plan_active || !config?.whatsapp_plan_expires_at) return null;
+    if (!state?.whatsapp_plan_active || !state?.whatsapp_plan_expires_at) return null;
     const now = new Date();
-    const exp = new Date(config.whatsapp_plan_expires_at);
+    const exp = new Date(state.whatsapp_plan_expires_at);
     if (isBefore(exp, now)) {
       return { type: 'expired' as const, message: 'Seu plano WhatsApp expirou. Suas mensagens estão sendo enviadas pelo número da plataforma.' };
     }
@@ -270,85 +79,97 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
       return { type: 'expiring' as const, message: `Seu plano WhatsApp vence em ${days} dia${days !== 1 ? 's' : ''} (${format(exp, 'dd/MM/yyyy', { locale: ptBR })}). Entre em contato para renovar.` };
     }
     return null;
-  }, [config]);
+  }, [state]);
 
-  if (loading) return null;
-  if (!config) return null;
+  const invokeInstance = useCallback(async (action: string) => {
+    const { data, error } = await supabase.functions.invoke('zapi-instance', {
+      body: { action, franchiseId },
+    });
+    if (error) throw error;
+    return data;
+  }, [franchiseId]);
 
-  // Estado A: Plano não ativo
-  if (!config.whatsapp_plan_active) {
-    return (
-      <Card className="card-premium">
-        <CardHeader>
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Smartphone className="w-4 h-4 text-primary" />
-            </div>
-            Use seu próprio número WhatsApp
-          </CardTitle>
-          <CardDescription className="text-xs">
-            Envie mensagens pelo seu próprio WhatsApp comercial para seus clientes.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="bg-muted/40 rounded-xl p-4 space-y-3">
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Com este recurso, todas as mensagens automáticas e manuais serão enviadas pelo seu número, 
-              mantendo a identidade da sua franquia. Entre em contato com o suporte para ativar este serviço.
-            </p>
-            <Badge variant="outline" className="text-xs gap-1.5 py-1 px-3">
-              <Crown className="w-3 h-3" />
-              Disponível como serviço adicional
-            </Badge>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  const handleConnect = async () => {
+    setLoadingQr(true);
+    try {
+      const data = await invokeInstance('qr_code');
+      if (data?.value) {
+        setQrCodeData(`data:image/png;base64,${data.value}`);
+        setShowQr(true);
+        startPolling();
+      } else if (data?.url) {
+        setQrCodeData(data.url);
+        setShowQr(true);
+        startPolling();
+      } else if (data?.message) {
+        toast.error(data.message);
+      } else {
+        toast.error('QR Code não disponível. Tente novamente.');
+      }
+    } catch {
+      toast.error('Erro ao gerar QR Code. Tente novamente.');
+    } finally {
+      setLoadingQr(false);
+    }
+  };
 
-  // Estado B: Plano ativo, modo plataforma
-  if (config.whatsapp_mode === 'platform') {
-    return (
-      <Card className="card-premium">
-        <CardHeader>
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-success/10 flex items-center justify-center">
-              <Zap className="w-4 h-4 text-success" />
-            </div>
-            WhatsApp da Plataforma
-          </CardTitle>
-          <CardDescription className="text-xs">
-            Suas mensagens estão sendo enviadas pelo número padrão da plataforma.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="bg-success/5 rounded-xl p-4 border border-success/20">
-            <div className="flex items-center gap-2 mb-2">
-              <Wifi className="w-4 h-4 text-success" />
-              <span className="text-sm font-semibold text-success">Ativo — Número da Plataforma</span>
-            </div>
-            <p className="text-xs text-muted-foreground">
-              Mensagens automáticas e manuais são enviadas pelo número central da Quintal Ideal.
-            </p>
-          </div>
+  const handleCheckStatus = async () => {
+    setCheckingStatus(true);
+    try {
+      const data = await invokeInstance('status');
+      if (data?.connected) {
+        stopPolling();
+        setShowQr(false);
+        setQrCodeData(null);
+        toast.success('WhatsApp conectado com sucesso! ✅');
+        await loadState();
+      } else {
+        toast.info('Ainda não conectado. Escaneie o QR Code com seu WhatsApp.');
+      }
+    } catch {
+      toast.error('Erro ao verificar status.');
+    } finally {
+      setCheckingStatus(false);
+    }
+  };
 
-          <Button
-            variant="outline"
-            onClick={handleActivateOwnMode}
-            className="gap-2 rounded-xl h-11 w-full"
-          >
-            <Smartphone className="w-4 h-4" />
-            Configurar meu próprio WhatsApp
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
+  const handleDisconnect = async () => {
+    setDisconnecting(true);
+    try {
+      await invokeInstance('disconnect');
+      toast.success('WhatsApp desconectado.');
+      await loadState();
+    } catch {
+      toast.error('Erro ao desconectar.');
+    } finally {
+      setDisconnecting(false);
+    }
+  };
 
-  // Estado C: Modo próprio ativo
+  const startPolling = () => {
+    stopPolling();
+    setPollingActive(true);
+    pollingRef.current = setInterval(async () => {
+      try {
+        const data = await invokeInstance('status');
+        if (data?.connected) {
+          stopPolling();
+          setShowQr(false);
+          setQrCodeData(null);
+          toast.success('WhatsApp conectado com sucesso! ✅');
+          await loadState();
+        }
+      } catch {
+        // silent
+      }
+    }, 7000);
+  };
+
+  if (loading || !state) return null;
+
   return (
-    <div className="space-y-5">
-      {/* Plan expiration banners */}
+    <div className="space-y-4">
+      {/* Expiration alerts */}
       {expirationAlert?.type === 'expired' && (
         <div className="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/10 p-3">
           <AlertTriangle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
@@ -361,137 +182,144 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
           <p className="text-xs text-warning-foreground font-medium">{expirationAlert.message}</p>
         </div>
       )}
-      <Card className="card-premium">
-        <CardHeader>
-          <CardTitle className="text-sm font-semibold flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center">
-              <Zap className="w-4 h-4 text-primary" />
+
+      {/* Estado 1 — Plano inativo */}
+      {viewState === 'inactive' && (
+        <Card className="card-premium">
+          <CardHeader>
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-muted flex items-center justify-center">
+                <Smartphone className="w-4 h-4 text-muted-foreground" />
+              </div>
+              Envio pelo número da plataforma
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Suas mensagens são enviadas pelo número central da plataforma.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="bg-muted/40 rounded-xl p-4 space-y-3">
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Contrate o plano WhatsApp para enviar mensagens pelo seu próprio número comercial,
+                mantendo a identidade da sua franquia.
+              </p>
+              <Badge variant="outline" className="text-xs gap-1.5 py-1 px-3">
+                <Crown className="w-3 h-3" />
+                Disponível como serviço adicional
+              </Badge>
             </div>
-            Credenciais Z-API — Número Próprio
-          </CardTitle>
-          <CardDescription className="text-xs">
-            Configure sua instância Z-API para enviar mensagens pelo seu WhatsApp.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          {/* Status Badge */}
-          <div className={`flex items-center gap-2 text-sm font-medium px-3 py-2 rounded-xl ${
-            config.zapi_instance_active
-              ? 'bg-success/10 text-success border border-success/20'
-              : 'bg-destructive/10 text-destructive border border-destructive/20'
-          }`}>
-            {config.zapi_instance_active ? (
-              <>
-                <Wifi className="w-4 h-4" /> Conectado
-                {config.zapi_phone_number && (
-                  <span className="text-xs font-normal ml-1">— {config.zapi_phone_number}</span>
-                )}
-              </>
-            ) : (
-              <><WifiOff className="w-4 h-4" /> Desconectado</>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Estado 2 — Aguardando conexão */}
+      {viewState === 'pending' && (
+        <Card className="card-premium">
+          <CardHeader>
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-warning/10 flex items-center justify-center">
+                <Smartphone className="w-4 h-4 text-warning-foreground" />
+              </div>
+              WhatsApp — Número Próprio
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Seu plano está ativo. Conecte seu WhatsApp para começar a enviar mensagens.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Badge variant="warning" className="text-xs gap-1.5 py-1 px-3">
+              Aguardando conexão
+            </Badge>
+
+            {!showQr && (
+              <Button
+                onClick={handleConnect}
+                disabled={loadingQr}
+                className="gap-2 rounded-xl h-11 w-full"
+              >
+                {loadingQr ? <Loader2 className="w-4 h-4 animate-spin" /> : <QrCode className="w-4 h-4" />}
+                Conectar WhatsApp
+              </Button>
             )}
-          </div>
+          </CardContent>
+        </Card>
+      )}
 
-          {/* Instance ID */}
-          <div className="space-y-1.5">
-            <Label className="text-xs font-medium">Instance ID</Label>
-            <div className="relative">
-              <Input
-                value={instanceId}
-                onChange={e => setInstanceId(e.target.value)}
-                placeholder="Ex: 3C7A..."
-                type={showInstance ? 'text' : 'password'}
-                className="rounded-xl h-11 font-mono text-sm pr-10"
-              />
-              <button
-                type="button"
-                onClick={() => setShowInstance(!showInstance)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {showInstance ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Token */}
-          <div className="space-y-1.5">
-            <Label className="text-xs font-medium">Token da Instância</Label>
-            <div className="relative">
-              <Input
-                value={token}
-                onChange={e => setToken(e.target.value)}
-                placeholder="Token fornecido pela Z-API"
-                type={showToken ? 'text' : 'password'}
-                className="rounded-xl h-11 font-mono text-sm pr-10"
-              />
-              <button
-                type="button"
-                onClick={() => setShowToken(!showToken)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {showToken ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Client Token */}
-          <div className="space-y-1.5">
-            <Label className="text-xs font-medium">Client Token (Security Token)</Label>
-            <div className="relative">
-              <Input
-                value={clientToken}
-                onChange={e => setClientToken(e.target.value)}
-                placeholder="Token de segurança (opcional)"
-                type={showClient ? 'text' : 'password'}
-                className="rounded-xl h-11 font-mono text-sm pr-10"
-              />
-              <button
-                type="button"
-                onClick={() => setShowClient(!showClient)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {showClient ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              </button>
-            </div>
-          </div>
-
-          {/* Buttons */}
-          <div className="flex flex-wrap gap-2 pt-2">
-            <Button onClick={handleSave} disabled={saving} className="gap-2 rounded-xl h-11 flex-1">
-              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-              {saving ? 'Salvando...' : 'Salvar credenciais'}
-            </Button>
-            <Button
-              variant="outline"
-              onClick={handleTestConnection}
-              disabled={testing || !instanceId || !token}
-              className="gap-2 rounded-xl h-11"
-            >
-              {testing ? (
-                <Loader2 className="w-4 h-4 animate-spin" />
-              ) : (
-                <Wifi className="w-4 h-4" />
+      {/* Estado 3 — Conectado */}
+      {viewState === 'connected' && (
+        <Card className="card-premium">
+          <CardHeader>
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-success/10 flex items-center justify-center">
+                <Wifi className="w-4 h-4 text-success" />
+              </div>
+              WhatsApp Conectado
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-2 text-sm font-medium px-3 py-2 rounded-xl bg-success/10 text-success border border-success/20">
+              <Wifi className="w-4 h-4" />
+              Conectado
+              {state.zapi_phone_number && (
+                <span className="text-xs font-normal ml-1">— {state.zapi_phone_number}</span>
               )}
-              Testar Conexão
-            </Button>
-          </div>
+            </div>
 
-          <div className="pt-2 border-t border-border/30">
+            <p className="text-xs text-muted-foreground">
+              Suas mensagens automáticas e manuais estão sendo enviadas pelo seu número.
+            </p>
+
             <Button
               variant="ghost"
               size="sm"
-              onClick={handleSwitchToPlatform}
-              className="gap-2 text-xs text-muted-foreground hover:text-foreground"
+              onClick={handleDisconnect}
+              disabled={disconnecting}
+              className="gap-2 text-xs text-muted-foreground hover:text-destructive"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
-              Voltar a usar o número da plataforma
+              {disconnecting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Unplug className="w-3.5 h-3.5" />}
+              Desconectar
             </Button>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      )}
 
-      {/* QR Code Card */}
-      {showQrCode && !config.zapi_instance_active && (
+      {/* Estado 4 — Desconectado */}
+      {viewState === 'disconnected' && (
+        <Card className="card-premium">
+          <CardHeader>
+            <CardTitle className="text-sm font-semibold flex items-center gap-2">
+              <div className="w-7 h-7 rounded-lg bg-destructive/10 flex items-center justify-center">
+                <WifiOff className="w-4 h-4 text-destructive" />
+              </div>
+              WhatsApp Desconectado
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-2 text-sm font-medium px-3 py-2 rounded-xl bg-destructive/10 text-destructive border border-destructive/20">
+              <WifiOff className="w-4 h-4" />
+              Desconectado
+            </div>
+
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Seu WhatsApp foi desconectado. As mensagens estão sendo enviadas pelo número da plataforma até você reconectar.
+            </p>
+
+            {!showQr && (
+              <Button
+                onClick={handleConnect}
+                disabled={loadingQr}
+                className="gap-2 rounded-xl h-11 w-full"
+              >
+                {loadingQr ? <Loader2 className="w-4 h-4 animate-spin" /> : <QrCode className="w-4 h-4" />}
+                Reconectar WhatsApp
+              </Button>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* QR Code Card — shown for pending/disconnected states */}
+      {showQr && (viewState === 'pending' || viewState === 'disconnected') && (
         <Card className="card-premium">
           <CardHeader className="text-center">
             <CardTitle className="text-sm font-semibold flex items-center justify-center gap-2">
@@ -521,7 +349,7 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
               )}
             </div>
 
-            {pollingStatus && (
+            {pollingActive && (
               <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
                 <Loader2 className="w-3 h-3 animate-spin" />
                 Aguardando conexão...
@@ -532,7 +360,7 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
               <Button
                 variant="outline"
                 size="sm"
-                onClick={fetchQrCode}
+                onClick={handleConnect}
                 disabled={loadingQr}
                 className="gap-2 rounded-xl"
               >
@@ -542,11 +370,11 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
               <Button
                 variant="default"
                 size="sm"
-                onClick={handleManualCheckStatus}
-                disabled={testing}
+                onClick={handleCheckStatus}
+                disabled={checkingStatus}
                 className="gap-2 rounded-xl"
               >
-                {testing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle className="w-3.5 h-3.5" />}
+                {checkingStatus ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle className="w-3.5 h-3.5" />}
                 Já conectei — verificar status
               </Button>
             </div>
