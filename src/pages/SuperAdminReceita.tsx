@@ -73,9 +73,6 @@ export default function SuperAdminReceita() {
   const trialing = franchises.filter(f => f.orcamento_stripe_subscription_status === 'trialing');
   const pastDue = franchises.filter(f => f.stripe_subscription_status === 'past_due' || f.orcamento_stripe_subscription_status === 'past_due');
   const canceledThisMonth = franchises.filter(f => {
-    const now = new Date();
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-    // We don't have exact cancel date, so check status = canceled
     return (f.stripe_subscription_status === 'canceled' || f.orcamento_stripe_subscription_status === 'canceled');
   });
 
