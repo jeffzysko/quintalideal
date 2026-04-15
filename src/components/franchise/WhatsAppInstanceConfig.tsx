@@ -17,6 +17,7 @@ interface FranchiseWAState {
   zapi_instance_active: boolean;
   zapi_phone_number: string | null;
   whatsapp_plan_expires_at: string | null;
+  stripe_subscription_id: string | null;
 }
 
 type ViewState = 'inactive' | 'pending' | 'connected' | 'disconnected';
