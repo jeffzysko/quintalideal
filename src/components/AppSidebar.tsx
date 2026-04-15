@@ -63,6 +63,7 @@ const SUPER_ADMIN_TABS: SidebarNavItem[] = [
   { title: 'E-mails', url: '/admin?tab=emails', icon: Mail, matchTab: 'emails' },
   { title: 'WhatsApp', url: '/admin?tab=whatsapp', icon: MessageCircle, matchTab: 'whatsapp' },
   { title: 'Visão Franquia', url: '/admin?tab=franchise-view', icon: Eye, matchTab: 'franchise-view' },
+  { title: 'Receita', url: '/superadmin/receita', icon: TrendingUp, matchPaths: ['/superadmin/receita'] },
 ];
 
 // ── Franchise sub-tabs ──
