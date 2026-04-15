@@ -362,20 +362,20 @@ export default function SejaParceiro() {
 
         {/* Hero content */}
         <motion.div
-          className="relative z-10 max-w-4xl mx-auto px-5 pt-16 sm:pt-20 text-center"
+          className="relative z-10 max-w-4xl mx-auto px-5 pt-12 sm:pt-16 text-center"
           style={{ y: heroY, opacity: heroOpacity }}
         >
           <motion.img
             src={logoQuintalIdeal}
             alt="Quintal Ideal"
-            className="h-10 sm:h-12 mx-auto mb-8"
+            className="h-10 sm:h-12 mx-auto mb-5"
             initial={{ opacity: 0, scale: 0.7, filter: 'blur(10px)' }}
             animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           />
 
           <motion.div
-            className="inline-flex items-center gap-2 mb-8"
+            className="inline-flex items-center gap-2 mb-5"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -388,7 +388,7 @@ export default function SejaParceiro() {
           </motion.div>
 
           <motion.h1
-            className="text-[2rem] leading-[1.1] sm:text-[3rem] lg:text-[3.75rem] font-extrabold text-foreground mb-6 tracking-tight sm:leading-[1.08]"
+            className="text-[1.75rem] leading-[1.1] sm:text-[2.75rem] lg:text-[3.25rem] font-extrabold text-foreground mb-4 tracking-tight sm:leading-[1.08]"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
@@ -411,7 +411,7 @@ export default function SejaParceiro() {
           </motion.h1>
 
           <motion.p
-            className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-4 leading-relaxed"
+            className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto mb-3 leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
@@ -420,7 +420,7 @@ export default function SejaParceiro() {
           </motion.p>
 
           <motion.p
-            className="text-sm text-muted-foreground/70 max-w-xl mx-auto mb-10"
+            className="text-xs sm:text-sm text-muted-foreground/70 max-w-xl mx-auto mb-7"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
@@ -429,7 +429,7 @@ export default function SejaParceiro() {
           </motion.p>
 
           <motion.div
-            className="flex flex-col sm:flex-row gap-3 justify-center mb-14"
+            className="flex flex-col sm:flex-row gap-3 justify-center mb-10"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
