@@ -25,6 +25,8 @@ import { isValidCPF, isValidCNPJ } from '@/lib/document-utils';
 import { ProposalScore } from '@/components/proposals/ProposalScore';
 import { ProposalVideoSection } from '@/components/proposals/ProposalVideoSection';
 import { SaveTemplateModal, LoadTemplateModal } from '@/components/proposals/ProposalTemplateModal';
+import { useOrcamentoAccess } from '@/hooks/useOrcamentoAccess';
+import { OrcamentoUpgradeWall } from '@/components/proposals/OrcamentoUpgradeWall';
 
 export interface ProposalItem {
   id: string;
