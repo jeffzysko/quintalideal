@@ -163,21 +163,42 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        {/* Unified navigation */}
+        {/* Common navigation */}
         <SidebarGroup>
           <SidebarGroupLabel>
-            {isAdmin ? 'Painel Admin' : 'Painel'}
+            {isAdmin ? 'Navegação' : 'Painel'}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {(isAdmin ? ADMIN_NAV : FRANCHISE_NAV).map((item) => renderNavItem(item))}
-              {isAdmin
-                ? adminTabs.map((item) => renderNavItem(item, false))
-                : FRANCHISE_TABS.map((item) => renderNavItem(item, false))
-              }
+              {!isAdmin && FRANCHISE_TABS.map((item) => renderNavItem(item, false))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {/* Admin Fábrica tabs */}
+        {isAdmin && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Fábrica</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {ADMIN_TABS.map((item) => renderNavItem(item, false))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
+        {/* Super Admin exclusive tabs */}
+        {isSuperAdmin && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Super Admin</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {SUPER_ADMIN_TABS.map((item) => renderNavItem(item, false))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
 
       <SidebarFooter className="p-0">
