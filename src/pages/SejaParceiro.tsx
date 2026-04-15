@@ -458,51 +458,6 @@ export default function SejaParceiro() {
             >
               <a href="/login">Já sou parceiro</a>
             </Button>
-          </motion.div>
-
-          {/* Social proof counters with glow */}
-          <motion.div
-            className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-8"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
-          >
-            {SOCIAL_PROOF.map((sp) => (
-              <motion.div
-                key={sp.label}
-                className="relative group px-6 sm:px-8 py-4 rounded-2xl border border-border/30 bg-background/50 backdrop-blur-md cursor-default"
-                whileHover={{ scale: 1.05, borderColor: 'hsl(225 76% 48% / 0.3)' }}
-                transition={{ type: 'spring', stiffness: 300 }}
-              >
-                <div className="absolute inset-0 rounded-2xl bg-primary/[0.03] group-hover:bg-primary/[0.06] transition-colors duration-300" />
-                <div className="relative text-center">
-                  <span className="block text-2xl sm:text-3xl font-bold bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent">
-                    <AnimatedCounter value={sp.metric} suffix={sp.suffix} />
-                  </span>
-                  <span className="text-[10px] sm:text-xs text-muted-foreground font-medium mt-1 block">{sp.label}</span>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          {/* Trust strip */}
-          <motion.div
-            className="flex flex-wrap justify-center gap-5 mb-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.1 }}
-          >
-            {[
-              { icon: Shield, text: 'Dados protegidos' },
-              { icon: Star, text: 'Avaliada por parceiros' },
-              { icon: Users, text: '38+ lojas ativas' },
-            ].map(t => (
-              <div key={t.text} className="flex items-center gap-1.5 text-[11px] text-muted-foreground/50">
-                <t.icon className="w-3 h-3" />
-                {t.text}
-              </div>
-            ))}
-          </motion.div>
         </motion.div>
 
         {/* Scroll indicator */}
@@ -519,6 +474,53 @@ export default function SejaParceiro() {
             />
           </div>
         </motion.div>
+      </section>
+
+      {/* ═══════════════════════════ SOCIAL PROOF BAND ═══════════════════════════ */}
+      <section className="py-10 sm:py-12 bg-background relative">
+        <div className="max-w-4xl mx-auto px-5">
+          <motion.div
+            className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            {SOCIAL_PROOF.map((sp) => (
+              <motion.div
+                key={sp.label}
+                className="relative group px-8 sm:px-10 py-5 rounded-2xl border border-border/30 bg-background backdrop-blur-md cursor-default"
+                whileHover={{ scale: 1.05, borderColor: 'hsl(225 76% 48% / 0.3)' }}
+                transition={{ type: 'spring', stiffness: 300 }}
+              >
+                <div className="absolute inset-0 rounded-2xl bg-primary/[0.02] group-hover:bg-primary/[0.05] transition-colors duration-300" />
+                <div className="relative text-center">
+                  <span className="block text-3xl sm:text-4xl font-bold bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent">
+                    <AnimatedCounter value={sp.metric} suffix={sp.suffix} />
+                  </span>
+                  <span className="text-[11px] sm:text-xs text-muted-foreground font-medium mt-1.5 block">{sp.label}</span>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          <motion.div
+            className="flex flex-wrap justify-center gap-5"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+          >
+            {[
+              { icon: Shield, text: 'Dados protegidos' },
+              { icon: Star, text: 'Avaliada por parceiros' },
+              { icon: Users, text: '38+ lojas ativas' },
+            ].map(t => (
+              <div key={t.text} className="flex items-center gap-1.5 text-[11px] text-muted-foreground/50">
+                <t.icon className="w-3 h-3" />
+                {t.text}
+              </div>
+            ))}
+          </motion.div>
+        </div>
       </section>
 
       {/* ═══════════════════════════ MARQUEE ═══════════════════════════ */}
