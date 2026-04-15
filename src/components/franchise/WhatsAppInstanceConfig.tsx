@@ -355,7 +355,7 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
                 {portalLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CreditCard className="w-3.5 h-3.5" />}
                 Gerenciar assinatura
               </Button>
-            )
+            )}
           </CardContent>
         </Card>
       )}
@@ -406,7 +406,11 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
                 {portalLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CreditCard className="w-3.5 h-3.5" />}
                 Gerenciar assinatura
               </Button>
-            )
+            )}
+          </CardContent>
+        </Card>
+      )}
+
       {/* QR Code Card — shown for pending/disconnected states */}
       {showQr && (viewState === 'pending' || viewState === 'disconnected') && (
         <Card className="card-premium">
