@@ -1,4 +1,4 @@
-import { useState, useMemo, useRef, useEffect } from 'react';
+import { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -6,10 +6,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
-import { cidades } from '@/lib/cities';
 import { Check, ClipboardList, Rocket, CheckCircle2 } from 'lucide-react';
 import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 
