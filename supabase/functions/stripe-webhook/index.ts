@@ -190,22 +190,25 @@ Deno.serve(async (req) => {
       const subscriptionId = session.subscription;
 
       if (planType === "orcamento") {
+        const isTrial = session.metadata?.trialStarted === "true";
+        const subStatus = isTrial ? "trialing" : "active";
+
         await supabase
           .from("franchises")
           .update({
             orcamento_stripe_subscription_id: subscriptionId,
-            orcamento_stripe_subscription_status: "active",
+            orcamento_stripe_subscription_status: subStatus,
             orcamento_plan_active: true,
           })
           .eq("id", franchiseId);
 
-        await sendPlatformWhatsApp(
-          supabase,
-          franchiseId,
-          `✅ *Plano Orçamento Personalizado ativado!*\n\nOlá! Seu plano foi confirmado. Agora você já pode criar e enviar orçamentos profissionais pelo Quintal Ideal.\n\nAcesse a seção de Orçamentos para começar! 🌱`
-        );
+        const message = isTrial
+          ? `🎉 *Seu teste gratuito começou!*\n\nOlá! Você tem 7 dias para explorar todos os recursos de Orçamentos Personalizados no Quintal Ideal, sem nenhuma cobrança.\n\nAcesse agora a seção de Orçamentos e comece a criar! 🌱`
+          : `✅ *Plano Orçamento Personalizado ativado!*\n\nOlá! Seu plano foi confirmado. Agora você já pode criar e enviar orçamentos profissionais pelo Quintal Ideal.\n\nAcesse a seção de Orçamentos para começar! 🌱`;
 
-        console.log(`[stripe-webhook] checkout.session.completed (orcamento) for franchise ${franchiseId}`);
+        await sendPlatformWhatsApp(supabase, franchiseId, message);
+
+        console.log(`[stripe-webhook] checkout.session.completed (orcamento, trial=${isTrial}) for franchise ${franchiseId}`);
       } else {
         const expiresAt = new Date();
         expiresAt.setMonth(expiresAt.getMonth() + 1);
@@ -400,10 +403,14 @@ Deno.serve(async (req) => {
         const planType = resolvePlanType(subscription.metadata, extractPriceId(subscription));
 
         if (planType === "orcamento") {
-          await supabase
-            .from("franchises")
-            .update({ orcamento_stripe_subscription_status: subscription.status })
-            .eq("id", franchiseId);
+          const updateData: Record<string, any> = {
+            orcamento_stripe_subscription_status: subscription.status,
+          };
+          // Ensure access during trialing
+          if (subscription.status === "trialing" || subscription.status === "active") {
+            updateData.orcamento_plan_active = true;
+          }
+          await supabase.from("franchises").update(updateData).eq("id", franchiseId);
         } else {
           await supabase
             .from("franchises")
@@ -412,6 +419,25 @@ Deno.serve(async (req) => {
         }
 
         console.log(`[stripe-webhook] customer.subscription.updated (${planType}) for franchise ${franchiseId}: ${subscription.status}`);
+      }
+    }
+
+    // ─── customer.subscription.trial_will_end ───
+    if (eventType === "customer.subscription.trial_will_end") {
+      const subscription = event.data.object;
+      const franchiseId = subscription.metadata?.franchiseId;
+
+      if (franchiseId) {
+        const planType = resolvePlanType(subscription.metadata, extractPriceId(subscription));
+
+        if (planType === "orcamento") {
+          await sendPlatformWhatsApp(
+            supabase,
+            franchiseId,
+            `⏳ *Seu período de teste termina em 3 dias!*\n\nSeu teste gratuito do plano Orçamento Personalizado encerra em 3 dias.\n\nPara continuar usando, seu cartão será cobrado R$ 29,00/mês automaticamente. Se preferir cancelar, acesse: ${platformUrl}/planos\n\nQualquer dúvida, é só chamar! 🌱`
+          );
+          console.log(`[stripe-webhook] trial_will_end (orcamento) for franchise ${franchiseId}`);
+        }
       }
     }
 

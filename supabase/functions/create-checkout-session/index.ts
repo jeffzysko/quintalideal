@@ -184,6 +184,14 @@ Deno.serve(async (req) => {
       "subscription_data[metadata][planType]": planType,
     });
 
+    // Add 7-day free trial for orcamento plan only
+    if (planType === "orcamento") {
+      params.set("subscription_data[trial_period_days]", "7");
+      params.set("payment_method_collection", "if_required");
+      params.set("metadata[trialStarted]", "true");
+      params.set("subscription_data[metadata][trialStarted]", "true");
+    }
+
     const sessionRes = await fetch("https://api.stripe.com/v1/checkout/sessions", {
       method: "POST",
       headers: {
