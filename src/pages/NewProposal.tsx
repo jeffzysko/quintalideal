@@ -25,6 +25,8 @@ import { isValidCPF, isValidCNPJ } from '@/lib/document-utils';
 import { ProposalScore } from '@/components/proposals/ProposalScore';
 import { ProposalVideoSection } from '@/components/proposals/ProposalVideoSection';
 import { SaveTemplateModal, LoadTemplateModal } from '@/components/proposals/ProposalTemplateModal';
+import { useOrcamentoAccess } from '@/hooks/useOrcamentoAccess';
+import { OrcamentoUpgradeWall } from '@/components/proposals/OrcamentoUpgradeWall';
 
 export interface ProposalItem {
   id: string;
@@ -93,7 +95,7 @@ export default function NewProposal() {
   const editId = searchParams.get('edit');
   const isMobile = useIsMobile();
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
-
+  const { hasAccess: hasOrcamentoAccess, loading: orcamentoLoading } = useOrcamentoAccess();
   // For admins without a franchise, allow selecting one
   const [selectedFranchiseId, setSelectedFranchiseId] = useState<string | null>(null);
   const [franchiseOptions, setFranchiseOptions] = useState<{ id: string; nome_franquia: string }[]>([]);
@@ -486,6 +488,32 @@ export default function NewProposal() {
       </Button>
     </div>
   );
+
+  if (orcamentoLoading) {
+    return (
+      <div className="min-h-screen bg-background pb-bottomnav sm:pb-0">
+        <PanelHeader title="Nova Proposta">
+          <BackButton fallback="/propostas" />
+        </PanelHeader>
+        <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="h-[72px] skeleton rounded-xl" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (!hasOrcamentoAccess) {
+    return (
+      <div className="min-h-screen bg-background pb-bottomnav sm:pb-0">
+        <PanelHeader title="Nova Proposta">
+          <BackButton fallback="/propostas" />
+        </PanelHeader>
+        <OrcamentoUpgradeWall />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background pb-bottomnav sm:pb-0">

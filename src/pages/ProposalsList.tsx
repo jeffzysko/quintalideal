@@ -15,6 +15,8 @@ import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Plus, FileText, Clock, ChevronRight, Link2, Pencil, Search, DollarSign, Eye, CheckCircle2, UserCheck, UserX } from 'lucide-react';
 import { format } from 'date-fns';
+import { useOrcamentoAccess } from '@/hooks/useOrcamentoAccess';
+import { OrcamentoUpgradeWall } from '@/components/proposals/OrcamentoUpgradeWall';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -46,6 +48,7 @@ export default function ProposalsList() {
   const queryClient = useQueryClient();
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
   const basePath = isAdmin ? '/admin' : '/franquia';
+  const { hasAccess: hasOrcamentoAccess, loading: orcamentoLoading } = useOrcamentoAccess();
   const canQuery = !!franchiseId || isAdmin;
 
   const [statusFilter, setStatusFilter] = useState('todas');
@@ -151,6 +154,15 @@ export default function ProposalsList() {
           <UserAvatarMenu />
         </PanelHeader>
 
+        {orcamentoLoading ? (
+          <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <div key={i} className="h-[72px] skeleton rounded-xl" />
+            ))}
+          </div>
+        ) : !hasOrcamentoAccess ? (
+          <OrcamentoUpgradeWall />
+        ) : (
         <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
           {/* Desktop breadcrumbs + title */}
           <div className="hidden md:flex items-center justify-between mb-5">
@@ -383,6 +395,7 @@ export default function ProposalsList() {
             )}
           </div>
         </div>
+        )}
       </div>
     </PageTransition>
   );
