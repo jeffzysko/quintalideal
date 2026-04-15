@@ -3,15 +3,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Loader2, Smartphone, Building2, Wifi, WifiOff, Monitor, CalendarClock, DollarSign, AlertTriangle, Server, ServerOff, Minus } from 'lucide-react';
+import { Loader2, Smartphone, Building2, Wifi, WifiOff, Monitor, CalendarClock, DollarSign, AlertTriangle, Server, ServerOff, Minus, ExternalLink, CreditCard } from 'lucide-react';
 import { toast } from 'sonner';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
@@ -28,14 +26,12 @@ interface FranchiseWARow {
   whatsapp_plan_expires_at: string | null;
   whatsapp_plan_price: number | null;
   whatsapp_plan_notes: string | null;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  stripe_subscription_status: string | null;
 }
 
-const DURATION_OPTIONS = [
-  { value: '1', label: '1 mês' },
-  { value: '3', label: '3 meses' },
-  { value: '6', label: '6 meses' },
-  { value: '12', label: '12 meses' },
-];
+const MONTHLY_PRICE = 79.90;
 
 async function invokeZapiInstance(action: string, franchiseId: string) {
   const { data, error } = await supabase.functions.invoke('zapi-instance', {
@@ -50,14 +46,10 @@ export function AdminWhatsAppPlans() {
   const queryClient = useQueryClient();
   const [togglingId, setTogglingId] = useState<string | null>(null);
 
-  // Activation modal state
   const [activatingFranchise, setActivatingFranchise] = useState<FranchiseWARow | null>(null);
-  const [duration, setDuration] = useState('1');
-  const [price, setPrice] = useState('79.90');
   const [notes, setNotes] = useState('');
   const [activating, setActivating] = useState(false);
 
-  // Deactivation dialog state
   const [deactivatingFranchise, setDeactivatingFranchise] = useState<FranchiseWARow | null>(null);
 
   const { data: franchises = [], isLoading } = useQuery({
@@ -65,7 +57,7 @@ export function AdminWhatsAppPlans() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('franchises')
-        .select('id, nome_franquia, whatsapp_mode, zapi_instance_active, whatsapp_plan_active, zapi_instance_id, whatsapp_plan_expires_at, whatsapp_plan_price, whatsapp_plan_notes')
+        .select('id, nome_franquia, whatsapp_mode, zapi_instance_active, whatsapp_plan_active, zapi_instance_id, whatsapp_plan_expires_at, whatsapp_plan_price, whatsapp_plan_notes, stripe_customer_id, stripe_subscription_id, stripe_subscription_status')
         .eq('ativa', true)
         .order('nome_franquia', { ascending: true });
       if (error) throw error;
@@ -82,15 +74,14 @@ export function AdminWhatsAppPlans() {
       const exp = new Date(f.whatsapp_plan_expires_at);
       return isBefore(exp, in7Days) && !isBefore(exp, now);
     });
-    const totalRevenue = activePlans.reduce((sum, f) => sum + (f.whatsapp_plan_price || 0), 0);
-    return { activeCount: activePlans.length, expiringCount: expiringSoon.length, totalRevenue };
+    const stripeActiveCount = franchises.filter(f => f.stripe_subscription_status === 'active').length;
+    const mrrStripe = stripeActiveCount * MONTHLY_PRICE;
+    return { activeCount: activePlans.length, expiringCount: expiringSoon.length, mrrStripe };
   }, [franchises]);
 
   const handleToggle = (franchise: FranchiseWARow, active: boolean) => {
     if (active) {
       setActivatingFranchise(franchise);
-      setDuration('1');
-      setPrice('79.90');
       setNotes('');
     } else {
       setDeactivatingFranchise(franchise);
@@ -102,20 +93,15 @@ export function AdminWhatsAppPlans() {
     setActivating(true);
 
     try {
-      // 1. Create Z-API instance
       await invokeZapiInstance('create', activatingFranchise.id);
 
-      // 2. Update plan data in DB
-      const months = parseInt(duration);
-      const expiresAt = addMonths(new Date(), months).toISOString();
-      const priceValue = parseFloat(price) || 0;
+      const expiresAt = addMonths(new Date(), 1).toISOString();
 
       const { error } = await supabase
         .from('franchises')
         .update({
           whatsapp_plan_active: true,
           whatsapp_plan_expires_at: expiresAt,
-          whatsapp_plan_price: priceValue,
           whatsapp_plan_notes: notes || null,
         })
         .eq('id', activatingFranchise.id);
@@ -138,10 +124,8 @@ export function AdminWhatsAppPlans() {
     setTogglingId(deactivatingFranchise.id);
 
     try {
-      // 1. Delete Z-API instance
       await invokeZapiInstance('delete', deactivatingFranchise.id);
 
-      // 2. Update DB
       const { error } = await supabase
         .from('franchises')
         .update({
@@ -243,6 +227,41 @@ export function AdminWhatsAppPlans() {
     );
   };
 
+  const getStripeBadge = (row: FranchiseWARow) => {
+    if (!row.stripe_subscription_status) {
+      return <span className="text-[10px] text-muted-foreground">—</span>;
+    }
+    switch (row.stripe_subscription_status) {
+      case 'active':
+      case 'trialing':
+        return <Badge variant="success" className="text-[10px]">Ativo</Badge>;
+      case 'past_due':
+        return <Badge variant="warning" className="text-[10px]">Inadimplente</Badge>;
+      case 'canceled':
+      case 'unpaid':
+        return <Badge variant="destructive" className="text-[10px]">Cancelado</Badge>;
+      default:
+        return <Badge variant="outline" className="text-[10px]">{row.stripe_subscription_status}</Badge>;
+    }
+  };
+
+  const getStripeLink = (row: FranchiseWARow) => {
+    if (!row.stripe_customer_id) {
+      return <span className="text-[10px] text-muted-foreground">—</span>;
+    }
+    return (
+      <a
+        href={`https://dashboard.stripe.com/customers/${row.stripe_customer_id}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="inline-flex items-center gap-1 text-[10px] text-primary hover:underline"
+      >
+        <ExternalLink className="w-3 h-3" />
+        Ver no Stripe
+      </a>
+    );
+  };
+
   const getPlanStatusBadge = (row: FranchiseWARow) => {
     if (!row.whatsapp_plan_active) {
       return <Badge variant="outline" className="text-[10px] text-muted-foreground">Inativo</Badge>;
@@ -277,10 +296,12 @@ export function AdminWhatsAppPlans() {
     );
   }
 
+  const hasNoStripeSubscription = activatingFranchise && activatingFranchise.stripe_subscription_status !== 'active';
+
   return (
     <>
       {/* Summary Cards */}
-      <div className="grid grid-cols-3 gap-3 mb-4">
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
         <Card className="p-3">
           <div className="flex items-center gap-2">
             <Smartphone className="w-4 h-4 text-success" />
@@ -303,8 +324,17 @@ export function AdminWhatsAppPlans() {
           <div className="flex items-center gap-2">
             <DollarSign className="w-4 h-4 text-primary" />
             <div>
-              <p className="text-lg font-bold">{formatCurrency(summary.totalRevenue)}</p>
-              <p className="text-[10px] text-muted-foreground">Receita mensal</p>
+              <p className="text-lg font-bold">{formatCurrency(summary.mrrStripe)}</p>
+              <p className="text-[10px] text-muted-foreground">MRR Stripe</p>
+            </div>
+          </div>
+        </Card>
+        <Card className="p-3">
+          <div className="flex items-center gap-2">
+            <CreditCard className="w-4 h-4 text-primary" />
+            <div>
+              <p className="text-lg font-bold">{franchises.filter(f => f.stripe_subscription_status === 'active').length}</p>
+              <p className="text-[10px] text-muted-foreground">Assinaturas ativas</p>
             </div>
           </div>
         </Card>
@@ -335,8 +365,9 @@ export function AdminWhatsAppPlans() {
                     <TableHead className="text-xs">Instância</TableHead>
                     <TableHead className="text-xs">Conexão</TableHead>
                     <TableHead className="text-xs">Status</TableHead>
+                    <TableHead className="text-xs">Status Stripe</TableHead>
+                    <TableHead className="text-xs">Assinatura</TableHead>
                     <TableHead className="text-xs">Validade</TableHead>
-                    <TableHead className="text-xs">Valor</TableHead>
                     <TableHead className="text-xs text-right">Plano</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -351,13 +382,14 @@ export function AdminWhatsAppPlans() {
                       <TableCell>{getInstanceBadge(f)}</TableCell>
                       <TableCell>{getConnectionBadge(f)}</TableCell>
                       <TableCell>{getPlanStatusBadge(f)}</TableCell>
+                      <TableCell>{getStripeBadge(f)}</TableCell>
+                      <TableCell>{getStripeLink(f)}</TableCell>
                       <TableCell className="text-xs text-muted-foreground">
                         <span className="flex items-center gap-1">
                           {(isExpired || isExpiringSoon) && <AlertTriangle className="w-3 h-3 text-warning-foreground" />}
                           {formatDate(f.whatsapp_plan_expires_at)}
                         </span>
                       </TableCell>
-                      <TableCell className="text-xs">{formatCurrency(f.whatsapp_plan_price)}</TableCell>
                       <TableCell className="text-right">
                         <Switch
                           checked={f.whatsapp_plan_active}
@@ -382,47 +414,29 @@ export function AdminWhatsAppPlans() {
           <DialogHeader>
             <DialogTitle className="text-base flex items-center gap-2">
               <CalendarClock className="w-4 h-4 text-primary" />
-              Ativar Plano WhatsApp
+              Ativar Plano WhatsApp (Manual)
             </DialogTitle>
             <DialogDescription className="text-xs">
-              Configurar plano para <strong>{activatingFranchise?.nome_franquia}</strong>. Uma instância Z-API será criada automaticamente.
+              Ativação manual para <strong>{activatingFranchise?.nome_franquia}</strong>. Uma instância Z-API será criada automaticamente.
             </DialogDescription>
           </DialogHeader>
 
+          {hasNoStripeSubscription && (
+            <div className="flex items-start gap-2 rounded-lg border border-warning/50 bg-warning/10 p-3">
+              <AlertTriangle className="w-4 h-4 text-warning-foreground mt-0.5 shrink-0" />
+              <p className="text-xs text-warning-foreground">
+                <strong>Atenção:</strong> este franqueado não tem assinatura Stripe ativa. A ativação manual não gera cobrança recorrente.
+              </p>
+            </div>
+          )}
+
           <div className="space-y-4 py-2">
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Duração</Label>
-              <Select value={duration} onValueChange={setDuration}>
-                <SelectTrigger className="rounded-xl h-11">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {DURATION_OPTIONS.map(opt => (
-                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label className="text-xs font-medium">Valor cobrado (R$)</Label>
-              <Input
-                type="number"
-                step="0.01"
-                min="0"
-                value={price}
-                onChange={e => setPrice(e.target.value)}
-                placeholder="79.90"
-                className="rounded-xl h-11"
-              />
-            </div>
-
             <div className="space-y-1.5">
               <Label className="text-xs font-medium">Observações (opcional)</Label>
               <Textarea
                 value={notes}
                 onChange={e => setNotes(e.target.value)}
-                placeholder="Anotações internas sobre esta ativação..."
+                placeholder="Anotações internas sobre esta ativação (ex: cortesia, teste)..."
                 className="rounded-xl resize-none"
                 rows={3}
               />
