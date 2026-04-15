@@ -1,7 +1,7 @@
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@tanstack/react-query';
-import { Check, Crown, Sparkles, MessageCircle, FileText, Lightbulb } from 'lucide-react';
+import { Check, Sparkles, MessageCircle, FileText, Lightbulb } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -138,6 +138,7 @@ export default function PlanosFranquia() {
       <PageHeader
         title="Planos e Assinaturas"
         subtitle="Expanda os recursos da sua franquia com nossos planos adicionais."
+        fallbackPath="/franquia"
       />
 
       {/* Banner for free plan */}

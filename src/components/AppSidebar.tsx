@@ -18,6 +18,7 @@ import {
   Webhook,
   LogOut,
   FileText,
+  Star,
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -71,6 +72,7 @@ const FRANCHISE_TABS: SidebarNavItem[] = [
   { title: 'Propostas', url: '/propostas', icon: FileText, matchPaths: ['/propostas'] },
   { title: 'Metas', url: '/franquia?tab=achievements', icon: TrendingUp, matchTab: 'achievements' },
   { title: 'Relatórios', url: '/franquia?tab=reports', icon: BarChart3, matchTab: 'reports' },
+  { title: 'Planos', url: '/planos', icon: Star, matchPaths: ['/planos'] },
 ];
 
 const ADMIN_NAV: SidebarNavItem[] = [
