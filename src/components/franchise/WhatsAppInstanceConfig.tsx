@@ -343,6 +343,19 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
               {disconnecting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Unplug className="w-3.5 h-3.5" />}
               Desconectar
             </Button>
+
+            {state.stripe_subscription_id && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePortal}
+                disabled={portalLoading}
+                className="gap-2 text-xs rounded-xl"
+              >
+                {portalLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CreditCard className="w-3.5 h-3.5" />}
+                Gerenciar assinatura
+              </Button>
+            )
           </CardContent>
         </Card>
       )}
@@ -380,8 +393,20 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
             )}
           </CardContent>
         </Card>
-      )}
+            )}
 
+            {state.stripe_subscription_id && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePortal}
+                disabled={portalLoading}
+                className="gap-2 text-xs rounded-xl"
+              >
+                {portalLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CreditCard className="w-3.5 h-3.5" />}
+                Gerenciar assinatura
+              </Button>
+            )
       {/* QR Code Card — shown for pending/disconnected states */}
       {showQr && (viewState === 'pending' || viewState === 'disconnected') && (
         <Card className="card-premium">
