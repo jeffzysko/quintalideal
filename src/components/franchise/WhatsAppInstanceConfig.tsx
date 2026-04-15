@@ -1,10 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
-import { Save, Eye, EyeOff, Loader2, Wifi, WifiOff, Zap, ArrowLeft, Smartphone, Crown } from 'lucide-react';
+import { Save, Eye, EyeOff, Loader2, Wifi, WifiOff, Zap, ArrowLeft, Smartphone, Crown, QrCode, RefreshCw, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 
@@ -19,6 +19,7 @@ interface FranchiseWAConfig {
   zapi_client_token: string | null;
   zapi_instance_active: boolean;
   whatsapp_plan_active: boolean;
+  zapi_phone_number: string | null;
 }
 
 export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigProps) {
@@ -35,15 +36,31 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
   const [showToken, setShowToken] = useState(false);
   const [showClient, setShowClient] = useState(false);
 
+  // QR Code state
+  const [qrCodeData, setQrCodeData] = useState<string | null>(null);
+  const [showQrCode, setShowQrCode] = useState(false);
+  const [loadingQr, setLoadingQr] = useState(false);
+  const [pollingStatus, setPollingStatus] = useState(false);
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
   useEffect(() => {
     loadConfig();
+    return () => stopPolling();
   }, [franchiseId]);
+
+  const stopPolling = () => {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current);
+      pollingRef.current = null;
+    }
+    setPollingStatus(false);
+  };
 
   const loadConfig = async () => {
     setLoading(true);
     const { data } = await supabase
       .from('franchises')
-      .select('whatsapp_mode, zapi_instance_id, zapi_token, zapi_client_token, zapi_instance_active, whatsapp_plan_active')
+      .select('whatsapp_mode, zapi_instance_id, zapi_token, zapi_client_token, zapi_instance_active, whatsapp_plan_active, zapi_phone_number')
       .eq('id', franchiseId)
       .maybeSingle();
 
@@ -76,8 +93,125 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
     } else {
       toast.success('Credenciais salvas com sucesso!');
       await loadConfig();
+      // After saving, test connection and show QR if needed
+      await handleTestAndShowQr();
     }
     setSaving(false);
+  };
+
+  const handleTestAndShowQr = async () => {
+    if (!instanceId || !token) return;
+    setTesting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('zapi-status', {
+        body: {
+          action: 'status',
+          instance_id: instanceId,
+          token: token,
+          security_token: clientToken || null,
+        },
+      });
+
+      if (error) throw error;
+
+      const connected = data?.connected === true;
+      if (connected) {
+        await markConnected(data?.phone);
+      } else {
+        // Not connected — show QR code
+        await fetchQrCode();
+        startPolling();
+      }
+    } catch {
+      toast.error('Erro ao verificar status. Verifique as credenciais.');
+    } finally {
+      setTesting(false);
+    }
+  };
+
+  const markConnected = async (phone?: string) => {
+    stopPolling();
+    setShowQrCode(false);
+    setQrCodeData(null);
+
+    await supabase
+      .from('franchises')
+      .update({
+        zapi_instance_active: true,
+        whatsapp_mode: 'own',
+        zapi_phone_number: phone || null,
+      })
+      .eq('id', franchiseId);
+
+    toast.success('WhatsApp conectado com sucesso! ✅');
+    await loadConfig();
+  };
+
+  const fetchQrCode = useCallback(async () => {
+    if (!instanceId || !token) return;
+    setLoadingQr(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('zapi-status', {
+        body: {
+          action: 'qr_code',
+          instance_id: instanceId,
+          token: token,
+          security_token: clientToken || null,
+        },
+      });
+
+      if (error) throw error;
+
+      if (data?.value) {
+        setQrCodeData(`data:image/png;base64,${data.value}`);
+        setShowQrCode(true);
+      } else if (data?.url) {
+        setQrCodeData(data.url);
+        setShowQrCode(true);
+      } else {
+        toast.error('QR Code não disponível. Tente novamente.');
+      }
+    } catch {
+      toast.error('Erro ao buscar QR Code.');
+    } finally {
+      setLoadingQr(false);
+    }
+  }, [instanceId, token, clientToken]);
+
+  const checkStatus = useCallback(async () => {
+    if (!instanceId || !token) return;
+    try {
+      const { data, error } = await supabase.functions.invoke('zapi-status', {
+        body: {
+          action: 'status',
+          instance_id: instanceId,
+          token: token,
+          security_token: clientToken || null,
+        },
+      });
+
+      if (error) return;
+
+      if (data?.connected === true) {
+        await markConnected(data?.phone);
+      }
+    } catch {
+      // silent
+    }
+  }, [instanceId, token, clientToken, franchiseId]);
+
+  const startPolling = () => {
+    stopPolling();
+    setPollingStatus(true);
+    pollingRef.current = setInterval(() => {
+      checkStatus();
+    }, 7000);
+  };
+
+  const handleManualCheckStatus = async () => {
+    setTesting(true);
+    await checkStatus();
+    setTesting(false);
   };
 
   const handleActivateOwnMode = async () => {
@@ -95,6 +229,7 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
   };
 
   const handleSwitchToPlatform = async () => {
+    stopPolling();
     const { error } = await supabase
       .from('franchises')
       .update({ whatsapp_mode: 'platform', zapi_instance_active: false })
@@ -104,6 +239,8 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
       toast.error('Erro ao voltar para modo plataforma.');
     } else {
       toast.success('Voltando a usar o número da plataforma.');
+      setShowQrCode(false);
+      setQrCodeData(null);
       await loadConfig();
     }
   };
@@ -113,35 +250,7 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
       toast.error('Preencha Instance ID e Token antes de testar.');
       return;
     }
-    setTesting(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('zapi-status', {
-        body: {
-          instance_id: instanceId,
-          token: token,
-          security_token: clientToken || null,
-        },
-      });
-
-      if (error) throw error;
-
-      const connected = data?.connected === true;
-      await supabase
-        .from('franchises')
-        .update({ zapi_instance_active: connected })
-        .eq('id', franchiseId);
-
-      if (connected) {
-        toast.success('Conexão verificada com sucesso! ✅');
-      } else {
-        toast.error('Não foi possível conectar. Verifique as credenciais.');
-      }
-      await loadConfig();
-    } catch {
-      toast.error('Erro ao testar conexão.');
-    } finally {
-      setTesting(false);
-    }
+    await handleTestAndShowQr();
   };
 
   if (loading) return null;
@@ -240,7 +349,12 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
               : 'bg-destructive/10 text-destructive border border-destructive/20'
           }`}>
             {config.zapi_instance_active ? (
-              <><Wifi className="w-4 h-4" /> Conectado</>
+              <>
+                <Wifi className="w-4 h-4" /> Conectado
+                {config.zapi_phone_number && (
+                  <span className="text-xs font-normal ml-1">— {config.zapi_phone_number}</span>
+                )}
+              </>
             ) : (
               <><WifiOff className="w-4 h-4" /> Desconectado</>
             )}
@@ -343,6 +457,70 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
           </div>
         </CardContent>
       </Card>
+
+      {/* QR Code Card */}
+      {showQrCode && !config.zapi_instance_active && (
+        <Card className="card-premium">
+          <CardHeader className="text-center">
+            <CardTitle className="text-sm font-semibold flex items-center justify-center gap-2">
+              <QrCode className="w-4 h-4 text-primary" />
+              Escaneie com seu WhatsApp
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Abra o WhatsApp → Dispositivos Vinculados → Vincular um dispositivo
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex justify-center">
+              {loadingQr ? (
+                <div className="w-[220px] h-[220px] flex items-center justify-center bg-muted/30 rounded-xl">
+                  <Loader2 className="w-8 h-8 animate-spin text-muted-foreground" />
+                </div>
+              ) : qrCodeData ? (
+                <img
+                  src={qrCodeData}
+                  alt="QR Code WhatsApp"
+                  className="max-w-[220px] max-h-[220px] rounded-lg border border-border"
+                />
+              ) : (
+                <div className="w-[220px] h-[220px] flex items-center justify-center bg-muted/30 rounded-xl text-xs text-muted-foreground">
+                  QR Code indisponível
+                </div>
+              )}
+            </div>
+
+            {pollingStatus && (
+              <div className="flex items-center justify-center gap-2 text-xs text-muted-foreground">
+                <Loader2 className="w-3 h-3 animate-spin" />
+                Aguardando conexão...
+              </div>
+            )}
+
+            <div className="flex flex-wrap gap-2 justify-center">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={fetchQrCode}
+                disabled={loadingQr}
+                className="gap-2 rounded-xl"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                Atualizar QR Code
+              </Button>
+              <Button
+                variant="default"
+                size="sm"
+                onClick={handleManualCheckStatus}
+                disabled={testing}
+                className="gap-2 rounded-xl"
+              >
+                {testing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CheckCircle className="w-3.5 h-3.5" />}
+                Já conectei — verificar status
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
