@@ -9,7 +9,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { PageHeader } from '@/components/PageHeader';
 import { toast } from 'sonner';
-import { useState, useMemo } from 'react';
+import { useState } from 'react';
 
 interface FranchisePlan {
   whatsapp_plan_active: boolean;
