@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.4";
+import { logError } from "../_shared/error-monitor.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -447,6 +448,15 @@ Deno.serve(async (req) => {
     });
   } catch (err) {
     console.error("[stripe-webhook] error:", err);
+    await logError({
+      supabaseUrl: Deno.env.get('SUPABASE_URL')!,
+      serviceKey: Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+      functionName: 'stripe-webhook',
+      message: 'Erro interno não tratado',
+      error: err,
+      severity: 'critical',
+      alertAdmin: true,
+    });
     return new Response(JSON.stringify({ error: "Internal server error" }), {
       status: 500,
       headers: { "Content-Type": "application/json" },

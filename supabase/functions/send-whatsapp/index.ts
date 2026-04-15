@@ -1,4 +1,5 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1";
+import { logError } from "../_shared/error-monitor.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -179,6 +180,15 @@ Deno.serve(async (req) => {
     );
   } catch (err) {
     console.error("send-whatsapp error:", err);
+    await logError({
+      supabaseUrl: Deno.env.get('SUPABASE_URL')!,
+      serviceKey: Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!,
+      functionName: 'send-whatsapp',
+      message: 'Erro interno não tratado',
+      error: err,
+      severity: 'critical',
+      alertAdmin: true,
+    });
     return new Response(
       JSON.stringify({ error: "Erro interno", details: String(err) }),
       { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
