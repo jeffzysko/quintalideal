@@ -67,7 +67,7 @@ export function Footer() {
               <FooterInlineLink to="/ranking" label="Ranking" />
               <FooterInlineLink to="/mapa" label="Mapa" />
               <FooterInlineLink to="/docs/webhook" label="API Docs" />
-              <FooterInlineLink to="/seja-franqueado" label="Seja um franqueado" />
+              <FooterInlineLink to="/seja-parceiro" label="Seja parceiro" />
             </div>
           )}
         </div>
@@ -117,7 +117,7 @@ function LegalBlock() {
       <SectionTitle>Legal</SectionTitle>
       <FooterLink to="/termos" icon={<FileText className="w-3.5 h-3.5" />} label="Termos de Uso" />
       <FooterLink to="/privacidade" icon={<Shield className="w-3.5 h-3.5" />} label="Privacidade" />
-      <FooterLink to="/seja-franqueado" icon={<Building2 className="w-3.5 h-3.5" />} label="Seja um franqueado" />
+      <FooterLink to="/seja-parceiro" icon={<Building2 className="w-3.5 h-3.5" />} label="Seja parceiro" />
     </div>
   );
 }

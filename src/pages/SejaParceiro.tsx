@@ -14,7 +14,7 @@ import { Check, ClipboardList, Rocket, CheckCircle2 } from 'lucide-react';
 import logoQI from '@/assets/logo-quintal-ideal.png';
 
 const STEPS = [
-  { emoji: '📋', title: 'Cadastre-se', description: 'Preencha o formulário com os dados da sua franquia. É rápido.' },
+  { emoji: '📋', title: 'Cadastre-se', description: 'Preencha o formulário com os dados da sua empresa. É rápido.' },
   { emoji: '✅', title: 'Aguarde a aprovação', description: 'Nossa equipe analisa e entra em contato em até 24h.' },
   { emoji: '🚀', title: 'Comece a operar', description: 'Acesse a plataforma, divulgue seu link e gerencie seus leads.' },
 ];
@@ -25,7 +25,7 @@ const FEATURES = [
   { emoji: '📱', title: 'WhatsApp integrado', description: 'Notificações automáticas para seus leads pelo WhatsApp' },
   { emoji: '📊', title: 'Relatórios e metas', description: 'Acompanhe sua performance e defina metas mensais' },
   { emoji: '🌍', title: 'Link exclusivo', description: 'Seu link de divulgação captura leads automaticamente' },
-  { emoji: '🏆', title: 'Ranking da rede', description: 'Veja seu desempenho comparado às outras franquias' },
+  { emoji: '🏆', title: 'Ranking da rede', description: 'Veja seu desempenho comparado aos outros parceiros' },
 ];
 
 const ORCAMENTO_BENEFITS = [
@@ -37,7 +37,7 @@ const ORCAMENTO_BENEFITS = [
 
 const WHATSAPP_BENEFITS = [
   'Tudo do plano Orçamento',
-  'Notificações pelo número da sua franquia',
+  'Notificações pelo número da sua empresa',
   'Instância dedicada gerenciada pela plataforma',
   'Conexão simples via QR Code',
   'Suporte prioritário',
@@ -50,7 +50,7 @@ function formatPhone(value: string) {
   return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
 
-export default function SejaFranqueado() {
+export default function SejaParceiro() {
   const [form, setForm] = useState({
     nome_franquia: '',
     cidade_base: '',
@@ -108,7 +108,7 @@ export default function SejaFranqueado() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            Leve o Quintal Ideal<br />para a sua cidade
+            Seja parceiro do<br />Quintal Ideal
           </motion.h1>
           <motion.p
             className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-8"
@@ -116,7 +116,7 @@ export default function SejaFranqueado() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            Gerencie seus leads, envie orçamentos profissionais e cresça com o suporte de uma plataforma feita para franqueados.
+            Gerencie seus leads, envie orçamentos profissionais e cresça com o suporte de uma plataforma feita para parceiros.
           </motion.p>
           <motion.div
             className="flex flex-col sm:flex-row gap-3 justify-center"
@@ -125,7 +125,7 @@ export default function SejaFranqueado() {
             transition={{ delay: 0.3 }}
           >
             <Button size="lg" className="rounded-xl" onClick={() => document.getElementById('formulario')?.scrollIntoView({ behavior: 'smooth' })}>
-              Quero ser franqueado
+              Quero ser parceiro
             </Button>
             <Button size="lg" variant="outline" className="rounded-xl" asChild>
               <a href="/login" target="_blank" rel="noopener noreferrer">Ver a plataforma</a>
@@ -187,7 +187,7 @@ export default function SejaFranqueado() {
       <section className="py-16 sm:py-20 bg-background">
         <div className="max-w-4xl mx-auto px-4">
           <h2 className="text-2xl sm:text-3xl font-bold text-center text-foreground mb-3">Planos</h2>
-          <p className="text-center text-sm text-muted-foreground mb-10">Disponíveis após o cadastro da sua franquia</p>
+          <p className="text-center text-sm text-muted-foreground mb-10">Disponíveis após o cadastro da sua empresa</p>
           <div className="grid sm:grid-cols-2 gap-6">
             {/* Orçamento */}
             <Card className="border-border/50 shadow-sm">
@@ -256,10 +256,10 @@ export default function SejaFranqueado() {
           ) : (
             <Card className="border-border/50 shadow-md">
               <CardContent className="p-6 sm:p-8">
-                <h2 className="text-xl font-bold text-foreground mb-6 text-center">Quero ser franqueado</h2>
+                <h2 className="text-xl font-bold text-foreground mb-6 text-center">Quero ser parceiro</h2>
                 <div className="space-y-4">
                   <div className="space-y-1.5">
-                    <Label className="text-xs font-medium">Nome da franquia *</Label>
+                    <Label className="text-xs font-medium">Nome da empresa *</Label>
                     <Input
                       value={form.nome_franquia}
                       onChange={e => setForm(p => ({ ...p, nome_franquia: e.target.value }))}
@@ -311,7 +311,7 @@ export default function SejaFranqueado() {
                       type="email"
                       value={form.email}
                       onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
-                      placeholder="contato@franquia.com"
+                      placeholder="contato@empresa.com"
                       maxLength={255}
                     />
                   </div>
