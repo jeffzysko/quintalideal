@@ -3,7 +3,7 @@ import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-quer
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Globe, Kanban, CalendarClock, MessageCircle } from 'lucide-react';
+import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Globe, Kanban, CalendarClock, MessageCircle, FileText } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -46,6 +46,7 @@ const KanbanBoard = lazy(() => import('@/components/franchise/KanbanBoard').then
 const FranchiseDashboard = lazy(() => import('@/pages/FranchiseDashboard'));
 const PerformanceQI = lazy(() => import('@/components/admin/PerformanceQI').then(m => ({ default: m.PerformanceQI })));
 const AdminLeadsReadOnly = lazy(() => import('@/components/admin/AdminLeadsReadOnly').then(m => ({ default: m.AdminLeadsReadOnly })));
+const AdminApplications = lazy(() => import('@/components/admin/AdminApplications').then(m => ({ default: m.AdminApplications })));
 
 function TabFallback() {
   return (
@@ -57,7 +58,7 @@ function TabFallback() {
 
 const PAGE_SIZE = 25;
 
-const getAdminTabFromSearch = (search: string): 'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'whatsapp' | 'franchise-view' => {
+const getAdminTabFromSearch = (search: string): 'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'whatsapp' | 'franchise-view' | 'candidaturas' => {
   const urlTab = new URLSearchParams(search).get('tab');
   if (urlTab === 'leads') return 'leads';
   if (urlTab === 'kanban') return 'kanban';
@@ -69,6 +70,7 @@ const getAdminTabFromSearch = (search: string): 'overview' | 'leads' | 'kanban' 
   if (urlTab === 'emails') return 'emails';
   if (urlTab === 'whatsapp') return 'whatsapp';
   if (urlTab === 'franchise-view') return 'franchise-view';
+  if (urlTab === 'candidaturas') return 'candidaturas';
   return 'overview';
 };
 
@@ -85,7 +87,7 @@ export default function AdminDashboard() {
   // Live updates: invalidates queries when leads change in the DB
   useLeadsRealtime();
   const { signOut: _signOut, role } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'whatsapp' | 'franchise-view'>(() => getAdminTabFromSearch(location.search));
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'whatsapp' | 'franchise-view' | 'candidaturas'>(() => getAdminTabFromSearch(location.search));
 
   // Sync activeTab when URL changes externally (e.g. sidebar navigation)
   useEffect(() => {
@@ -426,6 +428,20 @@ export default function AdminDashboard() {
 
   const isSuperAdmin = role === 'super_admin';
 
+  // Pending applications count for badge
+  const { data: pendingAppCount = 0 } = useQuery({
+    queryKey: ['pending-applications-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('franchise_applications')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'pending');
+      if (error) return 0;
+      return count || 0;
+    },
+    staleTime: 30_000,
+  });
+
   const TABS = [
     { key: 'overview' as const, icon: BarChart3, label: 'Inteligência' },
     { key: 'performance-qi' as const, icon: Target, label: 'Performance QI' },
@@ -437,6 +453,7 @@ export default function AdminDashboard() {
     { key: 'franchises' as const, icon: Building2, label: 'Franquias' },
     { key: 'cities' as const, icon: Globe, label: 'Territórios' },
     ...(isSuperAdmin ? [
+      { key: 'candidaturas' as const, icon: FileText, label: pendingAppCount > 0 ? `Candidaturas (${pendingAppCount})` : 'Candidaturas' },
       { key: 'users' as const, icon: Users, label: 'Usuários' },
       { key: 'emails' as const, icon: Mail, label: 'E-mails' },
       { key: 'whatsapp' as const, icon: MessageCircle, label: 'WhatsApp' },
@@ -669,6 +686,7 @@ export default function AdminDashboard() {
         {activeTab === 'users' && <Suspense fallback={<TabFallback />}><AdminUserManager /></Suspense>}
         {activeTab === 'emails' && <Suspense fallback={<TabFallback />}><AdminEmailTemplates /></Suspense>}
         {activeTab === 'whatsapp' && <Suspense fallback={<TabFallback />}><AdminWhatsAppTemplates /></Suspense>}
+        {activeTab === 'candidaturas' && <Suspense fallback={<TabFallback />}><AdminApplications /></Suspense>}
 
         {activeTab === 'franchise-view' && (
           <Suspense fallback={<TabFallback />}>
