@@ -362,20 +362,20 @@ export default function SejaParceiro() {
 
         {/* Hero content */}
         <motion.div
-          className="relative z-10 max-w-4xl mx-auto px-5 pt-16 sm:pt-20 text-center"
+          className="relative z-10 max-w-4xl mx-auto px-5 pt-12 sm:pt-16 text-center"
           style={{ y: heroY, opacity: heroOpacity }}
         >
           <motion.img
             src={logoQuintalIdeal}
             alt="Quintal Ideal"
-            className="h-10 sm:h-12 mx-auto mb-8"
+            className="h-10 sm:h-12 mx-auto mb-5"
             initial={{ opacity: 0, scale: 0.7, filter: 'blur(10px)' }}
             animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           />
 
           <motion.div
-            className="inline-flex items-center gap-2 mb-8"
+            className="inline-flex items-center gap-2 mb-5"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
@@ -388,7 +388,7 @@ export default function SejaParceiro() {
           </motion.div>
 
           <motion.h1
-            className="text-[2rem] leading-[1.1] sm:text-[3rem] lg:text-[3.75rem] font-extrabold text-foreground mb-6 tracking-tight sm:leading-[1.08]"
+            className="text-[1.75rem] leading-[1.1] sm:text-[2.75rem] lg:text-[3.25rem] font-extrabold text-foreground mb-4 tracking-tight sm:leading-[1.08]"
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
@@ -405,13 +405,13 @@ export default function SejaParceiro() {
                 transition={{ delay: 0.8, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 style={{ transformOrigin: 'left' }}
               />
-            </span>{' '}
-            <br className="hidden sm:block" />
-            e venda mais piscinas
+            </span>{' '}e venda
+            <br />
+            mais piscinas
           </motion.h1>
 
           <motion.p
-            className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-4 leading-relaxed"
+            className="text-sm sm:text-base text-muted-foreground max-w-2xl mx-auto mb-3 leading-relaxed"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
@@ -420,7 +420,7 @@ export default function SejaParceiro() {
           </motion.p>
 
           <motion.p
-            className="text-sm text-muted-foreground/70 max-w-xl mx-auto mb-10"
+            className="text-xs sm:text-sm text-muted-foreground/70 max-w-xl mx-auto mb-7"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
@@ -429,7 +429,7 @@ export default function SejaParceiro() {
           </motion.p>
 
           <motion.div
-            className="flex flex-col sm:flex-row gap-3 justify-center mb-14"
+            className="flex flex-col sm:flex-row gap-3 justify-center mb-10"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
@@ -459,53 +459,7 @@ export default function SejaParceiro() {
               <a href="/login">Já sou parceiro</a>
             </Button>
           </motion.div>
-
-          {/* Social proof counters with glow */}
-          <motion.div
-            className="flex flex-wrap justify-center gap-1 sm:gap-2 mb-6"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
-          >
-            {SOCIAL_PROOF.map((sp) => (
-              <motion.div
-                key={sp.label}
-                className="relative group px-6 sm:px-8 py-4 rounded-2xl border border-border/30 bg-background/50 backdrop-blur-md cursor-default"
-                whileHover={{ scale: 1.05, borderColor: 'hsl(225 76% 48% / 0.3)' }}
-                transition={{ type: 'spring', stiffness: 300 }}
-              >
-                <div className="absolute inset-0 rounded-2xl bg-primary/[0.03] group-hover:bg-primary/[0.06] transition-colors duration-300" />
-                <div className="relative text-center">
-                  <span className="block text-2xl sm:text-3xl font-bold bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent">
-                    <AnimatedCounter value={sp.metric} suffix={sp.suffix} />
-                  </span>
-                  <span className="text-[10px] sm:text-xs text-muted-foreground font-medium mt-1 block">{sp.label}</span>
-                </div>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          {/* Trust strip */}
-          <motion.div
-            className="flex flex-wrap justify-center gap-5"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.1 }}
-          >
-            {[
-              { icon: Shield, text: 'Dados protegidos' },
-              { icon: Star, text: 'Avaliada por parceiros' },
-              { icon: Users, text: '38+ lojas ativas' },
-            ].map(t => (
-              <div key={t.text} className="flex items-center gap-1.5 text-[11px] text-muted-foreground/50">
-                <t.icon className="w-3 h-3" />
-                {t.text}
-              </div>
-            ))}
-          </motion.div>
         </motion.div>
-
-        {/* Scroll indicator */}
         <motion.div
           className="absolute bottom-8 left-1/2 -translate-x-1/2"
           animate={{ y: [0, 8, 0] }}
@@ -519,6 +473,53 @@ export default function SejaParceiro() {
             />
           </div>
         </motion.div>
+      </section>
+
+      {/* ═══════════════════════════ SOCIAL PROOF BAND ═══════════════════════════ */}
+      <section className="py-10 sm:py-12 bg-background relative">
+        <div className="max-w-4xl mx-auto px-5">
+          <motion.div
+            className="flex flex-wrap justify-center gap-4 sm:gap-6 mb-6"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            {SOCIAL_PROOF.map((sp) => (
+              <motion.div
+                key={sp.label}
+                className="relative group px-8 sm:px-10 py-5 rounded-2xl border border-border/30 bg-background backdrop-blur-md cursor-default"
+                whileHover={{ scale: 1.05, borderColor: 'hsl(225 76% 48% / 0.3)' }}
+                transition={{ type: 'spring', stiffness: 300 }}
+              >
+                <div className="absolute inset-0 rounded-2xl bg-primary/[0.02] group-hover:bg-primary/[0.05] transition-colors duration-300" />
+                <div className="relative text-center">
+                  <span className="block text-3xl sm:text-4xl font-bold bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent">
+                    <AnimatedCounter value={sp.metric} suffix={sp.suffix} />
+                  </span>
+                  <span className="text-[11px] sm:text-xs text-muted-foreground font-medium mt-1.5 block">{sp.label}</span>
+                </div>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          <motion.div
+            className="flex flex-wrap justify-center gap-5"
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+          >
+            {[
+              { icon: Shield, text: 'Dados protegidos' },
+              { icon: Star, text: 'Avaliada por parceiros' },
+              { icon: Users, text: '38+ lojas ativas' },
+            ].map(t => (
+              <div key={t.text} className="flex items-center gap-1.5 text-[11px] text-muted-foreground/50">
+                <t.icon className="w-3 h-3" />
+                {t.text}
+              </div>
+            ))}
+          </motion.div>
+        </div>
       </section>
 
       {/* ═══════════════════════════ MARQUEE ═══════════════════════════ */}
