@@ -439,11 +439,14 @@ export default function SejaParceiro() {
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
               <Card className="border-primary/20 shadow-md">
                 <CardContent className="py-12 text-center">
-                  <CheckCircle2 className="w-12 h-12 text-primary mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-foreground mb-2">Candidatura recebida!</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Entraremos em contato pelo WhatsApp em até 24 horas.
-                  </p>
+                   <CheckCircle2 className="w-14 h-14 text-primary mx-auto mb-4" />
+                   <h3 className="text-xl font-bold text-foreground mb-2">Pronto! Sua candidatura foi recebida 🎉</h3>
+                   <p className="text-sm text-muted-foreground mb-1">
+                     Nossa equipe entrará em contato pelo <strong>WhatsApp em até 24 horas</strong>.
+                   </p>
+                   <p className="text-xs text-muted-foreground/70">
+                     Enquanto isso, prepare-se: em breve você terá acesso a uma plataforma completa para receber leads e fechar mais vendas.
+                   </p>
                 </CardContent>
               </Card>
             </motion.div>
