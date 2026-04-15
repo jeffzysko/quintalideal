@@ -35,6 +35,7 @@ import { AlertBanner } from '@/components/dashboard/AlertBanner';
 import type { MetricCardProps } from '@/components/dashboard/MetricCard';
 import { InsightCards } from '@/components/dashboard/InsightCards';
 import { useLeadsRealtime } from '@/hooks/useLeadsRealtime';
+import { OnboardingChecklist } from '@/components/franchise/OnboardingChecklist';
 
 const PAGE_SIZE = 20;
 
@@ -75,8 +76,9 @@ interface FranchiseDashboardProps {
 }
 
 export default function FranchiseDashboard({ overrideFranchiseId, embedded }: FranchiseDashboardProps = {}) {
-  const { franchiseId: authFranchiseId, loading: authLoading } = useAuth();
+  const { franchiseId: authFranchiseId, loading: authLoading, role } = useAuth();
   const franchiseId = overrideFranchiseId || authFranchiseId;
+  const showOnboarding = role === 'franquia' && !overrideFranchiseId;
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
@@ -356,7 +358,10 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
         </div>
       )}
 
-      {/* SLA + Goals row */}
+      {/* Onboarding Checklist for new franchisees */}
+      {showOnboarding && franchiseId && <OnboardingChecklist franchiseId={franchiseId} />}
+
+
       {loadingKpis ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           {Array.from({ length: 3 }).map((_, i) => (
