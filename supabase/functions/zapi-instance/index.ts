@@ -181,7 +181,6 @@ Deno.serve(async (req) => {
         .update({
           zapi_instance_id: null,
           zapi_token: null,
-          zapi_client_token: null,
           zapi_phone_number: null,
           zapi_instance_active: false,
         })
@@ -197,7 +196,7 @@ Deno.serve(async (req) => {
     // ─── Load credentials for remaining actions ───
     const { data: franchise } = await supabase
       .from("franchises")
-      .select("zapi_instance_id, zapi_token, zapi_client_token, whatsapp_plan_active, zapi_instance_active")
+      .select("zapi_instance_id, zapi_token, whatsapp_plan_active, zapi_instance_active")
       .eq("id", franchiseId)
       .maybeSingle();
 
@@ -217,7 +216,6 @@ Deno.serve(async (req) => {
 
     const instanceId = franchise.zapi_instance_id;
     const zapiToken = franchise.zapi_token;
-    const securityToken = franchise.zapi_client_token;
 
     if (!instanceId || !zapiToken) {
       return new Response(
