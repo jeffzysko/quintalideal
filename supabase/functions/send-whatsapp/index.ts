@@ -28,7 +28,7 @@ async function resolveZapiCredentials(
   // 1. Check franchise-specific credentials (multi-instance)
   const { data: franchise } = await supabase
     .from("franchises")
-    .select("whatsapp_mode, zapi_instance_id, zapi_token, zapi_client_token, zapi_instance_active, whatsapp_plan_active")
+    .select("whatsapp_mode, zapi_instance_id, zapi_token, zapi_instance_active, whatsapp_plan_active")
     .eq("id", franchiseId)
     .maybeSingle();
 
@@ -42,7 +42,7 @@ async function resolveZapiCredentials(
     return {
       instanceId: franchise.zapi_instance_id,
       zapiToken: franchise.zapi_token,
-      securityToken: franchise.zapi_client_token || null,
+      securityToken: null,
     };
   }
 

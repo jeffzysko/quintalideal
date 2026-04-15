@@ -181,7 +181,6 @@ Deno.serve(async (req) => {
         .update({
           zapi_instance_id: null,
           zapi_token: null,
-          zapi_client_token: null,
           zapi_phone_number: null,
           zapi_instance_active: false,
         })
@@ -197,7 +196,7 @@ Deno.serve(async (req) => {
     // ─── Load credentials for remaining actions ───
     const { data: franchise } = await supabase
       .from("franchises")
-      .select("zapi_instance_id, zapi_token, zapi_client_token, whatsapp_plan_active, zapi_instance_active")
+      .select("zapi_instance_id, zapi_token, whatsapp_plan_active, zapi_instance_active")
       .eq("id", franchiseId)
       .maybeSingle();
 
@@ -217,7 +216,6 @@ Deno.serve(async (req) => {
 
     const instanceId = franchise.zapi_instance_id;
     const zapiToken = franchise.zapi_token;
-    const securityToken = franchise.zapi_client_token;
 
     if (!instanceId || !zapiToken) {
       return new Response(
@@ -226,15 +224,10 @@ Deno.serve(async (req) => {
       );
     }
 
-    const apiHeaders: Record<string, string> = {};
-    if (securityToken) {
-      apiHeaders["Client-Token"] = securityToken;
-    }
-
     // Action: disconnect
     if (action === "disconnect") {
       const url = `https://api.z-api.io/instances/${instanceId}/token/${zapiToken}/disconnect`;
-      await fetch(url, { method: "POST", headers: apiHeaders });
+      await fetch(url, { method: "POST" });
 
       await supabase
         .from("franchises")
@@ -251,7 +244,7 @@ Deno.serve(async (req) => {
     // Action: qr_code
     if (action === "qr_code") {
       const qrUrl = `https://api.z-api.io/instances/${instanceId}/token/${zapiToken}/qr-code/image`;
-      const qrResp = await fetch(qrUrl, { headers: apiHeaders });
+      const qrResp = await fetch(qrUrl);
       const qrData = await qrResp.json();
 
       console.log(`[zapi-instance] QR code requested for franchise ${franchiseId}`);
