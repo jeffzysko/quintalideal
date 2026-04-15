@@ -14,9 +14,85 @@ interface SendRequest {
   franchise_id: string;
 }
 
-// Z-API base URL builder
 function buildZapiUrl(instanceId: string, token: string, endpoint: string) {
   return `https://api.z-api.io/instances/${instanceId}/token/${token}/${endpoint}`;
+}
+
+/**
+ * Resolve Z-API credentials: franchise-specific > central config > env secrets
+ */
+async function resolveZapiCredentials(
+  supabase: ReturnType<typeof createClient>,
+  franchiseId: string
+): Promise<{ instanceId: string; zapiToken: string; securityToken: string | null } | null> {
+  // 1. Check franchise-specific credentials (multi-instance)
+  const { data: franchise } = await supabase
+    .from("franchises")
+    .select("whatsapp_mode, zapi_instance_id, zapi_token, zapi_client_token, zapi_instance_active, whatsapp_plan_active")
+    .eq("id", franchiseId)
+    .maybeSingle();
+
+  if (
+    franchise?.whatsapp_mode === "own" &&
+    franchise?.whatsapp_plan_active === true &&
+    franchise?.zapi_instance_active === true &&
+    franchise?.zapi_instance_id &&
+    franchise?.zapi_token
+  ) {
+    return {
+      instanceId: franchise.zapi_instance_id,
+      zapiToken: franchise.zapi_token,
+      securityToken: franchise.zapi_client_token || null,
+    };
+  }
+
+  // 2. Fallback: check franchise-specific whatsapp_config row
+  const { data: franchiseConfig } = await supabase
+    .from("whatsapp_config")
+    .select("instance_id, token, security_token, is_active")
+    .eq("franchise_id", franchiseId)
+    .maybeSingle();
+
+  if (franchiseConfig && !franchiseConfig.is_active) {
+    // Check central config too
+    const { data: centralConfig } = await supabase
+      .from("whatsapp_config")
+      .select("is_active")
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+    if (centralConfig && !centralConfig.is_active) {
+      return null; // All disabled
+    }
+  }
+
+  const activeConfig = franchiseConfig?.is_active ? franchiseConfig : null;
+
+  // 3. Central config / env fallback
+  if (!activeConfig) {
+    const { data: centralConfig } = await supabase
+      .from("whatsapp_config")
+      .select("instance_id, token, security_token, is_active")
+      .order("created_at", { ascending: true })
+      .limit(1)
+      .maybeSingle();
+
+    if (!centralConfig?.is_active) return null;
+
+    const instanceId = centralConfig.instance_id || Deno.env.get("ZAPI_INSTANCE_ID");
+    const zapiToken = centralConfig.token || Deno.env.get("ZAPI_TOKEN");
+    const securityToken = centralConfig.security_token || Deno.env.get("ZAPI_SECURITY_TOKEN");
+
+    if (!instanceId || !zapiToken) return null;
+    return { instanceId, zapiToken, securityToken: securityToken || null };
+  }
+
+  const instanceId = activeConfig.instance_id || Deno.env.get("ZAPI_INSTANCE_ID");
+  const zapiToken = activeConfig.token || Deno.env.get("ZAPI_TOKEN");
+  const securityToken = activeConfig.security_token || Deno.env.get("ZAPI_SECURITY_TOKEN");
+
+  if (!instanceId || !zapiToken) return null;
+  return { instanceId, zapiToken, securityToken: securityToken || null };
 }
 
 Deno.serve(async (req) => {
@@ -65,47 +141,22 @@ Deno.serve(async (req) => {
       normalizedPhone = "55" + normalizedPhone;
     }
 
-    // --- FASE 2 ready: check franchise-specific config first ---
+    // Resolve credentials using multi-instance logic
     const serviceClient = createClient(
       supabaseUrl,
       Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
     );
 
-    const { data: franchiseConfig } = await serviceClient
-      .from("whatsapp_config")
-      .select("instance_id, token, security_token, is_active")
-      .eq("franchise_id", franchise_id)
-      .maybeSingle();
+    const credentials = await resolveZapiCredentials(serviceClient, franchise_id);
 
-    // Check if ANY config exists and is inactive → block sending
-    if (franchiseConfig && !franchiseConfig.is_active) {
-      // Also check central config
-      const { data: centralConfig } = await serviceClient
-        .from("whatsapp_config")
-        .select("is_active")
-        .order("created_at", { ascending: true })
-        .limit(1)
-        .maybeSingle();
-      if (centralConfig && !centralConfig.is_active) {
-        return new Response(
-          JSON.stringify({ error: "Envios de WhatsApp estão desativados." }),
-          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-        );
-      }
-    }
-
-    // Use franchise config if available and active (Fase 2), otherwise use central credentials (Fase 1)
-    const activeConfig = franchiseConfig?.is_active ? franchiseConfig : null;
-    const instanceId = activeConfig?.instance_id || Deno.env.get("ZAPI_INSTANCE_ID");
-    const zapiToken = activeConfig?.token || Deno.env.get("ZAPI_TOKEN");
-    const securityToken = activeConfig?.security_token || Deno.env.get("ZAPI_SECURITY_TOKEN");
-
-    if (!instanceId || !zapiToken) {
+    if (!credentials) {
       return new Response(
-        JSON.stringify({ error: "Z-API não configurada. Verifique as credenciais." }),
+        JSON.stringify({ error: "Z-API não configurada ou desativada. Verifique as credenciais." }),
         { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
       );
     }
+
+    const { instanceId, zapiToken, securityToken } = credentials;
 
     // Send message via Z-API
     const zapiUrl = buildZapiUrl(instanceId, zapiToken, "send-text");
