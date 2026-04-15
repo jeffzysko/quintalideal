@@ -96,7 +96,7 @@ export default function SejaParceiro() {
       <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-primary/5 to-background py-20 sm:py-28">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <motion.img
-            src={logoQI}
+            src={logoQuintalIdeal}
             alt="Quintal Ideal"
             className="h-12 mx-auto mb-6"
             initial={{ opacity: 0, y: -10 }}
