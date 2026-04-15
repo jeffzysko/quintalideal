@@ -1,7 +1,7 @@
-import { Share2, BarChart3, Users, CalendarClock, Sparkles } from 'lucide-react';
+import { Share2, BarChart3, Users, CalendarClock, Sparkles, FileText } from 'lucide-react';
 import { GuidedTour, type TourStep } from '@/components/GuidedTour';
 
-const WIZARD_KEY = 'franchise-welcome-v2';
+const WIZARD_KEY = 'franchise-welcome-v3';
 
 const steps: TourStep[] = [
   {
@@ -48,6 +48,26 @@ const steps: TourStep[] = [
     color: 'text-primary',
     bg: 'bg-primary/10',
     placement: 'bottom',
+  },
+  {
+    target: '[data-tour="nav-propostas"]',
+    icon: FileText,
+    title: 'Orçamentos Personalizados',
+    description: 'Crie e envie propostas profissionais direto pelo Quintal Ideal. O cliente recebe o link, visualiza o orçamento e você acompanha em tempo real se foi aceito ou recusado.',
+    color: 'text-emerald-600',
+    bg: 'bg-emerald-500/10',
+    placement: 'right',
+    fallbackModal: true,
+  },
+  {
+    target: '[data-tour="nav-planos"]',
+    icon: Sparkles,
+    title: 'Planos e Add-ons',
+    description: 'Expanda os recursos da sua franquia. Assine o plano de Orçamentos ou o WhatsApp Próprio para enviar notificações direto do número da sua franquia.',
+    color: 'text-amber-600',
+    bg: 'bg-amber-500/10',
+    placement: 'right',
+    fallbackModal: true,
   },
   {
     target: '[data-tour="nav-hoje"]',
