@@ -36,7 +36,10 @@ Deno.serve(async (req) => {
     }
     const userId = claims.claims.sub as string;
 
-    const { franchiseId } = await req.json();
+    const body = await req.json();
+    const { franchiseId, plan } = body;
+    const planType: "whatsapp" | "orcamento" = plan === "orcamento" ? "orcamento" : "whatsapp";
+
     if (!franchiseId) {
       return new Response(JSON.stringify({ error: "franchiseId is required" }), {
         status: 400,
@@ -59,9 +62,13 @@ Deno.serve(async (req) => {
     }
 
     // Get franchise data
+    const selectFields = planType === "orcamento"
+      ? "id, nome_franquia, email, orcamento_stripe_customer_id, whatsapp_plan_active, orcamento_stripe_subscription_id"
+      : "id, nome_franquia, email, stripe_customer_id";
+
     const { data: franchise } = await supabase
       .from("franchises")
-      .select("id, nome_franquia, email, stripe_customer_id")
+      .select(selectFields)
       .eq("id", franchiseId)
       .maybeSingle();
 
@@ -73,40 +80,94 @@ Deno.serve(async (req) => {
     }
 
     const stripeKey = Deno.env.get("STRIPE_SECRET_KEY")!;
-    const priceId = Deno.env.get("STRIPE_PRICE_ID")!;
     const platformUrl = Deno.env.get("PLATFORM_URL") || "https://quintalideal.lovable.app";
 
-    let customerId = franchise.stripe_customer_id;
+    const adminClient = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
 
-    // Create Stripe customer if needed
-    if (!customerId) {
-      const customerRes = await fetch("https://api.stripe.com/v1/customers", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${stripeKey}`,
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          name: franchise.nome_franquia,
-          ...(franchise.email ? { email: franchise.email } : {}),
-          "metadata[franchiseId]": franchiseId,
-        }),
-      });
-      const customer = await customerRes.json();
-      if (customer.error) {
-        throw new Error(customer.error.message);
+    let customerId: string | null;
+    let priceId: string;
+    let successUrl: string;
+    let cancelUrl: string;
+
+    if (planType === "orcamento") {
+      // Validate: if whatsapp plan is active, orcamento is already included
+      if ((franchise as any).whatsapp_plan_active) {
+        return new Response(
+          JSON.stringify({ error: "Você já tem acesso ao orçamento incluso no plano WhatsApp Próprio." }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
       }
-      customerId = customer.id;
 
-      // Save customer ID using service role client
-      const adminClient = createClient(
-        Deno.env.get("SUPABASE_URL")!,
-        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-      );
-      await adminClient
-        .from("franchises")
-        .update({ stripe_customer_id: customerId })
-        .eq("id", franchiseId);
+      // Validate: already has active orcamento subscription
+      if ((franchise as any).orcamento_stripe_subscription_id) {
+        return new Response(
+          JSON.stringify({ error: "Você já possui este plano ativo." }),
+          { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      customerId = (franchise as any).orcamento_stripe_customer_id;
+      priceId = Deno.env.get("STRIPE_ORCAMENTO_PRICE_ID")!;
+      successUrl = `${platformUrl}/propostas?status=success`;
+      cancelUrl = `${platformUrl}/propostas?status=canceled`;
+
+      // Create Stripe customer if needed
+      if (!customerId) {
+        const customerRes = await fetch("https://api.stripe.com/v1/customers", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${stripeKey}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams({
+            name: franchise.nome_franquia,
+            ...(franchise.email ? { email: franchise.email } : {}),
+            "metadata[franchiseId]": franchiseId,
+            "metadata[planType]": "orcamento",
+          }),
+        });
+        const customer = await customerRes.json();
+        if (customer.error) throw new Error(customer.error.message);
+        customerId = customer.id;
+
+        await adminClient
+          .from("franchises")
+          .update({ orcamento_stripe_customer_id: customerId })
+          .eq("id", franchiseId);
+      }
+    } else {
+      // WhatsApp plan — existing logic
+      customerId = (franchise as any).stripe_customer_id;
+      priceId = Deno.env.get("STRIPE_PRICE_ID")!;
+      successUrl = `${platformUrl}/settings?tab=whatsapp&status=success`;
+      cancelUrl = `${platformUrl}/settings?tab=whatsapp&status=canceled`;
+
+      // Create Stripe customer if needed
+      if (!customerId) {
+        const customerRes = await fetch("https://api.stripe.com/v1/customers", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${stripeKey}`,
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: new URLSearchParams({
+            name: franchise.nome_franquia,
+            ...(franchise.email ? { email: franchise.email } : {}),
+            "metadata[franchiseId]": franchiseId,
+          }),
+        });
+        const customer = await customerRes.json();
+        if (customer.error) throw new Error(customer.error.message);
+        customerId = customer.id;
+
+        await adminClient
+          .from("franchises")
+          .update({ stripe_customer_id: customerId })
+          .eq("id", franchiseId);
+      }
     }
 
     // Create Checkout Session
@@ -115,10 +176,12 @@ Deno.serve(async (req) => {
       customer: customerId!,
       "line_items[0][price]": priceId,
       "line_items[0][quantity]": "1",
-      success_url: `${platformUrl}/settings?tab=whatsapp&status=success`,
-      cancel_url: `${platformUrl}/settings?tab=whatsapp&status=canceled`,
+      success_url: successUrl,
+      cancel_url: cancelUrl,
       "metadata[franchiseId]": franchiseId,
+      "metadata[planType]": planType,
       "subscription_data[metadata][franchiseId]": franchiseId,
+      "subscription_data[metadata][planType]": planType,
     });
 
     const sessionRes = await fetch("https://api.stripe.com/v1/checkout/sessions", {
