@@ -15,21 +15,21 @@ import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 const STEPS = [
   { emoji: '📋', title: '1. Cadastre-se em 2 minutos', description: 'Preencha seus dados abaixo. Sem burocracia, sem taxas de adesão.' },
   { emoji: '✅', title: '2. Aprovação em até 24h', description: 'Nossa equipe analisa sua candidatura e entra em contato pelo WhatsApp.' },
-  { emoji: '🚀', title: '3. Comece a vender mais', description: 'Receba leads qualificados, envie orçamentos profissionais e acompanhe tudo em tempo real.' },
+  { emoji: '🚀', title: '3. Comece a vender mais', description: 'Qualifique seus leads, envie orçamentos e gerencie tudo em tempo real.' },
 ];
 
 const FEATURES = [
-  { emoji: '🎯', title: 'Leads que chegam até você', description: 'Receba clientes interessados direto no seu painel — sem precisar correr atrás' },
-  { emoji: '📄', title: 'Orçamentos em 1 clique', description: 'Propostas profissionais com a sua marca, enviadas automaticamente por WhatsApp' },
-  { emoji: '📱', title: 'WhatsApp inteligente', description: 'Mensagens automáticas que nutrem o cliente enquanto você foca na venda' },
-  { emoji: '📊', title: 'Métricas que importam', description: 'Saiba exatamente quantos leads entraram, converteram e quanto você faturou' },
-  { emoji: '🌍', title: 'Seu link exclusivo', description: 'Uma página personalizada que captura clientes 24h por dia, mesmo enquanto você dorme' },
-  { emoji: '🏆', title: 'Ranking da rede', description: 'Compare seu desempenho com outros parceiros e descubra como escalar suas vendas' },
+  { emoji: '🎯', title: 'Qualificação inteligente de leads', description: 'Cada lead do seu tráfego pago passa por um quiz que identifica perfil, orçamento e urgência — você recebe só quem está pronto para comprar' },
+  { emoji: '📋', title: 'CRM completo para piscinas', description: 'Kanban, funil de vendas, histórico de contatos e follow-ups automáticos — tudo organizado num só lugar' },
+  { emoji: '📄', title: 'Orçamentos profissionais em 1 clique', description: 'Crie propostas com a sua marca, envie por WhatsApp e saiba quando o cliente abriu' },
+  { emoji: '📱', title: 'Central de WhatsApp integrada', description: 'Atenda seus leads pelo WhatsApp da sua loja com mensagens automáticas, templates e histórico completo' },
+  { emoji: '📊', title: 'Métricas e relatórios', description: 'Acompanhe conversão, faturamento, metas mensais e veja quais campanhas trazem mais resultado' },
+  { emoji: '🌍', title: 'Página exclusiva de captação', description: 'Um link personalizado da sua loja com quiz interativo que transforma visitantes em leads qualificados' },
 ];
 
 const SOCIAL_PROOF = [
   { metric: '38+', label: 'lojas parceiras no RS' },
-  { metric: '2.500+', label: 'leads gerados na plataforma' },
+  { metric: '2.500+', label: 'leads qualificados na plataforma' },
   { metric: '24h', label: 'tempo médio de aprovação' },
 ];
 
@@ -247,7 +247,7 @@ export default function SejaParceiro() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
           >
-            Para lojas de piscinas que querem crescer
+            A plataforma completa para lojas de piscinas
           </motion.p>
           <motion.h1
             className="text-3xl sm:text-5xl font-bold text-foreground mb-4 leading-tight"
@@ -255,7 +255,7 @@ export default function SejaParceiro() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            Receba clientes prontos<br />para comprar piscina
+            Qualifique leads, envie orçamentos<br />e venda mais piscinas
           </motion.h1>
           <motion.p
             className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
@@ -263,7 +263,7 @@ export default function SejaParceiro() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            O Quintal Ideal gera leads qualificados, envia orçamentos automáticos e acompanha cada venda — tudo numa plataforma feita sob medida para o mercado de piscinas.
+            CRM, qualificação de leads, orçamentos profissionais e atendimento via WhatsApp — tudo integrado numa plataforma feita exclusivamente para o mercado de piscinas.
           </motion.p>
           <motion.p
             className="text-sm text-muted-foreground/80 max-w-xl mx-auto mb-8"
@@ -280,7 +280,7 @@ export default function SejaParceiro() {
             transition={{ delay: 0.3 }}
           >
             <Button size="lg" className="rounded-xl text-base px-8" onClick={() => document.getElementById('formulario')?.scrollIntoView({ behavior: 'smooth' })}>
-              Quero receber leads →
+              Quero ser parceiro →
             </Button>
             <Button size="lg" variant="outline" className="rounded-xl" asChild>
               <a href="/login" target="_blank" rel="noopener noreferrer">Já sou parceiro</a>
@@ -331,8 +331,8 @@ export default function SejaParceiro() {
       {/* ── Recursos ── */}
       <section className="py-16 sm:py-20 bg-muted/30">
         <div className="max-w-5xl mx-auto px-4">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-foreground mb-2">Tudo o que sua loja precisa para vender mais</h2>
-          <p className="text-center text-sm text-muted-foreground mb-12">Ferramentas profissionais que lojas de piscinas de todo o RS já usam</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-foreground mb-2">CRM, orçamentos e WhatsApp — tudo em um só lugar</h2>
+          <p className="text-center text-sm text-muted-foreground mb-12">A plataforma completa que lojas de piscinas de todo o RS já usam no dia a dia</p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {FEATURES.map((f, i) => (
               <motion.div
@@ -420,10 +420,10 @@ export default function SejaParceiro() {
             viewport={{ once: true }}
           >
             <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-3">
-              Sua loja já vende piscinas.<br className="sm:hidden" /> Agora imagine vender <span className="text-primary">com leads chegando todo dia.</span>
+              Sua loja já investe em tráfego pago.<br className="sm:hidden" /> Agora transforme cliques <span className="text-primary">em vendas de verdade.</span>
             </h2>
             <p className="text-sm text-muted-foreground mb-6 max-w-xl mx-auto">
-              Enquanto você lê isso, lojas parceiras estão recebendo clientes qualificados pelo Quintal Ideal. Não fique de fora.
+              O Quintal Ideal qualifica cada lead do seu tráfego, organiza sua operação comercial e automatiza o atendimento. Tudo o que falta para sua loja escalar.
             </p>
             <Button size="lg" className="rounded-xl text-base px-8" onClick={() => document.getElementById('formulario')?.scrollIntoView({ behavior: 'smooth' })}>
               Cadastrar minha loja gratuitamente →
@@ -550,7 +550,7 @@ export default function SejaParceiro() {
                     disabled={submitting}
                     onClick={handleSubmit}
                   >
-                    {submitting ? 'Enviando...' : 'Quero receber leads →'}
+                    {submitting ? 'Enviando...' : 'Quero ser parceiro →'}
                   </Button>
                 </div>
               </CardContent>
