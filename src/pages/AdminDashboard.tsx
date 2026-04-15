@@ -428,6 +428,20 @@ export default function AdminDashboard() {
 
   const isSuperAdmin = role === 'super_admin';
 
+  // Pending applications count for badge
+  const { data: pendingAppCount = 0 } = useQuery({
+    queryKey: ['pending-applications-count'],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from('franchise_applications')
+        .select('id', { count: 'exact', head: true })
+        .eq('status', 'pending');
+      if (error) return 0;
+      return count || 0;
+    },
+    staleTime: 30_000,
+  });
+
   const TABS = [
     { key: 'overview' as const, icon: BarChart3, label: 'Inteligência' },
     { key: 'performance-qi' as const, icon: Target, label: 'Performance QI' },
@@ -439,7 +453,7 @@ export default function AdminDashboard() {
     { key: 'franchises' as const, icon: Building2, label: 'Franquias' },
     { key: 'cities' as const, icon: Globe, label: 'Territórios' },
     ...(isSuperAdmin ? [
-      { key: 'candidaturas' as const, icon: FileText, label: 'Candidaturas' },
+      { key: 'candidaturas' as const, icon: FileText, label: pendingAppCount > 0 ? `Candidaturas (${pendingAppCount})` : 'Candidaturas' },
       { key: 'users' as const, icon: Users, label: 'Usuários' },
       { key: 'emails' as const, icon: Mail, label: 'E-mails' },
       { key: 'whatsapp' as const, icon: MessageCircle, label: 'WhatsApp' },
