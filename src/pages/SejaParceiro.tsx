@@ -9,6 +9,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Check, ClipboardList, Rocket, CheckCircle2 } from 'lucide-react';
+import { isValidEmail, isValidBRPhone } from '@/lib/validation';
 import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 
 const STEPS = [
