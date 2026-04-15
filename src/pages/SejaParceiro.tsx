@@ -242,34 +242,64 @@ export default function SejaParceiro() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
           />
+          <motion.p
+            className="text-xs sm:text-sm font-semibold text-primary uppercase tracking-widest mb-3"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            Para lojas de piscinas que querem crescer
+          </motion.p>
           <motion.h1
             className="text-3xl sm:text-5xl font-bold text-foreground mb-4 leading-tight"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            Seja parceiro do<br />Quintal Ideal
+            Receba clientes prontos<br />para comprar piscina
           </motion.h1>
           <motion.p
-            className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-8"
+            className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            Gerencie seus leads, envie orçamentos profissionais e cresça com o suporte de uma plataforma feita para lojas de piscinas.
+            O Quintal Ideal gera leads qualificados, envia orçamentos automáticos e acompanha cada venda — tudo numa plataforma feita sob medida para o mercado de piscinas.
+          </motion.p>
+          <motion.p
+            className="text-sm text-muted-foreground/80 max-w-xl mx-auto mb-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.25 }}
+          >
+            <strong className="text-foreground">Sem taxa de adesão.</strong> Cadastre-se gratuitamente e pague apenas se quiser recursos premium.
           </motion.p>
           <motion.div
-            className="flex flex-col sm:flex-row gap-3 justify-center"
+            className="flex flex-col sm:flex-row gap-3 justify-center mb-10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
-            <Button size="lg" className="rounded-xl" onClick={() => document.getElementById('formulario')?.scrollIntoView({ behavior: 'smooth' })}>
-              Quero ser parceiro
+            <Button size="lg" className="rounded-xl text-base px-8" onClick={() => document.getElementById('formulario')?.scrollIntoView({ behavior: 'smooth' })}>
+              Quero receber leads →
             </Button>
             <Button size="lg" variant="outline" className="rounded-xl" asChild>
-              <a href="/login" target="_blank" rel="noopener noreferrer">Ver a plataforma</a>
+              <a href="/login" target="_blank" rel="noopener noreferrer">Já sou parceiro</a>
             </Button>
+          </motion.div>
+
+          {/* Social Proof */}
+          <motion.div
+            className="flex flex-wrap justify-center gap-6 sm:gap-10"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            {SOCIAL_PROOF.map(sp => (
+              <div key={sp.label} className="text-center">
+                <span className="text-2xl sm:text-3xl font-bold text-primary">{sp.metric}</span>
+                <p className="text-xs text-muted-foreground mt-0.5">{sp.label}</p>
+              </div>
+            ))}
           </motion.div>
         </div>
       </section>
