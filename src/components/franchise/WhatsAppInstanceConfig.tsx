@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { differenceInDays, format, isBefore } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { AlertTriangle, Wifi, WifiOff, Smartphone, Crown, QrCode, RefreshCw, CheckCircle, Loader2, Unplug } from 'lucide-react';
+import { AlertTriangle, Wifi, WifiOff, Smartphone, QrCode, RefreshCw, CheckCircle, Loader2, Unplug, CreditCard } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,6 +24,7 @@ type ViewState = 'inactive' | 'pending' | 'connected' | 'disconnected';
 export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigProps) {
   const [state, setState] = useState<FranchiseWAState | null>(null);
   const [loading, setLoading] = useState(true);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   // QR Code
   const [qrCodeData, setQrCodeData] = useState<string | null>(null);
@@ -33,6 +34,25 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
   const [disconnecting, setDisconnecting] = useState(false);
   const [pollingActive, setPollingActive] = useState(false);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Handle checkout status from URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get('status');
+    if (status === 'success') {
+      toast.success('Pagamento confirmado! Conecte seu WhatsApp agora.');
+      loadState();
+      // Clean URL
+      const url = new URL(window.location.href);
+      url.searchParams.delete('status');
+      window.history.replaceState({}, '', url.toString());
+    } else if (status === 'canceled') {
+      toast('Contratação cancelada.');
+      const url = new URL(window.location.href);
+      url.searchParams.delete('status');
+      window.history.replaceState({}, '', url.toString());
+    }
+  }, []);
 
   useEffect(() => {
     loadState();
@@ -80,6 +100,25 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
     }
     return null;
   }, [state]);
+
+  const handleCheckout = async () => {
+    setCheckoutLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: { franchiseId },
+      });
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        toast.error('Erro ao iniciar checkout.');
+      }
+    } catch {
+      toast.error('Erro ao iniciar checkout. Tente novamente.');
+    } finally {
+      setCheckoutLoading(false);
+    }
+  };
 
   const invokeInstance = useCallback(async (action: string) => {
     const { data, error } = await supabase.functions.invoke('zapi-instance', {
@@ -203,10 +242,14 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
                 Contrate o plano WhatsApp para enviar mensagens pelo seu próprio número comercial,
                 mantendo a identidade da sua franquia.
               </p>
-              <Badge variant="outline" className="text-xs gap-1.5 py-1 px-3">
-                <Crown className="w-3 h-3" />
-                Disponível como serviço adicional
-              </Badge>
+              <Button
+                onClick={handleCheckout}
+                disabled={checkoutLoading}
+                className="gap-2 rounded-xl h-11 w-full"
+              >
+                {checkoutLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CreditCard className="w-4 h-4" />}
+                Contratar plano WhatsApp
+              </Button>
             </div>
           </CardContent>
         </Card>
