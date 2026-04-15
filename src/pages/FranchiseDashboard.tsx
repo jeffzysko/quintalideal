@@ -35,6 +35,7 @@ import { AlertBanner } from '@/components/dashboard/AlertBanner';
 import type { MetricCardProps } from '@/components/dashboard/MetricCard';
 import { InsightCards } from '@/components/dashboard/InsightCards';
 import { useLeadsRealtime } from '@/hooks/useLeadsRealtime';
+import { OnboardingChecklist } from '@/components/franchise/OnboardingChecklist';
 
 const PAGE_SIZE = 20;
 
