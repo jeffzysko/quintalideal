@@ -122,6 +122,25 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
     }
   };
 
+  const handlePortal = async () => {
+    setPortalLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-portal-session', {
+        body: { franchiseId },
+      });
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        toast.error('Erro ao abrir portal de assinatura.');
+      }
+    } catch {
+      toast.error('Erro ao abrir portal. Tente novamente.');
+    } finally {
+      setPortalLoading(false);
+    }
+  };
+
   const invokeInstance = useCallback(async (action: string) => {
     const { data, error } = await supabase.functions.invoke('zapi-instance', {
       body: { action, franchiseId },
