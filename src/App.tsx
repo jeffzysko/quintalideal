@@ -70,6 +70,7 @@ const PublicProposal = lazy(() => import("./pages/PublicProposal"));
 const PerformanceAudit = lazy(() => import("./pages/PerformanceAudit"));
 const PlanosFranquia = lazy(() => import("./pages/PlanosFranquia"));
 const SuperAdminReceita = lazy(() => import("./pages/SuperAdminReceita"));
+const SejaFranqueado = lazy(() => import("./pages/SejaFranqueado"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -124,6 +125,7 @@ function AppRouteTree() {
         <Route path="/termos" element={<TermosDeUso />} />
         <Route path="/privacidade" element={<PoliticaPrivacidade />} />
         <Route path="/docs/webhook" element={<WebhookDocs />} />
+        <Route path="/seja-franqueado" element={<SejaFranqueado />} />
       </Route>
 
       {/* Authenticated pages with sidebar (desktop) / BottomNav (mobile) */}
