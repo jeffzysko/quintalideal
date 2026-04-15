@@ -19,10 +19,12 @@ import {
   LogOut,
   FileText,
   Star,
+  ChevronRight,
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 
 import {
   Sidebar,
@@ -43,10 +45,9 @@ interface SidebarNavItem {
   url: string;
   icon: typeof Home;
   matchPaths?: string[];
-  matchTab?: string; // matches ?tab= value
+  matchTab?: string;
 }
 
-// ── Admin sub-tabs (shown under Painel Admin) ──
 const ADMIN_TABS: SidebarNavItem[] = [
   { title: 'Inteligência', url: '/admin?tab=overview', icon: BarChart3, matchTab: 'overview' },
   { title: 'Performance QI', url: '/admin?tab=performance-qi', icon: Target, matchTab: 'performance-qi' },
@@ -56,7 +57,6 @@ const ADMIN_TABS: SidebarNavItem[] = [
   { title: 'Territórios', url: '/admin?tab=cities', icon: Globe, matchTab: 'cities' },
 ];
 
-// Super-admin-only tabs
 const SUPER_ADMIN_TABS: SidebarNavItem[] = [
   { title: 'Funil Geral', url: '/admin?tab=kanban', icon: Kanban, matchTab: 'kanban' },
   { title: 'Usuários', url: '/admin?tab=users', icon: Users, matchTab: 'users' },
@@ -66,7 +66,6 @@ const SUPER_ADMIN_TABS: SidebarNavItem[] = [
   { title: 'Receita', url: '/superadmin/receita', icon: TrendingUp, matchPaths: ['/superadmin/receita'] },
 ];
 
-// ── Franchise sub-tabs ──
 const FRANCHISE_TABS: SidebarNavItem[] = [
   { title: 'Leads', url: '/franquia?tab=leads', icon: Users, matchTab: 'leads' },
   { title: 'Funil', url: '/franquia?tab=funnel', icon: Workflow, matchTab: 'funnel' },
@@ -106,10 +105,8 @@ export function AppSidebar() {
 
   const isActive = (item: SidebarNavItem) => {
     const basePath = item.url.split('?')[0];
-    // Tab-based matching
     if (item.matchTab) {
       if (location.pathname !== basePath) return false;
-      // Default tab: active when no ?tab param
       if (item.matchTab === 'overview' && !currentTab) return true;
       if (item.matchTab === 'leads' && !currentTab && basePath === '/franquia') return true;
       return currentTab === item.matchTab;
@@ -119,11 +116,13 @@ export function AppSidebar() {
     return false;
   };
 
+  const hasActiveItem = (items: SidebarNavItem[]) => items.some(isActive);
+
   const handleNav = (url: string) => {
     navigate(url);
   };
 
-  const renderNavItem = (item: SidebarNavItem, indent = false) => {
+  const renderNavItem = (item: SidebarNavItem) => {
     const active = isActive(item);
     return (
       <SidebarMenuItem key={item.title + item.url}>
@@ -134,7 +133,7 @@ export function AppSidebar() {
         >
           <button
             onClick={() => handleNav(item.url)}
-            className={`w-full flex items-center gap-2 ${indent ? 'pl-4' : ''} ${active ? 'bg-primary/10 text-primary font-medium' : ''}`}
+            className={`w-full flex items-center gap-2 ${active ? 'bg-primary/10 text-primary font-medium' : ''}`}
           >
             <item.icon className="h-4 w-4 shrink-0" />
             <span className="truncate">{item.title}</span>
@@ -144,6 +143,25 @@ export function AppSidebar() {
     );
   };
 
+  const renderCollapsibleGroup = (label: string, items: SidebarNavItem[]) => (
+    <Collapsible defaultOpen={hasActiveItem(items)} className="group/collapsible">
+      <SidebarGroup>
+        <SidebarGroupLabel asChild>
+          <CollapsibleTrigger className="flex w-full items-center justify-between [&[data-state=open]>svg]:rotate-90">
+            {label}
+            <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/70 transition-transform duration-200" />
+          </CollapsibleTrigger>
+        </SidebarGroupLabel>
+        <CollapsibleContent>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {items.map((item) => renderNavItem(item))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </CollapsibleContent>
+      </SidebarGroup>
+    </Collapsible>
+  );
 
   return (
     <Sidebar collapsible="icon" className="border-r border-border/40">
@@ -158,42 +176,24 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        {/* Common navigation */}
+        {/* Common navigation — always open */}
         <SidebarGroup>
-          <SidebarGroupLabel>
-            {isAdmin ? 'Navegação' : 'Painel'}
-          </SidebarGroupLabel>
+          <SidebarGroupLabel>{isAdmin ? 'Navegação' : 'Painel'}</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {(isAdmin ? ADMIN_NAV : FRANCHISE_NAV).map((item) => renderNavItem(item))}
-              {!isAdmin && FRANCHISE_TABS.map((item) => renderNavItem(item, false))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Admin Fábrica tabs */}
-        {isAdmin && (
-          <SidebarGroup>
-            <SidebarGroupLabel>Fábrica</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {ADMIN_TABS.map((item) => renderNavItem(item, false))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
+        {/* Franchise tabs — collapsible */}
+        {!isAdmin && renderCollapsibleGroup('Gestão', FRANCHISE_TABS)}
 
-        {/* Super Admin exclusive tabs */}
-        {isSuperAdmin && (
-          <SidebarGroup>
-            <SidebarGroupLabel>Super Admin</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {SUPER_ADMIN_TABS.map((item) => renderNavItem(item, false))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
-        )}
+        {/* Admin Fábrica tabs — collapsible */}
+        {isAdmin && renderCollapsibleGroup('Fábrica', ADMIN_TABS)}
+
+        {/* Super Admin exclusive tabs — collapsible */}
+        {isSuperAdmin && renderCollapsibleGroup('Super Admin', SUPER_ADMIN_TABS)}
       </SidebarContent>
 
       <SidebarFooter className="p-0">
