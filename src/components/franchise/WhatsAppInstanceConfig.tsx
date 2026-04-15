@@ -242,10 +242,14 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
                 Contrate o plano WhatsApp para enviar mensagens pelo seu próprio número comercial,
                 mantendo a identidade da sua franquia.
               </p>
-              <Badge variant="outline" className="text-xs gap-1.5 py-1 px-3">
-                <Crown className="w-3 h-3" />
-                Disponível como serviço adicional
-              </Badge>
+              <Button
+                onClick={handleCheckout}
+                disabled={checkoutLoading}
+                className="gap-2 rounded-xl h-11 w-full"
+              >
+                {checkoutLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CreditCard className="w-4 h-4" />}
+                Contratar plano WhatsApp
+              </Button>
             </div>
           </CardContent>
         </Card>
