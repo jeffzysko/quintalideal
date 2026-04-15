@@ -256,7 +256,7 @@ Deno.serve(async (req) => {
 
     // Default action: status
     const url = `https://api.z-api.io/instances/${instanceId}/token/${zapiToken}/status`;
-    const resp = await fetch(url, { headers: apiHeaders });
+    const resp = await fetch(url);
     const data = await resp.json();
 
     const connected = data?.connected === true || data?.status === "CONNECTED";
