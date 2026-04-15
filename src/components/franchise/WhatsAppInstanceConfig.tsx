@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { differenceInDays, format, isBefore } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { AlertTriangle, Wifi, WifiOff, Smartphone, QrCode, RefreshCw, CheckCircle, Loader2, Unplug, CreditCard } from 'lucide-react';
+import { AlertTriangle, Wifi, WifiOff, Smartphone, Crown, QrCode, RefreshCw, CheckCircle, Loader2, Unplug, CreditCard } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
