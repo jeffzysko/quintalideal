@@ -17,6 +17,7 @@ interface FranchiseWAState {
   zapi_instance_active: boolean;
   zapi_phone_number: string | null;
   whatsapp_plan_expires_at: string | null;
+  stripe_subscription_id: string | null;
 }
 
 type ViewState = 'inactive' | 'pending' | 'connected' | 'disconnected';
@@ -25,6 +26,7 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
   const [state, setState] = useState<FranchiseWAState | null>(null);
   const [loading, setLoading] = useState(true);
   const [checkoutLoading, setCheckoutLoading] = useState(false);
+  const [portalLoading, setPortalLoading] = useState(false);
 
   // QR Code
   const [qrCodeData, setQrCodeData] = useState<string | null>(null);
@@ -71,7 +73,7 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
     setLoading(true);
     const { data } = await supabase
       .from('franchises')
-      .select('whatsapp_plan_active, zapi_instance_active, zapi_phone_number, whatsapp_plan_expires_at')
+      .select('whatsapp_plan_active, zapi_instance_active, zapi_phone_number, whatsapp_plan_expires_at, stripe_subscription_id')
       .eq('id', franchiseId)
       .maybeSingle();
 
@@ -117,6 +119,25 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
       toast.error('Erro ao iniciar checkout. Tente novamente.');
     } finally {
       setCheckoutLoading(false);
+    }
+  };
+
+  const handlePortal = async () => {
+    setPortalLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-portal-session', {
+        body: { franchiseId },
+      });
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        toast.error('Erro ao abrir portal de assinatura.');
+      }
+    } catch {
+      toast.error('Erro ao abrir portal. Tente novamente.');
+    } finally {
+      setPortalLoading(false);
     }
   };
 
@@ -322,6 +343,19 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
               {disconnecting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Unplug className="w-3.5 h-3.5" />}
               Desconectar
             </Button>
+
+            {state.stripe_subscription_id && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePortal}
+                disabled={portalLoading}
+                className="gap-2 text-xs rounded-xl"
+              >
+                {portalLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CreditCard className="w-3.5 h-3.5" />}
+                Gerenciar assinatura
+              </Button>
+            )}
           </CardContent>
         </Card>
       )}
@@ -355,6 +389,19 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
               >
                 {loadingQr ? <Loader2 className="w-4 h-4 animate-spin" /> : <QrCode className="w-4 h-4" />}
                 Reconectar WhatsApp
+              </Button>
+            )}
+
+            {state.stripe_subscription_id && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePortal}
+                disabled={portalLoading}
+                className="gap-2 text-xs rounded-xl"
+              >
+                {portalLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CreditCard className="w-3.5 h-3.5" />}
+                Gerenciar assinatura
               </Button>
             )}
           </CardContent>
