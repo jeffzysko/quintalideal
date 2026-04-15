@@ -144,11 +144,6 @@ export function AppSidebar() {
     );
   };
 
-  // Build admin sub-tabs
-  const adminTabs = [
-    ...ADMIN_TABS,
-    ...(isSuperAdmin ? SUPER_ADMIN_TABS : []),
-  ];
 
   return (
     <Sidebar collapsible="icon" className="border-r border-border/40">
