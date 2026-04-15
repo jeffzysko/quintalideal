@@ -69,6 +69,7 @@ const ProposalDetail = lazy(() => import("./pages/ProposalDetail"));
 const PublicProposal = lazy(() => import("./pages/PublicProposal"));
 const PerformanceAudit = lazy(() => import("./pages/PerformanceAudit"));
 const PlanosFranquia = lazy(() => import("./pages/PlanosFranquia"));
+const SuperAdminReceita = lazy(() => import("./pages/SuperAdminReceita"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -189,6 +190,10 @@ function AppRouteTree() {
         <Route
           path="/admin/performance"
           element={<ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}><PerformanceAudit /></ProtectedRoute>}
+        />
+        <Route
+          path="/superadmin/receita"
+          element={<ProtectedRoute allowedRoles={['super_admin']}><SuperAdminReceita /></ProtectedRoute>}
         />
       </Route>
 
