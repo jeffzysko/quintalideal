@@ -67,6 +67,7 @@ export function Footer() {
               <FooterInlineLink to="/ranking" label="Ranking" />
               <FooterInlineLink to="/mapa" label="Mapa" />
               <FooterInlineLink to="/docs/webhook" label="API Docs" />
+              <FooterInlineLink to="/seja-franqueado" label="Seja um franqueado" />
             </div>
           )}
         </div>
