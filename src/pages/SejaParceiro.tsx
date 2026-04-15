@@ -331,8 +331,8 @@ export default function SejaParceiro() {
       {/* ── Recursos ── */}
       <section className="py-16 sm:py-20 bg-muted/30">
         <div className="max-w-5xl mx-auto px-4">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-foreground mb-2">Tudo o que sua loja precisa para vender mais</h2>
-          <p className="text-center text-sm text-muted-foreground mb-12">Ferramentas profissionais que lojas de piscinas de todo o RS já usam</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-foreground mb-2">CRM, orçamentos e WhatsApp — tudo em um só lugar</h2>
+          <p className="text-center text-sm text-muted-foreground mb-12">A plataforma completa que lojas de piscinas de todo o RS já usam no dia a dia</p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {FEATURES.map((f, i) => (
               <motion.div
