@@ -1,7 +1,7 @@
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@tanstack/react-query';
-import { Check, Sparkles, MessageCircle, FileText, Lightbulb } from 'lucide-react';
+import { Check, Sparkles, MessageCircle, FileText, Lightbulb, Clock } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,13 +9,14 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { PageHeader } from '@/components/PageHeader';
 import { toast } from 'sonner';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 
 interface FranchisePlan {
   whatsapp_plan_active: boolean;
   orcamento_plan_active: boolean;
   stripe_subscription_status: string | null;
   orcamento_stripe_subscription_status: string | null;
+  orcamento_stripe_subscription_id: string | null;
   zapi_phone_number: string | null;
 }
 
@@ -55,6 +56,10 @@ const FAQ = [
     q: 'O que acontece se o pagamento falhar?',
     a: 'O Stripe tentará cobrar novamente por alguns dias. Você receberá uma notificação por WhatsApp com o link para atualizar seu cartão. Se não for regularizado, o plano é cancelado e os recursos voltam ao estado gratuito.',
   },
+  {
+    q: 'Como funciona o período de teste gratuito?',
+    a: 'O plano Orçamento Personalizado oferece 7 dias de teste gratuito. Durante esse período, você tem acesso completo a todos os recursos sem nenhuma cobrança. Após os 7 dias, a assinatura é cobrada automaticamente. Você pode cancelar a qualquer momento durante o teste.',
+  },
 ];
 
 export default function PlanosFranquia() {
@@ -66,7 +71,7 @@ export default function PlanosFranquia() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('franchises')
-        .select('whatsapp_plan_active, orcamento_plan_active, stripe_subscription_status, orcamento_stripe_subscription_status, zapi_phone_number')
+        .select('whatsapp_plan_active, orcamento_plan_active, stripe_subscription_status, orcamento_stripe_subscription_status, orcamento_stripe_subscription_id, zapi_phone_number')
         .eq('id', franchiseId!)
         .maybeSingle();
       if (error) throw error;
@@ -78,9 +83,17 @@ export default function PlanosFranquia() {
 
   const whatsappActive = plan?.whatsapp_plan_active ?? false;
   const orcamentoActive = plan?.orcamento_plan_active ?? false;
-  const orcamentoViaWhatsApp = whatsappActive && orcamentoActive;
-  const orcamentoStandalone = orcamentoActive && !whatsappActive;
-  const noPlan = !whatsappActive && !orcamentoActive;
+  const orcamentoTrialing = plan?.orcamento_stripe_subscription_status === 'trialing';
+  const orcamentoViaWhatsApp = whatsappActive && orcamentoActive && !orcamentoTrialing;
+  const orcamentoStandalone = (orcamentoActive || orcamentoTrialing) && !whatsappActive;
+  const noPlan = !whatsappActive && !orcamentoActive && !orcamentoTrialing;
+
+  const trialDaysLeft = useMemo(() => {
+    // We don't have trial_end from Stripe directly on the table,
+    // but trialing status means trial is active. Show generic message.
+    if (orcamentoTrialing) return null; // We'll show "Em teste gratuito" badge
+    return null;
+  }, [orcamentoTrialing]);
 
   const handleCheckout = async (planType: 'whatsapp' | 'orcamento') => {
     if (!franchiseId) return;
@@ -160,7 +173,13 @@ export default function PlanosFranquia() {
           {noPlan && (
             <p className="text-sm text-muted-foreground">Plano Gratuito — recursos básicos disponíveis</p>
           )}
-          {orcamentoActive && (
+          {orcamentoTrialing && (
+            <Badge variant="outline" className="border-yellow-500 text-yellow-700 bg-yellow-50 gap-1">
+              <Clock className="h-3 w-3" />
+              Orçamento Personalizado — Em teste gratuito
+            </Badge>
+          )}
+          {orcamentoActive && !orcamentoTrialing && (
             <Badge variant="default" className="bg-success text-success-foreground gap-1">
               <FileText className="h-3 w-3" />
               Orçamento Personalizado ativo
@@ -279,6 +298,21 @@ export default function PlanosFranquia() {
                 </TooltipTrigger>
                 <TooltipContent>Este recurso está incluso no seu plano WhatsApp Próprio</TooltipContent>
               </Tooltip>
+            ) : orcamentoTrialing ? (
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 p-3 rounded-lg bg-yellow-50 border border-yellow-200">
+                  <Clock className="h-4 w-4 text-yellow-600 shrink-0" />
+                  <span className="text-sm text-yellow-800 font-medium">Período de teste gratuito ativo</span>
+                </div>
+                <Button
+                  variant="outline"
+                  className="w-full"
+                  onClick={() => handlePortal('orcamento')}
+                  disabled={loadingPlan === 'orcamento'}
+                >
+                  {loadingPlan === 'orcamento' ? 'Abrindo...' : 'Gerenciar assinatura'}
+                </Button>
+              </div>
             ) : orcamentoStandalone ? (
               <Button
                 variant="outline"
@@ -289,14 +323,19 @@ export default function PlanosFranquia() {
                 {loadingPlan === 'orcamento' ? 'Abrindo...' : 'Gerenciar assinatura'}
               </Button>
             ) : (
-              <Button
-                className="w-full"
-                size="lg"
-                onClick={() => handleCheckout('orcamento')}
-                disabled={loadingPlan === 'orcamento'}
-              >
-                {loadingPlan === 'orcamento' ? 'Redirecionando...' : 'Assinar por R$ 29,00/mês'}
-              </Button>
+              <div className="space-y-2">
+                <Button
+                  className="w-full"
+                  size="lg"
+                  onClick={() => handleCheckout('orcamento')}
+                  disabled={loadingPlan === 'orcamento'}
+                >
+                  {loadingPlan === 'orcamento' ? 'Redirecionando...' : 'Começar grátis — 7 dias de teste'}
+                </Button>
+                <p className="text-xs text-muted-foreground text-center">
+                  Sem cobrança durante o período de teste. Cancele quando quiser.
+                </p>
+              </div>
             )}
           </CardContent>
         </Card>
