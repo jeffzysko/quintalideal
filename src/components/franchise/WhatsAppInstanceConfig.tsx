@@ -25,6 +25,7 @@ type ViewState = 'inactive' | 'pending' | 'connected' | 'disconnected';
 export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigProps) {
   const [state, setState] = useState<FranchiseWAState | null>(null);
   const [loading, setLoading] = useState(true);
+  const [checkoutLoading, setCheckoutLoading] = useState(false);
 
   // QR Code
   const [qrCodeData, setQrCodeData] = useState<string | null>(null);
@@ -34,6 +35,25 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
   const [disconnecting, setDisconnecting] = useState(false);
   const [pollingActive, setPollingActive] = useState(false);
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // Handle checkout status from URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const status = params.get('status');
+    if (status === 'success') {
+      toast.success('Pagamento confirmado! Conecte seu WhatsApp agora.');
+      loadState();
+      // Clean URL
+      const url = new URL(window.location.href);
+      url.searchParams.delete('status');
+      window.history.replaceState({}, '', url.toString());
+    } else if (status === 'canceled') {
+      toast('Contratação cancelada.');
+      const url = new URL(window.location.href);
+      url.searchParams.delete('status');
+      window.history.replaceState({}, '', url.toString());
+    }
+  }, []);
 
   useEffect(() => {
     loadState();
