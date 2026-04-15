@@ -101,6 +101,25 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
     return null;
   }, [state]);
 
+  const handleCheckout = async () => {
+    setCheckoutLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: { franchiseId },
+      });
+      if (error) throw error;
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        toast.error('Erro ao iniciar checkout.');
+      }
+    } catch {
+      toast.error('Erro ao iniciar checkout. Tente novamente.');
+    } finally {
+      setCheckoutLoading(false);
+    }
+  };
+
   const invokeInstance = useCallback(async (action: string) => {
     const { data, error } = await supabase.functions.invoke('zapi-instance', {
       body: { action, franchiseId },
