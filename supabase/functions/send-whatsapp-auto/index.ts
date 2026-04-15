@@ -25,6 +25,53 @@ function replaceVars(template: string, vars: Record<string, string>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (_, key) => vars[key] ?? "");
 }
 
+/**
+ * Resolve Z-API credentials: franchise-specific > central config > env secrets
+ */
+async function resolveZapiCredentials(
+  supabase: ReturnType<typeof createClient>,
+  franchiseId: string
+): Promise<{ instanceId: string; zapiToken: string; securityToken: string | null } | null> {
+  // 1. Check franchise-specific credentials (multi-instance)
+  const { data: franchise } = await supabase
+    .from("franchises")
+    .select("whatsapp_mode, zapi_instance_id, zapi_token, zapi_client_token, zapi_instance_active, whatsapp_plan_active")
+    .eq("id", franchiseId)
+    .maybeSingle();
+
+  if (
+    franchise?.whatsapp_mode === "own" &&
+    franchise?.whatsapp_plan_active === true &&
+    franchise?.zapi_instance_active === true &&
+    franchise?.zapi_instance_id &&
+    franchise?.zapi_token
+  ) {
+    return {
+      instanceId: franchise.zapi_instance_id,
+      zapiToken: franchise.zapi_token,
+      securityToken: franchise.zapi_client_token || null,
+    };
+  }
+
+  // 2. Fallback to central whatsapp_config
+  const { data: config } = await supabase
+    .from("whatsapp_config")
+    .select("instance_id, token, security_token, is_active")
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+
+  if (!config?.is_active) return null;
+
+  const instanceId = config.instance_id || Deno.env.get("ZAPI_INSTANCE_ID");
+  const zapiToken = config.token || Deno.env.get("ZAPI_TOKEN");
+  const securityToken = config.security_token || Deno.env.get("ZAPI_SECURITY_TOKEN");
+
+  if (!instanceId || !zapiToken) return null;
+
+  return { instanceId, zapiToken, securityToken: securityToken || null };
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -51,26 +98,6 @@ Deno.serve(async (req) => {
 
     if (tplRow && !tplRow.is_active) {
       return jsonResp({ skipped: true, reason: `Template '${trigger_event}' desativado` });
-    }
-
-    // Check is_active (global Z-API toggle)
-    const { data: config } = await supabase
-      .from("whatsapp_config")
-      .select("instance_id, token, security_token, is_active")
-      .order("created_at", { ascending: true })
-      .limit(1)
-      .maybeSingle();
-
-    if (!config?.is_active) {
-      return jsonResp({ skipped: true, reason: "WhatsApp desativado" });
-    }
-
-    const instanceId = config.instance_id || Deno.env.get("ZAPI_INSTANCE_ID");
-    const zapiToken = config.token || Deno.env.get("ZAPI_TOKEN");
-    const securityToken = config.security_token || Deno.env.get("ZAPI_SECURITY_TOKEN");
-
-    if (!instanceId || !zapiToken) {
-      return jsonResp({ skipped: true, reason: "Z-API não configurada" });
     }
 
     // Build context based on trigger_event
@@ -183,12 +210,19 @@ Deno.serve(async (req) => {
       return jsonResp({ skipped: true, reason: "Telefone vazio" });
     }
 
+    // Resolve Z-API credentials (franchise-specific or central)
+    const credentials = await resolveZapiCredentials(supabase, resolvedFranchiseId);
+    if (!credentials) {
+      return jsonResp({ skipped: true, reason: "Z-API não configurada ou desativada" });
+    }
+
+    const { instanceId, zapiToken, securityToken } = credentials;
+
     // Build message: use DB template if available, else fallback
     let message = "";
     if (tplRow?.message_text) {
       message = replaceVars(tplRow.message_text, vars);
     } else {
-      // Fallback hardcoded (should not happen if DB is seeded)
       message = Object.entries(vars).reduce(
         (msg, [k, v]) => msg + `${k}: ${v}\n`,
         `[${trigger_event}]\n`
@@ -216,7 +250,6 @@ Deno.serve(async (req) => {
 
     const { data: existingMsg } = await dupQuery.limit(1);
     if (existingMsg && existingMsg.length > 0) {
-      // Log as skipped
       await supabase.from("whatsapp_messages").insert({
         franchise_id: resolvedFranchiseId,
         lead_id: resolvedLeadId || null,
@@ -235,13 +268,11 @@ Deno.serve(async (req) => {
     const nowBrasilia = new Date(new Date().toLocaleString("en-US", { timeZone: "America/Sao_Paulo" }));
     const hour = nowBrasilia.getHours();
     if (hour < 8 || hour >= 20) {
-      // Schedule for next available 08:00
       const scheduled = new Date(nowBrasilia);
       if (hour >= 20) {
         scheduled.setDate(scheduled.getDate() + 1);
       }
       scheduled.setHours(8, 0, 0, 0);
-      // Convert back to UTC-ish by creating proper ISO
       const offsetMs = scheduled.getTime() - nowBrasilia.getTime() + Date.now();
       const scheduledUtc = new Date(offsetMs);
 
@@ -274,7 +305,6 @@ Deno.serve(async (req) => {
     const success = zapiResponse.ok && !zapiResult.error;
     const status = success ? "sent" : "failed";
 
-    // Log
     await supabase.from("whatsapp_messages").insert({
       franchise_id: resolvedFranchiseId,
       lead_id: resolvedLeadId || null,

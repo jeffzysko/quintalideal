@@ -34,12 +34,12 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Check admin role
+    // Check role: admin OR franchise
     const { data: roleData } = await supabase
       .from("user_roles")
       .select("role")
       .eq("user_id", user.id)
-      .in("role", ["admin_fabrica", "super_admin"])
+      .in("role", ["admin_fabrica", "super_admin", "franquia"])
       .maybeSingle();
 
     if (!roleData) {
@@ -49,25 +49,51 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Get central whatsapp_config (first active or first record)
-    const { data: config } = await supabase
-      .from("whatsapp_config")
-      .select("instance_id, token, security_token")
-      .order("created_at", { ascending: true })
-      .limit(1)
-      .maybeSingle();
+    // Check if custom credentials were sent in the body (for franchise testing their own instance)
+    let customInstanceId: string | null = null;
+    let customToken: string | null = null;
+    let customSecurityToken: string | null = null;
 
-    if (!config?.instance_id || !config?.token) {
-      return new Response(
-        JSON.stringify({ connected: false, message: "Credenciais não configuradas." }),
-        { headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
+    if (req.method === "POST") {
+      try {
+        const body = await req.json();
+        customInstanceId = body.instance_id || null;
+        customToken = body.token || null;
+        customSecurityToken = body.security_token || null;
+      } catch {
+        // No body or invalid JSON — fall through to central config
+      }
     }
 
-    const url = `https://api.z-api.io/instances/${config.instance_id}/token/${config.token}/status`;
+    let instanceId = customInstanceId;
+    let zapiToken = customToken;
+    let securityToken = customSecurityToken;
+
+    // If no custom credentials, use central whatsapp_config
+    if (!instanceId || !zapiToken) {
+      const { data: config } = await supabase
+        .from("whatsapp_config")
+        .select("instance_id, token, security_token")
+        .order("created_at", { ascending: true })
+        .limit(1)
+        .maybeSingle();
+
+      if (!config?.instance_id || !config?.token) {
+        return new Response(
+          JSON.stringify({ connected: false, message: "Credenciais não configuradas." }),
+          { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      instanceId = config.instance_id;
+      zapiToken = config.token;
+      securityToken = config.security_token;
+    }
+
+    const url = `https://api.z-api.io/instances/${instanceId}/token/${zapiToken}/status`;
     const headers: Record<string, string> = {};
-    if (config.security_token) {
-      headers["Client-Token"] = config.security_token;
+    if (securityToken) {
+      headers["Client-Token"] = securityToken;
     }
 
     const resp = await fetch(url, { headers });

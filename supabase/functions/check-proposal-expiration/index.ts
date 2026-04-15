@@ -137,7 +137,7 @@ Deno.serve(async (req) => {
       }
     }
 
-    // 5. Process scheduled WhatsApp messages (business hours queue)
+    // 5. Process scheduled WhatsApp messages (business hours queue) — multi-instance aware
     let waScheduledCount = 0;
     const { data: scheduledMsgs } = await supabase
       .from("whatsapp_messages")
@@ -147,52 +147,83 @@ Deno.serve(async (req) => {
       .limit(50);
 
     if (scheduledMsgs?.length) {
-      // Get Z-API config
-      const { data: waConfig } = await supabase
-        .from("whatsapp_config")
-        .select("instance_id, token, security_token, is_active")
-        .order("created_at", { ascending: true })
-        .limit(1)
-        .maybeSingle();
+      // Group messages by franchise_id to resolve credentials per franchise
+      const byFranchise: Record<string, typeof scheduledMsgs> = {};
+      for (const msg of scheduledMsgs) {
+        if (!byFranchise[msg.franchise_id]) byFranchise[msg.franchise_id] = [];
+        byFranchise[msg.franchise_id].push(msg);
+      }
 
-      if (waConfig?.is_active) {
-        const instanceId = waConfig.instance_id || Deno.env.get("ZAPI_INSTANCE_ID");
-        const zapiToken = waConfig.token || Deno.env.get("ZAPI_TOKEN");
-        const securityToken = waConfig.security_token || Deno.env.get("ZAPI_SECURITY_TOKEN");
+      for (const [fId, msgs] of Object.entries(byFranchise)) {
+        // Resolve credentials for this franchise (multi-instance)
+        const { data: franchise } = await supabase
+          .from("franchises")
+          .select("whatsapp_mode, zapi_instance_id, zapi_token, zapi_client_token, zapi_instance_active, whatsapp_plan_active")
+          .eq("id", fId)
+          .maybeSingle();
 
-        if (instanceId && zapiToken) {
-          const zapiUrl = `https://api.z-api.io/instances/${instanceId}/token/${zapiToken}/send-text`;
-          const zapiHeaders: Record<string, string> = { "Content-Type": "application/json" };
-          if (securityToken) zapiHeaders["Client-Token"] = securityToken;
+        let instanceId: string | undefined;
+        let zapiToken: string | undefined;
+        let securityToken: string | null = null;
 
-          for (const msg of scheduledMsgs) {
-            try {
-              const resp = await fetch(zapiUrl, {
-                method: "POST",
-                headers: zapiHeaders,
-                body: JSON.stringify({ phone: msg.phone, message: msg.message_text }),
-              });
-              const result = await resp.json();
-              const ok = resp.ok && !result.error;
+        if (
+          franchise?.whatsapp_mode === "own" &&
+          franchise?.whatsapp_plan_active &&
+          franchise?.zapi_instance_active &&
+          franchise?.zapi_instance_id &&
+          franchise?.zapi_token
+        ) {
+          instanceId = franchise.zapi_instance_id;
+          zapiToken = franchise.zapi_token;
+          securityToken = franchise.zapi_client_token || null;
+        } else {
+          // Fallback to central config
+          const { data: waConfig } = await supabase
+            .from("whatsapp_config")
+            .select("instance_id, token, security_token, is_active")
+            .order("created_at", { ascending: true })
+            .limit(1)
+            .maybeSingle();
 
-              await supabase
-                .from("whatsapp_messages")
-                .update({
-                  status: ok ? "sent" : "failed",
-                  scheduled_for: null,
-                  zapi_message_id: result?.messageId || result?.zapiMessageId || null,
-                  error_message: ok ? null : JSON.stringify(result),
-                })
-                .eq("id", msg.id);
+          if (!waConfig?.is_active) continue;
+          instanceId = waConfig.instance_id || Deno.env.get("ZAPI_INSTANCE_ID");
+          zapiToken = waConfig.token || Deno.env.get("ZAPI_TOKEN");
+          securityToken = waConfig.security_token || Deno.env.get("ZAPI_SECURITY_TOKEN") || null;
+        }
 
-              if (ok) waScheduledCount++;
-            } catch (e) {
-              console.error("Scheduled send error:", e);
-              await supabase
-                .from("whatsapp_messages")
-                .update({ status: "failed", scheduled_for: null, error_message: String(e) })
-                .eq("id", msg.id);
-            }
+        if (!instanceId || !zapiToken) continue;
+
+        const zapiUrl = `https://api.z-api.io/instances/${instanceId}/token/${zapiToken}/send-text`;
+        const zapiHeaders: Record<string, string> = { "Content-Type": "application/json" };
+        if (securityToken) zapiHeaders["Client-Token"] = securityToken;
+
+        for (const msg of msgs) {
+          try {
+            const resp = await fetch(zapiUrl, {
+              method: "POST",
+              headers: zapiHeaders,
+              body: JSON.stringify({ phone: msg.phone, message: msg.message_text }),
+            });
+            const result = await resp.json();
+            const ok = resp.ok && !result.error;
+
+            await supabase
+              .from("whatsapp_messages")
+              .update({
+                status: ok ? "sent" : "failed",
+                scheduled_for: null,
+                zapi_message_id: result?.messageId || result?.zapiMessageId || null,
+                error_message: ok ? null : JSON.stringify(result),
+              })
+              .eq("id", msg.id);
+
+            if (ok) waScheduledCount++;
+          } catch (e) {
+            console.error("Scheduled send error:", e);
+            await supabase
+              .from("whatsapp_messages")
+              .update({ status: "failed", scheduled_for: null, error_message: String(e) })
+              .eq("id", msg.id);
           }
         }
       }
