@@ -18,6 +18,8 @@ interface FranchiseWAState {
   zapi_phone_number: string | null;
   whatsapp_plan_expires_at: string | null;
   stripe_subscription_id: string | null;
+  orcamento_plan_active: boolean;
+  orcamento_stripe_subscription_id: string | null;
 }
 
 type ViewState = 'inactive' | 'pending' | 'connected' | 'disconnected';
@@ -73,7 +75,7 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
     setLoading(true);
     const { data } = await supabase
       .from('franchises')
-      .select('whatsapp_plan_active, zapi_instance_active, zapi_phone_number, whatsapp_plan_expires_at, stripe_subscription_id')
+      .select('whatsapp_plan_active, zapi_instance_active, zapi_phone_number, whatsapp_plan_expires_at, stripe_subscription_id, orcamento_plan_active, orcamento_stripe_subscription_id')
       .eq('id', franchiseId)
       .maybeSingle();
 
@@ -107,7 +109,7 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
     setCheckoutLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout-session', {
-        body: { franchiseId },
+        body: { franchiseId, plan: 'whatsapp' },
       });
       if (error) throw error;
       if (data?.url) {
@@ -122,11 +124,11 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
     }
   };
 
-  const handlePortal = async () => {
+  const handlePortal = async (planType: 'whatsapp' | 'orcamento' = 'whatsapp') => {
     setPortalLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('create-portal-session', {
-        body: { franchiseId },
+        body: { franchiseId, planType },
       });
       if (error) throw error;
       if (data?.url) {
@@ -348,7 +350,7 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handlePortal}
+                onClick={() => handlePortal('whatsapp')}
                 disabled={portalLoading}
                 className="gap-2 text-xs rounded-xl"
               >
@@ -396,7 +398,7 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handlePortal}
+                onClick={() => handlePortal('whatsapp')}
                 disabled={portalLoading}
                 className="gap-2 text-xs rounded-xl"
               >
@@ -404,6 +406,37 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
                 Gerenciar assinatura
               </Button>
             )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Orcamento plan info */}
+      {state.whatsapp_plan_active && (
+        <div className="flex items-center gap-2 rounded-xl border border-success/30 bg-success/10 p-3">
+          <CheckCircle className="w-4 h-4 text-success shrink-0" />
+          <p className="text-xs text-foreground font-medium">
+            ✅ Orçamento Personalizado incluso no seu plano WhatsApp Próprio
+          </p>
+        </div>
+      )}
+
+      {!state.whatsapp_plan_active && state.orcamento_plan_active && state.orcamento_stripe_subscription_id && (
+        <Card className="card-premium">
+          <CardContent className="flex items-center justify-between py-3 px-4">
+            <div className="flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-success" />
+              <p className="text-xs font-medium text-foreground">Plano Orçamento Personalizado ativo</p>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handlePortal('orcamento')}
+              disabled={portalLoading}
+              className="gap-2 text-xs rounded-xl"
+            >
+              {portalLoading ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <CreditCard className="w-3.5 h-3.5" />}
+              Gerenciar assinatura
+            </Button>
           </CardContent>
         </Card>
       )}

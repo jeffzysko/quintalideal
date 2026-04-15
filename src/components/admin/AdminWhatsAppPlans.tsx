@@ -29,6 +29,8 @@ interface FranchiseWARow {
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
   stripe_subscription_status: string | null;
+  orcamento_plan_active: boolean;
+  orcamento_stripe_subscription_status: string | null;
 }
 
 const MONTHLY_PRICE = 149;
@@ -57,7 +59,7 @@ export function AdminWhatsAppPlans() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('franchises')
-        .select('id, nome_franquia, whatsapp_mode, zapi_instance_active, whatsapp_plan_active, zapi_instance_id, whatsapp_plan_expires_at, whatsapp_plan_price, whatsapp_plan_notes, stripe_customer_id, stripe_subscription_id, stripe_subscription_status')
+        .select('id, nome_franquia, whatsapp_mode, zapi_instance_active, whatsapp_plan_active, zapi_instance_id, whatsapp_plan_expires_at, whatsapp_plan_price, whatsapp_plan_notes, stripe_customer_id, stripe_subscription_id, stripe_subscription_status, orcamento_plan_active, orcamento_stripe_subscription_status')
         .eq('ativa', true)
         .order('nome_franquia', { ascending: true });
       if (error) throw error;
@@ -278,6 +280,25 @@ export function AdminWhatsAppPlans() {
     return <Badge variant="success" className="text-[10px]">Ativo</Badge>;
   };
 
+  const getOrcamentoBadge = (row: FranchiseWARow) => {
+    if (row.orcamento_plan_active || row.whatsapp_plan_active) {
+      const viaWhatsApp = !row.orcamento_plan_active && row.whatsapp_plan_active;
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <Badge variant="success" className="text-[10px]">Ativo</Badge>
+            </TooltipTrigger>
+            {viaWhatsApp && (
+              <TooltipContent><p>Incluso no plano WhatsApp</p></TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+    return <Badge variant="outline" className="text-[10px] text-muted-foreground">Inativo</Badge>;
+  };
+
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return 'Sem vencimento';
     return format(new Date(dateStr), 'dd/MM/yyyy', { locale: ptBR });
@@ -368,6 +389,7 @@ export function AdminWhatsAppPlans() {
                     <TableHead className="text-xs">Status Stripe</TableHead>
                     <TableHead className="text-xs">Assinatura</TableHead>
                     <TableHead className="text-xs">Validade</TableHead>
+                    <TableHead className="text-xs">Orçamento</TableHead>
                     <TableHead className="text-xs text-right">Plano</TableHead>
                   </TableRow>
                 </TableHeader>
@@ -390,6 +412,7 @@ export function AdminWhatsAppPlans() {
                           {formatDate(f.whatsapp_plan_expires_at)}
                         </span>
                       </TableCell>
+                      <TableCell>{getOrcamentoBadge(f)}</TableCell>
                       <TableCell className="text-right">
                         <Switch
                           checked={f.whatsapp_plan_active}
