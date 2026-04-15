@@ -59,7 +59,7 @@ export function AdminWhatsAppPlans() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from('franchises')
-        .select('id, nome_franquia, whatsapp_mode, zapi_instance_active, whatsapp_plan_active, zapi_instance_id, whatsapp_plan_expires_at, whatsapp_plan_price, whatsapp_plan_notes, stripe_customer_id, stripe_subscription_id, stripe_subscription_status')
+        .select('id, nome_franquia, whatsapp_mode, zapi_instance_active, whatsapp_plan_active, zapi_instance_id, whatsapp_plan_expires_at, whatsapp_plan_price, whatsapp_plan_notes, stripe_customer_id, stripe_subscription_id, stripe_subscription_status, orcamento_plan_active, orcamento_stripe_subscription_status')
         .eq('ativa', true)
         .order('nome_franquia', { ascending: true });
       if (error) throw error;
