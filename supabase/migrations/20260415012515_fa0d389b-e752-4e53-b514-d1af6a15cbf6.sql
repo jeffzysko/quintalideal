@@ -1,0 +1,1 @@
+ALTER TABLE public.franchises ADD COLUMN IF NOT EXISTS zapi_phone_number text;
