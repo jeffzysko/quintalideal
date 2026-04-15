@@ -36,6 +36,7 @@ import type { MetricCardProps } from '@/components/dashboard/MetricCard';
 import { InsightCards } from '@/components/dashboard/InsightCards';
 import { useLeadsRealtime } from '@/hooks/useLeadsRealtime';
 import { OnboardingChecklist } from '@/components/franchise/OnboardingChecklist';
+import { FirstAccessModal } from '@/components/franchise/FirstAccessModal';
 
 const PAGE_SIZE = 20;
 
