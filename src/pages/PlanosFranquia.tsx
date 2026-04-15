@@ -1,7 +1,9 @@
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@tanstack/react-query';
-import { Check, Sparkles, MessageCircle, FileText, Lightbulb, Clock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Check, Sparkles, MessageCircle, FileText, Lightbulb, Clock, Rocket, Send, ThumbsUp, BarChart3 } from 'lucide-react';
+import { useFranchiseMetrics } from '@/hooks/useFranchiseMetrics';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -87,6 +89,10 @@ export default function PlanosFranquia() {
   const orcamentoViaWhatsApp = whatsappActive && orcamentoActive && !orcamentoTrialing;
   const orcamentoStandalone = (orcamentoActive || orcamentoTrialing) && !whatsappActive;
   const noPlan = !whatsappActive && !orcamentoActive && !orcamentoTrialing;
+  const hasAnyPlan = !noPlan;
+
+  const navigate = useNavigate();
+  const { data: metrics } = useFranchiseMetrics(hasAnyPlan ? franchiseId : null);
 
   const handleCheckout = async (planType: 'whatsapp' | 'orcamento') => {
     if (!franchiseId) return;
@@ -192,6 +198,112 @@ export default function PlanosFranquia() {
           )}
         </CardContent>
       </Card>
+
+      {/* Usage Metrics */}
+      {hasAnyPlan && metrics && (
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-foreground">Meu uso este mês</h2>
+
+          {metrics.orcamentoSent === 0 && metrics.whatsappSent === 0 && orcamentoTrialing ? (
+            <Card className="border-primary/20 bg-primary/5">
+              <CardContent className="flex items-center gap-4 py-6">
+                <Rocket className="h-8 w-8 text-primary shrink-0" />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-foreground">🚀 Você ainda não enviou nenhum orçamento este mês. Que tal começar agora?</p>
+                </div>
+                <Button size="sm" onClick={() => navigate('/propostas/nova')}>
+                  Criar primeiro orçamento
+                </Button>
+              </CardContent>
+            </Card>
+          ) : (
+            <>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                {(orcamentoActive || orcamentoTrialing) && (
+                  <>
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-xs text-muted-foreground flex items-center gap-1">
+                          <Send className="h-3 w-3" /> Orçamentos enviados
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-2xl font-bold text-foreground">{metrics.orcamentoSent}</p>
+                        <p className="text-xs text-muted-foreground">{metrics.totalOrcamentoHistoric} total</p>
+                      </CardContent>
+                    </Card>
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-xs text-muted-foreground flex items-center gap-1">
+                          <ThumbsUp className="h-3 w-3" /> Taxa de aceite
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        {metrics.orcamentoSent > 0 ? (() => {
+                          const rate = Math.round((metrics.orcamentoAccepted / metrics.orcamentoSent) * 100);
+                          const color = rate > 50 ? 'text-success' : rate >= 20 ? 'text-yellow-600' : 'text-destructive';
+                          return (
+                            <>
+                              <p className={`text-2xl font-bold ${color}`}>{rate}%</p>
+                              <p className="text-xs text-muted-foreground">{metrics.orcamentoAccepted} aceitos</p>
+                            </>
+                          );
+                        })() : (
+                          <p className="text-sm text-muted-foreground">Sem dados</p>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </>
+                )}
+                {whatsappActive && (
+                  <>
+                    <Card>
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-xs text-muted-foreground flex items-center gap-1">
+                          <MessageCircle className="h-3 w-3" /> Mensagens este mês
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-2xl font-bold text-foreground">{metrics.whatsappSent}</p>
+                        <p className="text-xs text-muted-foreground">{metrics.totalWhatsappHistoric} total</p>
+                      </CardContent>
+                    </Card>
+                  </>
+                )}
+              </div>
+
+              {/* Monthly bar chart */}
+              {(orcamentoActive || orcamentoTrialing) && metrics.monthlyOrcamento.some(m => m.count > 0) && (
+                <Card>
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-xs text-muted-foreground flex items-center gap-1">
+                      <BarChart3 className="h-3 w-3" /> Orçamentos enviados — últimos 6 meses
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="flex items-end gap-2 h-32">
+                      {metrics.monthlyOrcamento.map((m, i) => {
+                        const max = Math.max(...metrics.monthlyOrcamento.map(x => x.count), 1);
+                        const height = (m.count / max) * 100;
+                        return (
+                          <div key={i} className="flex-1 flex flex-col items-center gap-1">
+                            <span className="text-xs font-medium text-foreground">{m.count}</span>
+                            <div
+                              className="w-full bg-primary/80 rounded-t-sm min-h-[2px]"
+                              style={{ height: `${Math.max(height, 2)}%` }}
+                            />
+                            <span className="text-[10px] text-muted-foreground">{m.month}</span>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </>
+          )}
+        </div>
+      )}
 
       {/* Plan Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
