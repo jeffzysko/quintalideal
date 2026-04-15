@@ -13,33 +13,39 @@ import { isValidEmail, isValidBRPhone } from '@/lib/validation';
 import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 
 const STEPS = [
-  { emoji: '📋', title: 'Cadastre-se', description: 'Preencha o formulário com os dados da sua empresa. É rápido.' },
-  { emoji: '✅', title: 'Aguarde a aprovação', description: 'Nossa equipe analisa e entra em contato em até 24h.' },
-  { emoji: '🚀', title: 'Comece a operar', description: 'Acesse a plataforma, divulgue seu link e gerencie seus leads.' },
+  { emoji: '📋', title: '1. Cadastre-se em 2 minutos', description: 'Preencha seus dados abaixo. Sem burocracia, sem taxas de adesão.' },
+  { emoji: '✅', title: '2. Aprovação em até 24h', description: 'Nossa equipe analisa sua candidatura e entra em contato pelo WhatsApp.' },
+  { emoji: '🚀', title: '3. Comece a vender mais', description: 'Receba leads qualificados, envie orçamentos profissionais e acompanhe tudo em tempo real.' },
 ];
 
 const FEATURES = [
-  { emoji: '🎯', title: 'Gestão de leads', description: 'Kanban, funil de vendas e histórico completo de cada cliente' },
-  { emoji: '📄', title: 'Orçamentos personalizados', description: 'Crie e envie propostas profissionais com um clique' },
-  { emoji: '📱', title: 'WhatsApp integrado', description: 'Notificações automáticas para seus leads pelo WhatsApp' },
-  { emoji: '📊', title: 'Relatórios e metas', description: 'Acompanhe sua performance e defina metas mensais' },
-  { emoji: '🌍', title: 'Link exclusivo', description: 'Seu link de divulgação captura leads automaticamente' },
-  { emoji: '🏆', title: 'Ranking da rede', description: 'Veja seu desempenho comparado aos outros parceiros' },
+  { emoji: '🎯', title: 'Leads que chegam até você', description: 'Receba clientes interessados direto no seu painel — sem precisar correr atrás' },
+  { emoji: '📄', title: 'Orçamentos em 1 clique', description: 'Propostas profissionais com a sua marca, enviadas automaticamente por WhatsApp' },
+  { emoji: '📱', title: 'WhatsApp inteligente', description: 'Mensagens automáticas que nutrem o cliente enquanto você foca na venda' },
+  { emoji: '📊', title: 'Métricas que importam', description: 'Saiba exatamente quantos leads entraram, converteram e quanto você faturou' },
+  { emoji: '🌍', title: 'Seu link exclusivo', description: 'Uma página personalizada que captura clientes 24h por dia, mesmo enquanto você dorme' },
+  { emoji: '🏆', title: 'Ranking da rede', description: 'Compare seu desempenho com outros parceiros e descubra como escalar suas vendas' },
+];
+
+const SOCIAL_PROOF = [
+  { metric: '38+', label: 'lojas parceiras no RS' },
+  { metric: '2.500+', label: 'leads gerados na plataforma' },
+  { metric: '24h', label: 'tempo médio de aprovação' },
 ];
 
 const ORCAMENTO_BENEFITS = [
   'Orçamentos e propostas ilimitados',
-  'Modelos profissionais personalizados',
+  'Modelos profissionais com a sua marca',
   'Envio automático por WhatsApp',
-  'Acompanhamento de status em tempo real',
+  'Saiba quando o cliente abriu a proposta',
 ];
 
 const WHATSAPP_BENEFITS = [
   'Tudo do plano Orçamento',
-  'Notificações pelo número da sua empresa',
-  'Instância dedicada gerenciada pela plataforma',
+  'Mensagens automáticas pelo número da sua loja',
+  'Instância dedicada — sem compartilhar número',
   'Conexão simples via QR Code',
-  'Suporte prioritário',
+  'Suporte prioritário da equipe Quintal Ideal',
 ];
 
 function formatPhone(value: string) {
