@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -6,10 +6,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
-import { cidades } from '@/lib/cities';
 import { Check, ClipboardList, Rocket, CheckCircle2 } from 'lucide-react';
 import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 
@@ -49,6 +47,95 @@ function formatPhone(value: string) {
   if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
   return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
+
+interface IBGECity {
+  nome: string;
+  microrregiao?: { mesorregiao?: { UF?: { sigla?: string } } };
+}
+
+function CityAutocomplete({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [query, setQuery] = useState(value);
+  const [results, setResults] = useState<{ nome: string; uf: string }[]>([]);
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout>>();
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, []);
+
+  const search = useCallback((term: string) => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    if (term.length < 3) { setResults([]); setOpen(false); return; }
+
+    debounceRef.current = setTimeout(async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(
+          `https://servicodados.ibge.gov.br/api/v1/localidades/municipios?orderBy=nome`
+        );
+        const data: IBGECity[] = await res.json();
+        const normalized = term.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+        const filtered = data
+          .filter(c => c.nome.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').includes(normalized))
+          .slice(0, 15)
+          .map(c => ({ nome: c.nome, uf: c.microrregiao?.mesorregiao?.UF?.sigla || '' }));
+        setResults(filtered);
+        setOpen(filtered.length > 0);
+      } catch {
+        setResults([]);
+      } finally {
+        setLoading(false);
+      }
+    }, 300);
+  }, []);
+
+  return (
+    <div className="space-y-1.5 relative" ref={containerRef}>
+      <Label className="text-xs font-medium">Cidade *</Label>
+      <Input
+        value={query}
+        onChange={e => {
+          const v = e.target.value;
+          setQuery(v);
+          onChange('');
+          search(v);
+        }}
+        placeholder="Digite o nome da cidade..."
+        maxLength={100}
+        autoComplete="off"
+      />
+      {loading && <p className="text-xs text-muted-foreground mt-1">Buscando...</p>}
+      {open && results.length > 0 && (
+        <div className="absolute z-50 top-full left-0 right-0 mt-1 bg-popover border border-border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+          {results.map(c => (
+            <button
+              key={`${c.nome}-${c.uf}`}
+              type="button"
+              className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
+              onClick={() => {
+                const label = `${c.nome} (${c.uf})`;
+                setQuery(label);
+                onChange(label);
+                setOpen(false);
+              }}
+            >
+              {c.nome} <span className="text-muted-foreground">({c.uf})</span>
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 
 export default function SejaParceiro() {
   const [form, setForm] = useState({
@@ -116,7 +203,7 @@ export default function SejaParceiro() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            Gerencie seus leads, envie orçamentos profissionais e cresça com o suporte de uma plataforma feita para parceiros.
+            Gerencie seus leads, envie orçamentos profissionais e cresça com o suporte de uma plataforma feita para lojas de piscinas.
           </motion.p>
           <motion.div
             className="flex flex-col sm:flex-row gap-3 justify-center"
@@ -268,21 +355,10 @@ export default function SejaParceiro() {
                     />
                   </div>
 
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-medium">Cidade base *</Label>
-                    <Select value={form.cidade_base} onValueChange={v => setForm(p => ({ ...p, cidade_base: v }))}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione a cidade" />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-60">
-                        {cidades.map(c => (
-                          <SelectItem key={`${c.nome}-${c.pais}`} value={c.nome}>
-                            {c.nome} {c.estado ? `(${c.estado})` : `(${c.pais})`}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <CityAutocomplete
+                    value={form.cidade_base}
+                    onChange={v => setForm(p => ({ ...p, cidade_base: v }))}
+                  />
 
                   <div className="space-y-1.5">
                     <Label className="text-xs font-medium">Nome do responsável *</Label>
