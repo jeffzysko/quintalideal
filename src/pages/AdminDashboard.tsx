@@ -3,7 +3,7 @@ import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-quer
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Globe, Kanban, CalendarClock, MessageCircle, FileText } from 'lucide-react';
+import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Globe, Kanban, CalendarClock, MessageCircle, FileText, ShieldAlert } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -47,6 +47,7 @@ const FranchiseDashboard = lazy(() => import('@/pages/FranchiseDashboard'));
 const PerformanceQI = lazy(() => import('@/components/admin/PerformanceQI').then(m => ({ default: m.PerformanceQI })));
 const AdminLeadsReadOnly = lazy(() => import('@/components/admin/AdminLeadsReadOnly').then(m => ({ default: m.AdminLeadsReadOnly })));
 const AdminApplications = lazy(() => import('@/components/admin/AdminApplications').then(m => ({ default: m.AdminApplications })));
+const AdminErrorLogs = lazy(() => import('@/components/admin/AdminErrorLogs').then(m => ({ default: m.AdminErrorLogs })));
 
 function TabFallback() {
   return (
@@ -58,7 +59,7 @@ function TabFallback() {
 
 const PAGE_SIZE = 25;
 
-const getAdminTabFromSearch = (search: string): 'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'whatsapp' | 'franchise-view' | 'candidaturas' => {
+const getAdminTabFromSearch = (search: string): 'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'whatsapp' | 'franchise-view' | 'candidaturas' | 'errors' => {
   const urlTab = new URLSearchParams(search).get('tab');
   if (urlTab === 'leads') return 'leads';
   if (urlTab === 'kanban') return 'kanban';
@@ -71,6 +72,7 @@ const getAdminTabFromSearch = (search: string): 'overview' | 'leads' | 'kanban' 
   if (urlTab === 'whatsapp') return 'whatsapp';
   if (urlTab === 'franchise-view') return 'franchise-view';
   if (urlTab === 'candidaturas') return 'candidaturas';
+  if (urlTab === 'errors') return 'errors';
   return 'overview';
 };
 
@@ -87,7 +89,7 @@ export default function AdminDashboard() {
   // Live updates: invalidates queries when leads change in the DB
   useLeadsRealtime();
   const { signOut: _signOut, role } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'whatsapp' | 'franchise-view' | 'candidaturas'>(() => getAdminTabFromSearch(location.search));
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'whatsapp' | 'franchise-view' | 'candidaturas' | 'errors'>(() => getAdminTabFromSearch(location.search));
 
   // Sync activeTab when URL changes externally (e.g. sidebar navigation)
   useEffect(() => {
@@ -457,6 +459,7 @@ export default function AdminDashboard() {
       { key: 'users' as const, icon: Users, label: 'Usuários' },
       { key: 'emails' as const, icon: Mail, label: 'E-mails' },
       { key: 'whatsapp' as const, icon: MessageCircle, label: 'WhatsApp' },
+      { key: 'errors' as const, icon: ShieldAlert, label: 'Erros' },
       { key: 'franchise-view' as const, icon: Eye, label: 'Visão Franquia' },
     ] : []),
   ];
@@ -687,6 +690,7 @@ export default function AdminDashboard() {
         {activeTab === 'emails' && <Suspense fallback={<TabFallback />}><AdminEmailTemplates /></Suspense>}
         {activeTab === 'whatsapp' && <Suspense fallback={<TabFallback />}><AdminWhatsAppTemplates /></Suspense>}
         {activeTab === 'candidaturas' && <Suspense fallback={<TabFallback />}><AdminApplications /></Suspense>}
+        {activeTab === 'errors' && <Suspense fallback={<TabFallback />}><AdminErrorLogs franchiseMap={franchiseMap} /></Suspense>}
 
         {activeTab === 'franchise-view' && (
           <Suspense fallback={<TabFallback />}>
