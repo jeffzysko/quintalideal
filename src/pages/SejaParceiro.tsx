@@ -467,7 +467,7 @@ export default function SejaParceiro() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9 }}
           >
-            {SOCIAL_PROOF.map((sp, i) => (
+            {SOCIAL_PROOF.map((sp) => (
               <motion.div
                 key={sp.label}
                 className="relative group px-6 sm:px-8 py-4 rounded-2xl border border-border/30 bg-background/50 backdrop-blur-md cursor-default"
