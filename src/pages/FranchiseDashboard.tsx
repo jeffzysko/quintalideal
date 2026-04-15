@@ -76,8 +76,9 @@ interface FranchiseDashboardProps {
 }
 
 export default function FranchiseDashboard({ overrideFranchiseId, embedded }: FranchiseDashboardProps = {}) {
-  const { franchiseId: authFranchiseId, loading: authLoading } = useAuth();
+  const { franchiseId: authFranchiseId, loading: authLoading, role } = useAuth();
   const franchiseId = overrideFranchiseId || authFranchiseId;
+  const showOnboarding = role === 'franquia' && !overrideFranchiseId;
   const navigate = useNavigate();
   const location = useLocation();
   const queryClient = useQueryClient();
