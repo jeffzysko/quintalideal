@@ -31,7 +31,7 @@ interface FranchiseWARow {
   stripe_subscription_status: string | null;
 }
 
-const MONTHLY_PRICE = 79.90;
+const MONTHLY_PRICE = 149;
 
 async function invokeZapiInstance(action: string, franchiseId: string) {
   const { data, error } = await supabase.functions.invoke('zapi-instance', {
