@@ -178,6 +178,12 @@ export type Database = {
           webhook_secret: string | null
           webhook_url: string | null
           whatsapp: string | null
+          whatsapp_mode: string
+          whatsapp_plan_active: boolean
+          zapi_client_token: string | null
+          zapi_instance_active: boolean
+          zapi_instance_id: string | null
+          zapi_token: string | null
         }
         Insert: {
           ativa?: boolean
@@ -196,6 +202,12 @@ export type Database = {
           webhook_secret?: string | null
           webhook_url?: string | null
           whatsapp?: string | null
+          whatsapp_mode?: string
+          whatsapp_plan_active?: boolean
+          zapi_client_token?: string | null
+          zapi_instance_active?: boolean
+          zapi_instance_id?: string | null
+          zapi_token?: string | null
         }
         Update: {
           ativa?: boolean
@@ -214,6 +226,12 @@ export type Database = {
           webhook_secret?: string | null
           webhook_url?: string | null
           whatsapp?: string | null
+          whatsapp_mode?: string
+          whatsapp_plan_active?: boolean
+          zapi_client_token?: string | null
+          zapi_instance_active?: boolean
+          zapi_instance_id?: string | null
+          zapi_token?: string | null
         }
         Relationships: []
       }
