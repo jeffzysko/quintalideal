@@ -161,7 +161,7 @@ export default function PlanosFranquia() {
             <p className="text-sm text-muted-foreground">Plano Gratuito — recursos básicos disponíveis</p>
           )}
           {orcamentoActive && (
-            <Badge variant="default" className="bg-emerald-600 hover:bg-emerald-600 text-white gap-1">
+            <Badge variant="default" className="bg-success text-success-foreground gap-1">
               <FileText className="h-3 w-3" />
               Orçamento Personalizado ativo
               {orcamentoViaWhatsApp && (
@@ -170,7 +170,7 @@ export default function PlanosFranquia() {
             </Badge>
           )}
           {whatsappActive && (
-            <Badge variant="default" className="bg-emerald-600 hover:bg-emerald-600 text-white gap-1">
+            <Badge variant="default" className="bg-success text-success-foreground gap-1">
               <MessageCircle className="h-3 w-3" />
               WhatsApp Próprio ativo
               {plan?.zapi_phone_number && (
@@ -206,7 +206,7 @@ export default function PlanosFranquia() {
             <ul className="space-y-2.5">
               {WHATSAPP_BENEFITS.map((b) => (
                 <li key={b} className="flex items-start gap-2 text-sm text-foreground">
-                  <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                  <Check className="h-4 w-4 text-success shrink-0 mt-0.5" />
                   <span>{b}</span>
                 </li>
               ))}
@@ -264,7 +264,7 @@ export default function PlanosFranquia() {
             <ul className="space-y-2.5">
               {ORCAMENTO_BENEFITS.map((b) => (
                 <li key={b} className="flex items-start gap-2 text-sm text-foreground">
-                  <Check className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
+                  <Check className="h-4 w-4 text-success shrink-0 mt-0.5" />
                   <span>{b}</span>
                 </li>
               ))}
