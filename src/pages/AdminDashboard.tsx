@@ -59,7 +59,7 @@ function TabFallback() {
 
 const PAGE_SIZE = 25;
 
-const getAdminTabFromSearch = (search: string): 'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'whatsapp' | 'franchise-view' | 'candidaturas' => {
+const getAdminTabFromSearch = (search: string): 'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'whatsapp' | 'franchise-view' | 'candidaturas' | 'errors' => {
   const urlTab = new URLSearchParams(search).get('tab');
   if (urlTab === 'leads') return 'leads';
   if (urlTab === 'kanban') return 'kanban';
@@ -72,6 +72,7 @@ const getAdminTabFromSearch = (search: string): 'overview' | 'leads' | 'kanban' 
   if (urlTab === 'whatsapp') return 'whatsapp';
   if (urlTab === 'franchise-view') return 'franchise-view';
   if (urlTab === 'candidaturas') return 'candidaturas';
+  if (urlTab === 'errors') return 'errors';
   return 'overview';
 };
 
@@ -88,7 +89,7 @@ export default function AdminDashboard() {
   // Live updates: invalidates queries when leads change in the DB
   useLeadsRealtime();
   const { signOut: _signOut, role } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'whatsapp' | 'franchise-view' | 'candidaturas'>(() => getAdminTabFromSearch(location.search));
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'whatsapp' | 'franchise-view' | 'candidaturas' | 'errors'>(() => getAdminTabFromSearch(location.search));
 
   // Sync activeTab when URL changes externally (e.g. sidebar navigation)
   useEffect(() => {
