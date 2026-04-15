@@ -350,7 +350,7 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handlePortal}
+                onClick={() => handlePortal('whatsapp')}
                 disabled={portalLoading}
                 className="gap-2 text-xs rounded-xl"
               >
@@ -398,7 +398,7 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handlePortal}
+                onClick={() => handlePortal('whatsapp')}
                 disabled={portalLoading}
                 className="gap-2 text-xs rounded-xl"
               >
