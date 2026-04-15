@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { cidades } from '@/lib/cities';
 import { Check, ClipboardList, Rocket, CheckCircle2 } from 'lucide-react';
-import logoQI from '@/assets/logo-quintal-ideal.png';
+import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 
 const STEPS = [
   { emoji: '📋', title: 'Cadastre-se', description: 'Preencha o formulário com os dados da sua empresa. É rápido.' },
