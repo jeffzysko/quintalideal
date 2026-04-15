@@ -459,6 +459,7 @@ export default function AdminDashboard() {
       { key: 'users' as const, icon: Users, label: 'Usuários' },
       { key: 'emails' as const, icon: Mail, label: 'E-mails' },
       { key: 'whatsapp' as const, icon: MessageCircle, label: 'WhatsApp' },
+      { key: 'errors' as const, icon: ShieldAlert, label: 'Erros' },
       { key: 'franchise-view' as const, icon: Eye, label: 'Visão Franquia' },
     ] : []),
   ];
@@ -689,6 +690,7 @@ export default function AdminDashboard() {
         {activeTab === 'emails' && <Suspense fallback={<TabFallback />}><AdminEmailTemplates /></Suspense>}
         {activeTab === 'whatsapp' && <Suspense fallback={<TabFallback />}><AdminWhatsAppTemplates /></Suspense>}
         {activeTab === 'candidaturas' && <Suspense fallback={<TabFallback />}><AdminApplications /></Suspense>}
+        {activeTab === 'errors' && <Suspense fallback={<TabFallback />}><AdminErrorLogs franchiseMap={franchiseMap} /></Suspense>}
 
         {activeTab === 'franchise-view' && (
           <Suspense fallback={<TabFallback />}>
