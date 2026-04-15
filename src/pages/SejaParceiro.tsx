@@ -362,7 +362,7 @@ export default function SejaParceiro() {
 
         {/* Hero content */}
         <motion.div
-          className="relative z-10 max-w-4xl mx-auto px-5 text-center"
+          className="relative z-10 max-w-4xl mx-auto px-5 pt-16 sm:pt-20 text-center"
           style={{ y: heroY, opacity: heroOpacity }}
         >
           <motion.img
@@ -405,7 +405,7 @@ export default function SejaParceiro() {
                 transition={{ delay: 0.8, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 style={{ transformOrigin: 'left' }}
               />
-            </span>
+            </span>{' '}
             <br className="hidden sm:block" />
             e venda mais piscinas
           </motion.h1>
