@@ -295,13 +295,12 @@ export default function SejaParceiro() {
           </motion.div>
 
           <motion.h1
-            className="text-[2rem] leading-[1.15] sm:text-5xl lg:text-[3.4rem] font-bold text-foreground mb-6 tracking-tight sm:leading-[1.15]"
+            className="text-[1.85rem] leading-[1.2] sm:text-[2.75rem] lg:text-[3.1rem] font-bold text-foreground mb-6 tracking-tight sm:leading-[1.15]"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15, type: 'spring', stiffness: 100 }}
           >
-            Qualifique leads, envie{' '}
-            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">orçamentos</span>
+            Qualifique leads, envie <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">orçamentos</span>
             <br />
             e venda mais piscinas
           </motion.h1>
