@@ -1,7 +1,9 @@
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@tanstack/react-query';
-import { Check, Sparkles, MessageCircle, FileText, Lightbulb, Clock } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Check, Sparkles, MessageCircle, FileText, Lightbulb, Clock, Rocket, Send, ThumbsUp, BarChart3 } from 'lucide-react';
+import { useFranchiseMetrics } from '@/hooks/useFranchiseMetrics';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
