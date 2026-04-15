@@ -396,25 +396,38 @@ export default function SejaParceiro() {
                     <Label className="text-xs font-medium">Nome da empresa *</Label>
                     <Input
                       value={form.nome_franquia}
-                      onChange={e => setForm(p => ({ ...p, nome_franquia: e.target.value }))}
+                      onChange={e => { setForm(p => ({ ...p, nome_franquia: e.target.value })); clearError('nome_franquia'); }}
+                      onBlur={() => handleBlur('nome_franquia')}
                       placeholder="Quintal Ideal Porto Alegre"
                       maxLength={100}
+                      className={touched.nome_franquia && errors.nome_franquia ? 'border-destructive focus-visible:ring-destructive' : ''}
                     />
+                    {touched.nome_franquia && errors.nome_franquia && (
+                      <p className="text-xs text-destructive mt-1">{errors.nome_franquia}</p>
+                    )}
                   </div>
 
                   <CityAutocomplete
                     value={form.cidade_base}
-                    onChange={v => setForm(p => ({ ...p, cidade_base: v }))}
+                    onChange={v => { setForm(p => ({ ...p, cidade_base: v })); clearError('cidade_base'); }}
                   />
+                  {touched.cidade_base && errors.cidade_base && (
+                    <p className="text-xs text-destructive -mt-2">{errors.cidade_base}</p>
+                  )}
 
                   <div className="space-y-1.5">
                     <Label className="text-xs font-medium">Nome do responsável *</Label>
                     <Input
                       value={form.nome_responsavel}
-                      onChange={e => setForm(p => ({ ...p, nome_responsavel: e.target.value }))}
+                      onChange={e => { setForm(p => ({ ...p, nome_responsavel: e.target.value })); clearError('nome_responsavel'); }}
+                      onBlur={() => handleBlur('nome_responsavel')}
                       placeholder="João Silva"
                       maxLength={100}
+                      className={touched.nome_responsavel && errors.nome_responsavel ? 'border-destructive focus-visible:ring-destructive' : ''}
                     />
+                    {touched.nome_responsavel && errors.nome_responsavel && (
+                      <p className="text-xs text-destructive mt-1">{errors.nome_responsavel}</p>
+                    )}
                   </div>
 
                   <div className="space-y-1.5">
@@ -422,10 +435,15 @@ export default function SejaParceiro() {
                     <Input
                       type="tel"
                       value={form.whatsapp_responsavel}
-                      onChange={e => setForm(p => ({ ...p, whatsapp_responsavel: formatPhone(e.target.value) }))}
+                      onChange={e => { setForm(p => ({ ...p, whatsapp_responsavel: formatPhone(e.target.value) })); clearError('whatsapp_responsavel'); }}
+                      onBlur={() => handleBlur('whatsapp_responsavel')}
                       placeholder="(51) 99999-9999"
                       maxLength={15}
+                      className={touched.whatsapp_responsavel && errors.whatsapp_responsavel ? 'border-destructive focus-visible:ring-destructive' : ''}
                     />
+                    {touched.whatsapp_responsavel && errors.whatsapp_responsavel && (
+                      <p className="text-xs text-destructive mt-1">{errors.whatsapp_responsavel}</p>
+                    )}
                   </div>
 
                   <div className="space-y-1.5">
@@ -433,17 +451,22 @@ export default function SejaParceiro() {
                     <Input
                       type="email"
                       value={form.email}
-                      onChange={e => setForm(p => ({ ...p, email: e.target.value }))}
+                      onChange={e => { setForm(p => ({ ...p, email: e.target.value })); clearError('email'); }}
+                      onBlur={() => handleBlur('email')}
                       placeholder="contato@empresa.com"
                       maxLength={255}
+                      className={touched.email && errors.email ? 'border-destructive focus-visible:ring-destructive' : ''}
                     />
+                    {touched.email && errors.email && (
+                      <p className="text-xs text-destructive mt-1">{errors.email}</p>
+                    )}
                   </div>
 
                   <div className="flex items-start gap-2 pt-2">
                     <Checkbox
                       id="terms"
                       checked={accepted}
-                      onCheckedChange={v => setAccepted(v === true)}
+                      onCheckedChange={v => { setAccepted(v === true); clearError('terms'); }}
                       className="mt-0.5"
                     />
                     <label htmlFor="terms" className="text-xs text-muted-foreground leading-snug cursor-pointer">
@@ -453,11 +476,14 @@ export default function SejaParceiro() {
                       <Link to="/privacidade" className="underline hover:text-foreground" target="_blank">Política de Privacidade</Link>.
                     </label>
                   </div>
+                  {errors.terms && (
+                    <p className="text-xs text-destructive -mt-2">{errors.terms}</p>
+                  )}
 
                   <Button
                     className="w-full rounded-xl"
                     size="lg"
-                    disabled={!isValid || submitting}
+                    disabled={submitting}
                     onClick={handleSubmit}
                   >
                     {submitting ? 'Enviando...' : 'Enviar candidatura'}
