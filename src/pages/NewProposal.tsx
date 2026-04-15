@@ -489,6 +489,32 @@ export default function NewProposal() {
     </div>
   );
 
+  if (orcamentoLoading) {
+    return (
+      <div className="min-h-screen bg-background pb-bottomnav sm:pb-0">
+        <PanelHeader title="Nova Proposta">
+          <BackButton fallback="/propostas" />
+        </PanelHeader>
+        <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <div key={i} className="h-[72px] skeleton rounded-xl" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (!hasOrcamentoAccess) {
+    return (
+      <div className="min-h-screen bg-background pb-bottomnav sm:pb-0">
+        <PanelHeader title="Nova Proposta">
+          <BackButton fallback="/propostas" />
+        </PanelHeader>
+        <OrcamentoUpgradeWall />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background pb-bottomnav sm:pb-0">
       {/* Mobile header — same pattern as HojePage */}
