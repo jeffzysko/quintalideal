@@ -15,6 +15,8 @@ import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Plus, FileText, Clock, ChevronRight, Link2, Pencil, Search, DollarSign, Eye, CheckCircle2, UserCheck, UserX } from 'lucide-react';
 import { format } from 'date-fns';
+import { useOrcamentoAccess } from '@/hooks/useOrcamentoAccess';
+import { OrcamentoUpgradeWall } from '@/components/proposals/OrcamentoUpgradeWall';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
@@ -46,6 +48,7 @@ export default function ProposalsList() {
   const queryClient = useQueryClient();
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
   const basePath = isAdmin ? '/admin' : '/franquia';
+  const { hasAccess: hasOrcamentoAccess, loading: orcamentoLoading } = useOrcamentoAccess();
   const canQuery = !!franchiseId || isAdmin;
 
   const [statusFilter, setStatusFilter] = useState('todas');
