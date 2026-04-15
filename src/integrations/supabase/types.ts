@@ -183,7 +183,6 @@ export type Database = {
           whatsapp_plan_expires_at: string | null
           whatsapp_plan_notes: string | null
           whatsapp_plan_price: number | null
-          zapi_client_token: string | null
           zapi_instance_active: boolean
           zapi_instance_id: string | null
           zapi_phone_number: string | null
@@ -211,7 +210,6 @@ export type Database = {
           whatsapp_plan_expires_at?: string | null
           whatsapp_plan_notes?: string | null
           whatsapp_plan_price?: number | null
-          zapi_client_token?: string | null
           zapi_instance_active?: boolean
           zapi_instance_id?: string | null
           zapi_phone_number?: string | null
@@ -239,7 +237,6 @@ export type Database = {
           whatsapp_plan_expires_at?: string | null
           whatsapp_plan_notes?: string | null
           whatsapp_plan_price?: number | null
-          zapi_client_token?: string | null
           zapi_instance_active?: boolean
           zapi_instance_id?: string | null
           zapi_phone_number?: string | null
