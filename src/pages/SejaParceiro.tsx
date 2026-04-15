@@ -149,17 +149,63 @@ export default function SejaParceiro() {
   const [accepted, setAccepted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
-  const isValid =
-    form.nome_franquia.trim() &&
-    form.cidade_base &&
-    form.nome_responsavel.trim() &&
-    form.whatsapp_responsavel.replace(/\D/g, '').length >= 10 &&
-    form.email.includes('@') &&
-    accepted;
+  const clearError = (field: string) => setErrors(p => ({ ...p, [field]: '' }));
+  const markTouched = (field: string) => setTouched(p => ({ ...p, [field]: true }));
+
+  const validateField = (field: string, value: string): string => {
+    switch (field) {
+      case 'nome_franquia':
+        if (!value.trim()) return 'Nome da empresa é obrigatório';
+        if (value.trim().length < 2) return 'Mínimo de 2 caracteres';
+        return '';
+      case 'cidade_base':
+        if (!value) return 'Selecione uma cidade da lista';
+        return '';
+      case 'nome_responsavel':
+        if (!value.trim()) return 'Nome do responsável é obrigatório';
+        if (value.trim().length < 2) return 'Mínimo de 2 caracteres';
+        return '';
+      case 'whatsapp_responsavel': {
+        const digits = value.replace(/\D/g, '');
+        if (!digits) return 'WhatsApp é obrigatório';
+        if (!isValidBRPhone(digits)) return 'Número inválido. Use DDD + número (10 ou 11 dígitos)';
+        return '';
+      }
+      case 'email': {
+        const trimmed = value.trim();
+        if (!trimmed) return 'E-mail é obrigatório';
+        if (!isValidEmail(trimmed)) return 'E-mail inválido. Ex: contato@empresa.com';
+        return '';
+      }
+      default:
+        return '';
+    }
+  };
+
+  const handleBlur = (field: string) => {
+    markTouched(field);
+    const err = validateField(field, form[field as keyof typeof form]);
+    setErrors(p => ({ ...p, [field]: err }));
+  };
+
+  const validateAll = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    let valid = true;
+    for (const key of Object.keys(form) as (keyof typeof form)[]) {
+      const err = validateField(key, form[key]);
+      if (err) { newErrors[key] = err; valid = false; }
+    }
+    if (!accepted) { newErrors.terms = 'Aceite os termos para continuar'; valid = false; }
+    setErrors(newErrors);
+    setTouched({ nome_franquia: true, cidade_base: true, nome_responsavel: true, whatsapp_responsavel: true, email: true });
+    return valid;
+  };
 
   const handleSubmit = async () => {
-    if (!isValid) return;
+    if (!validateAll()) return;
     setSubmitting(true);
     try {
       const { error } = await supabase.from('franchise_applications' as any).insert({
