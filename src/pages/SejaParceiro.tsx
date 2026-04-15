@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { cidades } from '@/lib/cities';
 import { Check, ClipboardList, Rocket, CheckCircle2 } from 'lucide-react';
-import logoQI from '@/assets/logo-quintal-ideal.png';
+import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 
 const STEPS = [
   { emoji: '📋', title: 'Cadastre-se', description: 'Preencha o formulário com os dados da sua empresa. É rápido.' },
@@ -96,7 +96,7 @@ export default function SejaParceiro() {
       <section className="relative overflow-hidden bg-gradient-to-br from-primary/10 via-primary/5 to-background py-20 sm:py-28">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <motion.img
-            src={logoQI}
+            src={logoQuintalIdeal}
             alt="Quintal Ideal"
             className="h-12 mx-auto mb-6"
             initial={{ opacity: 0, y: -10 }}
