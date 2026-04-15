@@ -280,6 +280,25 @@ export function AdminWhatsAppPlans() {
     return <Badge variant="success" className="text-[10px]">Ativo</Badge>;
   };
 
+  const getOrcamentoBadge = (row: FranchiseWARow) => {
+    if (row.orcamento_plan_active || row.whatsapp_plan_active) {
+      const viaWhatsApp = !row.orcamento_plan_active && row.whatsapp_plan_active;
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <Badge variant="success" className="text-[10px]">Ativo</Badge>
+            </TooltipTrigger>
+            {viaWhatsApp && (
+              <TooltipContent><p>Incluso no plano WhatsApp</p></TooltipContent>
+            )}
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+    return <Badge variant="outline" className="text-[10px] text-muted-foreground">Inativo</Badge>;
+  };
+
   const formatDate = (dateStr: string | null) => {
     if (!dateStr) return 'Sem vencimento';
     return format(new Date(dateStr), 'dd/MM/yyyy', { locale: ptBR });
