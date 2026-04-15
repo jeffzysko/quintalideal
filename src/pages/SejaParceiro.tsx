@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
@@ -6,7 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { cidades } from '@/lib/cities';
@@ -116,7 +116,7 @@ export default function SejaParceiro() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            Gerencie seus leads, envie orçamentos profissionais e cresça com o suporte de uma plataforma feita para parceiros.
+            Gerencie seus leads, envie orçamentos profissionais e cresça com o suporte de uma plataforma feita para lojas de piscinas.
           </motion.p>
           <motion.div
             className="flex flex-col sm:flex-row gap-3 justify-center"
@@ -268,21 +268,10 @@ export default function SejaParceiro() {
                     />
                   </div>
 
-                  <div className="space-y-1.5">
-                    <Label className="text-xs font-medium">Cidade base *</Label>
-                    <Select value={form.cidade_base} onValueChange={v => setForm(p => ({ ...p, cidade_base: v }))}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione a cidade" />
-                      </SelectTrigger>
-                      <SelectContent className="max-h-60">
-                        {cidades.map(c => (
-                          <SelectItem key={`${c.nome}-${c.pais}`} value={c.nome}>
-                            {c.nome} {c.estado ? `(${c.estado})` : `(${c.pais})`}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+                  <CityAutocomplete
+                    value={form.cidade_base}
+                    onChange={v => setForm(p => ({ ...p, cidade_base: v }))}
+                  />
 
                   <div className="space-y-1.5">
                     <Label className="text-xs font-medium">Nome do responsável *</Label>
