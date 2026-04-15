@@ -300,7 +300,8 @@ export function AdminWhatsAppPlans() {
                         />
                       </TableCell>
                     </TableRow>
-                  ))}
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
