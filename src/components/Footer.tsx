@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Waves, MapPin, Trophy, FileText, Shield, Instagram, Code2, HelpCircle, ChevronDown } from 'lucide-react';
+import { Waves, MapPin, Trophy, FileText, Shield, Instagram, Code2, HelpCircle, ChevronDown, Building2 } from 'lucide-react';
 import { useAuth } from '@/hooks/useAuth';
 import { useStandalone } from '@/hooks/useStandalone';
 import { cn } from '@/lib/utils';
@@ -67,6 +67,7 @@ export function Footer() {
               <FooterInlineLink to="/ranking" label="Ranking" />
               <FooterInlineLink to="/mapa" label="Mapa" />
               <FooterInlineLink to="/docs/webhook" label="API Docs" />
+              <FooterInlineLink to="/seja-franqueado" label="Seja um franqueado" />
             </div>
           )}
         </div>
@@ -116,6 +117,7 @@ function LegalBlock() {
       <SectionTitle>Legal</SectionTitle>
       <FooterLink to="/termos" icon={<FileText className="w-3.5 h-3.5" />} label="Termos de Uso" />
       <FooterLink to="/privacidade" icon={<Shield className="w-3.5 h-3.5" />} label="Privacidade" />
+      <FooterLink to="/seja-franqueado" icon={<Building2 className="w-3.5 h-3.5" />} label="Seja um franqueado" />
     </div>
   );
 }
