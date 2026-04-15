@@ -458,9 +458,8 @@ export default function SejaParceiro() {
             >
               <a href="/login">Já sou parceiro</a>
             </Button>
+          </motion.div>
         </motion.div>
-
-        {/* Scroll indicator */}
         <motion.div
           className="absolute bottom-8 left-1/2 -translate-x-1/2"
           animate={{ y: [0, 8, 0] }}
