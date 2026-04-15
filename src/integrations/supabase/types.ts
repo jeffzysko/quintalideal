@@ -1054,6 +1054,52 @@ export type Database = {
         }
         Relationships: []
       }
+      usage_logs: {
+        Row: {
+          created_at: string
+          event_type: string
+          franchise_id: string
+          id: string
+          metadata: Json
+        }
+        Insert: {
+          created_at?: string
+          event_type: string
+          franchise_id: string
+          id?: string
+          metadata?: Json
+        }
+        Update: {
+          created_at?: string
+          event_type?: string
+          franchise_id?: string
+          id?: string
+          metadata?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "usage_logs_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchise_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "usage_logs_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchises"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "usage_logs_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchises_public"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           id: string
