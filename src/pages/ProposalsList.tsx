@@ -395,6 +395,7 @@ export default function ProposalsList() {
             )}
           </div>
         </div>
+        )}
       </div>
     </PageTransition>
   );
