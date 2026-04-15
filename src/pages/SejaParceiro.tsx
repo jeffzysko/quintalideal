@@ -550,7 +550,7 @@ export default function SejaParceiro() {
                     disabled={submitting}
                     onClick={handleSubmit}
                   >
-                    {submitting ? 'Enviando...' : 'Quero receber leads →'}
+                    {submitting ? 'Enviando...' : 'Quero ser parceiro →'}
                   </Button>
                 </div>
               </CardContent>
