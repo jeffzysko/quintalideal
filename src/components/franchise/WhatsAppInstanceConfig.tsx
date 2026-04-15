@@ -348,6 +348,19 @@ export function WhatsAppInstanceConfig({ franchiseId }: WhatsAppInstanceConfigPr
   // Estado C: Modo próprio ativo
   return (
     <div className="space-y-5">
+      {/* Plan expiration banners */}
+      {expirationAlert?.type === 'expired' && (
+        <div className="flex items-start gap-2 rounded-xl border border-destructive/30 bg-destructive/10 p-3">
+          <AlertTriangle className="w-4 h-4 text-destructive mt-0.5 shrink-0" />
+          <p className="text-xs text-destructive font-medium">{expirationAlert.message}</p>
+        </div>
+      )}
+      {expirationAlert?.type === 'expiring' && (
+        <div className="flex items-start gap-2 rounded-xl border border-warning/30 bg-warning/10 p-3">
+          <AlertTriangle className="w-4 h-4 text-warning-foreground mt-0.5 shrink-0" />
+          <p className="text-xs text-warning-foreground font-medium">{expirationAlert.message}</p>
+        </div>
+      )}
       <Card className="card-premium">
         <CardHeader>
           <CardTitle className="text-sm font-semibold flex items-center gap-2">

@@ -275,13 +275,21 @@ export function AdminWhatsAppPlans() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {franchises.map(f => (
-                    <TableRow key={f.id}>
+                  {franchises.map(f => {
+                    const isExpired = f.whatsapp_plan_active && f.whatsapp_plan_expires_at && isBefore(new Date(f.whatsapp_plan_expires_at), new Date());
+                    const isExpiringSoon = f.whatsapp_plan_active && f.whatsapp_plan_expires_at && !isExpired && isBefore(new Date(f.whatsapp_plan_expires_at), addDays(new Date(), 7));
+                    return (
+                    <TableRow key={f.id} className={isExpired ? 'bg-destructive/5' : isExpiringSoon ? 'bg-warning/5' : ''}>
                       <TableCell className="text-xs font-medium">{f.nome_franquia}</TableCell>
                       <TableCell>{getModeBadge(f)}</TableCell>
                       <TableCell>{getConnectionBadge(f)}</TableCell>
                       <TableCell>{getPlanStatusBadge(f)}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{formatDate(f.whatsapp_plan_expires_at)}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          {(isExpired || isExpiringSoon) && <AlertTriangle className="w-3 h-3 text-warning-foreground" />}
+                          {formatDate(f.whatsapp_plan_expires_at)}
+                        </span>
+                      </TableCell>
                       <TableCell className="text-xs">{formatCurrency(f.whatsapp_plan_price)}</TableCell>
                       <TableCell className="text-right">
                         <Switch
