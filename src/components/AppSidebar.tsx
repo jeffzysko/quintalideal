@@ -122,6 +122,12 @@ export function AppSidebar() {
     navigate(url);
   };
 
+  const getDataTour = (item: SidebarNavItem): string | undefined => {
+    if (item.title === 'Propostas') return 'nav-propostas';
+    if (item.title === 'Planos') return 'nav-planos';
+    return undefined;
+  };
+
   const renderNavItem = (item: SidebarNavItem) => {
     const active = isActive(item);
     return (
@@ -133,6 +139,7 @@ export function AppSidebar() {
         >
           <button
             onClick={() => handleNav(item.url)}
+            data-tour={getDataTour(item)}
             className={`w-full flex items-center gap-2 ${active ? 'bg-primary/10 text-primary font-medium' : ''}`}
           >
             <item.icon className="h-4 w-4 shrink-0" />
