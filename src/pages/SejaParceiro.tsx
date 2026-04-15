@@ -8,14 +8,16 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
-import { Check, ClipboardList, Rocket, CheckCircle2, ArrowRight, Sparkles } from 'lucide-react';
+import { Check, ClipboardList, Rocket, CheckCircle2, ArrowRight, Sparkles, Shield, Star, Users } from 'lucide-react';
 import { isValidEmail, isValidBRPhone } from '@/lib/validation';
 import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 
+/* ── Data ── */
+
 const STEPS = [
-  { emoji: '📋', title: '1. Cadastre-se em 2 minutos', description: 'Preencha seus dados abaixo. Sem burocracia, sem taxas de adesão.' },
-  { emoji: '✅', title: '2. Aprovação em até 24h', description: 'Nossa equipe analisa sua candidatura e entra em contato pelo WhatsApp.' },
-  { emoji: '🚀', title: '3. Comece a vender mais', description: 'Qualifique seus leads, envie orçamentos e gerencie tudo em tempo real.' },
+  { num: '01', title: 'Cadastre-se em 2 minutos', description: 'Preencha seus dados abaixo. Sem burocracia, sem taxas de adesão.' },
+  { num: '02', title: 'Aprovação em até 24h', description: 'Nossa equipe analisa sua candidatura e entra em contato pelo WhatsApp.' },
+  { num: '03', title: 'Comece a vender mais', description: 'Qualifique seus leads, envie orçamentos e gerencie tudo em tempo real.' },
 ];
 
 const FEATURES = [
@@ -31,6 +33,12 @@ const SOCIAL_PROOF = [
   { metric: 38, suffix: '+', label: 'lojas parceiras no RS' },
   { metric: 2500, suffix: '+', label: 'leads qualificados' },
   { metric: 24, suffix: 'h', label: 'aprovação média' },
+];
+
+const TRUST_ITEMS = [
+  { icon: Shield, text: 'Dados protegidos com criptografia' },
+  { icon: Star, text: 'Plataforma avaliada por parceiros reais' },
+  { icon: Users, text: 'Rede ativa com mais de 38 lojas' },
 ];
 
 const ORCAMENTO_BENEFITS = [
@@ -73,12 +81,13 @@ function AnimatedCounter({ value, suffix }: { value: number; suffix: string }) {
   }, [isInView, value]);
 
   return (
-    <span ref={ref} className="text-3xl sm:text-4xl font-bold text-primary tabular-nums">
+    <span ref={ref} className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent tabular-nums">
       {count.toLocaleString('pt-BR')}{suffix}
     </span>
   );
 }
 
+/* ── Helpers ── */
 function formatPhone(value: string) {
   const digits = value.replace(/\D/g, '').slice(0, 11);
   if (digits.length <= 2) return digits;
@@ -101,9 +110,7 @@ function CityAutocomplete({ value, onChange }: { value: string; onChange: (v: st
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) setOpen(false);
     }
     document.addEventListener('mousedown', handleClick);
     return () => document.removeEventListener('mousedown', handleClick);
@@ -112,13 +119,10 @@ function CityAutocomplete({ value, onChange }: { value: string; onChange: (v: st
   const search = useCallback((term: string) => {
     if (debounceRef.current) clearTimeout(debounceRef.current);
     if (term.length < 3) { setResults([]); setOpen(false); return; }
-
     debounceRef.current = setTimeout(async () => {
       setLoading(true);
       try {
-        const res = await fetch(
-          `https://servicodados.ibge.gov.br/api/v1/localidades/municipios?orderBy=nome`
-        );
+        const res = await fetch('https://servicodados.ibge.gov.br/api/v1/localidades/municipios?orderBy=nome');
         const data: IBGECity[] = await res.json();
         const normalized = term.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
         const filtered = data
@@ -127,11 +131,8 @@ function CityAutocomplete({ value, onChange }: { value: string; onChange: (v: st
           .map(c => ({ nome: c.nome, uf: c.microrregiao?.mesorregiao?.UF?.sigla || '' }));
         setResults(filtered);
         setOpen(filtered.length > 0);
-      } catch {
-        setResults([]);
-      } finally {
-        setLoading(false);
-      }
+      } catch { setResults([]); }
+      finally { setLoading(false); }
     }, 300);
   }, []);
 
@@ -140,12 +141,7 @@ function CityAutocomplete({ value, onChange }: { value: string; onChange: (v: st
       <Label className="text-xs font-medium">Cidade *</Label>
       <Input
         value={query}
-        onChange={e => {
-          const v = e.target.value;
-          setQuery(v);
-          onChange('');
-          search(v);
-        }}
+        onChange={e => { setQuery(e.target.value); onChange(''); search(e.target.value); }}
         placeholder="Digite o nome da cidade..."
         maxLength={100}
         autoComplete="off"
@@ -158,12 +154,7 @@ function CityAutocomplete({ value, onChange }: { value: string; onChange: (v: st
               key={`${c.nome}-${c.uf}`}
               type="button"
               className="w-full text-left px-3 py-2 text-sm hover:bg-accent transition-colors"
-              onClick={() => {
-                const label = `${c.nome} (${c.uf})`;
-                setQuery(label);
-                onChange(label);
-                setOpen(false);
-              }}
+              onClick={() => { const label = `${c.nome} (${c.uf})`; setQuery(label); onChange(label); setOpen(false); }}
             >
               {c.nome} <span className="text-muted-foreground">({c.uf})</span>
             </button>
@@ -174,14 +165,11 @@ function CityAutocomplete({ value, onChange }: { value: string; onChange: (v: st
   );
 }
 
-
+/* ── Main Component ── */
 export default function SejaParceiro() {
   const [form, setForm] = useState({
-    nome_franquia: '',
-    cidade_base: '',
-    nome_responsavel: '',
-    whatsapp_responsavel: '',
-    email: '',
+    nome_franquia: '', cidade_base: '', nome_responsavel: '',
+    whatsapp_responsavel: '', email: '',
   });
   const [accepted, setAccepted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -217,15 +205,13 @@ export default function SejaParceiro() {
         if (!isValidEmail(trimmed)) return 'E-mail inválido. Ex: contato@empresa.com';
         return '';
       }
-      default:
-        return '';
+      default: return '';
     }
   };
 
   const handleBlur = (field: string) => {
     markTouched(field);
-    const err = validateField(field, form[field as keyof typeof form]);
-    setErrors(p => ({ ...p, [field]: err }));
+    setErrors(p => ({ ...p, [field]: validateField(field, form[field as keyof typeof form]) }));
   };
 
   const validateAll = (): boolean => {
@@ -261,42 +247,45 @@ export default function SejaParceiro() {
     }
   };
 
+  const scrollToForm = () => document.getElementById('formulario')?.scrollIntoView({ behavior: 'smooth' });
+
   return (
     <div className="min-h-screen overflow-hidden">
-      {/* ── Hero ── */}
-      <section className="relative py-24 sm:py-32 overflow-hidden">
-        {/* Animated gradient background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-secondary/5 to-primary/3" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full bg-primary/5 blur-3xl animate-pulse pointer-events-none" />
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full bg-secondary/5 blur-3xl pointer-events-none" />
-        {/* Floating decorative dots */}
-        <motion.div
-          className="absolute top-20 left-[10%] w-3 h-3 rounded-full bg-primary/20"
-          animate={{ y: [0, -20, 0] }}
+
+      {/* ═══════════════════════════ HERO ═══════════════════════════ */}
+      <section className="relative py-20 sm:py-32 overflow-hidden">
+        {/* Background layers */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-background to-secondary/5" />
+        <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, hsl(var(--primary) / 0.04) 1px, transparent 0)', backgroundSize: '32px 32px' }} />
+        <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[700px] h-[700px] rounded-full bg-primary/6 blur-[120px] pointer-events-none" />
+        <div className="absolute bottom-[-100px] right-[-100px] w-[400px] h-[400px] rounded-full bg-secondary/6 blur-[100px] pointer-events-none" />
+
+        {/* Floating orbs */}
+        <motion.div className="absolute top-24 left-[8%] w-3 h-3 rounded-full bg-primary/25"
+          animate={{ y: [0, -18, 0], opacity: [0.4, 0.8, 0.4] }}
           transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
         />
-        <motion.div
-          className="absolute top-40 right-[15%] w-2 h-2 rounded-full bg-secondary/30"
-          animate={{ y: [0, 15, 0] }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
+        <motion.div className="absolute top-48 right-[12%] w-2 h-2 rounded-full bg-secondary/35"
+          animate={{ y: [0, 14, 0] }}
+          transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
         />
-        <motion.div
-          className="absolute bottom-32 left-[20%] w-4 h-4 rounded-full bg-primary/10"
-          animate={{ y: [0, -12, 0] }}
-          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+        <motion.div className="absolute bottom-24 left-[18%] w-4 h-4 rounded-full bg-primary/15"
+          animate={{ y: [0, -10, 0], x: [0, 5, 0] }}
+          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
         />
 
-        <div className="relative max-w-4xl mx-auto px-4 text-center">
+        <div className="relative max-w-4xl mx-auto px-5 text-center">
           <motion.img
             src={logoQuintalIdeal}
             alt="Quintal Ideal"
-            className="h-12 mx-auto mb-8"
-            initial={{ opacity: 0, scale: 0.8 }}
+            className="h-11 sm:h-12 mx-auto mb-7"
+            initial={{ opacity: 0, scale: 0.85 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ type: 'spring', stiffness: 200, damping: 20 }}
           />
+
           <motion.div
-            className="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs sm:text-sm font-semibold px-4 py-1.5 rounded-full mb-5"
+            className="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs sm:text-sm font-semibold px-4 py-1.5 rounded-full mb-6 backdrop-blur-sm"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
@@ -304,36 +293,38 @@ export default function SejaParceiro() {
             <Sparkles className="w-3.5 h-3.5" />
             A plataforma completa para lojas de piscinas
           </motion.div>
+
           <motion.h1
-            className="text-4xl sm:text-6xl font-bold text-foreground mb-5 leading-[1.1] tracking-tight"
+            className="text-[1.85rem] leading-[1.2] sm:text-[2.75rem] lg:text-[3.1rem] font-bold text-foreground mb-6 tracking-tight sm:leading-[1.15]"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15, type: 'spring', stiffness: 100 }}
           >
-            Qualifique leads, envie{' '}
-            <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              orçamentos
-            </span>
-            <br />e venda mais piscinas
+            Qualifique leads, envie <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">orçamentos</span>
+            <br />
+            e venda mais piscinas
           </motion.h1>
+
           <motion.p
-            className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-4 leading-relaxed"
+            className="text-[0.95rem] sm:text-lg text-muted-foreground max-w-xl sm:max-w-2xl mx-auto mb-5 leading-relaxed"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.25 }}
           >
-            CRM, qualificação de leads, orçamentos profissionais e atendimento via WhatsApp. Tudo integrado numa plataforma feita exclusivamente para o mercado de piscinas.
+            CRM, qualificação de leads, orçamentos profissionais e atendimento via WhatsApp. Tudo integrado numa plataforma feita para o mercado de piscinas.
           </motion.p>
+
           <motion.p
-            className="text-sm text-muted-foreground/80 max-w-xl mx-auto mb-8"
+            className="text-sm text-muted-foreground/80 max-w-md sm:max-w-xl mx-auto mb-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
             <strong className="text-foreground">Sem taxa de adesão.</strong> Cadastre-se gratuitamente e pague apenas se quiser recursos premium.
           </motion.p>
+
           <motion.div
-            className="flex flex-col sm:flex-row gap-3 justify-center mb-12"
+            className="flex flex-col sm:flex-row gap-3 justify-center mb-10"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35 }}
@@ -341,7 +332,7 @@ export default function SejaParceiro() {
             <Button
               size="lg"
               className="rounded-xl text-base px-8 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 hover:-translate-y-0.5 group"
-              onClick={() => document.getElementById('formulario')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={scrollToForm}
             >
               Quero ser parceiro
               <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
@@ -351,74 +342,87 @@ export default function SejaParceiro() {
             </Button>
           </motion.div>
 
-          {/* Social Proof with animated counters */}
+          {/* Animated counters */}
           <motion.div
-            className="flex flex-wrap justify-center gap-8 sm:gap-14"
+            className="flex flex-wrap justify-center gap-8 sm:gap-16 mb-8"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
             {SOCIAL_PROOF.map(sp => (
-              <div key={sp.label} className="text-center">
+              <div key={sp.label} className="text-center min-w-[80px]">
                 <AnimatedCounter value={sp.metric} suffix={sp.suffix} />
-                <p className="text-xs text-muted-foreground mt-1">{sp.label}</p>
+                <p className="text-[11px] sm:text-xs text-muted-foreground mt-1.5 font-medium">{sp.label}</p>
+              </div>
+            ))}
+          </motion.div>
+
+          {/* Trust strip */}
+          <motion.div
+            className="flex flex-wrap justify-center gap-4 sm:gap-6"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            {TRUST_ITEMS.map(t => (
+              <div key={t.text} className="flex items-center gap-1.5 text-[11px] text-muted-foreground/70">
+                <t.icon className="w-3.5 h-3.5 text-primary/60" />
+                {t.text}
               </div>
             ))}
           </motion.div>
         </div>
       </section>
 
-      {/* ── Como funciona ── */}
+      {/* ═══════════════════════════ COMO FUNCIONA ═══════════════════════════ */}
       <section className="py-20 sm:py-24 bg-background relative">
-        <div className="max-w-4xl mx-auto px-4">
-          <motion.div
-            className="text-center mb-14"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
+        <div className="max-w-4xl mx-auto px-5">
+          <motion.div className="text-center mb-14" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <span className="text-xs font-semibold text-primary uppercase tracking-widest">Como funciona</span>
             <h2 className="text-2xl sm:text-4xl font-bold text-foreground mt-2 mb-2">Simples como 1, 2, 3</h2>
             <p className="text-sm text-muted-foreground">Do cadastro à primeira venda em poucos dias</p>
           </motion.div>
-          <div className="grid sm:grid-cols-3 gap-8 relative">
-            {/* Connector line (desktop) */}
-            <div className="hidden sm:block absolute top-12 left-[17%] right-[17%] h-px bg-gradient-to-r from-primary/20 via-primary/40 to-primary/20" />
+
+          <div className="grid sm:grid-cols-3 gap-6 sm:gap-8 relative">
+            {/* Connector (desktop) */}
+            <div className="hidden sm:block absolute top-10 left-[20%] right-[20%] h-px bg-gradient-to-r from-primary/10 via-primary/30 to-primary/10" />
+
             {STEPS.map((s, i) => (
               <motion.div
-                key={s.title}
-                className="text-center relative"
+                key={s.num}
+                className="relative text-center sm:text-left"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.15 }}
               >
-                <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4 relative z-10">
-                  <span className="text-3xl">{s.emoji}</span>
+                <div className="flex flex-col items-center sm:items-start">
+                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/10 flex items-center justify-center mb-4 relative z-10">
+                    <span className="text-lg font-bold text-primary">{s.num}</span>
+                  </div>
+                  <h3 className="font-bold text-foreground mb-1.5 text-[0.95rem]">{s.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed max-w-[260px] mx-auto sm:mx-0">{s.description}</p>
                 </div>
-                <h3 className="font-bold text-foreground mb-1.5">{s.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{s.description}</p>
               </motion.div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* ── Recursos ── */}
-      <section className="py-20 sm:py-24 bg-muted/30 relative">
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
-        <div className="max-w-5xl mx-auto px-4">
-          <motion.div
-            className="text-center mb-14"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
+      {/* ═══════════════════════════ RECURSOS ═══════════════════════════ */}
+      <section className="py-20 sm:py-24 relative overflow-hidden">
+        <div className="absolute inset-0 bg-muted/40" />
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+        <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+
+        <div className="relative max-w-5xl mx-auto px-5">
+          <motion.div className="text-center mb-14" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <span className="text-xs font-semibold text-primary uppercase tracking-widest">Recursos</span>
-            <h2 className="text-2xl sm:text-4xl font-bold text-foreground mt-2 mb-2">CRM, orçamentos e WhatsApp em um só lugar</h2>
-            <p className="text-sm text-muted-foreground">A plataforma completa que lojas de piscinas de todo o RS já usam no dia a dia</p>
+            <h2 className="text-2xl sm:text-4xl font-bold text-foreground mt-2 mb-2">CRM, orçamentos e WhatsApp<br className="hidden sm:block" /> em um só lugar</h2>
+            <p className="text-sm text-muted-foreground max-w-lg mx-auto">A plataforma completa que lojas de piscinas de todo o RS já usam no dia a dia</p>
           </motion.div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
             {FEATURES.map((f, i) => (
               <motion.div
                 key={f.title}
@@ -427,9 +431,9 @@ export default function SejaParceiro() {
                 viewport={{ once: true }}
                 transition={{ delay: Math.min(i * 0.08, 0.3) }}
               >
-                <Card className="h-full border-border/50 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group">
-                  <CardContent className="p-6">
-                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/15 group-hover:scale-110 transition-all duration-300">
+                <Card className="h-full border-border/50 bg-background/80 backdrop-blur-sm shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group">
+                  <CardContent className="p-5 sm:p-6">
+                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary/12 to-primary/5 border border-primary/10 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:from-primary/20 group-hover:to-primary/10 transition-all duration-300">
                       <span className="text-xl">{f.emoji}</span>
                     </div>
                     <h3 className="font-bold text-foreground text-sm mb-2">{f.title}</h3>
@@ -442,36 +446,28 @@ export default function SejaParceiro() {
         </div>
       </section>
 
-      {/* ── Planos ── */}
+      {/* ═══════════════════════════ PLANOS ═══════════════════════════ */}
       <section className="py-20 sm:py-24 bg-background relative">
-        <div className="max-w-4xl mx-auto px-4">
-          <motion.div
-            className="text-center mb-12"
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-          >
+        <div className="max-w-4xl mx-auto px-5">
+          <motion.div className="text-center mb-12" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <span className="text-xs font-semibold text-primary uppercase tracking-widest">Planos</span>
             <h2 className="text-2xl sm:text-4xl font-bold text-foreground mt-2 mb-2">Invista pouco, venda muito</h2>
             <p className="text-sm text-muted-foreground">Planos acessíveis que se pagam com a primeira venda</p>
-            <p className="text-xs text-muted-foreground/70 mt-1">Disponíveis após a aprovação do seu cadastro</p>
+            <p className="text-xs text-muted-foreground/60 mt-1">Disponíveis após a aprovação do seu cadastro</p>
           </motion.div>
-          <div className="grid sm:grid-cols-2 gap-6">
+
+          <div className="grid sm:grid-cols-2 gap-5 sm:gap-6">
             {/* Orçamento */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
+            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
               <Card className="h-full border-border/50 shadow-sm hover:shadow-lg transition-all duration-300">
                 <CardContent className="p-6 sm:p-8">
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <div className="flex items-center gap-2.5 mb-3">
+                    <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
                       <ClipboardList className="w-4 h-4 text-primary" />
                     </div>
                     <h3 className="font-bold text-foreground">Orçamento Personalizado</h3>
                   </div>
-                  <div className="flex items-baseline gap-1 my-4">
+                  <div className="flex items-baseline gap-1 mb-5">
                     <span className="text-4xl font-bold text-foreground">R$ 29</span>
                     <span className="text-sm text-muted-foreground">/mês</span>
                   </div>
@@ -485,30 +481,26 @@ export default function SejaParceiro() {
                       </li>
                     ))}
                   </ul>
-                  <p className="text-xs text-muted-foreground/60 text-center">Disponível após o cadastro</p>
+                  <p className="text-xs text-muted-foreground/50 text-center">Disponível após o cadastro</p>
                 </CardContent>
               </Card>
             </motion.div>
 
             {/* WhatsApp */}
-            <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <Card className="h-full border-primary/30 shadow-md ring-1 ring-primary/10 relative overflow-hidden hover:shadow-lg transition-all duration-300">
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary to-secondary" />
-                <div className="absolute top-3 right-3">
-                  <span className="text-[10px] font-semibold bg-primary/10 text-primary px-2 py-0.5 rounded-full">Mais popular</span>
+            <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
+              <Card className="h-full border-primary/20 shadow-lg ring-1 ring-primary/10 relative overflow-hidden hover:shadow-xl transition-all duration-300">
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-primary to-secondary" />
+                <div className="absolute top-3.5 right-3.5">
+                  <span className="text-[10px] font-bold bg-primary text-primary-foreground px-2.5 py-1 rounded-full uppercase tracking-wide">Mais popular</span>
                 </div>
-                <CardContent className="p-6 sm:p-8">
-                  <div className="flex items-center gap-2 mb-1">
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <CardContent className="p-6 sm:p-8 pt-8">
+                  <div className="flex items-center gap-2.5 mb-3">
+                    <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
                       <Rocket className="w-4 h-4 text-primary" />
                     </div>
                     <h3 className="font-bold text-foreground">WhatsApp Próprio</h3>
                   </div>
-                  <div className="flex items-baseline gap-1 my-4">
+                  <div className="flex items-baseline gap-1 mb-5">
                     <span className="text-4xl font-bold text-foreground">R$ 149</span>
                     <span className="text-sm text-muted-foreground">/mês</span>
                   </div>
@@ -522,7 +514,7 @@ export default function SejaParceiro() {
                       </li>
                     ))}
                   </ul>
-                  <p className="text-xs text-muted-foreground/60 text-center">Disponível após o cadastro</p>
+                  <p className="text-xs text-muted-foreground/50 text-center">Disponível após o cadastro</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -530,30 +522,31 @@ export default function SejaParceiro() {
         </div>
       </section>
 
-      {/* ── CTA Bridge ── */}
+      {/* ═══════════════════════════ CTA BRIDGE ═══════════════════════════ */}
       <section className="py-16 sm:py-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-primary/5 to-secondary/5" />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/5 via-transparent to-transparent" />
-        <div className="relative max-w-3xl mx-auto px-4 text-center">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/6 via-primary/4 to-secondary/4" />
+        <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, hsl(var(--primary) / 0.03) 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+
+        <div className="relative max-w-2xl mx-auto px-5 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ type: 'spring', stiffness: 100 }}
           >
-            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-4 leading-snug">
+            <h2 className="text-xl sm:text-3xl font-bold text-foreground mb-4 leading-snug">
               Sua loja já investe em tráfego pago.{' '}
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                 Agora transforme cliques em vendas de verdade.
               </span>
             </h2>
-            <p className="text-sm sm:text-base text-muted-foreground mb-8 max-w-xl mx-auto leading-relaxed">
+            <p className="text-sm sm:text-base text-muted-foreground mb-8 max-w-lg mx-auto leading-relaxed">
               O Quintal Ideal qualifica cada lead do seu tráfego, organiza sua operação comercial e automatiza o atendimento. Tudo o que falta para sua loja escalar.
             </p>
             <Button
               size="lg"
               className="rounded-xl text-base px-8 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 hover:-translate-y-0.5 group"
-              onClick={() => document.getElementById('formulario')?.scrollIntoView({ behavior: 'smooth' })}
+              onClick={scrollToForm}
             >
               Cadastrar minha loja gratuitamente
               <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
@@ -562,44 +555,38 @@ export default function SejaParceiro() {
         </div>
       </section>
 
-      {/* ── Formulário ── */}
+      {/* ═══════════════════════════ FORMULÁRIO ═══════════════════════════ */}
       <section id="formulario" className="py-20 sm:py-24 bg-muted/30 relative">
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent" />
-        <div className="max-w-[560px] mx-auto px-4">
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+        <div className="max-w-[540px] mx-auto px-5">
           {submitted ? (
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: 'spring', stiffness: 200 }}>
               <Card className="border-primary/20 shadow-xl overflow-hidden">
                 <div className="h-1.5 bg-gradient-to-r from-primary to-secondary" />
                 <CardContent className="py-14 text-center px-6">
-                   <motion.div
-                     initial={{ scale: 0 }}
-                     animate={{ scale: 1 }}
-                     transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
-                   >
-                     <CheckCircle2 className="w-16 h-16 text-primary mx-auto mb-5" />
-                   </motion.div>
-                   <h3 className="text-2xl font-bold text-foreground mb-3">Pronto! Sua candidatura foi recebida 🎉</h3>
-                   <p className="text-sm text-muted-foreground mb-2">
-                     Nossa equipe entrará em contato pelo <strong>WhatsApp em até 24 horas</strong>.
-                   </p>
-                   <p className="text-xs text-muted-foreground/70">
-                     Prepare-se: em breve você terá acesso a uma plataforma completa para qualificar leads e fechar mais vendas.
-                   </p>
+                  <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}>
+                    <CheckCircle2 className="w-16 h-16 text-primary mx-auto mb-5" />
+                  </motion.div>
+                  <h3 className="text-2xl font-bold text-foreground mb-3">Pronto! Sua candidatura foi recebida 🎉</h3>
+                  <p className="text-sm text-muted-foreground mb-2">
+                    Nossa equipe entrará em contato pelo <strong>WhatsApp em até 24 horas</strong>.
+                  </p>
+                  <p className="text-xs text-muted-foreground/70">
+                    Prepare-se: em breve você terá acesso a uma plataforma completa para qualificar leads e fechar mais vendas.
+                  </p>
                 </CardContent>
               </Card>
             </motion.div>
           ) : (
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
+            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
               <Card className="border-border/50 shadow-xl overflow-hidden">
                 <div className="h-1 bg-gradient-to-r from-primary to-secondary" />
                 <CardContent className="p-6 sm:p-8">
-                   <h2 className="text-xl font-bold text-foreground mb-1 text-center">Comece agora mesmo</h2>
-                   <p className="text-xs text-muted-foreground text-center mb-6">Cadastro gratuito · Sem compromisso · Aprovação em até 24h</p>
+                  <h2 className="text-xl font-bold text-foreground mb-1 text-center">Comece agora mesmo</h2>
+                  <p className="text-xs text-muted-foreground text-center mb-6">Cadastro gratuito · Sem compromisso · Aprovação em até 24h</p>
+
                   <div className="space-y-4">
+                    {/* Nome da empresa */}
                     <div className="space-y-1.5">
                       <Label className="text-xs font-medium">Nome da empresa *</Label>
                       <Input
@@ -610,19 +597,14 @@ export default function SejaParceiro() {
                         maxLength={100}
                         className={touched.nome_franquia && errors.nome_franquia ? 'border-destructive focus-visible:ring-destructive' : ''}
                       />
-                      {touched.nome_franquia && errors.nome_franquia && (
-                        <p className="text-xs text-destructive mt-1">{errors.nome_franquia}</p>
-                      )}
+                      {touched.nome_franquia && errors.nome_franquia && <p className="text-xs text-destructive mt-1">{errors.nome_franquia}</p>}
                     </div>
 
-                    <CityAutocomplete
-                      value={form.cidade_base}
-                      onChange={v => { setForm(p => ({ ...p, cidade_base: v })); clearError('cidade_base'); }}
-                    />
-                    {touched.cidade_base && errors.cidade_base && (
-                      <p className="text-xs text-destructive -mt-2">{errors.cidade_base}</p>
-                    )}
+                    {/* Cidade */}
+                    <CityAutocomplete value={form.cidade_base} onChange={v => { setForm(p => ({ ...p, cidade_base: v })); clearError('cidade_base'); }} />
+                    {touched.cidade_base && errors.cidade_base && <p className="text-xs text-destructive -mt-2">{errors.cidade_base}</p>}
 
+                    {/* Nome do responsável */}
                     <div className="space-y-1.5">
                       <Label className="text-xs font-medium">Nome do responsável *</Label>
                       <Input
@@ -633,11 +615,10 @@ export default function SejaParceiro() {
                         maxLength={100}
                         className={touched.nome_responsavel && errors.nome_responsavel ? 'border-destructive focus-visible:ring-destructive' : ''}
                       />
-                      {touched.nome_responsavel && errors.nome_responsavel && (
-                        <p className="text-xs text-destructive mt-1">{errors.nome_responsavel}</p>
-                      )}
+                      {touched.nome_responsavel && errors.nome_responsavel && <p className="text-xs text-destructive mt-1">{errors.nome_responsavel}</p>}
                     </div>
 
+                    {/* WhatsApp */}
                     <div className="space-y-1.5">
                       <Label className="text-xs font-medium">WhatsApp *</Label>
                       <Input
@@ -649,11 +630,10 @@ export default function SejaParceiro() {
                         maxLength={15}
                         className={touched.whatsapp_responsavel && errors.whatsapp_responsavel ? 'border-destructive focus-visible:ring-destructive' : ''}
                       />
-                      {touched.whatsapp_responsavel && errors.whatsapp_responsavel && (
-                        <p className="text-xs text-destructive mt-1">{errors.whatsapp_responsavel}</p>
-                      )}
+                      {touched.whatsapp_responsavel && errors.whatsapp_responsavel && <p className="text-xs text-destructive mt-1">{errors.whatsapp_responsavel}</p>}
                     </div>
 
+                    {/* E-mail */}
                     <div className="space-y-1.5">
                       <Label className="text-xs font-medium">E-mail *</Label>
                       <Input
@@ -665,18 +645,12 @@ export default function SejaParceiro() {
                         maxLength={255}
                         className={touched.email && errors.email ? 'border-destructive focus-visible:ring-destructive' : ''}
                       />
-                      {touched.email && errors.email && (
-                        <p className="text-xs text-destructive mt-1">{errors.email}</p>
-                      )}
+                      {touched.email && errors.email && <p className="text-xs text-destructive mt-1">{errors.email}</p>}
                     </div>
 
+                    {/* Termos */}
                     <div className="flex items-start gap-2 pt-2">
-                      <Checkbox
-                        id="terms"
-                        checked={accepted}
-                        onCheckedChange={v => { setAccepted(v === true); clearError('terms'); }}
-                        className="mt-0.5"
-                      />
+                      <Checkbox id="terms" checked={accepted} onCheckedChange={v => { setAccepted(v === true); clearError('terms'); }} className="mt-0.5" />
                       <label htmlFor="terms" className="text-xs text-muted-foreground leading-snug cursor-pointer">
                         Li e aceito os{' '}
                         <Link to="/termos" className="underline hover:text-foreground" target="_blank">Termos de Uso</Link>
@@ -684,9 +658,7 @@ export default function SejaParceiro() {
                         <Link to="/privacidade" className="underline hover:text-foreground" target="_blank">Política de Privacidade</Link>.
                       </label>
                     </div>
-                    {errors.terms && (
-                      <p className="text-xs text-destructive -mt-2">{errors.terms}</p>
-                    )}
+                    {errors.terms && <p className="text-xs text-destructive -mt-2">{errors.terms}</p>}
 
                     <Button
                       className="w-full rounded-xl shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 group"
