@@ -19,80 +19,41 @@ function buildZapiUrl(instanceId: string, token: string, endpoint: string) {
 }
 
 /**
- * Resolve Z-API credentials: franchise-specific > central config > env secrets
+ * Resolve Z-API credentials with robust fallback:
+ * Use franchise own instance ONLY if all 3 conditions are true:
+ * 1. whatsapp_plan_active === true
+ * 2. whatsapp_mode === 'own'
+ * 3. zapi_instance_active === true
+ * Otherwise, always fall back to platform env credentials.
  */
 async function resolveZapiCredentials(
   supabase: ReturnType<typeof createClient>,
   franchiseId: string
 ): Promise<{ instanceId: string; zapiToken: string; securityToken: string | null } | null> {
-  // 1. Check franchise-specific credentials (multi-instance)
   const { data: franchise } = await supabase
     .from("franchises")
     .select("whatsapp_mode, zapi_instance_id, zapi_token, zapi_instance_active, whatsapp_plan_active")
     .eq("id", franchiseId)
     .maybeSingle();
 
-  if (
-    franchise?.whatsapp_mode === "own" &&
+  const useOwnInstance =
     franchise?.whatsapp_plan_active === true &&
-    franchise?.zapi_instance_active === true &&
-    franchise?.zapi_instance_id &&
-    franchise?.zapi_token
-  ) {
-    return {
-      instanceId: franchise.zapi_instance_id,
-      zapiToken: franchise.zapi_token,
-      securityToken: null,
-    };
-  }
+    franchise?.whatsapp_mode === "own" &&
+    franchise?.zapi_instance_active === true;
 
-  // 2. Fallback: check franchise-specific whatsapp_config row
-  const { data: franchiseConfig } = await supabase
-    .from("whatsapp_config")
-    .select("instance_id, token, security_token, is_active")
-    .eq("franchise_id", franchiseId)
-    .maybeSingle();
-
-  if (franchiseConfig && !franchiseConfig.is_active) {
-    // Check central config too
-    const { data: centralConfig } = await supabase
-      .from("whatsapp_config")
-      .select("is_active")
-      .order("created_at", { ascending: true })
-      .limit(1)
-      .maybeSingle();
-    if (centralConfig && !centralConfig.is_active) {
-      return null; // All disabled
-    }
-  }
-
-  const activeConfig = franchiseConfig?.is_active ? franchiseConfig : null;
-
-  // 3. Central config / env fallback
-  if (!activeConfig) {
-    const { data: centralConfig } = await supabase
-      .from("whatsapp_config")
-      .select("instance_id, token, security_token, is_active")
-      .order("created_at", { ascending: true })
-      .limit(1)
-      .maybeSingle();
-
-    if (!centralConfig?.is_active) return null;
-
-    const instanceId = centralConfig.instance_id || Deno.env.get("ZAPI_INSTANCE_ID");
-    const zapiToken = centralConfig.token || Deno.env.get("ZAPI_TOKEN");
-    const securityToken = centralConfig.security_token || Deno.env.get("ZAPI_SECURITY_TOKEN");
-
-    if (!instanceId || !zapiToken) return null;
-    return { instanceId, zapiToken, securityToken: securityToken || null };
-  }
-
-  const instanceId = activeConfig.instance_id || Deno.env.get("ZAPI_INSTANCE_ID");
-  const zapiToken = activeConfig.token || Deno.env.get("ZAPI_TOKEN");
-  const securityToken = activeConfig.security_token || Deno.env.get("ZAPI_SECURITY_TOKEN");
+  const instanceId = useOwnInstance
+    ? franchise!.zapi_instance_id
+    : Deno.env.get("ZAPI_INSTANCE_ID");
+  const zapiToken = useOwnInstance
+    ? franchise!.zapi_token
+    : Deno.env.get("ZAPI_TOKEN");
+  const securityToken = useOwnInstance
+    ? null
+    : Deno.env.get("ZAPI_SECURITY_TOKEN") || null;
 
   if (!instanceId || !zapiToken) return null;
-  return { instanceId, zapiToken, securityToken: securityToken || null };
+
+  return { instanceId, zapiToken, securityToken };
 }
 
 Deno.serve(async (req) => {

@@ -155,40 +155,27 @@ Deno.serve(async (req) => {
       }
 
       for (const [fId, msgs] of Object.entries(byFranchise)) {
-        // Resolve credentials for this franchise (multi-instance)
+        // Resolve credentials: use own instance only if all 3 conditions met
         const { data: franchise } = await supabase
           .from("franchises")
           .select("whatsapp_mode, zapi_instance_id, zapi_token, zapi_instance_active, whatsapp_plan_active")
           .eq("id", fId)
           .maybeSingle();
 
-        let instanceId: string | undefined;
-        let zapiToken: string | undefined;
-        let securityToken: string | null = null;
-
-        if (
+        const useOwnInstance =
+          franchise?.whatsapp_plan_active === true &&
           franchise?.whatsapp_mode === "own" &&
-          franchise?.whatsapp_plan_active &&
-          franchise?.zapi_instance_active &&
-          franchise?.zapi_instance_id &&
-          franchise?.zapi_token
-        ) {
-          instanceId = franchise.zapi_instance_id;
-          zapiToken = franchise.zapi_token;
-        } else {
-          // Fallback to central config
-          const { data: waConfig } = await supabase
-            .from("whatsapp_config")
-            .select("instance_id, token, security_token, is_active")
-            .order("created_at", { ascending: true })
-            .limit(1)
-            .maybeSingle();
+          franchise?.zapi_instance_active === true;
 
-          if (!waConfig?.is_active) continue;
-          instanceId = waConfig.instance_id || Deno.env.get("ZAPI_INSTANCE_ID");
-          zapiToken = waConfig.token || Deno.env.get("ZAPI_TOKEN");
-          securityToken = waConfig.security_token || Deno.env.get("ZAPI_SECURITY_TOKEN") || null;
-        }
+        const instanceId = useOwnInstance
+          ? franchise!.zapi_instance_id
+          : Deno.env.get("ZAPI_INSTANCE_ID");
+        const zapiToken = useOwnInstance
+          ? franchise!.zapi_token
+          : Deno.env.get("ZAPI_TOKEN");
+        const securityToken = useOwnInstance
+          ? null
+          : Deno.env.get("ZAPI_SECURITY_TOKEN") || null;
 
         if (!instanceId || !zapiToken) continue;
 
