@@ -438,7 +438,7 @@ export default function NewProposal() {
           franchise_id: franchiseId,
           event_type: 'orcamento_sent',
           metadata: { proposal_id: proposalId },
-        }).then(() => {}).catch(() => {});
+        } as any).then(() => {});
       }
 
       const msg = isEditMode ? 'Proposta atualizada com sucesso!' : 'Proposta criada com sucesso!';
