@@ -3,7 +3,7 @@ import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-quer
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Globe, Kanban, CalendarClock, MessageCircle, FileText } from 'lucide-react';
+import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Globe, Kanban, CalendarClock, MessageCircle, FileText, ShieldAlert } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -47,6 +47,7 @@ const FranchiseDashboard = lazy(() => import('@/pages/FranchiseDashboard'));
 const PerformanceQI = lazy(() => import('@/components/admin/PerformanceQI').then(m => ({ default: m.PerformanceQI })));
 const AdminLeadsReadOnly = lazy(() => import('@/components/admin/AdminLeadsReadOnly').then(m => ({ default: m.AdminLeadsReadOnly })));
 const AdminApplications = lazy(() => import('@/components/admin/AdminApplications').then(m => ({ default: m.AdminApplications })));
+const AdminErrorLogs = lazy(() => import('@/components/admin/AdminErrorLogs').then(m => ({ default: m.AdminErrorLogs })));
 
 function TabFallback() {
   return (
