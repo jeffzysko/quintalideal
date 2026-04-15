@@ -10,7 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
-import { Loader2, Smartphone, Building2, Wifi, WifiOff, Monitor, CalendarClock, DollarSign, AlertTriangle } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Loader2, Smartphone, Building2, Wifi, WifiOff, Monitor, CalendarClock, DollarSign, AlertTriangle, Server, ServerOff, Minus } from 'lucide-react';
 import { toast } from 'sonner';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
@@ -35,6 +36,15 @@ const DURATION_OPTIONS = [
   { value: '6', label: '6 meses' },
   { value: '12', label: '12 meses' },
 ];
+
+async function invokeZapiInstance(action: string, franchiseId: string) {
+  const { data, error } = await supabase.functions.invoke('zapi-instance', {
+    body: { action, franchiseId },
+  });
+  if (error) throw error;
+  if (data?.error) throw new Error(data.error);
+  return data;
+}
 
 export function AdminWhatsAppPlans() {
   const queryClient = useQueryClient();
@@ -63,7 +73,6 @@ export function AdminWhatsAppPlans() {
     },
   });
 
-  // Summary stats
   const summary = useMemo(() => {
     const now = new Date();
     const in7Days = addDays(now, 7);
@@ -92,26 +101,34 @@ export function AdminWhatsAppPlans() {
     if (!activatingFranchise) return;
     setActivating(true);
 
-    const months = parseInt(duration);
-    const expiresAt = addMonths(new Date(), months).toISOString();
-    const priceValue = parseFloat(price) || 0;
+    try {
+      // 1. Create Z-API instance
+      await invokeZapiInstance('create', activatingFranchise.id);
 
-    const { error } = await supabase
-      .from('franchises')
-      .update({
-        whatsapp_plan_active: true,
-        whatsapp_plan_expires_at: expiresAt,
-        whatsapp_plan_price: priceValue,
-        whatsapp_plan_notes: notes || null,
-      })
-      .eq('id', activatingFranchise.id);
+      // 2. Update plan data in DB
+      const months = parseInt(duration);
+      const expiresAt = addMonths(new Date(), months).toISOString();
+      const priceValue = parseFloat(price) || 0;
 
-    if (error) {
-      toast.error('Erro ao ativar plano.');
-    } else {
-      toast.success(`Plano ativado para ${activatingFranchise.nome_franquia}!`);
+      const { error } = await supabase
+        .from('franchises')
+        .update({
+          whatsapp_plan_active: true,
+          whatsapp_plan_expires_at: expiresAt,
+          whatsapp_plan_price: priceValue,
+          whatsapp_plan_notes: notes || null,
+        })
+        .eq('id', activatingFranchise.id);
+
+      if (error) throw error;
+
+      toast.success(`Instância criada com sucesso! O franqueado ${activatingFranchise.nome_franquia} já pode conectar o WhatsApp.`);
       queryClient.invalidateQueries({ queryKey: ['admin-whatsapp-plans'] });
+    } catch (err: any) {
+      console.error('Erro ao ativar plano:', err);
+      toast.error(err?.message || 'Erro ao criar instância e ativar plano.');
     }
+
     setActivating(false);
     setActivatingFranchise(null);
   };
@@ -120,17 +137,28 @@ export function AdminWhatsAppPlans() {
     if (!deactivatingFranchise) return;
     setTogglingId(deactivatingFranchise.id);
 
-    const { error } = await supabase
-      .from('franchises')
-      .update({ whatsapp_plan_active: false })
-      .eq('id', deactivatingFranchise.id);
+    try {
+      // 1. Delete Z-API instance
+      await invokeZapiInstance('delete', deactivatingFranchise.id);
 
-    if (error) {
-      toast.error('Erro ao desativar plano.');
-    } else {
-      toast.success('Plano WhatsApp desativado.');
+      // 2. Update DB
+      const { error } = await supabase
+        .from('franchises')
+        .update({
+          whatsapp_plan_active: false,
+          whatsapp_mode: 'platform',
+        })
+        .eq('id', deactivatingFranchise.id);
+
+      if (error) throw error;
+
+      toast.success('Plano WhatsApp desativado e instância deletada.');
       queryClient.invalidateQueries({ queryKey: ['admin-whatsapp-plans'] });
+    } catch (err: any) {
+      console.error('Erro ao desativar plano:', err);
+      toast.error(err?.message || 'Erro ao desativar plano.');
     }
+
     setTogglingId(null);
     setDeactivatingFranchise(null);
   };
@@ -175,6 +203,43 @@ export function AdminWhatsAppPlans() {
         <WifiOff className="w-3 h-3" />
         Desconectado
       </Badge>
+    );
+  };
+
+  const getInstanceBadge = (row: FranchiseWARow) => {
+    if (!row.zapi_instance_id) {
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <Minus className="w-4 h-4 text-muted-foreground" />
+            </TooltipTrigger>
+            <TooltipContent><p>Sem instância</p></TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+    if (row.zapi_instance_active) {
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger>
+              <Server className="w-4 h-4 text-success" />
+            </TooltipTrigger>
+            <TooltipContent><p>Instância ativa</p></TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            <ServerOff className="w-4 h-4 text-amber-500" />
+          </TooltipTrigger>
+          <TooltipContent><p>Instância criada, WhatsApp não conectado</p></TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
     );
   };
 
@@ -267,6 +332,7 @@ export function AdminWhatsAppPlans() {
                   <TableRow>
                     <TableHead className="text-xs">Franquia</TableHead>
                     <TableHead className="text-xs">Modo</TableHead>
+                    <TableHead className="text-xs">Instância</TableHead>
                     <TableHead className="text-xs">Conexão</TableHead>
                     <TableHead className="text-xs">Status</TableHead>
                     <TableHead className="text-xs">Validade</TableHead>
@@ -282,6 +348,7 @@ export function AdminWhatsAppPlans() {
                     <TableRow key={f.id} className={isExpired ? 'bg-destructive/5' : isExpiringSoon ? 'bg-warning/5' : ''}>
                       <TableCell className="text-xs font-medium">{f.nome_franquia}</TableCell>
                       <TableCell>{getModeBadge(f)}</TableCell>
+                      <TableCell>{getInstanceBadge(f)}</TableCell>
                       <TableCell>{getConnectionBadge(f)}</TableCell>
                       <TableCell>{getPlanStatusBadge(f)}</TableCell>
                       <TableCell className="text-xs text-muted-foreground">
@@ -310,7 +377,7 @@ export function AdminWhatsAppPlans() {
       </Card>
 
       {/* Activation Modal */}
-      <Dialog open={!!activatingFranchise} onOpenChange={(open) => !open && setActivatingFranchise(null)}>
+      <Dialog open={!!activatingFranchise} onOpenChange={(open) => !open && !activating && setActivatingFranchise(null)}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-base flex items-center gap-2">
@@ -318,7 +385,7 @@ export function AdminWhatsAppPlans() {
               Ativar Plano WhatsApp
             </DialogTitle>
             <DialogDescription className="text-xs">
-              Configurar plano para <strong>{activatingFranchise?.nome_franquia}</strong>
+              Configurar plano para <strong>{activatingFranchise?.nome_franquia}</strong>. Uma instância Z-API será criada automaticamente.
             </DialogDescription>
           </DialogHeader>
 
@@ -363,29 +430,32 @@ export function AdminWhatsAppPlans() {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setActivatingFranchise(null)} className="rounded-xl">
+            <Button variant="outline" onClick={() => setActivatingFranchise(null)} disabled={activating} className="rounded-xl">
               Cancelar
             </Button>
             <Button onClick={handleConfirmActivation} disabled={activating} className="gap-2 rounded-xl">
               {activating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Smartphone className="w-4 h-4" />}
-              Confirmar ativação
+              {activating ? 'Criando instância...' : 'Confirmar ativação'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Deactivation Confirmation */}
-      <AlertDialog open={!!deactivatingFranchise} onOpenChange={(open) => !open && setDeactivatingFranchise(null)}>
+      <AlertDialog open={!!deactivatingFranchise} onOpenChange={(open) => !open && !togglingId && setDeactivatingFranchise(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Desativar plano WhatsApp?</AlertDialogTitle>
             <AlertDialogDescription>
-              O franqueado <strong>{deactivatingFranchise?.nome_franquia}</strong> voltará a usar o número da plataforma. Esta ação pode ser revertida.
+              Desativar o plano irá <strong>desconectar o WhatsApp</strong> do franqueado <strong>{deactivatingFranchise?.nome_franquia}</strong> e <strong>deletar a instância</strong>. Ele voltará a usar o número da plataforma. Deseja continuar?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmDeactivation}>Desativar</AlertDialogAction>
+            <AlertDialogCancel disabled={!!togglingId}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleConfirmDeactivation} disabled={!!togglingId}>
+              {togglingId ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : null}
+              Desativar e deletar instância
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
