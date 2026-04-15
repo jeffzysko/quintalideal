@@ -125,7 +125,7 @@ export default function PlanosFranquia() {
   if (isLoading) {
     return (
       <div className="p-4 md:p-6 space-y-6">
-        <PageHeader title="Planos e Assinaturas" subtitle="Carregando..." />
+        <PageHeader title="Planos e Assinaturas" subtitle="Carregando..." fallbackPath="/franquia" />
         <div className="flex justify-center py-12">
           <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
         </div>
