@@ -25,7 +25,6 @@ async function verifyStripeSignature(
     throw new Error("Invalid signature header");
   }
 
-  // Check timestamp tolerance (5 minutes)
   const now = Math.floor(Date.now() / 1000);
   if (Math.abs(now - parseInt(timestamp)) > 300) {
     throw new Error("Timestamp outside tolerance");
@@ -54,6 +53,79 @@ async function verifyStripeSignature(
   }
 
   return JSON.parse(payload);
+}
+
+/**
+ * Send a WhatsApp notification using platform credentials (never franchise own instance).
+ * Fails silently — errors are logged but never propagated.
+ */
+async function sendPlatformWhatsApp(
+  supabase: ReturnType<typeof createClient>,
+  franchiseId: string,
+  message: string
+) {
+  try {
+    // Get franchise WhatsApp number
+    const { data: franchise } = await supabase
+      .from("franchises")
+      .select("whatsapp")
+      .eq("id", franchiseId)
+      .maybeSingle();
+
+    const phone = franchise?.whatsapp;
+    if (!phone) {
+      console.log(`[stripe-webhook] No WhatsApp number for franchise ${franchiseId}, skipping notification`);
+      return;
+    }
+
+    // Normalize phone
+    let normalizedPhone = phone.replace(/\D/g, "");
+    if (!normalizedPhone.startsWith("55")) {
+      normalizedPhone = "55" + normalizedPhone;
+    }
+
+    // Use platform credentials
+    const instanceId = Deno.env.get("ZAPI_INSTANCE_ID");
+    const zapiToken = Deno.env.get("ZAPI_TOKEN");
+    const securityToken = Deno.env.get("ZAPI_SECURITY_TOKEN");
+
+    if (!instanceId || !zapiToken) {
+      console.warn("[stripe-webhook] Platform Z-API credentials not configured, skipping notification");
+      return;
+    }
+
+    const zapiUrl = `https://api.z-api.io/instances/${instanceId}/token/${zapiToken}/send-text`;
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    if (securityToken) headers["Client-Token"] = securityToken;
+
+    const res = await fetch(zapiUrl, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ phone: normalizedPhone, message }),
+    });
+
+    const result = await res.json();
+    const success = res.ok && !result.error;
+
+    // Log message
+    await supabase.from("whatsapp_messages").insert({
+      franchise_id: franchiseId,
+      phone: normalizedPhone,
+      message_text: message,
+      status: success ? "sent" : "failed",
+      zapi_message_id: result?.messageId || result?.zapiMessageId || null,
+      error_message: success ? null : JSON.stringify(result),
+      template_key: "stripe_notification",
+    });
+
+    if (success) {
+      console.log(`[stripe-webhook] WhatsApp notification sent to franchise ${franchiseId}`);
+    } else {
+      console.error(`[stripe-webhook] WhatsApp notification failed for franchise ${franchiseId}:`, result);
+    }
+  } catch (err) {
+    console.error(`[stripe-webhook] Error sending WhatsApp notification for franchise ${franchiseId}:`, err);
+  }
 }
 
 Deno.serve(async (req) => {
@@ -85,6 +157,7 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const serviceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabase = createClient(supabaseUrl, serviceKey);
+    const platformUrl = Deno.env.get("PLATFORM_URL") || "https://quintalideal.lovable.app";
 
     const eventType = event.type;
     console.log(`[stripe-webhook] Processing event: ${eventType}`);
@@ -100,7 +173,6 @@ Deno.serve(async (req) => {
 
       const subscriptionId = session.subscription;
 
-      // Calculate expiration (1 month from now)
       const expiresAt = new Date();
       expiresAt.setMonth(expiresAt.getMonth() + 1);
 
@@ -128,6 +200,13 @@ Deno.serve(async (req) => {
       } catch (err) {
         console.error("[stripe-webhook] Failed to trigger zapi-instance create:", err);
       }
+
+      // Send WhatsApp notification
+      await sendPlatformWhatsApp(
+        supabase,
+        franchiseId,
+        `✅ *Plano WhatsApp Próprio ativado!*\n\nOlá! Seu plano foi confirmado com sucesso.\n\nAgora acesse as configurações da sua franquia no Quintal Ideal, vá até a aba WhatsApp e clique em *Conectar WhatsApp* para vincular seu número.\n\nQualquer dúvida, é só chamar! 🌱`
+      );
 
       console.log(`[stripe-webhook] checkout.session.completed for franchise ${franchiseId}`);
     }
@@ -170,6 +249,13 @@ Deno.serve(async (req) => {
           .update({ stripe_subscription_status: "past_due" })
           .eq("id", franchiseId);
 
+        // Send WhatsApp notification
+        await sendPlatformWhatsApp(
+          supabase,
+          franchiseId,
+          `⚠️ *Atenção: falha no pagamento*\n\nNão conseguimos processar o pagamento do seu plano WhatsApp Próprio.\n\nPor favor, atualize seu método de pagamento para evitar a suspensão do serviço. Acesse: ${platformUrl}/settings?tab=whatsapp\n\nCaso precise de ajuda, é só falar! 🌱`
+        );
+
         console.log(`[stripe-webhook] invoice.payment_failed for franchise ${franchiseId}`);
       }
     }
@@ -180,6 +266,13 @@ Deno.serve(async (req) => {
       const franchiseId = subscription.metadata?.franchiseId;
 
       if (franchiseId) {
+        // Send notification BEFORE deactivating (so we can still fetch franchise data)
+        await sendPlatformWhatsApp(
+          supabase,
+          franchiseId,
+          `📴 *Plano WhatsApp encerrado*\n\nSeu plano WhatsApp Próprio foi cancelado. A partir de agora, as notificações da sua franquia voltam a ser enviadas pelo número da plataforma normalmente.\n\nSe quiser reativar no futuro, acesse as configurações a qualquer momento. 🌱`
+        );
+
         await supabase
           .from("franchises")
           .update({
