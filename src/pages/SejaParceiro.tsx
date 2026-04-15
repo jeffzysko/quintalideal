@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -8,37 +8,35 @@ import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
-import { Check, ClipboardList, Rocket, CheckCircle2, ArrowRight, Sparkles, Shield, Star, Users } from 'lucide-react';
+import { Check, ClipboardList, Rocket, CheckCircle2, ArrowRight, Sparkles, Shield, Star, Users, Zap, BarChart3, MessageCircle, Target, FileText, Globe } from 'lucide-react';
 import { isValidEmail, isValidBRPhone } from '@/lib/validation';
 import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 
 /* ── Data ── */
-
 const STEPS = [
-  { num: '01', title: 'Cadastre-se em 2 minutos', description: 'Preencha seus dados abaixo. Sem burocracia, sem taxas de adesão.' },
-  { num: '02', title: 'Aprovação em até 24h', description: 'Nossa equipe analisa sua candidatura e entra em contato pelo WhatsApp.' },
-  { num: '03', title: 'Comece a vender mais', description: 'Qualifique seus leads, envie orçamentos e gerencie tudo em tempo real.' },
+  { num: '01', icon: Zap, title: 'Cadastre-se em 2 minutos', description: 'Preencha seus dados abaixo. Sem burocracia, sem taxas de adesão.' },
+  { num: '02', icon: Shield, title: 'Aprovação em até 24h', description: 'Nossa equipe analisa sua candidatura e entra em contato pelo WhatsApp.' },
+  { num: '03', icon: Rocket, title: 'Comece a vender mais', description: 'Qualifique seus leads, envie orçamentos e gerencie tudo em tempo real.' },
 ];
 
 const FEATURES = [
-  { emoji: '🎯', title: 'Qualificação inteligente de leads', description: 'Cada lead do seu tráfego pago passa por um quiz que identifica perfil, orçamento e urgência. Você recebe só quem está pronto para comprar.' },
-  { emoji: '📋', title: 'CRM completo para piscinas', description: 'Kanban, funil de vendas, histórico de contatos e follow-ups automáticos. Tudo organizado num só lugar.' },
-  { emoji: '📄', title: 'Orçamentos profissionais em 1 clique', description: 'Crie propostas com a sua marca, envie por WhatsApp e saiba quando o cliente abriu.' },
-  { emoji: '📱', title: 'Central de WhatsApp integrada', description: 'Atenda seus leads pelo WhatsApp da sua loja com mensagens automáticas, templates e histórico completo.' },
-  { emoji: '📊', title: 'Métricas e relatórios', description: 'Acompanhe conversão, faturamento, metas mensais e veja quais campanhas trazem mais resultado.' },
-  { emoji: '🌍', title: 'Página exclusiva de captação', description: 'Um link personalizado da sua loja com quiz interativo que transforma visitantes em leads qualificados.' },
+  { icon: Target, title: 'Qualificação inteligente', description: 'Cada lead passa por um quiz que identifica perfil, orçamento e urgência. Você recebe só quem está pronto.' },
+  { icon: BarChart3, title: 'CRM completo', description: 'Kanban, funil, histórico de contatos e follow-ups automáticos num só lugar.' },
+  { icon: FileText, title: 'Orçamentos em 1 clique', description: 'Propostas com sua marca, envio por WhatsApp e rastreio de abertura.' },
+  { icon: MessageCircle, title: 'WhatsApp integrado', description: 'Atenda leads pelo WhatsApp da sua loja com mensagens automáticas e templates.' },
+  { icon: BarChart3, title: 'Métricas em tempo real', description: 'Conversão, faturamento, metas mensais e performance de campanhas.' },
+  { icon: Globe, title: 'Página de captação', description: 'Link personalizado com quiz interativo que transforma visitantes em leads qualificados.' },
 ];
 
 const SOCIAL_PROOF = [
-  { metric: 38, suffix: '+', label: 'lojas parceiras no RS' },
-  { metric: 2500, suffix: '+', label: 'leads qualificados' },
-  { metric: 24, suffix: 'h', label: 'aprovação média' },
+  { metric: 38, suffix: '+', label: 'Lojas parceiras' },
+  { metric: 2500, suffix: '+', label: 'Leads qualificados' },
+  { metric: 24, suffix: 'h', label: 'Aprovação média' },
 ];
 
-const TRUST_ITEMS = [
-  { icon: Shield, text: 'Dados protegidos com criptografia' },
-  { icon: Star, text: 'Plataforma avaliada por parceiros reais' },
-  { icon: Users, text: 'Rede ativa com mais de 38 lojas' },
+const MARQUEE_ITEMS = [
+  'CRM completo', 'Orçamentos profissionais', 'WhatsApp automático', 'Qualificação de leads',
+  'Métricas em tempo real', 'Kanban de vendas', 'Follow-ups inteligentes', 'Página personalizada',
 ];
 
 const ORCAMENTO_BENEFITS = [
@@ -64,26 +62,70 @@ function AnimatedCounter({ value, suffix }: { value: number; suffix: string }) {
 
   useEffect(() => {
     if (!isInView) return;
-    const duration = 1500;
-    const steps = 40;
+    const duration = 1800;
+    const steps = 50;
     const increment = value / steps;
     let current = 0;
     const timer = setInterval(() => {
       current += increment;
-      if (current >= value) {
-        setCount(value);
-        clearInterval(timer);
-      } else {
-        setCount(Math.floor(current));
-      }
+      if (current >= value) { setCount(value); clearInterval(timer); }
+      else setCount(Math.floor(current));
     }, duration / steps);
     return () => clearInterval(timer);
   }, [isInView, value]);
 
+  return <span ref={ref} className="tabular-nums">{count.toLocaleString('pt-BR')}{suffix}</span>;
+}
+
+/* ── 3D Tilt Card ── */
+function TiltCard({ children, className = '' }: { children: React.ReactNode; className?: string }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const x = useMotionValue(0);
+  const y = useMotionValue(0);
+  const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [8, -8]), { stiffness: 300, damping: 30 });
+  const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-8, 8]), { stiffness: 300, damping: 30 });
+
+  function handleMouse(e: React.MouseEvent) {
+    if (!ref.current) return;
+    const rect = ref.current.getBoundingClientRect();
+    x.set((e.clientX - rect.left) / rect.width - 0.5);
+    y.set((e.clientY - rect.top) / rect.height - 0.5);
+  }
+
+  function handleLeave() { x.set(0); y.set(0); }
+
   return (
-    <span ref={ref} className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent tabular-nums">
-      {count.toLocaleString('pt-BR')}{suffix}
-    </span>
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMouse}
+      onMouseLeave={handleLeave}
+      style={{ rotateX, rotateY, transformStyle: 'preserve-3d' }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+/* ── Marquee ── */
+function Marquee() {
+  return (
+    <div className="relative overflow-hidden py-4">
+      <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-background to-transparent z-10" />
+      <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-background to-transparent z-10" />
+      <motion.div
+        className="flex gap-6 whitespace-nowrap"
+        animate={{ x: ['0%', '-50%'] }}
+        transition={{ duration: 25, repeat: Infinity, ease: 'linear' }}
+      >
+        {[...MARQUEE_ITEMS, ...MARQUEE_ITEMS].map((item, i) => (
+          <span key={i} className="flex items-center gap-2 text-sm font-medium text-muted-foreground/60 shrink-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-primary/40" />
+            {item}
+          </span>
+        ))}
+      </motion.div>
+    </div>
   );
 }
 
@@ -95,10 +137,7 @@ function formatPhone(value: string) {
   return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
 }
 
-interface IBGECity {
-  nome: string;
-  microrregiao?: { mesorregiao?: { UF?: { sigla?: string } } };
-}
+interface IBGECity { nome: string; microrregiao?: { mesorregiao?: { UF?: { sigla?: string } } }; }
 
 function CityAutocomplete({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   const [query, setQuery] = useState(value);
@@ -177,6 +216,11 @@ export default function SejaParceiro() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
 
+  const heroRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
+  const heroY = useTransform(scrollYProgress, [0, 1], [0, 150]);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+
   const clearError = (field: string) => setErrors(p => ({ ...p, [field]: '' }));
   const markTouched = (field: string) => setTouched(p => ({ ...p, [field]: true }));
 
@@ -250,158 +294,284 @@ export default function SejaParceiro() {
   const scrollToForm = () => document.getElementById('formulario')?.scrollIntoView({ behavior: 'smooth' });
 
   return (
-    <div className="min-h-screen overflow-hidden">
+    <div className="min-h-screen overflow-hidden bg-background">
 
       {/* ═══════════════════════════ HERO ═══════════════════════════ */}
-      <section className="relative py-20 sm:py-32 overflow-hidden">
-        {/* Background layers */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/8 via-background to-secondary/5" />
-        <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, hsl(var(--primary) / 0.04) 1px, transparent 0)', backgroundSize: '32px 32px' }} />
-        <div className="absolute top-[-200px] left-1/2 -translate-x-1/2 w-[700px] h-[700px] rounded-full bg-primary/6 blur-[120px] pointer-events-none" />
-        <div className="absolute bottom-[-100px] right-[-100px] w-[400px] h-[400px] rounded-full bg-secondary/6 blur-[100px] pointer-events-none" />
+      <section ref={heroRef} className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden">
+        {/* Animated mesh gradient background */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-br from-[hsl(225,76%,48%,0.08)] via-background to-[hsl(178,100%,43%,0.06)]" />
+          <div className="absolute inset-0" style={{
+            backgroundImage: 'radial-gradient(circle at 20% 50%, hsl(225 76% 48% / 0.12) 0%, transparent 50%), radial-gradient(circle at 80% 20%, hsl(178 100% 43% / 0.08) 0%, transparent 50%), radial-gradient(circle at 50% 80%, hsl(225 76% 48% / 0.06) 0%, transparent 50%)',
+          }} />
+        </div>
 
-        {/* Floating orbs */}
-        <motion.div className="absolute top-24 left-[8%] w-3 h-3 rounded-full bg-primary/25"
-          animate={{ y: [0, -18, 0], opacity: [0.4, 0.8, 0.4] }}
-          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+        {/* Animated floating orbs */}
+        <motion.div
+          className="absolute w-[500px] h-[500px] rounded-full opacity-30 blur-[120px] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, hsl(225 76% 48% / 0.4), transparent 70%)' }}
+          animate={{
+            x: ['-10%', '10%', '-10%'],
+            y: ['-5%', '15%', '-5%'],
+          }}
+          transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
         />
-        <motion.div className="absolute top-48 right-[12%] w-2 h-2 rounded-full bg-secondary/35"
-          animate={{ y: [0, 14, 0] }}
-          transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: 0.8 }}
-        />
-        <motion.div className="absolute bottom-24 left-[18%] w-4 h-4 rounded-full bg-primary/15"
-          animate={{ y: [0, -10, 0], x: [0, 5, 0] }}
-          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 0.3 }}
+        <motion.div
+          className="absolute w-[400px] h-[400px] rounded-full opacity-20 blur-[100px] pointer-events-none"
+          style={{ background: 'radial-gradient(circle, hsl(178 100% 43% / 0.5), transparent 70%)', right: '10%', top: '20%' }}
+          animate={{
+            x: ['5%', '-15%', '5%'],
+            y: ['10%', '-10%', '10%'],
+          }}
+          transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut', delay: 3 }}
         />
 
-        <div className="relative max-w-4xl mx-auto px-5 text-center">
+        {/* Grid pattern */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: `linear-gradient(hsl(var(--foreground)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--foreground)) 1px, transparent 1px)`,
+          backgroundSize: '60px 60px',
+        }} />
+
+        {/* Radial vignette */}
+        <div className="absolute inset-0" style={{
+          background: 'radial-gradient(ellipse at center, transparent 0%, hsl(var(--background)) 75%)',
+        }} />
+
+        {/* Floating particles */}
+        {[...Array(6)].map((_, i) => (
+          <motion.div
+            key={i}
+            className="absolute w-1 h-1 rounded-full bg-primary/30"
+            style={{
+              left: `${15 + i * 14}%`,
+              top: `${20 + (i % 3) * 25}%`,
+            }}
+            animate={{
+              y: [0, -30, 0],
+              opacity: [0.2, 0.7, 0.2],
+              scale: [1, 1.5, 1],
+            }}
+            transition={{
+              duration: 3 + i * 0.7,
+              repeat: Infinity,
+              ease: 'easeInOut',
+              delay: i * 0.5,
+            }}
+          />
+        ))}
+
+        {/* Hero content */}
+        <motion.div
+          className="relative z-10 max-w-4xl mx-auto px-5 text-center"
+          style={{ y: heroY, opacity: heroOpacity }}
+        >
           <motion.img
             src={logoQuintalIdeal}
             alt="Quintal Ideal"
-            className="h-11 sm:h-12 mx-auto mb-7"
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+            className="h-10 sm:h-12 mx-auto mb-8"
+            initial={{ opacity: 0, scale: 0.7, filter: 'blur(10px)' }}
+            animate={{ opacity: 1, scale: 1, filter: 'blur(0px)' }}
+            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           />
 
           <motion.div
-            className="inline-flex items-center gap-1.5 bg-primary/10 text-primary text-xs sm:text-sm font-semibold px-4 py-1.5 rounded-full mb-6 backdrop-blur-sm"
-            initial={{ opacity: 0, y: 10 }}
+            className="inline-flex items-center gap-2 mb-8"
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
+            transition={{ delay: 0.2 }}
           >
-            <Sparkles className="w-3.5 h-3.5" />
-            A plataforma completa para lojas de piscinas
+            <span className="relative inline-flex items-center gap-2 text-xs sm:text-sm font-semibold px-5 py-2 rounded-full border border-primary/20 bg-primary/5 text-primary backdrop-blur-sm">
+              <span className="absolute inset-0 rounded-full animate-pulse bg-primary/5" />
+              <Sparkles className="w-3.5 h-3.5 relative z-10" />
+              <span className="relative z-10">A plataforma completa para lojas de piscinas</span>
+            </span>
           </motion.div>
 
           <motion.h1
-            className="text-[1.85rem] leading-[1.2] sm:text-[2.75rem] lg:text-[3.1rem] font-bold text-foreground mb-6 tracking-tight sm:leading-[1.15]"
-            initial={{ opacity: 0, y: 30 }}
+            className="text-[2rem] leading-[1.1] sm:text-[3rem] lg:text-[3.75rem] font-extrabold text-foreground mb-6 tracking-tight sm:leading-[1.08]"
+            initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15, type: 'spring', stiffness: 100 }}
+            transition={{ delay: 0.3, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
-            Qualifique leads, envie <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">orçamentos</span>
-            <br />
+            Qualifique leads, envie{' '}
+            <span className="relative inline-block">
+              <span className="relative z-10 bg-gradient-to-r from-primary via-[hsl(200,80%,50%)] to-secondary bg-clip-text text-transparent">
+                orçamentos
+              </span>
+              <motion.span
+                className="absolute -inset-x-2 -inset-y-1 rounded-lg bg-primary/[0.07] -z-0"
+                initial={{ scaleX: 0 }}
+                animate={{ scaleX: 1 }}
+                transition={{ delay: 0.8, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                style={{ transformOrigin: 'left' }}
+              />
+            </span>
+            <br className="hidden sm:block" />
             e venda mais piscinas
           </motion.h1>
 
           <motion.p
-            className="text-[0.95rem] sm:text-lg text-muted-foreground max-w-xl sm:max-w-2xl mx-auto mb-5 leading-relaxed"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.25 }}
+            className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-4 leading-relaxed"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
           >
             CRM, qualificação de leads, orçamentos profissionais e atendimento via WhatsApp. Tudo integrado numa plataforma feita para o mercado de piscinas.
           </motion.p>
 
           <motion.p
-            className="text-sm text-muted-foreground/80 max-w-md sm:max-w-xl mx-auto mb-8"
+            className="text-sm text-muted-foreground/70 max-w-xl mx-auto mb-10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
+            transition={{ delay: 0.6 }}
           >
             <strong className="text-foreground">Sem taxa de adesão.</strong> Cadastre-se gratuitamente e pague apenas se quiser recursos premium.
           </motion.p>
 
           <motion.div
-            className="flex flex-col sm:flex-row gap-3 justify-center mb-10"
-            initial={{ opacity: 0, y: 20 }}
+            className="flex flex-col sm:flex-row gap-3 justify-center mb-14"
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35 }}
+            transition={{ delay: 0.7 }}
           >
             <Button
               size="lg"
-              className="rounded-xl text-base px-8 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 hover:-translate-y-0.5 group"
               onClick={scrollToForm}
+              className="relative rounded-2xl text-base px-10 py-7 font-bold gap-2 overflow-hidden group transition-all duration-500 hover:scale-[1.03] active:scale-[0.98]"
+              style={{
+                boxShadow: '0 0 30px -5px hsl(225 76% 48% / 0.4), 0 10px 30px -10px hsl(225 76% 48% / 0.3)',
+              }}
             >
-              Quero ser parceiro
-              <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+              <span className="absolute inset-0 bg-gradient-to-r from-primary via-[hsl(200,80%,50%)] to-primary bg-[length:200%_100%] group-hover:animate-[shimmer_2s_linear_infinite]" />
+              <span className="relative z-10 flex items-center gap-2">
+                Quero ser parceiro
+                <motion.span animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>
+                  <ArrowRight className="w-5 h-5" />
+                </motion.span>
+              </span>
             </Button>
-            <Button size="lg" variant="outline" className="rounded-xl hover:-translate-y-0.5 transition-all duration-300" asChild>
-              <a href="/login" target="_blank" rel="noopener noreferrer">Já sou parceiro</a>
+            <Button
+              size="lg"
+              variant="outline"
+              className="rounded-2xl px-8 py-7 backdrop-blur-sm border-border/50 hover:bg-muted/50 hover:scale-[1.02] transition-all duration-300"
+              asChild
+            >
+              <a href="/login">Já sou parceiro</a>
             </Button>
           </motion.div>
 
-          {/* Animated counters */}
+          {/* Social proof counters with glow */}
           <motion.div
-            className="flex flex-wrap justify-center gap-8 sm:gap-16 mb-8"
-            initial={{ opacity: 0, y: 10 }}
+            className="flex flex-wrap justify-center gap-1 sm:gap-2 mb-6"
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+            transition={{ delay: 0.9 }}
           >
-            {SOCIAL_PROOF.map(sp => (
-              <div key={sp.label} className="text-center min-w-[80px]">
-                <AnimatedCounter value={sp.metric} suffix={sp.suffix} />
-                <p className="text-[11px] sm:text-xs text-muted-foreground mt-1.5 font-medium">{sp.label}</p>
-              </div>
+            {SOCIAL_PROOF.map((sp, i) => (
+              <motion.div
+                key={sp.label}
+                className="relative group px-6 sm:px-8 py-4 rounded-2xl border border-border/30 bg-background/50 backdrop-blur-md cursor-default"
+                whileHover={{ scale: 1.05, borderColor: 'hsl(225 76% 48% / 0.3)' }}
+                transition={{ type: 'spring', stiffness: 300 }}
+              >
+                <div className="absolute inset-0 rounded-2xl bg-primary/[0.03] group-hover:bg-primary/[0.06] transition-colors duration-300" />
+                <div className="relative text-center">
+                  <span className="block text-2xl sm:text-3xl font-bold bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent">
+                    <AnimatedCounter value={sp.metric} suffix={sp.suffix} />
+                  </span>
+                  <span className="text-[10px] sm:text-xs text-muted-foreground font-medium mt-1 block">{sp.label}</span>
+                </div>
+              </motion.div>
             ))}
           </motion.div>
 
           {/* Trust strip */}
           <motion.div
-            className="flex flex-wrap justify-center gap-4 sm:gap-6"
+            className="flex flex-wrap justify-center gap-5"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
+            transition={{ delay: 1.1 }}
           >
-            {TRUST_ITEMS.map(t => (
-              <div key={t.text} className="flex items-center gap-1.5 text-[11px] text-muted-foreground/70">
-                <t.icon className="w-3.5 h-3.5 text-primary/60" />
+            {[
+              { icon: Shield, text: 'Dados protegidos' },
+              { icon: Star, text: 'Avaliada por parceiros' },
+              { icon: Users, text: '38+ lojas ativas' },
+            ].map(t => (
+              <div key={t.text} className="flex items-center gap-1.5 text-[11px] text-muted-foreground/50">
+                <t.icon className="w-3 h-3" />
                 {t.text}
               </div>
             ))}
           </motion.div>
-        </div>
+        </motion.div>
+
+        {/* Scroll indicator */}
+        <motion.div
+          className="absolute bottom-8 left-1/2 -translate-x-1/2"
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <div className="w-6 h-10 rounded-full border-2 border-muted-foreground/20 flex items-start justify-center p-1.5">
+            <motion.div
+              className="w-1.5 h-1.5 rounded-full bg-primary/60"
+              animate={{ y: [0, 12, 0], opacity: [1, 0.3, 1] }}
+              transition={{ duration: 2, repeat: Infinity }}
+            />
+          </div>
+        </motion.div>
       </section>
 
+      {/* ═══════════════════════════ MARQUEE ═══════════════════════════ */}
+      <div className="border-y border-border/30 bg-muted/20">
+        <Marquee />
+      </div>
+
       {/* ═══════════════════════════ COMO FUNCIONA ═══════════════════════════ */}
-      <section className="py-20 sm:py-24 bg-background relative">
-        <div className="max-w-4xl mx-auto px-5">
-          <motion.div className="text-center mb-14" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <span className="text-xs font-semibold text-primary uppercase tracking-widest">Como funciona</span>
-            <h2 className="text-2xl sm:text-4xl font-bold text-foreground mt-2 mb-2">Simples como 1, 2, 3</h2>
-            <p className="text-sm text-muted-foreground">Do cadastro à primeira venda em poucos dias</p>
+      <section className="py-24 sm:py-32 relative">
+        <div className="max-w-5xl mx-auto px-5">
+          <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <span className="inline-block text-xs font-bold text-primary uppercase tracking-[0.2em] mb-3 px-4 py-1.5 rounded-full border border-primary/15 bg-primary/5">Como funciona</span>
+            <h2 className="text-3xl sm:text-[2.75rem] font-extrabold text-foreground mt-4 mb-3 tracking-tight leading-tight">
+              Simples como{' '}
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">1, 2, 3</span>
+            </h2>
+            <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto">Do cadastro à primeira venda em poucos dias</p>
           </motion.div>
 
-          <div className="grid sm:grid-cols-3 gap-6 sm:gap-8 relative">
-            {/* Connector (desktop) */}
-            <div className="hidden sm:block absolute top-10 left-[20%] right-[20%] h-px bg-gradient-to-r from-primary/10 via-primary/30 to-primary/10" />
+          <div className="grid sm:grid-cols-3 gap-6 sm:gap-4 relative">
+            {/* Connector line (desktop) */}
+            <div className="hidden sm:block absolute top-16 left-[22%] right-[22%] h-px">
+              <motion.div
+                className="h-full bg-gradient-to-r from-primary/30 via-primary/50 to-primary/30"
+                initial={{ scaleX: 0 }}
+                whileInView={{ scaleX: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1, delay: 0.5 }}
+              />
+            </div>
 
             {STEPS.map((s, i) => (
               <motion.div
                 key={s.num}
-                className="relative text-center sm:text-left"
-                initial={{ opacity: 0, y: 30 }}
+                className="relative text-center group"
+                initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.15 }}
+                transition={{ delay: i * 0.2, duration: 0.6 }}
               >
-                <div className="flex flex-col items-center sm:items-start">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/10 flex items-center justify-center mb-4 relative z-10">
-                    <span className="text-lg font-bold text-primary">{s.num}</span>
+                <div className="flex flex-col items-center">
+                  <div className="relative mb-5">
+                    <motion.div
+                      className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 border border-primary/15 flex items-center justify-center relative z-10 group-hover:from-primary/25 group-hover:to-primary/10 transition-all duration-500"
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                    >
+                      <s.icon className="w-6 h-6 text-primary" />
+                    </motion.div>
+                    <div className="absolute -inset-2 rounded-3xl bg-primary/5 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
+                    <span className="absolute -top-2 -right-2 text-[10px] font-bold bg-primary text-primary-foreground w-6 h-6 rounded-full flex items-center justify-center z-20">{s.num}</span>
                   </div>
-                  <h3 className="font-bold text-foreground mb-1.5 text-[0.95rem]">{s.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed max-w-[260px] mx-auto sm:mx-0">{s.description}</p>
+                  <h3 className="font-bold text-foreground mb-2 text-base">{s.title}</h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed max-w-[260px] mx-auto">{s.description}</p>
                 </div>
               </motion.div>
             ))}
@@ -410,36 +580,52 @@ export default function SejaParceiro() {
       </section>
 
       {/* ═══════════════════════════ RECURSOS ═══════════════════════════ */}
-      <section className="py-20 sm:py-24 relative overflow-hidden">
-        <div className="absolute inset-0 bg-muted/40" />
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-        <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
+      <section className="py-24 sm:py-32 relative overflow-hidden">
+        {/* Background texture */}
+        <div className="absolute inset-0 bg-muted/30" />
+        <div className="absolute inset-0 opacity-[0.02]" style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, hsl(var(--foreground)) 1px, transparent 0)`,
+          backgroundSize: '24px 24px',
+        }} />
 
         <div className="relative max-w-5xl mx-auto px-5">
-          <motion.div className="text-center mb-14" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <span className="text-xs font-semibold text-primary uppercase tracking-widest">Recursos</span>
-            <h2 className="text-2xl sm:text-4xl font-bold text-foreground mt-2 mb-2">CRM, orçamentos e WhatsApp<br className="hidden sm:block" /> em um só lugar</h2>
-            <p className="text-sm text-muted-foreground max-w-lg mx-auto">A plataforma completa que lojas de piscinas de todo o RS já usam no dia a dia</p>
+          <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <span className="inline-block text-xs font-bold text-primary uppercase tracking-[0.2em] mb-3 px-4 py-1.5 rounded-full border border-primary/15 bg-primary/5">Recursos</span>
+            <h2 className="text-3xl sm:text-[2.75rem] font-extrabold text-foreground mt-4 mb-3 tracking-tight leading-tight">
+              CRM, orçamentos e WhatsApp<br className="hidden sm:block" />
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">em um só lugar</span>
+            </h2>
+            <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
+              A plataforma completa que lojas de piscinas de todo o RS já usam no dia a dia
+            </p>
           </motion.div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 perspective-[1200px]">
             {FEATURES.map((f, i) => (
               <motion.div
                 key={f.title}
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: Math.min(i * 0.08, 0.3) }}
+                transition={{ delay: Math.min(i * 0.1, 0.4), duration: 0.5 }}
               >
-                <Card className="h-full border-border/50 bg-background/80 backdrop-blur-sm shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 group">
-                  <CardContent className="p-5 sm:p-6">
-                    <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-primary/12 to-primary/5 border border-primary/10 flex items-center justify-center mb-3 group-hover:scale-110 group-hover:from-primary/20 group-hover:to-primary/10 transition-all duration-300">
-                      <span className="text-xl">{f.emoji}</span>
-                    </div>
-                    <h3 className="font-bold text-foreground text-sm mb-2">{f.title}</h3>
-                    <p className="text-xs text-muted-foreground leading-relaxed">{f.description}</p>
-                  </CardContent>
-                </Card>
+                <TiltCard>
+                  <Card className="h-full border-border/40 bg-background/80 backdrop-blur-sm shadow-sm hover:shadow-2xl hover:border-primary/20 transition-all duration-500 group overflow-hidden relative">
+                    {/* Hover glow */}
+                    <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    <CardContent className="p-6 relative">
+                      <motion.div
+                        className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary/12 to-secondary/8 border border-primary/10 flex items-center justify-center mb-4"
+                        whileHover={{ rotate: 10, scale: 1.1 }}
+                        transition={{ type: 'spring', stiffness: 300 }}
+                      >
+                        <f.icon className="w-5 h-5 text-primary" />
+                      </motion.div>
+                      <h3 className="font-bold text-foreground text-[0.95rem] mb-2">{f.title}</h3>
+                      <p className="text-sm text-muted-foreground leading-relaxed">{f.description}</p>
+                    </CardContent>
+                  </Card>
+                </TiltCard>
               </motion.div>
             ))}
           </div>
@@ -447,33 +633,36 @@ export default function SejaParceiro() {
       </section>
 
       {/* ═══════════════════════════ PLANOS ═══════════════════════════ */}
-      <section className="py-20 sm:py-24 bg-background relative">
+      <section className="py-24 sm:py-32 relative">
         <div className="max-w-4xl mx-auto px-5">
-          <motion.div className="text-center mb-12" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-            <span className="text-xs font-semibold text-primary uppercase tracking-widest">Planos</span>
-            <h2 className="text-2xl sm:text-4xl font-bold text-foreground mt-2 mb-2">Invista pouco, venda muito</h2>
-            <p className="text-sm text-muted-foreground">Planos acessíveis que se pagam com a primeira venda</p>
-            <p className="text-xs text-muted-foreground/60 mt-1">Disponíveis após a aprovação do seu cadastro</p>
+          <motion.div className="text-center mb-14" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <span className="inline-block text-xs font-bold text-primary uppercase tracking-[0.2em] mb-3 px-4 py-1.5 rounded-full border border-primary/15 bg-primary/5">Planos</span>
+            <h2 className="text-3xl sm:text-[2.75rem] font-extrabold text-foreground mt-4 mb-3 tracking-tight">
+              Invista pouco,{' '}
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">venda muito</span>
+            </h2>
+            <p className="text-sm sm:text-base text-muted-foreground">Planos acessíveis que se pagam com a primeira venda</p>
+            <p className="text-xs text-muted-foreground/50 mt-1">Disponíveis após a aprovação do seu cadastro</p>
           </motion.div>
 
           <div className="grid sm:grid-cols-2 gap-5 sm:gap-6">
             {/* Orçamento */}
-            <motion.div initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-              <Card className="h-full border-border/50 shadow-sm hover:shadow-lg transition-all duration-300">
-                <CardContent className="p-6 sm:p-8">
-                  <div className="flex items-center gap-2.5 mb-3">
-                    <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <ClipboardList className="w-4 h-4 text-primary" />
+            <motion.div initial={{ opacity: 0, x: -30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+              <Card className="h-full border-border/40 shadow-md hover:shadow-xl transition-all duration-500 group">
+                <CardContent className="p-7 sm:p-8">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/15 transition-colors">
+                      <ClipboardList className="w-5 h-5 text-primary" />
                     </div>
-                    <h3 className="font-bold text-foreground">Orçamento Personalizado</h3>
+                    <h3 className="font-bold text-foreground text-lg">Orçamento Personalizado</h3>
                   </div>
-                  <div className="flex items-baseline gap-1 mb-5">
-                    <span className="text-4xl font-bold text-foreground">R$ 29</span>
+                  <div className="flex items-baseline gap-1 mb-6">
+                    <span className="text-5xl font-extrabold text-foreground tracking-tight">R$ 29</span>
                     <span className="text-sm text-muted-foreground">/mês</span>
                   </div>
-                  <ul className="space-y-3 mb-5">
+                  <ul className="space-y-3 mb-6">
                     {ORCAMENTO_BENEFITS.map(b => (
-                      <li key={b} className="flex items-start gap-2.5 text-sm text-muted-foreground">
+                      <li key={b} className="flex items-start gap-3 text-sm text-muted-foreground">
                         <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
                           <Check className="w-3 h-3 text-primary" />
                         </div>
@@ -481,32 +670,37 @@ export default function SejaParceiro() {
                       </li>
                     ))}
                   </ul>
-                  <p className="text-xs text-muted-foreground/50 text-center">Disponível após o cadastro</p>
+                  <p className="text-xs text-muted-foreground/40 text-center">Disponível após o cadastro</p>
                 </CardContent>
               </Card>
             </motion.div>
 
             {/* WhatsApp */}
-            <motion.div initial={{ opacity: 0, x: 20 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }}>
-              <Card className="h-full border-primary/20 shadow-lg ring-1 ring-primary/10 relative overflow-hidden hover:shadow-xl transition-all duration-300">
-                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-primary to-secondary" />
-                <div className="absolute top-3.5 right-3.5">
-                  <span className="text-[10px] font-bold bg-primary text-primary-foreground px-2.5 py-1 rounded-full uppercase tracking-wide">Mais popular</span>
-                </div>
-                <CardContent className="p-6 sm:p-8 pt-8">
-                  <div className="flex items-center gap-2.5 mb-3">
-                    <div className="w-9 h-9 rounded-xl bg-primary/10 flex items-center justify-center">
-                      <Rocket className="w-4 h-4 text-primary" />
-                    </div>
-                    <h3 className="font-bold text-foreground">WhatsApp Próprio</h3>
+            <motion.div initial={{ opacity: 0, x: 30 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+              <Card className="h-full relative overflow-hidden group border-primary/25 hover:border-primary/40 transition-all duration-500"
+                style={{ boxShadow: '0 0 40px -10px hsl(225 76% 48% / 0.15), 0 10px 40px -10px rgba(0,0,0,0.1)' }}
+              >
+                {/* Animated border glow */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_100%] animate-[shimmer_3s_linear_infinite]" />
+                <div className="absolute -top-1 -right-1">
+                  <div className="relative">
+                    <span className="text-[10px] font-bold bg-gradient-to-r from-primary to-secondary text-primary-foreground px-3 py-1.5 rounded-bl-xl rounded-tr-sm uppercase tracking-wider">Mais popular</span>
                   </div>
-                  <div className="flex items-baseline gap-1 mb-5">
-                    <span className="text-4xl font-bold text-foreground">R$ 149</span>
+                </div>
+                <CardContent className="p-7 sm:p-8 pt-9">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/15 transition-colors">
+                      <Rocket className="w-5 h-5 text-primary" />
+                    </div>
+                    <h3 className="font-bold text-foreground text-lg">WhatsApp Próprio</h3>
+                  </div>
+                  <div className="flex items-baseline gap-1 mb-6">
+                    <span className="text-5xl font-extrabold text-foreground tracking-tight">R$ 149</span>
                     <span className="text-sm text-muted-foreground">/mês</span>
                   </div>
-                  <ul className="space-y-3 mb-5">
+                  <ul className="space-y-3 mb-6">
                     {WHATSAPP_BENEFITS.map(b => (
-                      <li key={b} className="flex items-start gap-2.5 text-sm text-muted-foreground">
+                      <li key={b} className="flex items-start gap-3 text-sm text-muted-foreground">
                         <div className="w-5 h-5 rounded-full bg-primary/10 flex items-center justify-center shrink-0 mt-0.5">
                           <Check className="w-3 h-3 text-primary" />
                         </div>
@@ -514,7 +708,7 @@ export default function SejaParceiro() {
                       </li>
                     ))}
                   </ul>
-                  <p className="text-xs text-muted-foreground/50 text-center">Disponível após o cadastro</p>
+                  <p className="text-xs text-muted-foreground/40 text-center">Disponível após o cadastro</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -523,67 +717,98 @@ export default function SejaParceiro() {
       </section>
 
       {/* ═══════════════════════════ CTA BRIDGE ═══════════════════════════ */}
-      <section className="py-16 sm:py-20 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/6 via-primary/4 to-secondary/4" />
-        <div className="absolute inset-0" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, hsl(var(--primary) / 0.03) 1px, transparent 0)', backgroundSize: '24px 24px' }} />
+      <section className="py-20 sm:py-28 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.06] via-background to-secondary/[0.04]" />
+        <div className="absolute inset-0 opacity-[0.02]" style={{
+          backgroundImage: `radial-gradient(circle at 1px 1px, hsl(var(--foreground)) 1px, transparent 0)`,
+          backgroundSize: '20px 20px',
+        }} />
+        {/* Floating glow */}
+        <motion.div
+          className="absolute w-[600px] h-[300px] rounded-full blur-[120px] bg-primary/10 left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none"
+          animate={{ scale: [1, 1.2, 1], opacity: [0.08, 0.15, 0.08] }}
+          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+        />
 
-        <div className="relative max-w-2xl mx-auto px-5 text-center">
+        <div className="relative max-w-3xl mx-auto px-5 text-center">
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ type: 'spring', stiffness: 100 }}
+            transition={{ duration: 0.7 }}
           >
-            <h2 className="text-xl sm:text-3xl font-bold text-foreground mb-4 leading-snug">
+            <h2 className="text-2xl sm:text-4xl font-extrabold text-foreground mb-5 leading-snug tracking-tight">
               Sua loja já investe em tráfego pago.{' '}
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-primary via-[hsl(200,80%,50%)] to-secondary bg-clip-text text-transparent">
                 Agora transforme cliques em vendas de verdade.
               </span>
             </h2>
-            <p className="text-sm sm:text-base text-muted-foreground mb-8 max-w-lg mx-auto leading-relaxed">
+            <p className="text-sm sm:text-lg text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed">
               O Quintal Ideal qualifica cada lead do seu tráfego, organiza sua operação comercial e automatiza o atendimento. Tudo o que falta para sua loja escalar.
             </p>
             <Button
               size="lg"
-              className="rounded-xl text-base px-8 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 hover:-translate-y-0.5 group"
               onClick={scrollToForm}
+              className="relative rounded-2xl text-base px-10 py-7 font-bold gap-2 overflow-hidden group transition-all duration-500 hover:scale-[1.03] active:scale-[0.98]"
+              style={{ boxShadow: '0 0 30px -5px hsl(225 76% 48% / 0.35)' }}
             >
-              Cadastrar minha loja gratuitamente
-              <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
+              <span className="absolute inset-0 bg-gradient-to-r from-primary via-[hsl(200,80%,50%)] to-primary bg-[length:200%_100%] group-hover:animate-[shimmer_2s_linear_infinite]" />
+              <span className="relative z-10 flex items-center gap-2">
+                Cadastrar minha loja gratuitamente
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </span>
             </Button>
           </motion.div>
         </div>
       </section>
 
       {/* ═══════════════════════════ FORMULÁRIO ═══════════════════════════ */}
-      <section id="formulario" className="py-20 sm:py-24 bg-muted/30 relative">
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border to-transparent" />
-        <div className="max-w-[540px] mx-auto px-5">
+      <section id="formulario" className="py-24 sm:py-32 relative">
+        <div className="absolute inset-0 bg-muted/20" />
+        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-border/50 to-transparent" />
+
+        {/* Glow behind form */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full bg-primary/[0.04] blur-[100px] pointer-events-none" />
+
+        <div className="relative max-w-[540px] mx-auto px-5">
           {submitted ? (
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ type: 'spring', stiffness: 200 }}>
-              <Card className="border-primary/20 shadow-xl overflow-hidden">
-                <div className="h-1.5 bg-gradient-to-r from-primary to-secondary" />
-                <CardContent className="py-14 text-center px-6">
+              <Card className="border-primary/20 overflow-hidden relative"
+                style={{ boxShadow: '0 0 60px -15px hsl(225 76% 48% / 0.2), 0 20px 40px -10px rgba(0,0,0,0.1)' }}
+              >
+                <div className="h-1.5 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_100%] animate-[shimmer_3s_linear_infinite]" />
+                <CardContent className="py-16 text-center px-6">
                   <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}>
-                    <CheckCircle2 className="w-16 h-16 text-primary mx-auto mb-5" />
+                    <div className="relative inline-block">
+                      <CheckCircle2 className="w-20 h-20 text-primary mx-auto mb-6" />
+                      <motion.div
+                        className="absolute inset-0 rounded-full bg-primary/10"
+                        animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                      />
+                    </div>
                   </motion.div>
-                  <h3 className="text-2xl font-bold text-foreground mb-3">Pronto! Sua candidatura foi recebida 🎉</h3>
+                  <h3 className="text-2xl font-extrabold text-foreground mb-3">Pronto! Sua candidatura foi recebida 🎉</h3>
                   <p className="text-sm text-muted-foreground mb-2">
                     Nossa equipe entrará em contato pelo <strong>WhatsApp em até 24 horas</strong>.
                   </p>
-                  <p className="text-xs text-muted-foreground/70">
+                  <p className="text-xs text-muted-foreground/60">
                     Prepare-se: em breve você terá acesso a uma plataforma completa para qualificar leads e fechar mais vendas.
                   </p>
                 </CardContent>
               </Card>
             </motion.div>
           ) : (
-            <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
-              <Card className="border-border/50 shadow-xl overflow-hidden">
-                <div className="h-1 bg-gradient-to-r from-primary to-secondary" />
-                <CardContent className="p-6 sm:p-8">
-                  <h2 className="text-xl font-bold text-foreground mb-1 text-center">Comece agora mesmo</h2>
-                  <p className="text-xs text-muted-foreground text-center mb-6">Cadastro gratuito · Sem compromisso · Aprovação em até 24h</p>
+            <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.6 }}>
+              <Card className="border-border/40 overflow-hidden relative"
+                style={{ boxShadow: '0 0 60px -15px hsl(225 76% 48% / 0.12), 0 20px 40px -10px rgba(0,0,0,0.08)' }}
+              >
+                <div className="h-1 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_100%] animate-[shimmer_3s_linear_infinite]" />
+                <CardContent className="p-7 sm:p-9">
+                  <div className="text-center mb-7">
+                    <h2 className="text-2xl font-extrabold text-foreground mb-1.5">Comece agora mesmo</h2>
+                    <p className="text-xs text-muted-foreground">Cadastro gratuito · Sem compromisso · Aprovação em até 24h</p>
+                  </div>
 
                   <div className="space-y-4">
                     {/* Nome da empresa */}
@@ -661,13 +886,17 @@ export default function SejaParceiro() {
                     {errors.terms && <p className="text-xs text-destructive -mt-2">{errors.terms}</p>}
 
                     <Button
-                      className="w-full rounded-xl shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transition-all duration-300 group"
+                      className="w-full relative rounded-xl overflow-hidden group transition-all duration-500 hover:scale-[1.01] active:scale-[0.99]"
                       size="lg"
                       disabled={submitting}
                       onClick={handleSubmit}
+                      style={{ boxShadow: '0 0 25px -5px hsl(225 76% 48% / 0.3)' }}
                     >
-                      {submitting ? 'Enviando...' : 'Quero ser parceiro'}
-                      {!submitting && <ArrowRight className="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />}
+                      <span className="absolute inset-0 bg-gradient-to-r from-primary via-[hsl(200,80%,50%)] to-primary bg-[length:200%_100%] group-hover:animate-[shimmer_2s_linear_infinite]" />
+                      <span className="relative z-10 flex items-center justify-center gap-2">
+                        {submitting ? 'Enviando...' : 'Quero ser parceiro'}
+                        {!submitting && <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
+                      </span>
                     </Button>
                   </div>
                 </CardContent>
