@@ -411,6 +411,27 @@ export default function SejaParceiro() {
         </div>
       </section>
 
+      {/* ── CTA Bridge ── */}
+      <section className="py-12 sm:py-16 bg-primary/5">
+        <div className="max-w-3xl mx-auto px-4 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-3">
+              Sua loja já vende piscinas.<br className="sm:hidden" /> Agora imagine vender <span className="text-primary">com leads chegando todo dia.</span>
+            </h2>
+            <p className="text-sm text-muted-foreground mb-6 max-w-xl mx-auto">
+              Enquanto você lê isso, lojas parceiras estão recebendo clientes qualificados pelo Quintal Ideal. Não fique de fora.
+            </p>
+            <Button size="lg" className="rounded-xl text-base px-8" onClick={() => document.getElementById('formulario')?.scrollIntoView({ behavior: 'smooth' })}>
+              Cadastrar minha loja gratuitamente →
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+
       {/* ── Formulário ── */}
       <section id="formulario" className="py-16 sm:py-20 bg-muted/30">
         <div className="max-w-[560px] mx-auto px-4">
