@@ -412,6 +412,7 @@ export function AdminWhatsAppPlans() {
                           {formatDate(f.whatsapp_plan_expires_at)}
                         </span>
                       </TableCell>
+                      <TableCell>{getOrcamentoBadge(f)}</TableCell>
                       <TableCell className="text-right">
                         <Switch
                           checked={f.whatsapp_plan_active}
