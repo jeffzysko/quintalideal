@@ -158,7 +158,7 @@ Deno.serve(async (req) => {
         // Resolve credentials for this franchise (multi-instance)
         const { data: franchise } = await supabase
           .from("franchises")
-          .select("whatsapp_mode, zapi_instance_id, zapi_token, zapi_client_token, zapi_instance_active, whatsapp_plan_active")
+          .select("whatsapp_mode, zapi_instance_id, zapi_token, zapi_instance_active, whatsapp_plan_active")
           .eq("id", fId)
           .maybeSingle();
 
@@ -175,7 +175,6 @@ Deno.serve(async (req) => {
         ) {
           instanceId = franchise.zapi_instance_id;
           zapiToken = franchise.zapi_token;
-          securityToken = franchise.zapi_client_token || null;
         } else {
           // Fallback to central config
           const { data: waConfig } = await supabase
