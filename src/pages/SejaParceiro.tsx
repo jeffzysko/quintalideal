@@ -13,33 +13,39 @@ import { isValidEmail, isValidBRPhone } from '@/lib/validation';
 import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 
 const STEPS = [
-  { emoji: '📋', title: 'Cadastre-se', description: 'Preencha o formulário com os dados da sua empresa. É rápido.' },
-  { emoji: '✅', title: 'Aguarde a aprovação', description: 'Nossa equipe analisa e entra em contato em até 24h.' },
-  { emoji: '🚀', title: 'Comece a operar', description: 'Acesse a plataforma, divulgue seu link e gerencie seus leads.' },
+  { emoji: '📋', title: '1. Cadastre-se em 2 minutos', description: 'Preencha seus dados abaixo. Sem burocracia, sem taxas de adesão.' },
+  { emoji: '✅', title: '2. Aprovação em até 24h', description: 'Nossa equipe analisa sua candidatura e entra em contato pelo WhatsApp.' },
+  { emoji: '🚀', title: '3. Comece a vender mais', description: 'Receba leads qualificados, envie orçamentos profissionais e acompanhe tudo em tempo real.' },
 ];
 
 const FEATURES = [
-  { emoji: '🎯', title: 'Gestão de leads', description: 'Kanban, funil de vendas e histórico completo de cada cliente' },
-  { emoji: '📄', title: 'Orçamentos personalizados', description: 'Crie e envie propostas profissionais com um clique' },
-  { emoji: '📱', title: 'WhatsApp integrado', description: 'Notificações automáticas para seus leads pelo WhatsApp' },
-  { emoji: '📊', title: 'Relatórios e metas', description: 'Acompanhe sua performance e defina metas mensais' },
-  { emoji: '🌍', title: 'Link exclusivo', description: 'Seu link de divulgação captura leads automaticamente' },
-  { emoji: '🏆', title: 'Ranking da rede', description: 'Veja seu desempenho comparado aos outros parceiros' },
+  { emoji: '🎯', title: 'Leads que chegam até você', description: 'Receba clientes interessados direto no seu painel — sem precisar correr atrás' },
+  { emoji: '📄', title: 'Orçamentos em 1 clique', description: 'Propostas profissionais com a sua marca, enviadas automaticamente por WhatsApp' },
+  { emoji: '📱', title: 'WhatsApp inteligente', description: 'Mensagens automáticas que nutrem o cliente enquanto você foca na venda' },
+  { emoji: '📊', title: 'Métricas que importam', description: 'Saiba exatamente quantos leads entraram, converteram e quanto você faturou' },
+  { emoji: '🌍', title: 'Seu link exclusivo', description: 'Uma página personalizada que captura clientes 24h por dia, mesmo enquanto você dorme' },
+  { emoji: '🏆', title: 'Ranking da rede', description: 'Compare seu desempenho com outros parceiros e descubra como escalar suas vendas' },
+];
+
+const SOCIAL_PROOF = [
+  { metric: '38+', label: 'lojas parceiras no RS' },
+  { metric: '2.500+', label: 'leads gerados na plataforma' },
+  { metric: '24h', label: 'tempo médio de aprovação' },
 ];
 
 const ORCAMENTO_BENEFITS = [
   'Orçamentos e propostas ilimitados',
-  'Modelos profissionais personalizados',
+  'Modelos profissionais com a sua marca',
   'Envio automático por WhatsApp',
-  'Acompanhamento de status em tempo real',
+  'Saiba quando o cliente abriu a proposta',
 ];
 
 const WHATSAPP_BENEFITS = [
   'Tudo do plano Orçamento',
-  'Notificações pelo número da sua empresa',
-  'Instância dedicada gerenciada pela plataforma',
+  'Mensagens automáticas pelo número da sua loja',
+  'Instância dedicada — sem compartilhar número',
   'Conexão simples via QR Code',
-  'Suporte prioritário',
+  'Suporte prioritário da equipe Quintal Ideal',
 ];
 
 function formatPhone(value: string) {
@@ -236,34 +242,64 @@ export default function SejaParceiro() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
           />
+          <motion.p
+            className="text-xs sm:text-sm font-semibold text-primary uppercase tracking-widest mb-3"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+          >
+            Para lojas de piscinas que querem crescer
+          </motion.p>
           <motion.h1
             className="text-3xl sm:text-5xl font-bold text-foreground mb-4 leading-tight"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            Seja parceiro do<br />Quintal Ideal
+            Receba clientes prontos<br />para comprar piscina
           </motion.h1>
           <motion.p
-            className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-8"
+            className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
           >
-            Gerencie seus leads, envie orçamentos profissionais e cresça com o suporte de uma plataforma feita para lojas de piscinas.
+            O Quintal Ideal gera leads qualificados, envia orçamentos automáticos e acompanha cada venda — tudo numa plataforma feita sob medida para o mercado de piscinas.
+          </motion.p>
+          <motion.p
+            className="text-sm text-muted-foreground/80 max-w-xl mx-auto mb-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.25 }}
+          >
+            <strong className="text-foreground">Sem taxa de adesão.</strong> Cadastre-se gratuitamente e pague apenas se quiser recursos premium.
           </motion.p>
           <motion.div
-            className="flex flex-col sm:flex-row gap-3 justify-center"
+            className="flex flex-col sm:flex-row gap-3 justify-center mb-10"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
-            <Button size="lg" className="rounded-xl" onClick={() => document.getElementById('formulario')?.scrollIntoView({ behavior: 'smooth' })}>
-              Quero ser parceiro
+            <Button size="lg" className="rounded-xl text-base px-8" onClick={() => document.getElementById('formulario')?.scrollIntoView({ behavior: 'smooth' })}>
+              Quero receber leads →
             </Button>
             <Button size="lg" variant="outline" className="rounded-xl" asChild>
-              <a href="/login" target="_blank" rel="noopener noreferrer">Ver a plataforma</a>
+              <a href="/login" target="_blank" rel="noopener noreferrer">Já sou parceiro</a>
             </Button>
+          </motion.div>
+
+          {/* Social Proof */}
+          <motion.div
+            className="flex flex-wrap justify-center gap-6 sm:gap-10"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+          >
+            {SOCIAL_PROOF.map(sp => (
+              <div key={sp.label} className="text-center">
+                <span className="text-2xl sm:text-3xl font-bold text-primary">{sp.metric}</span>
+                <p className="text-xs text-muted-foreground mt-0.5">{sp.label}</p>
+              </div>
+            ))}
           </motion.div>
         </div>
       </section>
@@ -271,7 +307,8 @@ export default function SejaParceiro() {
       {/* ── Como funciona ── */}
       <section className="py-16 sm:py-20 bg-background">
         <div className="max-w-4xl mx-auto px-4">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-foreground mb-12">Como funciona</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-foreground mb-2">Simples como 1, 2, 3</h2>
+          <p className="text-center text-sm text-muted-foreground mb-12">Do cadastro à primeira venda em poucos dias</p>
           <div className="grid sm:grid-cols-3 gap-8">
             {STEPS.map((s, i) => (
               <motion.div
@@ -294,7 +331,8 @@ export default function SejaParceiro() {
       {/* ── Recursos ── */}
       <section className="py-16 sm:py-20 bg-muted/30">
         <div className="max-w-5xl mx-auto px-4">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-foreground mb-12">Recursos da plataforma</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-foreground mb-2">Tudo o que sua loja precisa para vender mais</h2>
+          <p className="text-center text-sm text-muted-foreground mb-12">Ferramentas profissionais que lojas de piscinas de todo o RS já usam</p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {FEATURES.map((f, i) => (
               <motion.div
@@ -320,8 +358,9 @@ export default function SejaParceiro() {
       {/* ── Planos ── */}
       <section className="py-16 sm:py-20 bg-background">
         <div className="max-w-4xl mx-auto px-4">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-foreground mb-3">Planos</h2>
-          <p className="text-center text-sm text-muted-foreground mb-10">Disponíveis após o cadastro da sua empresa</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-foreground mb-2">Invista pouco, venda muito</h2>
+          <p className="text-center text-sm text-muted-foreground mb-3">Planos acessíveis que se pagam com a primeira venda</p>
+          <p className="text-center text-xs text-muted-foreground/70 mb-10">Disponíveis após a aprovação do seu cadastro</p>
           <div className="grid sm:grid-cols-2 gap-6">
             {/* Orçamento */}
             <Card className="border-border/50 shadow-sm">
@@ -372,6 +411,27 @@ export default function SejaParceiro() {
         </div>
       </section>
 
+      {/* ── CTA Bridge ── */}
+      <section className="py-12 sm:py-16 bg-primary/5">
+        <div className="max-w-3xl mx-auto px-4 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-3">
+              Sua loja já vende piscinas.<br className="sm:hidden" /> Agora imagine vender <span className="text-primary">com leads chegando todo dia.</span>
+            </h2>
+            <p className="text-sm text-muted-foreground mb-6 max-w-xl mx-auto">
+              Enquanto você lê isso, lojas parceiras estão recebendo clientes qualificados pelo Quintal Ideal. Não fique de fora.
+            </p>
+            <Button size="lg" className="rounded-xl text-base px-8" onClick={() => document.getElementById('formulario')?.scrollIntoView({ behavior: 'smooth' })}>
+              Cadastrar minha loja gratuitamente →
+            </Button>
+          </motion.div>
+        </div>
+      </section>
+
       {/* ── Formulário ── */}
       <section id="formulario" className="py-16 sm:py-20 bg-muted/30">
         <div className="max-w-[560px] mx-auto px-4">
@@ -379,18 +439,22 @@ export default function SejaParceiro() {
             <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}>
               <Card className="border-primary/20 shadow-md">
                 <CardContent className="py-12 text-center">
-                  <CheckCircle2 className="w-12 h-12 text-primary mx-auto mb-4" />
-                  <h3 className="text-xl font-bold text-foreground mb-2">Candidatura recebida!</h3>
-                  <p className="text-sm text-muted-foreground">
-                    Entraremos em contato pelo WhatsApp em até 24 horas.
-                  </p>
+                   <CheckCircle2 className="w-14 h-14 text-primary mx-auto mb-4" />
+                   <h3 className="text-xl font-bold text-foreground mb-2">Pronto! Sua candidatura foi recebida 🎉</h3>
+                   <p className="text-sm text-muted-foreground mb-1">
+                     Nossa equipe entrará em contato pelo <strong>WhatsApp em até 24 horas</strong>.
+                   </p>
+                   <p className="text-xs text-muted-foreground/70">
+                     Enquanto isso, prepare-se: em breve você terá acesso a uma plataforma completa para receber leads e fechar mais vendas.
+                   </p>
                 </CardContent>
               </Card>
             </motion.div>
           ) : (
             <Card className="border-border/50 shadow-md">
               <CardContent className="p-6 sm:p-8">
-                <h2 className="text-xl font-bold text-foreground mb-6 text-center">Quero ser parceiro</h2>
+                 <h2 className="text-xl font-bold text-foreground mb-1 text-center">Comece a receber leads agora</h2>
+                 <p className="text-xs text-muted-foreground text-center mb-6">Cadastro gratuito · Sem compromisso · Aprovação em até 24h</p>
                 <div className="space-y-4">
                   <div className="space-y-1.5">
                     <Label className="text-xs font-medium">Nome da empresa *</Label>
@@ -486,7 +550,7 @@ export default function SejaParceiro() {
                     disabled={submitting}
                     onClick={handleSubmit}
                   >
-                    {submitting ? 'Enviando...' : 'Enviar candidatura'}
+                    {submitting ? 'Enviando...' : 'Quero receber leads →'}
                   </Button>
                 </div>
               </CardContent>
