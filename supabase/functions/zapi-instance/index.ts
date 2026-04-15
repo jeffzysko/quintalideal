@@ -224,15 +224,10 @@ Deno.serve(async (req) => {
       );
     }
 
-    const apiHeaders: Record<string, string> = {};
-    if (securityToken) {
-      apiHeaders["Client-Token"] = securityToken;
-    }
-
     // Action: disconnect
     if (action === "disconnect") {
       const url = `https://api.z-api.io/instances/${instanceId}/token/${zapiToken}/disconnect`;
-      await fetch(url, { method: "POST", headers: apiHeaders });
+      await fetch(url, { method: "POST" });
 
       await supabase
         .from("franchises")
@@ -249,7 +244,7 @@ Deno.serve(async (req) => {
     // Action: qr_code
     if (action === "qr_code") {
       const qrUrl = `https://api.z-api.io/instances/${instanceId}/token/${zapiToken}/qr-code/image`;
-      const qrResp = await fetch(qrUrl, { headers: apiHeaders });
+      const qrResp = await fetch(qrUrl);
       const qrData = await qrResp.json();
 
       console.log(`[zapi-instance] QR code requested for franchise ${franchiseId}`);
