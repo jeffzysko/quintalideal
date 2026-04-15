@@ -36,6 +36,7 @@ import type { MetricCardProps } from '@/components/dashboard/MetricCard';
 import { InsightCards } from '@/components/dashboard/InsightCards';
 import { useLeadsRealtime } from '@/hooks/useLeadsRealtime';
 import { OnboardingChecklist } from '@/components/franchise/OnboardingChecklist';
+import { FirstAccessModal } from '@/components/franchise/FirstAccessModal';
 
 const PAGE_SIZE = 20;
 
@@ -360,6 +361,9 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
 
       {/* Onboarding Checklist for new franchisees */}
       {showOnboarding && franchiseId && <OnboardingChecklist franchiseId={franchiseId} />}
+      {showOnboarding && franchiseId && franchiseInfo?.nome_franquia && (
+        <FirstAccessModal franchiseId={franchiseId} franchiseName={franchiseInfo.nome_franquia} />
+      )}
 
 
       {loadingKpis ? (
