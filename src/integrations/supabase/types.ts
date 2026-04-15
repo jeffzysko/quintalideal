@@ -175,6 +175,9 @@ export type Database = {
           nome_franquia: string
           responsavel: string | null
           slug_url: string
+          stripe_customer_id: string | null
+          stripe_subscription_id: string | null
+          stripe_subscription_status: string | null
           webhook_secret: string | null
           webhook_url: string | null
           whatsapp: string | null
@@ -202,6 +205,9 @@ export type Database = {
           nome_franquia: string
           responsavel?: string | null
           slug_url: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          stripe_subscription_status?: string | null
           webhook_secret?: string | null
           webhook_url?: string | null
           whatsapp?: string | null
@@ -229,6 +235,9 @@ export type Database = {
           nome_franquia?: string
           responsavel?: string | null
           slug_url?: string
+          stripe_customer_id?: string | null
+          stripe_subscription_id?: string | null
+          stripe_subscription_status?: string | null
           webhook_secret?: string | null
           webhook_url?: string | null
           whatsapp?: string | null
