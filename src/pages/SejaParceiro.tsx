@@ -307,7 +307,8 @@ export default function SejaParceiro() {
       {/* ── Como funciona ── */}
       <section className="py-16 sm:py-20 bg-background">
         <div className="max-w-4xl mx-auto px-4">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-foreground mb-12">Como funciona</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-foreground mb-2">Simples como 1, 2, 3</h2>
+          <p className="text-center text-sm text-muted-foreground mb-12">Do cadastro à primeira venda em poucos dias</p>
           <div className="grid sm:grid-cols-3 gap-8">
             {STEPS.map((s, i) => (
               <motion.div
@@ -330,7 +331,8 @@ export default function SejaParceiro() {
       {/* ── Recursos ── */}
       <section className="py-16 sm:py-20 bg-muted/30">
         <div className="max-w-5xl mx-auto px-4">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-foreground mb-12">Recursos da plataforma</h2>
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-foreground mb-2">Tudo o que sua loja precisa para vender mais</h2>
+          <p className="text-center text-sm text-muted-foreground mb-12">Ferramentas profissionais que lojas de piscinas de todo o RS já usam</p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {FEATURES.map((f, i) => (
               <motion.div
@@ -356,8 +358,9 @@ export default function SejaParceiro() {
       {/* ── Planos ── */}
       <section className="py-16 sm:py-20 bg-background">
         <div className="max-w-4xl mx-auto px-4">
-          <h2 className="text-2xl sm:text-3xl font-bold text-center text-foreground mb-3">Planos</h2>
-          <p className="text-center text-sm text-muted-foreground mb-10">Disponíveis após o cadastro da sua empresa</p>
+          <h2 className="text-2xl sm:text-3xl font-bold text-center text-foreground mb-2">Invista pouco, venda muito</h2>
+          <p className="text-center text-sm text-muted-foreground mb-3">Planos acessíveis que se pagam com a primeira venda</p>
+          <p className="text-center text-xs text-muted-foreground/70 mb-10">Disponíveis após a aprovação do seu cadastro</p>
           <div className="grid sm:grid-cols-2 gap-6">
             {/* Orçamento */}
             <Card className="border-border/50 shadow-sm">
@@ -426,7 +429,8 @@ export default function SejaParceiro() {
           ) : (
             <Card className="border-border/50 shadow-md">
               <CardContent className="p-6 sm:p-8">
-                <h2 className="text-xl font-bold text-foreground mb-6 text-center">Quero ser parceiro</h2>
+                 <h2 className="text-xl font-bold text-foreground mb-1 text-center">Comece a receber leads agora</h2>
+                 <p className="text-xs text-muted-foreground text-center mb-6">Cadastro gratuito · Sem compromisso · Aprovação em até 24h</p>
                 <div className="space-y-4">
                   <div className="space-y-1.5">
                     <Label className="text-xs font-medium">Nome da empresa *</Label>
@@ -522,7 +526,7 @@ export default function SejaParceiro() {
                     disabled={submitting}
                     onClick={handleSubmit}
                   >
-                    {submitting ? 'Enviando...' : 'Enviar candidatura'}
+                    {submitting ? 'Enviando...' : 'Quero receber leads →'}
                   </Button>
                 </div>
               </CardContent>
