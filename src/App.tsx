@@ -8,6 +8,7 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ProtectedRoute } from "@/components/ProtectedRoute";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { lazy, Suspense, useEffect } from "react";
+import { supabase } from "@/lib/supabase";
 
 import { CommandPalette } from "@/components/CommandPalette";
 import HomePage from "./pages/HomePage";
@@ -212,6 +213,26 @@ function AppRouteTree() {
 function AppRoutes() {
   usePrefetchRoutes();
   useAppBadge();
+
+  useEffect(() => {
+    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
+      const message = event.reason?.message || String(event.reason);
+      if (message.includes('ResizeObserver') || message.includes('aborted')) return;
+
+      supabase.from('error_logs').insert({
+        source: 'frontend' as const,
+        severity: 'error',
+        function_name: 'unhandled_promise',
+        message,
+        stack: event.reason?.stack || null,
+        metadata: { type: 'UnhandledPromiseRejection' },
+      }).then(() => {});
+    };
+
+    window.addEventListener('unhandledrejection', handleUnhandledRejection);
+    return () => window.removeEventListener('unhandledrejection', handleUnhandledRejection);
+  }, []);
+
   return (
     <QueryClientProvider client={queryClient}>
       <ErrorBoundary>
