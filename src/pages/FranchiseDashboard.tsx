@@ -361,6 +361,9 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
 
       {/* Onboarding Checklist for new franchisees */}
       {showOnboarding && franchiseId && <OnboardingChecklist franchiseId={franchiseId} />}
+      {showOnboarding && franchiseId && franchiseInfo?.nome_franquia && (
+        <FirstAccessModal franchiseId={franchiseId} franchiseName={franchiseInfo.nome_franquia} />
+      )}
 
 
       {loadingKpis ? (
