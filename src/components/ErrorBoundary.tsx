@@ -16,13 +16,13 @@ export class ErrorBoundary extends Component<Props, State> {
     console.error('ErrorBoundary caught:', error, info);
 
     supabase.from('error_logs').insert({
-      source: 'frontend',
+      source: 'frontend' as const,
       severity: 'critical',
       function_name: info.componentStack?.split('\n')[1]?.trim() || 'unknown_component',
       message: error.message,
       stack: error.stack || null,
       metadata: { componentStack: info.componentStack },
-    }).then(() => {}).catch(() => {});
+    }).then(() => {});
   }
   render() {
     if (this.state.hasError) {
