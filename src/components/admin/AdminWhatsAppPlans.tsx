@@ -389,6 +389,7 @@ export function AdminWhatsAppPlans() {
                     <TableHead className="text-xs">Status Stripe</TableHead>
                     <TableHead className="text-xs">Assinatura</TableHead>
                     <TableHead className="text-xs">Validade</TableHead>
+                    <TableHead className="text-xs">Orçamento</TableHead>
                     <TableHead className="text-xs text-right">Plano</TableHead>
                   </TableRow>
                 </TableHeader>
