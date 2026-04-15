@@ -29,6 +29,8 @@ interface FranchiseWARow {
   stripe_customer_id: string | null;
   stripe_subscription_id: string | null;
   stripe_subscription_status: string | null;
+  orcamento_plan_active: boolean;
+  orcamento_stripe_subscription_status: string | null;
 }
 
 const MONTHLY_PRICE = 149;
