@@ -358,7 +358,10 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
         </div>
       )}
 
-      {/* SLA + Goals row */}
+      {/* Onboarding Checklist for new franchisees */}
+      {showOnboarding && franchiseId && <OnboardingChecklist franchiseId={franchiseId} />}
+
+
       {loadingKpis ? (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
           {Array.from({ length: 3 }).map((_, i) => (
