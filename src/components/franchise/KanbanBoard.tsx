@@ -218,9 +218,15 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       const { fireConfetti, haptic } = await import('@/lib/celebrations');
       fireConfetti();
       haptic('heavy');
-      toast.success('🎉 Venda registrada! Parabens!');
+      toast.success('🎉 Venda registrada! Não esqueça de agendar o pós-venda.', {
+        duration: 5000,
+        action: {
+          label: 'Ir para pós-venda',
+          onClick: () => { window.location.href = `${basePath}/lead/${leadId}?tab=pos-venda`; },
+        },
+      });
     } else if (newStatus === 'perdido') {
-      toast.success('Lead finalizado. Motivo registrado.');
+      toast.info('Lead marcado como perdido. O motivo foi registrado.', { duration: 3000 });
     } else {
       toast.success(`Lead movido para ${STATUS_LABELS[newStatus]}`);
     }
