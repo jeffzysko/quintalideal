@@ -570,6 +570,13 @@ export default function LeadDetail() {
           <LeadLinkedProposals leadId={lead.id} leadName={lead.nome} />
         </motion.div>
 
+        {/* Lead Tags */}
+        {(franchiseId || lead.franquia_id) && (
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.13 }}>
+            <LeadTagsSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
+          </motion.div>
+        )}
+
         {/* Tabbed Content */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
