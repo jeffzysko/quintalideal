@@ -12,7 +12,7 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
-import { MapPin, Calendar, GripVertical, Building2, MessageCircle, StickyNote, ArrowRightLeft, Phone, Send, Clock } from 'lucide-react';
+import { MapPin, GripVertical, Building2, MessageCircle, StickyNote, ArrowRightLeft, Phone, Send, Clock } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
