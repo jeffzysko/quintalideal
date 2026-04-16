@@ -132,6 +132,24 @@ function getAvatarColor(nome: string | null): string {
   return AVATAR_COLORS[idx];
 }
 
+function estimateValueRange(respostas: Record<string, string> | null): string | null {
+  if (!respostas) return null;
+  const budget = respostas.orcamento;
+  const pref = respostas.preferencia;
+  const space = respostas.espaco;
+  let min = 15000;
+  let max = 25000;
+  if (budget === '30-50') { min = 30000; max = 50000; }
+  else if (budget === '18-30') { min = 18000; max = 30000; }
+  else if (budget === 'ate-18') { min = 12000; max = 18000; }
+  else return null;
+  if (pref === 'spa') { min *= 1.15; max *= 1.15; }
+  if (pref === 'prainha') { min *= 1.1; max *= 1.1; }
+  if (space === 'mais-7') { min *= 1.1; max *= 1.1; }
+  min = Math.round(min / 1000);
+  max = Math.round(max / 1000);
+  return `R$ ${min}–${max} mil`;
+}
 
 export default function LeadDetail() {
   const { franchiseId, user } = useAuth();
