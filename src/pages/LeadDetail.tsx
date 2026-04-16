@@ -654,7 +654,7 @@ export default function LeadDetail() {
                     <PostSaleSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
                   </motion.div>
                 </TabsContent>
-              )
+              )}
 
               {/* Fotos Tab */}
               <TabsContent value="fotos" className="mt-4">
