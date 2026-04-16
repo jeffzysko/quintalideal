@@ -42,7 +42,10 @@ export const KanbanColumn = memo(function KanbanColumn({
   );
 
   const parentRef = useRef<HTMLDivElement>(null);
+  const [expanded, setExpanded] = useState(false);
   const useVirtual = leads.length > VIRTUAL_THRESHOLD;
+  const showCollapse = !useVirtual && leads.length > COLLAPSED_LIMIT && !expanded;
+  const visibleLeads = showCollapse ? leads.slice(0, COLLAPSED_LIMIT) : leads;
 
   const virtualizer = useVirtualizer({
     count: leads.length,
