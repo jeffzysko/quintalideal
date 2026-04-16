@@ -17,44 +17,44 @@ import mockupDashboard from '@/assets/mockup-dashboard.jpg';
 
 /* ── Data ── */
 const STEPS = [
-  { num: '01', icon: Zap, title: 'Cadastre-se em 2 minutos', description: 'Preencha seus dados abaixo. Sem burocracia, sem taxas de adesão.' },
-  { num: '02', icon: Shield, title: 'Aprovação em até 24h', description: 'Nossa equipe analisa sua candidatura e entra em contato pelo WhatsApp.' },
-  { num: '03', icon: Rocket, title: 'Comece a vender mais', description: 'Qualifique seus leads, envie orçamentos e gerencie tudo em tempo real.' },
+  { num: '01', icon: Zap, title: 'Cadastre-se em 2 minutos', description: 'Zero burocracia. Sem taxa de adesao. Preencha o formulario e pronto.' },
+  { num: '02', icon: Shield, title: 'Aprovacao em ate 24h', description: 'Nossa equipe valida seu cadastro e libera acesso completo a plataforma.' },
+  { num: '03', icon: Rocket, title: 'Pare de perder vendas', description: 'Leads qualificados, follow-ups automaticos e orcamentos profissionais desde o dia 1.' },
 ];
 
 const FEATURES = [
-  { icon: Target, title: 'Qualificação inteligente', description: 'Cada lead passa por um quiz que identifica perfil, orçamento e urgência. Você recebe só quem está pronto.' },
-  { icon: BarChart3, title: 'CRM completo', description: 'Kanban, funil, histórico de contatos e follow-ups automáticos num só lugar.' },
-  { icon: FileText, title: 'Orçamentos em 1 clique', description: 'Propostas com sua marca, envio por WhatsApp e rastreio de abertura.' },
-  { icon: MessageCircle, title: 'WhatsApp integrado', description: 'Atenda leads pelo WhatsApp da sua loja com mensagens automáticas e templates.' },
-  { icon: BarChart3, title: 'Métricas em tempo real', description: 'Conversão, faturamento, metas mensais e performance de campanhas.' },
-  { icon: Globe, title: 'Página de captação', description: 'Link personalizado com quiz interativo que transforma visitantes em leads qualificados.' },
+  { icon: Target, title: 'Filtragem automatica de leads', description: 'Chega de perder tempo com curiosos. O quiz filtra quem tem quintal, orcamento e intencao real de compra.' },
+  { icon: BarChart3, title: 'CRM feito para piscinas', description: 'Pipeline visual com temperatura do lead, historico de contatos e alertas de follow-up. Nenhum lead esfria.' },
+  { icon: FileText, title: 'Orcamentos que vendem', description: 'Propostas profissionais com sua marca, precos tabelados e envio por WhatsApp. O cliente abre e voce fica sabendo.' },
+  { icon: MessageCircle, title: 'WhatsApp que trabalha por voce', description: 'Mensagens automaticas de boas-vindas, follow-up e envio de propostas. Tudo pelo numero da sua loja.' },
+  { icon: BarChart3, title: 'Numeros que importam', description: 'Saiba exatamente quantos leads entraram, quantos converteram e quanto faturou. Sem achismo.' },
+  { icon: Globe, title: 'Sua vitrine digital', description: 'Link exclusivo com quiz interativo. Coloque no Instagram, Google Ads ou panfleto. Cada visitante vira um lead qualificado.' },
 ];
 
 const SOCIAL_PROOF = [
-  { metric: 38, suffix: '+', label: 'Lojas parceiras' },
-  { metric: 2500, suffix: '+', label: 'Leads qualificados' },
-  { metric: 24, suffix: 'h', label: 'Aprovação média' },
+  { metric: 38, suffix: '+', label: 'Lojas que ja vendem mais' },
+  { metric: 2500, suffix: '+', label: 'Leads qualificados gerados' },
+  { metric: 24, suffix: 'h', label: 'Para comecar a usar' },
 ];
 
 const MARQUEE_ITEMS = [
-  'CRM completo', 'Orçamentos profissionais', 'WhatsApp automático', 'Qualificação de leads',
-  'Métricas em tempo real', 'Kanban de vendas', 'Follow-ups inteligentes', 'Página personalizada',
+  'CRM completo', 'Orcamentos profissionais', 'WhatsApp automatico', 'Leads pre-qualificados',
+  'Metricas em tempo real', 'Kanban de vendas', 'Follow-ups inteligentes', 'Pagina personalizada',
 ];
 
 const ORCAMENTO_BENEFITS = [
-  'Orçamentos e propostas ilimitados',
+  'Orcamentos e propostas ilimitados',
   'Modelos profissionais com a sua marca',
-  'Envio automático por WhatsApp',
-  'Saiba quando o cliente abriu a proposta',
+  'Envio automatico por WhatsApp em 1 clique',
+  'Saiba o exato momento que o cliente abriu',
 ];
 
 const WHATSAPP_BENEFITS = [
-  'Tudo do plano Orçamento',
-  'Mensagens automáticas pelo número da sua loja',
-  'Instância dedicada, sem compartilhar número',
-  'Conexão simples via QR Code',
-  'Suporte prioritário da equipe Quintal Ideal',
+  'Tudo do plano Orcamento incluso',
+  'Mensagens automaticas pelo numero da sua loja',
+  'Instancia dedicada - seu numero, sua marca',
+  'Ativacao simples via QR Code',
+  'Suporte prioritario da equipe Quintal Ideal',
 ];
 
 /* ── Animated Counter ── */
@@ -386,7 +386,7 @@ export default function SejaParceiro() {
             <span className="relative inline-flex items-center gap-2 text-xs sm:text-sm font-semibold px-5 py-2 rounded-full border border-primary/20 bg-primary/5 text-primary backdrop-blur-sm">
               <span className="absolute inset-0 rounded-full animate-pulse bg-primary/5" />
               <Sparkles className="w-3.5 h-3.5 relative z-10" />
-              <span className="relative z-10">A plataforma completa para lojas de piscinas</span>
+              <span className="relative z-10">A plataforma que lojas de piscinas usam para vender mais</span>
             </span>
           </motion.div>
 
@@ -396,10 +396,12 @@ export default function SejaParceiro() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
-            Qualifique leads, envie{' '}
+            Pare de perder leads.{' '}
+            <br className="hidden sm:block" />
+            Comece a{' '}
             <span className="relative inline-block">
               <span className="relative z-10 bg-gradient-to-r from-primary via-[hsl(200,80%,50%)] to-secondary bg-clip-text text-transparent">
-                orçamentos
+                fechar vendas
               </span>
               <motion.span
                 className="absolute -inset-x-2 -inset-y-1 rounded-lg bg-primary/[0.07] -z-0"
@@ -408,9 +410,7 @@ export default function SejaParceiro() {
                 transition={{ delay: 0.8, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 style={{ transformOrigin: 'left' }}
               />
-            </span>{' '}e venda
-            <br />
-            mais piscinas
+            </span>
           </motion.h1>
 
           <motion.p
@@ -419,7 +419,7 @@ export default function SejaParceiro() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            CRM, qualificação de leads, orçamentos profissionais e atendimento via WhatsApp. Tudo integrado numa plataforma feita para o mercado de piscinas.
+            Sua loja gasta com trafego, mas os leads somem no WhatsApp. O Quintal Ideal qualifica cada contato, organiza seu funil e automatiza o atendimento para voce focar no que importa: vender.
           </motion.p>
 
           <motion.p
@@ -428,7 +428,7 @@ export default function SejaParceiro() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
           >
-            <strong className="text-foreground">Sem taxa de adesão.</strong> Cadastre-se gratuitamente e pague apenas se quiser recursos premium.
+            <strong className="text-foreground">Sem taxa de adesao.</strong> Cadastre-se gratis e pague apenas se quiser recursos premium.
           </motion.p>
 
           <motion.div
@@ -512,9 +512,9 @@ export default function SejaParceiro() {
             viewport={{ once: true }}
           >
             {[
-              { icon: Shield, text: 'Dados protegidos' },
-              { icon: Star, text: 'Avaliada por parceiros' },
-              { icon: Users, text: '38+ lojas ativas' },
+              { icon: Shield, text: 'Dados protegidos (LGPD)' },
+              { icon: Star, text: '38+ lojas ja usam' },
+              { icon: Users, text: 'Sem contrato de fidelidade' },
             ].map(t => (
               <div key={t.text} className="flex items-center gap-1.5 text-[11px] text-muted-foreground/50">
                 <t.icon className="w-3 h-3" />
@@ -536,10 +536,10 @@ export default function SejaParceiro() {
           <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <span className="inline-block text-xs font-bold text-primary uppercase tracking-[0.2em] mb-3 px-4 py-1.5 rounded-full border border-primary/15 bg-primary/5">Como funciona</span>
             <h2 className="text-3xl sm:text-[2.75rem] font-extrabold text-foreground mt-4 mb-3 tracking-tight leading-tight">
-              Simples como{' '}
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">1, 2, 3</span>
+              Do cadastro a primeira venda{' '}
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">em 3 passos</span>
             </h2>
-            <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto">Do cadastro à primeira venda em poucos dias</p>
+            <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto">Sem contrato, sem fidelidade. Comece a vender mais hoje.</p>
           </motion.div>
 
           <div className="grid sm:grid-cols-3 gap-6 sm:gap-4 relative">
@@ -596,11 +596,11 @@ export default function SejaParceiro() {
           <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <span className="inline-block text-xs font-bold text-primary uppercase tracking-[0.2em] mb-3 px-4 py-1.5 rounded-full border border-primary/15 bg-primary/5">Recursos</span>
             <h2 className="text-3xl sm:text-[2.75rem] font-extrabold text-foreground mt-4 mb-3 tracking-tight leading-tight">
-              CRM, orçamentos e WhatsApp<br className="hidden sm:block" />
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">em um só lugar</span>
+              Tudo que voce precisa para{' '}<br className="hidden sm:block" />
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">parar de perder vendas</span>
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
-              A plataforma completa que lojas de piscinas de todo o RS já usam no dia a dia
+              Chega de planilha, WhatsApp pessoal e lead esquecido. Sua operacao comercial inteira num so lugar.
             </p>
           </motion.div>
 
@@ -643,11 +643,11 @@ export default function SejaParceiro() {
           <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <span className="inline-block text-xs font-bold text-primary uppercase tracking-[0.2em] mb-3 px-4 py-1.5 rounded-full border border-primary/15 bg-primary/5">Por dentro da plataforma</span>
             <h2 className="text-3xl sm:text-[2.75rem] font-extrabold text-foreground mt-4 mb-3 tracking-tight leading-tight">
-              Conheça o sistema que vai{' '}
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">transformar suas vendas</span>
+              Veja como lojas reais{' '}
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">vendem mais todos os dias</span>
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
-              Uma plataforma profissional, intuitiva e feita sob medida para o mercado de piscinas
+              Interface limpa, profissional e feita para quem vende piscinas. Sem complicacao.
             </p>
           </motion.div>
 
@@ -666,10 +666,10 @@ export default function SejaParceiro() {
                   CRM e Pipeline
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight">
-                  Gerencie todos os seus leads em um Kanban visual
+                  Nenhum lead escapa do seu radar
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Arraste e solte leads entre as etapas do funil. Veja score de qualificação, histórico de contatos e follow-ups pendentes em um só lugar.
+                  Pipeline visual tipo Kanban. Arraste leads entre as etapas, veja quem esfriou, quem precisa de follow-up e quem esta pronto para fechar. Tudo em uma tela.
                 </p>
               </div>
               <div className="lg:col-span-3">
@@ -718,10 +718,10 @@ export default function SejaParceiro() {
                   Orçamentos
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight">
-                  Propostas profissionais com envio por WhatsApp
+                  Orcamentos que fecham negocios
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Crie orçamentos detalhados com seus modelos de piscina, condições de pagamento e envie direto pelo WhatsApp. Saiba quando o cliente visualizou.
+                  Propostas profissionais com modelos de piscina, condicoes de pagamento e sua marca. Envie por WhatsApp e saiba o momento exato que o cliente abriu.
                 </p>
               </div>
             </div>
@@ -741,10 +741,10 @@ export default function SejaParceiro() {
                   Dashboard
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight">
-                  Métricas e metas em tempo real
+                  Saiba exatamente o que funciona
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Acompanhe leads, conversão, faturamento e performance de campanhas. Defina metas mensais e veja o progresso da sua equipe.
+                  Quantos leads entraram, quantos converteram, qual o ticket medio. Defina metas mensais e acompanhe o progresso em tempo real. Sem achismo.
                 </p>
               </div>
               <div className="lg:col-span-3">
@@ -772,11 +772,11 @@ export default function SejaParceiro() {
           <motion.div className="text-center mb-14" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <span className="inline-block text-xs font-bold text-primary uppercase tracking-[0.2em] mb-3 px-4 py-1.5 rounded-full border border-primary/15 bg-primary/5">Planos</span>
             <h2 className="text-3xl sm:text-[2.75rem] font-extrabold text-foreground mt-4 mb-3 tracking-tight">
-              Invista pouco,{' '}
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">venda muito</span>
+              O custo de nao usar{' '}
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">e bem maior</span>
             </h2>
-            <p className="text-sm sm:text-base text-muted-foreground">Planos acessíveis que se pagam com a primeira venda</p>
-            <p className="text-xs text-muted-foreground/50 mt-1">Disponíveis após a aprovação do seu cadastro</p>
+            <p className="text-sm sm:text-base text-muted-foreground">Cada lead perdido custa mais do que qualquer plano. Escolha o seu.</p>
+            <p className="text-xs text-muted-foreground/50 mt-1">Disponíveis apos a aprovacao do seu cadastro</p>
           </motion.div>
 
           <div className="grid sm:grid-cols-2 gap-5 sm:gap-6">
@@ -872,13 +872,13 @@ export default function SejaParceiro() {
             transition={{ duration: 0.7 }}
           >
             <h2 className="text-2xl sm:text-4xl font-extrabold text-foreground mb-5 leading-snug tracking-tight">
-              Sua loja já investe em tráfego pago.{' '}
+              Voce ja investe em trafego.{' '}
               <span className="bg-gradient-to-r from-primary via-[hsl(200,80%,50%)] to-secondary bg-clip-text text-transparent">
-                Agora transforme cliques em vendas de verdade.
+                Quantas vendas esta deixando na mesa?
               </span>
             </h2>
             <p className="text-sm sm:text-lg text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed">
-              O Quintal Ideal qualifica cada lead do seu tráfego, organiza sua operação comercial e automatiza o atendimento. Tudo o que falta para sua loja escalar.
+              Enquanto seus leads esfriam na caixa de entrada, seus concorrentes ja estao usando o Quintal Ideal. Nao fique para tras.
             </p>
             <Button
               size="lg"
@@ -888,7 +888,7 @@ export default function SejaParceiro() {
             >
               <span className="absolute inset-0 bg-gradient-to-r from-primary via-[hsl(200,80%,50%)] to-primary bg-[length:200%_100%] group-hover:animate-[shimmer_2s_linear_infinite]" />
               <span className="relative z-10 flex items-center gap-2">
-                Cadastrar minha loja gratuitamente
+                Quero parar de perder vendas
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </span>
             </Button>
@@ -940,8 +940,8 @@ export default function SejaParceiro() {
                 <div className="h-1 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_100%] animate-[shimmer_3s_linear_infinite]" />
                 <CardContent className="p-7 sm:p-9">
                   <div className="text-center mb-7">
-                    <h2 className="text-2xl font-extrabold text-foreground mb-1.5">Comece agora mesmo</h2>
-                    <p className="text-xs text-muted-foreground">Cadastro gratuito · Sem compromisso · Aprovação em até 24h</p>
+                    <h2 className="text-2xl font-extrabold text-foreground mb-1.5">Cadastre sua loja agora</h2>
+                    <p className="text-xs text-muted-foreground">Gratis para comecar. Sem contrato. Aprovacao em ate 24h.</p>
                   </div>
 
                   <div className="space-y-4">
