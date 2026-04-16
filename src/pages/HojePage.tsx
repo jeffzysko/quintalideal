@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { StatCard } from '@/components/ui/stat-card';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
 import { PanelHeader } from '@/components/PanelHeader';
@@ -23,6 +24,7 @@ import {
   CalendarClock, AlertTriangle, Phone, MessageCircle,
   ChevronRight, Clock, CheckCircle2,
   MapPin, Rocket, Inbox, Users, Sparkles,
+  PhoneCall, FileText, Trophy,
 } from 'lucide-react';
 import { type LeadRow } from '@/lib/lead-constants';
 import { cn } from '@/lib/utils';
@@ -232,52 +234,74 @@ function LeadRow({
 }
 
 // ── Hero Greeting ──
-function HeroGreeting({ name, totalTasks, completedToday }: { name: string | null; totalTasks: number; completedToday: number }) {
+function HeroGreeting({
+  name, totalTasks, completedFollowupsToday, totalFollowupsToday, overdueCount, newTodayCount,
+}: {
+  name: string | null; totalTasks: number;
+  completedFollowupsToday: number; totalFollowupsToday: number;
+  overdueCount: number; newTodayCount: number;
+}) {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
   const firstName = name?.split(' ')[0] || '';
+
+  const pct = totalFollowupsToday === 0 ? 100 : Math.round((completedFollowupsToday / totalFollowupsToday) * 100);
+  const progressTone = pct >= 70 ? 'bg-emerald-500' : pct >= 40 ? 'bg-amber-500' : 'bg-destructive';
+
+  let subtitle = 'Tudo em dia por hoje. Continue assim! 🎯';
+  if (overdueCount > 0) {
+    subtitle = `Você tem ${overdueCount} follow-up${overdueCount > 1 ? 's' : ''} atrasado${overdueCount > 1 ? 's' : ''}. Vamos resolver?`;
+  } else if (newTodayCount > 0) {
+    subtitle = `${newTodayCount} novo${newTodayCount > 1 ? 's' : ''} lead${newTodayCount > 1 ? 's' : ''} chegaram hoje.`;
+  }
 
   return (
     <motion.div
       initial={{ opacity: 0, y: -16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: 'spring', stiffness: 200, damping: 24 }}
-      className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/10 p-5 mb-8"
+      className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/10 p-5 mb-6"
     >
-      {/* Decorative glow */}
       <div className="absolute -top-12 -right-12 w-40 h-40 bg-primary/8 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-8 -left-8 w-28 h-28 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
 
-      <div className="relative flex items-center gap-4">
-        <ProgressRing completed={completedToday} total={completedToday + totalTasks} />
+      <div className="relative flex items-center gap-4 mb-4">
+        <ProgressRing completed={completedFollowupsToday} total={totalFollowupsToday} />
         <div className="flex-1 min-w-0">
           <h1 className="text-lg font-bold tracking-tight text-foreground">
             {greeting}{firstName ? `, ${firstName}` : ''} 👋
           </h1>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-xs text-muted-foreground mt-1 capitalize">
             {format(new Date(), "EEEE, dd 'de' MMMM", { locale: ptBR })}
           </p>
-          {totalTasks > 0 ? (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="text-xs text-muted-foreground mt-2"
-            >
-              <span className="font-semibold text-foreground">{totalTasks}</span> tarefa{totalTasks > 1 ? 's' : ''} pendente{totalTasks > 1 ? 's' : ''}
-            </motion.p>
-          ) : (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="text-xs text-emerald-600 font-medium mt-2 flex items-center gap-1"
-            >
-              <Sparkles className="w-3 h-3" /> Tudo em dia!
-            </motion.p>
-          )}
+          <p className="text-xs text-foreground/80 mt-2 font-medium">{subtitle}</p>
         </div>
       </div>
+
+      {totalFollowupsToday > 0 && (
+        <div className="relative">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Progresso do dia</span>
+            <span className="text-[11px] font-bold text-foreground">
+              {completedFollowupsToday} de {totalFollowupsToday} follow-ups
+            </span>
+          </div>
+          <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+            <motion.div
+              className={cn('h-full rounded-full', progressTone)}
+              initial={{ width: 0 }}
+              animate={{ width: `${pct}%` }}
+              transition={{ duration: 1, ease: 'easeOut', delay: 0.3 }}
+            />
+          </div>
+        </div>
+      )}
+
+      {totalTasks === 0 && totalFollowupsToday === 0 && (
+        <p className="text-xs text-emerald-600 font-medium mt-2 flex items-center gap-1">
+          <Sparkles className="w-3 h-3" /> Tudo em dia!
+        </p>
+      )}
     </motion.div>
   );
 }
@@ -360,10 +384,41 @@ export default function HojePage() {
     enabled: !authLoading && (!!franchiseId || isAdmin),
   });
 
-  // Today's completed count (approximation – count leads contacted today)
-  const completedToday = useMemo(() =>
-    leads.filter(l => l.status_lead !== 'novo' && isToday(new Date(l.created_at))).length,
-    [leads]);
+  // Completed follow-ups for today (for progress bar)
+  const { data: todayCompletedFollowups = 0 } = useQuery({
+    queryKey: ['hoje-completed-followups', franchiseId, isAdmin],
+    queryFn: async () => {
+      const start = new Date(); start.setHours(0, 0, 0, 0);
+      const end = new Date(); end.setHours(23, 59, 59, 999);
+      let q = supabase
+        .from('lead_followups')
+        .select('id', { count: 'exact', head: true })
+        .eq('completed', true)
+        .gte('scheduled_at', start.toISOString())
+        .lte('scheduled_at', end.toISOString());
+      if (!isAdmin && franchiseId) q = q.eq('franchise_id', franchiseId);
+      const { count } = await q;
+      return count || 0;
+    },
+    enabled: !authLoading && (!!franchiseId || isAdmin),
+  });
+
+  // Open proposals & closed-this-month (for stat cards)
+  const { data: metrics } = useQuery({
+    queryKey: ['hoje-metrics', franchiseId, isAdmin],
+    queryFn: async () => {
+      const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0);
+      let propQ = supabase.from('proposals').select('id', { count: 'exact', head: true }).in('status', ['enviada', 'em_negociacao']);
+      let soldQ = supabase.from('leads').select('id', { count: 'exact', head: true }).eq('status_lead', 'vendido').gte('updated_at', monthStart.toISOString());
+      if (!isAdmin && franchiseId) {
+        propQ = propQ.eq('franchise_id', franchiseId);
+        soldQ = soldQ.eq('franquia_id', franchiseId);
+      }
+      const [{ count: openProposals }, { count: closedThisMonth }] = await Promise.all([propQ, soldQ]);
+      return { openProposals: openProposals || 0, closedThisMonth: closedThisMonth || 0 };
+    },
+    enabled: !authLoading && (!!franchiseId || isAdmin),
+  });
 
   const leadNameMap = useMemo(() => {
     const map: Record<string, string> = {};
@@ -454,8 +509,76 @@ export default function HojePage() {
                   <HeroGreeting
                     name={profile?.full_name || null}
                     totalTasks={totalTasks}
-                    completedToday={completedToday}
+                    completedFollowupsToday={todayCompletedFollowups}
+                    totalFollowupsToday={todayFollowups.length + todayCompletedFollowups}
+                    overdueCount={overdueFollowups.length}
+                    newTodayCount={newLeads.length}
                   />
+
+                  {/* ── Quick metrics row ── */}
+                  <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-4 mb-6 [&::-webkit-scrollbar]:hidden">
+                    <div className="min-w-[160px] sm:min-w-0">
+                      <StatCard title="Novos hoje" value={newLeads.length} icon={Inbox} onClick={() => navigate(isAdmin ? '/admin?tab=leads' : '/franquia?tab=funnel')} />
+                    </div>
+                    <div className="min-w-[160px] sm:min-w-0">
+                      <StatCard title="Para contatar" value={staleLeads.length} icon={PhoneCall} iconColor="text-amber-600" onClick={() => navigate('/franquia?tab=funnel')} />
+                    </div>
+                    <div className="min-w-[160px] sm:min-w-0">
+                      <StatCard title="Propostas abertas" value={metrics?.openProposals ?? 0} icon={FileText} iconColor="text-violet-600" onClick={() => navigate('/propostas')} />
+                    </div>
+                    <div className="min-w-[160px] sm:min-w-0">
+                      <StatCard title="Fechados no mês" value={metrics?.closedThisMonth ?? 0} icon={Trophy} iconColor="text-emerald-600" onClick={() => navigate('/relatorio-crm')} />
+                    </div>
+                  </div>
+
+                  {/* ── Urgent now ── */}
+                  {(overdueFollowups.length > 0 || staleLeads.filter(l => differenceInDays(now, new Date(l.created_at)) > 5).length > 0) && (() => {
+                    const veryStale = staleLeads.filter(l => differenceInDays(now, new Date(l.created_at)) > 5);
+                    const urgentItems: Array<{ id: string; label: string; sub: string; onClick: () => void }> = [
+                      ...overdueFollowups.map(f => ({
+                        id: `f-${f.id}`,
+                        label: leadNameMap[f.lead_id] || 'Lead',
+                        sub: `Follow-up ${formatDistanceToNow(new Date(f.scheduled_at), { locale: ptBR, addSuffix: true })}`,
+                        onClick: () => navigate(`${basePath}/${f.lead_id}`),
+                      })),
+                      ...veryStale.map(l => ({
+                        id: `l-${l.id}`,
+                        label: l.nome || 'Lead sem nome',
+                        sub: `${differenceInDays(now, new Date(l.created_at))} dias sem contato`,
+                        onClick: () => navigate(`${basePath}/${l.id}`),
+                      })),
+                    ];
+                    return (
+                      <div className="rounded-2xl border-l-4 border-amber-400 bg-amber-50 dark:bg-amber-950/20 p-4 mb-6">
+                        <div className="flex items-center gap-2 mb-3">
+                          <AlertTriangle className="w-4 h-4 text-amber-500" />
+                          <span className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+                            Urgente agora · {urgentItems.length} item{urgentItems.length > 1 ? 's' : ''}
+                          </span>
+                        </div>
+                        <div className="space-y-2">
+                          {urgentItems.slice(0, 2).map(item => (
+                            <button
+                              key={item.id}
+                              onClick={item.onClick}
+                              className="w-full text-left flex items-center justify-between gap-2 rounded-xl bg-background/60 hover:bg-background px-3 py-2 transition-colors"
+                            >
+                              <div className="min-w-0">
+                                <p className="text-xs font-semibold text-foreground truncate">{item.label}</p>
+                                <p className="text-[11px] text-muted-foreground truncate">{item.sub}</p>
+                              </div>
+                              <ChevronRight className="w-4 h-4 text-muted-foreground/50 shrink-0" />
+                            </button>
+                          ))}
+                        </div>
+                        {urgentItems.length > 2 && (
+                          <p className="text-[11px] text-amber-700 dark:text-amber-400 mt-2 font-medium">
+                            +{urgentItems.length - 2} outro{urgentItems.length - 2 > 1 ? 's' : ''}
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })()}
 
                   <div className="space-y-10 sm:space-y-12">
                     {/* ── 1. Overdue follow-ups ── */}
@@ -535,26 +658,22 @@ export default function HojePage() {
                   </div>
 
                   {/* ── Empty state ── */}
-                  {totalTasks === 0 && (
+                  {totalTasks === 0 && todayFollowups.length === 0 && (
                     <motion.div
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.3, type: 'spring', stiffness: 200, damping: 20 }}
                     >
-                      <Card className="border-dashed rounded-2xl overflow-hidden relative">
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-emerald-500/5 pointer-events-none" />
-                        <CardContent className="flex flex-col items-center py-16 text-center relative">
-                          <motion.div
-                            animate={{ y: [0, -6, 0] }}
-                            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                            className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center mb-4"
-                          >
-                            <Rocket className="w-7 h-7 text-primary/70" />
-                          </motion.div>
-                          <h3 className="text-base font-bold text-foreground mb-1">Tudo em dia!</h3>
-                          <p className="text-sm text-muted-foreground max-w-xs">
-                            Nenhuma tarefa pendente. Compartilhe seu link para receber novos leads.
+                      <Card className="border-dashed rounded-2xl">
+                        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+                          <div className="text-4xl mb-3">🎉</div>
+                          <p className="text-base font-semibold text-foreground">Agenda limpa por hoje!</p>
+                          <p className="text-sm text-muted-foreground mt-1 mb-4">
+                            Que tal entrar em contato com alguns leads em negociação?
                           </p>
+                          <Button variant="outline" size="sm" onClick={() => navigate(isAdmin ? '/admin?tab=leads' : '/franquia')}>
+                            Ver leads
+                          </Button>
                         </CardContent>
                       </Card>
                     </motion.div>
