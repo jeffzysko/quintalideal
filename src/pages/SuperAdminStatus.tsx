@@ -40,7 +40,7 @@ const MANUAL_ITEMS = [
 
 function StatusIcon({ ok }: { ok: boolean }) {
   return ok ? (
-    <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+    <CheckCircle2 className="h-5 w-5 text-success" />
   ) : (
     <XCircle className="h-5 w-5 text-destructive" />
   );
@@ -48,9 +48,9 @@ function StatusIcon({ ok }: { ok: boolean }) {
 
 function StatusBadge({ variant, label }: { variant: 'success' | 'warn' | 'error'; label: string }) {
   const cls = {
-    success: 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300',
-    warn: 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300',
-    error: 'bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300',
+    success: 'bg-success/15 text-success',
+    warn: 'bg-warning/15 text-warning',
+    error: 'bg-destructive/15 text-destructive',
   }[variant];
   return <Badge className={cn('border-0', cls)}>{label}</Badge>;
 }
@@ -85,8 +85,9 @@ export default function SuperAdminStatus() {
 
   if (isLoading || !status) {
     return (
-      <div className="container max-w-6xl mx-auto py-8 px-4">
-        <PageHeader title="Status do Sistema" description="Carregando..." />
+      <div>
+        <PageHeader title="Status do Sistema" subtitle="Carregando..." fallbackPath="/superadmin/receita" />
+        <div className="container max-w-6xl mx-auto py-8 px-4 text-sm text-muted-foreground">Carregando...</div>
       </div>
     );
   }
@@ -107,8 +108,9 @@ export default function SuperAdminStatus() {
   ];
 
   return (
-    <div className="container max-w-6xl mx-auto py-8 px-4 space-y-6">
-      <PageHeader title="Status do Sistema" description="Monitoramento das integrações críticas" />
+    <div>
+      <PageHeader title="Status do Sistema" subtitle="Monitoramento das integrações críticas" fallbackPath="/superadmin/receita" />
+      <div className="container max-w-6xl mx-auto py-8 px-4 space-y-6">
 
       {/* Cards de integração */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
