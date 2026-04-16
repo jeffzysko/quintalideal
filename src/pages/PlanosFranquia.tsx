@@ -157,6 +157,15 @@ export default function PlanosFranquia() {
         fallbackPath="/franquia"
       />
 
+      {showTestBanner && (
+        <div className="flex items-start gap-3 rounded-xl border border-warning/30 bg-warning/10 p-4">
+          <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
+          <p className="text-sm text-foreground">
+            <strong>Modo de teste ativo</strong> — nenhum pagamento real será processado. Visível apenas para administradores.
+          </p>
+        </div>
+      )}
+
       {/* Banner for free plan */}
       {noPlan && (
         <div className="flex items-start gap-3 rounded-xl border border-primary/20 bg-primary/5 p-4">
