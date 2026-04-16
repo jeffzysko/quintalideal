@@ -17,44 +17,44 @@ import mockupDashboard from '@/assets/mockup-dashboard.jpg';
 
 /* ── Data ── */
 const STEPS = [
-  { num: '01', icon: Zap, title: 'Cadastre-se em 2 minutos', description: 'Preencha seus dados abaixo. Sem burocracia, sem taxas de adesão.' },
-  { num: '02', icon: Shield, title: 'Aprovação em até 24h', description: 'Nossa equipe analisa sua candidatura e entra em contato pelo WhatsApp.' },
-  { num: '03', icon: Rocket, title: 'Comece a vender mais', description: 'Qualifique seus leads, envie orçamentos e gerencie tudo em tempo real.' },
+  { num: '01', icon: Zap, title: 'Cadastre-se em 2 minutos', description: 'Zero burocracia. Sem taxa de adesao. Preencha o formulario e pronto.' },
+  { num: '02', icon: Shield, title: 'Aprovacao em ate 24h', description: 'Nossa equipe valida seu cadastro e libera acesso completo a plataforma.' },
+  { num: '03', icon: Rocket, title: 'Pare de perder vendas', description: 'Leads qualificados, follow-ups automaticos e orcamentos profissionais desde o dia 1.' },
 ];
 
 const FEATURES = [
-  { icon: Target, title: 'Qualificação inteligente', description: 'Cada lead passa por um quiz que identifica perfil, orçamento e urgência. Você recebe só quem está pronto.' },
-  { icon: BarChart3, title: 'CRM completo', description: 'Kanban, funil, histórico de contatos e follow-ups automáticos num só lugar.' },
-  { icon: FileText, title: 'Orçamentos em 1 clique', description: 'Propostas com sua marca, envio por WhatsApp e rastreio de abertura.' },
-  { icon: MessageCircle, title: 'WhatsApp integrado', description: 'Atenda leads pelo WhatsApp da sua loja com mensagens automáticas e templates.' },
-  { icon: BarChart3, title: 'Métricas em tempo real', description: 'Conversão, faturamento, metas mensais e performance de campanhas.' },
-  { icon: Globe, title: 'Página de captação', description: 'Link personalizado com quiz interativo que transforma visitantes em leads qualificados.' },
+  { icon: Target, title: 'Filtragem automatica de leads', description: 'Chega de perder tempo com curiosos. O quiz filtra quem tem quintal, orcamento e intencao real de compra.' },
+  { icon: BarChart3, title: 'CRM feito para piscinas', description: 'Pipeline visual com temperatura do lead, historico de contatos e alertas de follow-up. Nenhum lead esfria.' },
+  { icon: FileText, title: 'Orcamentos que vendem', description: 'Propostas profissionais com sua marca, precos tabelados e envio por WhatsApp. O cliente abre e voce fica sabendo.' },
+  { icon: MessageCircle, title: 'WhatsApp que trabalha por voce', description: 'Mensagens automaticas de boas-vindas, follow-up e envio de propostas. Tudo pelo numero da sua loja.' },
+  { icon: BarChart3, title: 'Numeros que importam', description: 'Saiba exatamente quantos leads entraram, quantos converteram e quanto faturou. Sem achismo.' },
+  { icon: Globe, title: 'Sua vitrine digital', description: 'Link exclusivo com quiz interativo. Coloque no Instagram, Google Ads ou panfleto. Cada visitante vira um lead qualificado.' },
 ];
 
 const SOCIAL_PROOF = [
-  { metric: 38, suffix: '+', label: 'Lojas parceiras' },
-  { metric: 2500, suffix: '+', label: 'Leads qualificados' },
-  { metric: 24, suffix: 'h', label: 'Aprovação média' },
+  { metric: 38, suffix: '+', label: 'Lojas que ja vendem mais' },
+  { metric: 2500, suffix: '+', label: 'Leads qualificados gerados' },
+  { metric: 24, suffix: 'h', label: 'Para comecar a usar' },
 ];
 
 const MARQUEE_ITEMS = [
-  'CRM completo', 'Orçamentos profissionais', 'WhatsApp automático', 'Qualificação de leads',
-  'Métricas em tempo real', 'Kanban de vendas', 'Follow-ups inteligentes', 'Página personalizada',
+  'CRM completo', 'Orcamentos profissionais', 'WhatsApp automatico', 'Leads pre-qualificados',
+  'Metricas em tempo real', 'Kanban de vendas', 'Follow-ups inteligentes', 'Pagina personalizada',
 ];
 
 const ORCAMENTO_BENEFITS = [
-  'Orçamentos e propostas ilimitados',
+  'Orcamentos e propostas ilimitados',
   'Modelos profissionais com a sua marca',
-  'Envio automático por WhatsApp',
-  'Saiba quando o cliente abriu a proposta',
+  'Envio automatico por WhatsApp em 1 clique',
+  'Saiba o exato momento que o cliente abriu',
 ];
 
 const WHATSAPP_BENEFITS = [
-  'Tudo do plano Orçamento',
-  'Mensagens automáticas pelo número da sua loja',
-  'Instância dedicada, sem compartilhar número',
-  'Conexão simples via QR Code',
-  'Suporte prioritário da equipe Quintal Ideal',
+  'Tudo do plano Orcamento incluso',
+  'Mensagens automaticas pelo numero da sua loja',
+  'Instancia dedicada - seu numero, sua marca',
+  'Ativacao simples via QR Code',
+  'Suporte prioritario da equipe Quintal Ideal',
 ];
 
 /* ── Animated Counter ── */
