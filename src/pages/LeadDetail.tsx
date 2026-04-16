@@ -417,10 +417,6 @@ export default function LeadDetail() {
     ...(lead.status_lead === 'vendido' ? [{ value: 'pos-venda', icon: Package, label: 'Pós-venda' }] : []),
   ];
 
-  const quizEntries = lead.respostas_questionario
-    ? Object.entries(lead.respostas_questionario).filter(([key]) => questionLabels[key])
-    : [];
-
   return (
     <PageTransition>
     <div className="min-h-screen bg-background">
