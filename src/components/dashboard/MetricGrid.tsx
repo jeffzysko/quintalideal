@@ -63,7 +63,7 @@ export function MetricGrid({ metrics, loading, columns }: MetricGridProps) {
       animate="show"
       className={`grid ${gridCols} gap-3 sm:gap-4 mb-6 sm:mb-8`}
     >
-      {metrics.map((metric, i) => (
+      {metrics.map((metric) => (
         <motion.div key={metric.label} variants={itemVariants}>
           <MetricCard {...metric} delay={0} />
         </motion.div>
