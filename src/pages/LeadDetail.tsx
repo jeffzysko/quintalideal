@@ -405,9 +405,14 @@ export default function LeadDetail() {
   else delete liveRespostas.temperatura_manual;
   const temp = classifyLead(Object.keys(liveRespostas).length > 0 ? liveRespostas : null, lead.pontuacao_quintal);
 
+  const quizEntriesEarly = lead.respostas_questionario
+    ? Object.entries(lead.respostas_questionario).filter(([key]) => questionLabels[key])
+    : [];
+
   const tabs = [
     { value: 'conversa', icon: MessageCircle, label: 'Conversa' },
     { value: 'proposta', icon: FileText, label: 'Proposta' },
+    ...(quizEntriesEarly.length > 0 ? [{ value: 'quiz', icon: ClipboardList, label: 'Quiz' }] : []),
     { value: 'mais', icon: MoreHorizontal, label: 'Mais' },
     ...(lead.status_lead === 'vendido' ? [{ value: 'pos-venda', icon: Package, label: 'Pós-venda' }] : []),
   ];
