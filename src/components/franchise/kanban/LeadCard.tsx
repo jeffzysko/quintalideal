@@ -238,10 +238,19 @@ export const LeadCard = memo(function LeadCard({
               <span className="truncate">{franchiseName}</span>
             </div>
           )}
-          <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
-            <Calendar className="w-3 h-3 shrink-0" />
-            <span>{new Date(lead.created_at).toLocaleDateString('pt-BR')}</span>
-          </div>
+          {(() => {
+            const lastTs = (lead as any).updated_at || lead.created_at;
+            const days = (Date.now() - new Date(lastTs).getTime()) / (1000 * 60 * 60 * 24);
+            const tone = days > 7 ? 'text-destructive' : days > 3 ? 'text-amber-600' : 'text-muted-foreground';
+            return (
+              <div className={`flex items-center gap-1 text-[11px] ${tone}`}>
+                <Clock className="w-3 h-3 shrink-0" />
+                <span className="truncate">
+                  Último contato {formatDistanceToNow(new Date(lastTs), { locale: ptBR, addSuffix: true })}
+                </span>
+              </div>
+            );
+          })()}
         </div>
       </div>
 
