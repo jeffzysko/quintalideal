@@ -1,4 +1,4 @@
-import { useMemo, memo, useRef } from 'react';
+import { useMemo, memo, useRef, useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { STATUS_LABELS, STATUS_CHART_COLORS } from '@/lib/lead-constants';
@@ -7,6 +7,7 @@ import { estimateLeadValue, formatCurrency, type LeadWithQuiz } from './types';
 
 const ESTIMATED_CARD_HEIGHT = 160;
 const VIRTUAL_THRESHOLD = 20; // Only virtualize when there are many cards
+const COLLAPSED_LIMIT = 10;
 
 export const KanbanColumn = memo(function KanbanColumn({
   status,
@@ -41,7 +42,10 @@ export const KanbanColumn = memo(function KanbanColumn({
   );
 
   const parentRef = useRef<HTMLDivElement>(null);
+  const [expanded, setExpanded] = useState(false);
   const useVirtual = leads.length > VIRTUAL_THRESHOLD;
+  const showCollapse = !useVirtual && leads.length > COLLAPSED_LIMIT && !expanded;
+  const visibleLeads = showCollapse ? leads.slice(0, COLLAPSED_LIMIT) : leads;
 
   const virtualizer = useVirtualizer({
     count: leads.length,
@@ -133,21 +137,32 @@ export const KanbanColumn = memo(function KanbanColumn({
           </div>
         ) : (
           /* Standard list for small datasets — keeps drag-and-drop smooth */
-          leads.map((lead) => (
-            <div key={lead.id} className="animate-scale-in">
-              <LeadCard
-                lead={lead}
-                basePath={basePath}
-                franchiseName={franchiseMap?.[lead.franquia_id || '']}
-                onMoveStage={onMoveStage}
-                franchiseId={franchiseId}
-                whatsAppPlanActive={whatsAppPlanActive}
-                isSelected={selectedIds?.includes(lead.id)}
-                showCheckbox={!!hasSelection}
-                onToggleSelect={onToggleSelect}
-              />
-            </div>
-          ))
+          <>
+            {visibleLeads.map((lead) => (
+              <div key={lead.id} className="animate-scale-in">
+                <LeadCard
+                  lead={lead}
+                  basePath={basePath}
+                  franchiseName={franchiseMap?.[lead.franquia_id || '']}
+                  onMoveStage={onMoveStage}
+                  franchiseId={franchiseId}
+                  whatsAppPlanActive={whatsAppPlanActive}
+                  isSelected={selectedIds?.includes(lead.id)}
+                  showCheckbox={!!hasSelection}
+                  onToggleSelect={onToggleSelect}
+                />
+              </div>
+            ))}
+            {showCollapse && (
+              <button
+                type="button"
+                onClick={() => setExpanded(true)}
+                className="w-full mt-1 py-2 rounded-xl border border-dashed border-border/50 text-xs font-semibold text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/5 transition-colors"
+              >
+                Ver mais {leads.length - COLLAPSED_LIMIT} lead{leads.length - COLLAPSED_LIMIT > 1 ? 's' : ''}
+              </button>
+            )}
+          </>
         )}
       </div>
     </div>
