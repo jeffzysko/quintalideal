@@ -27,12 +27,16 @@ export const LeadCard = memo(function LeadCard({
   overlay,
   franchiseName,
   onMoveStage,
+  franchiseId,
+  whatsAppPlanActive = false,
 }: {
   lead: LeadWithQuiz;
   basePath: string;
   overlay?: boolean;
   franchiseName?: string;
   onMoveStage?: (leadId: string, newStatus: string, lossReason?: string) => void;
+  franchiseId?: string;
+  whatsAppPlanActive?: boolean;
 }) {
   const navigate = useNavigate();
   const { user } = useAuth();
