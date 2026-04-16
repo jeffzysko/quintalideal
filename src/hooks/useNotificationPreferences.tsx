@@ -83,6 +83,7 @@ function buildDefaults(role: string | null): NotificationSection[] {
       title: 'Sistema',
       icon: '⚙️',
       items: [
+        { key: 'daily_whatsapp_summary', label: 'Resumo diário por WhatsApp', description: 'Receba todo dia de manhã um resumo do que precisa fazer.', priority: 'medium', channels: { push: false, email: false, whatsapp: true } },
         { key: 'system_update', label: 'Atualização do sistema', description: 'Novidades e melhorias na plataforma.', priority: 'low', channels: { ...OFF_CHANNEL } },
         { key: 'announcement', label: 'Comunicados', description: 'Mensagens importantes da administração.', priority: 'medium', channels: { ...DEFAULT_CHANNEL } },
       ],
