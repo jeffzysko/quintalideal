@@ -74,6 +74,7 @@ const PlanosFranquia = lazy(() => import("./pages/PlanosFranquia"));
 const SuperAdminReceita = lazy(() => import("./pages/SuperAdminReceita"));
 const SejaParceiro = lazy(() => import("./pages/SejaParceiro"));
 const CatalogoPiscinas = lazy(() => import("./pages/CatalogoPiscinas"));
+const RelatorioCRM = lazy(() => import("./pages/RelatorioCRM"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
