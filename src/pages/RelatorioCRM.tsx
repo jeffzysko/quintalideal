@@ -374,6 +374,18 @@ export default function RelatorioCRM() {
           </div>
         )}
 
+        {!isLoading && totalLeads === 0 ? (
+          <Card>
+            <CardContent className="p-0">
+              <EmptyState
+                icon={BarChart3}
+                title="Sem dados neste período"
+                description="Não há atividade registrada no período selecionado. Tente ampliar o intervalo de datas."
+              />
+            </CardContent>
+          </Card>
+        ) : (
+        <>
         {/* Charts */}
         <div className="grid md:grid-cols-2 gap-6">
           <Card>
