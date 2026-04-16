@@ -228,12 +228,12 @@ export default function RelatorioCRM() {
 
   return (
     <div className="min-h-screen bg-background">
-      <PanelHeader title="Relatorio de Conversao" rightContent={
+      <PanelHeader title="Relatorio de Conversao">
         <div className="flex items-center gap-2">
           <NotificationBell />
           <UserAvatarMenu />
         </div>
-      } />
+      </PanelHeader>
 
       <div className="max-w-6xl mx-auto p-4 space-y-6">
         {/* Filters */}
