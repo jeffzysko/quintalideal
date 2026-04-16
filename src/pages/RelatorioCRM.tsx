@@ -490,6 +490,8 @@ export default function RelatorioCRM() {
             </CardContent>
           </Card>
         )}
+        </>
+        )}
       </div>
     </div>
     </PageTransition>
