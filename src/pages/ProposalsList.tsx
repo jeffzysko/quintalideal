@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { PanelHeader } from '@/components/PanelHeader';
 import { PageTransition } from '@/components/PageTransition';
+import { PullToRefresh } from '@/components/PullToRefresh';
 import { BackButton } from '@/components/BackButton';
 import { NotificationBell } from '@/components/NotificationBell';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
@@ -144,8 +145,13 @@ export default function ProposalsList() {
     return counts;
   }, [proposals]);
 
+  const handleRefresh = async () => {
+    await queryClient.invalidateQueries({ queryKey: proposalsQueryKey });
+  };
+
   return (
     <PageTransition>
+      <PullToRefresh onRefresh={handleRefresh}>
       <div className="min-h-screen bg-background pb-bottomnav sm:pb-0">
         <PanelHeader title="Propostas">
           <BackButton fallback={basePath} />

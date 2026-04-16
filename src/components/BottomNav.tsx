@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
-import { Home, Settings, FileText, Kanban, Plus, LayoutDashboard, CalendarDays } from 'lucide-react';
+import { Home, Settings, FileText, Kanban, Plus, LayoutDashboard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface NavItem {

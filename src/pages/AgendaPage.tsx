@@ -6,6 +6,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { PageTransition } from '@/components/PageTransition';
+import { PullToRefresh } from '@/components/PullToRefresh';
 import { PanelHeader } from '@/components/PanelHeader';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { NotificationBell } from '@/components/NotificationBell';
@@ -218,8 +219,13 @@ export default function AgendaPage() {
 
   const loading = authLoading || isLoading;
 
+  const handleRefresh = async () => {
+    await queryClient.invalidateQueries({ queryKey: ['agenda-followups'] });
+  };
+
   return (
     <PageTransition>
+      <PullToRefresh onRefresh={handleRefresh}>
       <div className="max-w-6xl mx-auto px-4 pb-28 sm:pb-8 pt-4 sm:pt-6">
         <PanelHeader title="Agenda">
           <div className="flex items-center gap-2">
@@ -267,6 +273,7 @@ export default function AgendaPage() {
           </motion.div>
         ) : isMobile ? renderMobileView() : renderDesktopView()}
       </div>
+      </PullToRefresh>
     </PageTransition>
   );
 }
