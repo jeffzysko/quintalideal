@@ -17,7 +17,9 @@ import { exportRelatorioCRMPdf, exportLeadsCsv } from '@/lib/exportRelatorioCRM'
 
 import { STATUS_LABELS, STATUS_CHART_COLORS } from '@/lib/lead-constants';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { Download, CalendarIcon, Users, TrendingUp, Clock, DollarSign, Loader2 } from 'lucide-react';
+import { Download, CalendarIcon, Users, TrendingUp, Clock, DollarSign, Loader2, BarChart3 } from 'lucide-react';
+import { PageTransition } from '@/components/PageTransition';
+import { EmptyState } from '@/components/ui/empty-state';
 import { format, subDays, startOfMonth, endOfMonth, subMonths, differenceInDays, startOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { DateRange } from 'react-day-picker';
@@ -478,6 +480,7 @@ export default function RelatorioCRM() {
         )}
       </div>
     </div>
+    </PageTransition>
   );
 }
 
