@@ -79,7 +79,7 @@ export default function RelatorioCRM() {
       if (!franchiseId) return [];
       const { data, error } = await supabase
         .from('leads')
-        .select('id, nome, status_lead, created_at, updated_at, loss_reason, assigned_to, franquia_id')
+        .select('id, nome, telefone, cidade, status_lead, created_at, updated_at, loss_reason, assigned_to, franquia_id')
         .eq('franquia_id', franchiseId)
         .gte('created_at', from.toISOString())
         .lte('created_at', to.toISOString())
