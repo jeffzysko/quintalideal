@@ -30,7 +30,7 @@ import { WhatsAppTemplates } from '@/components/lead/WhatsAppTemplates';
 import { LeadTagsSection } from '@/components/lead/LeadTagsSection';
 import { PostSaleSection } from '@/components/lead/PostSaleSection';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+
 
 import { useAuth } from '@/hooks/useAuth';
 import { triggerWhatsAppAuto } from '@/lib/whatsapp-auto';
@@ -155,7 +155,7 @@ export default function LeadDetail() {
   const [editEmail, setEditEmail] = useState('');
   const [editCidade, setEditCidade] = useState('');
   const [activeTab, setActiveTab] = useState('conversa');
-  const [, setShowMoreTabs] = useState(false);
+  
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
@@ -586,7 +586,7 @@ export default function LeadDetail() {
                   { value: 'mais', icon: MoreHorizontal, label: 'Mais' },
                 ].map(tab => {
                   const Icon = tab.icon;
-                  const isActive = activeTab === tab.value;
+                  
                   return (
                     <TabsTrigger
                       key={tab.value}
