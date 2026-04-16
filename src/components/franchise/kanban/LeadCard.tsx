@@ -135,15 +135,17 @@ export const LeadCard = memo(function LeadCard({
           </div>
           <div className="flex items-center gap-1 shrink-0">
             {assignedUser && <LeadCardAssignee assignedName={assignedUser} />}
-            <div
-              {...listeners}
-              {...attributes}
-              className="shrink-0 cursor-grab active:cursor-grabbing p-1 -m-1 rounded-lg hover:bg-muted/80 touch-none transition-colors"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <GripVertical className="w-4 h-4 text-muted-foreground/40" />
-            </div>
-          )}
+            {!overlay && (
+              <div
+                {...listeners}
+                {...attributes}
+                className="cursor-grab active:cursor-grabbing p-1 -m-1 rounded-lg hover:bg-muted/80 touch-none transition-colors"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <GripVertical className="w-4 h-4 text-muted-foreground/40" />
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center gap-2 mb-2">
