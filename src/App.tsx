@@ -72,6 +72,7 @@ const PublicProposal = lazy(() => import("./pages/PublicProposal"));
 const PerformanceAudit = lazy(() => import("./pages/PerformanceAudit"));
 const PlanosFranquia = lazy(() => import("./pages/PlanosFranquia"));
 const SuperAdminReceita = lazy(() => import("./pages/SuperAdminReceita"));
+const SuperAdminStatus = lazy(() => import("./pages/SuperAdminStatus"));
 const SejaParceiro = lazy(() => import("./pages/SejaParceiro"));
 const CatalogoPiscinas = lazy(() => import("./pages/CatalogoPiscinas"));
 const RelatorioCRM = lazy(() => import("./pages/RelatorioCRM"));
@@ -212,6 +213,10 @@ function AppRouteTree() {
         <Route
           path="/superadmin/receita"
           element={<ProtectedRoute allowedRoles={['super_admin']}><SuperAdminReceita /></ProtectedRoute>}
+        />
+        <Route
+          path="/superadmin/status"
+          element={<ProtectedRoute allowedRoles={['super_admin']}><SuperAdminStatus /></ProtectedRoute>}
         />
       </Route>
 

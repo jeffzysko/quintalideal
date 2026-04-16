@@ -71,6 +71,7 @@ const SUPER_ADMIN_TABS: SidebarNavItem[] = [
   { title: 'WhatsApp', url: '/admin?tab=whatsapp', icon: MessageCircle, matchTab: 'whatsapp' },
   { title: 'Visao Franquia', url: '/admin?tab=franchise-view', icon: Eye, matchTab: 'franchise-view' },
   { title: 'Receita', url: '/superadmin/receita', icon: TrendingUp, matchPaths: ['/superadmin/receita'] },
+  { title: 'Status do Sistema', url: '/superadmin/status', icon: Activity, matchPaths: ['/superadmin/status'] },
 ];
 
 // ── Franchise: always visible ──

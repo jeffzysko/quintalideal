@@ -2,7 +2,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Check, Sparkles, MessageCircle, FileText, Lightbulb, Clock, Rocket, Send, ThumbsUp, BarChart3 } from 'lucide-react';
+import { Check, Sparkles, MessageCircle, FileText, Lightbulb, Clock, Rocket, Send, ThumbsUp, BarChart3, AlertTriangle } from 'lucide-react';
 import { useFranchiseMetrics } from '@/hooks/useFranchiseMetrics';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { PageHeader } from '@/components/PageHeader';
 import { toast } from 'sonner';
 import { useState } from 'react';
+import { useStripeMode } from '@/hooks/useStripeMode';
 
 interface FranchisePlan {
   whatsapp_plan_active: boolean;
@@ -65,8 +66,11 @@ const FAQ = [
 ];
 
 export default function PlanosFranquia() {
-  const { franchiseId } = useAuth();
+  const { franchiseId, role } = useAuth();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const isPrivilegedAdmin = role === 'super_admin' || role === 'admin_fabrica';
+  const { data: stripeMode } = useStripeMode();
+  const showTestBanner = isPrivilegedAdmin && stripeMode?.mode === 'test';
 
   const { data: plan, isLoading } = useQuery({
     queryKey: ['franchise-plans', franchiseId],
@@ -152,6 +156,15 @@ export default function PlanosFranquia() {
         subtitle="Expanda os recursos da sua franquia com nossos planos adicionais."
         fallbackPath="/franquia"
       />
+
+      {showTestBanner && (
+        <div className="flex items-start gap-3 rounded-xl border border-warning/30 bg-warning/10 p-4">
+          <AlertTriangle className="h-5 w-5 text-warning shrink-0 mt-0.5" />
+          <p className="text-sm text-foreground">
+            <strong>Modo de teste ativo</strong> — nenhum pagamento real será processado. Visível apenas para administradores.
+          </p>
+        </div>
+      )}
 
       {/* Banner for free plan */}
       {noPlan && (
