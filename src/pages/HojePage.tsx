@@ -235,52 +235,74 @@ function LeadRow({
 }
 
 // ── Hero Greeting ──
-function HeroGreeting({ name, totalTasks, completedToday }: { name: string | null; totalTasks: number; completedToday: number }) {
+function HeroGreeting({
+  name, totalTasks, completedFollowupsToday, totalFollowupsToday, overdueCount, newTodayCount,
+}: {
+  name: string | null; totalTasks: number;
+  completedFollowupsToday: number; totalFollowupsToday: number;
+  overdueCount: number; newTodayCount: number;
+}) {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Bom dia' : hour < 18 ? 'Boa tarde' : 'Boa noite';
   const firstName = name?.split(' ')[0] || '';
+
+  const pct = totalFollowupsToday === 0 ? 100 : Math.round((completedFollowupsToday / totalFollowupsToday) * 100);
+  const progressTone = pct >= 70 ? 'bg-emerald-500' : pct >= 40 ? 'bg-amber-500' : 'bg-destructive';
+
+  let subtitle = 'Tudo em dia por hoje. Continue assim! 🎯';
+  if (overdueCount > 0) {
+    subtitle = `Você tem ${overdueCount} follow-up${overdueCount > 1 ? 's' : ''} atrasado${overdueCount > 1 ? 's' : ''}. Vamos resolver?`;
+  } else if (newTodayCount > 0) {
+    subtitle = `${newTodayCount} novo${newTodayCount > 1 ? 's' : ''} lead${newTodayCount > 1 ? 's' : ''} chegaram hoje.`;
+  }
 
   return (
     <motion.div
       initial={{ opacity: 0, y: -16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: 'spring', stiffness: 200, damping: 24 }}
-      className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/10 p-5 mb-8"
+      className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-primary/10 via-primary/5 to-transparent border border-primary/10 p-5 mb-6"
     >
-      {/* Decorative glow */}
       <div className="absolute -top-12 -right-12 w-40 h-40 bg-primary/8 rounded-full blur-3xl pointer-events-none" />
       <div className="absolute -bottom-8 -left-8 w-28 h-28 bg-primary/5 rounded-full blur-2xl pointer-events-none" />
 
-      <div className="relative flex items-center gap-4">
-        <ProgressRing completed={completedToday} total={completedToday + totalTasks} />
+      <div className="relative flex items-center gap-4 mb-4">
+        <ProgressRing completed={completedFollowupsToday} total={totalFollowupsToday} />
         <div className="flex-1 min-w-0">
           <h1 className="text-lg font-bold tracking-tight text-foreground">
             {greeting}{firstName ? `, ${firstName}` : ''} 👋
           </h1>
-          <p className="text-xs text-muted-foreground mt-1">
+          <p className="text-xs text-muted-foreground mt-1 capitalize">
             {format(new Date(), "EEEE, dd 'de' MMMM", { locale: ptBR })}
           </p>
-          {totalTasks > 0 ? (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="text-xs text-muted-foreground mt-2"
-            >
-              <span className="font-semibold text-foreground">{totalTasks}</span> tarefa{totalTasks > 1 ? 's' : ''} pendente{totalTasks > 1 ? 's' : ''}
-            </motion.p>
-          ) : (
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.5 }}
-              className="text-xs text-emerald-600 font-medium mt-2 flex items-center gap-1"
-            >
-              <Sparkles className="w-3 h-3" /> Tudo em dia!
-            </motion.p>
-          )}
+          <p className="text-xs text-foreground/80 mt-2 font-medium">{subtitle}</p>
         </div>
       </div>
+
+      {totalFollowupsToday > 0 && (
+        <div className="relative">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Progresso do dia</span>
+            <span className="text-[11px] font-bold text-foreground">
+              {completedFollowupsToday} de {totalFollowupsToday} follow-ups
+            </span>
+          </div>
+          <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
+            <motion.div
+              className={cn('h-full rounded-full', progressTone)}
+              initial={{ width: 0 }}
+              animate={{ width: `${pct}%` }}
+              transition={{ duration: 1, ease: 'easeOut', delay: 0.3 }}
+            />
+          </div>
+        </div>
+      )}
+
+      {totalTasks === 0 && totalFollowupsToday === 0 && (
+        <p className="text-xs text-emerald-600 font-medium mt-2 flex items-center gap-1">
+          <Sparkles className="w-3 h-3" /> Tudo em dia!
+        </p>
+      )}
     </motion.div>
   );
 }
