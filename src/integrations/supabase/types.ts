@@ -1684,6 +1684,23 @@ export type Database = {
       }
     }
     Functions: {
+      get_active_franchises_public: {
+        Args: never
+        Returns: {
+          ativa: boolean | null
+          cidade_base: string | null
+          id: string | null
+          nome_franquia: string | null
+          slug_url: string | null
+          whatsapp: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "franchises_public"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       get_public_franchise_by_slug: {
         Args: { _slug: string }
         Returns: {
