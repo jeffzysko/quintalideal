@@ -52,6 +52,24 @@ interface SidebarNavItem {
   matchPaths?: string[];
   matchTab?: string;
   dataTour?: string;
+  isNew?: boolean;
+}
+
+// Persist first-seen date to determine "Novo" badge eligibility
+const FIRST_SEEN_KEY = 'qi-first-seen-date';
+const NEW_BADGE_DAYS = 7;
+function shouldShowNewBadges(): boolean {
+  try {
+    const stored = localStorage.getItem(FIRST_SEEN_KEY);
+    if (!stored) {
+      localStorage.setItem(FIRST_SEEN_KEY, new Date().toISOString());
+      return false; // brand new user — features aren't "new" to them
+    }
+    const firstSeen = new Date(stored).getTime();
+    return Date.now() - firstSeen < NEW_BADGE_DAYS * 24 * 60 * 60 * 1000;
+  } catch {
+    return false;
+  }
 }
 
 // ── Admin sections ──
@@ -85,9 +103,9 @@ const FRANCHISE_MAIN: SidebarNavItem[] = [
 const FRANCHISE_TOOLS: SidebarNavItem[] = [
   { title: 'Agenda', url: '/agenda', icon: CalendarDays },
   { title: 'Catalogo de Piscinas', url: '/catalogo', icon: BookOpen, matchPaths: ['/catalogo'], dataTour: 'nav-catalogo' },
-  { title: 'Pos-venda', url: '/franquia?tab=pos-venda', icon: Package, matchTab: 'pos-venda' },
+  { title: 'Pos-venda', url: '/franquia?tab=pos-venda', icon: Package, matchTab: 'pos-venda', isNew: true },
   { title: 'Metas', url: '/franquia?tab=achievements', icon: TrendingUp, matchTab: 'achievements' },
-  { title: 'Relatorio CRM', url: '/relatorio-crm', icon: BarChart3, matchPaths: ['/relatorio-crm'] },
+  { title: 'Relatorio CRM', url: '/relatorio-crm', icon: BarChart3, matchPaths: ['/relatorio-crm'], isNew: true },
 ];
 
 // ── Franchise: "Configuracoes" group ──
@@ -139,6 +157,7 @@ export function AppSidebar() {
 
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
   const isSuperAdmin = role === 'super_admin';
+  const showNewBadges = useState(() => shouldShowNewBadges())[0];
 
   const currentTab = new URLSearchParams(location.search).get('tab');
 
@@ -179,8 +198,16 @@ export function AppSidebar() {
             data-tour={item.dataTour}
             className={`w-full flex items-center gap-2 ${active ? 'bg-primary/10 text-primary font-medium' : ''}`}
           >
-            <item.icon className="h-4 w-4 shrink-0" />
+            <span className="relative shrink-0">
+              <item.icon className="h-4 w-4" />
+              {item.isNew && showNewBadges && (
+                <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-destructive animate-pulse" aria-label="Novo" />
+              )}
+            </span>
             <span className="truncate">{item.title}</span>
+            {item.isNew && showNewBadges && !collapsed && (
+              <span className="ml-auto text-[9px] font-bold uppercase tracking-wide text-destructive">Novo</span>
+            )}
           </button>
         </SidebarMenuButton>
       </SidebarMenuItem>

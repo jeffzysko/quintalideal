@@ -17,7 +17,9 @@ import { exportRelatorioCRMPdf, exportLeadsCsv } from '@/lib/exportRelatorioCRM'
 
 import { STATUS_LABELS, STATUS_CHART_COLORS } from '@/lib/lead-constants';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { Download, CalendarIcon, Users, TrendingUp, Clock, DollarSign, Loader2 } from 'lucide-react';
+import { Download, CalendarIcon, Users, TrendingUp, Clock, DollarSign, Loader2, BarChart3 } from 'lucide-react';
+import { PageTransition } from '@/components/PageTransition';
+import { EmptyState } from '@/components/ui/empty-state';
 import { format, subDays, startOfMonth, endOfMonth, subMonths, differenceInDays, startOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { DateRange } from 'react-day-picker';
@@ -282,6 +284,7 @@ export default function RelatorioCRM() {
   // legacy CSV columns retained via dropdown handler above
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-background">
       <PanelHeader title="Relatorio de Conversao">
         <div className="flex items-center gap-2">
@@ -371,6 +374,18 @@ export default function RelatorioCRM() {
           </div>
         )}
 
+        {!isLoading && totalLeads === 0 ? (
+          <Card>
+            <CardContent className="p-0">
+              <EmptyState
+                icon={BarChart3}
+                title="Sem dados neste período"
+                description="Não há atividade registrada no período selecionado. Tente ampliar o intervalo de datas."
+              />
+            </CardContent>
+          </Card>
+        ) : (
+        <>
         {/* Charts */}
         <div className="grid md:grid-cols-2 gap-6">
           <Card>
@@ -475,8 +490,11 @@ export default function RelatorioCRM() {
             </CardContent>
           </Card>
         )}
+        </>
+        )}
       </div>
     </div>
+    </PageTransition>
   );
 }
 

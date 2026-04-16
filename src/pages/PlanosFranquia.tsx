@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { PageHeader } from '@/components/PageHeader';
+import { PageTransition } from '@/components/PageTransition';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { useStripeMode } from '@/hooks/useStripeMode';
@@ -150,6 +151,7 @@ export default function PlanosFranquia() {
   }
 
   return (
+    <PageTransition>
     <div className="p-4 md:p-6 space-y-8 max-w-4xl mx-auto pb-24">
       <PageHeader
         title="Planos e Assinaturas"
@@ -472,5 +474,6 @@ export default function PlanosFranquia() {
         </Accordion>
       </div>
     </div>
+    </PageTransition>
   );
 }

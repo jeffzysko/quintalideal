@@ -21,6 +21,7 @@ import { OrcamentoUpgradeWall } from '@/components/proposals/OrcamentoUpgradeWal
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+import { EmptyState } from '@/components/ui/empty-state';
 
 const STATUS_MAP: Record<string, { label: string; classes: string }> = {
   rascunho: { label: 'Rascunho', classes: 'bg-muted text-muted-foreground' },
@@ -313,23 +314,18 @@ export default function ProposalsList() {
               ))
             ) : !filtered.length ? (
               <Card className="shadow-sm border-border/50">
-                <CardContent className="flex flex-col items-center justify-center py-16 text-center">
-                  <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
-                    <FileText className="w-7 h-7 text-primary" />
-                  </div>
-                  <h3 className="font-semibold text-foreground mb-1">
-                    {search || statusFilter !== 'todas' ? 'Nenhuma proposta encontrada' : 'Nenhuma proposta ainda'}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-5 max-w-xs">
-                    {search || statusFilter !== 'todas'
-                      ? 'Tente alterar os filtros ou o termo de busca'
-                      : 'Crie sua primeira proposta comercial para enviar aos seus clientes'}
-                  </p>
-                  {!search && statusFilter === 'todas' && (
-                    <Button onClick={() => navigate('/propostas/nova')}>
-                      <Plus className="w-4 h-4 mr-1" /> Criar Proposta
-                    </Button>
-                  )}
+                <CardContent className="p-0">
+                  <EmptyState
+                    icon={FileText}
+                    title={search || statusFilter !== 'todas' ? 'Nenhuma proposta encontrada' : 'Nenhuma proposta ainda'}
+                    description={search || statusFilter !== 'todas'
+                      ? 'Tente alterar os filtros ou o termo de busca.'
+                      : 'Crie sua primeira proposta para um cliente e acompanhe o status em tempo real.'}
+                    action={!search && statusFilter === 'todas' ? {
+                      label: 'Criar proposta',
+                      onClick: () => navigate('/propostas/nova'),
+                    } : undefined}
+                  />
                 </CardContent>
               </Card>
             ) : (

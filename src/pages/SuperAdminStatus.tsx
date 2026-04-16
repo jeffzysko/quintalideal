@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Checkbox } from '@/components/ui/checkbox';
 import { PageHeader } from '@/components/PageHeader';
+import { PageTransition } from '@/components/PageTransition';
 import { supabase } from '@/lib/supabase';
 import { CheckCircle2, XCircle, AlertTriangle, ExternalLink, CreditCard, MessageCircle, Mail, Zap, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -108,6 +109,7 @@ export default function SuperAdminStatus() {
   ];
 
   return (
+    <PageTransition>
     <div>
       <PageHeader title="Status do Sistema" subtitle="Monitoramento das integrações críticas" fallbackPath="/superadmin/receita" />
       <div className="container max-w-6xl mx-auto py-8 px-4 space-y-6">
@@ -269,5 +271,6 @@ export default function SuperAdminStatus() {
       </Card>
       </div>
     </div>
+    </PageTransition>
   );
 }

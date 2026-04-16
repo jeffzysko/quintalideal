@@ -1,6 +1,17 @@
 import { MetricCard, MetricCardProps } from './MetricCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Card, CardContent } from '@/components/ui/card';
+import { motion } from 'framer-motion';
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.08 } },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 12 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.25 } },
+};
 
 const GRID_MAP: Record<number, string> = {
   2: 'grid-cols-2',
@@ -46,10 +57,17 @@ export function MetricGrid({ metrics, loading, columns }: MetricGridProps) {
   }
 
   return (
-    <div className={`grid ${gridCols} gap-3 sm:gap-4 mb-6 sm:mb-8`}>
-      {metrics.map((metric, i) => (
-        <MetricCard key={metric.label} {...metric} delay={i * 0.05} />
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="show"
+      className={`grid ${gridCols} gap-3 sm:gap-4 mb-6 sm:mb-8`}
+    >
+      {metrics.map((metric) => (
+        <motion.div key={metric.label} variants={itemVariants}>
+          <MetricCard {...metric} delay={0} />
+        </motion.div>
       ))}
-    </div>
+    </motion.div>
   );
 }

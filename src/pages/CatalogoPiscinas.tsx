@@ -12,6 +12,7 @@ import { Input } from '@/components/ui/input';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Search, Ruler, Droplets, ArrowDown, Star, FileText } from 'lucide-react';
 import { PageTransition } from '@/components/PageTransition';
+import { EmptyState } from '@/components/ui/empty-state';
 import { cn } from '@/lib/utils';
 
 export default function CatalogoPiscinas() {
@@ -70,10 +71,11 @@ export default function CatalogoPiscinas() {
 
           {/* Grid */}
           {filtered.length === 0 ? (
-            <div className="text-center py-12">
-              <Droplets className="w-10 h-10 text-muted-foreground/30 mx-auto mb-3" />
-              <p className="text-sm text-muted-foreground">Nenhum modelo encontrado.</p>
-            </div>
+            <EmptyState
+              icon={Droplets}
+              title="Nenhum modelo encontrado"
+              description="Tente ajustar os filtros ou alterar o termo de busca."
+            />
           ) : (
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {filtered.map(model => (
