@@ -587,6 +587,8 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
               isOverColumn={overColumnId === status}
               franchiseMap={franchiseMap}
               onMoveStage={moveLeadToStatus}
+              franchiseId={franchiseId}
+              whatsAppPlanActive={whatsAppPlanActive}
             />
           ))}
         </div>
