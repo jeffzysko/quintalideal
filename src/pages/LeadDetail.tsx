@@ -67,6 +67,7 @@ interface Lead {
   franquia_id: string | null;
   lead_origin?: string;
   loss_reason?: string | null;
+  assigned_to?: string | null;
 }
 
 const statusConfig: Record<string, { label: string; color: string; accent: string }> = {
