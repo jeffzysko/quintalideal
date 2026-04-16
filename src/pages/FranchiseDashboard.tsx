@@ -5,7 +5,7 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Users, TrendingUp, Clock, Eye, Inbox, Droplets, BarChart3, Link2, Copy, Check, Workflow, CalendarClock, FileText } from 'lucide-react';
+import { Users, TrendingUp, Clock, Eye, Inbox, Droplets, BarChart3, Link2, Copy, Check, Workflow, CalendarClock, FileText, Package } from 'lucide-react';
 import { ConversionFunnel } from '@/components/franchise/ConversionFunnel';
 import { SLAIndicator } from '@/components/franchise/SLAIndicator';
 import { MonthlyGoals } from '@/components/franchise/MonthlyGoals';
@@ -37,6 +37,7 @@ import { InsightCards } from '@/components/dashboard/InsightCards';
 import { useLeadsRealtime } from '@/hooks/useLeadsRealtime';
 import { OnboardingChecklist } from '@/components/franchise/OnboardingChecklist';
 import { FirstAccessModal } from '@/components/franchise/FirstAccessModal';
+import { PostSaleDashboard } from '@/components/franchise/PostSaleDashboard';
 
 const PAGE_SIZE = 20;
 
@@ -90,12 +91,13 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
   const [page, setPage] = useState(1);
   
   // Read tab from URL params (or local state when embedded)
-  type FranchiseTab = 'leads' | 'funnel' | 'reports' | 'achievements';
+  type FranchiseTab = 'leads' | 'funnel' | 'reports' | 'achievements' | 'pos-venda';
   const getTabFromSearch = (search: string): FranchiseTab => {
     const urlTab = new URLSearchParams(search).get('tab');
     if (urlTab === 'funnel') return 'funnel';
     if (urlTab === 'reports') return 'reports';
     if (urlTab === 'achievements') return 'achievements';
+    if (urlTab === 'pos-venda') return 'pos-venda';
     return 'leads';
   };
 
@@ -416,8 +418,9 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
           { key: 'leads' as const, icon: Users, label: 'Leads', tour: 'tab-leads' },
           { key: 'funnel' as const, icon: Workflow, label: 'Funil', tour: 'tab-funnel' },
           { key: 'propostas' as const, icon: FileText, label: 'Propostas', tour: 'tab-propostas' },
+          { key: 'pos-venda' as const, icon: Package, label: 'Pos-venda', tour: 'tab-pos-venda' },
           { key: 'achievements' as const, icon: TrendingUp, label: 'Metas', tour: 'tab-achievements' },
-          { key: 'reports' as const, icon: BarChart3, label: 'Relatórios', tour: 'tab-reports' },
+          { key: 'reports' as const, icon: BarChart3, label: 'Relatorios', tour: 'tab-reports' },
         ].map(tab => (
           <button
             key={tab.key}
@@ -650,6 +653,18 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
             transition={{ duration: 0.2 }}
           >
             <FranchiseReports leads={allLeads} />
+          </motion.div>
+        )}
+
+        {activeTab === 'pos-venda' && franchiseId && (
+          <motion.div
+            key="pos-venda"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+          >
+            <PostSaleDashboard franchiseId={franchiseId} basePath={leadDetailPath} />
           </motion.div>
         )}
       </AnimatePresence>

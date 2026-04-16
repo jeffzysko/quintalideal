@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Camera, ClipboardList, Settings2, Save, User, Trash2, Clock, Image, CalendarClock, Pencil, X, ChevronDown, Check } from 'lucide-react';
+import { MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Camera, ClipboardList, Settings2, Save, User, Trash2, Clock, Image, CalendarClock, Pencil, X, ChevronDown, Check, Package } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { BackButton } from '@/components/BackButton';
@@ -28,6 +28,7 @@ import { LeadLinkedProposals } from '@/components/lead/LeadLinkedProposals';
 import { LeadWhatsAppHistory } from '@/components/lead/LeadWhatsAppHistory';
 import { WhatsAppTemplates } from '@/components/lead/WhatsAppTemplates';
 import { LeadTagsSection } from '@/components/lead/LeadTagsSection';
+import { PostSaleSection } from '@/components/lead/PostSaleSection';
 
 import { useAuth } from '@/hooks/useAuth';
 import { triggerWhatsAppAuto } from '@/lib/whatsapp-auto';
@@ -581,12 +582,13 @@ export default function LeadDetail() {
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <div className="bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl p-1.5 shadow-sm">
-              <TabsList className="w-full grid grid-cols-4 h-12 bg-transparent p-0 gap-1">
+              <TabsList className={`w-full grid h-12 bg-transparent p-0 gap-1 ${lead.status_lead === 'vendido' ? 'grid-cols-5' : 'grid-cols-4'}`}>
                 {[
                   { value: 'fotos', icon: Image, label: 'Fotos', disabled: false, badge: photos.length > 0 ? photos.length : undefined },
                   { value: 'gerenciar', icon: Settings2, label: 'Gerenciar' },
                   { value: 'followups', icon: CalendarClock, label: 'Follow-ups' },
-                  { value: 'timeline', icon: Clock, label: 'Histórico' },
+                  { value: 'timeline', icon: Clock, label: 'Historico' },
+                  ...(lead.status_lead === 'vendido' ? [{ value: 'pos-venda', icon: Package, label: 'Pos-venda' }] : []),
                 ].map(tab => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.value;
@@ -644,6 +646,15 @@ export default function LeadDetail() {
                   <LeadWhatsAppHistory leadId={lead.id} />
                 </motion.div>
               </TabsContent>
+
+              {/* Pos-venda Tab */}
+              {lead.status_lead === 'vendido' && (
+                <TabsContent value="pos-venda" className="mt-4">
+                  <motion.div key="pos-venda" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
+                    <PostSaleSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
+                  </motion.div>
+                </TabsContent>
+              )}
 
               {/* Fotos Tab */}
               <TabsContent value="fotos" className="mt-4">

@@ -784,6 +784,87 @@ export type Database = {
         }
         Relationships: []
       }
+      post_sale_projects: {
+        Row: {
+          completion_date: string | null
+          created_at: string
+          franchise_id: string
+          id: string
+          installation_date: string | null
+          internal_notes: string | null
+          lead_id: string
+          responsible_name: string | null
+          satisfaction_note: string | null
+          satisfaction_rating: number | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          completion_date?: string | null
+          created_at?: string
+          franchise_id: string
+          id?: string
+          installation_date?: string | null
+          internal_notes?: string | null
+          lead_id: string
+          responsible_name?: string | null
+          satisfaction_note?: string | null
+          satisfaction_rating?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          completion_date?: string | null
+          created_at?: string
+          franchise_id?: string
+          id?: string
+          installation_date?: string | null
+          internal_notes?: string | null
+          lead_id?: string
+          responsible_name?: string | null
+          satisfaction_note?: string | null
+          satisfaction_rating?: number | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_sale_projects_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchise_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_sale_projects_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchises"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_sale_projects_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchises_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_sale_projects_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: true
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "post_sale_projects_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: true
+            referencedRelation: "leads_map"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
