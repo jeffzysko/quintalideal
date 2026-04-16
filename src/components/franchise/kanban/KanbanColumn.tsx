@@ -122,6 +122,9 @@ export const KanbanColumn = memo(function KanbanColumn({
                     onMoveStage={onMoveStage}
                     franchiseId={franchiseId}
                     whatsAppPlanActive={whatsAppPlanActive}
+                    isSelected={selectedIds?.includes(lead.id)}
+                    showCheckbox={!!hasSelection}
+                    onToggleSelect={onToggleSelect}
                   />
                 </div>
               );
@@ -138,6 +141,9 @@ export const KanbanColumn = memo(function KanbanColumn({
                 onMoveStage={onMoveStage}
                 franchiseId={franchiseId}
                 whatsAppPlanActive={whatsAppPlanActive}
+                isSelected={selectedIds?.includes(lead.id)}
+                showCheckbox={!!hasSelection}
+                onToggleSelect={onToggleSelect}
               />
             </div>
           ))
