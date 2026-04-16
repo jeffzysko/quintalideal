@@ -231,11 +231,21 @@ export const LeadCard = memo(function LeadCard({
                 window.open(`https://wa.me/${fullPhone}`, '_blank');
               }}
               aria-label="Abrir WhatsApp"
-              className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[10px] font-medium text-success hover:bg-success/5 transition-colors"
+              className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[10px] font-medium text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-colors"
               title="WhatsApp"
             >
               <MessageCircle className="w-3 h-3" />
             </button>
+          )}
+          {lead.telefone && franchiseId && (
+            <WhatsAppQuickSend
+              leadId={lead.id}
+              leadName={lead.nome}
+              leadPhone={lead.telefone}
+              franchiseId={franchiseId}
+              franchiseName={franchiseName}
+              whatsAppPlanActive={whatsAppPlanActive}
+            />
           )}
           {lead.telefone && (
             <button
