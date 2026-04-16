@@ -666,10 +666,10 @@ export default function SejaParceiro() {
                   CRM e Pipeline
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight">
-                  Gerencie todos os seus leads em um Kanban visual
+                  Nenhum lead escapa do seu radar
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Arraste e solte leads entre as etapas do funil. Veja score de qualificação, histórico de contatos e follow-ups pendentes em um só lugar.
+                  Pipeline visual tipo Kanban. Arraste leads entre as etapas, veja quem esfriou, quem precisa de follow-up e quem esta pronto para fechar. Tudo em uma tela.
                 </p>
               </div>
               <div className="lg:col-span-3">
@@ -718,10 +718,10 @@ export default function SejaParceiro() {
                   Orçamentos
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight">
-                  Propostas profissionais com envio por WhatsApp
+                  Orcamentos que fecham negocios
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Crie orçamentos detalhados com seus modelos de piscina, condições de pagamento e envie direto pelo WhatsApp. Saiba quando o cliente visualizou.
+                  Propostas profissionais com modelos de piscina, condicoes de pagamento e sua marca. Envie por WhatsApp e saiba o momento exato que o cliente abriu.
                 </p>
               </div>
             </div>
@@ -741,10 +741,10 @@ export default function SejaParceiro() {
                   Dashboard
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight">
-                  Métricas e metas em tempo real
+                  Saiba exatamente o que funciona
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Acompanhe leads, conversão, faturamento e performance de campanhas. Defina metas mensais e veja o progresso da sua equipe.
+                  Quantos leads entraram, quantos converteram, qual o ticket medio. Defina metas mensais e acompanhe o progresso em tempo real. Sem achismo.
                 </p>
               </div>
               <div className="lg:col-span-3">
