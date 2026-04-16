@@ -582,12 +582,13 @@ export default function LeadDetail() {
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <div className="bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl p-1.5 shadow-sm">
-              <TabsList className="w-full grid grid-cols-4 h-12 bg-transparent p-0 gap-1">
+              <TabsList className={`w-full grid h-12 bg-transparent p-0 gap-1 ${lead.status_lead === 'vendido' ? 'grid-cols-5' : 'grid-cols-4'}`}>
                 {[
                   { value: 'fotos', icon: Image, label: 'Fotos', disabled: false, badge: photos.length > 0 ? photos.length : undefined },
                   { value: 'gerenciar', icon: Settings2, label: 'Gerenciar' },
                   { value: 'followups', icon: CalendarClock, label: 'Follow-ups' },
-                  { value: 'timeline', icon: Clock, label: 'Histórico' },
+                  { value: 'timeline', icon: Clock, label: 'Historico' },
+                  ...(lead.status_lead === 'vendido' ? [{ value: 'pos-venda', icon: Package, label: 'Pos-venda' }] : []),
                 ].map(tab => {
                   const Icon = tab.icon;
                   const isActive = activeTab === tab.value;
