@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { SwipeableLeadCard } from '@/components/dashboard/SwipeableLeadCard';
+import { useQuery } from '@tanstack/react-query';
 import {
   DndContext,
   DragOverlay,
