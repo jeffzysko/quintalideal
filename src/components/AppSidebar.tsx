@@ -1,5 +1,6 @@
 import {
   Home,
+  CalendarDays,
   Settings,
   MessageCircle,
   HelpCircle,
