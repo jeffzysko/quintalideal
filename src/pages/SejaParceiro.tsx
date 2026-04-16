@@ -386,7 +386,7 @@ export default function SejaParceiro() {
             <span className="relative inline-flex items-center gap-2 text-xs sm:text-sm font-semibold px-5 py-2 rounded-full border border-primary/20 bg-primary/5 text-primary backdrop-blur-sm">
               <span className="absolute inset-0 rounded-full animate-pulse bg-primary/5" />
               <Sparkles className="w-3.5 h-3.5 relative z-10" />
-              <span className="relative z-10">A plataforma completa para lojas de piscinas</span>
+              <span className="relative z-10">A plataforma que lojas de piscinas usam para vender mais</span>
             </span>
           </motion.div>
 
@@ -396,10 +396,12 @@ export default function SejaParceiro() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
-            Qualifique leads, envie{' '}
+            Pare de perder leads.{' '}
+            <br className="hidden sm:block" />
+            Comece a{' '}
             <span className="relative inline-block">
               <span className="relative z-10 bg-gradient-to-r from-primary via-[hsl(200,80%,50%)] to-secondary bg-clip-text text-transparent">
-                orçamentos
+                fechar vendas
               </span>
               <motion.span
                 className="absolute -inset-x-2 -inset-y-1 rounded-lg bg-primary/[0.07] -z-0"
@@ -408,9 +410,7 @@ export default function SejaParceiro() {
                 transition={{ delay: 0.8, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
                 style={{ transformOrigin: 'left' }}
               />
-            </span>{' '}e venda
-            <br />
-            mais piscinas
+            </span>
           </motion.h1>
 
           <motion.p
@@ -419,7 +419,7 @@ export default function SejaParceiro() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            CRM, qualificação de leads, orçamentos profissionais e atendimento via WhatsApp. Tudo integrado numa plataforma feita para o mercado de piscinas.
+            Sua loja gasta com trafego, mas os leads somem no WhatsApp. O Quintal Ideal qualifica cada contato, organiza seu funil e automatiza o atendimento para voce focar no que importa: vender.
           </motion.p>
 
           <motion.p
@@ -428,7 +428,7 @@ export default function SejaParceiro() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
           >
-            <strong className="text-foreground">Sem taxa de adesão.</strong> Cadastre-se gratuitamente e pague apenas se quiser recursos premium.
+            <strong className="text-foreground">Sem taxa de adesao.</strong> Cadastre-se gratis e pague apenas se quiser recursos premium.
           </motion.p>
 
           <motion.div
