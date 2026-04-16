@@ -655,6 +655,18 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
             <FranchiseReports leads={allLeads} />
           </motion.div>
         )}
+
+        {activeTab === 'pos-venda' && franchiseId && (
+          <motion.div
+            key="pos-venda"
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+          >
+            <PostSaleDashboard franchiseId={franchiseId} basePath={leadDetailPath} />
+          </motion.div>
+        )}
       </AnimatePresence>
     </>
   );
