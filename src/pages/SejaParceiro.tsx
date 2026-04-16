@@ -17,44 +17,44 @@ import mockupDashboard from '@/assets/mockup-dashboard.jpg';
 
 /* ── Data ── */
 const STEPS = [
-  { num: '01', icon: Zap, title: 'Cadastre-se em 2 minutos', description: 'Zero burocracia. Sem taxa de adesao. Preencha o formulario e pronto.' },
-  { num: '02', icon: Shield, title: 'Aprovacao em ate 24h', description: 'Nossa equipe valida seu cadastro e libera acesso completo a plataforma.' },
-  { num: '03', icon: Rocket, title: 'Pare de perder vendas', description: 'Leads qualificados, follow-ups automaticos e orcamentos profissionais desde o dia 1.' },
+  { num: '01', icon: Zap, title: 'Cadastre-se em 2 minutos', description: 'Zero burocracia. Sem taxa de adesão. Preencha o formulário e pronto.' },
+  { num: '02', icon: Shield, title: 'Aprovação em até 24h', description: 'Nossa equipe valida seu cadastro e libera acesso completo à plataforma.' },
+  { num: '03', icon: Rocket, title: 'Pare de perder vendas', description: 'Leads qualificados, follow-ups automáticos e orçamentos profissionais desde o dia 1.' },
 ];
 
 const FEATURES = [
-  { icon: Target, title: 'Filtragem automatica de leads', description: 'Chega de perder tempo com curiosos. O quiz filtra quem tem quintal, orcamento e intencao real de compra.' },
-  { icon: BarChart3, title: 'CRM feito para piscinas', description: 'Pipeline visual com temperatura do lead, historico de contatos e alertas de follow-up. Nenhum lead esfria.' },
-  { icon: FileText, title: 'Orcamentos que vendem', description: 'Propostas profissionais com sua marca, precos tabelados e envio por WhatsApp. O cliente abre e voce fica sabendo.' },
-  { icon: MessageCircle, title: 'WhatsApp que trabalha por voce', description: 'Mensagens automaticas de boas-vindas, follow-up e envio de propostas. Tudo pelo numero da sua loja.' },
-  { icon: BarChart3, title: 'Numeros que importam', description: 'Saiba exatamente quantos leads entraram, quantos converteram e quanto faturou. Sem achismo.' },
+  { icon: Target, title: 'Filtragem automática de leads', description: 'Chega de perder tempo com curiosos. O quiz filtra quem tem quintal, orçamento e intenção real de compra.' },
+  { icon: BarChart3, title: 'CRM feito para piscinas', description: 'Pipeline visual com temperatura do lead, histórico de contatos e alertas de follow-up. Nenhum lead esfria.' },
+  { icon: FileText, title: 'Orçamentos que vendem', description: 'Propostas profissionais com sua marca, preços tabelados e envio por WhatsApp. O cliente abre e você fica sabendo.' },
+  { icon: MessageCircle, title: 'WhatsApp que trabalha por você', description: 'Mensagens automáticas de boas-vindas, follow-up e envio de propostas. Tudo pelo número da sua loja.' },
+  { icon: BarChart3, title: 'Números que importam', description: 'Saiba exatamente quantos leads entraram, quantos converteram e quanto faturou. Sem achismo.' },
   { icon: Globe, title: 'Sua vitrine digital', description: 'Link exclusivo com quiz interativo. Coloque no Instagram, Google Ads ou panfleto. Cada visitante vira um lead qualificado.' },
 ];
 
 const SOCIAL_PROOF = [
-  { metric: 38, suffix: '+', label: 'Lojas que ja vendem mais' },
+  { metric: 38, suffix: '+', label: 'Lojas que já vendem mais' },
   { metric: 2500, suffix: '+', label: 'Leads qualificados gerados' },
-  { metric: 24, suffix: 'h', label: 'Para comecar a usar' },
+  { metric: 24, suffix: 'h', label: 'Para começar a usar' },
 ];
 
 const MARQUEE_ITEMS = [
-  'CRM completo', 'Orcamentos profissionais', 'WhatsApp automatico', 'Leads pre-qualificados',
-  'Metricas em tempo real', 'Kanban de vendas', 'Follow-ups inteligentes', 'Pagina personalizada',
+  'CRM completo', 'Orçamentos profissionais', 'WhatsApp automático', 'Leads pré-qualificados',
+  'Métricas em tempo real', 'Kanban de vendas', 'Follow-ups inteligentes', 'Página personalizada',
 ];
 
 const ORCAMENTO_BENEFITS = [
-  'Orcamentos e propostas ilimitados',
+  'Orçamentos e propostas ilimitados',
   'Modelos profissionais com a sua marca',
-  'Envio automatico por WhatsApp em 1 clique',
+  'Envio automático por WhatsApp em 1 clique',
   'Saiba o exato momento que o cliente abriu',
 ];
 
 const WHATSAPP_BENEFITS = [
-  'Tudo do plano Orcamento incluso',
-  'Mensagens automaticas pelo numero da sua loja',
-  'Instancia dedicada - seu numero, sua marca',
-  'Ativacao simples via QR Code',
-  'Suporte prioritario da equipe Quintal Ideal',
+  'Tudo do plano Orçamento incluso',
+  'Mensagens automáticas pelo número da sua loja',
+  'Instância dedicada - seu número, sua marca',
+  'Ativação simples via QR Code',
+  'Suporte prioritário da equipe Quintal Ideal',
 ];
 
 /* ── Animated Counter ── */
@@ -419,7 +419,7 @@ export default function SejaParceiro() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
           >
-            Sua loja gasta com trafego, mas os leads somem no WhatsApp. O Quintal Ideal qualifica cada contato, organiza seu funil e automatiza o atendimento para voce focar no que importa: vender.
+            Sua loja gasta com tráfego, mas os leads somem no WhatsApp. O Quintal Ideal qualifica cada contato, organiza seu funil e automatiza o atendimento para você focar no que importa: vender.
           </motion.p>
 
           <motion.p
@@ -428,7 +428,7 @@ export default function SejaParceiro() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
           >
-            <strong className="text-foreground">Sem taxa de adesao.</strong> Cadastre-se gratis e pague apenas se quiser recursos premium.
+            <strong className="text-foreground">Sem taxa de adesão.</strong> Cadastre-se grátis e pague apenas se quiser recursos premium.
           </motion.p>
 
           <motion.div
@@ -513,7 +513,7 @@ export default function SejaParceiro() {
           >
             {[
               { icon: Shield, text: 'Dados protegidos (LGPD)' },
-              { icon: Star, text: '38+ lojas ja usam' },
+              { icon: Star, text: '38+ lojas já usam' },
               { icon: Users, text: 'Sem contrato de fidelidade' },
             ].map(t => (
               <div key={t.text} className="flex items-center gap-1.5 text-[11px] text-muted-foreground/50">
@@ -536,10 +536,10 @@ export default function SejaParceiro() {
           <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <span className="inline-block text-xs font-bold text-primary uppercase tracking-[0.2em] mb-3 px-4 py-1.5 rounded-full border border-primary/15 bg-primary/5">Como funciona</span>
             <h2 className="text-3xl sm:text-[2.75rem] font-extrabold text-foreground mt-4 mb-3 tracking-tight leading-tight">
-              Do cadastro a primeira venda{' '}
+              Do cadastro à primeira venda{' '}
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">em 3 passos</span>
             </h2>
-            <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto">Sem contrato, sem fidelidade. Comece a vender mais hoje.</p>
+             <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto">Sem contrato, sem fidelidade. Comece a vender mais hoje.</p>
           </motion.div>
 
           <div className="grid sm:grid-cols-3 gap-6 sm:gap-4 relative">
@@ -596,12 +596,12 @@ export default function SejaParceiro() {
           <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <span className="inline-block text-xs font-bold text-primary uppercase tracking-[0.2em] mb-3 px-4 py-1.5 rounded-full border border-primary/15 bg-primary/5">Recursos</span>
             <h2 className="text-3xl sm:text-[2.75rem] font-extrabold text-foreground mt-4 mb-3 tracking-tight leading-tight">
-              Tudo que voce precisa para{' '}<br className="hidden sm:block" />
+              Tudo que você precisa para{' '}<br className="hidden sm:block" />
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">parar de perder vendas</span>
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
-              Chega de planilha, WhatsApp pessoal e lead esquecido. Sua operacao comercial inteira num so lugar.
-            </p>
+               Chega de planilha, WhatsApp pessoal e lead esquecido. Sua operação comercial inteira num só lugar.
+             </p>
           </motion.div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 perspective-[1200px]">
@@ -647,8 +647,8 @@ export default function SejaParceiro() {
               <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">vendem mais todos os dias</span>
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
-              Interface limpa, profissional e feita para quem vende piscinas. Sem complicacao.
-            </p>
+               Interface limpa, profissional e feita para quem vende piscinas. Sem complicação.
+             </p>
           </motion.div>
 
           {/* Mockup 1 - CRM Kanban */}
@@ -669,8 +669,8 @@ export default function SejaParceiro() {
                   Nenhum lead escapa do seu radar
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Pipeline visual tipo Kanban. Arraste leads entre as etapas, veja quem esfriou, quem precisa de follow-up e quem esta pronto para fechar. Tudo em uma tela.
-                </p>
+                   Pipeline visual tipo Kanban. Arraste leads entre as etapas, veja quem esfriou, quem precisa de follow-up e quem está pronto para fechar. Tudo em uma tela.
+                 </p>
               </div>
               <div className="lg:col-span-3">
                 <div className="relative group">
@@ -718,10 +718,10 @@ export default function SejaParceiro() {
                   Orçamentos
                 </div>
                 <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight">
-                  Orcamentos que fecham negocios
+                  Orçamentos que fecham negócios
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Propostas profissionais com modelos de piscina, condicoes de pagamento e sua marca. Envie por WhatsApp e saiba o momento exato que o cliente abriu.
+                  Propostas profissionais com modelos de piscina, condições de pagamento e sua marca. Envie por WhatsApp e saiba o momento exato que o cliente abriu.
                 </p>
               </div>
             </div>
@@ -744,8 +744,8 @@ export default function SejaParceiro() {
                   Saiba exatamente o que funciona
                 </h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  Quantos leads entraram, quantos converteram, qual o ticket medio. Defina metas mensais e acompanhe o progresso em tempo real. Sem achismo.
-                </p>
+                   Quantos leads entraram, quantos converteram, qual o ticket médio. Defina metas mensais e acompanhe o progresso em tempo real. Sem achismo.
+                 </p>
               </div>
               <div className="lg:col-span-3">
                 <div className="relative group">
@@ -772,11 +772,11 @@ export default function SejaParceiro() {
           <motion.div className="text-center mb-14" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <span className="inline-block text-xs font-bold text-primary uppercase tracking-[0.2em] mb-3 px-4 py-1.5 rounded-full border border-primary/15 bg-primary/5">Planos</span>
             <h2 className="text-3xl sm:text-[2.75rem] font-extrabold text-foreground mt-4 mb-3 tracking-tight">
-              O custo de nao usar{' '}
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">e bem maior</span>
+              O custo de não usar{' '}
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">é bem maior</span>
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground">Cada lead perdido custa mais do que qualquer plano. Escolha o seu.</p>
-            <p className="text-xs text-muted-foreground/50 mt-1">Disponíveis apos a aprovacao do seu cadastro</p>
+            <p className="text-xs text-muted-foreground/50 mt-1">Disponíveis após a aprovação do seu cadastro</p>
           </motion.div>
 
           <div className="grid sm:grid-cols-2 gap-5 sm:gap-6">
@@ -788,7 +788,7 @@ export default function SejaParceiro() {
                     <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/15 transition-colors">
                       <ClipboardList className="w-5 h-5 text-primary" />
                     </div>
-                    <h3 className="font-bold text-foreground text-lg">Orçamento Personalizado</h3>
+                     <h3 className="font-bold text-foreground text-lg">Orçamento Personalizado</h3>
                   </div>
                   <div className="flex items-baseline gap-1 mb-6">
                     <span className="text-5xl font-extrabold text-foreground tracking-tight">R$ 29</span>
@@ -826,7 +826,7 @@ export default function SejaParceiro() {
                     <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/15 transition-colors">
                       <Rocket className="w-5 h-5 text-primary" />
                     </div>
-                    <h3 className="font-bold text-foreground text-lg">WhatsApp Próprio</h3>
+                     <h3 className="font-bold text-foreground text-lg">WhatsApp Próprio</h3>
                   </div>
                   <div className="flex items-baseline gap-1 mb-6">
                     <span className="text-5xl font-extrabold text-foreground tracking-tight">R$ 149</span>
@@ -872,13 +872,13 @@ export default function SejaParceiro() {
             transition={{ duration: 0.7 }}
           >
             <h2 className="text-2xl sm:text-4xl font-extrabold text-foreground mb-5 leading-snug tracking-tight">
-              Voce ja investe em trafego.{' '}
+              Você já investe em tráfego.{' '}
               <span className="bg-gradient-to-r from-primary via-[hsl(200,80%,50%)] to-secondary bg-clip-text text-transparent">
-                Quantas vendas esta deixando na mesa?
+                Quantas vendas está deixando na mesa?
               </span>
             </h2>
             <p className="text-sm sm:text-lg text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed">
-              Enquanto seus leads esfriam na caixa de entrada, seus concorrentes ja estao usando o Quintal Ideal. Nao fique para tras.
+              Enquanto seus leads esfriam na caixa de entrada, seus concorrentes já estão usando o Quintal Ideal. Não fique para trás.
             </p>
             <Button
               size="lg"
@@ -941,7 +941,7 @@ export default function SejaParceiro() {
                 <CardContent className="p-7 sm:p-9">
                   <div className="text-center mb-7">
                     <h2 className="text-2xl font-extrabold text-foreground mb-1.5">Cadastre sua loja agora</h2>
-                    <p className="text-xs text-muted-foreground">Gratis para comecar. Sem contrato. Aprovacao em ate 24h.</p>
+                    <p className="text-xs text-muted-foreground">Grátis para começar. Sem contrato. Aprovação em até 24h.</p>
                   </div>
 
                   <div className="space-y-4">
