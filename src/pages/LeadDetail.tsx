@@ -113,31 +113,6 @@ const answerLabels: Record<string, string> = {
   '30-50': 'R$ 30 a 50 mil',
 };
 
-function ScoreRing({ score }: { score: number }) {
-  const radius = 40;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (score / 100) * circumference;
-  const color = score >= 80 ? 'hsl(var(--primary))' : score >= 60 ? 'hsl(var(--secondary))' : 'hsl(var(--destructive))';
-
-  return (
-    <div className="relative w-24 h-24 flex-shrink-0">
-      <svg className="w-24 h-24 -rotate-90" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r={radius} fill="none" stroke="hsl(var(--muted))" strokeWidth="6" />
-        <motion.circle
-          cx="50" cy="50" r={radius} fill="none"
-          stroke={color} strokeWidth="6" strokeLinecap="round"
-          strokeDasharray={circumference}
-          initial={{ strokeDashoffset: circumference }}
-          animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 1, ease: 'easeOut' }}
-        />
-      </svg>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-xl font-bold text-foreground">{score}%</span>
-      </div>
-    </div>
-  );
-}
 
 export default function LeadDetail() {
   const { franchiseId, user } = useAuth();
