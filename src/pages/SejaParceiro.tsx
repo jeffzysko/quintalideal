@@ -11,6 +11,9 @@ import { supabase } from '@/lib/supabase';
 import { Check, ClipboardList, Rocket, CheckCircle2, ArrowRight, Sparkles, Shield, Star, Users, Zap, BarChart3, MessageCircle, Target, FileText, Globe } from 'lucide-react';
 import { isValidEmail, isValidBRPhone } from '@/lib/validation';
 import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
+import mockupCRM from '@/assets/mockup-crm-kanban.jpg';
+import mockupOrcamento from '@/assets/mockup-orcamento.jpg';
+import mockupDashboard from '@/assets/mockup-dashboard.jpg';
 
 /* ── Data ── */
 const STEPS = [
