@@ -615,6 +615,8 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
               onMoveStage={moveLeadToStatus}
               franchiseId={franchiseId}
               whatsAppPlanActive={whatsAppPlanActive}
+              selectedIds={selectedLeadIds}
+              onToggleSelect={toggleSelect}
             />
           ))}
         </div>
@@ -625,6 +627,16 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
           ) : null}
         </DragOverlay>
       </DndContext>
+
+      <BulkActionsBar
+        selectedIds={selectedLeadIds}
+        leads={filteredLeads}
+        franchiseId={franchiseId}
+        profiles={franchiseProfiles}
+        whatsAppPlanActive={whatsAppPlanActive}
+        onClearSelection={() => setSelectedLeadIds([])}
+        onMoveLeads={handleBulkMove}
+      />
     </>
   );
 }
