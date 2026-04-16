@@ -186,6 +186,10 @@ function AppRouteTree() {
           element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><CatalogoPiscinas /></ProtectedRoute>}
         />
         <Route
+          path="/relatorio-crm"
+          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><RelatorioCRM /></ProtectedRoute>}
+        />
+        <Route
           path="/painel/lead/:id"
           element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><LeadDetail /></ProtectedRoute>}
         />
