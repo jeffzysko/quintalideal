@@ -11,6 +11,7 @@ import { supabase } from '@/lib/supabase';
 import { Check, ClipboardList, Rocket, CheckCircle2, ArrowRight, Sparkles, Shield, Star, Users, Zap, BarChart3, MessageCircle, Target, FileText, Globe } from 'lucide-react';
 import { isValidEmail, isValidBRPhone } from '@/lib/validation';
 import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
+import { SEO } from '@/components/SEO';
 import mockupCRM from '@/assets/mockup-crm-kanban.jpg';
 import mockupOrcamento from '@/assets/mockup-orcamento.jpg';
 import mockupDashboard from '@/assets/mockup-dashboard.jpg';
@@ -298,6 +299,26 @@ export default function SejaParceiro() {
 
   return (
     <div className="min-h-screen overflow-hidden bg-background">
+      <SEO
+        title="Seja Parceiro | Quintal Ideal — Venda mais piscinas com tecnologia"
+        description="Transforme sua loja de piscinas em uma máquina de vendas. CRM completo, leads qualificados, orçamentos profissionais e WhatsApp automático. Aprovação em 24h."
+        keywords="parceiro quintal ideal, vender piscinas, CRM piscinas, leads qualificados piscinas, orçamento piscinas"
+        canonical="https://quintalideal.com.br/seja-parceiro"
+        ogImage="https://quintalideal.com.br/og-seja-parceiro.jpg"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "SoftwareApplication",
+          name: "Quintal Ideal",
+          applicationCategory: "BusinessApplication",
+          operatingSystem: "Web",
+          description: "Plataforma CRM para lojas de piscinas com leads qualificados, orçamentos e WhatsApp automático",
+          url: "https://quintalideal.com.br",
+          offers: [
+            { "@type": "Offer", name: "Orçamento Personalizado", price: "29.00", priceCurrency: "BRL" },
+            { "@type": "Offer", name: "WhatsApp Próprio", price: "149.00", priceCurrency: "BRL" }
+          ]
+        }}
+      />
 
       {/* ═══════════════════════════ HERO ═══════════════════════════ */}
       <section ref={heroRef} className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden">
