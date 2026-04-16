@@ -22,7 +22,10 @@ import {
   Star,
   ChevronRight,
   BookOpen,
+  Package,
+  Wrench,
 } from 'lucide-react';
+import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
@@ -48,53 +51,83 @@ interface SidebarNavItem {
   icon: typeof Home;
   matchPaths?: string[];
   matchTab?: string;
+  dataTour?: string;
 }
 
+// ── Admin sections ──
 const ADMIN_TABS: SidebarNavItem[] = [
-  { title: 'Inteligência', url: '/admin?tab=overview', icon: BarChart3, matchTab: 'overview' },
+  { title: 'Inteligencia', url: '/admin?tab=overview', icon: BarChart3, matchTab: 'overview' },
   { title: 'Performance QI', url: '/admin?tab=performance-qi', icon: Target, matchTab: 'performance-qi' },
   { title: 'Analytics', url: '/admin?tab=analytics', icon: Activity, matchTab: 'analytics' },
   { title: 'Leads', url: '/admin?tab=leads', icon: Users, matchTab: 'leads' },
   { title: 'Franquias', url: '/admin?tab=franchises', icon: Building2, matchTab: 'franchises' },
-  { title: 'Territórios', url: '/admin?tab=cities', icon: Globe, matchTab: 'cities' },
+  { title: 'Territorios', url: '/admin?tab=cities', icon: Globe, matchTab: 'cities' },
 ];
 
 const SUPER_ADMIN_TABS: SidebarNavItem[] = [
   { title: 'Funil Geral', url: '/admin?tab=kanban', icon: Kanban, matchTab: 'kanban' },
-  { title: 'Usuários', url: '/admin?tab=users', icon: Users, matchTab: 'users' },
+  { title: 'Usuarios', url: '/admin?tab=users', icon: Users, matchTab: 'users' },
   { title: 'E-mails', url: '/admin?tab=emails', icon: Mail, matchTab: 'emails' },
   { title: 'WhatsApp', url: '/admin?tab=whatsapp', icon: MessageCircle, matchTab: 'whatsapp' },
-  { title: 'Visão Franquia', url: '/admin?tab=franchise-view', icon: Eye, matchTab: 'franchise-view' },
+  { title: 'Visao Franquia', url: '/admin?tab=franchise-view', icon: Eye, matchTab: 'franchise-view' },
   { title: 'Receita', url: '/superadmin/receita', icon: TrendingUp, matchPaths: ['/superadmin/receita'] },
 ];
 
-const FRANCHISE_TABS: SidebarNavItem[] = [
-  { title: 'Leads', url: '/franquia?tab=leads', icon: Users, matchTab: 'leads' },
-  { title: 'Funil', url: '/franquia?tab=funnel', icon: Workflow, matchTab: 'funnel' },
-  { title: 'Propostas', url: '/propostas', icon: FileText, matchPaths: ['/propostas'] },
-  { title: 'Catalogo', url: '/catalogo', icon: BookOpen, matchPaths: ['/catalogo'] },
-  { title: 'Metas', url: '/franquia?tab=achievements', icon: TrendingUp, matchTab: 'achievements' },
-  { title: 'Relatorios', url: '/franquia?tab=reports', icon: BarChart3, matchTab: 'reports' },
-  { title: 'Planos', url: '/planos', icon: Star, matchPaths: ['/planos'] },
+// ── Franchise: always visible ──
+const FRANCHISE_MAIN: SidebarNavItem[] = [
+  { title: 'Inicio', url: '/hoje', icon: Home },
+  { title: 'Leads / CRM', url: '/franquia?tab=funnel', icon: Kanban, matchTab: 'funnel' },
+  { title: 'Propostas', url: '/propostas', icon: FileText, matchPaths: ['/propostas'], dataTour: 'nav-propostas' },
 ];
 
+// ── Franchise: "Ferramentas" group ──
+const FRANCHISE_TOOLS: SidebarNavItem[] = [
+  { title: 'Agenda', url: '/agenda', icon: CalendarDays },
+  { title: 'Catalogo de Piscinas', url: '/catalogo', icon: BookOpen, matchPaths: ['/catalogo'], dataTour: 'nav-catalogo' },
+  { title: 'Pos-venda', url: '/franquia?tab=pos-venda', icon: Package, matchTab: 'pos-venda' },
+  { title: 'Metas', url: '/franquia?tab=achievements', icon: TrendingUp, matchTab: 'achievements' },
+  { title: 'Relatorios', url: '/franquia?tab=reports', icon: BarChart3, matchTab: 'reports' },
+];
+
+// ── Franchise: "Configuracoes" group ──
+const FRANCHISE_CONFIG: SidebarNavItem[] = [
+  { title: 'Planos', url: '/planos', icon: Star, matchPaths: ['/planos'], dataTour: 'nav-planos' },
+  { title: 'Configuracoes', url: '/perfil', icon: Settings },
+  { title: 'Suporte', url: '/suporte', icon: HelpCircle },
+];
+
+// ── Admin navigation ──
 const ADMIN_NAV: SidebarNavItem[] = [
   { title: 'Inicio', url: '/hoje', icon: Home },
   { title: 'Agenda', url: '/agenda', icon: CalendarDays },
   { title: 'Notificacoes', url: '/notificacoes', icon: Bell },
 ];
 
-const FRANCHISE_NAV: SidebarNavItem[] = [
-  { title: 'Inicio', url: '/hoje', icon: Home },
-  { title: 'Agenda', url: '/agenda', icon: CalendarDays },
-  { title: 'Notificacoes', url: '/notificacoes', icon: Bell },
-];
-
-const BOTTOM_NAV: SidebarNavItem[] = [
-  { title: 'Integrações', url: '/perfil#integracoes', icon: Webhook },
-  { title: 'Configurações', url: '/perfil', icon: Settings },
+const ADMIN_BOTTOM: SidebarNavItem[] = [
+  { title: 'Integracoes', url: '/perfil#integracoes', icon: Webhook },
+  { title: 'Configuracoes', url: '/perfil', icon: Settings },
   { title: 'Suporte', url: '/suporte', icon: HelpCircle },
 ];
+
+function usePersistedCollapsible(key: string, defaultOpen: boolean, hasActive: boolean): [boolean, (open: boolean) => void] {
+  const storageKey = `sidebar-${key}`;
+  const [open, setOpen] = useState(() => {
+    if (hasActive) return true;
+    const stored = localStorage.getItem(storageKey);
+    return stored !== null ? stored === 'true' : defaultOpen;
+  });
+
+  useEffect(() => {
+    localStorage.setItem(storageKey, String(open));
+  }, [open, storageKey]);
+
+  // If an item becomes active, force open
+  useEffect(() => {
+    if (hasActive) setOpen(true);
+  }, [hasActive]);
+
+  return [open, setOpen];
+}
 
 export function AppSidebar() {
   const { state } = useSidebar();
@@ -114,6 +147,7 @@ export function AppSidebar() {
       if (location.pathname !== basePath) return false;
       if (item.matchTab === 'overview' && !currentTab) return true;
       if (item.matchTab === 'leads' && !currentTab && basePath === '/franquia') return true;
+      if (item.matchTab === 'funnel' && !currentTab && basePath === '/franquia') return true;
       return currentTab === item.matchTab;
     }
     if (location.pathname === basePath) return true;
@@ -123,16 +157,12 @@ export function AppSidebar() {
 
   const hasActiveItem = (items: SidebarNavItem[]) => items.some(isActive);
 
-  const handleNav = (url: string) => {
-    navigate(url);
-  };
+  const [toolsOpen, setToolsOpen] = usePersistedCollapsible('tools', false, hasActiveItem(FRANCHISE_TOOLS));
+  const [configOpen, setConfigOpen] = usePersistedCollapsible('config', false, hasActiveItem(FRANCHISE_CONFIG));
+  const [adminTabsOpen, setAdminTabsOpen] = usePersistedCollapsible('admin-tabs', true, hasActiveItem(ADMIN_TABS));
+  const [superTabsOpen, setSuperTabsOpen] = usePersistedCollapsible('super-tabs', false, hasActiveItem(SUPER_ADMIN_TABS));
 
-  const getDataTour = (item: SidebarNavItem): string | undefined => {
-    if (item.title === 'Propostas') return 'nav-propostas';
-    if (item.title === 'Catalogo') return 'nav-catalogo';
-    if (item.title === 'Planos') return 'nav-planos';
-    return undefined;
-  };
+  const handleNav = (url: string) => navigate(url);
 
   const renderNavItem = (item: SidebarNavItem) => {
     const active = isActive(item);
@@ -145,7 +175,7 @@ export function AppSidebar() {
         >
           <button
             onClick={() => handleNav(item.url)}
-            data-tour={getDataTour(item)}
+            data-tour={item.dataTour}
             className={`w-full flex items-center gap-2 ${active ? 'bg-primary/10 text-primary font-medium' : ''}`}
           >
             <item.icon className="h-4 w-4 shrink-0" />
@@ -156,8 +186,13 @@ export function AppSidebar() {
     );
   };
 
-  const renderCollapsibleGroup = (label: string, items: SidebarNavItem[]) => (
-    <Collapsible defaultOpen={hasActiveItem(items)} className="group/collapsible">
+  const renderCollapsibleGroup = (
+    label: string,
+    items: SidebarNavItem[],
+    open: boolean,
+    setOpen: (o: boolean) => void,
+  ) => (
+    <Collapsible open={open} onOpenChange={setOpen} className="group/collapsible">
       <SidebarGroup>
         <SidebarGroupLabel asChild>
           <CollapsibleTrigger className="flex w-full items-center justify-between [&[data-state=open]>svg]:rotate-90">
@@ -189,31 +224,50 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        {/* Common navigation — always open */}
-        <SidebarGroup>
-          <SidebarGroupLabel>{isAdmin ? 'Navegação' : 'Painel'}</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {(isAdmin ? ADMIN_NAV : FRANCHISE_NAV).map((item) => renderNavItem(item))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {isAdmin ? (
+          <>
+            {/* Admin common nav */}
+            <SidebarGroup>
+              <SidebarGroupLabel>Navegacao</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {ADMIN_NAV.map((item) => renderNavItem(item))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
 
-        {/* Franchise tabs — collapsible */}
-        {!isAdmin && renderCollapsibleGroup('Gestão', FRANCHISE_TABS)}
+            {/* Admin Fabrica tabs */}
+            {renderCollapsibleGroup('Fabrica', ADMIN_TABS, adminTabsOpen, setAdminTabsOpen)}
 
-        {/* Admin Fábrica tabs — collapsible */}
-        {isAdmin && renderCollapsibleGroup('Fábrica', ADMIN_TABS)}
+            {/* Super Admin */}
+            {isSuperAdmin && renderCollapsibleGroup('Super Admin', SUPER_ADMIN_TABS, superTabsOpen, setSuperTabsOpen)}
+          </>
+        ) : (
+          <>
+            {/* Franchise: always-visible items */}
+            <SidebarGroup>
+              <SidebarGroupLabel>Painel</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {FRANCHISE_MAIN.map((item) => renderNavItem(item))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
 
-        {/* Super Admin exclusive tabs — collapsible */}
-        {isSuperAdmin && renderCollapsibleGroup('Super Admin', SUPER_ADMIN_TABS)}
+            {/* Franchise: Ferramentas (collapsible) */}
+            {renderCollapsibleGroup('Ferramentas', FRANCHISE_TOOLS, toolsOpen, setToolsOpen)}
+
+            {/* Franchise: Configuracoes (collapsible) */}
+            {renderCollapsibleGroup('Configuracoes', FRANCHISE_CONFIG, configOpen, setConfigOpen)}
+          </>
+        )}
       </SidebarContent>
 
       <SidebarFooter className="p-0">
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {BOTTOM_NAV.map((item) => renderNavItem(item))}
+              {isAdmin && ADMIN_BOTTOM.map((item) => renderNavItem(item))}
               <SidebarMenuItem>
                 <SidebarMenuButton
                   tooltip={collapsed ? 'Sair' : undefined}
