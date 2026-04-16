@@ -170,6 +170,16 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
           <div className="flex items-center gap-2 mb-1">
             <Wrench className="w-4 h-4 text-primary" />
             <h3 className="text-sm font-semibold text-foreground">Status do Projeto</h3>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <HelpCircle className="w-3.5 h-3.5 text-muted-foreground/60 cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs max-w-[220px]">Acompanhe a instalacao apos o fechamento da venda</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
 
           <Badge className={`${statusInfo.bgColor} ${statusInfo.color} border text-xs`} variant="outline">
