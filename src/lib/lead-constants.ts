@@ -1,34 +1,22 @@
-export const STATUS_LABELS: Record<string, string> = {
-  novo: 'Novo',
-  contatado: 'Contatado',
-  em_negociacao: 'Em Negociação',
-  vendido: 'Vendido',
-  perdido: 'Perdido',
-};
-
-export const STATUS_COLORS: Record<string, string> = {
-  novo: 'bg-primary/10 text-primary border-primary/20',
-  contatado: 'bg-amber-50 text-amber-700 border-amber-200',
-  em_negociacao: 'bg-violet-50 text-violet-700 border-violet-200',
-  vendido: 'bg-emerald-50 text-emerald-700 border-emerald-200',
-  perdido: 'bg-red-50 text-red-700 border-red-200',
-};
-
-export const STATUS_CHART_COLORS: Record<string, string> = {
-  novo: 'hsl(199, 89%, 48%)',
-  contatado: 'hsl(38, 92%, 50%)',
-  em_negociacao: 'hsl(258, 90%, 66%)',
-  vendido: 'hsl(160, 84%, 39%)',
-  perdido: 'hsl(0, 84%, 60%)',
-};
-
 export const LEAD_STATUS_CONFIG = {
-  novo: { label: 'Novo', badge: 'bg-muted text-muted-foreground', dot: 'bg-gray-400' },
-  contatado: { label: 'Contatado', badge: 'bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300', dot: 'bg-sky-500' },
-  em_negociacao: { label: 'Em Negociação', badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300', dot: 'bg-amber-500' },
-  vendido: { label: 'Vendido', badge: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300', dot: 'bg-emerald-500' },
-  perdido: { label: 'Perdido', badge: 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300', dot: 'bg-red-500' },
+  novo: { label: 'Novo', badge: 'bg-muted text-muted-foreground border-border', dot: 'bg-gray-400', chart: 'hsl(199, 89%, 48%)' },
+  contatado: { label: 'Contatado', badge: 'bg-sky-100 text-sky-700 border-sky-200 dark:bg-sky-900/40 dark:text-sky-300 dark:border-sky-800', dot: 'bg-sky-500', chart: 'hsl(38, 92%, 50%)' },
+  em_negociacao: { label: 'Em Negociação', badge: 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/40 dark:text-amber-300 dark:border-amber-800', dot: 'bg-amber-500', chart: 'hsl(258, 90%, 66%)' },
+  vendido: { label: 'Vendido', badge: 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-900/40 dark:text-emerald-300 dark:border-emerald-800', dot: 'bg-emerald-500', chart: 'hsl(160, 84%, 39%)' },
+  perdido: { label: 'Perdido', badge: 'bg-red-100 text-red-700 border-red-200 dark:bg-red-900/40 dark:text-red-300 dark:border-red-800', dot: 'bg-red-500', chart: 'hsl(0, 84%, 60%)' },
 } as const;
+
+export const STATUS_LABELS: Record<string, string> = Object.fromEntries(
+  Object.entries(LEAD_STATUS_CONFIG).map(([k, v]) => [k, v.label])
+);
+
+export const STATUS_COLORS: Record<string, string> = Object.fromEntries(
+  Object.entries(LEAD_STATUS_CONFIG).map(([k, v]) => [k, v.badge])
+);
+
+export const STATUS_CHART_COLORS: Record<string, string> = Object.fromEntries(
+  Object.entries(LEAD_STATUS_CONFIG).map(([k, v]) => [k, v.chart])
+);
 
 export const TERRITORY_LABELS: Record<string, string> = {
   matched_unique_franchise: 'Cidade exclusiva',
