@@ -137,21 +137,32 @@ export const KanbanColumn = memo(function KanbanColumn({
           </div>
         ) : (
           /* Standard list for small datasets — keeps drag-and-drop smooth */
-          leads.map((lead) => (
-            <div key={lead.id} className="animate-scale-in">
-              <LeadCard
-                lead={lead}
-                basePath={basePath}
-                franchiseName={franchiseMap?.[lead.franquia_id || '']}
-                onMoveStage={onMoveStage}
-                franchiseId={franchiseId}
-                whatsAppPlanActive={whatsAppPlanActive}
-                isSelected={selectedIds?.includes(lead.id)}
-                showCheckbox={!!hasSelection}
-                onToggleSelect={onToggleSelect}
-              />
-            </div>
-          ))
+          <>
+            {visibleLeads.map((lead) => (
+              <div key={lead.id} className="animate-scale-in">
+                <LeadCard
+                  lead={lead}
+                  basePath={basePath}
+                  franchiseName={franchiseMap?.[lead.franquia_id || '']}
+                  onMoveStage={onMoveStage}
+                  franchiseId={franchiseId}
+                  whatsAppPlanActive={whatsAppPlanActive}
+                  isSelected={selectedIds?.includes(lead.id)}
+                  showCheckbox={!!hasSelection}
+                  onToggleSelect={onToggleSelect}
+                />
+              </div>
+            ))}
+            {showCollapse && (
+              <button
+                type="button"
+                onClick={() => setExpanded(true)}
+                className="w-full mt-1 py-2 rounded-xl border border-dashed border-border/50 text-xs font-semibold text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/5 transition-colors"
+              >
+                Ver mais {leads.length - COLLAPSED_LIMIT} lead{leads.length - COLLAPSED_LIMIT > 1 ? 's' : ''}
+              </button>
+            )}
+          </>
         )}
       </div>
     </div>
