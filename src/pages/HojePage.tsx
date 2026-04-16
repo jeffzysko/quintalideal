@@ -10,6 +10,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Progress } from '@/components/ui/progress';
+import { StatCard } from '@/components/ui/stat-card';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
 import { PanelHeader } from '@/components/PanelHeader';
@@ -17,12 +19,13 @@ import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { NotificationBell } from '@/components/NotificationBell';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion, AnimatePresence } from 'framer-motion';
-import { format, isToday, isPast, differenceInDays, differenceInHours, formatDistanceToNow } from 'date-fns';
+import { format, isToday, isPast, differenceInDays, differenceInHours, formatDistanceToNow, startOfMonth, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
   CalendarClock, AlertTriangle, Phone, MessageCircle,
   ChevronRight, Clock, CheckCircle2,
   MapPin, Rocket, Inbox, Users, Sparkles,
+  PhoneCall, FileText, Trophy,
 } from 'lucide-react';
 import { type LeadRow } from '@/lib/lead-constants';
 import { cn } from '@/lib/utils';
