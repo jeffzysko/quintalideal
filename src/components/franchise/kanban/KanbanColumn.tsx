@@ -31,6 +31,7 @@ export const KanbanColumn = memo(function KanbanColumn({
   selectedIds?: string[];
   onToggleSelect?: (leadId: string) => void;
 }) {
+  const hasSelection = selectedIds && selectedIds.length > 0;
   const { setNodeRef, isOver } = useDroppable({ id: status });
   const color = STATUS_CHART_COLORS[status] || '#64748b';
   const highlighted = isOver || isOverColumn;
