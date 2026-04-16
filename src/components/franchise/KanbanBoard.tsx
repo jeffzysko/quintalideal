@@ -99,13 +99,6 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
     );
   }, []);
 
-  const handleBulkMove = useCallback(async (ids: string[], newStatus: string) => {
-    const results = await Promise.allSettled(
-      ids.map(id => moveLeadToStatus(id, newStatus))
-    );
-    const success = results.filter(r => r.status === 'fulfilled').length;
-    toast.success(`${success} leads movidos para ${STATUS_LABELS[newStatus]}`);
-  }, [moveLeadToStatus]);
 
   useEffect(() => {
     setLocalStatusOverrides({});
