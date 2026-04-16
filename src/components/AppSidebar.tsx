@@ -157,6 +157,7 @@ export function AppSidebar() {
 
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
   const isSuperAdmin = role === 'super_admin';
+  const showNewBadges = useState(() => shouldShowNewBadges())[0];
 
   const currentTab = new URLSearchParams(location.search).get('tab');
 
@@ -197,8 +198,16 @@ export function AppSidebar() {
             data-tour={item.dataTour}
             className={`w-full flex items-center gap-2 ${active ? 'bg-primary/10 text-primary font-medium' : ''}`}
           >
-            <item.icon className="h-4 w-4 shrink-0" />
+            <span className="relative shrink-0">
+              <item.icon className="h-4 w-4" />
+              {item.isNew && showNewBadges && (
+                <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 rounded-full bg-destructive animate-pulse" aria-label="Novo" />
+              )}
+            </span>
             <span className="truncate">{item.title}</span>
+            {item.isNew && showNewBadges && !collapsed && (
+              <span className="ml-auto text-[9px] font-bold uppercase tracking-wide text-destructive">Novo</span>
+            )}
           </button>
         </SidebarMenuButton>
       </SidebarMenuItem>
