@@ -530,6 +530,7 @@ export type Database = {
       }
       leads: {
         Row: {
+          assigned_to: string | null
           cidade: string | null
           coverage_match_count: number | null
           created_at: string
@@ -564,6 +565,7 @@ export type Database = {
           utm_source: string | null
         }
         Insert: {
+          assigned_to?: string | null
           cidade?: string | null
           coverage_match_count?: number | null
           created_at?: string
@@ -598,6 +600,7 @@ export type Database = {
           utm_source?: string | null
         }
         Update: {
+          assigned_to?: string | null
           cidade?: string | null
           coverage_match_count?: number | null
           created_at?: string
