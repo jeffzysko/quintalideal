@@ -21,8 +21,8 @@ import { PhotoLightbox } from '@/components/lead/PhotoLightbox';
 import { InactivityBadge } from '@/components/lead/InactivityBadge';
 import { UnifiedConversation } from '@/components/lead/UnifiedConversation';
 
-import { LeadValueEstimator } from '@/components/lead/LeadValueEstimator';
-import { ContactAttempts } from '@/components/lead/ContactAttempts';
+
+
 import { LeadPhotoUpload } from '@/components/lead/LeadPhotoUpload';
 import { LeadLinkedProposals } from '@/components/lead/LeadLinkedProposals';
 
