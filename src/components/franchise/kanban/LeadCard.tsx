@@ -157,7 +157,18 @@ export const LeadCard = memo(function LeadCard({
             </TooltipContent>
           </Tooltip>
           <SmartTagBadges lead={lead} max={1} />
-        </div>
+          {leadTags.length > 0 && (
+            <span className="inline-flex items-center gap-0.5 ml-0.5">
+              {leadTags.map((tag: { name: string; color: string }, i: number) => (
+                <Tooltip key={i}>
+                  <TooltipTrigger asChild>
+                    <span className="w-2.5 h-2.5 rounded-full shrink-0 cursor-help" style={{ backgroundColor: tag.color }} />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="text-xs py-1 px-2">{tag.name}</TooltipContent>
+                </Tooltip>
+              ))}
+            </span>
+          )}
 
         <div className="space-y-1">
           {lead.status_lead === 'vendido' && (lead as any).modelo_vendido && (
