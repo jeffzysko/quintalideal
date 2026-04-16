@@ -10,6 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { PageHeader } from '@/components/PageHeader';
+import { PageTransition } from '@/components/PageTransition';
 import { toast } from 'sonner';
 import { useState } from 'react';
 import { useStripeMode } from '@/hooks/useStripeMode';
