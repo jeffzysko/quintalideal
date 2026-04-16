@@ -2,7 +2,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Check, Sparkles, MessageCircle, FileText, Lightbulb, Clock, Rocket, Send, ThumbsUp, BarChart3 } from 'lucide-react';
+import { Check, Sparkles, MessageCircle, FileText, Lightbulb, Clock, Rocket, Send, ThumbsUp, BarChart3, AlertTriangle } from 'lucide-react';
 import { useFranchiseMetrics } from '@/hooks/useFranchiseMetrics';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -12,6 +12,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip
 import { PageHeader } from '@/components/PageHeader';
 import { toast } from 'sonner';
 import { useState } from 'react';
+import { useStripeMode } from '@/hooks/useStripeMode';
 
 interface FranchisePlan {
   whatsapp_plan_active: boolean;
