@@ -12,10 +12,12 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { exportRelatorioCRMPdf, exportLeadsCsv } from '@/lib/exportRelatorioCRM';
 
 import { STATUS_LABELS, STATUS_CHART_COLORS } from '@/lib/lead-constants';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { Download, CalendarIcon, Users, TrendingUp, Clock, DollarSign } from 'lucide-react';
+import { Download, CalendarIcon, Users, TrendingUp, Clock, DollarSign, Loader2 } from 'lucide-react';
 import { format, subDays, startOfMonth, endOfMonth, subMonths, differenceInDays, startOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { DateRange } from 'react-day-picker';
@@ -56,8 +58,19 @@ export default function RelatorioCRM() {
   const [period, setPeriod] = useState('30');
   const [customRange, setCustomRange] = useState<DateRange | undefined>();
   const [assignedFilter, setAssignedFilter] = useState('all');
+  const [isExporting, setIsExporting] = useState(false);
 
   const { from, to } = getDateRange(period, customRange);
+
+  const { data: franchise } = useQuery({
+    queryKey: ['crm-report-franchise', franchiseId],
+    queryFn: async () => {
+      if (!franchiseId) return null;
+      const { data } = await supabase.from('franchises').select('nome_franquia').eq('id', franchiseId).maybeSingle();
+      return data;
+    },
+    enabled: !!franchiseId,
+  });
 
   // Fetch leads
   const { data: leads = [], isLoading } = useQuery({
@@ -66,7 +79,7 @@ export default function RelatorioCRM() {
       if (!franchiseId) return [];
       const { data, error } = await supabase
         .from('leads')
-        .select('id, nome, status_lead, created_at, updated_at, loss_reason, assigned_to, franquia_id')
+        .select('id, nome, telefone, cidade, status_lead, created_at, updated_at, loss_reason, assigned_to, franquia_id')
         .eq('franquia_id', franchiseId)
         .gte('created_at', from.toISOString())
         .lte('created_at', to.toISOString())
@@ -207,24 +220,66 @@ export default function RelatorioCRM() {
     return Array.from(set).map(uid => ({ uid, name: profileMap[uid] || uid.slice(0, 8) }));
   }, [leads, profileMap]);
 
+  const periodLabel = useMemo(() => {
+    const opt = PERIOD_OPTIONS.find(o => o.value === period);
+    if (period === 'custom' && customRange?.from && customRange?.to) {
+      return `${format(customRange.from, 'dd/MM/yyyy')} a ${format(customRange.to, 'dd/MM/yyyy')}`;
+    }
+    return opt?.label || '';
+  }, [period, customRange]);
+
+  const partnerName = franchise?.nome_franquia || 'Parceiro';
+
   const handleExportCSV = () => {
-    const headers = ['Nome', 'Status', 'Criado em', 'Motivo de perda', 'Responsavel'];
-    const rows = filteredLeads.map(l => [
-      l.nome || '',
-      STATUS_LABELS[l.status_lead] || l.status_lead,
-      format(new Date(l.created_at), 'dd/MM/yyyy'),
-      l.loss_reason || '',
-      l.assigned_to ? (profileMap[l.assigned_to] || '') : '',
-    ]);
-    const csv = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
-    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `relatorio-crm-${format(new Date(), 'yyyy-MM-dd')}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    setIsExporting(true);
+    try {
+      exportLeadsCsv(filteredLeads.map(l => ({
+        nome: l.nome || '',
+        telefone: l.telefone || '',
+        cidade: l.cidade || '',
+        estagio: STATUS_LABELS[l.status_lead] || l.status_lead,
+        responsavel: l.assigned_to ? (profileMap[l.assigned_to] || '') : '',
+        data_criacao: format(new Date(l.created_at), 'dd/MM/yyyy'),
+        motivo_perda: l.loss_reason || '',
+      })));
+    } finally {
+      setIsExporting(false);
+    }
   };
+
+  const handleExportPDF = () => {
+    setIsExporting(true);
+    try {
+      const totalFunnel = funnelData.reduce((s, f) => s + f.value, 0);
+      exportRelatorioCRMPdf({
+        partnerName,
+        periodLabel,
+        summary: {
+          totalLeads,
+          conversionRate: `${conversionRate}%`,
+          avgFunnelDays,
+          avgTicket: avgTicket > 0
+            ? `R$ ${avgTicket.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+            : '-',
+        },
+        funnel: funnelData.map(f => ({
+          name: f.name,
+          value: f.value,
+          pct: totalFunnel > 0 ? `${((f.value / totalFunnel) * 100).toFixed(1)}%` : '0%',
+        })),
+        lossReasons: lossReasons.map(r => ({ reason: r.reason, count: r.count, pct: r.pct })),
+        performance: performanceByAssignee.length
+          ? performanceByAssignee.map(p => ({ name: p.name, active: p.active, closed: p.closed, rate: p.rate }))
+          : undefined,
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const exportDisabled = isLoading || isExporting || filteredLeads.length === 0;
+
+  // legacy CSV columns retained via dropdown handler above
 
   return (
     <div className="min-h-screen bg-background">
@@ -284,10 +339,22 @@ export default function RelatorioCRM() {
             </Select>
           )}
 
-          <Button variant="outline" size="sm" onClick={handleExportCSV} className="ml-auto gap-2">
-            <Download className="h-4 w-4" />
-            Exportar CSV
-          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" disabled={exportDisabled} className="ml-auto gap-2">
+                {isExporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                Exportar
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={handleExportPDF} disabled={exportDisabled}>
+                Exportar PDF
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={handleExportCSV} disabled={exportDisabled}>
+                Exportar CSV
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
 
         {/* Summary Cards */}
