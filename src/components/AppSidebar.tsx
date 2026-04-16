@@ -1,5 +1,6 @@
 import {
   Home,
+  CalendarDays,
   Settings,
   MessageCircle,
   HelpCircle,
@@ -78,13 +79,15 @@ const FRANCHISE_TABS: SidebarNavItem[] = [
 ];
 
 const ADMIN_NAV: SidebarNavItem[] = [
-  { title: 'Início', url: '/hoje', icon: Home },
-  { title: 'Notificações', url: '/notificacoes', icon: Bell },
+  { title: 'Inicio', url: '/hoje', icon: Home },
+  { title: 'Agenda', url: '/agenda', icon: CalendarDays },
+  { title: 'Notificacoes', url: '/notificacoes', icon: Bell },
 ];
 
 const FRANCHISE_NAV: SidebarNavItem[] = [
-  { title: 'Início', url: '/hoje', icon: Home },
-  { title: 'Notificações', url: '/notificacoes', icon: Bell },
+  { title: 'Inicio', url: '/hoje', icon: Home },
+  { title: 'Agenda', url: '/agenda', icon: CalendarDays },
+  { title: 'Notificacoes', url: '/notificacoes', icon: Bell },
 ];
 
 const BOTTOM_NAV: SidebarNavItem[] = [

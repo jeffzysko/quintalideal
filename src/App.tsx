@@ -62,6 +62,7 @@ const PoliticaPrivacidade = lazy(() => import("./pages/PoliticaPrivacidade"));
 const Suporte = lazy(() => import("./pages/Suporte"));
 const Notificacoes = lazy(() => import("./pages/Notificacoes"));
 const HojePage = lazy(() => import("./pages/HojePage"));
+const AgendaPage = lazy(() => import("./pages/AgendaPage"));
 
 const NotificationPreferences = lazy(() => import("./pages/NotificationPreferences"));
 const ProposalsList = lazy(() => import("./pages/ProposalsList"));
@@ -149,6 +150,10 @@ function AppRouteTree() {
         <Route
           path="/hoje"
           element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><HojePage /></ProtectedRoute>}
+        />
+        <Route
+          path="/agenda"
+          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><AgendaPage /></ProtectedRoute>}
         />
         <Route
           path="/notificacoes/preferencias"

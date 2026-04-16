@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, Home, Settings, FileText, BookOpen } from 'lucide-react';
+import { LayoutDashboard, Home, Settings, FileText, CalendarDays } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface NavItem {
@@ -16,8 +16,8 @@ function getNavForRole(role: string | null): NavItem[] {
     return [
       { icon: Home, label: 'Inicio', path: '/hoje' },
       { icon: LayoutDashboard, label: 'Painel', path: '/admin', matchPaths: ['/admin'] },
+      { icon: CalendarDays, label: 'Agenda', path: '/agenda' },
       { icon: FileText, label: 'Propostas', path: '/propostas', matchPaths: ['/propostas'] },
-      { icon: BookOpen, label: 'Catalogo', path: '/catalogo', matchPaths: ['/catalogo'] },
       { icon: Settings, label: 'Perfil', path: '/perfil' },
     ];
   }
@@ -25,8 +25,8 @@ function getNavForRole(role: string | null): NavItem[] {
   return [
     { icon: Home, label: 'Inicio', path: '/hoje' },
     { icon: LayoutDashboard, label: 'Painel', path: '/franquia', matchPaths: ['/franquia', '/painel'] },
+    { icon: CalendarDays, label: 'Agenda', path: '/agenda' },
     { icon: FileText, label: 'Propostas', path: '/propostas', matchPaths: ['/propostas'] },
-    { icon: BookOpen, label: 'Catalogo', path: '/catalogo', matchPaths: ['/catalogo'] },
     { icon: Settings, label: 'Perfil', path: '/perfil' },
   ];
 }
@@ -38,7 +38,7 @@ export function BottomNav() {
 
   if (!user || !role) return null;
 
-  const authenticatedPrefixes = ['/admin', '/franquia', '/hoje', '/perfil', '/suporte', '/docs', '/notificacoes', '/lead', '/painel', '/radar', '/propostas', '/catalogo'];
+  const authenticatedPrefixes = ['/admin', '/franquia', '/hoje', '/agenda', '/perfil', '/suporte', '/docs', '/notificacoes', '/lead', '/painel', '/radar', '/propostas', '/catalogo'];
   const isAuthenticatedPage = authenticatedPrefixes.some(p => location.pathname.startsWith(p));
   if (!isAuthenticatedPage) return null;
 
