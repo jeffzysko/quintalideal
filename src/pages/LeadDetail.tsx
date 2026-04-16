@@ -437,6 +437,13 @@ export default function LeadDetail() {
                   {statusInfo.label}
                 </Badge>
               </div>
+              {lead.status_lead === 'perdido' && lead.loss_reason && (
+                <div className="mt-2 sm:mt-1 sm:absolute sm:top-14 sm:right-5">
+                  <Badge variant="outline" className="bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800 text-[10px] sm:text-xs font-medium gap-1">
+                    💔 {lead.loss_reason}
+                  </Badge>
+                </div>
+              )}
             </div>
 
             <CardContent className="p-3 sm:p-5">
