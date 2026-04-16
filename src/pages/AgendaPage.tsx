@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from 'react';
+import { useMemo, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -12,8 +12,8 @@ import { NotificationBell } from '@/components/NotificationBell';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion } from 'framer-motion';
 import {
-  startOfWeek, endOfWeek, addWeeks, subWeeks, format, isToday, isPast,
-  isSameDay, eachDayOfInterval,
+  startOfWeek, endOfWeek, addWeeks, format, isToday, isPast,
+  eachDayOfInterval,
 } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
@@ -49,7 +49,7 @@ interface FollowupRow {
 
 export default function AgendaPage() {
   const navigate = useNavigate();
-  const { user, role, franchiseId, loading: authLoading } = useAuth();
+  const { role, franchiseId, loading: authLoading } = useAuth();
   const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
   const basePath = isAdmin ? '/admin/lead' : '/painel/lead';
   const queryClient = useQueryClient();
@@ -221,12 +221,12 @@ export default function AgendaPage() {
   return (
     <PageTransition>
       <div className="max-w-6xl mx-auto px-4 pb-28 sm:pb-8 pt-4 sm:pt-6">
-        <PanelHeader title="Agenda" rightContent={
+        <PanelHeader title="Agenda">
           <div className="flex items-center gap-2">
             <NotificationBell />
             <UserAvatarMenu />
           </div>
-        } />
+        </PanelHeader>
 
         {/* Week navigation */}
         <div className="flex flex-wrap items-center gap-2 mt-4 mb-6">
