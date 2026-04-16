@@ -772,11 +772,11 @@ export default function SejaParceiro() {
           <motion.div className="text-center mb-14" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <span className="inline-block text-xs font-bold text-primary uppercase tracking-[0.2em] mb-3 px-4 py-1.5 rounded-full border border-primary/15 bg-primary/5">Planos</span>
             <h2 className="text-3xl sm:text-[2.75rem] font-extrabold text-foreground mt-4 mb-3 tracking-tight">
-              Invista pouco,{' '}
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">venda muito</span>
+              O custo de nao usar{' '}
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">e bem maior</span>
             </h2>
-            <p className="text-sm sm:text-base text-muted-foreground">Planos acessíveis que se pagam com a primeira venda</p>
-            <p className="text-xs text-muted-foreground/50 mt-1">Disponíveis após a aprovação do seu cadastro</p>
+            <p className="text-sm sm:text-base text-muted-foreground">Cada lead perdido custa mais do que qualquer plano. Escolha o seu.</p>
+            <p className="text-xs text-muted-foreground/50 mt-1">Disponíveis apos a aprovacao do seu cadastro</p>
           </motion.div>
 
           <div className="grid sm:grid-cols-2 gap-5 sm:gap-6">
@@ -872,13 +872,13 @@ export default function SejaParceiro() {
             transition={{ duration: 0.7 }}
           >
             <h2 className="text-2xl sm:text-4xl font-extrabold text-foreground mb-5 leading-snug tracking-tight">
-              Sua loja já investe em tráfego pago.{' '}
+              Voce ja investe em trafego.{' '}
               <span className="bg-gradient-to-r from-primary via-[hsl(200,80%,50%)] to-secondary bg-clip-text text-transparent">
-                Agora transforme cliques em vendas de verdade.
+                Quantas vendas esta deixando na mesa?
               </span>
             </h2>
             <p className="text-sm sm:text-lg text-muted-foreground mb-10 max-w-xl mx-auto leading-relaxed">
-              O Quintal Ideal qualifica cada lead do seu tráfego, organiza sua operação comercial e automatiza o atendimento. Tudo o que falta para sua loja escalar.
+              Enquanto seus leads esfriam na caixa de entrada, seus concorrentes ja estao usando o Quintal Ideal. Nao fique para tras.
             </p>
             <Button
               size="lg"
@@ -888,7 +888,7 @@ export default function SejaParceiro() {
             >
               <span className="absolute inset-0 bg-gradient-to-r from-primary via-[hsl(200,80%,50%)] to-primary bg-[length:200%_100%] group-hover:animate-[shimmer_2s_linear_infinite]" />
               <span className="relative z-10 flex items-center gap-2">
-                Cadastrar minha loja gratuitamente
+                Quero parar de perder vendas
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </span>
             </Button>
