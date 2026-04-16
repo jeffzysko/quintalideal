@@ -27,6 +27,7 @@ import { LeadPhotoUpload } from '@/components/lead/LeadPhotoUpload';
 import { LeadLinkedProposals } from '@/components/lead/LeadLinkedProposals';
 import { LeadWhatsAppHistory } from '@/components/lead/LeadWhatsAppHistory';
 import { WhatsAppTemplates } from '@/components/lead/WhatsAppTemplates';
+import { LeadTagsSection } from '@/components/lead/LeadTagsSection';
 
 import { useAuth } from '@/hooks/useAuth';
 import { triggerWhatsAppAuto } from '@/lib/whatsapp-auto';
