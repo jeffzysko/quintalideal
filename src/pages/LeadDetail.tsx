@@ -201,6 +201,21 @@ export default function LeadDetail() {
     staleTime: 2 * 60 * 1000,
   });
 
+  // Fetch franchise users for the responsible selector
+  const leadFranchiseId = lead?.franquia_id || franchiseId;
+  const { data: franchiseUsers = [] } = useQuery({
+    queryKey: ['franchise-users', leadFranchiseId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('user_id, full_name')
+        .eq('franquia_id', leadFranchiseId!);
+      return (data || []).filter((u: any) => u.full_name);
+    },
+    enabled: !!leadFranchiseId,
+    staleTime: 5 * 60 * 1000,
+  });
+
   // Sync editable form fields when the lead first loads or when ID changes
   useEffect(() => {
     if (lead) {
@@ -211,6 +226,7 @@ export default function LeadDetail() {
       setEditTelefone(lead.telefone || '');
       setEditEmail(lead.email || '');
       setEditCidade(lead.cidade || '');
+      setAssignedTo(lead.assigned_to || null);
       const respostas = lead.respostas_questionario as Record<string, string> | null;
       setTempOverride((respostas?.temperatura_manual as LeadTemperature) || '');
     }
