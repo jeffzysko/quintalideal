@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MessageCircle, Phone, Mail, MapPin, Droplets, Camera, ClipboardList, Settings2, X, ChevronDown, Package, FileText, HelpCircle, Plus, MoreHorizontal } from 'lucide-react';
+import { MessageCircle, Phone, Mail, MapPin, Droplets, Camera, ClipboardList, Settings2, X, ChevronDown, Package, FileText, HelpCircle, Plus, TrendingUp } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { BackButton } from '@/components/BackButton';
@@ -21,8 +21,8 @@ import { PhotoLightbox } from '@/components/lead/PhotoLightbox';
 import { InactivityBadge } from '@/components/lead/InactivityBadge';
 import { UnifiedConversation } from '@/components/lead/UnifiedConversation';
 
-import { LeadValueEstimator } from '@/components/lead/LeadValueEstimator';
-import { ContactAttempts } from '@/components/lead/ContactAttempts';
+
+
 import { LeadPhotoUpload } from '@/components/lead/LeadPhotoUpload';
 import { LeadLinkedProposals } from '@/components/lead/LeadLinkedProposals';
 
@@ -132,6 +132,24 @@ function getAvatarColor(nome: string | null): string {
   return AVATAR_COLORS[idx];
 }
 
+function estimateValueRange(respostas: Record<string, string> | null): string | null {
+  if (!respostas) return null;
+  const budget = respostas.orcamento;
+  const pref = respostas.preferencia;
+  const space = respostas.espaco;
+  let min = 15000;
+  let max = 25000;
+  if (budget === '30-50') { min = 30000; max = 50000; }
+  else if (budget === '18-30') { min = 18000; max = 30000; }
+  else if (budget === 'ate-18') { min = 12000; max = 18000; }
+  else return null;
+  if (pref === 'spa') { min *= 1.15; max *= 1.15; }
+  if (pref === 'prainha') { min *= 1.1; max *= 1.1; }
+  if (space === 'mais-7') { min *= 1.1; max *= 1.1; }
+  min = Math.round(min / 1000);
+  max = Math.round(max / 1000);
+  return `R$ ${min}–${max} mil`;
+}
 
 export default function LeadDetail() {
   const { franchiseId, user } = useAuth();
@@ -413,7 +431,7 @@ export default function LeadDetail() {
     { value: 'conversa', icon: MessageCircle, label: 'Conversa' },
     { value: 'proposta', icon: FileText, label: 'Proposta' },
     ...(quizEntriesEarly.length > 0 ? [{ value: 'quiz', icon: ClipboardList, label: 'Quiz' }] : []),
-    { value: 'mais', icon: MoreHorizontal, label: 'Mais' },
+    { value: 'fotos', icon: Camera, label: 'Fotos' },
     ...(lead.status_lead === 'vendido' ? [{ value: 'pos-venda', icon: Package, label: 'Pós-venda' }] : []),
   ];
 
@@ -485,6 +503,17 @@ export default function LeadDetail() {
               <span>Modelo recomendado: <strong className="text-foreground">{lead.modelo_recomendado}</strong></span>
             </div>
           )}
+
+          {(() => {
+            const estimate = estimateValueRange(lead.respostas_questionario);
+            if (!estimate) return null;
+            return (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
+                <TrendingUp className="w-3.5 h-3.5 text-success" />
+                <span>Valor estimado: <strong className="text-foreground">{estimate}</strong></span>
+              </div>
+            );
+          })()}
 
           {lead.status_lead === 'perdido' && lead.loss_reason && (
             <div className="flex items-center gap-2 text-xs text-destructive mb-4">
@@ -610,11 +639,8 @@ export default function LeadDetail() {
               </TabsContent>
             )}
 
-            <TabsContent value="mais" className="mt-0">
-              <motion.div key="mais" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="p-4 space-y-5">
-                <ContactAttempts leadId={lead.id} />
-                <LeadValueEstimator respostas={lead.respostas_questionario} modeloRecomendado={lead.modelo_recomendado} />
-
+            <TabsContent value="fotos" className="mt-0">
+              <motion.div key="fotos" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="p-4 space-y-5">
                 <div>
                   <p className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
                     <Camera className="w-4 h-4 text-primary" /> Fotos do Quintal
