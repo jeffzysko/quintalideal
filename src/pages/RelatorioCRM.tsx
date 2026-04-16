@@ -220,24 +220,66 @@ export default function RelatorioCRM() {
     return Array.from(set).map(uid => ({ uid, name: profileMap[uid] || uid.slice(0, 8) }));
   }, [leads, profileMap]);
 
+  const periodLabel = useMemo(() => {
+    const opt = PERIOD_OPTIONS.find(o => o.value === period);
+    if (period === 'custom' && customRange?.from && customRange?.to) {
+      return `${format(customRange.from, 'dd/MM/yyyy')} a ${format(customRange.to, 'dd/MM/yyyy')}`;
+    }
+    return opt?.label || '';
+  }, [period, customRange]);
+
+  const partnerName = franchise?.nome_franquia || 'Parceiro';
+
   const handleExportCSV = () => {
-    const headers = ['Nome', 'Status', 'Criado em', 'Motivo de perda', 'Responsavel'];
-    const rows = filteredLeads.map(l => [
-      l.nome || '',
-      STATUS_LABELS[l.status_lead] || l.status_lead,
-      format(new Date(l.created_at), 'dd/MM/yyyy'),
-      l.loss_reason || '',
-      l.assigned_to ? (profileMap[l.assigned_to] || '') : '',
-    ]);
-    const csv = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
-    const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `relatorio-crm-${format(new Date(), 'yyyy-MM-dd')}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    setIsExporting(true);
+    try {
+      exportLeadsCsv(filteredLeads.map(l => ({
+        nome: l.nome || '',
+        telefone: l.telefone || '',
+        cidade: l.cidade || '',
+        estagio: STATUS_LABELS[l.status_lead] || l.status_lead,
+        responsavel: l.assigned_to ? (profileMap[l.assigned_to] || '') : '',
+        data_criacao: format(new Date(l.created_at), 'dd/MM/yyyy'),
+        motivo_perda: l.loss_reason || '',
+      })));
+    } finally {
+      setIsExporting(false);
+    }
   };
+
+  const handleExportPDF = () => {
+    setIsExporting(true);
+    try {
+      const totalFunnel = funnelData.reduce((s, f) => s + f.value, 0);
+      exportRelatorioCRMPdf({
+        partnerName,
+        periodLabel,
+        summary: {
+          totalLeads,
+          conversionRate: `${conversionRate}%`,
+          avgFunnelDays,
+          avgTicket: avgTicket > 0
+            ? `R$ ${avgTicket.toLocaleString('pt-BR', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`
+            : '-',
+        },
+        funnel: funnelData.map(f => ({
+          name: f.name,
+          value: f.value,
+          pct: totalFunnel > 0 ? `${((f.value / totalFunnel) * 100).toFixed(1)}%` : '0%',
+        })),
+        lossReasons: lossReasons.map(r => ({ reason: r.reason, count: r.count, pct: r.pct })),
+        performance: performanceByAssignee.length
+          ? performanceByAssignee.map(p => ({ name: p.name, active: p.active, closed: p.closed, rate: p.rate }))
+          : undefined,
+      });
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  const exportDisabled = isLoading || isExporting || filteredLeads.length === 0;
+
+  // legacy CSV columns retained via dropdown handler above
 
   return (
     <div className="min-h-screen bg-background">
