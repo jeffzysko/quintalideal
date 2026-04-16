@@ -40,6 +40,7 @@ import { MobilePipelineCard } from './kanban/MobilePipelineCard';
 import { KanbanColumn } from './kanban/KanbanColumn';
 import { PipelineSummary } from './kanban/PipelineSummary';
 import { StageChangeDrawer } from './kanban/StageChangeDrawer';
+import { BulkActionsBar } from './kanban/BulkActionsBar';
 import { STATUS_CHART_COLORS } from '@/lib/lead-constants';
 
 interface KanbanBoardProps {
@@ -81,6 +82,30 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
   const [stageDrawerLeadId, setStageDrawerLeadId] = useState<string | null>(null);
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
   const queryClient = useQueryClient();
+  const [selectedLeadIds, setSelectedLeadIds] = useState<string[]>([]);
+
+  const { data: franchiseProfiles = [] } = useQuery({
+    queryKey: ['franchise-profiles', franchiseId],
+    queryFn: async () => {
+      const { data } = await supabase.from('profiles').select('user_id, full_name').eq('franquia_id', franchiseId);
+      return data || [];
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const toggleSelect = useCallback((leadId: string) => {
+    setSelectedLeadIds(prev =>
+      prev.includes(leadId) ? prev.filter(id => id !== leadId) : [...prev, leadId]
+    );
+  }, []);
+
+  const handleBulkMove = useCallback(async (ids: string[], newStatus: string) => {
+    const results = await Promise.allSettled(
+      ids.map(id => moveLeadToStatus(id, newStatus))
+    );
+    const success = results.filter(r => r.status === 'fulfilled').length;
+    toast.success(`${success} leads movidos para ${STATUS_LABELS[newStatus]}`);
+  }, [moveLeadToStatus]);
 
   useEffect(() => {
     setLocalStatusOverrides({});
