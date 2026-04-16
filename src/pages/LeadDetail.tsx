@@ -34,7 +34,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 import { useAuth } from '@/hooks/useAuth';
 import { triggerWhatsAppAuto } from '@/lib/whatsapp-auto';
-import { useIsMobile } from '@/hooks/use-mobile';
+
 import { classifyLead, type LeadTemperature } from '@/lib/leadScoring';
 import { toast } from 'sonner';
 import { isValidBRPhone, isValidEmail } from '@/lib/validation';
