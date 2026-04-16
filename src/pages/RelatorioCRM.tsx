@@ -12,10 +12,12 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { exportRelatorioCRMPdf, exportLeadsCsv } from '@/lib/exportRelatorioCRM';
 
 import { STATUS_LABELS, STATUS_CHART_COLORS } from '@/lib/lead-constants';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LineChart, Line } from 'recharts';
-import { Download, CalendarIcon, Users, TrendingUp, Clock, DollarSign } from 'lucide-react';
+import { Download, CalendarIcon, Users, TrendingUp, Clock, DollarSign, Loader2 } from 'lucide-react';
 import { format, subDays, startOfMonth, endOfMonth, subMonths, differenceInDays, startOfWeek } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { DateRange } from 'react-day-picker';
