@@ -30,7 +30,7 @@ export const LeadCard = memo(function LeadCard({
   basePath: string;
   overlay?: boolean;
   franchiseName?: string;
-  onMoveStage?: (leadId: string, newStatus: string) => void;
+  onMoveStage?: (leadId: string, newStatus: string, lossReason?: string) => void;
 }) {
   const navigate = useNavigate();
   const { user } = useAuth();
