@@ -461,6 +461,73 @@ export type Database = {
           },
         ]
       }
+      lead_tag_assignments: {
+        Row: {
+          created_at: string
+          id: string
+          lead_id: string
+          tag_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          lead_id: string
+          tag_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          lead_id?: string
+          tag_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "lead_tag_assignments_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_tag_assignments_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_map"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "lead_tag_assignments_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "lead_tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      lead_tags: {
+        Row: {
+          color: string
+          created_at: string
+          franchise_id: string
+          id: string
+          name: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          franchise_id: string
+          id?: string
+          name: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          franchise_id?: string
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       leads: {
         Row: {
           cidade: string | null
@@ -476,6 +543,7 @@ export type Database = {
           id: string
           lead_city_normalized: string | null
           lead_origin: string
+          loss_reason: string | null
           modelo_recomendado: string | null
           modelo_vendido: string | null
           nome: string | null
@@ -509,6 +577,7 @@ export type Database = {
           id?: string
           lead_city_normalized?: string | null
           lead_origin?: string
+          loss_reason?: string | null
           modelo_recomendado?: string | null
           modelo_vendido?: string | null
           nome?: string | null
@@ -542,6 +611,7 @@ export type Database = {
           id?: string
           lead_city_normalized?: string | null
           lead_origin?: string
+          loss_reason?: string | null
           modelo_recomendado?: string | null
           modelo_vendido?: string | null
           nome?: string | null
