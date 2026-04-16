@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Camera, ClipboardList, Settings2, Save, User, Trash2, Clock, Image, CalendarClock, Pencil, X, ChevronDown, Check } from 'lucide-react';
+import { MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Camera, ClipboardList, Settings2, Save, User, Trash2, Clock, Image, CalendarClock, Pencil, X, ChevronDown, Check, Package } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { BackButton } from '@/components/BackButton';
@@ -28,6 +28,7 @@ import { LeadLinkedProposals } from '@/components/lead/LeadLinkedProposals';
 import { LeadWhatsAppHistory } from '@/components/lead/LeadWhatsAppHistory';
 import { WhatsAppTemplates } from '@/components/lead/WhatsAppTemplates';
 import { LeadTagsSection } from '@/components/lead/LeadTagsSection';
+import { PostSaleSection } from '@/components/lead/PostSaleSection';
 
 import { useAuth } from '@/hooks/useAuth';
 import { triggerWhatsAppAuto } from '@/lib/whatsapp-auto';
