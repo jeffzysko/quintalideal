@@ -6,10 +6,10 @@ import { Card, CardContent } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
+
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Phone, Clock, FileText, ArrowRightLeft, MessageCircle, Thermometer, Send, CalendarClock, CheckCircle2 } from 'lucide-react';
+import { Phone, FileText, ArrowRightLeft, MessageCircle, Thermometer, Send, CalendarClock } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -56,7 +56,7 @@ interface Props {
   leadName?: string | null;
 }
 
-export function UnifiedConversation({ leadId, franchiseId, leadName }: Props) {
+export function UnifiedConversation({ leadId }: Props) {
   const { user } = useAuth();
   const [newContent, setNewContent] = useState('');
   const [newType, setNewType] = useState('note');
