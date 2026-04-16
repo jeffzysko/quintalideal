@@ -159,6 +159,7 @@ export default function LeadDetail() {
   
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [assignedTo, setAssignedTo] = useState<string | null>(null);
 
   const { data: poolModels = [] } = useQuery({
     queryKey: ['pool-models'],
