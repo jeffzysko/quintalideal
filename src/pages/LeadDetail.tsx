@@ -504,6 +504,17 @@ export default function LeadDetail() {
             </div>
           )}
 
+          {(() => {
+            const estimate = estimateValueRange(lead.respostas_questionario);
+            if (!estimate) return null;
+            return (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
+                <TrendingUp className="w-3.5 h-3.5 text-success" />
+                <span>Valor estimado: <strong className="text-foreground">{estimate}</strong></span>
+              </div>
+            );
+          })()}
+
           {lead.status_lead === 'perdido' && lead.loss_reason && (
             <div className="flex items-center gap-2 text-xs text-destructive mb-4">
               💔 <span>Perdido: {lead.loss_reason}</span>
