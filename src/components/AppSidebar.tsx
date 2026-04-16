@@ -87,6 +87,7 @@ const FRANCHISE_TOOLS: SidebarNavItem[] = [
   { title: 'Pos-venda', url: '/franquia?tab=pos-venda', icon: Package, matchTab: 'pos-venda' },
   { title: 'Metas', url: '/franquia?tab=achievements', icon: TrendingUp, matchTab: 'achievements' },
   { title: 'Relatorios', url: '/franquia?tab=reports', icon: BarChart3, matchTab: 'reports' },
+  { title: 'Relatorio CRM', url: '/relatorio-crm', icon: TrendingUp, matchPaths: ['/relatorio-crm'] },
 ];
 
 // ── Franchise: "Configuracoes" group ──
