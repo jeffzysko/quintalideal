@@ -2,19 +2,19 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
-import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Camera, ClipboardList, Settings2, Save, User, Pencil, X, ChevronDown, Check, Package, FileText, HelpCircle, Plus } from 'lucide-react';
+import { MessageCircle, Phone, Mail, MapPin, Droplets, Camera, ClipboardList, Settings2, X, ChevronDown, Package, FileText, HelpCircle, Plus, MoreHorizontal } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { BackButton } from '@/components/BackButton';
 import { PanelHeader } from '@/components/PanelHeader';
 import { NotificationBell } from '@/components/NotificationBell';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { LeadFollowups } from '@/components/franchise/LeadFollowups';
 import { PhotoLightbox } from '@/components/lead/PhotoLightbox';
@@ -70,12 +70,12 @@ interface Lead {
   assigned_to?: string | null;
 }
 
-const statusConfig: Record<string, { label: string; color: string; accent: string }> = {
-  novo: { label: 'Novo', color: 'bg-card text-foreground border-border', accent: 'border-l-primary bg-primary/5' },
-  contatado: { label: 'Contatado', color: 'bg-sky-100 dark:bg-sky-900/40 text-sky-800 dark:text-sky-300 border-sky-200 dark:border-sky-700', accent: 'border-l-sky-500 bg-sky-50 dark:bg-sky-950/30' },
-  em_negociacao: { label: 'Em Negociação', color: 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-700', accent: 'border-l-amber-500 bg-amber-50 dark:bg-amber-950/30' },
-  vendido: { label: 'Vendido', color: 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-700', accent: 'border-l-emerald-500 bg-emerald-50 dark:bg-emerald-950/30' },
-  perdido: { label: 'Perdido', color: 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 border-red-200 dark:border-red-700', accent: 'border-l-red-500 bg-red-50 dark:bg-red-950/30' },
+const statusConfig: Record<string, { label: string; color: string }> = {
+  novo: { label: 'Novo', color: 'bg-card text-foreground border-border' },
+  contatado: { label: 'Contatado', color: 'bg-sky-100 dark:bg-sky-900/40 text-sky-800 dark:text-sky-300 border-sky-200 dark:border-sky-700' },
+  em_negociacao: { label: 'Em Negociação', color: 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-700' },
+  vendido: { label: 'Vendido', color: 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-700' },
+  perdido: { label: 'Perdido', color: 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 border-red-200 dark:border-red-700' },
 };
 
 const questionLabels: Record<string, { label: string; icon: string }> = {
@@ -113,6 +113,25 @@ const answerLabels: Record<string, string> = {
   '30-50': 'R$ 30 a 50 mil',
 };
 
+function getInitials(nome: string | null): string {
+  if (!nome) return '?';
+  const parts = nome.trim().split(' ').filter(Boolean);
+  if (parts.length === 0) return '?';
+  if (parts.length === 1) return parts[0][0].toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+const AVATAR_COLORS = [
+  '#6366f1', '#8b5cf6', '#ec4899', '#f59e0b',
+  '#10b981', '#3b82f6', '#ef4444', '#14b8a6',
+];
+
+function getAvatarColor(nome: string | null): string {
+  if (!nome) return AVATAR_COLORS[0];
+  const idx = nome.charCodeAt(0) % AVATAR_COLORS.length;
+  return AVATAR_COLORS[idx];
+}
+
 
 export default function LeadDetail() {
   const { franchiseId, user } = useAuth();
@@ -131,7 +150,8 @@ export default function LeadDetail() {
   const [editEmail, setEditEmail] = useState('');
   const [editCidade, setEditCidade] = useState('');
   const [activeTab, setActiveTab] = useState('conversa');
-  
+  const [manageOpen, setManageOpen] = useState(false);
+
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
   const [assignedTo, setAssignedTo] = useState<string | null>(null);
@@ -145,7 +165,6 @@ export default function LeadDetail() {
     staleTime: 10 * 60 * 1000,
   });
 
-  // Both queries run in parallel — no sequential waterfall
   const { data: lead, isLoading: loading } = useQuery({
     queryKey: ['lead-detail', id],
     queryFn: async () => {
@@ -176,7 +195,6 @@ export default function LeadDetail() {
     staleTime: 2 * 60 * 1000,
   });
 
-  // Fetch franchise users for the responsible selector
   const leadFranchiseId = lead?.franquia_id || franchiseId;
   const { data: franchiseUsers = [] } = useQuery({
     queryKey: ['franchise-users', leadFranchiseId],
@@ -191,7 +209,6 @@ export default function LeadDetail() {
     staleTime: 5 * 60 * 1000,
   });
 
-  // Sync editable form fields when the lead first loads or when ID changes
   useEffect(() => {
     if (lead) {
       setStatus(lead.status_lead);
@@ -272,16 +289,15 @@ export default function LeadDetail() {
       queryClient.invalidateQueries({ queryKey: ['franchise-leads-table'] });
       queryClient.invalidateQueries({ queryKey: ['admin-leads-all'] });
       queryClient.invalidateQueries({ queryKey: ['admin-leads-table'] });
+      setManageOpen(false);
     } else {
       toast.error('Erro ao salvar.');
     }
   };
 
   const [autoSaving, setAutoSaving] = useState(false);
-  const [autoSaved, setAutoSaved] = useState<string | null>(null);
   const autoSaveTimeoutRef = useRef<NodeJS.Timeout>();
 
-  // Cleanup autoSaveTimeoutRef on unmount to prevent timer leaks
   useEffect(() => {
     return () => {
       if (autoSaveTimeoutRef.current) clearTimeout(autoSaveTimeoutRef.current);
@@ -308,7 +324,6 @@ export default function LeadDetail() {
       }
       const { error } = await supabase.from('leads').update({ status_lead: newValue as any }).eq('id', lead.id);
       if (error) { toast.error('Erro ao salvar status'); setAutoSaving(false); return; }
-      // Event 7: WhatsApp auto trigger for em_negociacao
       if (newValue === 'em_negociacao') {
         triggerWhatsAppAuto({ trigger_event: 'lead_negotiation', lead_id: lead.id, franchise_id: lead.franquia_id || undefined });
       }
@@ -334,15 +349,12 @@ export default function LeadDetail() {
     }
 
     setAutoSaving(false);
-    setAutoSaved(field === 'status' ? 'Status salvo!' : 'Temperatura salva!');
-    if (autoSaveTimeoutRef.current) clearTimeout(autoSaveTimeoutRef.current);
-    autoSaveTimeoutRef.current = setTimeout(() => setAutoSaved(null), 2000);
     queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
     queryClient.invalidateQueries({ queryKey: ['franchise-leads-all'] });
     queryClient.invalidateQueries({ queryKey: ['franchise-leads-table'] });
     queryClient.invalidateQueries({ queryKey: ['admin-leads-all'] });
     queryClient.invalidateQueries({ queryKey: ['admin-leads-table'] });
-  }, [lead, id, queryClient]);
+  }, [lead, id, queryClient, user]);
 
   const handleStatusChange = useCallback((newStatus: string) => {
     setStatus(newStatus);
@@ -364,7 +376,7 @@ export default function LeadDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center gradient-hero">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
       </div>
     );
@@ -372,7 +384,7 @@ export default function LeadDetail() {
 
   if (!lead) {
     return (
-      <div className="min-h-screen flex items-center justify-center gradient-hero">
+      <div className="min-h-screen flex items-center justify-center bg-background">
         <p className="text-muted-foreground">Lead não encontrado.</p>
       </div>
     );
@@ -388,562 +400,498 @@ export default function LeadDetail() {
     { label: lead.nome || 'Detalhes' },
   ];
 
+  const liveRespostas = { ...(lead.respostas_questionario || {}) };
+  if (tempOverride) liveRespostas.temperatura_manual = tempOverride;
+  else delete liveRespostas.temperatura_manual;
+  const temp = classifyLead(Object.keys(liveRespostas).length > 0 ? liveRespostas : null, lead.pontuacao_quintal);
+
+  const tabs = [
+    { value: 'conversa', icon: MessageCircle, label: 'Conversa' },
+    { value: 'proposta', icon: FileText, label: 'Proposta' },
+    { value: 'mais', icon: MoreHorizontal, label: 'Mais' },
+    ...(lead.status_lead === 'vendido' ? [{ value: 'pos-venda', icon: Package, label: 'Pós-venda' }] : []),
+  ];
+
+  const quizEntries = lead.respostas_questionario
+    ? Object.entries(lead.respostas_questionario).filter(([key]) => questionLabels[key])
+    : [];
+
   return (
     <PageTransition>
-    <div className="min-h-screen bg-background pb-bottomnav">
+    <div className="min-h-screen bg-background">
       <PanelHeader title={lead.nome || 'Detalhes do Lead'}>
         <BackButton fallback={returnTo} />
         <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
+        <Button variant="ghost" size="icon" onClick={() => setManageOpen(true)} title="Gerenciar lead">
+          <Settings2 className="w-4 h-4" />
+        </Button>
         <NotificationBell />
         <UserAvatarMenu />
       </PanelHeader>
 
-      <div className="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-5">
-        <Breadcrumbs className="md:hidden" items={breadcrumbItems} />
+      <div className="max-w-2xl mx-auto">
+        <div className="px-3 sm:px-4 pt-3">
+          <Breadcrumbs className="md:hidden" items={breadcrumbItems} />
+        </div>
 
-        {/* Compact Hero Card */}
-        {(() => {
-          const liveRespostas = { ...(lead.respostas_questionario || {}) };
-          if (tempOverride) liveRespostas.temperatura_manual = tempOverride;
-          else delete liveRespostas.temperatura_manual;
-          const temp = classifyLead(Object.keys(liveRespostas).length > 0 ? liveRespostas : null, lead.pontuacao_quintal);
-          const accentBar =
-            lead.status_lead === 'vendido' ? 'bg-emerald-500' :
-            lead.status_lead === 'perdido' ? 'bg-red-500' :
-            lead.status_lead === 'em_negociacao' ? 'bg-amber-500' :
-            lead.status_lead === 'contatado' ? 'bg-sky-500' : 'bg-primary';
-
-          return (
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-              <Card className="glass-card overflow-hidden">
-                <div className={`h-1 w-full ${accentBar}`} />
-                <CardContent className="p-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
-                      <User className="w-5 h-5 text-primary" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <h1 className="text-base font-bold text-foreground truncate">{lead.nome || 'Lead sem nome'}</h1>
-                        <Badge className={`${statusInfo.color} border text-[10px] font-medium shrink-0`}>
-                          {statusInfo.label}
-                        </Badge>
-                        <span className="text-base" title={`Lead ${temp.label}`}>{temp.emoji}</span>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mt-0.5">
-                        {lead.cidade && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{lead.cidade}</span>}
-                        <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{new Date(lead.created_at).toLocaleDateString('pt-BR')}</span>
-                        <InactivityBadge createdAt={lead.created_at} lastActivityAt={lastActivityAt} />
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-2">
-                    {lead.telefone && (
-                      <Button
-                        size="sm"
-                        className="flex-1 bg-success hover:bg-success/90 text-success-foreground gap-1.5 h-10"
-                        onClick={() => {
-                          const fullPhone = toWhatsAppPhone(lead.telefone || '');
-                          const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem? Vi que você fez o teste do Índice do Quintal Ideal!`);
-                          window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
-                        }}
-                      >
-                        <MessageCircle className="w-4 h-4" /> WhatsApp
-                      </Button>
-                    )}
-                    {lead.telefone && (
-                      <Button size="sm" variant="outline" className="h-10 w-10 shrink-0" onClick={() => window.open(`tel:${lead.telefone}`, '_self')}>
-                        <Phone className="w-4 h-4" />
-                      </Button>
-                    )}
-                    {lead.email && (
-                      <Button size="sm" variant="outline" className="h-10 w-10 shrink-0" onClick={() => window.open(`mailto:${lead.email}`, '_blank')}>
-                        <Mail className="w-4 h-4" />
-                      </Button>
-                    )}
-                  </div>
-
-                  {lead.modelo_recomendado && (
-                    <div className="mt-3 flex items-center gap-2 bg-muted/40 rounded-lg px-3 py-2">
-                      <Droplets className="w-3.5 h-3.5 text-primary shrink-0" />
-                      <span className="text-xs text-muted-foreground">Modelo recomendado:</span>
-                      <span className="text-xs font-semibold text-foreground truncate">{lead.modelo_recomendado}</span>
-                    </div>
-                  )}
-
-                  {lead.status_lead === 'perdido' && lead.loss_reason && (
-                    <div className="mt-2 flex items-center gap-2 bg-destructive/10 rounded-lg px-3 py-2">
-                      <span className="text-xs text-destructive">💔 Motivo: {lead.loss_reason}</span>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
-            </motion.div>
-          );
-        })()}
-
-        {/* Tabs */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <div className="bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl p-1.5 shadow-sm">
-              <TabsList className={`w-full grid h-12 bg-transparent p-0 gap-1 ${lead.status_lead === 'vendido' ? 'grid-cols-5' : 'grid-cols-4'}`}>
-                {[
-                  { value: 'conversa', icon: MessageCircle, label: 'Conversa' },
-                  { value: 'proposta', icon: FileText, label: 'Proposta' },
-                  { value: 'dados', icon: ClipboardList, label: 'Dados' },
-                  { value: 'gerenciar', icon: Settings2, label: 'Gerenciar' },
-                  ...(lead.status_lead === 'vendido' ? [{ value: 'pos-venda', icon: Package, label: 'Pós-venda' }] : []),
-                ].map(tab => {
-                  const Icon = tab.icon;
-                  return (
-                    <TabsTrigger
-                      key={tab.value}
-                      value={tab.value}
-                      title={tab.label}
-                      className="relative h-10 text-[11px] sm:text-xs gap-1 sm:gap-1.5 rounded-xl font-medium transition-all duration-200 text-muted-foreground data-[state=active]:bg-gradient-to-b data-[state=active]:from-primary data-[state=active]:to-primary/90 data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/20 hover:bg-muted/60 data-[state=active]:hover:bg-primary"
-                    >
-                      <Icon className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-                      <span className="hidden sm:inline text-[10px] sm:text-xs">{tab.label}</span>
-                    </TabsTrigger>
-                  );
-                })}
-              </TabsList>
+        {/* ZONA 1 — Hero (sem card, sem borda) */}
+        <div className="bg-muted/30 px-4 pt-4 pb-5">
+          <div className="flex items-center gap-4 mb-4">
+            <div
+              className="w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-bold text-white shrink-0 shadow-md"
+              style={{ backgroundColor: getAvatarColor(lead.nome) }}
+            >
+              {getInitials(lead.nome)}
             </div>
 
-            <AnimatePresence mode="wait">
-              {/* Conversa Tab */}
-              <TabsContent value="conversa" className="mt-4">
-                <motion.div key="conversa" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="space-y-4">
-                  <UnifiedConversation leadId={lead.id} franchiseId={franchiseId || lead.franquia_id} leadName={lead.nome} />
-                  {(franchiseId || lead.franquia_id) && (
-                    <LeadFollowups franchiseId={(franchiseId || lead.franquia_id)!} leadId={lead.id} leadName={lead.nome || undefined} />
-                  )}
-                </motion.div>
-              </TabsContent>
+            <div className="flex-1 min-w-0">
+              <h1 className="text-xl font-bold text-foreground leading-tight truncate">
+                {lead.nome || 'Lead sem nome'}
+              </h1>
+              <div className="flex flex-wrap items-center gap-2 mt-1">
+                {lead.cidade && (
+                  <span className="text-xs text-muted-foreground flex items-center gap-1">
+                    <MapPin className="w-3 h-3" />{lead.cidade}
+                  </span>
+                )}
+                <InactivityBadge createdAt={lead.created_at} lastActivityAt={lastActivityAt} />
+              </div>
+            </div>
+          </div>
 
-              {/* Proposta Tab */}
-              <TabsContent value="proposta" className="mt-4">
-                <motion.div key="proposta" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="space-y-4">
-                  <LeadLinkedProposals leadId={lead.id} leadName={lead.nome} />
-                  <Button
-                    className="w-full gap-2"
-                    onClick={() => {
-                      const params = new URLSearchParams({ lead_id: lead.id });
-                      if (lead.nome) params.set('lead_name', lead.nome);
-                      navigate(`/propostas/nova?${params.toString()}`);
-                    }}
-                  >
-                    <Plus className="w-4 h-4" /> Nova proposta para este lead
-                  </Button>
-                </motion.div>
-              </TabsContent>
-
-              {/* Dados Tab */}
-              <TabsContent value="dados" className="mt-4">
-                <motion.div key="dados" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="space-y-4">
-                  {lead.respostas_questionario && (() => {
-                    const entries = Object.entries(lead.respostas_questionario).filter(([key]) => questionLabels[key]);
-                    return (
-                      <Card className="glass-card">
-                        <CardContent className="p-3 sm:p-5">
-                          <Collapsible defaultOpen>
-                            <CollapsibleTrigger asChild>
-                              <button className="w-full flex items-center justify-between mb-3 group">
-                                <div className="flex items-center gap-2">
-                                  <ClipboardList className="w-4 h-4 text-primary" />
-                                  <h2 className="text-sm font-semibold text-foreground">Respostas do Quiz ({entries.length})</h2>
-                                </div>
-                                <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
-                              </button>
-                            </CollapsibleTrigger>
-                            <CollapsibleContent className="space-y-1.5">
-                              {entries.map(([key, value]) => {
-                                const q = questionLabels[key];
-                                const displayValue = answerLabels[value as string] || (value as string);
-                                return (
-                                  <div key={key} className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 py-2 sm:py-2.5 px-3 sm:px-3.5 rounded-xl bg-muted/40">
-                                    <span className="text-xs sm:text-sm text-muted-foreground flex items-center gap-2">
-                                      <span className="text-base">{q.icon}</span>
-                                      {q.label}
-                                    </span>
-                                    <span className="text-xs sm:text-sm font-semibold text-foreground ml-7 sm:ml-0">{displayValue}</span>
-                                  </div>
-                                );
-                              })}
-                            </CollapsibleContent>
-                          </Collapsible>
-                        </CardContent>
-                      </Card>
-                    );
-                  })()}
-
-                  <div className="grid grid-cols-1 gap-4">
-                    <LeadValueEstimator respostas={lead.respostas_questionario} modeloRecomendado={lead.modelo_recomendado} />
-                    <Card className="glass-card">
-                      <CardContent className="p-3 sm:p-5">
-                        <h2 className="text-sm font-semibold text-foreground mb-3">Tentativas de contato</h2>
-                        <ContactAttempts leadId={lead.id} />
-                      </CardContent>
-                    </Card>
-                  </div>
-
-                  <Card className="glass-card">
-                    <CardContent className="p-3 sm:p-5">
-                      {photos.length > 0 ? (
-                        <>
-                          <div className="flex items-center gap-2 mb-3">
-                            <Camera className="w-4 h-4 text-primary" />
-                            <h2 className="text-sm font-semibold text-foreground">Fotos do Quintal</h2>
-                          </div>
-                          <div className="grid grid-cols-2 gap-2 mb-4">
-                            {photos.map((url, i) => (
-                              <div key={i} className="relative group rounded-xl overflow-hidden border border-border/50 aspect-square">
-                                <button
-                                  onClick={() => { setLightboxIndex(i); setLightboxOpen(true); }}
-                                  className="w-full h-full focus:outline-none focus:ring-2 focus:ring-primary"
-                                >
-                                  <img src={url} alt={`Quintal ${i + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
-                                </button>
-                                <AlertDialog>
-                                  <AlertDialogTrigger asChild>
-                                    <button className="absolute top-1.5 right-1.5 w-7 h-7 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shadow-md z-10">
-                                      <X className="w-3.5 h-3.5" />
-                                    </button>
-                                  </AlertDialogTrigger>
-                                  <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                      <AlertDialogTitle>Remover foto?</AlertDialogTitle>
-                                      <AlertDialogDescription>Esta ação não pode ser desfeita.</AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                                      <AlertDialogAction
-                                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                                        onClick={async () => {
-                                          if (!lead) return;
-                                          const photoFields = ['foto1', 'foto2', 'foto3', 'foto4'] as const;
-                                          const remaining = photos.filter((_, idx) => idx !== i);
-                                          const update: Record<string, string | null> = {};
-                                          photoFields.forEach((field, idx) => {
-                                            update[field] = remaining[idx] || null;
-                                          });
-                                          const { error } = await supabase.from('leads').update(update).eq('id', lead.id);
-                                          if (error) toast.error('Erro ao remover foto.');
-                                          else {
-                                            toast.success('Foto removida!');
-                                            queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
-                                          }
-                                        }}
-                                      >
-                                        Remover
-                                      </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                  </AlertDialogContent>
-                                </AlertDialog>
-                              </div>
-                            ))}
-                          </div>
-                        </>
-                      ) : (
-                        <div className="flex flex-col items-center justify-center py-6 text-center">
-                          <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-2">
-                            <Camera className="w-6 h-6 text-primary" />
-                          </div>
-                          <p className="text-sm font-medium text-foreground mb-1">Nenhuma foto adicionada</p>
-                        </div>
-                      )}
-                      {photos.length < 4 && lead && (
-                        <LeadPhotoUpload
-                          leadId={lead.id}
-                          existingPhotos={[lead.foto1, lead.foto2, lead.foto3, lead.foto4]}
-                          franchiseId={lead.franquia_id || ''}
-                          onSaved={() => queryClient.invalidateQueries({ queryKey: ['lead-detail', id] })}
-                        />
-                      )}
-                    </CardContent>
-                  </Card>
-                  <PhotoLightbox photos={photos} initialIndex={lightboxIndex} open={lightboxOpen} onOpenChange={setLightboxOpen} />
-
-                  {(franchiseId || lead.franquia_id) && (
-                    <LeadTagsSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
-                  )}
-
-                  <WhatsAppTemplates
-                    leadName={lead.nome}
-                    leadPhone={lead.telefone}
-                    modeloRecomendado={lead.modelo_recomendado}
-                    cidade={lead.cidade}
-                    pontuacao={lead.pontuacao_quintal}
-                    statusLead={lead.status_lead}
-                    leadId={lead.id}
+          <div className="flex items-center gap-2 mb-4 flex-wrap">
+            <Badge className={`${statusInfo.color} border font-medium`}>
+              {statusInfo.label}
+            </Badge>
+            <span className="text-base">{temp.emoji}</span>
+            <span className="text-xs text-muted-foreground font-medium">Lead {temp.label}</span>
+            {lead.pontuacao_quintal != null && (
+              <div className="flex items-center gap-1.5 ml-auto">
+                <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full ${lead.pontuacao_quintal >= 70 ? 'bg-emerald-500' : lead.pontuacao_quintal >= 40 ? 'bg-amber-500' : 'bg-red-400'}`}
+                    style={{ width: `${lead.pontuacao_quintal}%` }}
                   />
+                </div>
+                <span className="text-xs font-semibold text-muted-foreground">{lead.pontuacao_quintal}%</span>
+              </div>
+            )}
+          </div>
+
+          {lead.modelo_recomendado && (
+            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
+              <Droplets className="w-3.5 h-3.5 text-primary" />
+              <span>Modelo recomendado: <strong className="text-foreground">{lead.modelo_recomendado}</strong></span>
+            </div>
+          )}
+
+          {lead.status_lead === 'perdido' && lead.loss_reason && (
+            <div className="flex items-center gap-2 text-xs text-destructive mb-4">
+              💔 <span>Perdido: {lead.loss_reason}</span>
+            </div>
+          )}
+
+          <div className="flex gap-2">
+            {lead.telefone ? (
+              <>
+                <Button
+                  className="flex-1 bg-[#25D366] hover:bg-[#1ebe5d] text-white gap-2 h-11 rounded-xl font-semibold"
+                  onClick={() => {
+                    const fullPhone = toWhatsAppPhone(lead.telefone || '');
+                    const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem? Vi que você fez o teste do Índice do Quintal Ideal!`);
+                    window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
+                  }}
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  WhatsApp
+                </Button>
+                <Button variant="outline" className="h-11 w-11 rounded-xl shrink-0" onClick={() => window.open(`tel:${lead.telefone}`, '_self')}>
+                  <Phone className="w-4 h-4" />
+                </Button>
+              </>
+            ) : (
+              <div className="flex-1 flex items-center justify-center h-11 rounded-xl bg-muted/50 text-xs text-muted-foreground">
+                Sem telefone cadastrado
+              </div>
+            )}
+            {lead.email && (
+              <Button variant="outline" className="h-11 w-11 rounded-xl shrink-0" onClick={() => window.open(`mailto:${lead.email}`, '_blank')}>
+                <Mail className="w-4 h-4" />
+              </Button>
+            )}
+          </div>
+        </div>
+
+        {/* ZONA 2 — Tabs underline */}
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <div className="border-b border-border/50 bg-background sticky top-[57px] z-10">
+            <TabsList className="h-auto bg-transparent p-0 w-full flex justify-start gap-0 rounded-none">
+              {tabs.map(tab => {
+                const Icon = tab.icon;
+                return (
+                  <TabsTrigger
+                    key={tab.value}
+                    value={tab.value}
+                    className="flex items-center gap-1.5 px-4 py-3 text-xs font-medium rounded-none border-b-2 text-muted-foreground border-transparent data-[state=active]:text-primary data-[state=active]:border-primary hover:text-foreground transition-colors bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                  >
+                    <Icon className="w-3.5 h-3.5" />
+                    {tab.label}
+                  </TabsTrigger>
+                );
+              })}
+            </TabsList>
+          </div>
+
+          {/* ZONA 3 — Feed */}
+          <AnimatePresence mode="wait">
+            <TabsContent value="conversa" className="mt-0">
+              <motion.div key="conversa" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="p-4 space-y-4">
+                <UnifiedConversation leadId={lead.id} franchiseId={franchiseId || lead.franquia_id} leadName={lead.nome} />
+                {(franchiseId || lead.franquia_id) && (
+                  <LeadFollowups franchiseId={(franchiseId || lead.franquia_id)!} leadId={lead.id} leadName={lead.nome || undefined} />
+                )}
+              </motion.div>
+            </TabsContent>
+
+            <TabsContent value="proposta" className="mt-0">
+              <motion.div key="proposta" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="p-4 space-y-4">
+                <LeadLinkedProposals leadId={lead.id} leadName={lead.nome} />
+                <Button
+                  variant="outline"
+                  className="w-full gap-2 rounded-xl"
+                  onClick={() => {
+                    const params = new URLSearchParams({ lead_id: lead.id });
+                    if (lead.nome) params.set('lead_name', lead.nome);
+                    navigate(`/propostas/nova?${params.toString()}`);
+                  }}
+                >
+                  <Plus className="w-4 h-4" /> Nova proposta para este lead
+                </Button>
+              </motion.div>
+            </TabsContent>
+
+            <TabsContent value="mais" className="mt-0">
+              <motion.div key="mais" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="p-4 space-y-5">
+                <ContactAttempts leadId={lead.id} />
+                <LeadValueEstimator respostas={lead.respostas_questionario} modeloRecomendado={lead.modelo_recomendado} />
+
+                {quizEntries.length > 0 && (
+                  <Collapsible defaultOpen={false}>
+                    <CollapsibleTrigger className="flex w-full items-center justify-between py-2 text-sm font-medium text-foreground group">
+                      <span className="flex items-center gap-2">
+                        <ClipboardList className="w-4 h-4 text-primary" />
+                        Respostas do Quiz ({quizEntries.length})
+                      </span>
+                      <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="space-y-1.5 mt-2">
+                      {quizEntries.map(([key, value]) => {
+                        const q = questionLabels[key];
+                        const displayValue = answerLabels[value as string] || (value as string);
+                        return (
+                          <div key={key} className="flex items-center justify-between gap-2 py-2 px-3 rounded-xl bg-muted/40">
+                            <span className="text-xs text-muted-foreground flex items-center gap-2">
+                              <span className="text-base">{q.icon}</span>
+                              {q.label}
+                            </span>
+                            <span className="text-xs font-semibold text-foreground text-right">{displayValue}</span>
+                          </div>
+                        );
+                      })}
+                    </CollapsibleContent>
+                  </Collapsible>
+                )}
+
+                <div>
+                  <p className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
+                    <Camera className="w-4 h-4 text-primary" /> Fotos do Quintal
+                  </p>
+                  {photos.length > 0 ? (
+                    <div className="grid grid-cols-2 gap-2 mb-3">
+                      {photos.map((url, i) => (
+                        <div key={i} className="relative group rounded-xl overflow-hidden border border-border/50 aspect-square">
+                          <button
+                            onClick={() => { setLightboxIndex(i); setLightboxOpen(true); }}
+                            className="w-full h-full focus:outline-none focus:ring-2 focus:ring-primary"
+                          >
+                            <img src={url} alt={`Quintal ${i + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
+                          </button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <button className="absolute top-1.5 right-1.5 w-7 h-7 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shadow-md z-10">
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Remover foto?</AlertDialogTitle>
+                                <AlertDialogDescription>Esta ação não pode ser desfeita.</AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                                <AlertDialogAction
+                                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                                  onClick={async () => {
+                                    if (!lead) return;
+                                    const photoFields = ['foto1', 'foto2', 'foto3', 'foto4'] as const;
+                                    const remaining = photos.filter((_, idx) => idx !== i);
+                                    const update: Record<string, string | null> = {};
+                                    photoFields.forEach((field, idx) => {
+                                      update[field] = remaining[idx] || null;
+                                    });
+                                    const { error } = await supabase.from('leads').update(update).eq('id', lead.id);
+                                    if (error) toast.error('Erro ao remover foto.');
+                                    else {
+                                      toast.success('Foto removida!');
+                                      queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
+                                    }
+                                  }}
+                                >
+                                  Remover
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-xs text-muted-foreground mb-3">Nenhuma foto adicionada.</p>
+                  )}
+                  {photos.length < 4 && lead && (
+                    <LeadPhotoUpload
+                      leadId={lead.id}
+                      existingPhotos={[lead.foto1, lead.foto2, lead.foto3, lead.foto4]}
+                      franchiseId={lead.franquia_id || ''}
+                      onSaved={() => queryClient.invalidateQueries({ queryKey: ['lead-detail', id] })}
+                    />
+                  )}
+                </div>
+                <PhotoLightbox photos={photos} initialIndex={lightboxIndex} open={lightboxOpen} onOpenChange={setLightboxOpen} />
+
+                {(franchiseId || lead.franquia_id) && (
+                  <LeadTagsSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
+                )}
+
+                <WhatsAppTemplates
+                  leadName={lead.nome}
+                  leadPhone={lead.telefone}
+                  modeloRecomendado={lead.modelo_recomendado}
+                  cidade={lead.cidade}
+                  pontuacao={lead.pontuacao_quintal}
+                  statusLead={lead.status_lead}
+                  leadId={lead.id}
+                />
+              </motion.div>
+            </TabsContent>
+
+            {lead.status_lead === 'vendido' && (
+              <TabsContent value="pos-venda" className="mt-0">
+                <motion.div key="pos-venda" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="p-4">
+                  <PostSaleSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
                 </motion.div>
               </TabsContent>
-
-              {/* Pos-venda Tab */}
-              {lead.status_lead === 'vendido' && (
-                <TabsContent value="pos-venda" className="mt-4">
-                  <motion.div key="pos-venda" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
-                    <PostSaleSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
-                  </motion.div>
-                </TabsContent>
-              )}
-
-              {/* Gerenciar Tab */}
-              <TabsContent value="gerenciar" className="mt-4">
-                <motion.div key="gerenciar" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
-                  <Card className="glass-card">
-                    <CardContent className="p-3 sm:p-5 space-y-4">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Settings2 className="w-4 h-4 text-primary" />
-                        <h2 className="text-sm font-semibold text-foreground">Gerenciar Lead</h2>
-                      </div>
-
-                      <div>
-                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Responsável</label>
-                        <Select
-                          value={assignedTo || '_none'}
-                          onValueChange={async (val) => {
-                            const newVal = val === '_none' ? null : val;
-                            setAssignedTo(newVal);
-                            await supabase.from('leads').update({ assigned_to: newVal } as any).eq('id', lead.id);
-                            queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
-                            toast.success('Responsável atualizado');
-                          }}
-                        >
-                          <SelectTrigger className="bg-muted/50">
-                            <SelectValue placeholder="Selecionar..." />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="_none">Sem responsável</SelectItem>
-                            {franchiseUsers.map((u: any) => (
-                              <SelectItem key={u.user_id} value={u.user_id}>{u.full_name}</SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      {lead.pontuacao_quintal != null && (
-                        <div className="space-y-2 p-3 bg-muted/30 rounded-xl border border-border/40">
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pontuação do Quintal</span>
-                            <span className={`text-sm font-bold ${
-                              lead.pontuacao_quintal >= 70 ? 'text-success' :
-                              lead.pontuacao_quintal >= 40 ? 'text-amber-600 dark:text-amber-400' :
-                              'text-destructive'
-                            }`}>{lead.pontuacao_quintal}%</span>
-                          </div>
-                          <div className="h-3 bg-muted rounded-full overflow-hidden">
-                            <motion.div
-                              className={`h-full rounded-full ${
-                                lead.pontuacao_quintal >= 70 ? 'bg-gradient-to-r from-emerald-400 to-emerald-500' :
-                                lead.pontuacao_quintal >= 40 ? 'bg-gradient-to-r from-amber-400 to-amber-500' :
-                                'bg-gradient-to-r from-red-400 to-red-500'
-                              }`}
-                              initial={{ width: 0 }}
-                              animate={{ width: `${lead.pontuacao_quintal}%` }}
-                              transition={{ duration: 0.8, ease: 'easeOut' }}
-                            />
-                          </div>
-                        </div>
-                      )}
-
-                      <div className={`rounded-lg border-l-4 p-4 ${statusConfig[status]?.accent || 'border-l-primary bg-primary/5'} transition-colors duration-200`}>
-                        <label className="text-sm font-semibold text-foreground flex items-center gap-2 mb-2">
-                          <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold">▶</span>
-                          Alterar Status do Lead
-                        </label>
-                        <p className="text-xs text-muted-foreground mb-3">Salva automaticamente</p>
-                        {autoSaved && (
-                          <div className="flex items-center gap-1.5 mb-2 text-xs text-success font-medium animate-in fade-in slide-in-from-top-1 duration-200">
-                            <Check className="w-3.5 h-3.5" />
-                            {autoSaved}
-                          </div>
-                        )}
-                        <Select value={status} onValueChange={handleStatusChange}>
-                          <SelectTrigger className={`bg-background border-2 border-primary/20 hover:border-primary/40 transition-colors h-12 text-sm font-medium ${autoSaving ? 'opacity-70 pointer-events-none' : ''}`}>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {Object.entries(statusConfig).map(([val, cfg]) => (
-                              <SelectItem key={val} value={val}>
-                                <span className="flex items-center gap-2">
-                                  <span className={`inline-block w-2.5 h-2.5 rounded-full ${cfg.color.split(' ')[0]}`} />
-                                  {cfg.label}
-                                </span>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
-                      <div>
-                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Temperatura do Lead</label>
-                        <div className="flex gap-2">
-                          {([
-                            { value: '' as const, label: 'Auto', emoji: '🤖' },
-                            { value: 'quente' as LeadTemperature, label: 'Quente', emoji: '🔥' },
-                            { value: 'morno' as LeadTemperature, label: 'Morno', emoji: '☀️' },
-                            { value: 'frio' as LeadTemperature, label: 'Frio', emoji: '❄️' },
-                          ]).map(t => (
-                            <button
-                              key={t.value}
-                              type="button"
-                              onClick={() => handleTempChange(t.value)}
-                              className={`flex-1 text-xs py-3 px-1 rounded-lg border transition-colors font-medium min-h-[44px] active:scale-[0.97] ${
-                                tempOverride === t.value
-                                  ? 'border-primary bg-primary/10 text-primary'
-                                  : 'border-border text-muted-foreground hover:bg-muted/50'
-                              }`}
-                            >
-                              {t.emoji} {t.label}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-
-                      {status === 'vendido' && (
-                        <div>
-                          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                            Modelo Vendido
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <HelpCircle className="w-3.5 h-3.5 text-muted-foreground/60 cursor-help" />
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p className="text-xs max-w-[200px]">O modelo confirmado na venda</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </label>
-                          <Select value={modeloVendido} onValueChange={setModeloVendido}>
-                            <SelectTrigger className="bg-muted/50"><SelectValue placeholder="Selecione" /></SelectTrigger>
-                            <SelectContent>
-                              {poolModels.map(m => (
-                                <SelectItem key={m} value={m}>{m}</SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      )}
-
-                      <div>
-                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Observações</label>
-                        <Textarea
-                          value={observacoes}
-                          onChange={e => setObservacoes(e.target.value)}
-                          rows={3}
-                          placeholder="Adicionar observações..."
-                          maxLength={1000}
-                          className="bg-muted/50 resize-none"
-                        />
-                      </div>
-
-                      <Collapsible>
-                        <CollapsibleTrigger asChild>
-                          <button className="w-full flex items-center justify-between p-3 bg-muted/30 rounded-xl border border-border/40 hover:bg-muted/50 transition-colors text-left">
-                            <div className="flex items-center gap-2">
-                              <Pencil className="w-3.5 h-3.5 text-muted-foreground" />
-                              <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Editar Dados Pessoais</span>
-                            </div>
-                            <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform duration-200 [[data-state=open]>&]:rotate-180" />
-                          </button>
-                        </CollapsibleTrigger>
-                        <CollapsibleContent className="mt-2 space-y-3 p-3 bg-muted/30 rounded-xl border border-border/40">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            <div>
-                              <label className="text-xs font-medium text-muted-foreground mb-1 block">Nome</label>
-                              <Input value={editNome} onChange={e => setEditNome(e.target.value)} placeholder="Nome do lead" className="bg-background" maxLength={200} />
-                            </div>
-                            <div>
-                              <label className="text-xs font-medium text-muted-foreground mb-1 block">Telefone</label>
-                              <Input value={editTelefone} onChange={e => setEditTelefone(e.target.value)} placeholder="(XX) XXXXX-XXXX" className="bg-background" maxLength={20} />
-                            </div>
-                            <div>
-                              <label className="text-xs font-medium text-muted-foreground mb-1 block">Email</label>
-                              <Input type="email" value={editEmail} onChange={e => setEditEmail(e.target.value)} placeholder="email@exemplo.com" className="bg-background" maxLength={255} />
-                            </div>
-                            <div>
-                              <label className="text-xs font-medium text-muted-foreground mb-1 block">Cidade</label>
-                              <Input value={editCidade} onChange={e => setEditCidade(e.target.value)} placeholder="Cidade" className="bg-background" maxLength={200} />
-                            </div>
-                          </div>
-                        </CollapsibleContent>
-                      </Collapsible>
-
-                      <Button onClick={save} disabled={saving} className="w-full gap-2">
-                        {saving ? (
-                          <>
-                            <div className="animate-spin w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full" />
-                            Salvando...
-                          </>
-                        ) : (
-                          <>
-                            <Save className="w-4 h-4" /> Salvar Alterações
-                          </>
-                        )}
-                      </Button>
-
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <button className="w-full text-center text-xs text-destructive/60 hover:text-destructive transition-colors py-2 underline underline-offset-2">
-                            Excluir este lead de teste
-                          </button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
-                            <AlertDialogDescription className="space-y-2">
-                              <span className="block">
-                                Você está prestes a excluir o lead <strong>"{lead.nome || 'sem nome'}"</strong>.
-                              </span>
-                              <span className="block font-semibold text-destructive">
-                                ⚠️ Esta ação é irreversível.
-                              </span>
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                            <AlertDialogAction
-                              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                              onClick={async () => {
-                                await supabase.from('lead_activities').delete().eq('lead_id', lead.id);
-                                await supabase.from('lead_followups').delete().eq('lead_id', lead.id);
-                                const { error } = await supabase.from('leads').delete().eq('id', lead.id);
-                                if (error) {
-                                  toast.error('Erro ao excluir lead.');
-                                } else {
-                                  toast.success('Lead excluído.');
-                                  queryClient.invalidateQueries({ queryKey: ['admin-leads-table'] });
-                                  queryClient.invalidateQueries({ queryKey: ['admin-leads'] });
-                                  queryClient.invalidateQueries({ queryKey: ['franchise-leads'] });
-                                  queryClient.invalidateQueries({ queryKey: ['leads'] });
-                                  queryClient.invalidateQueries({ queryKey: ['kanban-leads'] });
-                                  if (isAdminRoute) {
-                                    navigate(returnTo, { replace: true });
-                                  } else if (window.history.length > 2) {
-                                    navigate(-1);
-                                  } else {
-                                    navigate('/franquia', { replace: true });
-                                  }
-                                }
-                              }}
-                            >
-                              Confirmar exclusão
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              </TabsContent>
-            </AnimatePresence>
-          </Tabs>
-        </motion.div>
+            )}
+          </AnimatePresence>
+        </Tabs>
       </div>
+
+      {/* Drawer de gerenciamento */}
+      <Sheet open={manageOpen} onOpenChange={setManageOpen}>
+        <SheetContent side="right" className="w-full sm:w-[420px] overflow-y-auto">
+          <SheetHeader className="mb-4">
+            <SheetTitle className="flex items-center gap-2">
+              <Settings2 className="w-4 h-4" /> Gerenciar Lead
+            </SheetTitle>
+          </SheetHeader>
+
+          <div className="space-y-5">
+            <div>
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">Responsável</label>
+              <Select
+                value={assignedTo || '_none'}
+                onValueChange={async (val) => {
+                  const newVal = val === '_none' ? null : val;
+                  setAssignedTo(newVal);
+                  await supabase.from('leads').update({ assigned_to: newVal } as any).eq('id', lead.id);
+                  queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
+                  toast.success('Responsável atualizado');
+                }}
+              >
+                <SelectTrigger className="bg-muted/50">
+                  <SelectValue placeholder="Selecionar..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="_none">Sem responsável</SelectItem>
+                  {franchiseUsers.map((u: any) => (
+                    <SelectItem key={u.user_id} value={u.user_id}>{u.full_name}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">Status no Funil</label>
+              <Select value={status} onValueChange={handleStatusChange}>
+                <SelectTrigger className={`bg-muted/50 ${autoSaving ? 'opacity-70 pointer-events-none' : ''}`}>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {Object.entries(statusConfig).map(([val, cfg]) => (
+                    <SelectItem key={val} value={val}>{cfg.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">Temperatura</label>
+              <div className="grid grid-cols-4 gap-2">
+                {([
+                  { value: '' as const, label: 'Auto', emoji: '🤖' },
+                  { value: 'quente' as LeadTemperature, label: 'Quente', emoji: '🔥' },
+                  { value: 'morno' as LeadTemperature, label: 'Morno', emoji: '☀️' },
+                  { value: 'frio' as LeadTemperature, label: 'Frio', emoji: '❄️' },
+                ]).map(t => (
+                  <button
+                    key={t.value}
+                    type="button"
+                    onClick={() => handleTempChange(t.value)}
+                    className={`text-xs py-3 px-1 rounded-lg border transition-colors font-medium min-h-[44px] active:scale-[0.97] ${
+                      tempOverride === t.value
+                        ? 'border-primary bg-primary/10 text-primary'
+                        : 'border-border text-muted-foreground hover:bg-muted/50'
+                    }`}
+                  >
+                    <div className="text-base leading-none mb-0.5">{t.emoji}</div>
+                    {t.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {status === 'vendido' && (
+              <div>
+                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                  Modelo Vendido
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <HelpCircle className="w-3.5 h-3.5 text-muted-foreground/60 cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p className="text-xs max-w-[200px]">O modelo confirmado na venda</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </label>
+                <Select value={modeloVendido} onValueChange={setModeloVendido}>
+                  <SelectTrigger className="bg-muted/50"><SelectValue placeholder="Selecione" /></SelectTrigger>
+                  <SelectContent>
+                    {poolModels.map(m => (
+                      <SelectItem key={m} value={m}>{m}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+
+            <div>
+              <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 block">Observações</label>
+              <Textarea
+                value={observacoes}
+                onChange={e => setObservacoes(e.target.value)}
+                rows={3}
+                placeholder="Adicionar observações..."
+                maxLength={1000}
+                className="bg-muted/50 resize-none"
+              />
+            </div>
+
+            <Collapsible>
+              <CollapsibleTrigger className="flex w-full items-center justify-between py-2 text-sm font-medium group">
+                <span>Editar dados pessoais</span>
+                <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+              </CollapsibleTrigger>
+              <CollapsibleContent className="space-y-3 mt-2">
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Nome</label>
+                  <Input value={editNome} onChange={e => setEditNome(e.target.value)} placeholder="Nome do lead" maxLength={200} />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Telefone</label>
+                  <Input value={editTelefone} onChange={e => setEditTelefone(e.target.value)} placeholder="(XX) XXXXX-XXXX" maxLength={20} />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Email</label>
+                  <Input type="email" value={editEmail} onChange={e => setEditEmail(e.target.value)} placeholder="email@exemplo.com" maxLength={255} />
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground mb-1 block">Cidade</label>
+                  <Input value={editCidade} onChange={e => setEditCidade(e.target.value)} placeholder="Cidade" maxLength={200} />
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
+
+            <Button onClick={save} disabled={saving} className="w-full">
+              {saving ? 'Salvando...' : 'Salvar Alterações'}
+            </Button>
+
+            <div className="pt-4 border-t border-border/30">
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <button className="text-xs text-muted-foreground/50 hover:text-destructive transition-colors w-full text-center py-1">
+                    Excluir lead de teste
+                  </button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                    <AlertDialogDescription className="space-y-2">
+                      <span className="block">
+                        Você está prestes a excluir o lead <strong>"{lead.nome || 'sem nome'}"</strong>.
+                      </span>
+                      <span className="block font-semibold text-destructive">
+                        ⚠️ Esta ação é irreversível.
+                      </span>
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      onClick={async () => {
+                        await supabase.from('lead_activities').delete().eq('lead_id', lead.id);
+                        await supabase.from('lead_followups').delete().eq('lead_id', lead.id);
+                        const { error } = await supabase.from('leads').delete().eq('id', lead.id);
+                        if (error) {
+                          toast.error('Erro ao excluir lead.');
+                        } else {
+                          toast.success('Lead excluído.');
+                          queryClient.invalidateQueries({ queryKey: ['admin-leads-table'] });
+                          queryClient.invalidateQueries({ queryKey: ['admin-leads'] });
+                          queryClient.invalidateQueries({ queryKey: ['franchise-leads'] });
+                          queryClient.invalidateQueries({ queryKey: ['leads'] });
+                          queryClient.invalidateQueries({ queryKey: ['kanban-leads'] });
+                          if (isAdminRoute) {
+                            navigate(returnTo, { replace: true });
+                          } else if (window.history.length > 2) {
+                            navigate(-1);
+                          } else {
+                            navigate('/franquia', { replace: true });
+                          }
+                        }
+                      }}
+                    >
+                      Confirmar exclusão
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </div>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
     </PageTransition>
   );
