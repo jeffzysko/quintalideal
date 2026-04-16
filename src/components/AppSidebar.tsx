@@ -52,6 +52,24 @@ interface SidebarNavItem {
   matchPaths?: string[];
   matchTab?: string;
   dataTour?: string;
+  isNew?: boolean;
+}
+
+// Persist first-seen date to determine "Novo" badge eligibility
+const FIRST_SEEN_KEY = 'qi-first-seen-date';
+const NEW_BADGE_DAYS = 7;
+function shouldShowNewBadges(): boolean {
+  try {
+    const stored = localStorage.getItem(FIRST_SEEN_KEY);
+    if (!stored) {
+      localStorage.setItem(FIRST_SEEN_KEY, new Date().toISOString());
+      return false; // brand new user — features aren't "new" to them
+    }
+    const firstSeen = new Date(stored).getTime();
+    return Date.now() - firstSeen < NEW_BADGE_DAYS * 24 * 60 * 60 * 1000;
+  } catch {
+    return false;
+  }
 }
 
 // ── Admin sections ──
@@ -85,9 +103,9 @@ const FRANCHISE_MAIN: SidebarNavItem[] = [
 const FRANCHISE_TOOLS: SidebarNavItem[] = [
   { title: 'Agenda', url: '/agenda', icon: CalendarDays },
   { title: 'Catalogo de Piscinas', url: '/catalogo', icon: BookOpen, matchPaths: ['/catalogo'], dataTour: 'nav-catalogo' },
-  { title: 'Pos-venda', url: '/franquia?tab=pos-venda', icon: Package, matchTab: 'pos-venda' },
+  { title: 'Pos-venda', url: '/franquia?tab=pos-venda', icon: Package, matchTab: 'pos-venda', isNew: true },
   { title: 'Metas', url: '/franquia?tab=achievements', icon: TrendingUp, matchTab: 'achievements' },
-  { title: 'Relatorio CRM', url: '/relatorio-crm', icon: BarChart3, matchPaths: ['/relatorio-crm'] },
+  { title: 'Relatorio CRM', url: '/relatorio-crm', icon: BarChart3, matchPaths: ['/relatorio-crm'], isNew: true },
 ];
 
 // ── Franchise: "Configuracoes" group ──
