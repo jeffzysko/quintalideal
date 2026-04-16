@@ -16,6 +16,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { SITE_URL } from '@/lib/constants';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { MobileLeadCard } from '@/components/admin/MobileLeadCard';
+import { MobileLeadSkeleton } from '@/components/dashboard/MobileLeadSkeleton';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
@@ -474,21 +475,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
               <CardContent>
                 {isLoading ? (
                   isMobile ? (
-                    <div className="space-y-3">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <div key={i} className="rounded-2xl border border-border/50 bg-card p-4 animate-pulse">
-                          <div className="flex items-start gap-3">
-                            <div className="w-10 h-10 rounded-xl bg-muted shrink-0" />
-                            <div className="flex-1 space-y-2">
-                              <div className="h-3.5 bg-muted rounded w-2/3" />
-                              <div className="h-2.5 bg-muted/60 rounded w-1/2" />
-                            </div>
-                            <div className="h-5 w-14 bg-muted rounded-full" />
-                          </div>
-                          <div className="mt-3 h-1.5 bg-muted/40 rounded-full" />
-                        </div>
-                      ))}
-                    </div>
+                    <MobileLeadSkeleton />
                   ) : (
                     <TableSkeleton rows={8} cols={6} />
                   )
