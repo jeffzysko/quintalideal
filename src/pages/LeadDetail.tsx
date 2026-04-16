@@ -405,16 +405,17 @@ export default function LeadDetail() {
   else delete liveRespostas.temperatura_manual;
   const temp = classifyLead(Object.keys(liveRespostas).length > 0 ? liveRespostas : null, lead.pontuacao_quintal);
 
+  const quizEntriesEarly = lead.respostas_questionario
+    ? Object.entries(lead.respostas_questionario).filter(([key]) => questionLabels[key])
+    : [];
+
   const tabs = [
     { value: 'conversa', icon: MessageCircle, label: 'Conversa' },
     { value: 'proposta', icon: FileText, label: 'Proposta' },
+    ...(quizEntriesEarly.length > 0 ? [{ value: 'quiz', icon: ClipboardList, label: 'Quiz' }] : []),
     { value: 'mais', icon: MoreHorizontal, label: 'Mais' },
     ...(lead.status_lead === 'vendido' ? [{ value: 'pos-venda', icon: Package, label: 'Pós-venda' }] : []),
   ];
-
-  const quizEntries = lead.respostas_questionario
-    ? Object.entries(lead.respostas_questionario).filter(([key]) => questionLabels[key])
-    : [];
 
   return (
     <PageTransition>
@@ -491,6 +492,12 @@ export default function LeadDetail() {
             </div>
           )}
 
+          {(franchiseId || lead.franquia_id) && (
+            <div className="mb-4">
+              <LeadTagsSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
+            </div>
+          )}
+
           <div className="flex gap-2">
             {lead.telefone ? (
               <>
@@ -546,10 +553,19 @@ export default function LeadDetail() {
           <AnimatePresence mode="wait">
             <TabsContent value="conversa" className="mt-0">
               <motion.div key="conversa" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="p-4 space-y-4">
-                <UnifiedConversation leadId={lead.id} franchiseId={franchiseId || lead.franquia_id} leadName={lead.nome} />
                 {(franchiseId || lead.franquia_id) && (
                   <LeadFollowups franchiseId={(franchiseId || lead.franquia_id)!} leadId={lead.id} leadName={lead.nome || undefined} />
                 )}
+                <UnifiedConversation leadId={lead.id} franchiseId={franchiseId || lead.franquia_id} leadName={lead.nome} />
+                <WhatsAppTemplates
+                  leadName={lead.nome}
+                  leadPhone={lead.telefone}
+                  modeloRecomendado={lead.modelo_recomendado}
+                  cidade={lead.cidade}
+                  pontuacao={lead.pontuacao_quintal}
+                  statusLead={lead.status_lead}
+                  leadId={lead.id}
+                />
               </motion.div>
             </TabsContent>
 
@@ -570,37 +586,34 @@ export default function LeadDetail() {
               </motion.div>
             </TabsContent>
 
+            {quizEntriesEarly.length > 0 && (
+              <TabsContent value="quiz" className="mt-0">
+                <motion.div key="quiz" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="p-4 space-y-2">
+                  <div className="flex items-center gap-2 mb-2">
+                    <ClipboardList className="w-4 h-4 text-primary" />
+                    <h2 className="text-sm font-semibold text-foreground">Respostas do Quiz ({quizEntriesEarly.length})</h2>
+                  </div>
+                  {quizEntriesEarly.map(([key, value]) => {
+                    const q = questionLabels[key];
+                    const displayValue = answerLabels[value as string] || (value as string);
+                    return (
+                      <div key={key} className="flex items-center justify-between gap-2 py-2.5 px-3 rounded-xl bg-muted/40">
+                        <span className="text-xs text-muted-foreground flex items-center gap-2">
+                          <span className="text-base">{q.icon}</span>
+                          {q.label}
+                        </span>
+                        <span className="text-xs font-semibold text-foreground text-right">{displayValue}</span>
+                      </div>
+                    );
+                  })}
+                </motion.div>
+              </TabsContent>
+            )}
+
             <TabsContent value="mais" className="mt-0">
               <motion.div key="mais" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="p-4 space-y-5">
                 <ContactAttempts leadId={lead.id} />
                 <LeadValueEstimator respostas={lead.respostas_questionario} modeloRecomendado={lead.modelo_recomendado} />
-
-                {quizEntries.length > 0 && (
-                  <Collapsible defaultOpen={false}>
-                    <CollapsibleTrigger className="flex w-full items-center justify-between py-2 text-sm font-medium text-foreground group">
-                      <span className="flex items-center gap-2">
-                        <ClipboardList className="w-4 h-4 text-primary" />
-                        Respostas do Quiz ({quizEntries.length})
-                      </span>
-                      <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="space-y-1.5 mt-2">
-                      {quizEntries.map(([key, value]) => {
-                        const q = questionLabels[key];
-                        const displayValue = answerLabels[value as string] || (value as string);
-                        return (
-                          <div key={key} className="flex items-center justify-between gap-2 py-2 px-3 rounded-xl bg-muted/40">
-                            <span className="text-xs text-muted-foreground flex items-center gap-2">
-                              <span className="text-base">{q.icon}</span>
-                              {q.label}
-                            </span>
-                            <span className="text-xs font-semibold text-foreground text-right">{displayValue}</span>
-                          </div>
-                        );
-                      })}
-                    </CollapsibleContent>
-                  </Collapsible>
-                )}
 
                 <div>
                   <p className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
@@ -668,20 +681,6 @@ export default function LeadDetail() {
                   )}
                 </div>
                 <PhotoLightbox photos={photos} initialIndex={lightboxIndex} open={lightboxOpen} onOpenChange={setLightboxOpen} />
-
-                {(franchiseId || lead.franquia_id) && (
-                  <LeadTagsSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
-                )}
-
-                <WhatsAppTemplates
-                  leadName={lead.nome}
-                  leadPhone={lead.telefone}
-                  modeloRecomendado={lead.modelo_recomendado}
-                  cidade={lead.cidade}
-                  pontuacao={lead.pontuacao_quintal}
-                  statusLead={lead.status_lead}
-                  leadId={lead.id}
-                />
               </motion.div>
             </TabsContent>
 
