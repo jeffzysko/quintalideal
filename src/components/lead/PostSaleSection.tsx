@@ -9,7 +9,8 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar } from '@/components/ui/calendar';
-import { CalendarIcon, Star, Save, Plus, Wrench, CheckCircle2, CalendarDays } from 'lucide-react';
+import { CalendarIcon, Star, Save, Plus, Wrench, CheckCircle2, CalendarDays, HelpCircle } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -169,6 +170,16 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
           <div className="flex items-center gap-2 mb-1">
             <Wrench className="w-4 h-4 text-primary" />
             <h3 className="text-sm font-semibold text-foreground">Status do Projeto</h3>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <HelpCircle className="w-3.5 h-3.5 text-muted-foreground/60 cursor-help" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p className="text-xs max-w-[220px]">Acompanhe a instalacao apos o fechamento da venda</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
 
           <Badge className={`${statusInfo.bgColor} ${statusInfo.color} border text-xs`} variant="outline">

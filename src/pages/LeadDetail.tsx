@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Camera, ClipboardList, Settings2, Save, User, Trash2, Clock, Image, CalendarClock, Pencil, X, ChevronDown, Check, Package } from 'lucide-react';
+import { MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Camera, ClipboardList, Settings2, Save, User, Trash2, Pencil, X, ChevronDown, Check, Package, MoreHorizontal, HelpCircle } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { BackButton } from '@/components/BackButton';
@@ -16,19 +16,21 @@ import { PanelHeader } from '@/components/PanelHeader';
 import { NotificationBell } from '@/components/NotificationBell';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { LeadTimeline } from '@/components/lead/LeadTimeline';
 import { LeadFollowups } from '@/components/franchise/LeadFollowups';
 import { PhotoLightbox } from '@/components/lead/PhotoLightbox';
 import { InactivityBadge } from '@/components/lead/InactivityBadge';
+import { UnifiedConversation } from '@/components/lead/UnifiedConversation';
 
 import { LeadValueEstimator } from '@/components/lead/LeadValueEstimator';
 import { ContactAttempts } from '@/components/lead/ContactAttempts';
 import { LeadPhotoUpload } from '@/components/lead/LeadPhotoUpload';
 import { LeadLinkedProposals } from '@/components/lead/LeadLinkedProposals';
-import { LeadWhatsAppHistory } from '@/components/lead/LeadWhatsAppHistory';
+
 import { WhatsAppTemplates } from '@/components/lead/WhatsAppTemplates';
 import { LeadTagsSection } from '@/components/lead/LeadTagsSection';
 import { PostSaleSection } from '@/components/lead/PostSaleSection';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+
 
 import { useAuth } from '@/hooks/useAuth';
 import { triggerWhatsAppAuto } from '@/lib/whatsapp-auto';
@@ -152,7 +154,8 @@ export default function LeadDetail() {
   const [editTelefone, setEditTelefone] = useState('');
   const [editEmail, setEditEmail] = useState('');
   const [editCidade, setEditCidade] = useState('');
-  const [activeTab, setActiveTab] = useState('gerenciar');
+  const [activeTab, setActiveTab] = useState('conversa');
+  
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
@@ -566,46 +569,32 @@ export default function LeadDetail() {
           </motion.div>
         )}
 
-        {/* Linked Proposals */}
+        {/* Linked Proposals - shown outside tabs for quick access */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
           <LeadLinkedProposals leadId={lead.id} leadName={lead.nome} />
         </motion.div>
 
-        {/* Lead Tags */}
-        {(franchiseId || lead.franquia_id) && (
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.13 }}>
-            <LeadTagsSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
-          </motion.div>
-        )}
-
-        {/* Tabbed Content */}
+        {/* Tabbed Content - Simplified */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <div className="bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl p-1.5 shadow-sm">
-              <TabsList className={`w-full grid h-12 bg-transparent p-0 gap-1 ${lead.status_lead === 'vendido' ? 'grid-cols-5' : 'grid-cols-4'}`}>
+              <TabsList className={`w-full grid h-12 bg-transparent p-0 gap-1 ${lead.status_lead === 'vendido' ? 'grid-cols-4' : 'grid-cols-3'}`}>
                 {[
-                  { value: 'fotos', icon: Image, label: 'Fotos', disabled: false, badge: photos.length > 0 ? photos.length : undefined },
+                  { value: 'conversa', icon: MessageCircle, label: 'Conversa' },
                   { value: 'gerenciar', icon: Settings2, label: 'Gerenciar' },
-                  { value: 'followups', icon: CalendarClock, label: 'Follow-ups' },
-                  { value: 'timeline', icon: Clock, label: 'Historico' },
                   ...(lead.status_lead === 'vendido' ? [{ value: 'pos-venda', icon: Package, label: 'Pos-venda' }] : []),
+                  { value: 'mais', icon: MoreHorizontal, label: 'Mais' },
                 ].map(tab => {
                   const Icon = tab.icon;
-                  const isActive = activeTab === tab.value;
+                  
                   return (
                     <TabsTrigger
                       key={tab.value}
                       value={tab.value}
-                      disabled={tab.disabled}
                       className="relative h-10 text-[11px] sm:text-xs gap-1 sm:gap-1.5 rounded-xl font-medium transition-all duration-200 text-muted-foreground data-[state=active]:bg-gradient-to-b data-[state=active]:from-primary data-[state=active]:to-primary/90 data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/20 hover:bg-muted/60 data-[state=active]:hover:bg-primary"
                     >
                       <Icon className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
                       <span className="text-[10px] sm:text-xs">{tab.label}</span>
-                      {tab.badge && (
-                        <span className={`text-[9px] rounded-full px-1.5 leading-tight font-bold ${isActive ? 'bg-white/20 text-primary-foreground' : 'bg-primary/10 text-primary'}`}>
-                          {tab.badge}
-                        </span>
-                      )}
                     </TabsTrigger>
                   );
                 })}
@@ -614,36 +603,13 @@ export default function LeadDetail() {
 
             <AnimatePresence mode="wait">
 
-              {/* Follow-ups Tab */}
-              <TabsContent value="followups" className="mt-4">
-                <motion.div key="followups" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="space-y-4">
-                  <WhatsAppTemplates
-                    leadName={lead.nome}
-                    leadPhone={lead.telefone}
-                    modeloRecomendado={lead.modelo_recomendado}
-                    cidade={lead.cidade}
-                    pontuacao={lead.pontuacao_quintal}
-                    statusLead={lead.status_lead}
-                    leadId={lead.id}
-                  />
-                  {(franchiseId || lead.franquia_id) ? (
+              {/* Conversa Tab - Unified feed */}
+              <TabsContent value="conversa" className="mt-4">
+                <motion.div key="conversa" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="space-y-4">
+                  <UnifiedConversation leadId={lead.id} franchiseId={franchiseId || lead.franquia_id} leadName={lead.nome} />
+                  {(franchiseId || lead.franquia_id) && (
                     <LeadFollowups franchiseId={(franchiseId || lead.franquia_id)!} leadId={lead.id} leadName={lead.nome || undefined} />
-                  ) : (
-                    <Card className="glass-card">
-                      <CardContent className="p-6 text-center">
-                        <CalendarClock className="w-8 h-8 text-muted-foreground/30 mx-auto mb-2" />
-                        <p className="text-xs text-muted-foreground">Follow-ups não disponíveis para este lead.</p>
-                      </CardContent>
-                    </Card>
                   )}
-                </motion.div>
-              </TabsContent>
-
-              {/* Timeline Tab */}
-              <TabsContent value="timeline" className="mt-4">
-                <motion.div key="timeline" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="space-y-4">
-                  <LeadTimeline leadId={lead.id} />
-                  <LeadWhatsAppHistory leadId={lead.id} />
                 </motion.div>
               </TabsContent>
 
@@ -656,9 +622,10 @@ export default function LeadDetail() {
                 </TabsContent>
               )}
 
-              {/* Fotos Tab */}
-              <TabsContent value="fotos" className="mt-4">
-                <motion.div key="fotos" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
+              {/* Mais Tab - Secondary content */}
+              <TabsContent value="mais" className="mt-4">
+                <motion.div key="mais" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="space-y-4">
+                  {/* Photos */}
                   <Card className="glass-card">
                     <CardContent className="p-3 sm:p-5">
                       {photos.length > 0 ? (
@@ -679,18 +646,16 @@ export default function LeadDetail() {
                                     <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
                                   </div>
                                 </button>
-                <AlertDialog>
+                                <AlertDialog>
                                   <AlertDialogTrigger asChild>
-                                    <button
-                                      className="absolute top-1.5 right-1.5 w-7 h-7 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shadow-md z-10"
-                                    >
+                                    <button className="absolute top-1.5 right-1.5 w-7 h-7 bg-destructive text-destructive-foreground rounded-full flex items-center justify-center opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity shadow-md z-10">
                                       <X className="w-3.5 h-3.5" />
                                     </button>
                                   </AlertDialogTrigger>
                                   <AlertDialogContent>
                                     <AlertDialogHeader>
                                       <AlertDialogTitle>Remover foto?</AlertDialogTitle>
-                                      <AlertDialogDescription>Esta ação não pode ser desfeita. A foto será removida permanentemente do lead.</AlertDialogDescription>
+                                      <AlertDialogDescription>Esta acao nao pode ser desfeita. A foto sera removida permanentemente do lead.</AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                       <AlertDialogCancel>Cancelar</AlertDialogCancel>
@@ -723,12 +688,12 @@ export default function LeadDetail() {
                           </div>
                         </>
                       ) : (
-                        <div className="flex flex-col items-center justify-center py-8 text-center">
-                          <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-3">
-                            <Camera className="w-7 h-7 text-primary" />
+                        <div className="flex flex-col items-center justify-center py-6 text-center">
+                          <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center mb-2">
+                            <Camera className="w-6 h-6 text-primary" />
                           </div>
                           <p className="text-sm font-medium text-foreground mb-1">Nenhuma foto adicionada</p>
-                          <p className="text-xs text-muted-foreground max-w-[220px]">Adicione fotos do quintal para enriquecer o cadastro deste lead</p>
+                          <p className="text-xs text-muted-foreground max-w-[220px]">Adicione fotos do quintal para enriquecer o cadastro</p>
                         </div>
                       )}
                       {photos.length < 4 && lead && (
@@ -736,14 +701,28 @@ export default function LeadDetail() {
                           leadId={lead.id}
                           existingPhotos={[lead.foto1, lead.foto2, lead.foto3, lead.foto4]}
                           franchiseId={lead.franquia_id || ''}
-                          onSaved={() => {
-                            queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
-                          }}
+                          onSaved={() => queryClient.invalidateQueries({ queryKey: ['lead-detail', id] })}
                         />
                       )}
                     </CardContent>
                   </Card>
                   <PhotoLightbox photos={photos} initialIndex={lightboxIndex} open={lightboxOpen} onOpenChange={setLightboxOpen} />
+
+                  {/* WhatsApp Templates */}
+                  <WhatsAppTemplates
+                    leadName={lead.nome}
+                    leadPhone={lead.telefone}
+                    modeloRecomendado={lead.modelo_recomendado}
+                    cidade={lead.cidade}
+                    pontuacao={lead.pontuacao_quintal}
+                    statusLead={lead.status_lead}
+                    leadId={lead.id}
+                  />
+
+                  {/* Tags */}
+                  {(franchiseId || lead.franquia_id) && (
+                    <LeadTagsSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
+                  )}
                 </motion.div>
               </TabsContent>
 
@@ -757,13 +736,11 @@ export default function LeadDetail() {
                         <h2 className="text-sm font-semibold text-foreground">Gerenciar Lead</h2>
                       </div>
 
-                      {/* Status section comes first — most important action */}
-
-                      {/* Score / Pontuação visual */}
+                      {/* Score / Pontuacao visual */}
                       {lead.pontuacao_quintal != null && (
                         <div className="space-y-2 p-3 bg-muted/30 rounded-xl border border-border/40">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pontuação do Quintal</span>
+                            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pontuacao do Quintal</span>
                             <span className={`text-sm font-bold ${
                               lead.pontuacao_quintal >= 70 ? 'text-emerald-600 dark:text-emerald-400' :
                               lead.pontuacao_quintal >= 40 ? 'text-amber-600 dark:text-amber-400' :
@@ -783,9 +760,9 @@ export default function LeadDetail() {
                             />
                           </div>
                           <p className="text-[11px] text-muted-foreground">
-                            {lead.pontuacao_quintal >= 70 ? 'Excelente — quintal muito preparado para uma piscina.' :
-                             lead.pontuacao_quintal >= 40 ? 'Bom potencial — com alguns ajustes, o quintal estará pronto.' :
-                             'Potencial inicial — vale explorar mais com o cliente.'}
+                            {lead.pontuacao_quintal >= 70 ? 'Excelente - quintal muito preparado para uma piscina.' :
+                             lead.pontuacao_quintal >= 40 ? 'Bom potencial - com alguns ajustes, o quintal estara pronto.' :
+                             'Potencial inicial - vale explorar mais com o cliente.'}
                           </p>
                         </div>
                       )}
@@ -795,7 +772,7 @@ export default function LeadDetail() {
                           <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold">▶</span>
                           Alterar Status do Lead
                         </label>
-                        <p className="text-xs text-muted-foreground mb-3">Selecione o estágio atual deste lead no funil de vendas — salva automaticamente</p>
+                        <p className="text-xs text-muted-foreground mb-3">Selecione o estagio atual deste lead no funil de vendas - salva automaticamente</p>
                         {autoSaved && (
                           <div className="flex items-center gap-1.5 mb-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium animate-in fade-in slide-in-from-top-1 duration-200">
                             <Check className="w-3.5 h-3.5" />
@@ -844,14 +821,26 @@ export default function LeadDetail() {
                           ))}
                         </div>
                         <p className="text-[11px] text-muted-foreground mt-1">
-                          {tempOverride ? `Temperatura fixada como "${tempOverride}". Toque em "Automático" para usar o cálculo inteligente.` : 'Calculado automaticamente com base nas respostas do quiz (intenção, orçamento e espaço).'}
+                          {tempOverride ? `Temperatura fixada como "${tempOverride}". Toque em "Automatico" para usar o calculo inteligente.` : 'Calculado automaticamente com base nas respostas do quiz (intencao, orcamento e espaco).'}
                         </p>
                       </div>
 
-                      {/* Modelo Vendido — only when status is vendido */}
+                      {/* Modelo Vendido */}
                       {status === 'vendido' && (
                         <div>
-                          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Modelo Vendido</label>
+                          <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                            Modelo Vendido
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <HelpCircle className="w-3.5 h-3.5 text-muted-foreground/60 cursor-help" />
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p className="text-xs max-w-[200px]">O modelo sugerido com base nas respostas do cliente</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          </label>
                           <Select value={modeloVendido} onValueChange={setModeloVendido}>
                             <SelectTrigger className="bg-muted/50"><SelectValue placeholder="Selecione o modelo vendido" /></SelectTrigger>
                             <SelectContent>
@@ -860,25 +849,22 @@ export default function LeadDetail() {
                               ))}
                             </SelectContent>
                           </Select>
-                           <p className="text-[11px] text-muted-foreground mt-1">
-                            Registre o modelo efetivamente vendido. Isso melhora a inteligência das recomendações futuras.
-                          </p>
                         </div>
                       )}
 
                       <div>
-                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Observações</label>
+                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Observacoes</label>
                         <Textarea
                           value={observacoes}
                           onChange={e => setObservacoes(e.target.value)}
                           rows={3}
-                          placeholder="Adicionar observações sobre este lead..."
+                          placeholder="Adicionar observacoes sobre este lead..."
                           maxLength={1000}
                           className="bg-muted/50 resize-none"
                         />
                       </div>
 
-                      {/* Personal info — collapsible, below observações */}
+                      {/* Personal info - collapsible */}
                       <Collapsible>
                         <CollapsibleTrigger asChild>
                           <button className="w-full flex items-center justify-between p-3 bg-muted/30 rounded-xl border border-border/40 hover:bg-muted/50 transition-colors text-left">
@@ -919,7 +905,7 @@ export default function LeadDetail() {
                           </>
                         ) : (
                           <>
-                            <Save className="w-4 h-4" /> Salvar Alterações
+                            <Save className="w-4 h-4" /> Salvar Alteracoes
                           </>
                         )}
                       </Button>
@@ -933,16 +919,16 @@ export default function LeadDetail() {
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
+                            <AlertDialogTitle>Confirmar exclusao</AlertDialogTitle>
                             <AlertDialogDescription className="space-y-2">
                               <span className="block">
-                                Você está prestes a excluir o lead <strong>"{lead.nome || 'sem nome'}"</strong>.
+                                Voce esta prestes a excluir o lead <strong>"{lead.nome || 'sem nome'}"</strong>.
                               </span>
                               <span className="block font-semibold text-destructive">
-                                ⚠️ Esta ação é irreversível. Confirme que este é um lead de teste e NÃO um lead oficial de um cliente real.
+                                ⚠️ Esta acao e irreversivel. Confirme que este e um lead de teste e NAO um lead oficial de um cliente real.
                               </span>
                               <span className="block text-xs">
-                                Todas as atividades, follow-ups e dados associados serão removidos permanentemente.
+                                Todas as atividades, follow-ups e dados associados serao removidos permanentemente.
                               </span>
                             </AlertDialogDescription>
                           </AlertDialogHeader>
@@ -957,8 +943,7 @@ export default function LeadDetail() {
                                 if (error) {
                                   toast.error('Erro ao excluir lead.');
                                 } else {
-                                  toast.success('Lead de teste excluído com sucesso.');
-                                  // Invalidate all lead-related queries so lists refresh immediately
+                                  toast.success('Lead de teste excluido com sucesso.');
                                   queryClient.invalidateQueries({ queryKey: ['admin-leads-table'] });
                                   queryClient.invalidateQueries({ queryKey: ['admin-leads'] });
                                   queryClient.invalidateQueries({ queryKey: ['franchise-leads'] });
@@ -974,7 +959,7 @@ export default function LeadDetail() {
                                 }
                               }}
                             >
-                              Confirmo: é lead de teste, excluir
+                              Confirmo: e lead de teste, excluir
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>

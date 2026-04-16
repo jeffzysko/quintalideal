@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button';
 import { STATUS_LABELS, STATUS_CHART_COLORS } from '@/lib/lead-constants';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Textarea } from '@/components/ui/textarea';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { COLUMNS } from './types';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, HelpCircle } from 'lucide-react';
 
 const LOSS_REASONS = [
   { key: 'preco_alto', emoji: '💰', label: 'Preço alto' },
@@ -124,7 +125,19 @@ export function StageChangeDrawer({
                   <ArrowLeft className="w-4 h-4 text-muted-foreground" />
                 </button>
                 <div>
-                  <DrawerTitle className="text-base">Por que este lead foi perdido?</DrawerTitle>
+                  <div className="flex items-center gap-1.5">
+                    <DrawerTitle className="text-base">Por que este lead foi perdido?</DrawerTitle>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <HelpCircle className="w-3.5 h-3.5 text-muted-foreground/60 cursor-help shrink-0" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs max-w-[220px]">Registrar o motivo ajuda a entender o que melhorar no processo</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                   <p className="text-xs text-muted-foreground mt-0.5">Selecione um ou mais motivos para registrar.</p>
                 </div>
               </div>

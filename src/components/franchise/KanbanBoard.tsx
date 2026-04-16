@@ -189,7 +189,9 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       const { fireConfetti, haptic } = await import('@/lib/celebrations');
       fireConfetti();
       haptic('heavy');
-      toast.success('🎉 Venda registrada! Parabéns!');
+      toast.success('🎉 Venda registrada! Parabens!');
+    } else if (newStatus === 'perdido') {
+      toast.success('Lead finalizado. Motivo registrado.');
     } else {
       toast.success(`Lead movido para ${STATUS_LABELS[newStatus]}`);
     }
