@@ -242,7 +242,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center text-[1.6rem] sm:text-[2.1rem] md:text-[2.75rem] lg:text-[3.25rem] font-extrabold leading-[1.1] mb-3 sm:mb-4 text-white tracking-tight whitespace-nowrap"
+            className="text-center text-[1.55rem] sm:text-[2.1rem] md:text-[2.75rem] lg:text-[3.25rem] font-extrabold leading-[1.1] mb-3 sm:mb-4 text-white tracking-tight"
           >
             A piscina ideal para
             <br />
