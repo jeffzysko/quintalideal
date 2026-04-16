@@ -491,6 +491,12 @@ export default function LeadDetail() {
             </div>
           )}
 
+          {(franchiseId || lead.franquia_id) && (
+            <div className="mb-4">
+              <LeadTagsSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
+            </div>
+          )}
+
           <div className="flex gap-2">
             {lead.telefone ? (
               <>
