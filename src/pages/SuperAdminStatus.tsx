@@ -267,6 +267,7 @@ export default function SuperAdminStatus() {
           ))}
         </CardContent>
       </Card>
+      </div>
     </div>
   );
 }
