@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Camera, ClipboardList, Settings2, Save, User, Trash2, Clock, Image, CalendarClock, Pencil, X, ChevronDown, Check, Package, MoreHorizontal, HelpCircle } from 'lucide-react';
+import { MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Camera, ClipboardList, Settings2, Save, User, Trash2, Pencil, X, ChevronDown, Check, Package, MoreHorizontal, HelpCircle } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { BackButton } from '@/components/BackButton';
@@ -16,7 +16,6 @@ import { PanelHeader } from '@/components/PanelHeader';
 import { NotificationBell } from '@/components/NotificationBell';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
-import { LeadTimeline } from '@/components/lead/LeadTimeline';
 import { LeadFollowups } from '@/components/franchise/LeadFollowups';
 import { PhotoLightbox } from '@/components/lead/PhotoLightbox';
 import { InactivityBadge } from '@/components/lead/InactivityBadge';
@@ -26,7 +25,7 @@ import { LeadValueEstimator } from '@/components/lead/LeadValueEstimator';
 import { ContactAttempts } from '@/components/lead/ContactAttempts';
 import { LeadPhotoUpload } from '@/components/lead/LeadPhotoUpload';
 import { LeadLinkedProposals } from '@/components/lead/LeadLinkedProposals';
-import { LeadWhatsAppHistory } from '@/components/lead/LeadWhatsAppHistory';
+
 import { WhatsAppTemplates } from '@/components/lead/WhatsAppTemplates';
 import { LeadTagsSection } from '@/components/lead/LeadTagsSection';
 import { PostSaleSection } from '@/components/lead/PostSaleSection';
@@ -156,7 +155,7 @@ export default function LeadDetail() {
   const [editEmail, setEditEmail] = useState('');
   const [editCidade, setEditCidade] = useState('');
   const [activeTab, setActiveTab] = useState('conversa');
-  const [showMoreTabs, setShowMoreTabs] = useState(false);
+  const [, setShowMoreTabs] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
