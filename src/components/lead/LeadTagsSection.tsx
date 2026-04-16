@@ -26,7 +26,7 @@ interface LeadTag {
 }
 
 export function LeadTagsSection({ leadId, franchiseId }: { leadId: string; franchiseId: string }) {
-  const { user } = useAuth();
+  const { } = useAuth();
   const queryClient = useQueryClient();
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [newTagName, setNewTagName] = useState('');
