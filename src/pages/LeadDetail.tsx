@@ -647,6 +647,15 @@ export default function LeadDetail() {
                 </motion.div>
               </TabsContent>
 
+              {/* Pos-venda Tab */}
+              {lead.status_lead === 'vendido' && (
+                <TabsContent value="pos-venda" className="mt-4">
+                  <motion.div key="pos-venda" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
+                    <PostSaleSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
+                  </motion.div>
+                </TabsContent>
+              )
+
               {/* Fotos Tab */}
               <TabsContent value="fotos" className="mt-4">
                 <motion.div key="fotos" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
