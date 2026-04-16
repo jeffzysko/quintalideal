@@ -58,8 +58,19 @@ export default function RelatorioCRM() {
   const [period, setPeriod] = useState('30');
   const [customRange, setCustomRange] = useState<DateRange | undefined>();
   const [assignedFilter, setAssignedFilter] = useState('all');
+  const [isExporting, setIsExporting] = useState(false);
 
   const { from, to } = getDateRange(period, customRange);
+
+  const { data: franchise } = useQuery({
+    queryKey: ['crm-report-franchise', franchiseId],
+    queryFn: async () => {
+      if (!franchiseId) return null;
+      const { data } = await supabase.from('franchises').select('nome_franquia').eq('id', franchiseId).maybeSingle();
+      return data;
+    },
+    enabled: !!franchiseId,
+  });
 
   // Fetch leads
   const { data: leads = [], isLoading } = useQuery({
