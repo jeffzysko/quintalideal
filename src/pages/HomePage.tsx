@@ -242,7 +242,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center text-[1.6rem] sm:text-[2.1rem] md:text-[2.75rem] lg:text-[3.25rem] font-extrabold leading-[1.1] mb-3 sm:mb-4 text-white tracking-tight"
+            className="text-center text-[1.6rem] sm:text-[2.1rem] md:text-[2.75rem] lg:text-[3.25rem] font-extrabold leading-[1.1] mb-3 sm:mb-4 text-white tracking-tight whitespace-nowrap"
           >
             A piscina ideal para
             <br />
@@ -267,7 +267,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.85, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="w-full max-w-sm"
+            className="w-full max-w-xs sm:max-w-sm"
           >
             <div className="relative group">
               {/* Glow behind input */}
