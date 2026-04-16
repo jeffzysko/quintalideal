@@ -43,6 +43,19 @@ export const LeadCard = memo(function LeadCard({
   const [noteText, setNoteText] = useState('');
   const [savingNote, setSavingNote] = useState(false);
 
+  const { data: leadTags = [] } = useQuery({
+    queryKey: ['lead-card-tags', lead.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('lead_tag_assignments')
+        .select('tag_id, lead_tags(name, color)')
+        .eq('lead_id', lead.id)
+        .limit(3);
+      return (data || []).map((d: any) => ({ name: d.lead_tags?.name, color: d.lead_tags?.color })).filter((t: any) => t.name);
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+
   const style = !overlay
     ? {
         transform: CSS.Translate.toString(transform),
