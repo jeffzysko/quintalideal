@@ -1,7 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
-import { LayoutDashboard, Home, Settings, FileText } from 'lucide-react';
+import { LayoutDashboard, Home, Settings, FileText, BookOpen } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface NavItem {
@@ -14,17 +14,19 @@ interface NavItem {
 function getNavForRole(role: string | null): NavItem[] {
   if (role === 'admin_fabrica' || role === 'super_admin') {
     return [
-      { icon: Home, label: 'Início', path: '/hoje' },
+      { icon: Home, label: 'Inicio', path: '/hoje' },
       { icon: LayoutDashboard, label: 'Painel', path: '/admin', matchPaths: ['/admin'] },
       { icon: FileText, label: 'Propostas', path: '/propostas', matchPaths: ['/propostas'] },
+      { icon: BookOpen, label: 'Catalogo', path: '/catalogo', matchPaths: ['/catalogo'] },
       { icon: Settings, label: 'Perfil', path: '/perfil' },
     ];
   }
 
   return [
-    { icon: Home, label: 'Início', path: '/hoje' },
+    { icon: Home, label: 'Inicio', path: '/hoje' },
     { icon: LayoutDashboard, label: 'Painel', path: '/franquia', matchPaths: ['/franquia', '/painel'] },
     { icon: FileText, label: 'Propostas', path: '/propostas', matchPaths: ['/propostas'] },
+    { icon: BookOpen, label: 'Catalogo', path: '/catalogo', matchPaths: ['/catalogo'] },
     { icon: Settings, label: 'Perfil', path: '/perfil' },
   ];
 }
@@ -36,7 +38,7 @@ export function BottomNav() {
 
   if (!user || !role) return null;
 
-  const authenticatedPrefixes = ['/admin', '/franquia', '/hoje', '/perfil', '/suporte', '/docs', '/notificacoes', '/lead', '/painel', '/radar', '/propostas'];
+  const authenticatedPrefixes = ['/admin', '/franquia', '/hoje', '/perfil', '/suporte', '/docs', '/notificacoes', '/lead', '/painel', '/radar', '/propostas', '/catalogo'];
   const isAuthenticatedPage = authenticatedPrefixes.some(p => location.pathname.startsWith(p));
   if (!isAuthenticatedPage) return null;
 
@@ -63,7 +65,7 @@ export function BottomNav() {
             <button
               key={item.label}
               onClick={() => navigate(item.path)}
-              data-tour={item.label === 'Início' ? 'nav-hoje' : item.label === 'Propostas' ? 'nav-propostas' : undefined}
+              data-tour={item.label === 'Inicio' ? 'nav-hoje' : item.label === 'Propostas' ? 'nav-propostas' : item.label === 'Catalogo' ? 'nav-catalogo' : undefined}
               className={cn(
                 'flex flex-col items-center justify-center gap-0.5 flex-1 relative transition-colors min-h-[48px]',
                 '-webkit-tap-highlight-color: transparent',
