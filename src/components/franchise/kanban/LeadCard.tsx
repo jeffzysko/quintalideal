@@ -62,6 +62,21 @@ export const LeadCard = memo(function LeadCard({
     staleTime: 5 * 60 * 1000,
   });
 
+  const assignedTo = (lead as any).assigned_to as string | null;
+  const { data: assignedUser } = useQuery({
+    queryKey: ['assigned-user', assignedTo],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('user_id', assignedTo!)
+        .maybeSingle();
+      return data?.full_name || null;
+    },
+    enabled: !!assignedTo,
+    staleTime: 10 * 60 * 1000,
+  });
+
   const style = !overlay
     ? {
         transform: CSS.Translate.toString(transform),
