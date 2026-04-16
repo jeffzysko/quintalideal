@@ -9,6 +9,7 @@ import { STATUS_LABELS, STATUS_CHART_COLORS } from '@/lib/lead-constants';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
 import { MapPin, Calendar, GripVertical, Building2, MessageCircle, StickyNote, ArrowRightLeft, Phone, Send } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
