@@ -536,10 +536,10 @@ export default function SejaParceiro() {
           <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <span className="inline-block text-xs font-bold text-primary uppercase tracking-[0.2em] mb-3 px-4 py-1.5 rounded-full border border-primary/15 bg-primary/5">Como funciona</span>
             <h2 className="text-3xl sm:text-[2.75rem] font-extrabold text-foreground mt-4 mb-3 tracking-tight leading-tight">
-              Simples como{' '}
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">1, 2, 3</span>
+              Do cadastro a primeira venda{' '}
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">em 3 passos</span>
             </h2>
-            <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto">Do cadastro à primeira venda em poucos dias</p>
+            <p className="text-sm sm:text-base text-muted-foreground max-w-md mx-auto">Sem contrato, sem fidelidade. Comece a vender mais hoje.</p>
           </motion.div>
 
           <div className="grid sm:grid-cols-3 gap-6 sm:gap-4 relative">
@@ -596,11 +596,11 @@ export default function SejaParceiro() {
           <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <span className="inline-block text-xs font-bold text-primary uppercase tracking-[0.2em] mb-3 px-4 py-1.5 rounded-full border border-primary/15 bg-primary/5">Recursos</span>
             <h2 className="text-3xl sm:text-[2.75rem] font-extrabold text-foreground mt-4 mb-3 tracking-tight leading-tight">
-              CRM, orçamentos e WhatsApp<br className="hidden sm:block" />
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">em um só lugar</span>
+              Tudo que voce precisa para{' '}<br className="hidden sm:block" />
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">parar de perder vendas</span>
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
-              A plataforma completa que lojas de piscinas de todo o RS já usam no dia a dia
+              Chega de planilha, WhatsApp pessoal e lead esquecido. Sua operacao comercial inteira num so lugar.
             </p>
           </motion.div>
 
@@ -643,11 +643,11 @@ export default function SejaParceiro() {
           <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
             <span className="inline-block text-xs font-bold text-primary uppercase tracking-[0.2em] mb-3 px-4 py-1.5 rounded-full border border-primary/15 bg-primary/5">Por dentro da plataforma</span>
             <h2 className="text-3xl sm:text-[2.75rem] font-extrabold text-foreground mt-4 mb-3 tracking-tight leading-tight">
-              Conheça o sistema que vai{' '}
-              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">transformar suas vendas</span>
+              Veja como lojas reais{' '}
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">vendem mais todos os dias</span>
             </h2>
             <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
-              Uma plataforma profissional, intuitiva e feita sob medida para o mercado de piscinas
+              Interface limpa, profissional e feita para quem vende piscinas. Sem complicacao.
             </p>
           </motion.div>
 
