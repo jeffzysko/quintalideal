@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { EmptyState } from '@/components/ui/empty-state';
 
 // Reuse from HojePage pattern
 function parseFollowupType(note: string | null) {
@@ -258,19 +259,12 @@ export default function AgendaPage() {
             {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-20 rounded-xl" />)}
           </div>
         ) : followups.length === 0 ? (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="flex flex-col items-center justify-center py-20 text-center"
-          >
-            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
-              <CalendarDays className="w-8 h-8 text-primary" />
-            </div>
-            <h3 className="text-base font-bold text-foreground mb-1">Nenhum follow-up agendado</h3>
-            <p className="text-sm text-muted-foreground max-w-xs">
-              Nenhum follow-up agendado para esta semana. Que tal agendar o proximo contato com algum lead?
-            </p>
-          </motion.div>
+          <EmptyState
+            icon={CalendarDays}
+            title="Semana livre de agendamentos"
+            description="Você não tem follow-ups programados para esta semana. Que tal agendar contatos com seus leads em negociação?"
+            action={{ label: 'Ver leads', onClick: () => navigate('/franquia') }}
+          />
         ) : isMobile ? renderMobileView() : renderDesktopView()}
       </div>
       </PullToRefresh>
