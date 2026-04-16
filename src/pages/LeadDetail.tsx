@@ -155,7 +155,8 @@ export default function LeadDetail() {
   const [editTelefone, setEditTelefone] = useState('');
   const [editEmail, setEditEmail] = useState('');
   const [editCidade, setEditCidade] = useState('');
-  const [activeTab, setActiveTab] = useState('gerenciar');
+  const [activeTab, setActiveTab] = useState('conversa');
+  const [showMoreTabs, setShowMoreTabs] = useState(false);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
 
