@@ -27,6 +27,7 @@ import { LeadPhotoUpload } from '@/components/lead/LeadPhotoUpload';
 import { LeadLinkedProposals } from '@/components/lead/LeadLinkedProposals';
 import { LeadWhatsAppHistory } from '@/components/lead/LeadWhatsAppHistory';
 import { WhatsAppTemplates } from '@/components/lead/WhatsAppTemplates';
+import { LeadTagsSection } from '@/components/lead/LeadTagsSection';
 
 import { useAuth } from '@/hooks/useAuth';
 import { triggerWhatsAppAuto } from '@/lib/whatsapp-auto';
@@ -62,6 +63,7 @@ interface Lead {
   distribution_rule_used: string | null;
   franquia_id: string | null;
   lead_origin?: string;
+  loss_reason?: string | null;
 }
 
 const statusConfig: Record<string, { label: string; color: string; accent: string }> = {
@@ -168,7 +170,7 @@ export default function LeadDetail() {
     queryFn: async () => {
       const { data } = await supabase
         .from('leads')
-        .select('id, nome, telefone, email, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, respostas_questionario, foto1, foto2, foto3, foto4, status_lead, observacoes, created_at, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, franquia_id, lead_origin')
+        .select('id, nome, telefone, email, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, respostas_questionario, foto1, foto2, foto3, foto4, status_lead, observacoes, created_at, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, franquia_id, lead_origin, loss_reason')
         .eq('id', id!)
         .maybeSingle();
       return data ? (data as Lead) : null;
@@ -435,6 +437,13 @@ export default function LeadDetail() {
                   {statusInfo.label}
                 </Badge>
               </div>
+              {lead.status_lead === 'perdido' && lead.loss_reason && (
+                <div className="mt-2 sm:mt-1 sm:absolute sm:top-14 sm:right-5">
+                  <Badge variant="outline" className="bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800 text-[10px] sm:text-xs font-medium gap-1">
+                    💔 {lead.loss_reason}
+                  </Badge>
+                </div>
+              )}
             </div>
 
             <CardContent className="p-3 sm:p-5">
@@ -560,6 +569,13 @@ export default function LeadDetail() {
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
           <LeadLinkedProposals leadId={lead.id} leadName={lead.nome} />
         </motion.div>
+
+        {/* Lead Tags */}
+        {(franchiseId || lead.franquia_id) && (
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.13 }}>
+            <LeadTagsSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
+          </motion.div>
+        )}
 
         {/* Tabbed Content */}
         <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>

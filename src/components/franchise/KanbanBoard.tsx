@@ -140,7 +140,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
     setOverColumnId(event.over?.id as string || null);
   }, []);
 
-  const moveLeadToStatus = useCallback(async (leadId: string, newStatus: string) => {
+  const moveLeadToStatus = useCallback(async (leadId: string, newStatus: string, lossReason?: string) => {
     if (movingLeads.has(leadId)) return;
     const lead = leads.find((l) => l.id === leadId);
     if (!lead) return;
@@ -151,9 +151,16 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
     setMovingLeads(prev => new Set(prev).add(leadId));
     setLocalStatusOverrides((prev) => ({ ...prev, [leadId]: newStatus }));
 
+    const updatePayload: Record<string, any> = { status_lead: newStatus as any };
+    if (newStatus === 'perdido' && lossReason) {
+      updatePayload.loss_reason = lossReason;
+    } else if (newStatus !== 'perdido') {
+      updatePayload.loss_reason = null;
+    }
+
     const { error } = await supabase
       .from('leads')
-      .update({ status_lead: newStatus as any })
+      .update(updatePayload)
       .eq('id', leadId);
 
     if (error) {
@@ -173,7 +180,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
         lead_id: leadId,
         user_id: currentUser.id,
         activity_type: 'status_change',
-        content: `${STATUS_LABELS[oldStatus]} → ${STATUS_LABELS[newStatus]}`,
+        content: `${STATUS_LABELS[oldStatus]} → ${STATUS_LABELS[newStatus]}${lossReason ? ` (Motivo: ${lossReason})` : ''}`,
       });
     }
 

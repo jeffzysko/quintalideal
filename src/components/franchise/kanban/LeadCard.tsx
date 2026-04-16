@@ -9,6 +9,7 @@ import { STATUS_LABELS, STATUS_CHART_COLORS } from '@/lib/lead-constants';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
 import { MapPin, Calendar, GripVertical, Building2, MessageCircle, StickyNote, ArrowRightLeft, Phone, Send } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -29,7 +30,7 @@ export const LeadCard = memo(function LeadCard({
   basePath: string;
   overlay?: boolean;
   franchiseName?: string;
-  onMoveStage?: (leadId: string, newStatus: string) => void;
+  onMoveStage?: (leadId: string, newStatus: string, lossReason?: string) => void;
 }) {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -41,6 +42,19 @@ export const LeadCard = memo(function LeadCard({
   const [noteOpen, setNoteOpen] = useState(false);
   const [noteText, setNoteText] = useState('');
   const [savingNote, setSavingNote] = useState(false);
+
+  const { data: leadTags = [] } = useQuery({
+    queryKey: ['lead-card-tags', lead.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('lead_tag_assignments')
+        .select('tag_id, lead_tags(name, color)')
+        .eq('lead_id', lead.id)
+        .limit(3);
+      return (data || []).map((d: any) => ({ name: d.lead_tags?.name, color: d.lead_tags?.color })).filter((t: any) => t.name);
+    },
+    staleTime: 5 * 60 * 1000,
+  });
 
   const style = !overlay
     ? {
@@ -143,6 +157,18 @@ export const LeadCard = memo(function LeadCard({
             </TooltipContent>
           </Tooltip>
           <SmartTagBadges lead={lead} max={1} />
+          {leadTags.length > 0 && (
+            <span className="inline-flex items-center gap-0.5 ml-0.5">
+              {leadTags.map((tag: { name: string; color: string }, i: number) => (
+                <Tooltip key={i}>
+                  <TooltipTrigger asChild>
+                    <span className="w-2.5 h-2.5 rounded-full shrink-0 cursor-help" style={{ backgroundColor: tag.color }} />
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="text-xs py-1 px-2">{tag.name}</TooltipContent>
+                </Tooltip>
+              ))}
+            </span>
+          )}
         </div>
 
         <div className="space-y-1">
