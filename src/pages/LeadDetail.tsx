@@ -557,10 +557,19 @@ export default function LeadDetail() {
           <AnimatePresence mode="wait">
             <TabsContent value="conversa" className="mt-0">
               <motion.div key="conversa" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="p-4 space-y-4">
-                <UnifiedConversation leadId={lead.id} franchiseId={franchiseId || lead.franquia_id} leadName={lead.nome} />
                 {(franchiseId || lead.franquia_id) && (
                   <LeadFollowups franchiseId={(franchiseId || lead.franquia_id)!} leadId={lead.id} leadName={lead.nome || undefined} />
                 )}
+                <UnifiedConversation leadId={lead.id} franchiseId={franchiseId || lead.franquia_id} leadName={lead.nome} />
+                <WhatsAppTemplates
+                  leadName={lead.nome}
+                  leadPhone={lead.telefone}
+                  modeloRecomendado={lead.modelo_recomendado}
+                  cidade={lead.cidade}
+                  pontuacao={lead.pontuacao_quintal}
+                  statusLead={lead.status_lead}
+                  leadId={lead.id}
+                />
               </motion.div>
             </TabsContent>
 
