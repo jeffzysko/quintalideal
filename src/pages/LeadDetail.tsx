@@ -466,6 +466,32 @@ export default function LeadDetail() {
                   </Badge>
                 </div>
               )}
+
+              {/* Responsável */}
+              <div className="mt-3 flex items-center gap-2">
+                <User className="w-3.5 h-3.5 text-primary-foreground/70" />
+                <span className="text-xs text-primary-foreground/70">Responsável:</span>
+                <Select
+                  value={assignedTo || '_none'}
+                  onValueChange={async (val) => {
+                    const newVal = val === '_none' ? null : val;
+                    setAssignedTo(newVal);
+                    await supabase.from('leads').update({ assigned_to: newVal } as any).eq('id', lead.id);
+                    queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
+                    toast.success('Responsável atualizado');
+                  }}
+                >
+                  <SelectTrigger className="h-7 w-[160px] text-xs bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground">
+                    <SelectValue placeholder="Selecionar..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="_none">Sem responsável</SelectItem>
+                    {franchiseUsers.map((u: any) => (
+                      <SelectItem key={u.user_id} value={u.user_id}>{u.full_name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <CardContent className="p-3 sm:p-5">
