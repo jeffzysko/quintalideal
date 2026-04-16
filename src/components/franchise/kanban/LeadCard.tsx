@@ -133,7 +133,8 @@ export const LeadCard = memo(function LeadCard({
             </div>
             <p className="text-sm font-semibold text-foreground truncate">{lead.nome || '—'}</p>
           </div>
-          {!overlay && (
+          <div className="flex items-center gap-1 shrink-0">
+            {assignedUser && <LeadCardAssignee assignedName={assignedUser} />}
             <div
               {...listeners}
               {...attributes}
