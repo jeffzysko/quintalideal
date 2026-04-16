@@ -639,11 +639,8 @@ export default function LeadDetail() {
               </TabsContent>
             )}
 
-            <TabsContent value="mais" className="mt-0">
-              <motion.div key="mais" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="p-4 space-y-5">
-                <ContactAttempts leadId={lead.id} />
-                <LeadValueEstimator respostas={lead.respostas_questionario} modeloRecomendado={lead.modelo_recomendado} />
-
+            <TabsContent value="fotos" className="mt-0">
+              <motion.div key="fotos" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="p-4 space-y-5">
                 <div>
                   <p className="text-sm font-medium text-foreground mb-2 flex items-center gap-2">
                     <Camera className="w-4 h-4 text-primary" /> Fotos do Quintal
