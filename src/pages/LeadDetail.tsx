@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Camera, ClipboardList, Settings2, Save, User, Trash2, Pencil, X, ChevronDown, Check, Package, MoreHorizontal, HelpCircle } from 'lucide-react';
+import { MessageCircle, Phone, Mail, MapPin, Calendar, Droplets, Camera, ClipboardList, Settings2, Save, User, Pencil, X, ChevronDown, Check, Package, FileText, HelpCircle, Plus } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { BackButton } from '@/components/BackButton';
@@ -34,7 +34,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 
 import { useAuth } from '@/hooks/useAuth';
 import { triggerWhatsAppAuto } from '@/lib/whatsapp-auto';
-import { useIsMobile } from '@/hooks/use-mobile';
+
 import { classifyLead, type LeadTemperature } from '@/lib/leadScoring';
 import { toast } from 'sonner';
 import { isValidBRPhone, isValidEmail } from '@/lib/validation';
@@ -113,35 +113,10 @@ const answerLabels: Record<string, string> = {
   '30-50': 'R$ 30 a 50 mil',
 };
 
-function ScoreRing({ score }: { score: number }) {
-  const radius = 40;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (score / 100) * circumference;
-  const color = score >= 80 ? 'hsl(var(--primary))' : score >= 60 ? 'hsl(var(--secondary))' : 'hsl(var(--destructive))';
-
-  return (
-    <div className="relative w-24 h-24 flex-shrink-0">
-      <svg className="w-24 h-24 -rotate-90" viewBox="0 0 100 100">
-        <circle cx="50" cy="50" r={radius} fill="none" stroke="hsl(var(--muted))" strokeWidth="6" />
-        <motion.circle
-          cx="50" cy="50" r={radius} fill="none"
-          stroke={color} strokeWidth="6" strokeLinecap="round"
-          strokeDasharray={circumference}
-          initial={{ strokeDashoffset: circumference }}
-          animate={{ strokeDashoffset: offset }}
-          transition={{ duration: 1, ease: 'easeOut' }}
-        />
-      </svg>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <span className="text-xl font-bold text-foreground">{score}%</span>
-      </div>
-    </div>
-  );
-}
 
 export default function LeadDetail() {
   const { franchiseId, user } = useAuth();
-  const isMobile = useIsMobile();
+  
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const location = useLocation();
@@ -426,219 +401,110 @@ export default function LeadDetail() {
       <div className="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4 sm:space-y-5">
         <Breadcrumbs className="md:hidden" items={breadcrumbItems} />
 
-        {/* Hero Card */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-          <Card className="glass-card overflow-hidden">
-            <div className="gradient-blue px-3 sm:px-5 py-3 sm:py-4 relative">
-              <div className="flex items-start sm:items-center gap-3 sm:gap-4">
-                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary-foreground/20 backdrop-blur flex items-center justify-center shrink-0">
-                  <User className="w-5 h-5 sm:w-6 sm:h-6 text-primary-foreground" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h1 className="text-base sm:text-lg font-bold text-primary-foreground truncate">
-                    {lead.nome || 'Lead sem nome'}
-                  </h1>
-                  <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-primary-foreground/80 text-xs sm:text-sm mt-0.5">
-                    {lead.cidade && (
-                      <span className="flex items-center gap-1"><MapPin className="w-3 h-3 sm:w-3.5 sm:h-3.5" />{lead.cidade}</span>
-                    )}
-                    <span className="flex items-center gap-1">
-                      <Calendar className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
-                      {new Date(lead.created_at).toLocaleDateString('pt-BR')}
-                    </span>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-2 sm:mt-0 sm:absolute sm:top-4 sm:right-5 flex items-center gap-1.5">
-                {lead.lead_origin === 'manual' && (
-                  <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-[10px] sm:text-xs font-medium" variant="outline">
-                    ✏️ Manual
-                  </Badge>
-                )}
-                <Badge className={`${statusInfo.color} border text-[10px] sm:text-xs font-medium`}>
-                  {statusInfo.label}
-                </Badge>
-              </div>
-              {lead.status_lead === 'perdido' && lead.loss_reason && (
-                <div className="mt-2 sm:mt-1 sm:absolute sm:top-14 sm:right-5">
-                  <Badge variant="outline" className="bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800 text-[10px] sm:text-xs font-medium gap-1">
-                    💔 {lead.loss_reason}
-                  </Badge>
-                </div>
-              )}
+        {/* Compact Hero Card */}
+        {(() => {
+          const liveRespostas = { ...(lead.respostas_questionario || {}) };
+          if (tempOverride) liveRespostas.temperatura_manual = tempOverride;
+          else delete liveRespostas.temperatura_manual;
+          const temp = classifyLead(Object.keys(liveRespostas).length > 0 ? liveRespostas : null, lead.pontuacao_quintal);
+          const accentBar =
+            lead.status_lead === 'vendido' ? 'bg-emerald-500' :
+            lead.status_lead === 'perdido' ? 'bg-red-500' :
+            lead.status_lead === 'em_negociacao' ? 'bg-amber-500' :
+            lead.status_lead === 'contatado' ? 'bg-sky-500' : 'bg-primary';
 
-              {/* Responsável */}
-              <div className="mt-3 flex items-center gap-2">
-                <User className="w-3.5 h-3.5 text-primary-foreground/70" />
-                <span className="text-xs text-primary-foreground/70">Responsável:</span>
-                <Select
-                  value={assignedTo || '_none'}
-                  onValueChange={async (val) => {
-                    const newVal = val === '_none' ? null : val;
-                    setAssignedTo(newVal);
-                    await supabase.from('leads').update({ assigned_to: newVal } as any).eq('id', lead.id);
-                    queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
-                    toast.success('Responsável atualizado');
-                  }}
-                >
-                  <SelectTrigger className="h-7 w-[160px] text-xs bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground">
-                    <SelectValue placeholder="Selecionar..." />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="_none">Sem responsável</SelectItem>
-                    {franchiseUsers.map((u: any) => (
-                      <SelectItem key={u.user_id} value={u.user_id}>{u.full_name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-
-            <CardContent className="p-3 sm:p-5">
-              <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-5">
-                <ScoreRing score={lead.pontuacao_quintal || 0} />
-                <div className="flex-1 space-y-2 w-full">
-                  <div className="text-center sm:text-left">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Índice do Quintal</p>
-                    <p className="text-sm text-foreground mt-0.5">Quanto maior, mais preparado está o quintal para uma piscina</p>
-                  </div>
-                  {/* Inactivity Badge */}
-                  <div className="flex justify-center sm:justify-start">
-                    <InactivityBadge createdAt={lead.created_at} lastActivityAt={lastActivityAt} />
-                  </div>
-                  {/* Lead Temperature */}
-                  {(() => {
-                    const liveRespostas = { ...(lead.respostas_questionario || {}) };
-                    if (tempOverride) liveRespostas.temperatura_manual = tempOverride;
-                    else delete liveRespostas.temperatura_manual;
-                    const temp = classifyLead(Object.keys(liveRespostas).length > 0 ? liveRespostas : null, lead.pontuacao_quintal);
-                    return (
-                      <div className={`flex items-center gap-2 ${temp.bgColor} border rounded-lg px-3 py-2`}>
-                        <span className="text-lg">{temp.emoji}</span>
-                        <div>
-                          <p className="text-xs text-muted-foreground">Temperatura</p>
-                          <p className={`text-sm font-semibold ${temp.color}`}>Lead {temp.label}</p>
-                        </div>
+          return (
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
+              <Card className="glass-card overflow-hidden">
+                <div className={`h-1 w-full ${accentBar}`} />
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center shrink-0">
+                      <User className="w-5 h-5 text-primary" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <h1 className="text-base font-bold text-foreground truncate">{lead.nome || 'Lead sem nome'}</h1>
+                        <Badge className={`${statusInfo.color} border text-[10px] font-medium shrink-0`}>
+                          {statusInfo.label}
+                        </Badge>
+                        <span className="text-base" title={`Lead ${temp.label}`}>{temp.emoji}</span>
                       </div>
-                    );
-                  })()}
-                  {lead.modelo_recomendado && (
-                    <div className="flex items-center gap-2 bg-accent/50 rounded-lg px-3 py-2">
-                      <Droplets className="w-4 h-4 text-primary shrink-0" />
-                      <div className="min-w-0">
-                        <p className="text-xs text-muted-foreground">Modelo recomendado</p>
-                        <p className="text-sm font-semibold text-foreground truncate">{lead.modelo_recomendado}</p>
+                      <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground mt-0.5">
+                        {lead.cidade && <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{lead.cidade}</span>}
+                        <span className="flex items-center gap-1"><Calendar className="w-3 h-3" />{new Date(lead.created_at).toLocaleDateString('pt-BR')}</span>
+                        <InactivityBadge createdAt={lead.created_at} lastActivityAt={lastActivityAt} />
                       </div>
                     </div>
-                  )}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        {/* Contact */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-          <Card className="glass-card">
-            <CardContent className="p-3 sm:p-5 space-y-3">
-              <div className="flex items-center gap-2 mb-1">
-                <Phone className="w-4 h-4 text-primary" />
-                <h2 className="text-sm font-semibold text-foreground">Contato</h2>
-              </div>
-
-              {lead.telefone && (
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 bg-muted/50 rounded-lg px-3 sm:px-4 py-3">
-                  <div className="flex items-center gap-3">
-                    <Phone className="w-4 h-4 text-muted-foreground shrink-0" />
-                    <span className="text-sm font-medium text-foreground">{lead.telefone}</span>
                   </div>
-                    <Button
-                    size="sm"
-                    className="bg-success hover:bg-success/90 text-success-foreground text-xs h-8 gap-1.5 w-full sm:w-auto"
-                    onClick={() => {
-                      const fullPhone = toWhatsAppPhone(lead.telefone || '');
-                      const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem? Vi que você fez o teste do Índice do Quintal Ideal!`);
-                      window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
-                    }}
-                  >
-                    <MessageCircle className="w-3.5 h-3.5" /> WhatsApp
-                  </Button>
-                </div>
-              )}
 
-              {lead.email && (
-                <div className="flex items-center gap-3 bg-muted/50 rounded-lg px-3 sm:px-4 py-3">
-                  <Mail className="w-4 h-4 text-muted-foreground shrink-0" />
-                  <span className="text-sm text-foreground truncate">{lead.email}</span>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </motion.div>
+                  <div className="flex gap-2">
+                    {lead.telefone && (
+                      <Button
+                        size="sm"
+                        className="flex-1 bg-success hover:bg-success/90 text-success-foreground gap-1.5 h-10"
+                        onClick={() => {
+                          const fullPhone = toWhatsAppPhone(lead.telefone || '');
+                          const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem? Vi que você fez o teste do Índice do Quintal Ideal!`);
+                          window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
+                        }}
+                      >
+                        <MessageCircle className="w-4 h-4" /> WhatsApp
+                      </Button>
+                    )}
+                    {lead.telefone && (
+                      <Button size="sm" variant="outline" className="h-10 w-10 shrink-0" onClick={() => window.open(`tel:${lead.telefone}`, '_self')}>
+                        <Phone className="w-4 h-4" />
+                      </Button>
+                    )}
+                    {lead.email && (
+                      <Button size="sm" variant="outline" className="h-10 w-10 shrink-0" onClick={() => window.open(`mailto:${lead.email}`, '_blank')}>
+                        <Mail className="w-4 h-4" />
+                      </Button>
+                    )}
+                  </div>
 
-        {/* Contact Attempts + Value Estimator */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="space-y-4">
-          <ContactAttempts leadId={lead.id} />
-          <LeadValueEstimator respostas={lead.respostas_questionario} modeloRecomendado={lead.modelo_recomendado} />
-        </motion.div>
+                  {lead.modelo_recomendado && (
+                    <div className="mt-3 flex items-center gap-2 bg-muted/40 rounded-lg px-3 py-2">
+                      <Droplets className="w-3.5 h-3.5 text-primary shrink-0" />
+                      <span className="text-xs text-muted-foreground">Modelo recomendado:</span>
+                      <span className="text-xs font-semibold text-foreground truncate">{lead.modelo_recomendado}</span>
+                    </div>
+                  )}
 
-        {/* Quiz Answers — always visible */}
-        {lead.respostas_questionario && (
-          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-            <Card className="glass-card">
-              <CardContent className="p-3 sm:p-5">
-                <div className="flex items-center gap-2 mb-3">
-                  <ClipboardList className="w-4 h-4 text-primary" />
-                  <h2 className="text-sm font-semibold text-foreground">Respostas do Questionário</h2>
-                </div>
-                <div className="space-y-1.5">
-                  {Object.entries(lead.respostas_questionario)
-                    .filter(([key]) => questionLabels[key])
-                    .map(([key, value]) => {
-                      const q = questionLabels[key];
-                      const displayValue = answerLabels[value as string] || (value as string);
-                      return (
-                        <div key={key} className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 py-2 sm:py-2.5 px-3 sm:px-3.5 rounded-xl bg-muted/40 hover:bg-muted/60 transition-colors">
-                          <span className="text-xs sm:text-sm text-muted-foreground flex items-center gap-2">
-                            <span className="text-base">{q.icon}</span>
-                            {q.label}
-                          </span>
-                          <span className="text-xs sm:text-sm font-semibold text-foreground ml-7 sm:ml-0">{displayValue}</span>
-                        </div>
-                      );
-                    })}
-                </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        )}
+                  {lead.status_lead === 'perdido' && lead.loss_reason && (
+                    <div className="mt-2 flex items-center gap-2 bg-destructive/10 rounded-lg px-3 py-2">
+                      <span className="text-xs text-destructive">💔 Motivo: {lead.loss_reason}</span>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </motion.div>
+          );
+        })()}
 
-        {/* Linked Proposals - shown outside tabs for quick access */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }}>
-          <LeadLinkedProposals leadId={lead.id} leadName={lead.nome} />
-        </motion.div>
-
-        {/* Tabbed Content - Simplified */}
-        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+        {/* Tabs */}
+        <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
             <div className="bg-card/80 backdrop-blur-sm border border-border/40 rounded-2xl p-1.5 shadow-sm">
-              <TabsList className={`w-full grid h-12 bg-transparent p-0 gap-1 ${lead.status_lead === 'vendido' ? 'grid-cols-4' : 'grid-cols-3'}`}>
+              <TabsList className={`w-full grid h-12 bg-transparent p-0 gap-1 ${lead.status_lead === 'vendido' ? 'grid-cols-5' : 'grid-cols-4'}`}>
                 {[
                   { value: 'conversa', icon: MessageCircle, label: 'Conversa' },
+                  { value: 'proposta', icon: FileText, label: 'Proposta' },
+                  { value: 'dados', icon: ClipboardList, label: 'Dados' },
                   { value: 'gerenciar', icon: Settings2, label: 'Gerenciar' },
-                  ...(lead.status_lead === 'vendido' ? [{ value: 'pos-venda', icon: Package, label: 'Pos-venda' }] : []),
-                  { value: 'mais', icon: MoreHorizontal, label: 'Mais' },
+                  ...(lead.status_lead === 'vendido' ? [{ value: 'pos-venda', icon: Package, label: 'Pós-venda' }] : []),
                 ].map(tab => {
                   const Icon = tab.icon;
-                  
                   return (
                     <TabsTrigger
                       key={tab.value}
                       value={tab.value}
+                      title={tab.label}
                       className="relative h-10 text-[11px] sm:text-xs gap-1 sm:gap-1.5 rounded-xl font-medium transition-all duration-200 text-muted-foreground data-[state=active]:bg-gradient-to-b data-[state=active]:from-primary data-[state=active]:to-primary/90 data-[state=active]:text-primary-foreground data-[state=active]:shadow-md data-[state=active]:shadow-primary/20 hover:bg-muted/60 data-[state=active]:hover:bg-primary"
                     >
                       <Icon className="w-4 h-4 sm:w-3.5 sm:h-3.5" />
-                      <span className="text-[10px] sm:text-xs">{tab.label}</span>
+                      <span className="hidden sm:inline text-[10px] sm:text-xs">{tab.label}</span>
                     </TabsTrigger>
                   );
                 })}
@@ -646,8 +512,7 @@ export default function LeadDetail() {
             </div>
 
             <AnimatePresence mode="wait">
-
-              {/* Conversa Tab - Unified feed */}
+              {/* Conversa Tab */}
               <TabsContent value="conversa" className="mt-4">
                 <motion.div key="conversa" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="space-y-4">
                   <UnifiedConversation leadId={lead.id} franchiseId={franchiseId || lead.franquia_id} leadName={lead.nome} />
@@ -657,19 +522,72 @@ export default function LeadDetail() {
                 </motion.div>
               </TabsContent>
 
-              {/* Pos-venda Tab */}
-              {lead.status_lead === 'vendido' && (
-                <TabsContent value="pos-venda" className="mt-4">
-                  <motion.div key="pos-venda" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
-                    <PostSaleSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
-                  </motion.div>
-                </TabsContent>
-              )}
+              {/* Proposta Tab */}
+              <TabsContent value="proposta" className="mt-4">
+                <motion.div key="proposta" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="space-y-4">
+                  <LeadLinkedProposals leadId={lead.id} leadName={lead.nome} />
+                  <Button
+                    className="w-full gap-2"
+                    onClick={() => {
+                      const params = new URLSearchParams({ lead_id: lead.id });
+                      if (lead.nome) params.set('lead_name', lead.nome);
+                      navigate(`/propostas/nova?${params.toString()}`);
+                    }}
+                  >
+                    <Plus className="w-4 h-4" /> Nova proposta para este lead
+                  </Button>
+                </motion.div>
+              </TabsContent>
 
-              {/* Mais Tab - Secondary content */}
-              <TabsContent value="mais" className="mt-4">
-                <motion.div key="mais" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="space-y-4">
-                  {/* Photos */}
+              {/* Dados Tab */}
+              <TabsContent value="dados" className="mt-4">
+                <motion.div key="dados" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="space-y-4">
+                  {lead.respostas_questionario && (() => {
+                    const entries = Object.entries(lead.respostas_questionario).filter(([key]) => questionLabels[key]);
+                    return (
+                      <Card className="glass-card">
+                        <CardContent className="p-3 sm:p-5">
+                          <Collapsible defaultOpen>
+                            <CollapsibleTrigger asChild>
+                              <button className="w-full flex items-center justify-between mb-3 group">
+                                <div className="flex items-center gap-2">
+                                  <ClipboardList className="w-4 h-4 text-primary" />
+                                  <h2 className="text-sm font-semibold text-foreground">Respostas do Quiz ({entries.length})</h2>
+                                </div>
+                                <ChevronDown className="w-4 h-4 text-muted-foreground transition-transform group-data-[state=open]:rotate-180" />
+                              </button>
+                            </CollapsibleTrigger>
+                            <CollapsibleContent className="space-y-1.5">
+                              {entries.map(([key, value]) => {
+                                const q = questionLabels[key];
+                                const displayValue = answerLabels[value as string] || (value as string);
+                                return (
+                                  <div key={key} className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 py-2 sm:py-2.5 px-3 sm:px-3.5 rounded-xl bg-muted/40">
+                                    <span className="text-xs sm:text-sm text-muted-foreground flex items-center gap-2">
+                                      <span className="text-base">{q.icon}</span>
+                                      {q.label}
+                                    </span>
+                                    <span className="text-xs sm:text-sm font-semibold text-foreground ml-7 sm:ml-0">{displayValue}</span>
+                                  </div>
+                                );
+                              })}
+                            </CollapsibleContent>
+                          </Collapsible>
+                        </CardContent>
+                      </Card>
+                    );
+                  })()}
+
+                  <div className="grid grid-cols-1 gap-4">
+                    <LeadValueEstimator respostas={lead.respostas_questionario} modeloRecomendado={lead.modelo_recomendado} />
+                    <Card className="glass-card">
+                      <CardContent className="p-3 sm:p-5">
+                        <h2 className="text-sm font-semibold text-foreground mb-3">Tentativas de contato</h2>
+                        <ContactAttempts leadId={lead.id} />
+                      </CardContent>
+                    </Card>
+                  </div>
+
                   <Card className="glass-card">
                     <CardContent className="p-3 sm:p-5">
                       {photos.length > 0 ? (
@@ -686,9 +604,6 @@ export default function LeadDetail() {
                                   className="w-full h-full focus:outline-none focus:ring-2 focus:ring-primary"
                                 >
                                   <img src={url} alt={`Quintal ${i + 1}`} className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105" loading="lazy" />
-                                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors flex items-center justify-center">
-                                    <Camera className="w-5 h-5 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
-                                  </div>
                                 </button>
                                 <AlertDialog>
                                   <AlertDialogTrigger asChild>
@@ -699,7 +614,7 @@ export default function LeadDetail() {
                                   <AlertDialogContent>
                                     <AlertDialogHeader>
                                       <AlertDialogTitle>Remover foto?</AlertDialogTitle>
-                                      <AlertDialogDescription>Esta acao nao pode ser desfeita. A foto sera removida permanentemente do lead.</AlertDialogDescription>
+                                      <AlertDialogDescription>Esta ação não pode ser desfeita.</AlertDialogDescription>
                                     </AlertDialogHeader>
                                     <AlertDialogFooter>
                                       <AlertDialogCancel>Cancelar</AlertDialogCancel>
@@ -714,10 +629,9 @@ export default function LeadDetail() {
                                             update[field] = remaining[idx] || null;
                                           });
                                           const { error } = await supabase.from('leads').update(update).eq('id', lead.id);
-                                          if (error) {
-                                            toast.error('Erro ao remover foto.');
-                                          } else {
-                                            toast.success('Foto removida com sucesso!');
+                                          if (error) toast.error('Erro ao remover foto.');
+                                          else {
+                                            toast.success('Foto removida!');
                                             queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
                                           }
                                         }}
@@ -737,7 +651,6 @@ export default function LeadDetail() {
                             <Camera className="w-6 h-6 text-primary" />
                           </div>
                           <p className="text-sm font-medium text-foreground mb-1">Nenhuma foto adicionada</p>
-                          <p className="text-xs text-muted-foreground max-w-[220px]">Adicione fotos do quintal para enriquecer o cadastro</p>
                         </div>
                       )}
                       {photos.length < 4 && lead && (
@@ -752,7 +665,10 @@ export default function LeadDetail() {
                   </Card>
                   <PhotoLightbox photos={photos} initialIndex={lightboxIndex} open={lightboxOpen} onOpenChange={setLightboxOpen} />
 
-                  {/* WhatsApp Templates */}
+                  {(franchiseId || lead.franquia_id) && (
+                    <LeadTagsSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
+                  )}
+
                   <WhatsAppTemplates
                     leadName={lead.nome}
                     leadPhone={lead.telefone}
@@ -762,13 +678,17 @@ export default function LeadDetail() {
                     statusLead={lead.status_lead}
                     leadId={lead.id}
                   />
-
-                  {/* Tags */}
-                  {(franchiseId || lead.franquia_id) && (
-                    <LeadTagsSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
-                  )}
                 </motion.div>
               </TabsContent>
+
+              {/* Pos-venda Tab */}
+              {lead.status_lead === 'vendido' && (
+                <TabsContent value="pos-venda" className="mt-4">
+                  <motion.div key="pos-venda" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }}>
+                    <PostSaleSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
+                  </motion.div>
+                </TabsContent>
+              )}
 
               {/* Gerenciar Tab */}
               <TabsContent value="gerenciar" className="mt-4">
@@ -780,15 +700,38 @@ export default function LeadDetail() {
                         <h2 className="text-sm font-semibold text-foreground">Gerenciar Lead</h2>
                       </div>
 
-                      {/* Score / Pontuacao visual */}
+                      <div>
+                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Responsável</label>
+                        <Select
+                          value={assignedTo || '_none'}
+                          onValueChange={async (val) => {
+                            const newVal = val === '_none' ? null : val;
+                            setAssignedTo(newVal);
+                            await supabase.from('leads').update({ assigned_to: newVal } as any).eq('id', lead.id);
+                            queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
+                            toast.success('Responsável atualizado');
+                          }}
+                        >
+                          <SelectTrigger className="bg-muted/50">
+                            <SelectValue placeholder="Selecionar..." />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="_none">Sem responsável</SelectItem>
+                            {franchiseUsers.map((u: any) => (
+                              <SelectItem key={u.user_id} value={u.user_id}>{u.full_name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
                       {lead.pontuacao_quintal != null && (
                         <div className="space-y-2 p-3 bg-muted/30 rounded-xl border border-border/40">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pontuacao do Quintal</span>
+                            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pontuação do Quintal</span>
                             <span className={`text-sm font-bold ${
-                              lead.pontuacao_quintal >= 70 ? 'text-emerald-600 dark:text-emerald-400' :
+                              lead.pontuacao_quintal >= 70 ? 'text-success' :
                               lead.pontuacao_quintal >= 40 ? 'text-amber-600 dark:text-amber-400' :
-                              'text-red-500 dark:text-red-400'
+                              'text-destructive'
                             }`}>{lead.pontuacao_quintal}%</span>
                           </div>
                           <div className="h-3 bg-muted rounded-full overflow-hidden">
@@ -803,11 +746,6 @@ export default function LeadDetail() {
                               transition={{ duration: 0.8, ease: 'easeOut' }}
                             />
                           </div>
-                          <p className="text-[11px] text-muted-foreground">
-                            {lead.pontuacao_quintal >= 70 ? 'Excelente - quintal muito preparado para uma piscina.' :
-                             lead.pontuacao_quintal >= 40 ? 'Bom potencial - com alguns ajustes, o quintal estara pronto.' :
-                             'Potencial inicial - vale explorar mais com o cliente.'}
-                          </p>
                         </div>
                       )}
 
@@ -816,9 +754,9 @@ export default function LeadDetail() {
                           <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-primary/10 text-primary text-xs font-bold">▶</span>
                           Alterar Status do Lead
                         </label>
-                        <p className="text-xs text-muted-foreground mb-3">Selecione o estagio atual deste lead no funil de vendas - salva automaticamente</p>
+                        <p className="text-xs text-muted-foreground mb-3">Salva automaticamente</p>
                         {autoSaved && (
-                          <div className="flex items-center gap-1.5 mb-2 text-xs text-emerald-600 dark:text-emerald-400 font-medium animate-in fade-in slide-in-from-top-1 duration-200">
+                          <div className="flex items-center gap-1.5 mb-2 text-xs text-success font-medium animate-in fade-in slide-in-from-top-1 duration-200">
                             <Check className="w-3.5 h-3.5" />
                             {autoSaved}
                           </div>
@@ -840,7 +778,6 @@ export default function LeadDetail() {
                         </Select>
                       </div>
 
-                      {/* Temperature override */}
                       <div>
                         <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Temperatura do Lead</label>
                         <div className="flex gap-2">
@@ -864,12 +801,8 @@ export default function LeadDetail() {
                             </button>
                           ))}
                         </div>
-                        <p className="text-[11px] text-muted-foreground mt-1">
-                          {tempOverride ? `Temperatura fixada como "${tempOverride}". Toque em "Automatico" para usar o calculo inteligente.` : 'Calculado automaticamente com base nas respostas do quiz (intencao, orcamento e espaco).'}
-                        </p>
                       </div>
 
-                      {/* Modelo Vendido */}
                       {status === 'vendido' && (
                         <div>
                           <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
@@ -880,13 +813,13 @@ export default function LeadDetail() {
                                   <HelpCircle className="w-3.5 h-3.5 text-muted-foreground/60 cursor-help" />
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                  <p className="text-xs max-w-[200px]">O modelo sugerido com base nas respostas do cliente</p>
+                                  <p className="text-xs max-w-[200px]">O modelo confirmado na venda</p>
                                 </TooltipContent>
                               </Tooltip>
                             </TooltipProvider>
                           </label>
                           <Select value={modeloVendido} onValueChange={setModeloVendido}>
-                            <SelectTrigger className="bg-muted/50"><SelectValue placeholder="Selecione o modelo vendido" /></SelectTrigger>
+                            <SelectTrigger className="bg-muted/50"><SelectValue placeholder="Selecione" /></SelectTrigger>
                             <SelectContent>
                               {poolModels.map(m => (
                                 <SelectItem key={m} value={m}>{m}</SelectItem>
@@ -897,18 +830,17 @@ export default function LeadDetail() {
                       )}
 
                       <div>
-                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Observacoes</label>
+                        <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-1.5 block">Observações</label>
                         <Textarea
                           value={observacoes}
                           onChange={e => setObservacoes(e.target.value)}
                           rows={3}
-                          placeholder="Adicionar observacoes sobre este lead..."
+                          placeholder="Adicionar observações..."
                           maxLength={1000}
                           className="bg-muted/50 resize-none"
                         />
                       </div>
 
-                      {/* Personal info - collapsible */}
                       <Collapsible>
                         <CollapsibleTrigger asChild>
                           <button className="w-full flex items-center justify-between p-3 bg-muted/30 rounded-xl border border-border/40 hover:bg-muted/50 transition-colors text-left">
@@ -949,30 +881,26 @@ export default function LeadDetail() {
                           </>
                         ) : (
                           <>
-                            <Save className="w-4 h-4" /> Salvar Alteracoes
+                            <Save className="w-4 h-4" /> Salvar Alterações
                           </>
                         )}
                       </Button>
 
-                      {/* Delete test lead */}
                       <AlertDialog>
                         <AlertDialogTrigger asChild>
-                          <Button variant="outline" className="w-full gap-2 text-destructive border-destructive/20 hover:bg-destructive/5 hover:text-destructive">
-                            <Trash2 className="w-4 h-4" /> Excluir Lead de Teste
-                          </Button>
+                          <button className="w-full text-center text-xs text-destructive/60 hover:text-destructive transition-colors py-2 underline underline-offset-2">
+                            Excluir este lead de teste
+                          </button>
                         </AlertDialogTrigger>
                         <AlertDialogContent>
                           <AlertDialogHeader>
-                            <AlertDialogTitle>Confirmar exclusao</AlertDialogTitle>
+                            <AlertDialogTitle>Confirmar exclusão</AlertDialogTitle>
                             <AlertDialogDescription className="space-y-2">
                               <span className="block">
-                                Voce esta prestes a excluir o lead <strong>"{lead.nome || 'sem nome'}"</strong>.
+                                Você está prestes a excluir o lead <strong>"{lead.nome || 'sem nome'}"</strong>.
                               </span>
                               <span className="block font-semibold text-destructive">
-                                ⚠️ Esta acao e irreversivel. Confirme que este e um lead de teste e NAO um lead oficial de um cliente real.
-                              </span>
-                              <span className="block text-xs">
-                                Todas as atividades, follow-ups e dados associados serao removidos permanentemente.
+                                ⚠️ Esta ação é irreversível.
                               </span>
                             </AlertDialogDescription>
                           </AlertDialogHeader>
@@ -987,7 +915,7 @@ export default function LeadDetail() {
                                 if (error) {
                                   toast.error('Erro ao excluir lead.');
                                 } else {
-                                  toast.success('Lead de teste excluido com sucesso.');
+                                  toast.success('Lead excluído.');
                                   queryClient.invalidateQueries({ queryKey: ['admin-leads-table'] });
                                   queryClient.invalidateQueries({ queryKey: ['admin-leads'] });
                                   queryClient.invalidateQueries({ queryKey: ['franchise-leads'] });
@@ -1003,7 +931,7 @@ export default function LeadDetail() {
                                 }
                               }}
                             >
-                              Confirmo: e lead de teste, excluir
+                              Confirmar exclusão
                             </AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
@@ -1015,46 +943,7 @@ export default function LeadDetail() {
             </AnimatePresence>
           </Tabs>
         </motion.div>
-
-        {/* Spacer for sticky bar + bottom nav */}
-        {isMobile && <div className="h-32" />}
       </div>
-
-      {/* Sticky bottom action bar - mobile only */}
-      {isMobile && lead.telefone && (
-        <div className="fixed bottom-14 inset-x-0 z-40 bg-card/95 backdrop-blur-xl border-t border-border/50 px-4 py-3 flex items-center gap-2 shadow-lg" style={{ paddingBottom: '0.25rem' }}>
-          <Button
-            size="sm"
-            className="flex-1 bg-success hover:bg-success/90 text-success-foreground gap-1.5 h-11"
-            onClick={() => {
-              const fullPhone = toWhatsAppPhone(lead.telefone!);
-              const msg = encodeURIComponent(`Olá ${lead.nome || ''}, tudo bem?`);
-              window.open(`https://wa.me/${fullPhone}?text=${msg}`, '_blank');
-            }}
-          >
-            <MessageCircle className="w-4 h-4" />
-            WhatsApp
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="h-11 w-11 shrink-0"
-            onClick={() => window.open(`tel:${lead.telefone}`, '_self')}
-          >
-            <Phone className="w-4 h-4" />
-          </Button>
-          {lead.email && (
-            <Button
-              size="sm"
-              variant="outline"
-              className="h-11 w-11 shrink-0"
-              onClick={() => window.open(`mailto:${lead.email}`, '_blank')}
-            >
-              <Mail className="w-4 h-4" />
-            </Button>
-          )}
-        </div>
-      )}
     </div>
     </PageTransition>
   );
