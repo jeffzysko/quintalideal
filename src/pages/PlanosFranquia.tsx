@@ -151,6 +151,7 @@ export default function PlanosFranquia() {
   }
 
   return (
+    <PageTransition>
     <div className="p-4 md:p-6 space-y-8 max-w-4xl mx-auto pb-24">
       <PageHeader
         title="Planos e Assinaturas"
@@ -473,5 +474,6 @@ export default function PlanosFranquia() {
         </Accordion>
       </div>
     </div>
+    </PageTransition>
   );
 }
