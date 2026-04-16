@@ -1684,6 +1684,28 @@ export type Database = {
       }
     }
     Functions: {
+      admin_get_cron_job_history: {
+        Args: { _jobname: string; _limit?: number }
+        Returns: {
+          end_time: string
+          return_message: string
+          runid: number
+          start_time: string
+          status: string
+        }[]
+      }
+      admin_get_cron_jobs: {
+        Args: never
+        Returns: {
+          active: boolean
+          jobid: number
+          jobname: string
+          last_run_duration: string
+          last_run_started: string
+          last_run_status: string
+          schedule: string
+        }[]
+      }
       get_active_franchises_public: {
         Args: never
         Returns: {

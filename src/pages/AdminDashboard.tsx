@@ -48,6 +48,7 @@ const PerformanceQI = lazy(() => import('@/components/admin/PerformanceQI').then
 const AdminLeadsReadOnly = lazy(() => import('@/components/admin/AdminLeadsReadOnly').then(m => ({ default: m.AdminLeadsReadOnly })));
 const AdminApplications = lazy(() => import('@/components/admin/AdminApplications').then(m => ({ default: m.AdminApplications })));
 const AdminErrorLogs = lazy(() => import('@/components/admin/AdminErrorLogs').then(m => ({ default: m.AdminErrorLogs })));
+const AdminCronJobs = lazy(() => import('@/components/admin/AdminCronJobs').then(m => ({ default: m.AdminCronJobs })));
 
 function TabFallback() {
   return (
@@ -606,6 +607,15 @@ export default function AdminDashboard() {
               </Card>
             </div>
             </Suspense>
+
+            {/* Cron jobs panel - super admin only */}
+            {isSuperAdmin && (
+              <div className="mb-4 sm:mb-6">
+                <Suspense fallback={<TabFallback />}>
+                  <AdminCronJobs />
+                </Suspense>
+              </div>
+            )}
           </>
         )}
 
