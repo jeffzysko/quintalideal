@@ -72,6 +72,7 @@ const PerformanceAudit = lazy(() => import("./pages/PerformanceAudit"));
 const PlanosFranquia = lazy(() => import("./pages/PlanosFranquia"));
 const SuperAdminReceita = lazy(() => import("./pages/SuperAdminReceita"));
 const SejaParceiro = lazy(() => import("./pages/SejaParceiro"));
+const CatalogoPiscinas = lazy(() => import("./pages/CatalogoPiscinas"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -173,6 +174,10 @@ function AppRouteTree() {
         <Route
           path="/propostas/:id"
           element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><ProposalDetail /></ProtectedRoute>}
+        />
+        <Route
+          path="/catalogo"
+          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><CatalogoPiscinas /></ProtectedRoute>}
         />
         <Route
           path="/painel/lead/:id"

@@ -20,6 +20,7 @@ import {
   FileText,
   Star,
   ChevronRight,
+  BookOpen,
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -70,8 +71,9 @@ const FRANCHISE_TABS: SidebarNavItem[] = [
   { title: 'Leads', url: '/franquia?tab=leads', icon: Users, matchTab: 'leads' },
   { title: 'Funil', url: '/franquia?tab=funnel', icon: Workflow, matchTab: 'funnel' },
   { title: 'Propostas', url: '/propostas', icon: FileText, matchPaths: ['/propostas'] },
+  { title: 'Catalogo', url: '/catalogo', icon: BookOpen, matchPaths: ['/catalogo'] },
   { title: 'Metas', url: '/franquia?tab=achievements', icon: TrendingUp, matchTab: 'achievements' },
-  { title: 'Relatórios', url: '/franquia?tab=reports', icon: BarChart3, matchTab: 'reports' },
+  { title: 'Relatorios', url: '/franquia?tab=reports', icon: BarChart3, matchTab: 'reports' },
   { title: 'Planos', url: '/planos', icon: Star, matchPaths: ['/planos'] },
 ];
 
@@ -124,6 +126,7 @@ export function AppSidebar() {
 
   const getDataTour = (item: SidebarNavItem): string | undefined => {
     if (item.title === 'Propostas') return 'nav-propostas';
+    if (item.title === 'Catalogo') return 'nav-catalogo';
     if (item.title === 'Planos') return 'nav-planos';
     return undefined;
   };
