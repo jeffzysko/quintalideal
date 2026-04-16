@@ -22,6 +22,14 @@ export const STATUS_CHART_COLORS: Record<string, string> = {
   perdido: 'hsl(0, 84%, 60%)',
 };
 
+export const LEAD_STATUS_CONFIG = {
+  novo: { label: 'Novo', badge: 'bg-muted text-muted-foreground', dot: 'bg-gray-400' },
+  contatado: { label: 'Contatado', badge: 'bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300', dot: 'bg-sky-500' },
+  em_negociacao: { label: 'Em Negociação', badge: 'bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-300', dot: 'bg-amber-500' },
+  vendido: { label: 'Vendido', badge: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300', dot: 'bg-emerald-500' },
+  perdido: { label: 'Perdido', badge: 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300', dot: 'bg-red-500' },
+} as const;
+
 export const TERRITORY_LABELS: Record<string, string> = {
   matched_unique_franchise: 'Cidade exclusiva',
   matched_multiple_franchises: 'Múltiplas franquias',
