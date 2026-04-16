@@ -510,8 +510,76 @@ export default function HojePage() {
                   <HeroGreeting
                     name={profile?.full_name || null}
                     totalTasks={totalTasks}
-                    completedToday={completedToday}
+                    completedFollowupsToday={todayCompletedFollowups}
+                    totalFollowupsToday={todayFollowups.length + todayCompletedFollowups}
+                    overdueCount={overdueFollowups.length}
+                    newTodayCount={newLeads.length}
                   />
+
+                  {/* ── Quick metrics row ── */}
+                  <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-4 mb-6 [&::-webkit-scrollbar]:hidden">
+                    <div className="min-w-[160px] sm:min-w-0">
+                      <StatCard title="Novos hoje" value={newLeads.length} icon={Inbox} onClick={() => navigate(isAdmin ? '/admin?tab=leads' : '/franquia?tab=funnel')} />
+                    </div>
+                    <div className="min-w-[160px] sm:min-w-0">
+                      <StatCard title="Para contatar" value={staleLeads.length} icon={PhoneCall} iconColor="text-amber-600" onClick={() => navigate('/franquia?tab=funnel')} />
+                    </div>
+                    <div className="min-w-[160px] sm:min-w-0">
+                      <StatCard title="Propostas abertas" value={metrics?.openProposals ?? 0} icon={FileText} iconColor="text-violet-600" onClick={() => navigate('/propostas')} />
+                    </div>
+                    <div className="min-w-[160px] sm:min-w-0">
+                      <StatCard title="Fechados no mês" value={metrics?.closedThisMonth ?? 0} icon={Trophy} iconColor="text-emerald-600" onClick={() => navigate('/relatorio-crm')} />
+                    </div>
+                  </div>
+
+                  {/* ── Urgent now ── */}
+                  {(overdueFollowups.length > 0 || staleLeads.filter(l => differenceInDays(now, new Date(l.created_at)) > 5).length > 0) && (() => {
+                    const veryStale = staleLeads.filter(l => differenceInDays(now, new Date(l.created_at)) > 5);
+                    const urgentItems: Array<{ id: string; label: string; sub: string; onClick: () => void }> = [
+                      ...overdueFollowups.map(f => ({
+                        id: `f-${f.id}`,
+                        label: leadNameMap[f.lead_id] || 'Lead',
+                        sub: `Follow-up ${formatDistanceToNow(new Date(f.scheduled_at), { locale: ptBR, addSuffix: true })}`,
+                        onClick: () => navigate(`${basePath}/${f.lead_id}`),
+                      })),
+                      ...veryStale.map(l => ({
+                        id: `l-${l.id}`,
+                        label: l.nome || 'Lead sem nome',
+                        sub: `${differenceInDays(now, new Date(l.created_at))} dias sem contato`,
+                        onClick: () => navigate(`${basePath}/${l.id}`),
+                      })),
+                    ];
+                    return (
+                      <div className="rounded-2xl border-l-4 border-amber-400 bg-amber-50 dark:bg-amber-950/20 p-4 mb-6">
+                        <div className="flex items-center gap-2 mb-3">
+                          <AlertTriangle className="w-4 h-4 text-amber-500" />
+                          <span className="text-sm font-semibold text-amber-800 dark:text-amber-300">
+                            Urgente agora · {urgentItems.length} item{urgentItems.length > 1 ? 's' : ''}
+                          </span>
+                        </div>
+                        <div className="space-y-2">
+                          {urgentItems.slice(0, 2).map(item => (
+                            <button
+                              key={item.id}
+                              onClick={item.onClick}
+                              className="w-full text-left flex items-center justify-between gap-2 rounded-xl bg-background/60 hover:bg-background px-3 py-2 transition-colors"
+                            >
+                              <div className="min-w-0">
+                                <p className="text-xs font-semibold text-foreground truncate">{item.label}</p>
+                                <p className="text-[11px] text-muted-foreground truncate">{item.sub}</p>
+                              </div>
+                              <ChevronRight className="w-4 h-4 text-muted-foreground/50 shrink-0" />
+                            </button>
+                          ))}
+                        </div>
+                        {urgentItems.length > 2 && (
+                          <p className="text-[11px] text-amber-700 dark:text-amber-400 mt-2 font-medium">
+                            +{urgentItems.length - 2} outro{urgentItems.length - 2 > 1 ? 's' : ''}
+                          </p>
+                        )}
+                      </div>
+                    );
+                  })()}
 
                   <div className="space-y-10 sm:space-y-12">
                     {/* ── 1. Overdue follow-ups ── */}
