@@ -512,9 +512,9 @@ export default function SejaParceiro() {
             viewport={{ once: true }}
           >
             {[
-              { icon: Shield, text: 'Dados protegidos' },
-              { icon: Star, text: 'Avaliada por parceiros' },
-              { icon: Users, text: '38+ lojas ativas' },
+              { icon: Shield, text: 'Dados protegidos (LGPD)' },
+              { icon: Star, text: '38+ lojas ja usam' },
+              { icon: Users, text: 'Sem contrato de fidelidade' },
             ].map(t => (
               <div key={t.text} className="flex items-center gap-1.5 text-[11px] text-muted-foreground/50">
                 <t.icon className="w-3 h-3" />
@@ -940,8 +940,8 @@ export default function SejaParceiro() {
                 <div className="h-1 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_100%] animate-[shimmer_3s_linear_infinite]" />
                 <CardContent className="p-7 sm:p-9">
                   <div className="text-center mb-7">
-                    <h2 className="text-2xl font-extrabold text-foreground mb-1.5">Comece agora mesmo</h2>
-                    <p className="text-xs text-muted-foreground">Cadastro gratuito · Sem compromisso · Aprovação em até 24h</p>
+                    <h2 className="text-2xl font-extrabold text-foreground mb-1.5">Cadastre sua loja agora</h2>
+                    <p className="text-xs text-muted-foreground">Gratis para comecar. Sem contrato. Aprovacao em ate 24h.</p>
                   </div>
 
                   <div className="space-y-4">
