@@ -5,7 +5,7 @@ import {
   MessageCircle,
   HelpCircle,
   Bell,
-  Workflow,
+  
   BarChart3,
   Target,
   Activity,
@@ -23,7 +23,7 @@ import {
   ChevronRight,
   BookOpen,
   Package,
-  Wrench,
+  
 } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
