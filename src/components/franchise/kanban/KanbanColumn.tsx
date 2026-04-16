@@ -17,6 +17,8 @@ export const KanbanColumn = memo(function KanbanColumn({
   onMoveStage,
   franchiseId,
   whatsAppPlanActive,
+  selectedIds,
+  onToggleSelect,
 }: {
   status: string;
   leads: LeadWithQuiz[];
@@ -26,7 +28,10 @@ export const KanbanColumn = memo(function KanbanColumn({
   onMoveStage: (leadId: string, newStatus: string, lossReason?: string) => void;
   franchiseId?: string;
   whatsAppPlanActive?: boolean;
+  selectedIds?: string[];
+  onToggleSelect?: (leadId: string) => void;
 }) {
+  const hasSelection = selectedIds && selectedIds.length > 0;
   const { setNodeRef, isOver } = useDroppable({ id: status });
   const color = STATUS_CHART_COLORS[status] || '#64748b';
   const highlighted = isOver || isOverColumn;
@@ -118,6 +123,9 @@ export const KanbanColumn = memo(function KanbanColumn({
                     onMoveStage={onMoveStage}
                     franchiseId={franchiseId}
                     whatsAppPlanActive={whatsAppPlanActive}
+                    isSelected={selectedIds?.includes(lead.id)}
+                    showCheckbox={!!hasSelection}
+                    onToggleSelect={onToggleSelect}
                   />
                 </div>
               );
@@ -134,6 +142,9 @@ export const KanbanColumn = memo(function KanbanColumn({
                 onMoveStage={onMoveStage}
                 franchiseId={franchiseId}
                 whatsAppPlanActive={whatsAppPlanActive}
+                isSelected={selectedIds?.includes(lead.id)}
+                showCheckbox={!!hasSelection}
+                onToggleSelect={onToggleSelect}
               />
             </div>
           ))

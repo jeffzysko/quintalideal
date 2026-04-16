@@ -1,4 +1,5 @@
 import { useState, memo } from 'react';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Badge } from '@/components/ui/badge';
@@ -29,6 +30,9 @@ export const LeadCard = memo(function LeadCard({
   onMoveStage,
   franchiseId,
   whatsAppPlanActive = false,
+  isSelected = false,
+  showCheckbox = false,
+  onToggleSelect,
 }: {
   lead: LeadWithQuiz;
   basePath: string;
@@ -37,6 +41,9 @@ export const LeadCard = memo(function LeadCard({
   onMoveStage?: (leadId: string, newStatus: string, lossReason?: string) => void;
   franchiseId?: string;
   whatsAppPlanActive?: boolean;
+  isSelected?: boolean;
+  showCheckbox?: boolean;
+  onToggleSelect?: (leadId: string) => void;
 }) {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -112,7 +119,9 @@ export const LeadCard = memo(function LeadCard({
     <div
       ref={!overlay ? setNodeRef : undefined}
       style={style}
-      className={`group bg-card border rounded-xl shadow-sm transition-all border-l-[3px] ${borderAccent} ${
+      className={`group relative bg-card border rounded-xl shadow-sm transition-all border-l-[3px] ${borderAccent} ${
+        isSelected ? 'ring-2 ring-primary/40' : ''
+      } ${
         overlay
           ? 'shadow-xl border-primary/30 scale-105 rotate-1 ring-2 ring-primary/20'
           : isDragging
@@ -120,6 +129,19 @@ export const LeadCard = memo(function LeadCard({
           : 'border-border/50 hover:shadow-md hover:border-border cursor-pointer'
       }`}
     >
+      {!overlay && onToggleSelect && (
+        <div
+          className={`absolute top-2 left-2 z-10 transition-opacity ${showCheckbox || isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+          onClick={e => e.stopPropagation()}
+          onPointerDown={e => e.stopPropagation()}
+        >
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={() => onToggleSelect(lead.id)}
+            className="h-4 w-4 border-border bg-background shadow-sm"
+          />
+        </div>
+      )}
       <div
         className="p-3"
         onClick={!overlay ? () => navigate(`${basePath}/${lead.id}`) : undefined}
