@@ -1,7 +1,7 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LazyMotion, domAnimation, m, AnimatePresence } from 'framer-motion';
-import { Search, MapPin, Droplets, Shield, Clock, ChevronRight } from 'lucide-react';
+import { Search, MapPin, Droplets, Shield, Clock, ChevronRight, ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/lib/supabase';
 import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
@@ -22,6 +22,73 @@ function formatCityLabel(city: CityOption): string {
   return `${city.nome}, ${city.estado || 'RS'}`;
 }
 
+/* ── Floating light orbs for depth ── */
+function LightOrbs() {
+  return (
+    <>
+      <m.div
+        animate={{ x: [0, 30, 0], y: [0, -20, 0], opacity: [0.08, 0.15, 0.08] }}
+        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute top-[10%] left-[5%] w-[30vw] h-[30vw] max-w-[400px] max-h-[400px] rounded-full"
+        style={{ background: 'radial-gradient(circle, rgba(56,189,248,0.2) 0%, transparent 70%)' }}
+      />
+      <m.div
+        animate={{ x: [0, -20, 0], y: [0, 25, 0], opacity: [0.06, 0.12, 0.06] }}
+        transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+        className="absolute bottom-[15%] right-[3%] w-[25vw] h-[25vw] max-w-[350px] max-h-[350px] rounded-full"
+        style={{ background: 'radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%)' }}
+      />
+    </>
+  );
+}
+
+/* ── Trust badge pill ── */
+function TrustBadges() {
+  const badges = [
+    { icon: Clock, label: '60 segundos' },
+    { icon: Shield, label: '100% gratuito' },
+    { icon: Droplets, label: '+3.200 analises' },
+  ];
+
+  return (
+    <m.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 1.1, duration: 0.6 }}
+      className="flex items-center justify-center gap-2 sm:gap-3 mt-6 sm:mt-8"
+    >
+      <div className="inline-flex items-center gap-3 sm:gap-5 px-5 py-2.5 rounded-full bg-white/[0.06] backdrop-blur-md border border-white/[0.08]">
+        {badges.map(({ icon: Icon, label }, i) => (
+          <div key={label} className="flex items-center gap-1.5">
+            {i > 0 && <div className="w-px h-3 bg-white/10 -ml-1 mr-1 sm:-ml-1.5 sm:mr-1.5" />}
+            <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-300/60" />
+            <span className="text-[9px] sm:text-[10px] font-medium text-white/40 tracking-wide">{label}</span>
+          </div>
+        ))}
+      </div>
+    </m.div>
+  );
+}
+
+/* ── Scroll indicator ── */
+function ScrollHint() {
+  return (
+    <m.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 2 }}
+      className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 pointer-events-none"
+    >
+      <m.div
+        animate={{ y: [0, 6, 0] }}
+        transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+      >
+        <ChevronDown className="w-4 h-4 text-white/20" />
+      </m.div>
+    </m.div>
+  );
+}
+
 export default function HomePage() {
   const navigate = useNavigate();
   const [citySearch, setCitySearch] = useState('');
@@ -29,11 +96,19 @@ export default function HomePage() {
   const [matches, setMatches] = useState<FranchiseMatch[]>([]);
   const [nearestFranchise, setNearestFranchise] = useState<FranchiseMatch | null>(null);
   const [searchedCity, setSearchedCity] = useState('');
+  const [imgLoaded, setImgLoaded] = useState(false);
+
+  useEffect(() => {
+    const img = new Image();
+    img.src = heroPool;
+    img.onload = () => setImgLoaded(true);
+    if (img.complete) setImgLoaded(true);
+  }, []);
 
   const filteredCities = useMemo(() => {
     if (!citySearch || citySearch.length < 2) return [];
     const search = citySearch.toLowerCase();
-    return cidades.filter(c => c.nome.toLowerCase().includes(search)).slice(0, 8);
+    return cidades.filter(c => c.nome.toLowerCase().includes(search)).slice(0, 6);
   }, [citySearch]);
 
   const handleCitySelect = useCallback(async (cityName: string) => {
@@ -111,104 +186,134 @@ export default function HomePage() {
   return (
     <LazyMotion features={domAnimation}>
       <div className="h-[100dvh] flex flex-col relative overflow-hidden">
-        {/* Background */}
-        <div className="absolute inset-0">
-          <img src={heroPool} alt="" className="w-full h-full object-cover scale-105" loading="eager" fetchPriority="high" />
-          <div className="absolute inset-0" style={{
-            background: 'linear-gradient(180deg, rgba(8,20,40,0.4) 0%, rgba(8,20,40,0.2) 30%, rgba(8,20,40,0.5) 60%, rgba(8,20,40,0.92) 100%)',
-          }} />
-        </div>
-
-        {/* Floating water drops */}
+        {/* ── Background image with cinematic overlay ── */}
         <m.div
-          animate={{ y: [-8, 8, -8] }}
-          transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-          className="absolute top-[15%] left-[10%] text-3xl opacity-20 hidden sm:block"
-        >💧</m.div>
-        <m.div
-          animate={{ y: [6, -10, 6] }}
-          transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut', delay: 1 }}
-          className="absolute top-[25%] right-[12%] text-2xl opacity-15 hidden sm:block"
-        >💧</m.div>
+          initial={{ scale: 1.15, opacity: 0 }}
+          animate={{ scale: imgLoaded ? 1.02 : 1.15, opacity: imgLoaded ? 1 : 0 }}
+          transition={{ duration: 1.8, ease: [0.22, 1, 0.36, 1] }}
+          className="absolute inset-0"
+        >
+          <img
+            src={heroPool}
+            alt=""
+            className="w-full h-full object-cover"
+            loading="eager"
+            fetchPriority="high"
+          />
+        </m.div>
 
-        {/* Content */}
-        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-5 pb-10 sm:py-10 max-w-lg mx-auto w-full" style={{ marginTop: '-3vh' }}>
+        {/* Cinematic gradient overlay */}
+        <div className="absolute inset-0" style={{
+          background: `
+            radial-gradient(ellipse 80% 60% at 50% 40%, rgba(8,20,40,0.15) 0%, transparent 70%),
+            linear-gradient(180deg, 
+              rgba(8,20,40,0.55) 0%, 
+              rgba(8,20,40,0.2) 25%, 
+              rgba(8,20,40,0.25) 45%,
+              rgba(8,20,40,0.6) 70%, 
+              rgba(8,20,40,0.95) 100%
+            )
+          `,
+        }} />
+
+        {/* Subtle vignette */}
+        <div className="absolute inset-0 pointer-events-none" style={{
+          background: 'radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.3) 100%)',
+        }} />
+
+        {/* Floating light orbs */}
+        <LightOrbs />
+
+        {/* ── Main content ── */}
+        <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-5 safe-bottom max-w-md sm:max-w-lg mx-auto w-full">
+          {/* Logo */}
           <m.img
             src={logoQuintalIdeal}
             alt="Quintal Ideal"
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="mx-auto mb-5 sm:mb-6 w-36 sm:w-44 md:w-52 h-auto drop-shadow-2xl brightness-0 invert"
+            initial={{ opacity: 0, y: -15, scale: 0.9 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ delay: 0.3, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="mx-auto mb-4 sm:mb-6 w-32 sm:w-40 md:w-48 h-auto brightness-0 invert"
+            style={{ filter: 'brightness(0) invert(1) drop-shadow(0 4px 20px rgba(255,255,255,0.15))' }}
           />
 
+          {/* Headline */}
           <m.h1
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.35, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center text-[1.75rem] sm:text-[2rem] md:text-[2.75rem] font-extrabold leading-[1.08] mb-3 sm:mb-4 text-white tracking-tight"
+            transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+            className="text-center text-[1.6rem] sm:text-[2.1rem] md:text-[2.75rem] lg:text-[3.25rem] font-extrabold leading-[1.1] mb-3 sm:mb-4 text-white tracking-tight"
           >
-            A piscina ideal para<br />
-            <span className="bg-gradient-to-r from-blue-300 via-blue-200 to-cyan-300 bg-clip-text text-transparent">
+            A piscina ideal para
+            <br />
+            <span className="bg-gradient-to-r from-sky-300 via-blue-200 to-cyan-300 bg-clip-text text-transparent">
               o seu quintal
             </span>
           </m.h1>
 
+          {/* Subtitle */}
           <m.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.55 }}
-            className="text-center text-[13px] sm:text-sm md:text-base text-white/55 mb-6 sm:mb-8 max-w-xs mx-auto leading-relaxed"
+            transition={{ delay: 0.7, duration: 0.6 }}
+            className="text-center text-[13px] sm:text-sm md:text-base text-white/50 mb-7 sm:mb-9 max-w-[280px] sm:max-w-xs mx-auto leading-relaxed"
           >
-            Digite sua cidade para encontrar a unidade parceira mais próxima para fazer o quiz do seu quintal.
+            Digite sua cidade para encontrar a unidade
+            parceira mais proxima para fazer o quiz.
           </m.p>
 
-          {/* City search */}
+          {/* ── Search card with glassmorphism ── */}
           <m.div
-            initial={{ opacity: 0, y: 25 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.7, duration: 0.5 }}
-            className="w-full max-w-xs"
+            transition={{ delay: 0.85, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="w-full max-w-sm"
           >
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40 pointer-events-none" />
-              <Input
-                value={citySearch}
-                onChange={e => {
-                  setCitySearch(e.target.value);
-                  if (searchState !== 'idle') {
-                    setSearchState('idle');
-                    setMatches([]);
-                    setNearestFranchise(null);
-                  }
-                }}
-                placeholder="Digite sua cidade..."
-                aria-label="Busca por cidade"
-                className="pl-11 py-6 rounded-2xl text-[15px] bg-white/10 backdrop-blur-md border-white/15 text-white placeholder:text-white/35 focus:border-primary/50 focus:ring-primary/20"
-                autoFocus
-              />
+            <div className="relative group">
+              {/* Glow behind input */}
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-sky-400/20 via-blue-500/20 to-cyan-400/20 rounded-2xl blur-sm opacity-0 group-focus-within:opacity-100 transition-opacity duration-500" />
+              
+              <div className="relative">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-[18px] h-[18px] text-white/30 pointer-events-none z-10" />
+                <Input
+                  value={citySearch}
+                  onChange={e => {
+                    setCitySearch(e.target.value);
+                    if (searchState !== 'idle') {
+                      setSearchState('idle');
+                      setMatches([]);
+                      setNearestFranchise(null);
+                    }
+                  }}
+                  placeholder="Digite sua cidade..."
+                  aria-label="Busca por cidade"
+                  className="pl-11 pr-4 h-14 rounded-2xl text-[15px] bg-white/[0.07] backdrop-blur-xl border-white/[0.12] text-white placeholder:text-white/30 focus:border-sky-400/40 focus:ring-sky-400/15 focus:bg-white/[0.1] transition-all duration-300 shadow-lg shadow-black/10"
+                  autoFocus
+                />
+              </div>
             </div>
 
             {/* Autocomplete dropdown */}
             <AnimatePresence>
               {showAutocomplete && (
                 <m.div
-                  initial={{ opacity: 0, y: -5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -5 }}
-                  className="mt-2 space-y-1"
+                  initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                  transition={{ duration: 0.2 }}
+                  className="mt-2 rounded-xl bg-white/[0.07] backdrop-blur-xl border border-white/[0.1] overflow-hidden shadow-xl shadow-black/20"
                 >
                   {filteredCities.map((city, i) => (
                     <m.button
                       key={`${city.pais}-${city.nome}`}
-                      initial={{ opacity: 0, x: -10 }}
+                      initial={{ opacity: 0, x: -8 }}
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: Math.min(i * 0.04, 0.15) }}
                       onClick={() => handleCitySelect(city.nome)}
-                      className="w-full text-left px-4 py-3.5 rounded-xl bg-white/5 backdrop-blur-sm hover:bg-white/15 active:bg-white/20 transition-colors flex items-center gap-3 text-sm group"
+                      className="w-full text-left px-4 py-3 hover:bg-white/[0.08] active:bg-white/[0.12] transition-colors flex items-center gap-3 text-sm group border-b border-white/[0.04] last:border-b-0"
                     >
-                      <MapPin className="w-4 h-4 text-blue-300 shrink-0 group-hover:scale-110 transition-transform" />
-                      <span className="font-medium text-white/90">{formatCityLabel(city)}</span>
+                      <MapPin className="w-4 h-4 text-sky-300/70 shrink-0 group-hover:text-sky-300 group-hover:scale-110 transition-all" />
+                      <span className="font-medium text-white/85 group-hover:text-white transition-colors">{formatCityLabel(city)}</span>
                     </m.button>
                   ))}
                 </m.div>
@@ -219,7 +324,7 @@ export default function HomePage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="text-sm text-white/40 mt-4 text-center"
+                  className="text-sm text-white/35 mt-4 text-center"
                 >
                   Nenhuma cidade encontrada. Tente outro nome.
                 </m.p>
@@ -231,10 +336,10 @@ export default function HomePage() {
               <m.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="flex items-center justify-center gap-2 mt-4"
+                className="flex items-center justify-center gap-2.5 mt-5"
               >
-                <div className="animate-spin w-4 h-4 border-2 border-white/40 border-t-white rounded-full" />
-                <span className="text-white/50 text-sm">Buscando unidade...</span>
+                <div className="animate-spin w-4 h-4 border-2 border-sky-300/30 border-t-sky-300 rounded-full" />
+                <span className="text-white/45 text-sm">Buscando unidade...</span>
               </m.div>
             )}
 
@@ -246,24 +351,26 @@ export default function HomePage() {
                   initial={{ opacity: 0, y: 15 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -10 }}
-                  className="mt-4 space-y-2"
+                  className="mt-4"
                 >
-                  <p className="text-white/60 text-xs text-center mb-2">
+                  <p className="text-white/50 text-xs text-center mb-3">
                     Encontramos {matches.length} unidades para {searchedCity}:
                   </p>
-                  {matches.map((f) => (
-                    <button
-                      key={f.id}
-                      onClick={() => navigate(`/${f.slug_url}`)}
-                      className="w-full flex items-center justify-between px-4 py-3.5 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 text-white hover:bg-white/20 transition-all group"
-                    >
-                      <div className="text-left">
-                        <span className="block text-sm font-semibold">{f.nome_franquia}</span>
-                        <span className="block text-[11px] text-white/50">{f.cidade_base}</span>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-white/40 group-hover:text-white/70 transition-colors" />
-                    </button>
-                  ))}
+                  <div className="space-y-2 rounded-xl bg-white/[0.05] backdrop-blur-xl border border-white/[0.08] p-2 shadow-xl shadow-black/15">
+                    {matches.map((f) => (
+                      <button
+                        key={f.id}
+                        onClick={() => navigate(`/${f.slug_url}`)}
+                        className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.1] active:bg-white/[0.14] transition-all group"
+                      >
+                        <div className="text-left">
+                          <span className="block text-sm font-semibold text-white/90">{f.nome_franquia}</span>
+                          <span className="block text-[11px] text-white/40">{f.cidade_base}</span>
+                        </div>
+                        <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white/60 group-hover:translate-x-0.5 transition-all" />
+                      </button>
+                    ))}
+                  </div>
                 </m.div>
               )}
 
@@ -275,22 +382,22 @@ export default function HomePage() {
                   exit={{ opacity: 0, y: -10 }}
                   className="mt-4"
                 >
-                  <div className="px-4 py-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 text-center">
-                    <p className="text-white/70 text-sm mb-2">
-                      Ainda não temos cobertura para "<span className="font-semibold">{searchedCity}</span>".
+                  <div className="px-4 py-4 rounded-xl bg-white/[0.06] backdrop-blur-xl border border-white/[0.1] text-center shadow-xl shadow-black/15">
+                    <p className="text-white/60 text-sm mb-2">
+                      Ainda nao temos cobertura para "<span className="font-semibold text-white/80">{searchedCity}</span>".
                     </p>
                     {nearestFranchise && (
                       <>
-                        <p className="text-white/50 text-xs mb-3">A unidade mais próxima é:</p>
+                        <p className="text-white/40 text-xs mb-3">A unidade mais proxima e:</p>
                         <button
                           onClick={() => navigate(`/${nearestFranchise.slug_url}`)}
-                          className="w-full flex items-center justify-between px-4 py-3 rounded-xl bg-white/10 border border-white/15 text-white hover:bg-white/20 transition-all group"
+                          className="w-full flex items-center justify-between px-4 py-3 rounded-lg bg-white/[0.06] border border-white/[0.08] text-white hover:bg-white/[0.12] transition-all group"
                         >
                           <div className="text-left">
                             <span className="block text-sm font-semibold">{nearestFranchise.nome_franquia}</span>
-                            <span className="block text-[11px] text-white/50">{nearestFranchise.cidade_base}</span>
+                            <span className="block text-[11px] text-white/40">{nearestFranchise.cidade_base}</span>
                           </div>
-                          <ChevronRight className="w-4 h-4 text-white/40 group-hover:text-white/70 transition-colors" />
+                          <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white/60 group-hover:translate-x-0.5 transition-all" />
                         </button>
                       </>
                     )}
@@ -306,11 +413,11 @@ export default function HomePage() {
                   exit={{ opacity: 0 }}
                   className="flex flex-col items-center gap-2 mt-4"
                 >
-                  <p className="text-center text-red-300/80 text-sm">Erro ao buscar. Verifique sua conexão.</p>
+                  <p className="text-center text-red-300/70 text-sm">Erro ao buscar. Verifique sua conexao.</p>
                   <button
                     type="button"
                     onClick={() => handleCitySelect(citySearch)}
-                    className="text-xs text-white/60 underline underline-offset-2 hover:text-white/80 transition-colors"
+                    className="text-xs text-white/50 underline underline-offset-2 hover:text-white/70 transition-colors"
                   >
                     Tentar novamente
                   </button>
@@ -319,29 +426,12 @@ export default function HomePage() {
             </AnimatePresence>
           </m.div>
 
-          {/* Trust indicators */}
-          <m.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1 }}
-            className="flex items-center justify-center gap-3 sm:gap-5 mt-6 sm:mt-8 mb-2 flex-wrap"
-          >
-            <div className="flex items-center gap-1.5 text-white/35">
-              <Clock className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
-              <span className="text-[9px] sm:text-[10px] font-medium">60 segundos</span>
-            </div>
-            <div className="w-px h-3 bg-white/15" />
-            <div className="flex items-center gap-1.5 text-white/35">
-              <Shield className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
-              <span className="text-[9px] sm:text-[10px] font-medium">100% gratuito</span>
-            </div>
-            <div className="w-px h-3 bg-white/15" />
-            <div className="flex items-center gap-1.5 text-white/35">
-              <Droplets className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
-              <span className="text-[9px] sm:text-[10px] font-medium">+3.200 análises</span>
-            </div>
-          </m.div>
+          {/* Trust badges */}
+          <TrustBadges />
         </div>
+
+        {/* Scroll hint */}
+        <ScrollHint />
       </div>
     </LazyMotion>
   );
