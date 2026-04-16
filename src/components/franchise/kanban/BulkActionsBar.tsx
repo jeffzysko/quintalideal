@@ -1,10 +1,10 @@
-import { useState, useCallback } from 'react';
+import { useState } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Badge } from '@/components/ui/badge';
+
 import { STATUS_LABELS, STATUS_CHART_COLORS } from '@/lib/lead-constants';
 import { COLUMNS, type LeadWithQuiz } from './types';
 import { X, ArrowRightLeft, MessageCircle, UserPlus, Send, AlertTriangle } from 'lucide-react';

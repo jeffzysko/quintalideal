@@ -29,6 +29,9 @@ export const LeadCard = memo(function LeadCard({
   onMoveStage,
   franchiseId,
   whatsAppPlanActive = false,
+  isSelected = false,
+  showCheckbox = false,
+  onToggleSelect,
 }: {
   lead: LeadWithQuiz;
   basePath: string;
@@ -37,6 +40,9 @@ export const LeadCard = memo(function LeadCard({
   onMoveStage?: (leadId: string, newStatus: string, lossReason?: string) => void;
   franchiseId?: string;
   whatsAppPlanActive?: boolean;
+  isSelected?: boolean;
+  showCheckbox?: boolean;
+  onToggleSelect?: (leadId: string) => void;
 }) {
   const navigate = useNavigate();
   const { user } = useAuth();
