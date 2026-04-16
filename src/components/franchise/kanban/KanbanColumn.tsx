@@ -132,6 +132,8 @@ export const KanbanColumn = memo(function KanbanColumn({
                 basePath={basePath}
                 franchiseName={franchiseMap?.[lead.franquia_id || '']}
                 onMoveStage={onMoveStage}
+                franchiseId={franchiseId}
+                whatsAppPlanActive={whatsAppPlanActive}
               />
             </div>
           ))
