@@ -66,8 +66,11 @@ const FAQ = [
 ];
 
 export default function PlanosFranquia() {
-  const { franchiseId } = useAuth();
+  const { franchiseId, role } = useAuth();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+  const isPrivilegedAdmin = role === 'super_admin' || role === 'admin_fabrica';
+  const { data: stripeMode } = useStripeMode();
+  const showTestBanner = isPrivilegedAdmin && stripeMode?.mode === 'test';
 
   const { data: plan, isLoading } = useQuery({
     queryKey: ['franchise-plans', franchiseId],
