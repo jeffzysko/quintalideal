@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { SwipeableLeadCard } from '@/components/dashboard/SwipeableLeadCard';
+import { useQuery } from '@tanstack/react-query';
 import {
   DndContext,
   DragOverlay,
@@ -53,6 +54,16 @@ export { type LeadWithQuiz } from './kanban/types';
 export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: KanbanBoardProps) {
   const { user: authUser } = useAuth();
   const isMobile = useIsMobile();
+
+  const { data: franchise } = useQuery({
+    queryKey: ['franchise-whatsapp-plan', franchiseId],
+    queryFn: async () => {
+      const { data } = await supabase.from('franchises').select('whatsapp_plan_active').eq('id', franchiseId).maybeSingle();
+      return data;
+    },
+    staleTime: 5 * 60 * 1000,
+  });
+  const whatsAppPlanActive = franchise?.whatsapp_plan_active ?? false;
   const [activeId, setActiveId] = useState<string | null>(null);
   const [overColumnId, setOverColumnId] = useState<string | null>(null);
   const [localStatusOverrides, setLocalStatusOverrides] = useState<Record<string, string>>({});
@@ -576,6 +587,8 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
               isOverColumn={overColumnId === status}
               franchiseMap={franchiseMap}
               onMoveStage={moveLeadToStatus}
+              franchiseId={franchiseId}
+              whatsAppPlanActive={whatsAppPlanActive}
             />
           ))}
         </div>

@@ -67,6 +67,7 @@ interface Lead {
   franquia_id: string | null;
   lead_origin?: string;
   loss_reason?: string | null;
+  assigned_to?: string | null;
 }
 
 const statusConfig: Record<string, { label: string; color: string; accent: string }> = {
@@ -158,6 +159,7 @@ export default function LeadDetail() {
   
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);
+  const [assignedTo, setAssignedTo] = useState<string | null>(null);
 
   const { data: poolModels = [] } = useQuery({
     queryKey: ['pool-models'],
@@ -174,7 +176,7 @@ export default function LeadDetail() {
     queryFn: async () => {
       const { data } = await supabase
         .from('leads')
-        .select('id, nome, telefone, email, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, respostas_questionario, foto1, foto2, foto3, foto4, status_lead, observacoes, created_at, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, franquia_id, lead_origin, loss_reason')
+        .select('id, nome, telefone, email, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, respostas_questionario, foto1, foto2, foto3, foto4, status_lead, observacoes, created_at, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, franquia_id, lead_origin, loss_reason, assigned_to')
         .eq('id', id!)
         .maybeSingle();
       return data ? (data as Lead) : null;
@@ -199,6 +201,21 @@ export default function LeadDetail() {
     staleTime: 2 * 60 * 1000,
   });
 
+  // Fetch franchise users for the responsible selector
+  const leadFranchiseId = lead?.franquia_id || franchiseId;
+  const { data: franchiseUsers = [] } = useQuery({
+    queryKey: ['franchise-users', leadFranchiseId],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('user_id, full_name')
+        .eq('franquia_id', leadFranchiseId!);
+      return (data || []).filter((u: any) => u.full_name);
+    },
+    enabled: !!leadFranchiseId,
+    staleTime: 5 * 60 * 1000,
+  });
+
   // Sync editable form fields when the lead first loads or when ID changes
   useEffect(() => {
     if (lead) {
@@ -209,6 +226,7 @@ export default function LeadDetail() {
       setEditTelefone(lead.telefone || '');
       setEditEmail(lead.email || '');
       setEditCidade(lead.cidade || '');
+      setAssignedTo(lead.assigned_to || null);
       const respostas = lead.respostas_questionario as Record<string, string> | null;
       setTempOverride((respostas?.temperatura_manual as LeadTemperature) || '');
     }
@@ -448,6 +466,32 @@ export default function LeadDetail() {
                   </Badge>
                 </div>
               )}
+
+              {/* Responsável */}
+              <div className="mt-3 flex items-center gap-2">
+                <User className="w-3.5 h-3.5 text-primary-foreground/70" />
+                <span className="text-xs text-primary-foreground/70">Responsável:</span>
+                <Select
+                  value={assignedTo || '_none'}
+                  onValueChange={async (val) => {
+                    const newVal = val === '_none' ? null : val;
+                    setAssignedTo(newVal);
+                    await supabase.from('leads').update({ assigned_to: newVal } as any).eq('id', lead.id);
+                    queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
+                    toast.success('Responsável atualizado');
+                  }}
+                >
+                  <SelectTrigger className="h-7 w-[160px] text-xs bg-primary-foreground/10 border-primary-foreground/20 text-primary-foreground">
+                    <SelectValue placeholder="Selecionar..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="_none">Sem responsável</SelectItem>
+                    {franchiseUsers.map((u: any) => (
+                      <SelectItem key={u.user_id} value={u.user_id}>{u.full_name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
 
             <CardContent className="p-3 sm:p-5">

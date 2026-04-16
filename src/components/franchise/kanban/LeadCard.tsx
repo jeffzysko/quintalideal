@@ -18,6 +18,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useAuth } from '@/hooks/useAuth';
 import { SmartTagBadges } from '@/components/SmartTagBadges';
 import { COLUMNS, type LeadWithQuiz } from './types';
+import { WhatsAppQuickSend } from './WhatsAppQuickSend';
+import { LeadCardAssignee } from './LeadCardAssignee';
 
 export const LeadCard = memo(function LeadCard({
   lead,
@@ -25,12 +27,16 @@ export const LeadCard = memo(function LeadCard({
   overlay,
   franchiseName,
   onMoveStage,
+  franchiseId,
+  whatsAppPlanActive = false,
 }: {
   lead: LeadWithQuiz;
   basePath: string;
   overlay?: boolean;
   franchiseName?: string;
   onMoveStage?: (leadId: string, newStatus: string, lossReason?: string) => void;
+  franchiseId?: string;
+  whatsAppPlanActive?: boolean;
 }) {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -54,6 +60,21 @@ export const LeadCard = memo(function LeadCard({
       return (data || []).map((d: any) => ({ name: d.lead_tags?.name, color: d.lead_tags?.color })).filter((t: any) => t.name);
     },
     staleTime: 5 * 60 * 1000,
+  });
+
+  const assignedTo = (lead as any).assigned_to as string | null;
+  const { data: assignedUser } = useQuery({
+    queryKey: ['assigned-user', assignedTo],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('profiles')
+        .select('full_name')
+        .eq('user_id', assignedTo!)
+        .maybeSingle();
+      return data?.full_name || null;
+    },
+    enabled: !!assignedTo,
+    staleTime: 10 * 60 * 1000,
   });
 
   const style = !overlay
@@ -112,16 +133,19 @@ export const LeadCard = memo(function LeadCard({
             </div>
             <p className="text-sm font-semibold text-foreground truncate">{lead.nome || '—'}</p>
           </div>
-          {!overlay && (
-            <div
-              {...listeners}
-              {...attributes}
-              className="shrink-0 cursor-grab active:cursor-grabbing p-1 -m-1 rounded-lg hover:bg-muted/80 touch-none transition-colors"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <GripVertical className="w-4 h-4 text-muted-foreground/40" />
-            </div>
-          )}
+          <div className="flex items-center gap-1 shrink-0">
+            {assignedUser && <LeadCardAssignee assignedName={assignedUser} />}
+            {!overlay && (
+              <div
+                {...listeners}
+                {...attributes}
+                className="cursor-grab active:cursor-grabbing p-1 -m-1 rounded-lg hover:bg-muted/80 touch-none transition-colors"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <GripVertical className="w-4 h-4 text-muted-foreground/40" />
+              </div>
+            )}
+          </div>
         </div>
 
         <div className="flex items-center gap-2 mb-2">
@@ -207,11 +231,21 @@ export const LeadCard = memo(function LeadCard({
                 window.open(`https://wa.me/${fullPhone}`, '_blank');
               }}
               aria-label="Abrir WhatsApp"
-              className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[10px] font-medium text-success hover:bg-success/5 transition-colors"
+              className="flex-1 flex items-center justify-center gap-1 py-1.5 text-[10px] font-medium text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-colors"
               title="WhatsApp"
             >
               <MessageCircle className="w-3 h-3" />
             </button>
+          )}
+          {lead.telefone && franchiseId && (
+            <WhatsAppQuickSend
+              leadId={lead.id}
+              leadName={lead.nome}
+              leadPhone={lead.telefone}
+              franchiseId={franchiseId}
+              franchiseName={franchiseName}
+              whatsAppPlanActive={whatsAppPlanActive}
+            />
           )}
           {lead.telefone && (
             <button
