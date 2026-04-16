@@ -385,10 +385,41 @@ export default function HojePage() {
     enabled: !authLoading && (!!franchiseId || isAdmin),
   });
 
-  // Today's completed count (approximation – count leads contacted today)
-  const completedToday = useMemo(() =>
-    leads.filter(l => l.status_lead !== 'novo' && isToday(new Date(l.created_at))).length,
-    [leads]);
+  // Completed follow-ups for today (for progress bar)
+  const { data: todayCompletedFollowups = 0 } = useQuery({
+    queryKey: ['hoje-completed-followups', franchiseId, isAdmin],
+    queryFn: async () => {
+      const start = new Date(); start.setHours(0, 0, 0, 0);
+      const end = new Date(); end.setHours(23, 59, 59, 999);
+      let q = supabase
+        .from('lead_followups')
+        .select('id', { count: 'exact', head: true })
+        .eq('completed', true)
+        .gte('scheduled_at', start.toISOString())
+        .lte('scheduled_at', end.toISOString());
+      if (!isAdmin && franchiseId) q = q.eq('franchise_id', franchiseId);
+      const { count } = await q;
+      return count || 0;
+    },
+    enabled: !authLoading && (!!franchiseId || isAdmin),
+  });
+
+  // Open proposals & closed-this-month (for stat cards)
+  const { data: metrics } = useQuery({
+    queryKey: ['hoje-metrics', franchiseId, isAdmin],
+    queryFn: async () => {
+      const monthStart = new Date(); monthStart.setDate(1); monthStart.setHours(0, 0, 0, 0);
+      let propQ = supabase.from('proposals').select('id', { count: 'exact', head: true }).in('status', ['enviada', 'em_negociacao']);
+      let soldQ = supabase.from('leads').select('id', { count: 'exact', head: true }).eq('status_lead', 'vendido').gte('updated_at', monthStart.toISOString());
+      if (!isAdmin && franchiseId) {
+        propQ = propQ.eq('franchise_id', franchiseId);
+        soldQ = soldQ.eq('franquia_id', franchiseId);
+      }
+      const [{ count: openProposals }, { count: closedThisMonth }] = await Promise.all([propQ, soldQ]);
+      return { openProposals: openProposals || 0, closedThisMonth: closedThisMonth || 0 };
+    },
+    enabled: !authLoading && (!!franchiseId || isAdmin),
+  });
 
   const leadNameMap = useMemo(() => {
     const map: Record<string, string> = {};
