@@ -18,7 +18,7 @@ import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { NotificationBell } from '@/components/NotificationBell';
 import { Skeleton } from '@/components/ui/skeleton';
 import { motion, AnimatePresence } from 'framer-motion';
-import { format, isToday, isPast, differenceInDays, differenceInHours, formatDistanceToNow, startOfMonth, subDays } from 'date-fns';
+import { format, isToday, isPast, differenceInDays, differenceInHours, formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import {
   CalendarClock, AlertTriangle, Phone, MessageCircle,
