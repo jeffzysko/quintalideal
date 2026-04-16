@@ -18,6 +18,8 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { useAuth } from '@/hooks/useAuth';
 import { SmartTagBadges } from '@/components/SmartTagBadges';
 import { COLUMNS, type LeadWithQuiz } from './types';
+import { WhatsAppQuickSend } from './WhatsAppQuickSend';
+import { LeadCardAssignee } from './LeadCardAssignee';
 
 export const LeadCard = memo(function LeadCard({
   lead,
