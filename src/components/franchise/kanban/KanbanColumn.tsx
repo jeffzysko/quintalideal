@@ -1,4 +1,4 @@
-import { useMemo, memo, useRef } from 'react';
+import { useMemo, memo, useRef, useState } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { STATUS_LABELS, STATUS_CHART_COLORS } from '@/lib/lead-constants';
@@ -7,6 +7,7 @@ import { estimateLeadValue, formatCurrency, type LeadWithQuiz } from './types';
 
 const ESTIMATED_CARD_HEIGHT = 160;
 const VIRTUAL_THRESHOLD = 20; // Only virtualize when there are many cards
+const COLLAPSED_LIMIT = 10;
 
 export const KanbanColumn = memo(function KanbanColumn({
   status,
