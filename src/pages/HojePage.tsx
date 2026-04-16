@@ -659,26 +659,22 @@ export default function HojePage() {
                   </div>
 
                   {/* ── Empty state ── */}
-                  {totalTasks === 0 && (
+                  {totalTasks === 0 && todayFollowups.length === 0 && (
                     <motion.div
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       transition={{ delay: 0.3, type: 'spring', stiffness: 200, damping: 20 }}
                     >
-                      <Card className="border-dashed rounded-2xl overflow-hidden relative">
-                        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-emerald-500/5 pointer-events-none" />
-                        <CardContent className="flex flex-col items-center py-16 text-center relative">
-                          <motion.div
-                            animate={{ y: [0, -6, 0] }}
-                            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                            className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/15 to-primary/5 flex items-center justify-center mb-4"
-                          >
-                            <Rocket className="w-7 h-7 text-primary/70" />
-                          </motion.div>
-                          <h3 className="text-base font-bold text-foreground mb-1">Tudo em dia!</h3>
-                          <p className="text-sm text-muted-foreground max-w-xs">
-                            Nenhuma tarefa pendente. Compartilhe seu link para receber novos leads.
+                      <Card className="border-dashed rounded-2xl">
+                        <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+                          <div className="text-4xl mb-3">🎉</div>
+                          <p className="text-base font-semibold text-foreground">Agenda limpa por hoje!</p>
+                          <p className="text-sm text-muted-foreground mt-1 mb-4">
+                            Que tal entrar em contato com alguns leads em negociação?
                           </p>
+                          <Button variant="outline" size="sm" onClick={() => navigate(isAdmin ? '/admin?tab=leads' : '/franquia')}>
+                            Ver leads
+                          </Button>
                         </CardContent>
                       </Card>
                     </motion.div>
