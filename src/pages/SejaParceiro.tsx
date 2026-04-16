@@ -11,6 +11,9 @@ import { supabase } from '@/lib/supabase';
 import { Check, ClipboardList, Rocket, CheckCircle2, ArrowRight, Sparkles, Shield, Star, Users, Zap, BarChart3, MessageCircle, Target, FileText, Globe } from 'lucide-react';
 import { isValidEmail, isValidBRPhone } from '@/lib/validation';
 import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
+import mockupCRM from '@/assets/mockup-crm-kanban.jpg';
+import mockupOrcamento from '@/assets/mockup-orcamento.jpg';
+import mockupDashboard from '@/assets/mockup-dashboard.jpg';
 
 /* ── Data ── */
 const STEPS = [
@@ -630,6 +633,136 @@ export default function SejaParceiro() {
               </motion.div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════ MOCKUPS / SHOWCASE ═══════════════════════════ */}
+      <section className="py-24 sm:py-32 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-primary/[0.02] to-background" />
+        <div className="relative max-w-6xl mx-auto px-5">
+          <motion.div className="text-center mb-16" initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+            <span className="inline-block text-xs font-bold text-primary uppercase tracking-[0.2em] mb-3 px-4 py-1.5 rounded-full border border-primary/15 bg-primary/5">Por dentro da plataforma</span>
+            <h2 className="text-3xl sm:text-[2.75rem] font-extrabold text-foreground mt-4 mb-3 tracking-tight leading-tight">
+              Conheça o sistema que vai{' '}
+              <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">transformar suas vendas</span>
+            </h2>
+            <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto">
+              Uma plataforma profissional, intuitiva e feita sob medida para o mercado de piscinas
+            </p>
+          </motion.div>
+
+          {/* Mockup 1 - CRM Kanban */}
+          <motion.div
+            className="mb-20"
+            initial={{ opacity: 0, y: 60 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.7 }}
+          >
+            <div className="grid lg:grid-cols-5 gap-8 items-center">
+              <div className="lg:col-span-2 space-y-4">
+                <div className="inline-flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-[0.15em] px-3 py-1 rounded-full border border-primary/15 bg-primary/5">
+                  <Target className="w-3.5 h-3.5" />
+                  CRM e Pipeline
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight">
+                  Gerencie todos os seus leads em um Kanban visual
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Arraste e solte leads entre as etapas do funil. Veja score de qualificação, histórico de contatos e follow-ups pendentes em um só lugar.
+                </p>
+              </div>
+              <div className="lg:col-span-3">
+                <div className="relative group">
+                  <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-primary/10 to-secondary/5 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                  <div className="relative rounded-2xl overflow-hidden border border-border/40 shadow-2xl">
+                    <div className="h-8 bg-muted/80 border-b border-border/30 flex items-center gap-1.5 px-4">
+                      <div className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/70" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
+                      <span className="text-[10px] text-muted-foreground/50 ml-3">quintalideal.app/painel</span>
+                    </div>
+                    <img src={mockupCRM} alt="CRM e Pipeline de Vendas do Quintal Ideal" loading="lazy" width={1280} height={800} className="w-full" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Mockup 2 - Orçamentos */}
+          <motion.div
+            className="mb-20"
+            initial={{ opacity: 0, y: 60 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.7 }}
+          >
+            <div className="grid lg:grid-cols-5 gap-8 items-center">
+              <div className="lg:col-span-3 order-2 lg:order-1">
+                <div className="relative group">
+                  <div className="absolute -inset-4 rounded-3xl bg-gradient-to-bl from-secondary/10 to-primary/5 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                  <div className="relative rounded-2xl overflow-hidden border border-border/40 shadow-2xl">
+                    <div className="h-8 bg-muted/80 border-b border-border/30 flex items-center gap-1.5 px-4">
+                      <div className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/70" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
+                      <span className="text-[10px] text-muted-foreground/50 ml-3">quintalideal.app/orcamento</span>
+                    </div>
+                    <img src={mockupOrcamento} alt="Gerador de Orçamentos do Quintal Ideal" loading="lazy" width={1280} height={800} className="w-full" />
+                  </div>
+                </div>
+              </div>
+              <div className="lg:col-span-2 order-1 lg:order-2 space-y-4">
+                <div className="inline-flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-[0.15em] px-3 py-1 rounded-full border border-primary/15 bg-primary/5">
+                  <FileText className="w-3.5 h-3.5" />
+                  Orçamentos
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight">
+                  Propostas profissionais com envio por WhatsApp
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Crie orçamentos detalhados com seus modelos de piscina, condições de pagamento e envie direto pelo WhatsApp. Saiba quando o cliente visualizou.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
+          {/* Mockup 3 - Dashboard */}
+          <motion.div
+            initial={{ opacity: 0, y: 60 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-100px' }}
+            transition={{ duration: 0.7 }}
+          >
+            <div className="grid lg:grid-cols-5 gap-8 items-center">
+              <div className="lg:col-span-2 space-y-4">
+                <div className="inline-flex items-center gap-2 text-xs font-bold text-primary uppercase tracking-[0.15em] px-3 py-1 rounded-full border border-primary/15 bg-primary/5">
+                  <BarChart3 className="w-3.5 h-3.5" />
+                  Dashboard
+                </div>
+                <h3 className="text-2xl sm:text-3xl font-extrabold text-foreground leading-tight">
+                  Métricas e metas em tempo real
+                </h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  Acompanhe leads, conversão, faturamento e performance de campanhas. Defina metas mensais e veja o progresso da sua equipe.
+                </p>
+              </div>
+              <div className="lg:col-span-3">
+                <div className="relative group">
+                  <div className="absolute -inset-4 rounded-3xl bg-gradient-to-br from-primary/10 to-secondary/5 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
+                  <div className="relative rounded-2xl overflow-hidden border border-border/40 shadow-2xl">
+                    <div className="h-8 bg-muted/80 border-b border-border/30 flex items-center gap-1.5 px-4">
+                      <div className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/70" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
+                      <span className="text-[10px] text-muted-foreground/50 ml-3">quintalideal.app/dashboard</span>
+                    </div>
+                    <img src={mockupDashboard} alt="Dashboard de Métricas do Quintal Ideal" loading="lazy" width={1280} height={800} className="w-full" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
