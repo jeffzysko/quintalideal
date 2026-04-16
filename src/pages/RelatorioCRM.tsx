@@ -282,6 +282,7 @@ export default function RelatorioCRM() {
   // legacy CSV columns retained via dropdown handler above
 
   return (
+    <PageTransition>
     <div className="min-h-screen bg-background">
       <PanelHeader title="Relatorio de Conversao">
         <div className="flex items-center gap-2">
