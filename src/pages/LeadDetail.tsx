@@ -431,7 +431,7 @@ export default function LeadDetail() {
     { value: 'conversa', icon: MessageCircle, label: 'Conversa' },
     { value: 'proposta', icon: FileText, label: 'Proposta' },
     ...(quizEntriesEarly.length > 0 ? [{ value: 'quiz', icon: ClipboardList, label: 'Quiz' }] : []),
-    { value: 'mais', icon: MoreHorizontal, label: 'Mais' },
+    { value: 'fotos', icon: Camera, label: 'Fotos' },
     ...(lead.status_lead === 'vendido' ? [{ value: 'pos-venda', icon: Package, label: 'Pós-venda' }] : []),
   ];
 
