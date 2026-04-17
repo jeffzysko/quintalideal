@@ -480,39 +480,46 @@ export default function LeadDetail() {
             </div>
 
             {/* Avatar do responsável clicável */}
-            <Select
-              value={assignedTo || '_none'}
-              onValueChange={async (val) => {
-                const newVal = val === '_none' ? null : val;
-                setAssignedTo(newVal);
-                await supabase.from('leads').update({ assigned_to: newVal } as any).eq('id', lead.id);
-                queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
-                toast.success('Responsável atualizado');
-              }}
-            >
-              <SelectTrigger className="h-auto w-auto p-0 border-0 bg-transparent hover:opacity-80 transition-opacity [&>svg]:hidden shrink-0" title="Trocar responsável">
-                {(() => {
-                  const assignedUser = franchiseUsers.find((u: any) => u.user_id === assignedTo) as any;
-                  if (assignedUser?.full_name) {
+            <div className="flex flex-col items-center shrink-0">
+              <span className="text-[9px] uppercase tracking-wider text-muted-foreground font-semibold mb-1">Responsável</span>
+              <Select
+                value={assignedTo || '_none'}
+                onValueChange={async (val) => {
+                  const newVal = val === '_none' ? null : val;
+                  setAssignedTo(newVal);
+                  await supabase.from('leads').update({ assigned_to: newVal } as any).eq('id', lead.id);
+                  queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
+                  toast.success('Responsável atualizado');
+                }}
+              >
+                <SelectTrigger className="h-auto w-auto p-0 border-0 bg-transparent hover:opacity-80 transition-opacity [&>svg]:hidden" title="Clique para trocar o responsável">
+                  {(() => {
+                    const assignedUser = franchiseUsers.find((u: any) => u.user_id === assignedTo) as any;
+                    if (assignedUser?.full_name) {
+                      return (
+                        <div className="flex flex-col items-center gap-0.5">
+                          <div className="relative">
+                            <div className="w-10 h-10 rounded-full bg-primary/15 border-2 border-background shadow-sm flex items-center justify-center">
+                              <span className="text-[11px] font-bold text-primary">{getInitials(assignedUser.full_name)}</span>
+                            </div>
+                            <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-background border border-border flex items-center justify-center shadow-sm">
+                              <ChevronDown className="w-2.5 h-2.5 text-muted-foreground" />
+                            </div>
+                          </div>
+                          <span className="text-[9px] text-muted-foreground max-w-[60px] truncate mt-0.5">{assignedUser.full_name.split(' ')[0]}</span>
+                        </div>
+                      );
+                    }
                     return (
                       <div className="flex flex-col items-center gap-0.5">
-                        <div className="w-10 h-10 rounded-full bg-primary/15 border-2 border-background shadow-sm flex items-center justify-center">
-                          <span className="text-[11px] font-bold text-primary">{getInitials(assignedUser.full_name)}</span>
+                        <div className="w-10 h-10 rounded-full bg-muted border-2 border-dashed border-primary/40 flex items-center justify-center animate-pulse">
+                          <Plus className="w-4 h-4 text-primary" />
                         </div>
-                        <span className="text-[9px] text-muted-foreground max-w-[60px] truncate">{assignedUser.full_name.split(' ')[0]}</span>
+                        <span className="text-[9px] font-semibold text-primary">Atribuir</span>
                       </div>
                     );
-                  }
-                  return (
-                    <div className="flex flex-col items-center gap-0.5">
-                      <div className="w-10 h-10 rounded-full bg-muted border-2 border-dashed border-border flex items-center justify-center">
-                        <Plus className="w-4 h-4 text-muted-foreground" />
-                      </div>
-                      <span className="text-[9px] text-muted-foreground">Atribuir</span>
-                    </div>
-                  );
-                })()}
-              </SelectTrigger>
+                  })()}
+                </SelectTrigger>
               <SelectContent align="end">
                 <SelectItem value="_none">Sem responsável</SelectItem>
                 {franchiseUsers.map((u: any) => (
