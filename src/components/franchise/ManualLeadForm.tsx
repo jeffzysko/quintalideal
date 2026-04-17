@@ -11,8 +11,9 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { UserPlus, Loader2, ChevronDown, AlertTriangle, Camera, Plus, X } from 'lucide-react';
+import { UserPlus, Loader2, ChevronDown, AlertTriangle, Camera, Plus, X, MapPin, Check } from 'lucide-react';
 import { isValidBRPhone, isValidEmail, formatPhoneBR, unformatPhone } from '@/lib/validation';
+import { cidades } from '@/lib/cities';
 import { classifyLead, LeadTemperature } from '@/lib/leadScoring';
 import { cn } from '@/lib/utils';
 
@@ -83,6 +84,7 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
   const [telefone, setTelefone] = useState('');
   const [email, setEmail] = useState('');
   const [cidade, setCidade] = useState('');
+  const [cityFocused, setCityFocused] = useState(false);
   const [modelo, setModelo] = useState('');
   const [observacoes, setObservacoes] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -116,6 +118,13 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
     if (tempOverride) respostas.temperatura_manual = tempOverride;
     return classifyLead(Object.keys(respostas).length > 0 ? respostas : null, null);
   }, [orcamento, intencao, espaco, moradia, tempOverride]);
+
+  const filteredCities = useMemo(() => {
+    if (!cidade || cidade.length < 2) return [];
+    const q = cidade.toLowerCase();
+    if (cidades.some((c) => c.nome.toLowerCase() === q)) return [];
+    return cidades.filter((c) => c.nome.toLowerCase().includes(q)).slice(0, 6);
+  }, [cidade]);
 
   const detailsFilledCount = [
     modelo, orcamento, intencao, espaco, moradia, observacoes,
@@ -377,15 +386,39 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
               />
               {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 relative">
               <Label htmlFor="ml-cidade" className="text-sm font-semibold">Cidade</Label>
-              <Input
-                id="ml-cidade"
-                placeholder="Cidade"
-                value={cidade}
-                onChange={(e) => setCidade(e.target.value)}
-                className="h-12 text-base rounded-xl"
-              />
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                <Input
+                  id="ml-cidade"
+                  placeholder="Digite a cidade"
+                  value={cidade}
+                  onChange={(e) => setCidade(e.target.value)}
+                  onFocus={() => setCityFocused(true)}
+                  onBlur={() => setTimeout(() => setCityFocused(false), 150)}
+                  autoComplete="off"
+                  className="h-12 text-base rounded-xl pl-9"
+                />
+              </div>
+              {cityFocused && filteredCities.length > 0 && (
+                <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-popover border border-border rounded-xl shadow-lg max-h-56 overflow-y-auto">
+                  {filteredCities.map((c) => {
+                    const label = c.pais === 'UY' ? `${c.nome}, Uruguai` : `${c.nome}${c.estado ? ` - ${c.estado}` : ''}`;
+                    return (
+                      <button
+                        key={`${c.nome}-${c.pais}`}
+                        type="button"
+                        onMouseDown={(e) => { e.preventDefault(); setCidade(c.nome); setCityFocused(false); }}
+                        className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center gap-2"
+                      >
+                        <Check className="w-3.5 h-3.5 text-primary" />
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
 
