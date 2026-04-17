@@ -462,29 +462,6 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
         {/* DETALHES */}
         {showDetails && (
           <div className="px-5 pb-4 space-y-4 border-t border-border/30 pt-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">E-mail</Label>
-                <Input
-                  type="email"
-                  placeholder="email@exemplo.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={cn('h-10 rounded-xl text-sm', errors.email && 'border-destructive')}
-                />
-                {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Cidade</Label>
-                <Input
-                  placeholder="Cidade"
-                  value={cidade}
-                  onChange={(e) => setCidade(e.target.value)}
-                  className="h-10 rounded-xl text-sm"
-                />
-              </div>
-            </div>
-
             <div className="space-y-1.5">
               <Label className="text-xs font-medium">Modelo de interesse</Label>
               <Select value={modelo} onValueChange={setModelo}>
