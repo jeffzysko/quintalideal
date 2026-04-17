@@ -421,7 +421,7 @@ export function TechnicalVisitSection({ leadId, franchiseId }: Props) {
 
       {/* Bloco 4 - Fotos */}
       <Section icon={Camera} title={`Fotos da Visita (${visit.visit_photo_urls.length}/${MAX_PHOTOS})`}>
-        <div className="grid grid-cols-2 gap-2">
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
           {visit.visit_photo_urls.map((url) => (
             <div key={url} className="relative rounded-xl overflow-hidden border border-border/50 aspect-square">
               <img src={url} alt="Visita técnica" className="w-full h-full object-cover" loading="lazy" />
@@ -458,7 +458,7 @@ export function TechnicalVisitSection({ leadId, franchiseId }: Props) {
 
       {/* Rodapé - Viabilidade */}
       <Section icon={ClipboardCheck} title="Parecer Técnico">
-        <div className="grid grid-cols-1 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           <FeasibilityCard
             active={visit.feasibility === 'viavel'}
             icon={CheckCircle2}
@@ -498,7 +498,7 @@ export function TechnicalVisitSection({ leadId, franchiseId }: Props) {
       </Section>
 
       {/* Sticky save button */}
-      <div className="fixed bottom-0 inset-x-0 sm:relative sm:bottom-auto sm:inset-x-auto bg-background/95 backdrop-blur border-t border-border/50 sm:border-0 p-3 sm:p-0 z-20">
+      <div className="fixed bottom-0 inset-x-0 sm:relative sm:bottom-auto sm:inset-x-auto bg-background/95 backdrop-blur border-t border-border/50 sm:border-0 px-4 pt-3 pb-4 pb-safe sm:p-0 z-20">
         <div className="max-w-2xl mx-auto">
           <Button
             onClick={() => saveMutation.mutate(visit)}
