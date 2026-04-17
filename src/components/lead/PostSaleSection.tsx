@@ -12,7 +12,9 @@ import { Calendar } from '@/components/ui/calendar';
 import {
   CalendarIcon, Star, Save, Plus, Wrench, CheckCircle2, CalendarDays, HelpCircle,
   ListChecks, Check, Image as ImageIcon, Camera, ShieldCheck, X, Loader2,
+  Link2, Copy, Users, MessageCircle,
 } from 'lucide-react';
+import { toWhatsAppPhone } from '@/lib/phone-utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { format, addMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -132,6 +134,8 @@ interface PostSaleProject {
   warranty_notes: string | null;
   final_photo_urls: string[] | null;
   final_value: number | null;
+  review_token: string | null;
+  would_recommend: boolean | null;
 }
 
 interface ChecklistItem {
@@ -159,11 +163,33 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [saving, setSaving] = useState(false);
   const [savingNotes, setSavingNotes] = useState(false);
+  const [reviewToken, setReviewToken] = useState<string | null>(project.review_token);
+  const [sendingReview, setSendingReview] = useState(false);
   const finalPhotoRef = useRef<HTMLInputElement>(null);
+
+  // Fetch lead + franchise info for WhatsApp messages
+  const { data: leadInfo } = useQuery({
+    queryKey: ['post-sale-lead-info', project.lead_id, project.franchise_id],
+    queryFn: async () => {
+      const [leadRes, franRes] = await Promise.all([
+        supabase.from('leads').select('nome, telefone').eq('id', project.lead_id).maybeSingle(),
+        supabase.from('franchises').select('slug_url').eq('id', project.franchise_id).maybeSingle(),
+      ]);
+      return {
+        nome: leadRes.data?.nome || 'cliente',
+        telefone: leadRes.data?.telefone || '',
+        slug: franRes.data?.slug_url || '',
+      };
+    },
+  });
 
   useEffect(() => {
     setFinalPhotos(project.final_photo_urls || []);
   }, [project.final_photo_urls]);
+
+  useEffect(() => {
+    setReviewToken(project.review_token);
+  }, [project.review_token]);
 
   const statusInfo = STATUS_CONFIG[status] || STATUS_CONFIG.agendado;
 
@@ -548,42 +574,157 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
         </CardContent>
       </Card>
 
-      {/* Satisfaction - only when concluido */}
+      {/* Satisfaction via WhatsApp - only when concluido */}
       {status === 'concluido' && (
-        <Card className="glass-card">
+        <Card className="glass-card border-amber-200/50 bg-amber-50/30 dark:bg-amber-950/10">
           <CardContent className="p-4 space-y-4">
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2">
               <Star className="w-4 h-4 text-amber-500" />
-              <h3 className="text-sm font-semibold text-foreground">Como foi a experiencia do cliente?</h3>
+              <h3 className="text-sm font-semibold text-foreground">Pesquisa de Satisfação</h3>
             </div>
 
-            <div className="flex items-center gap-1">
-              {[1, 2, 3, 4, 5].map(star => (
-                <button
-                  key={star}
-                  type="button"
-                  onClick={() => setRating(star)}
-                  className="p-1 transition-transform hover:scale-110 active:scale-95"
-                  aria-label={`${star} estrela${star > 1 ? 's' : ''}`}
+            {project.satisfaction_rating ? (
+              <div className="space-y-2">
+                <div className="flex items-center gap-1">
+                  {[1, 2, 3, 4, 5].map(s => (
+                    <Star key={s} className={cn("w-5 h-5", s <= (project.satisfaction_rating || 0) ? "text-amber-400 fill-amber-400" : "text-muted-foreground/30")} />
+                  ))}
+                  <span className="text-sm font-bold ml-1 text-foreground">{project.satisfaction_rating}/5</span>
+                </div>
+                {project.satisfaction_note && (
+                  <p className="text-sm text-muted-foreground italic">"{project.satisfaction_note}"</p>
+                )}
+                {project.would_recommend !== null && (
+                  <Badge variant="outline" className="text-xs">
+                    {project.would_recommend ? '👍 Recomendaria' : '👎 Não recomendaria'}
+                  </Badge>
+                )}
+              </div>
+            ) : (
+              <div className="space-y-3">
+                <p className="text-xs text-muted-foreground">
+                  Envie um link por WhatsApp para o cliente avaliar a experiência em 30 segundos.
+                </p>
+
+                {reviewToken && (
+                  <div className="flex items-center gap-2 p-2.5 bg-background rounded-xl border border-border/40">
+                    <Link2 className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
+                    <span className="text-xs text-muted-foreground truncate flex-1">
+                      quintalideal.com.br/avaliar/{reviewToken}
+                    </span>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(`${window.location.origin}/avaliar/${reviewToken}`);
+                        toast.success('Link copiado!');
+                      }}
+                      aria-label="Copiar link"
+                    >
+                      <Copy className="w-3.5 h-3.5 text-muted-foreground hover:text-foreground" />
+                    </button>
+                  </div>
+                )}
+
+                <Button
+                  className="w-full gap-2 bg-emerald-500 hover:bg-emerald-600 text-white"
+                  onClick={async () => {
+                    if (!leadInfo?.telefone) { toast.error('Lead sem telefone cadastrado.'); return; }
+                    setSendingReview(true);
+                    let token = reviewToken;
+                    if (!token) {
+                      const { data, error } = await supabase
+                        .from('post_sale_reviews')
+                        .insert({ project_id: project.id })
+                        .select('token')
+                        .single();
+                      if (error || !data) { setSendingReview(false); toast.error('Erro ao gerar link.'); return; }
+                      token = data.token;
+                      setReviewToken(token);
+                      await supabase.from('post_sale_projects').update({ review_token: token }).eq('id', project.id);
+                    }
+                    const link = `${window.location.origin}/avaliar/${token}`;
+                    const msg = encodeURIComponent(
+                      `Olá ${leadInfo.nome}! 🌊\n\nA piscina ficou pronta! Adoraríamos saber sua opinião sobre a experiência.\n\nLeva menos de 1 minuto:\n👉 ${link}\n\nObrigado pela confiança! 🙏`
+                    );
+                    window.open(`https://wa.me/${toWhatsAppPhone(leadInfo.telefone)}?text=${msg}`, '_blank');
+                    setSendingReview(false);
+                    toast.success('Mensagem aberta no WhatsApp!');
+                  }}
+                  disabled={sendingReview || !leadInfo?.telefone}
                 >
-                  <Star className={cn("w-8 h-8 transition-colors", star <= rating ? "text-amber-400 fill-amber-400" : "text-muted-foreground/30")} />
-                </button>
-              ))}
-              {rating > 0 && <span className="text-sm font-semibold text-foreground ml-2">{rating}/5</span>}
+                  <MessageCircle className="w-4 h-4" />
+                  {sendingReview ? 'Gerando link...' : 'Enviar pesquisa por WhatsApp'}
+                </Button>
+
+                {!leadInfo?.telefone && (
+                  <p className="text-xs text-destructive text-center">Lead sem telefone cadastrado.</p>
+                )}
+
+                <details className="text-xs">
+                  <summary className="text-muted-foreground cursor-pointer hover:text-foreground">Registrar avaliação manualmente</summary>
+                  <div className="mt-3 space-y-2">
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map(star => (
+                        <button
+                          key={star}
+                          type="button"
+                          onClick={() => setRating(star)}
+                          className="p-1 transition-transform hover:scale-110 active:scale-95"
+                          aria-label={`${star} estrela${star > 1 ? 's' : ''}`}
+                        >
+                          <Star className={cn("w-7 h-7 transition-colors", star <= rating ? "text-amber-400 fill-amber-400" : "text-muted-foreground/30")} />
+                        </button>
+                      ))}
+                    </div>
+                    <Textarea
+                      value={satisfactionNote}
+                      onChange={e => setSatisfactionNote(e.target.value)}
+                      rows={2}
+                      placeholder="Observações..."
+                      className="bg-muted/50 resize-none text-sm"
+                      maxLength={1000}
+                    />
+                    <Button onClick={saveRating} variant="outline" size="sm" className="w-full gap-2">
+                      <Save className="w-3.5 h-3.5" />
+                      Salvar avaliação
+                    </Button>
+                  </div>
+                </details>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Referral program - when satisfied */}
+      {status === 'concluido' && (project.satisfaction_rating || 0) >= 4 && (
+        <Card className="glass-card border-emerald-200/50 bg-emerald-50/30 dark:bg-emerald-950/10">
+          <CardContent className="p-4 space-y-3">
+            <div className="flex items-center gap-2">
+              <Users className="w-4 h-4 text-emerald-600" />
+              <h3 className="text-sm font-semibold text-emerald-800 dark:text-emerald-300">
+                Cliente satisfeito → Peça indicações!
+              </h3>
             </div>
-
-            <Textarea
-              value={satisfactionNote}
-              onChange={e => setSatisfactionNote(e.target.value)}
-              rows={3}
-              placeholder="Observacoes sobre a avaliacao do cliente..."
-              className="bg-muted/50 resize-none"
-              maxLength={1000}
-            />
-
-            <Button onClick={saveRating} variant="outline" className="w-full gap-2">
-              <Save className="w-4 h-4" />
-              Salvar avaliacao
+            <p className="text-xs text-muted-foreground">
+              {leadInfo?.nome || 'O cliente'} deu {project.satisfaction_rating}⭐ — um ótimo momento para pedir indicações de amigos e familiares.
+            </p>
+            <Button
+              variant="outline"
+              className="w-full gap-2 border-emerald-300 text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-950/30"
+              disabled={!leadInfo?.telefone}
+              onClick={() => {
+                if (!leadInfo?.telefone) return;
+                const link = leadInfo.slug
+                  ? `${window.location.origin}/${leadInfo.slug}`
+                  : window.location.origin;
+                const msg = encodeURIComponent(
+                  `Olá ${leadInfo.nome}! 😊\n\nFicamos muito felizes com sua avaliação!\n\nVocê conhece alguém que também sonha com uma piscina? Adoraríamos ajudar!\n\nSe puder indicar, é só compartilhar nosso link:\n👉 ${link}\n\nObrigado! 🏊`
+                );
+                window.open(`https://wa.me/${toWhatsAppPhone(leadInfo.telefone)}?text=${msg}`, '_blank');
+              }}
+            >
+              <MessageCircle className="w-4 h-4" />
+              Pedir indicação por WhatsApp
             </Button>
           </CardContent>
         </Card>
