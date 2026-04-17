@@ -790,10 +790,53 @@ export type Database = {
         }
         Relationships: []
       }
+      post_sale_checklist: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          completed_by: string | null
+          created_at: string
+          id: string
+          label: string
+          position: number
+          project_id: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          id?: string
+          label: string
+          position?: number
+          project_id: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          completed_by?: string | null
+          created_at?: string
+          id?: string
+          label?: string
+          position?: number
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_sale_checklist_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "post_sale_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       post_sale_projects: {
         Row: {
           completion_date: string | null
           created_at: string
+          final_photo_urls: string[] | null
+          final_value: number | null
           franchise_id: string
           id: string
           installation_date: string | null
@@ -804,10 +847,14 @@ export type Database = {
           satisfaction_rating: number | null
           status: string
           updated_at: string
+          warranty_months: number | null
+          warranty_notes: string | null
         }
         Insert: {
           completion_date?: string | null
           created_at?: string
+          final_photo_urls?: string[] | null
+          final_value?: number | null
           franchise_id: string
           id?: string
           installation_date?: string | null
@@ -818,10 +865,14 @@ export type Database = {
           satisfaction_rating?: number | null
           status?: string
           updated_at?: string
+          warranty_months?: number | null
+          warranty_notes?: string | null
         }
         Update: {
           completion_date?: string | null
           created_at?: string
+          final_photo_urls?: string[] | null
+          final_value?: number | null
           franchise_id?: string
           id?: string
           installation_date?: string | null
@@ -832,6 +883,8 @@ export type Database = {
           satisfaction_rating?: number | null
           status?: string
           updated_at?: string
+          warranty_months?: number | null
+          warranty_notes?: string | null
         }
         Relationships: [
           {
