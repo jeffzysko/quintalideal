@@ -69,8 +69,18 @@ export function PostSaleSection({ leadId, franchiseId }: PostSaleSectionProps) {
         .single();
       if (error) throw error;
 
+      // Try to load a default template for this franchise
+      const { data: tpl } = await supabase
+        .from('post_sale_checklist_templates')
+        .select('items')
+        .eq('franchise_id', franchiseId)
+        .eq('is_default', true)
+        .maybeSingle();
+
+      const labels: string[] = (tpl?.items as string[] | undefined) ?? DEFAULT_CHECKLIST;
+
       await supabase.from('post_sale_checklist').insert(
-        DEFAULT_CHECKLIST.map((label, position) => ({
+        labels.map((label, position) => ({
           project_id: proj.id,
           label,
           position,
