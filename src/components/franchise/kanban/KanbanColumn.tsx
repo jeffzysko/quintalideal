@@ -37,7 +37,7 @@ export const KanbanColumn = memo(function KanbanColumn({
   const color = STATUS_CHART_COLORS[status] || '#64748b';
   const highlighted = isOver || isOverColumn;
   const totalValue = useMemo(
-    () => leads.reduce((sum, l) => sum + estimateLeadValue(l.respostas_questionario || null), 0),
+    () => leads.reduce((sum, l) => sum + estimateLeadValue(l.respostas_questionario || null, (l as any).valor_venda), 0),
     [leads]
   );
 

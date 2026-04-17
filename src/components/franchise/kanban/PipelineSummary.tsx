@@ -8,7 +8,7 @@ export function PipelineSummary({ leads, franchiseMap }: { leads: LeadWithQuiz[]
     const temps = { quente: 0, morno: 0, frio: 0 };
     const byFranchise: Record<string, { total: number; count: number }> = {};
     for (const lead of leads) {
-      const val = estimateLeadValue(lead.respostas_questionario || null);
+      const val = estimateLeadValue(lead.respostas_questionario || null, (lead as any).valor_venda);
       total += val;
       const t = classifyLead(lead.respostas_questionario || null, lead.pontuacao_quintal);
       temps[t.temperature]++;
