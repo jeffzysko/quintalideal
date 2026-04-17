@@ -225,7 +225,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
         lead_id: leadId,
         user_id: currentUser.id,
         activity_type: 'status_change',
-        content: `${STATUS_LABELS[oldStatus]} → ${STATUS_LABELS[newStatus]}${lossReason ? ` (Motivo: ${lossReason})` : ''}`,
+        content: `${STATUS_LABELS[oldStatus]} → ${STATUS_LABELS[newStatus]}${extra?.lossReason ? ` (Motivo: ${extra.lossReason})` : ''}${extra?.valorVenda ? ` — Valor: ${extra.valorVenda.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}` : ''}`,
       });
     }
 
