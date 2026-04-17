@@ -170,7 +170,11 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
     setOverColumnId(event.over?.id as string || null);
   }, []);
 
-  const moveLeadToStatus = useCallback(async (leadId: string, newStatus: string, lossReason?: string) => {
+  const moveLeadToStatus = useCallback(async (
+    leadId: string,
+    newStatus: string,
+    extra?: { lossReason?: string; valorVenda?: number },
+  ) => {
     if (movingLeads.has(leadId)) return;
     const lead = leads.find((l) => l.id === leadId);
     if (!lead) return;
@@ -178,14 +182,25 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
     const oldStatus = localStatusOverrides[leadId] || lead.status_lead;
     if (oldStatus === newStatus) return;
 
+    // Moving to "vendido" requires a sale value — open the drawer to capture it
+    // unless the value was already provided (e.g. confirmed from the drawer itself).
+    if (newStatus === 'vendido' && (!extra || typeof extra.valorVenda !== 'number' || extra.valorVenda <= 0)) {
+      setStageDrawerLeadId(leadId);
+      setStageDrawerOpen(true);
+      return;
+    }
+
     setMovingLeads(prev => new Set(prev).add(leadId));
     setLocalStatusOverrides((prev) => ({ ...prev, [leadId]: newStatus }));
 
     const updatePayload: Record<string, any> = { status_lead: newStatus as any };
-    if (newStatus === 'perdido' && lossReason) {
-      updatePayload.loss_reason = lossReason;
+    if (newStatus === 'perdido' && extra?.lossReason) {
+      updatePayload.loss_reason = extra.lossReason;
     } else if (newStatus !== 'perdido') {
       updatePayload.loss_reason = null;
+    }
+    if (newStatus === 'vendido' && extra?.valorVenda) {
+      updatePayload.valor_venda = extra.valorVenda;
     }
 
     const { error } = await supabase
