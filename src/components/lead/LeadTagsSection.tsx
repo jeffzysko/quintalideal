@@ -1,14 +1,11 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Card, CardContent } from '@/components/ui/card';
-import { Tag, Plus, X, Check, HelpCircle } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tag, Plus, X, Check, Search, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
 
@@ -16,8 +13,11 @@ const PRESET_COLORS = [
   { name: 'Verde', hex: '#22C55E' },
   { name: 'Azul', hex: '#3B82F6' },
   { name: 'Roxo', hex: '#8B5CF6' },
+  { name: 'Rosa', hex: '#EC4899' },
   { name: 'Laranja', hex: '#F97316' },
+  { name: 'Amarelo', hex: '#EAB308' },
   { name: 'Vermelho', hex: '#EF4444' },
+  { name: 'Cinza', hex: '#64748B' },
 ];
 
 interface LeadTag {
@@ -26,10 +26,17 @@ interface LeadTag {
   color: string;
 }
 
-export function LeadTagsSection({ leadId, franchiseId }: { leadId: string; franchiseId: string }) {
-  
+interface LeadTagsSectionProps {
+  leadId: string;
+  franchiseId: string;
+  /** Compact inline mode (sem card e sem título) — ideal para o hero */
+  inline?: boolean;
+}
+
+export function LeadTagsSection({ leadId, franchiseId, inline = false }: LeadTagsSectionProps) {
   const queryClient = useQueryClient();
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const [search, setSearch] = useState('');
   const [newTagName, setNewTagName] = useState('');
   const [newTagColor, setNewTagColor] = useState(PRESET_COLORS[0].hex);
   const [creating, setCreating] = useState(false);
@@ -60,142 +67,217 @@ export function LeadTagsSection({ leadId, franchiseId }: { leadId: string; franc
   });
 
   const assignedTags = franchiseTags.filter(t => assignedTagIds.includes(t.id));
-  const unassignedTags = franchiseTags.filter(t => !assignedTagIds.includes(t.id));
+
+  const filteredTags = useMemo(() => {
+    const q = search.trim().toLowerCase();
+    if (!q) return franchiseTags;
+    return franchiseTags.filter(t => t.name.toLowerCase().includes(q));
+  }, [franchiseTags, search]);
+
+  const exactMatch = useMemo(
+    () => franchiseTags.some(t => t.name.toLowerCase() === search.trim().toLowerCase()),
+    [franchiseTags, search],
+  );
 
   const invalidate = () => {
     queryClient.invalidateQueries({ queryKey: ['lead-tag-assignments', leadId] });
     queryClient.invalidateQueries({ queryKey: ['lead-tags', franchiseId] });
   };
 
-  const assignTag = async (tagId: string) => {
-    const { error } = await supabase.from('lead_tag_assignments').insert({ lead_id: leadId, tag_id: tagId });
-    if (error) { toast.error('Erro ao aplicar etiqueta'); return; }
+  const toggleTag = async (tagId: string) => {
+    const isAssigned = assignedTagIds.includes(tagId);
+    if (isAssigned) {
+      const { error } = await supabase
+        .from('lead_tag_assignments')
+        .delete()
+        .eq('lead_id', leadId)
+        .eq('tag_id', tagId);
+      if (error) { toast.error('Erro ao remover etiqueta'); return; }
+    } else {
+      const { error } = await supabase
+        .from('lead_tag_assignments')
+        .insert({ lead_id: leadId, tag_id: tagId });
+      if (error) { toast.error('Erro ao aplicar etiqueta'); return; }
+    }
     invalidate();
   };
 
   const removeTag = async (tagId: string) => {
-    const { error } = await supabase.from('lead_tag_assignments').delete().eq('lead_id', leadId).eq('tag_id', tagId);
+    const { error } = await supabase
+      .from('lead_tag_assignments')
+      .delete()
+      .eq('lead_id', leadId)
+      .eq('tag_id', tagId);
     if (error) { toast.error('Erro ao remover etiqueta'); return; }
     invalidate();
   };
 
   const createTag = async () => {
-    if (!newTagName.trim() || !franchiseId) return;
+    const name = (newTagName || search).trim();
+    if (!name || !franchiseId) return;
     setCreating(true);
     const { data, error } = await supabase.from('lead_tags').insert({
       franchise_id: franchiseId,
-      name: newTagName.trim(),
+      name,
       color: newTagColor,
     }).select('id').single();
     if (error) { toast.error('Erro ao criar etiqueta'); setCreating(false); return; }
-    // Auto-assign the new tag
     await supabase.from('lead_tag_assignments').insert({ lead_id: leadId, tag_id: data.id });
     setNewTagName('');
+    setSearch('');
     setCreating(false);
     invalidate();
-    toast.success('Etiqueta criada e aplicada!');
+    toast.success('Etiqueta criada e aplicada');
   };
 
-  return (
-    <Card className="glass-card">
-      <CardContent className="p-3 sm:p-5">
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Tag className="w-4 h-4 text-primary" />
-            <h2 className="text-sm font-semibold text-foreground">Etiquetas</h2>
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <HelpCircle className="w-3.5 h-3.5 text-muted-foreground/60 cursor-help" />
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="text-xs max-w-[200px]">Use tags para filtrar e segmentar seus leads facilmente</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
+  const AddButton = (
+    <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="inline-flex items-center gap-1 h-7 px-2.5 rounded-full text-[11px] font-medium border border-dashed border-border/70 text-muted-foreground hover:text-foreground hover:border-primary/60 hover:bg-primary/5 transition-all"
+        >
+          <Plus className="w-3 h-3" />
+          {assignedTags.length === 0 ? 'Adicionar etiqueta' : 'Etiqueta'}
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80 p-0 overflow-hidden" align="start" sideOffset={6}>
+        {/* Search */}
+        <div className="p-2.5 border-b border-border/40">
+          <div className="relative">
+            <Search className="w-3.5 h-3.5 text-muted-foreground absolute left-2.5 top-1/2 -translate-y-1/2" />
+            <Input
+              autoFocus
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Buscar ou criar etiqueta..."
+              className="h-9 text-xs pl-8 border-0 bg-muted/40 focus-visible:ring-1"
+              maxLength={30}
+            />
           </div>
-          <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="ghost" size="sm" className="h-7 text-xs gap-1 text-primary">
-                <Plus className="w-3.5 h-3.5" /> Adicionar
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-72 p-3" align="end">
-              <p className="text-xs font-semibold text-foreground mb-2">Etiquetas da franquia</p>
-              {unassignedTags.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mb-3">
-                  {unassignedTags.map(tag => (
-                    <button
-                      key={tag.id}
-                      onClick={() => assignTag(tag.id)}
-                      className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-md border border-border/40 hover:bg-muted/60 transition-colors"
-                    >
-                      <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: tag.color }} />
-                      {tag.name}
-                    </button>
-                  ))}
-                </div>
-              )}
-              <div className="border-t border-border/40 pt-2 mt-1">
-                <p className="text-[11px] text-muted-foreground mb-2">Criar nova etiqueta</p>
-                <div className="flex gap-1.5 mb-2">
-                  {PRESET_COLORS.map(c => (
-                    <button
-                      key={c.hex}
-                      onClick={() => setNewTagColor(c.hex)}
-                      className={cn(
-                        "w-7 h-7 rounded-lg border-2 transition-all flex items-center justify-center",
-                        newTagColor === c.hex ? "border-foreground scale-110" : "border-transparent"
-                      )}
-                      style={{ backgroundColor: c.hex }}
-                      title={c.name}
-                    >
-                      {newTagColor === c.hex && <Check className="w-3.5 h-3.5 text-white" />}
-                    </button>
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  <Input
-                    value={newTagName}
-                    onChange={(e) => setNewTagName(e.target.value)}
-                    placeholder="Nome da etiqueta"
-                    className="h-8 text-xs"
-                    maxLength={30}
-                  />
-                  <Button size="sm" className="h-8 text-xs shrink-0" disabled={!newTagName.trim() || creating} onClick={createTag}>
-                    Criar
-                  </Button>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
         </div>
 
-        {assignedTags.length > 0 ? (
-          <div className="flex flex-wrap gap-1.5">
-            {assignedTags.map(tag => (
-              <Badge
+        {/* Tag list */}
+        <div className="max-h-56 overflow-y-auto p-1.5">
+          {filteredTags.length === 0 && !search && (
+            <p className="text-[11px] text-muted-foreground text-center py-4 px-2">
+              Nenhuma etiqueta criada ainda. Digite acima para criar a primeira.
+            </p>
+          )}
+          {filteredTags.map(tag => {
+            const isAssigned = assignedTagIds.includes(tag.id);
+            return (
+              <button
                 key={tag.id}
-                variant="outline"
-                className="gap-1 text-xs font-medium pr-1 group cursor-default"
-                style={{ borderColor: tag.color + '60', backgroundColor: tag.color + '15', color: tag.color }}
+                onClick={() => toggleTag(tag.id)}
+                className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-muted/60 transition-colors group"
               >
-                <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: tag.color }} />
-                {tag.name}
-                <button
-                  onClick={() => removeTag(tag.id)}
-                  className="ml-0.5 p-0.5 rounded hover:bg-black/10 transition-colors opacity-50 group-hover:opacity-100"
-                  title="Remover etiqueta"
+                <span
+                  className="inline-flex items-center gap-1.5 text-[11px] font-medium px-2 py-0.5 rounded-full"
+                  style={{
+                    backgroundColor: tag.color + '20',
+                    color: tag.color,
+                  }}
                 >
-                  <X className="w-3 h-3" />
-                </button>
-              </Badge>
-            ))}
+                  <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: tag.color }} />
+                  {tag.name}
+                </span>
+                <span className="ml-auto">
+                  {isAssigned ? (
+                    <Check className="w-3.5 h-3.5 text-primary" />
+                  ) : (
+                    <Plus className="w-3.5 h-3.5 text-muted-foreground/40 group-hover:text-muted-foreground transition-colors" />
+                  )}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Create new */}
+        {search.trim() && !exactMatch && (
+          <div className="border-t border-border/40 p-2.5 bg-muted/20">
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1.5 flex items-center gap-1">
+              <Sparkles className="w-3 h-3" /> Criar nova
+            </p>
+            <div className="flex gap-1 mb-2">
+              {PRESET_COLORS.map(c => (
+                <button
+                  key={c.hex}
+                  onClick={() => setNewTagColor(c.hex)}
+                  className={cn(
+                    'w-5 h-5 rounded-full transition-all flex items-center justify-center ring-offset-background',
+                    newTagColor === c.hex
+                      ? 'ring-2 ring-offset-1 ring-foreground scale-110'
+                      : 'hover:scale-110',
+                  )}
+                  style={{ backgroundColor: c.hex }}
+                  title={c.name}
+                  aria-label={c.name}
+                />
+              ))}
+            </div>
+            <Button
+              size="sm"
+              className="h-8 w-full text-xs"
+              disabled={creating}
+              onClick={() => { setNewTagName(search); createTag(); }}
+            >
+              <Plus className="w-3 h-3" /> Criar "{search.trim()}"
+            </Button>
           </div>
-        ) : (
-          <p className="text-xs text-muted-foreground">Nenhuma etiqueta aplicada a este lead.</p>
         )}
-      </CardContent>
-    </Card>
+      </PopoverContent>
+    </Popover>
+  );
+
+  const tagChips = assignedTags.map(tag => (
+    <span
+      key={tag.id}
+      className="group inline-flex items-center gap-1 h-7 pl-2 pr-1 rounded-full text-[11px] font-medium transition-all hover:shadow-sm"
+      style={{
+        backgroundColor: tag.color + '18',
+        color: tag.color,
+        boxShadow: `inset 0 0 0 1px ${tag.color}30`,
+      }}
+    >
+      <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: tag.color }} />
+      {tag.name}
+      <button
+        onClick={() => removeTag(tag.id)}
+        className="ml-0.5 w-4 h-4 rounded-full flex items-center justify-center hover:bg-current/20 opacity-0 group-hover:opacity-60 hover:!opacity-100 transition-all"
+        title="Remover etiqueta"
+        aria-label={`Remover ${tag.name}`}
+      >
+        <X className="w-2.5 h-2.5" />
+      </button>
+    </span>
+  ));
+
+  if (inline) {
+    return (
+      <div className="flex flex-wrap items-center gap-1.5">
+        {tagChips}
+        {AddButton}
+      </div>
+    );
+  }
+
+  return (
+    <div className="rounded-xl border border-border/40 bg-card/30 p-3">
+      <div className="flex items-center gap-1.5 mb-2.5">
+        <Tag className="w-3.5 h-3.5 text-muted-foreground" />
+        <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+          Etiquetas
+        </span>
+        {assignedTags.length > 0 && (
+          <span className="text-[10px] text-muted-foreground/60">· {assignedTags.length}</span>
+        )}
+      </div>
+      <div className="flex flex-wrap items-center gap-1.5">
+        {tagChips}
+        {AddButton}
+      </div>
+    </div>
   );
 }
