@@ -1453,6 +1453,147 @@ export type Database = {
         }
         Relationships: []
       }
+      technical_visits: {
+        Row: {
+          access_height_cm: number | null
+          access_notes: string | null
+          access_width_cm: number | null
+          created_at: string
+          distance_from_trees_cm: number | null
+          distance_from_wall_cm: number | null
+          electrical_distance_m: number | null
+          feasibility: string
+          feasibility_notes: string | null
+          franchise_id: string
+          general_notes: string | null
+          ground_level: string | null
+          has_drain: boolean | null
+          has_electrical_point: boolean | null
+          has_slope: boolean | null
+          has_water_point: boolean | null
+          id: string
+          infrastructure_notes: string | null
+          lead_id: string
+          needs_crane: boolean | null
+          needs_winch: boolean | null
+          pool_position: string | null
+          position_notes: string | null
+          slope_notes: string | null
+          solar_orientation: string | null
+          status: string
+          terrain_type: string | null
+          updated_at: string
+          visit_photo_urls: string[] | null
+          visited_at: string | null
+          visited_by: string | null
+          water_distance_m: number | null
+        }
+        Insert: {
+          access_height_cm?: number | null
+          access_notes?: string | null
+          access_width_cm?: number | null
+          created_at?: string
+          distance_from_trees_cm?: number | null
+          distance_from_wall_cm?: number | null
+          electrical_distance_m?: number | null
+          feasibility?: string
+          feasibility_notes?: string | null
+          franchise_id: string
+          general_notes?: string | null
+          ground_level?: string | null
+          has_drain?: boolean | null
+          has_electrical_point?: boolean | null
+          has_slope?: boolean | null
+          has_water_point?: boolean | null
+          id?: string
+          infrastructure_notes?: string | null
+          lead_id: string
+          needs_crane?: boolean | null
+          needs_winch?: boolean | null
+          pool_position?: string | null
+          position_notes?: string | null
+          slope_notes?: string | null
+          solar_orientation?: string | null
+          status?: string
+          terrain_type?: string | null
+          updated_at?: string
+          visit_photo_urls?: string[] | null
+          visited_at?: string | null
+          visited_by?: string | null
+          water_distance_m?: number | null
+        }
+        Update: {
+          access_height_cm?: number | null
+          access_notes?: string | null
+          access_width_cm?: number | null
+          created_at?: string
+          distance_from_trees_cm?: number | null
+          distance_from_wall_cm?: number | null
+          electrical_distance_m?: number | null
+          feasibility?: string
+          feasibility_notes?: string | null
+          franchise_id?: string
+          general_notes?: string | null
+          ground_level?: string | null
+          has_drain?: boolean | null
+          has_electrical_point?: boolean | null
+          has_slope?: boolean | null
+          has_water_point?: boolean | null
+          id?: string
+          infrastructure_notes?: string | null
+          lead_id?: string
+          needs_crane?: boolean | null
+          needs_winch?: boolean | null
+          pool_position?: string | null
+          position_notes?: string | null
+          slope_notes?: string | null
+          solar_orientation?: string | null
+          status?: string
+          terrain_type?: string | null
+          updated_at?: string
+          visit_photo_urls?: string[] | null
+          visited_at?: string | null
+          visited_by?: string | null
+          water_distance_m?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technical_visits_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchise_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technical_visits_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchises"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technical_visits_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchises_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technical_visits_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "technical_visits_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads_map"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       usage_logs: {
         Row: {
           created_at: string
