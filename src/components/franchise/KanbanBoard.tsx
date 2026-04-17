@@ -470,138 +470,220 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
     <>
       <PipelineSummary leads={filteredLeads} franchiseMap={franchiseMap} />
 
-      <div className="flex flex-wrap items-center gap-3 mb-4">
-        <ManualLeadForm franchiseId={franchiseId} />
-        <CSVLeadImport franchiseId={franchiseId} />
-        <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-muted-foreground" />
-          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Filtros</span>
-        </div>
-
-        <div className="relative">
-          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+      <div className="flex items-center gap-2 mb-5">
+        {/* Busca */}
+        <div className="relative flex-1 max-w-[260px]">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
-            placeholder="Buscar por nome..."
+            placeholder="Buscar lead..."
             value={nameSearch}
             onChange={(e) => setNameSearch(e.target.value)}
-            className="w-[160px] h-8 text-xs pl-7"
+            className="pl-9 h-10 rounded-xl"
           />
+          {nameSearch && (
+            <button
+              onClick={() => setNameSearch('')}
+              className="absolute right-3 top-1/2 -translate-y-1/2"
+              aria-label="Limpar busca"
+            >
+              <X className="w-3.5 h-3.5 text-muted-foreground" />
+            </button>
+          )}
         </div>
 
-        <Select value={tempFilter} onValueChange={setTempFilter}>
-          <SelectTrigger className="w-[150px] h-8 text-xs"><SelectValue placeholder="Temperatura" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todas temperaturas</SelectItem>
-            <SelectItem value="quente">🔥 Quente</SelectItem>
-            <SelectItem value="morno">☀️ Morno</SelectItem>
-            <SelectItem value="frio">❄️ Frio</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select value={originFilter} onValueChange={setOriginFilter}>
-          <SelectTrigger className="w-[140px] h-8 text-xs"><SelectValue placeholder="Origem" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todas origens</SelectItem>
-            <SelectItem value="quiz">📝 Quiz</SelectItem>
-            <SelectItem value="manual">✏️ Manual</SelectItem>
-            <SelectItem value="csv_import">📄 CSV</SelectItem>
-            <SelectItem value="instagram">📸 Instagram</SelectItem>
-            <SelectItem value="facebook">📘 Facebook</SelectItem>
-            <SelectItem value="google">🔍 Google Ads</SelectItem>
-            <SelectItem value="indicacao">🤝 Indicação</SelectItem>
-            <SelectItem value="organico">🌱 Orgânico</SelectItem>
-            <SelectItem value="tiktok">🎵 TikTok</SelectItem>
-          </SelectContent>
-        </Select>
-
-        <Select value={cityFilter} onValueChange={setCityFilter}>
-          <SelectTrigger className="w-[180px] h-8 text-xs"><SelectValue placeholder="Cidade" /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">Todas cidades</SelectItem>
-            {cities.map((city) => (
-              <SelectItem key={city} value={city}>{city}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-
-        {franchiseMap && Object.keys(franchiseMap).length > 0 && (
-          <Select value={franchiseFilter} onValueChange={setFranchiseFilter}>
-            <SelectTrigger className="w-[180px] h-8 text-xs"><SelectValue placeholder="Franquia" /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Todas franquias</SelectItem>
-              {Object.entries(franchiseMap).sort((a, b) => a[1].localeCompare(b[1])).map(([id, name]) => (
-                <SelectItem key={id} value={id}>{name}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        )}
-
+        {/* Botão de Filtros com contador de ativos */}
         <Popover>
           <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className={cn("h-8 text-xs gap-1.5", dateFrom && "text-foreground")}>
-              <CalendarIcon className="w-3.5 h-3.5" />
-              {dateFrom ? format(dateFrom, "dd/MM/yy", { locale: ptBR }) : "De"}
+            <Button
+              variant="outline"
+              className={cn(
+                "h-10 gap-2 rounded-xl",
+                hasActiveFilters && "border-primary/50 bg-primary/5 text-primary"
+              )}
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+              Filtros
+              {hasActiveFilters && (
+                <Badge className="h-4 min-w-4 p-0 px-1 text-[10px] rounded-full bg-primary text-primary-foreground flex items-center justify-center">
+                  {[
+                    tempFilter !== 'all',
+                    originFilter !== 'all',
+                    cityFilter !== 'all',
+                    franchiseFilter !== 'all',
+                    !!dateFrom,
+                    !!dateTo,
+                  ].filter(Boolean).length}
+                </Badge>
+              )}
             </Button>
           </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <CalendarPicker
-              mode="single"
-              selected={dateFrom}
-              onSelect={setDateFrom}
-              initialFocus
-              className={cn("p-3 pointer-events-auto")}
-            />
-          </PopoverContent>
-        </Popover>
+          <PopoverContent className="w-80 p-4" align="start">
+            <div className="space-y-4">
+              <p className="text-sm font-semibold text-foreground">Filtros</p>
 
-        <Popover>
-          <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className={cn("h-8 text-xs gap-1.5", dateTo && "text-foreground")}>
-              <CalendarIcon className="w-3.5 h-3.5" />
-              {dateTo ? format(dateTo, "dd/MM/yy", { locale: ptBR }) : "Até"}
-            </Button>
-          </PopoverTrigger>
-          <PopoverContent className="w-auto p-0" align="start">
-            <CalendarPicker
-              mode="single"
-              selected={dateTo}
-              onSelect={setDateTo}
-              initialFocus
-              className={cn("p-3 pointer-events-auto")}
-            />
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">Temperatura</label>
+                <div className="flex gap-1.5 flex-wrap">
+                  {[
+                    { value: 'all', label: 'Todas', emoji: '' },
+                    { value: 'quente', label: 'Quente', emoji: '🔥' },
+                    { value: 'morno', label: 'Morno', emoji: '☀️' },
+                    { value: 'frio', label: 'Frio', emoji: '❄️' },
+                  ].map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => setTempFilter(opt.value)}
+                      className={cn(
+                        "px-3 py-1.5 rounded-full text-xs font-medium border transition-all",
+                        tempFilter === opt.value
+                          ? "border-primary bg-primary/10 text-primary"
+                          : "border-border text-muted-foreground hover:border-primary/30"
+                      )}
+                    >
+                      {opt.emoji} {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">Origem</label>
+                <Select value={originFilter} onValueChange={setOriginFilter}>
+                  <SelectTrigger className="h-9 rounded-xl text-xs">
+                    <SelectValue placeholder="Todas origens" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas origens</SelectItem>
+                    <SelectItem value="quiz">📝 Quiz</SelectItem>
+                    <SelectItem value="manual">✏️ Manual</SelectItem>
+                    <SelectItem value="csv_import">📄 CSV</SelectItem>
+                    <SelectItem value="instagram">📸 Instagram</SelectItem>
+                    <SelectItem value="facebook">📘 Facebook</SelectItem>
+                    <SelectItem value="google">🔍 Google Ads</SelectItem>
+                    <SelectItem value="indicacao">🤝 Indicação</SelectItem>
+                    <SelectItem value="organico">🌱 Orgânico</SelectItem>
+                    <SelectItem value="tiktok">🎵 TikTok</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-muted-foreground">Cidade</label>
+                <Select value={cityFilter} onValueChange={setCityFilter}>
+                  <SelectTrigger className="h-9 rounded-xl text-xs">
+                    <SelectValue placeholder="Todas cidades" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Todas cidades</SelectItem>
+                    {cities.map((city) => (
+                      <SelectItem key={city} value={city}>{city}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              {franchiseMap && Object.keys(franchiseMap).length > 0 && (
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-muted-foreground">Franquia</label>
+                  <Select value={franchiseFilter} onValueChange={setFranchiseFilter}>
+                    <SelectTrigger className="h-9 rounded-xl text-xs">
+                      <SelectValue placeholder="Todas franquias" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas franquias</SelectItem>
+                      {Object.entries(franchiseMap)
+                        .sort((a, b) => a[1].localeCompare(b[1]))
+                        .map(([id, name]) => (
+                          <SelectItem key={id} value={id}>{name}</SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-muted-foreground">A partir de</label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full h-9 rounded-xl text-xs justify-start gap-2"
+                      >
+                        <CalendarIcon className="w-3.5 h-3.5" />
+                        {dateFrom ? format(dateFrom, "dd/MM/yy", { locale: ptBR }) : "Início"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <CalendarPicker
+                        mode="single"
+                        selected={dateFrom}
+                        onSelect={setDateFrom}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-muted-foreground">Até</label>
+                  <Popover>
+                    <PopoverTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full h-9 rounded-xl text-xs justify-start gap-2"
+                      >
+                        <CalendarIcon className="w-3.5 h-3.5" />
+                        {dateTo ? format(dateTo, "dd/MM/yy", { locale: ptBR }) : "Fim"}
+                      </Button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <CalendarPicker
+                        mode="single"
+                        selected={dateTo}
+                        onSelect={setDateTo}
+                        initialFocus
+                        className={cn("p-3 pointer-events-auto")}
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
+              </div>
+
+              {hasActiveFilters && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="w-full text-xs text-muted-foreground"
+                  onClick={clearAllFilters}
+                >
+                  <X className="w-3.5 h-3.5 mr-1.5" /> Limpar todos os filtros
+                </Button>
+              )}
+            </div>
           </PopoverContent>
         </Popover>
 
         {hasActiveFilters && (
-          <Button variant="ghost" size="sm" className="h-8 px-2 text-xs text-muted-foreground hover:text-foreground" onClick={clearAllFilters}>
-            <X className="w-3 h-3 mr-1" />
-            Limpar
-          </Button>
-        )}
-
-        {hasActiveFilters && (
-          <span className="text-[11px] text-muted-foreground">
-            {filteredLeads.length} de {leads.length} leads
+          <span className="text-xs text-muted-foreground">
+            {filteredLeads.length}/{leads.length} leads
           </span>
         )}
-      </div>
 
-      {!kanbanTipDismissed && (
-        <div className="flex items-center gap-3 px-4 py-2.5 mb-4 rounded-xl border border-primary/20 bg-primary/5 animate-fade-in">
-          <span className="text-sm">💡</span>
-          <p className="text-xs text-foreground flex-1">
-            <span className="font-semibold">Dica:</span> Arraste os cards entre as colunas para mudar o status do lead.
-          </p>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-6 px-2 text-[10px] text-muted-foreground shrink-0"
-            onClick={() => { localStorage.setItem('kanban-tip-dismissed', 'true'); setKanbanTipDismissed(true); }}
-          >
-            Entendi
-          </Button>
-        </div>
-      )}
+        <div className="flex-1" />
+
+        <ManualLeadForm franchiseId={franchiseId} />
+        <CSVLeadImport
+          franchiseId={franchiseId}
+          trigger={
+            <Button variant="outline" size="sm" className="h-10 gap-2 rounded-xl">
+              <Upload className="w-4 h-4" /> CSV
+            </Button>
+          }
+        />
+      </div>
 
       <DndContext
         sensors={sensors}
