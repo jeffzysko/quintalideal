@@ -52,6 +52,7 @@ interface Lead {
   pontuacao_quintal: number | null;
   modelo_recomendado: string | null;
   modelo_vendido: string | null;
+  valor_venda: number | null;
   respostas_questionario: Record<string, string> | null;
   foto1: string | null;
   foto2: string | null;
@@ -161,6 +162,7 @@ export default function LeadDetail() {
   const [status, setStatus] = useState('');
   const [observacoes, setObservacoes] = useState('');
   const [modeloVendido, setModeloVendido] = useState('');
+  const [valorVendaInput, setValorVendaInput] = useState('');
   const [tempOverride, setTempOverride] = useState<LeadTemperature | ''>('');
   const [saving, setSaving] = useState(false);
   const [editNome, setEditNome] = useState('');
@@ -188,7 +190,7 @@ export default function LeadDetail() {
     queryFn: async () => {
       const { data } = await supabase
         .from('leads')
-        .select('id, nome, telefone, email, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, respostas_questionario, foto1, foto2, foto3, foto4, status_lead, observacoes, created_at, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, franquia_id, lead_origin, loss_reason, assigned_to')
+        .select('id, nome, telefone, email, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, valor_venda, respostas_questionario, foto1, foto2, foto3, foto4, status_lead, observacoes, created_at, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, franquia_id, lead_origin, loss_reason, assigned_to')
         .eq('id', id!)
         .maybeSingle();
       return data ? (data as Lead) : null;
@@ -232,6 +234,11 @@ export default function LeadDetail() {
       setStatus(lead.status_lead);
       setObservacoes(lead.observacoes || '');
       setModeloVendido(lead.modelo_vendido || '');
+      setValorVendaInput(
+        lead.valor_venda != null
+          ? lead.valor_venda.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+          : ''
+      );
       setEditNome(lead.nome || '');
       setEditTelefone(lead.telefone || '');
       setEditEmail(lead.email || '');
