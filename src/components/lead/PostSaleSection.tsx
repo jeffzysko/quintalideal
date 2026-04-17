@@ -216,7 +216,7 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
     },
   });
 
-  const completedCount = checklist.filter(c => c.completed).length;
+  
 
   const saveProject = async () => {
     setSaving(true);
