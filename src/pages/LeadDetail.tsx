@@ -454,9 +454,10 @@ export default function LeadDetail() {
           <Breadcrumbs className="md:hidden" items={breadcrumbItems} />
         </div>
 
-        {/* ZONA 1 — Hero (sem card, sem borda) */}
-        <div className="bg-muted/30 px-4 pt-4 pb-5">
-          <div className="flex items-center gap-4 mb-4">
+        {/* ZONA 1 — Hero unificado (perfil + pipeline + métricas) */}
+        <div className="bg-gradient-to-b from-muted/40 to-background px-4 pt-4 pb-5">
+          {/* Linha 1: Avatar do lead + Nome + Avatar do responsável */}
+          <div className="flex items-center gap-3 mb-4">
             <div
               className="w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-bold text-white shrink-0 shadow-md"
               style={{ backgroundColor: getAvatarColor(lead.nome) }}
@@ -468,7 +469,7 @@ export default function LeadDetail() {
               <h1 className="text-xl font-bold text-foreground leading-tight truncate">
                 {lead.nome || 'Lead sem nome'}
               </h1>
-              <div className="flex flex-wrap items-center gap-2 mt-1">
+              <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
                 {lead.cidade && (
                   <span className="text-xs text-muted-foreground flex items-center gap-1">
                     <MapPin className="w-3 h-3" />{lead.cidade}
@@ -477,42 +478,8 @@ export default function LeadDetail() {
                 <InactivityBadge createdAt={lead.created_at} lastActivityAt={lastActivityAt} />
               </div>
             </div>
-          </div>
 
-          {/* Controles rápidos: Status + Temperatura (clicáveis) */}
-          <div className="grid grid-cols-2 gap-2 mb-3">
-            <Select value={status} onValueChange={handleStatusChange}>
-              <SelectTrigger className={`h-auto py-2 px-3 border ${statusInfo.color} font-medium text-xs ${autoSaving ? 'opacity-70' : ''}`}>
-                <div className="flex items-center gap-1.5 min-w-0">
-                  <span className="text-[10px] uppercase tracking-wider opacity-70 shrink-0">Status</span>
-                  <span className="truncate">{statusInfo.label}</span>
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(statusConfig).map(([val, cfg]) => (
-                  <SelectItem key={val} value={val}>{cfg.label}</SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            <Select value={tempOverride || '_auto'} onValueChange={(v) => handleTempChange(v === '_auto' ? '' : v as LeadTemperature)}>
-              <SelectTrigger className="h-auto py-2 px-3 border bg-muted/50 font-medium text-xs">
-                <div className="flex items-center gap-1.5 min-w-0">
-                  <span className="text-[10px] uppercase tracking-wider opacity-70 shrink-0">Temp.</span>
-                  <span className="truncate">{temp.emoji} {temp.label}</span>
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="_auto">🤖 Automático</SelectItem>
-                <SelectItem value="quente">🔥 Quente</SelectItem>
-                <SelectItem value="morno">☀️ Morno</SelectItem>
-                <SelectItem value="frio">❄️ Frio</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Responsável + Score */}
-          <div className="flex items-center gap-2 mb-4 flex-wrap">
+            {/* Avatar do responsável clicável */}
             <Select
               value={assignedTo || '_none'}
               onValueChange={async (val) => {
@@ -523,20 +490,114 @@ export default function LeadDetail() {
                 toast.success('Responsável atualizado');
               }}
             >
-              <SelectTrigger className="h-8 w-auto gap-1.5 px-2.5 text-xs bg-muted/50 border-border/50 rounded-full">
-                <span className="text-[10px] uppercase tracking-wider opacity-70">Resp.</span>
-                <SelectValue placeholder="Atribuir..." />
+              <SelectTrigger className="h-auto w-auto p-0 border-0 bg-transparent hover:opacity-80 transition-opacity [&>svg]:hidden shrink-0" title="Trocar responsável">
+                {(() => {
+                  const assignedUser = franchiseUsers.find((u: any) => u.user_id === assignedTo) as any;
+                  if (assignedUser?.full_name) {
+                    return (
+                      <div className="flex flex-col items-center gap-0.5">
+                        <div className="w-10 h-10 rounded-full bg-primary/15 border-2 border-background shadow-sm flex items-center justify-center">
+                          <span className="text-[11px] font-bold text-primary">{getInitials(assignedUser.full_name)}</span>
+                        </div>
+                        <span className="text-[9px] text-muted-foreground max-w-[60px] truncate">{assignedUser.full_name.split(' ')[0]}</span>
+                      </div>
+                    );
+                  }
+                  return (
+                    <div className="flex flex-col items-center gap-0.5">
+                      <div className="w-10 h-10 rounded-full bg-muted border-2 border-dashed border-border flex items-center justify-center">
+                        <Plus className="w-4 h-4 text-muted-foreground" />
+                      </div>
+                      <span className="text-[9px] text-muted-foreground">Atribuir</span>
+                    </div>
+                  );
+                })()}
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent align="end">
                 <SelectItem value="_none">Sem responsável</SelectItem>
                 {franchiseUsers.map((u: any) => (
                   <SelectItem key={u.user_id} value={u.user_id}>{u.full_name}</SelectItem>
                 ))}
               </SelectContent>
             </Select>
+          </div>
+
+          {/* Linha 2: Pipeline visual de status */}
+          {(() => {
+            const pipeline = [
+              { key: 'novo', label: 'Novo', color: 'bg-slate-400' },
+              { key: 'contatado', label: 'Contatado', color: 'bg-sky-500' },
+              { key: 'em_negociacao', label: 'Negociação', color: 'bg-amber-500' },
+              { key: 'vendido', label: 'Vendido', color: 'bg-emerald-500' },
+            ];
+            const currentIdx = pipeline.findIndex(p => p.key === status);
+            const isLost = status === 'perdido';
+
+            return (
+              <div className="mb-4">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Funil</span>
+                  {isLost ? (
+                    <span className="text-[10px] font-semibold text-destructive">💔 Perdido</span>
+                  ) : (
+                    <button
+                      onClick={() => handleStatusChange('perdido')}
+                      className="text-[10px] text-muted-foreground hover:text-destructive transition-colors"
+                    >
+                      Marcar perdido
+                    </button>
+                  )}
+                </div>
+                <div className="flex items-center gap-1">
+                  {pipeline.map((step, i) => {
+                    const isActive = !isLost && i <= currentIdx;
+                    const isCurrent = !isLost && i === currentIdx;
+                    return (
+                      <button
+                        key={step.key}
+                        onClick={() => handleStatusChange(step.key)}
+                        disabled={autoSaving}
+                        className={`flex-1 group flex flex-col items-center gap-1 ${autoSaving ? 'opacity-70' : ''}`}
+                        title={`Mover para ${step.label}`}
+                      >
+                        <div className={`h-1.5 w-full rounded-full transition-all ${isActive && !isLost ? step.color : 'bg-muted'} ${isCurrent ? 'h-2' : ''}`} />
+                        <span className={`text-[10px] font-medium transition-colors ${isCurrent ? 'text-foreground' : isActive ? 'text-muted-foreground' : 'text-muted-foreground/50'}`}>
+                          {step.label}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })()}
+
+          {/* Linha 3: Métricas (temperatura + score + valor) */}
+          <div className="flex items-center gap-2 mb-3 flex-wrap">
+            {/* Chips de temperatura */}
+            <div className="flex items-center gap-1 bg-muted/60 rounded-full p-0.5">
+              {[
+                { val: 'quente' as const, emoji: '🔥', label: 'Quente' },
+                { val: 'morno' as const, emoji: '☀️', label: 'Morno' },
+                { val: 'frio' as const, emoji: '❄️', label: 'Frio' },
+              ].map((t) => {
+                const active = (tempOverride || temp.temperature) === t.val;
+                return (
+                  <button
+                    key={t.val}
+                    onClick={() => handleTempChange(active && tempOverride === t.val ? '' : t.val)}
+                    className={`text-[11px] font-medium px-2.5 py-1 rounded-full transition-all ${active ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                    title={tempOverride === t.val ? 'Clique para voltar ao automático' : `Marcar como ${t.label}`}
+                  >
+                    {t.emoji} {t.label}
+                  </button>
+                );
+              })}
+            </div>
+
             {lead.pontuacao_quintal != null && (
-              <div className="flex items-center gap-1.5 ml-auto">
-                <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
+              <div className="flex items-center gap-1.5 ml-auto" title="Score do quintal">
+                <div className="w-14 h-1.5 bg-muted rounded-full overflow-hidden">
                   <div
                     className={`h-full rounded-full ${lead.pontuacao_quintal >= 70 ? 'bg-emerald-500' : lead.pontuacao_quintal >= 40 ? 'bg-amber-500' : 'bg-red-400'}`}
                     style={{ width: `${lead.pontuacao_quintal}%` }}
@@ -547,27 +608,30 @@ export default function LeadDetail() {
             )}
           </div>
 
-          {lead.modelo_recomendado && (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
-              <Droplets className="w-3.5 h-3.5 text-primary" />
-              <span>Modelo recomendado: <strong className="text-foreground">{lead.modelo_recomendado}</strong></span>
+          {/* Linha 4: Infos contextuais (modelo + valor) */}
+          {(lead.modelo_recomendado || estimateValueRange(lead.respostas_questionario)) && (
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground mb-3 pb-3 border-b border-border/40">
+              {lead.modelo_recomendado && (
+                <span className="flex items-center gap-1.5">
+                  <Droplets className="w-3.5 h-3.5 text-primary" />
+                  <strong className="text-foreground font-semibold">{lead.modelo_recomendado}</strong>
+                </span>
+              )}
+              {(() => {
+                const estimate = estimateValueRange(lead.respostas_questionario);
+                return estimate ? (
+                  <span className="flex items-center gap-1.5">
+                    <TrendingUp className="w-3.5 h-3.5 text-success" />
+                    <strong className="text-foreground font-semibold">{estimate}</strong>
+                  </span>
+                ) : null;
+              })()}
             </div>
           )}
 
-          {(() => {
-            const estimate = estimateValueRange(lead.respostas_questionario);
-            if (!estimate) return null;
-            return (
-              <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
-                <TrendingUp className="w-3.5 h-3.5 text-success" />
-                <span>Valor estimado: <strong className="text-foreground">{estimate}</strong></span>
-              </div>
-            );
-          })()}
-
           {lead.status_lead === 'perdido' && lead.loss_reason && (
-            <div className="flex items-center gap-2 text-xs text-destructive mb-4">
-              💔 <span>Perdido: {lead.loss_reason}</span>
+            <div className="flex items-center gap-2 text-xs text-destructive mb-3">
+              💔 <span>Motivo: {lead.loss_reason}</span>
             </div>
           )}
 
