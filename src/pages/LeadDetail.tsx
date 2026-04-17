@@ -430,6 +430,7 @@ export default function LeadDetail() {
   const tabs = [
     { value: 'conversa', icon: MessageCircle, label: 'Conversa' },
     { value: 'proposta', icon: FileText, label: 'Proposta' },
+    { value: 'dados', icon: HelpCircle, label: 'Dados' },
     ...(quizEntriesEarly.length > 0 ? [{ value: 'quiz', icon: ClipboardList, label: 'Quiz' }] : []),
     { value: 'fotos', icon: Camera, label: 'Fotos' },
     ...(lead.status_lead === 'vendido' ? [{ value: 'pos-venda', icon: Package, label: 'Pós-venda' }] : []),
