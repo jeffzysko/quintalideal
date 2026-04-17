@@ -12,7 +12,9 @@ import { Calendar } from '@/components/ui/calendar';
 import {
   CalendarIcon, Star, Save, Plus, Wrench, CheckCircle2, CalendarDays, HelpCircle,
   ListChecks, Check, Image as ImageIcon, Camera, ShieldCheck, X, Loader2,
+  Link2, Copy, Users, MessageCircle,
 } from 'lucide-react';
+import { toWhatsAppPhone } from '@/lib/phone-utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { format, addMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -132,6 +134,8 @@ interface PostSaleProject {
   warranty_notes: string | null;
   final_photo_urls: string[] | null;
   final_value: number | null;
+  review_token: string | null;
+  would_recommend: boolean | null;
 }
 
 interface ChecklistItem {
