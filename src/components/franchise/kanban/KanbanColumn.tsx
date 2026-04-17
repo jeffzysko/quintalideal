@@ -26,7 +26,7 @@ export const KanbanColumn = memo(function KanbanColumn({
   basePath: string;
   isOverColumn: boolean;
   franchiseMap?: Record<string, string>;
-  onMoveStage: (leadId: string, newStatus: string, lossReason?: string) => void;
+  onMoveStage: (leadId: string, newStatus: string, extra?: { lossReason?: string; valorVenda?: number }) => void;
   franchiseId?: string;
   whatsAppPlanActive?: boolean;
   selectedIds?: string[];
