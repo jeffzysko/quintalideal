@@ -706,14 +706,14 @@ export default function LeadDetail() {
         {/* ZONA 2 — Tabs underline */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="border-b border-border/50 bg-background sticky top-[57px] z-10">
-            <TabsList className="h-auto bg-transparent p-0 w-full flex justify-start gap-0 rounded-none">
+            <TabsList className="h-auto bg-transparent p-0 w-full flex justify-start gap-0 rounded-none overflow-x-auto scrollbar-hide [scroll-snap-type:x_mandatory]">
               {tabs.map(tab => {
                 const Icon = tab.icon;
                 return (
                   <TabsTrigger
                     key={tab.value}
                     value={tab.value}
-                    className="flex items-center gap-1.5 px-4 py-3 text-xs font-medium rounded-none border-b-2 text-muted-foreground border-transparent data-[state=active]:text-primary data-[state=active]:border-primary hover:text-foreground transition-colors bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none relative"
+                    className="flex-shrink-0 whitespace-nowrap [scroll-snap-align:start] flex items-center gap-1.5 px-3 sm:px-4 py-3 text-xs font-medium rounded-none border-b-2 text-muted-foreground border-transparent data-[state=active]:text-primary data-[state=active]:border-primary hover:text-foreground transition-colors bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none relative"
                   >
                     <Icon className="w-3.5 h-3.5" />
                     {tab.label}
