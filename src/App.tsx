@@ -76,6 +76,7 @@ const SuperAdminStatus = lazy(() => import("./pages/SuperAdminStatus"));
 const SejaParceiro = lazy(() => import("./pages/SejaParceiro"));
 const CatalogoPiscinas = lazy(() => import("./pages/CatalogoPiscinas"));
 const RelatorioCRM = lazy(() => import("./pages/RelatorioCRM"));
+const PublicReview = lazy(() => import("./pages/PublicReview"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -222,6 +223,9 @@ function AppRouteTree() {
 
       {/* Public proposal page - NO footer, NO auth */}
       <Route path="/proposta/:token" element={<PublicProposal />} />
+
+      {/* Public review page - NO footer, NO auth */}
+      <Route path="/avaliar/:token" element={<PublicReview />} />
 
       {/* Franchise dynamic landing - NO footer (quiz flow) */}
       <Route path="/:slug" element={<FranchiseLanding />} />
