@@ -1,6 +1,9 @@
 import type { LeadRow } from '@/lib/lead-constants';
 
-export type LeadWithQuiz = LeadRow & { respostas_questionario?: Record<string, string> | null };
+export type LeadWithQuiz = LeadRow & {
+  respostas_questionario?: Record<string, string> | null;
+  valor_venda?: number | null;
+};
 
 export const COLUMNS = ['novo', 'contatado', 'em_negociacao', 'vendido', 'perdido'] as const;
 
@@ -10,7 +13,16 @@ const BUDGET_RANGES: Record<string, [number, number]> = {
   'ate-18': [5000, 18000],
 };
 
-export function estimateLeadValue(respostas: Record<string, string> | null): number {
+/**
+ * Returns the lead's value. Prefers real sale value (valor_venda) once concrete
+ * data is available (closed sale or accepted proposal); otherwise falls back to
+ * the estimate based on the budget question.
+ */
+export function estimateLeadValue(
+  respostas: Record<string, string> | null,
+  valorVenda?: number | null,
+): number {
+  if (typeof valorVenda === 'number' && valorVenda > 0) return valorVenda;
   if (!respostas?.orcamento) return 15000;
   const range = BUDGET_RANGES[respostas.orcamento];
   if (!range) return 15000;
