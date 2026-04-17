@@ -119,6 +119,13 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
     return classifyLead(Object.keys(respostas).length > 0 ? respostas : null, null);
   }, [orcamento, intencao, espaco, moradia, tempOverride]);
 
+  const filteredCities = useMemo(() => {
+    if (!cidade || cidade.length < 2) return [];
+    const q = cidade.toLowerCase();
+    if (cidades.some((c) => c.nome.toLowerCase() === q)) return [];
+    return cidades.filter((c) => c.nome.toLowerCase().includes(q)).slice(0, 6);
+  }, [cidade]);
+
   const detailsFilledCount = [
     modelo, orcamento, intencao, espaco, moradia, observacoes,
     photoFiles.length > 0 ? 'photos' : '',
