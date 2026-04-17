@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MessageCircle, Phone, Mail, MapPin, Droplets, Camera, ClipboardList, Settings2, X, ChevronDown, Package, FileText, HelpCircle, Plus, TrendingUp } from 'lucide-react';
+import { MessageCircle, Phone, Mail, MapPin, Droplets, Camera, ClipboardList, ClipboardCheck, Settings2, X, ChevronDown, Package, FileText, HelpCircle, Plus, TrendingUp } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { BackButton } from '@/components/BackButton';
@@ -29,6 +29,7 @@ import { LeadLinkedProposals } from '@/components/lead/LeadLinkedProposals';
 import { WhatsAppTemplates } from '@/components/lead/WhatsAppTemplates';
 import { LeadTagsSection } from '@/components/lead/LeadTagsSection';
 import { PostSaleSection } from '@/components/lead/PostSaleSection';
+import { TechnicalVisitSection } from '@/components/lead/TechnicalVisitSection';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
@@ -445,8 +446,22 @@ export default function LeadDetail() {
     ? Object.entries(lead.respostas_questionario).filter(([key]) => questionLabels[key])
     : [];
 
+  const { data: techVisit } = useQuery({
+    queryKey: ['technical-visit-status', lead.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('technical_visits' as any)
+        .select('status')
+        .eq('lead_id', lead.id)
+        .maybeSingle();
+      return data as { status?: string } | null;
+    },
+  });
+  const visitConcluded = techVisit?.status === 'concluida';
+
   const tabs = [
     { value: 'dados', icon: HelpCircle, label: 'Dados' },
+    { value: 'visita', icon: ClipboardCheck, label: 'Visita Técnica', dot: visitConcluded },
     { value: 'proposta', icon: FileText, label: 'Proposta' },
     { value: 'conversa', icon: MessageCircle, label: 'Conversa' },
     ...(quizEntriesEarly.length > 0 ? [{ value: 'quiz', icon: ClipboardList, label: 'Quiz' }] : []),
@@ -710,10 +725,13 @@ export default function LeadDetail() {
                   <TabsTrigger
                     key={tab.value}
                     value={tab.value}
-                    className="flex items-center gap-1.5 px-4 py-3 text-xs font-medium rounded-none border-b-2 text-muted-foreground border-transparent data-[state=active]:text-primary data-[state=active]:border-primary hover:text-foreground transition-colors bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                    className="flex items-center gap-1.5 px-4 py-3 text-xs font-medium rounded-none border-b-2 text-muted-foreground border-transparent data-[state=active]:text-primary data-[state=active]:border-primary hover:text-foreground transition-colors bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none relative"
                   >
                     <Icon className="w-3.5 h-3.5" />
                     {tab.label}
+                    {(tab as any).dot && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-success ml-0.5" aria-hidden />
+                    )}
                   </TabsTrigger>
                 );
               })}
@@ -810,6 +828,14 @@ export default function LeadDetail() {
                   />
                   <p className="text-[10px] text-muted-foreground mt-1">Salva automaticamente ao sair do campo.</p>
                 </div>
+              </motion.div>
+            </TabsContent>
+
+            <TabsContent value="visita" className="mt-0">
+              <motion.div key="visita" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="p-4">
+                {(franchiseId || lead.franquia_id) && (
+                  <TechnicalVisitSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
+                )}
               </motion.div>
             </TabsContent>
 
