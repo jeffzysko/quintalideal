@@ -217,22 +217,6 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
   });
 
   const completedCount = checklist.filter(c => c.completed).length;
-  const progress = checklist.length > 0 ? (completedCount / checklist.length) * 100 : 0;
-
-  const toggleChecklistItem = async (item: ChecklistItem) => {
-    const newVal = !item.completed;
-    const { error } = await supabase
-      .from('post_sale_checklist')
-      .update({
-        completed: newVal,
-        completed_at: newVal ? new Date().toISOString() : null,
-      })
-      .eq('id', item.id);
-    if (error) { toast.error('Erro ao atualizar etapa.'); return; }
-    queryClient.invalidateQueries({ queryKey: ['post-sale-checklist', project.id] });
-    const allDone = checklist.every(c => c.id === item.id ? newVal : c.completed);
-    if (allDone && newVal) toast.success('Todas etapas concluídas! Lembre de atualizar o status para Concluído.');
-  };
 
   const saveProject = async () => {
     setSaving(true);
