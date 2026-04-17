@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent } from '@/components/ui/card';
@@ -48,10 +48,11 @@ export function PostSaleChecklistManager({ projectId, franchiseId, checklist }: 
   const [saveTplOpen, setSaveTplOpen] = useState(false);
   const [tplName, setTplName] = useState('');
 
-  // Sync local state when query refreshes
-  if (!editing && items !== checklist && items.length !== checklist.length) {
-    setItems(checklist);
-  }
+  useEffect(() => {
+    if (!editing) {
+      setItems(checklist);
+    }
+  }, [checklist, editing]);
 
   const { data: templates = [] } = useQuery({
     queryKey: ['post-sale-checklist-templates', franchiseId],
@@ -379,7 +380,7 @@ export function PostSaleChecklistManager({ projectId, franchiseId, checklist }: 
           ))}
 
           {editing && (
-            <div className="flex gap-2 pt-1">
+            <div className="flex flex-col sm:flex-row gap-2 pt-1">
               <Input
                 value={newLabel}
                 onChange={e => setNewLabel(e.target.value)}
@@ -388,7 +389,7 @@ export function PostSaleChecklistManager({ projectId, franchiseId, checklist }: 
                 className="h-9 text-sm"
                 maxLength={120}
               />
-              <Button size="sm" onClick={addItem} disabled={!newLabel.trim()} className="gap-1 shrink-0">
+              <Button size="sm" onClick={addItem} disabled={!newLabel.trim()} className="gap-1 shrink-0 w-full sm:w-auto">
                 <Plus className="w-3.5 h-3.5" />
                 Adicionar
               </Button>

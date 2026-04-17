@@ -421,7 +421,7 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
             <h3 className="text-sm font-semibold">Garantia</h3>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Prazo de garantia</label>
               <Select value={warrantyMonths?.toString() || ''} onValueChange={v => setWarrantyMonths(Number(v))}>
@@ -437,16 +437,14 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              {warrantyExpiry && (
-                <div className="flex flex-col justify-center h-full pt-5">
-                  <p className="text-xs text-muted-foreground">Vence em</p>
-                  <p className="text-sm font-semibold text-foreground">
-                    {format(warrantyExpiry, "MM/yyyy", { locale: ptBR })}
-                  </p>
-                </div>
-              )}
-            </div>
+            {warrantyExpiry && (
+              <div className="rounded-xl border border-border/40 bg-muted/30 px-3 py-2 sm:py-0 sm:border-0 sm:bg-transparent sm:px-0 sm:flex sm:flex-col sm:justify-center sm:h-full sm:pt-5">
+                <p className="text-xs text-muted-foreground">Vence em</p>
+                <p className="text-sm font-semibold text-foreground">
+                  {format(warrantyExpiry, "MM/yyyy", { locale: ptBR })}
+                </p>
+              </div>
+            )}
           </div>
 
           <div>
@@ -483,7 +481,7 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
             Registre a piscina instalada — essas fotos podem ser usadas como portfólio e prova social.
           </p>
 
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
             {finalPhotos.map((url, i) => (
               <div key={i} className="relative rounded-xl overflow-hidden aspect-square border border-border/40 group">
                 <img src={url} alt={`Resultado ${i + 1}`} className="w-full h-full object-cover" />
