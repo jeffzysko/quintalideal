@@ -408,7 +408,7 @@ export default function LeadDetail() {
     );
   }
 
-  const statusInfo = statusConfig[lead.status_lead] || statusConfig.novo;
+  void statusConfig;
   const isAdminRoute = location.pathname.startsWith('/admin');
   const leadsUrl = isAdminRoute ? '/admin?tab=leads' : '/franquia';
   const returnTo = ((location.state as { returnTo?: string } | null)?.returnTo) || leadsUrl;
