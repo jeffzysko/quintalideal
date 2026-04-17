@@ -64,7 +64,7 @@ export function PostSaleDashboard({ franchiseId, basePath = '/painel/lead' }: Po
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
   const activeProjects = projects.filter(p => p.status !== 'concluido');
-  const agendados = projects.filter(p => p.status === 'agendado').length;
+  
   const completedThisMonth = projects.filter(p => {
     if (p.status !== 'concluido') return false;
     const d = p.completion_date ? new Date(p.completion_date) : new Date(p.updated_at);
