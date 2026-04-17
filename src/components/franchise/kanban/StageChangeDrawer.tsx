@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { STATUS_LABELS, STATUS_CHART_COLORS } from '@/lib/lead-constants';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { COLUMNS } from './types';
-import { ArrowLeft, HelpCircle } from 'lucide-react';
+import { ArrowLeft, HelpCircle, DollarSign, PartyPopper } from 'lucide-react';
 
 const LOSS_REASONS = [
   { key: 'preco_alto', emoji: '💰', label: 'Preço alto' },
