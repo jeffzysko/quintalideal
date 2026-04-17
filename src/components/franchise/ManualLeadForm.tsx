@@ -391,6 +391,12 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
             </div>
           </div>
 
+  const filteredCities = useMemo(() => {
+    if (!cidade || cidade.length < 2) return [];
+    const q = cidade.toLowerCase();
+    if (cidades.some((c) => c.nome.toLowerCase() === q)) return [];
+    return cidades.filter((c) => c.nome.toLowerCase().includes(q)).slice(0, 6);
+  }, [cidade]);
 
           <div className="space-y-2">
             <Label className="text-sm font-semibold">De onde veio este lead?</Label>
