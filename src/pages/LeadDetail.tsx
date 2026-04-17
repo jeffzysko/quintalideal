@@ -249,6 +249,12 @@ export default function LeadDetail() {
     }
   }, [lead?.id]);
 
+  const parsedValorVenda = (() => {
+    const cleaned = valorVendaInput.replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '');
+    const n = parseFloat(cleaned);
+    return isNaN(n) ? 0 : n;
+  })();
+
   const save = async () => {
     if (!lead) return;
     if (!editNome.trim()) { toast.error('Nome é obrigatório'); return; }
@@ -256,6 +262,10 @@ export default function LeadDetail() {
     if (editTelefone.trim()) {
       const digits = editTelefone.replace(/\D/g, '');
       if (!isValidBRPhone(digits)) { toast.error('Telefone inválido (ex: 11999998888)'); return; }
+    }
+    if (status === 'vendido' && parsedValorVenda <= 0) {
+      toast.error('Informe o valor total da venda para registrar o fechamento.');
+      return;
     }
     setSaving(true);
 
@@ -303,6 +313,7 @@ export default function LeadDetail() {
         status_lead: status as any,
         observacoes,
         modelo_vendido: status === 'vendido' && modeloVendido ? modeloVendido : null,
+        valor_venda: status === 'vendido' ? parsedValorVenda : null,
         respostas_questionario: Object.keys(updatedRespostas).length > 0 ? updatedRespostas : null,
       })
       .eq('id', lead.id);
