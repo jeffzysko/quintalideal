@@ -29,6 +29,7 @@ import { LeadLinkedProposals } from '@/components/lead/LeadLinkedProposals';
 import { WhatsAppTemplates } from '@/components/lead/WhatsAppTemplates';
 import { LeadTagsSection } from '@/components/lead/LeadTagsSection';
 import { PostSaleSection } from '@/components/lead/PostSaleSection';
+import { TechnicalVisitSection } from '@/components/lead/TechnicalVisitSection';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
@@ -445,8 +446,22 @@ export default function LeadDetail() {
     ? Object.entries(lead.respostas_questionario).filter(([key]) => questionLabels[key])
     : [];
 
+  const { data: techVisit } = useQuery({
+    queryKey: ['technical-visit-status', lead.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('technical_visits' as any)
+        .select('status')
+        .eq('lead_id', lead.id)
+        .maybeSingle();
+      return data as { status?: string } | null;
+    },
+  });
+  const visitConcluded = techVisit?.status === 'concluida';
+
   const tabs = [
     { value: 'dados', icon: HelpCircle, label: 'Dados' },
+    { value: 'visita', icon: ClipboardCheck, label: 'Visita Técnica', dot: visitConcluded },
     { value: 'proposta', icon: FileText, label: 'Proposta' },
     { value: 'conversa', icon: MessageCircle, label: 'Conversa' },
     ...(quizEntriesEarly.length > 0 ? [{ value: 'quiz', icon: ClipboardList, label: 'Quiz' }] : []),
