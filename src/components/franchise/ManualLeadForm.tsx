@@ -363,7 +363,33 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
             )}
           </div>
 
-          {/* ORIGEM */}
+          {/* EMAIL + CIDADE */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="ml-email" className="text-sm font-semibold">E-mail</Label>
+              <Input
+                id="ml-email"
+                type="email"
+                placeholder="email@exemplo.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={cn('h-12 text-base rounded-xl', errors.email && 'border-destructive')}
+              />
+              {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="ml-cidade" className="text-sm font-semibold">Cidade</Label>
+              <Input
+                id="ml-cidade"
+                placeholder="Cidade"
+                value={cidade}
+                onChange={(e) => setCidade(e.target.value)}
+                className="h-12 text-base rounded-xl"
+              />
+            </div>
+          </div>
+
+
           <div className="space-y-2">
             <Label className="text-sm font-semibold">De onde veio este lead?</Label>
             <div className="flex flex-wrap gap-2">
