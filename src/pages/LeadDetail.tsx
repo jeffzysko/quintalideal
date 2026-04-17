@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
-import { Badge } from '@/components/ui/badge';
+
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -479,12 +479,61 @@ export default function LeadDetail() {
             </div>
           </div>
 
+          {/* Controles rápidos: Status + Temperatura (clicáveis) */}
+          <div className="grid grid-cols-2 gap-2 mb-3">
+            <Select value={status} onValueChange={handleStatusChange}>
+              <SelectTrigger className={`h-auto py-2 px-3 border ${statusInfo.color} font-medium text-xs ${autoSaving ? 'opacity-70' : ''}`}>
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <span className="text-[10px] uppercase tracking-wider opacity-70 shrink-0">Status</span>
+                  <span className="truncate">{statusInfo.label}</span>
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(statusConfig).map(([val, cfg]) => (
+                  <SelectItem key={val} value={val}>{cfg.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={tempOverride || '_auto'} onValueChange={(v) => handleTempChange(v === '_auto' ? '' : v as LeadTemperature)}>
+              <SelectTrigger className="h-auto py-2 px-3 border bg-muted/50 font-medium text-xs">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <span className="text-[10px] uppercase tracking-wider opacity-70 shrink-0">Temp.</span>
+                  <span className="truncate">{temp.emoji} {temp.label}</span>
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="_auto">🤖 Automático</SelectItem>
+                <SelectItem value="quente">🔥 Quente</SelectItem>
+                <SelectItem value="morno">☀️ Morno</SelectItem>
+                <SelectItem value="frio">❄️ Frio</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Responsável + Score */}
           <div className="flex items-center gap-2 mb-4 flex-wrap">
-            <Badge className={`${statusInfo.color} border font-medium`}>
-              {statusInfo.label}
-            </Badge>
-            <span className="text-base">{temp.emoji}</span>
-            <span className="text-xs text-muted-foreground font-medium">Lead {temp.label}</span>
+            <Select
+              value={assignedTo || '_none'}
+              onValueChange={async (val) => {
+                const newVal = val === '_none' ? null : val;
+                setAssignedTo(newVal);
+                await supabase.from('leads').update({ assigned_to: newVal } as any).eq('id', lead.id);
+                queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
+                toast.success('Responsável atualizado');
+              }}
+            >
+              <SelectTrigger className="h-8 w-auto gap-1.5 px-2.5 text-xs bg-muted/50 border-border/50 rounded-full">
+                <span className="text-[10px] uppercase tracking-wider opacity-70">Resp.</span>
+                <SelectValue placeholder="Atribuir..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="_none">Sem responsável</SelectItem>
+                {franchiseUsers.map((u: any) => (
+                  <SelectItem key={u.user_id} value={u.user_id}>{u.full_name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {lead.pontuacao_quintal != null && (
               <div className="flex items-center gap-1.5 ml-auto">
                 <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
@@ -617,35 +666,58 @@ export default function LeadDetail() {
             </TabsContent>
 
             <TabsContent value="dados" className="mt-0">
-              <motion.div key="dados" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="p-4 space-y-2">
-                <div className="flex items-center gap-2 mb-2">
-                  <HelpCircle className="w-4 h-4 text-primary" />
-                  <h2 className="text-sm font-semibold text-foreground">Dados pessoais</h2>
-                </div>
-                {[
-                  { label: 'Nome', value: lead.nome, icon: '👤' },
-                  { label: 'Telefone', value: lead.telefone, icon: '📱' },
-                  { label: 'E-mail', value: lead.email, icon: '✉️' },
-                  { label: 'Cidade', value: lead.cidade, icon: '📍' },
-                ].map((item) => (
-                  <div key={item.label} className="flex items-center justify-between gap-2 py-2.5 px-3 rounded-xl bg-muted/40">
-                    <span className="text-xs text-muted-foreground flex items-center gap-2">
-                      <span className="text-base">{item.icon}</span>
-                      {item.label}
-                    </span>
-                    <span className="text-xs font-semibold text-foreground text-right break-all">
-                      {item.value || <span className="text-muted-foreground/60 italic font-normal">Não informado</span>}
-                    </span>
+              <motion.div key="dados" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="p-4 space-y-4">
+                <div>
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <div className="flex items-center gap-2">
+                      <HelpCircle className="w-4 h-4 text-primary" />
+                      <h2 className="text-sm font-semibold text-foreground">Dados pessoais</h2>
+                    </div>
+                    <Button variant="ghost" size="sm" className="h-7 px-2 text-xs gap-1" onClick={() => setManageOpen(true)}>
+                      <Settings2 className="w-3 h-3" /> Editar
+                    </Button>
                   </div>
-                ))}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="w-full mt-3 gap-2 rounded-xl"
-                  onClick={() => setManageOpen(true)}
-                >
-                  <Settings2 className="w-3.5 h-3.5" /> Editar dados
-                </Button>
+                  <div className="space-y-2">
+                    {[
+                      { label: 'Nome', value: lead.nome, icon: '👤' },
+                      { label: 'Telefone', value: lead.telefone, icon: '📱' },
+                      { label: 'E-mail', value: lead.email, icon: '✉️' },
+                      { label: 'Cidade', value: lead.cidade, icon: '📍' },
+                    ].map((item) => (
+                      <div key={item.label} className="flex items-center justify-between gap-2 py-2.5 px-3 rounded-xl bg-muted/40">
+                        <span className="text-xs text-muted-foreground flex items-center gap-2">
+                          <span className="text-base">{item.icon}</span>
+                          {item.label}
+                        </span>
+                        <span className="text-xs font-semibold text-foreground text-right break-all">
+                          {item.value || <span className="text-muted-foreground/60 italic font-normal">Não informado</span>}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-semibold text-foreground mb-2 block">Observações internas</label>
+                  <Textarea
+                    value={observacoes}
+                    onChange={e => setObservacoes(e.target.value)}
+                    onBlur={async () => {
+                      if (observacoes === (lead.observacoes || '')) return;
+                      const { error } = await supabase.from('leads').update({ observacoes }).eq('id', lead.id);
+                      if (error) toast.error('Erro ao salvar observações');
+                      else {
+                        toast.success('Observações salvas');
+                        queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
+                      }
+                    }}
+                    rows={4}
+                    placeholder="Adicionar observações sobre este lead..."
+                    maxLength={1000}
+                    className="bg-muted/40 resize-none text-sm"
+                  />
+                  <p className="text-[10px] text-muted-foreground mt-1">Salva automaticamente ao sair do campo.</p>
+                </div>
               </motion.div>
             </TabsContent>
 
