@@ -118,7 +118,7 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
   }, [orcamento, intencao, espaco, moradia, tempOverride]);
 
   const detailsFilledCount = [
-    email, cidade, modelo, orcamento, intencao, espaco, moradia, observacoes,
+    modelo, orcamento, intencao, espaco, moradia, observacoes,
     photoFiles.length > 0 ? 'photos' : '',
   ].filter(Boolean).length;
 
