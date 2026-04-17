@@ -994,29 +994,52 @@ export default function LeadDetail() {
             </div>
 
             {status === 'vendido' && (
-              <div>
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  Modelo Vendido
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <HelpCircle className="w-3.5 h-3.5 text-muted-foreground/60 cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs max-w-[200px]">O modelo confirmado na venda</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </label>
-                <Select value={modeloVendido} onValueChange={setModeloVendido}>
-                  <SelectTrigger className="bg-muted/50"><SelectValue placeholder="Selecione" /></SelectTrigger>
-                  <SelectContent>
-                    {poolModels.map(m => (
-                      <SelectItem key={m} value={m}>{m}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    Valor da venda <span className="text-destructive">*</span>
+                  </label>
+                  <Input
+                    type="text"
+                    inputMode="decimal"
+                    value={valorVendaInput}
+                    onChange={e => setValorVendaInput(e.target.value)}
+                    placeholder="Ex: 35.000,00"
+                    className="bg-muted/50"
+                  />
+                  {parsedValorVenda > 0 && (
+                    <p className="text-[11px] text-emerald-600 mt-1 font-medium">
+                      {parsedValorVenda.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                    </p>
+                  )}
+                  <p className="text-[10px] text-muted-foreground mt-1">
+                    Substitui a estimativa do lead. Atualizado automaticamente quando uma proposta vinculada é aceita.
+                  </p>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    Modelo Vendido
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <HelpCircle className="w-3.5 h-3.5 text-muted-foreground/60 cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs max-w-[200px]">O modelo confirmado na venda</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </label>
+                  <Select value={modeloVendido} onValueChange={setModeloVendido}>
+                    <SelectTrigger className="bg-muted/50"><SelectValue placeholder="Selecione" /></SelectTrigger>
+                    <SelectContent>
+                      {poolModels.map(m => (
+                        <SelectItem key={m} value={m}>{m}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </>
             )}
 
             <div>
