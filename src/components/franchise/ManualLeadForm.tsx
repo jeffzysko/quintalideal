@@ -315,7 +315,7 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
                 Cadastre um cliente da loja, ligação ou indicação
               </p>
             </div>
-            <div className={cn('flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border shrink-0', preview.bgColor, preview.color)}>
+            <div className={cn('flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold border shrink-0 mr-8', preview.bgColor, preview.color)}>
               <span>{preview.emoji}</span>
               <span>{preview.label}</span>
             </div>
