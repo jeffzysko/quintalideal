@@ -447,22 +447,9 @@ export default function LeadDetail() {
     ? Object.entries(lead.respostas_questionario).filter(([key]) => questionLabels[key])
     : [];
 
-  const { data: techVisit } = useQuery({
-    queryKey: ['technical-visit-status', lead.id],
-    queryFn: async () => {
-      const { data } = await supabase
-        .from('technical_visits' as any)
-        .select('status')
-        .eq('lead_id', lead.id)
-        .maybeSingle();
-      return data as { status?: string } | null;
-    },
-  });
-  const visitConcluded = techVisit?.status === 'concluida';
-
   const tabs = [
     { value: 'dados', icon: HelpCircle, label: 'Dados' },
-    { value: 'visita', icon: ClipboardCheck, label: 'Visita Técnica', dot: visitConcluded },
+    { value: 'visita', icon: ClipboardCheck, label: 'Visita Técnica' },
     { value: 'proposta', icon: FileText, label: 'Proposta' },
     { value: 'conversa', icon: MessageCircle, label: 'Conversa' },
     ...(quizEntriesEarly.length > 0 ? [{ value: 'quiz', icon: ClipboardList, label: 'Quiz' }] : []),
@@ -834,8 +821,11 @@ export default function LeadDetail() {
 
             <TabsContent value="visita" className="mt-0">
               <motion.div key="visita" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="p-4">
-                {(franchiseId || lead.franquia_id) ? (
-                  <TechnicalVisitSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
+                {(lead?.franquia_id ?? franchiseId ?? '') ? (
+                  <TechnicalVisitSection
+                    leadId={lead?.id ?? ''}
+                    franchiseId={lead?.franquia_id ?? franchiseId ?? ''}
+                  />
                 ) : (
                   <div className="p-4 text-sm text-muted-foreground">Franquia não vinculada a este lead.</div>
                 )}
