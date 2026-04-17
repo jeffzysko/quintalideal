@@ -831,6 +831,39 @@ export type Database = {
           },
         ]
       }
+      post_sale_checklist_templates: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          franchise_id: string
+          id: string
+          is_default: boolean
+          items: Json
+          name: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          franchise_id: string
+          id?: string
+          is_default?: boolean
+          items?: Json
+          name: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          franchise_id?: string
+          id?: string
+          is_default?: boolean
+          items?: Json
+          name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       post_sale_projects: {
         Row: {
           completion_date: string | null

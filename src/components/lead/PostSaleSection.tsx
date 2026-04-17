@@ -11,9 +11,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import {
   CalendarIcon, Star, Save, Plus, Wrench, CheckCircle2, CalendarDays, HelpCircle,
-  ListChecks, Check, Image as ImageIcon, Camera, ShieldCheck, X, Loader2,
+  Image as ImageIcon, Camera, ShieldCheck, X, Loader2,
   Link2, Copy, Users, MessageCircle,
 } from 'lucide-react';
+import { PostSaleChecklistManager } from './PostSaleChecklistManager';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { format, addMonths } from 'date-fns';
@@ -68,8 +69,18 @@ export function PostSaleSection({ leadId, franchiseId }: PostSaleSectionProps) {
         .single();
       if (error) throw error;
 
+      // Try to load a default template for this franchise
+      const { data: tpl } = await supabase
+        .from('post_sale_checklist_templates')
+        .select('items')
+        .eq('franchise_id', franchiseId)
+        .eq('is_default', true)
+        .maybeSingle();
+
+      const labels: string[] = (tpl?.items as string[] | undefined) ?? DEFAULT_CHECKLIST;
+
       await supabase.from('post_sale_checklist').insert(
-        DEFAULT_CHECKLIST.map((label, position) => ({
+        labels.map((label, position) => ({
           project_id: proj.id,
           label,
           position,
@@ -205,23 +216,7 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
     },
   });
 
-  const completedCount = checklist.filter(c => c.completed).length;
-  const progress = checklist.length > 0 ? (completedCount / checklist.length) * 100 : 0;
-
-  const toggleChecklistItem = async (item: ChecklistItem) => {
-    const newVal = !item.completed;
-    const { error } = await supabase
-      .from('post_sale_checklist')
-      .update({
-        completed: newVal,
-        completed_at: newVal ? new Date().toISOString() : null,
-      })
-      .eq('id', item.id);
-    if (error) { toast.error('Erro ao atualizar etapa.'); return; }
-    queryClient.invalidateQueries({ queryKey: ['post-sale-checklist', project.id] });
-    const allDone = checklist.every(c => c.id === item.id ? newVal : c.completed);
-    if (allDone && newVal) toast.success('Todas etapas concluídas! Lembre de atualizar o status para Concluído.');
-  };
+  
 
   const saveProject = async () => {
     setSaving(true);
@@ -470,62 +465,11 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
       </Card>
 
       {/* Installation Checklist */}
-      <Card className="glass-card">
-        <CardContent className="p-4 space-y-3">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <ListChecks className="w-4 h-4 text-primary" />
-              <h3 className="text-sm font-semibold">Etapas da Instalação</h3>
-            </div>
-            <span className="text-xs font-semibold text-muted-foreground">
-              {completedCount}/{checklist.length}
-            </span>
-          </div>
-
-          <div className="h-1.5 bg-muted rounded-full overflow-hidden">
-            <div
-              className="h-full bg-emerald-500 rounded-full transition-all duration-500"
-              style={{ width: `${progress}%` }}
-            />
-          </div>
-
-          <div className="space-y-2">
-            {checklist.map(item => (
-              <div
-                key={item.id}
-                className={cn(
-                  "flex items-center gap-3 p-2.5 rounded-xl border transition-all cursor-pointer",
-                  item.completed
-                    ? "bg-emerald-50 dark:bg-emerald-950/20 border-emerald-200 dark:border-emerald-800"
-                    : "bg-muted/30 border-border/40 hover:bg-muted/50"
-                )}
-                onClick={() => toggleChecklistItem(item)}
-              >
-                <div className={cn(
-                  "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all",
-                  item.completed ? "bg-emerald-500 border-emerald-500" : "border-muted-foreground/30"
-                )}>
-                  {item.completed && <Check className="w-3 h-3 text-white" />}
-                </div>
-                <span className={cn(
-                  "text-sm flex-1",
-                  item.completed ? "line-through text-muted-foreground" : "text-foreground"
-                )}>
-                  {item.label}
-                </span>
-                {item.completed && item.completed_at && (
-                  <span className="text-[10px] text-muted-foreground shrink-0">
-                    {format(new Date(item.completed_at), "dd/MM", { locale: ptBR })}
-                  </span>
-                )}
-              </div>
-            ))}
-            {checklist.length === 0 && (
-              <p className="text-xs text-muted-foreground text-center py-3">Nenhuma etapa configurada.</p>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+      <PostSaleChecklistManager
+        projectId={project.id}
+        franchiseId={project.franchise_id}
+        checklist={checklist}
+      />
 
       {/* Final result photos */}
       <Card className="glass-card">
