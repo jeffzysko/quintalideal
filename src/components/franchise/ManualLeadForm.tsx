@@ -11,8 +11,9 @@ import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import { UserPlus, Loader2, ChevronDown, AlertTriangle, Camera, Plus, X } from 'lucide-react';
+import { UserPlus, Loader2, ChevronDown, AlertTriangle, Camera, Plus, X, MapPin, Check } from 'lucide-react';
 import { isValidBRPhone, isValidEmail, formatPhoneBR, unformatPhone } from '@/lib/validation';
+import { cidades } from '@/lib/cities';
 import { classifyLead, LeadTemperature } from '@/lib/leadScoring';
 import { cn } from '@/lib/utils';
 
