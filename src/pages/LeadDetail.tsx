@@ -831,6 +831,14 @@ export default function LeadDetail() {
               </motion.div>
             </TabsContent>
 
+            <TabsContent value="visita" className="mt-0">
+              <motion.div key="visita" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="p-4">
+                {(franchiseId || lead.franquia_id) && (
+                  <TechnicalVisitSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
+                )}
+              </motion.div>
+            </TabsContent>
+
             {quizEntriesEarly.length > 0 && (
               <TabsContent value="quiz" className="mt-0">
                 <motion.div key="quiz" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="p-4 space-y-2">
