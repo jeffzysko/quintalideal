@@ -479,12 +479,61 @@ export default function LeadDetail() {
             </div>
           </div>
 
+          {/* Controles rápidos: Status + Temperatura (clicáveis) */}
+          <div className="grid grid-cols-2 gap-2 mb-3">
+            <Select value={status} onValueChange={handleStatusChange}>
+              <SelectTrigger className={`h-auto py-2 px-3 border ${statusInfo.color} font-medium text-xs ${autoSaving ? 'opacity-70' : ''}`}>
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <span className="text-[10px] uppercase tracking-wider opacity-70 shrink-0">Status</span>
+                  <span className="truncate">{statusInfo.label}</span>
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                {Object.entries(statusConfig).map(([val, cfg]) => (
+                  <SelectItem key={val} value={val}>{cfg.label}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select value={tempOverride || '_auto'} onValueChange={(v) => handleTempChange(v === '_auto' ? '' : v as LeadTemperature)}>
+              <SelectTrigger className="h-auto py-2 px-3 border bg-muted/50 font-medium text-xs">
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <span className="text-[10px] uppercase tracking-wider opacity-70 shrink-0">Temp.</span>
+                  <span className="truncate">{temp.emoji} {temp.label}</span>
+                </div>
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="_auto">🤖 Automático</SelectItem>
+                <SelectItem value="quente">🔥 Quente</SelectItem>
+                <SelectItem value="morno">☀️ Morno</SelectItem>
+                <SelectItem value="frio">❄️ Frio</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Responsável + Score */}
           <div className="flex items-center gap-2 mb-4 flex-wrap">
-            <Badge className={`${statusInfo.color} border font-medium`}>
-              {statusInfo.label}
-            </Badge>
-            <span className="text-base">{temp.emoji}</span>
-            <span className="text-xs text-muted-foreground font-medium">Lead {temp.label}</span>
+            <Select
+              value={assignedTo || '_none'}
+              onValueChange={async (val) => {
+                const newVal = val === '_none' ? null : val;
+                setAssignedTo(newVal);
+                await supabase.from('leads').update({ assigned_to: newVal } as any).eq('id', lead.id);
+                queryClient.invalidateQueries({ queryKey: ['lead-detail', id] });
+                toast.success('Responsável atualizado');
+              }}
+            >
+              <SelectTrigger className="h-8 w-auto gap-1.5 px-2.5 text-xs bg-muted/50 border-border/50 rounded-full">
+                <span className="text-[10px] uppercase tracking-wider opacity-70">Resp.</span>
+                <SelectValue placeholder="Atribuir..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="_none">Sem responsável</SelectItem>
+                {franchiseUsers.map((u: any) => (
+                  <SelectItem key={u.user_id} value={u.user_id}>{u.full_name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
             {lead.pontuacao_quintal != null && (
               <div className="flex items-center gap-1.5 ml-auto">
                 <div className="w-16 h-1.5 bg-muted rounded-full overflow-hidden">
