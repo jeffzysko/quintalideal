@@ -84,6 +84,7 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
   const [telefone, setTelefone] = useState('');
   const [email, setEmail] = useState('');
   const [cidade, setCidade] = useState('');
+  const [cityFocused, setCityFocused] = useState(false);
   const [modelo, setModelo] = useState('');
   const [observacoes, setObservacoes] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
