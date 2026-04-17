@@ -1,37 +1,74 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
+import { supabase } from '@/integrations/supabase/client';
+import { Star, CheckCircle2, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Star } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
+
+interface FranchiseInfo {
+  nome_franquia: string;
+  slug_url: string;
+  logo_url: string | null;
+}
 
 export default function PublicReview() {
   const { token } = useParams<{ token: string }>();
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState('');
-  const [wouldRecommend, setWouldRecommend] = useState<boolean | null>(null);
-  const [submitted, setSubmitted] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
-  const [alreadyDone, setAlreadyDone] = useState(false);
+  const [franchise, setFranchise] = useState<FranchiseInfo | null>(null);
   const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [alreadySubmitted, setAlreadySubmitted] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [hoverRating, setHoverRating] = useState(0);
+  const [wouldRecommend, setWouldRecommend] = useState<boolean | null>(null);
+  const [comment, setComment] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     if (!token) return;
     (async () => {
-      const { data } = await supabase
+      setLoading(true);
+      const { data: review } = await supabase
         .from('post_sale_reviews')
-        .select('submitted_at')
+        .select('submitted_at, project_id')
         .eq('token', token)
         .maybeSingle();
-      if (data?.submitted_at) setAlreadyDone(true);
+
+      if (!review) {
+        setNotFound(true);
+        setLoading(false);
+        return;
+      }
+
+      if (review.submitted_at) {
+        setAlreadySubmitted(true);
+      }
+
+      const { data: project } = await supabase
+        .from('post_sale_projects')
+        .select('franchise_id')
+        .eq('id', review.project_id)
+        .maybeSingle();
+
+      if (project?.franchise_id) {
+        const { data: f } = await supabase
+          .from('franchises')
+          .select('nome_franquia, slug_url, logo_url')
+          .eq('id', project.franchise_id)
+          .maybeSingle();
+        if (f) setFranchise(f as FranchiseInfo);
+      }
+
       setLoading(false);
     })();
   }, [token]);
 
   const handleSubmit = async () => {
-    if (!rating) { toast.error('Selecione uma avaliação'); return; }
+    if (!rating) {
+      toast.error('Selecione uma avaliação');
+      return;
+    }
     setSubmitting(true);
     const { error } = await supabase.rpc('submit_post_sale_review', {
       _token: token!,
@@ -40,118 +77,192 @@ export default function PublicReview() {
       _recommend: wouldRecommend,
     });
     setSubmitting(false);
-    if (error) { toast.error('Erro ao enviar avaliação.'); return; }
+    if (error) {
+      toast.error('Erro ao enviar avaliação.');
+      return;
+    }
     setSubmitted(true);
+  };
+
+  const ratingLabels: Record<number, string> = {
+    1: 'Muito insatisfeito',
+    2: 'Insatisfeito',
+    3: 'Neutro',
+    4: 'Satisfeito',
+    5: 'Muito satisfeito!',
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-primary border-t-transparent rounded-full" />
+      <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex items-center justify-center">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-primary" />
       </div>
     );
   }
 
-  if (alreadyDone || submitted) {
+  if (notFound) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center p-6 text-center bg-background">
-        <div className="text-6xl mb-4">{submitted ? '🎉' : '✅'}</div>
-        <h1 className="text-xl font-bold mb-2 text-foreground">
-          {submitted ? 'Obrigado pela avaliação!' : 'Avaliação já enviada'}
-        </h1>
-        <p className="text-muted-foreground text-sm max-w-xs">
-          {submitted
-            ? 'Sua opinião é muito importante para continuarmos melhorando.'
-            : 'Esta avaliação já foi respondida. Obrigado!'}
-        </p>
-        {submitted && wouldRecommend && (
-          <div className="mt-6 p-4 bg-emerald-50 dark:bg-emerald-950/20 rounded-2xl border border-emerald-200 dark:border-emerald-800 max-w-xs">
-            <p className="text-sm text-emerald-700 dark:text-emerald-300 font-medium">
-              Conhece alguém que também gostaria de ter uma piscina? 🏊
-            </p>
-            <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1">
-              Compartilhe e ajude a realizar mais sonhos!
-            </p>
+      <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex items-center justify-center p-4">
+        <div className="text-center max-w-sm">
+          <p className="text-4xl mb-4">🔍</p>
+          <h2 className="text-xl font-semibold text-foreground mb-2">Link não encontrado</h2>
+          <p className="text-muted-foreground text-sm">Este link de avaliação não é válido ou expirou.</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (alreadySubmitted && !submitted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex items-center justify-center p-4">
+        <div className="text-center max-w-sm">
+          <CheckCircle2 className="h-14 w-14 text-success mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-foreground mb-2">Avaliação já enviada</h2>
+          <p className="text-muted-foreground text-sm">Você já avaliou esta instalação. Obrigado pelo feedback!</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (submitted) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex items-center justify-center p-4">
+        <div className="text-center max-w-sm space-y-5">
+          <CheckCircle2 className="h-16 w-16 text-success mx-auto" />
+          <div>
+            <h2 className="text-2xl font-bold text-foreground mb-1">Obrigado pelo feedback!</h2>
+            <p className="text-muted-foreground text-sm">Sua avaliação foi enviada com sucesso.</p>
           </div>
-        )}
-        <img src="/lettering-quintal-ideal.svg" alt="Quintal Ideal" className="h-8 mt-8 opacity-50" />
+          {rating >= 4 && franchise?.slug_url && (
+            <div className="bg-success/10 border border-success/20 rounded-2xl p-4 text-left space-y-3">
+              <p className="text-sm font-medium text-foreground">
+                🌟 Que ótimo! Você adorou o resultado. Tem alguém que também merece uma piscina?
+              </p>
+              <p className="text-xs text-muted-foreground">
+                Indique um amigo ou familiar e ajude quem você gosta a ter o resultado dos sonhos.
+              </p>
+              <Button
+                className="w-full gap-2"
+                onClick={() => {
+                  const msg = encodeURIComponent(
+                    `Oi! Acabei de instalar minha piscina com a ${franchise.nome_franquia} e amei o resultado. Você também pode ter a sua! Acesse: ${window.location.origin}/${franchise.slug_url}`
+                  );
+                  window.open(`https://wa.me/?text=${msg}`, '_blank');
+                }}
+              >
+                <MessageCircle className="h-4 w-4" />
+                Indicar pelo WhatsApp
+              </Button>
+            </div>
+          )}
+          <img src="/lettering-quintal-ideal.svg" alt="Quintal Ideal" className="h-7 mx-auto opacity-50 mt-4" />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      <div className="bg-primary/5 border-b border-primary/10 px-6 py-4 flex items-center gap-3">
-        <img src="/lettering-quintal-ideal.svg" alt="Quintal Ideal" className="h-7" />
-      </div>
-
-      <div className="flex-1 flex flex-col justify-center px-6 py-8 max-w-md mx-auto w-full space-y-8">
-        <div className="text-center">
-          <div className="text-5xl mb-3">🌊</div>
-          <h1 className="text-xl font-bold text-foreground">Como foi a sua experiência?</h1>
-          <p className="text-sm text-muted-foreground mt-1">Sua opinião nos ajuda a melhorar</p>
+    <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex items-center justify-center p-4">
+      <div className="w-full max-w-md space-y-6">
+        <div className="text-center space-y-2">
+          {franchise?.logo_url ? (
+            <img src={franchise.logo_url} alt={franchise.nome_franquia} className="h-10 mx-auto object-contain mb-1" />
+          ) : (
+            <img src="/lettering-quintal-ideal.svg" alt="Quintal Ideal" className="h-8 mx-auto" />
+          )}
+          <h1 className="text-2xl font-bold text-foreground">Como foi sua experiência?</h1>
+          <p className="text-muted-foreground text-sm">
+            {franchise?.nome_franquia ? `Avalie sua instalação com a ${franchise.nome_franquia}.` : 'Avalie sua instalação.'}{' '}
+            Leva menos de 1 minuto.
+          </p>
         </div>
 
-        <div>
-          <p className="text-sm font-medium text-center mb-4 text-foreground">Toque para avaliar:</p>
+        <div className="bg-card rounded-2xl shadow-sm border border-border p-6 space-y-4">
+          <p className="text-sm font-medium text-foreground text-center">Qual nota você dá para a instalação?</p>
           <div className="flex justify-center gap-3">
-            {[1, 2, 3, 4, 5].map(s => (
-              <button key={s} onClick={() => setRating(s)} className="transition-transform hover:scale-110 active:scale-95" aria-label={`${s} estrela${s > 1 ? 's' : ''}`}>
-                <Star className={cn("w-12 h-12 transition-colors", s <= rating ? "text-amber-400 fill-amber-400" : "text-muted-foreground/20")} />
+            {[1, 2, 3, 4, 5].map((star) => (
+              <button
+                key={star}
+                onClick={() => setRating(star)}
+                onMouseEnter={() => setHoverRating(star)}
+                onMouseLeave={() => setHoverRating(0)}
+                className="transition-transform hover:scale-110 active:scale-95"
+                aria-label={`${star} estrela${star > 1 ? 's' : ''}`}
+              >
+                <Star
+                  className={`h-10 w-10 transition-colors ${
+                    star <= (hoverRating || rating)
+                      ? 'fill-amber-400 text-amber-400'
+                      : 'text-muted-foreground/30'
+                  }`}
+                />
               </button>
             ))}
           </div>
-          {rating > 0 && (
-            <p className="text-center text-sm font-semibold mt-2 text-foreground">
-              {['', 'Ruim 😞', 'Regular 😐', 'Bom 🙂', 'Ótimo 😊', 'Excelente! 🤩'][rating]}
+          {(hoverRating || rating) > 0 && (
+            <p className="text-center text-sm text-foreground font-medium">
+              {ratingLabels[hoverRating || rating]}
             </p>
           )}
         </div>
 
-        {rating >= 4 && (
-          <div>
-            <p className="text-sm font-medium text-center mb-3 text-foreground">Você recomendaria para amigos?</p>
+        {rating > 0 && (
+          <div className="bg-card rounded-2xl shadow-sm border border-border p-5 space-y-3">
+            <p className="text-sm font-medium text-foreground">Você indicaria para amigos ou familiares?</p>
             <div className="flex gap-3">
               <button
                 onClick={() => setWouldRecommend(true)}
-                className={cn("flex-1 py-3 rounded-xl border text-sm font-medium transition-all", wouldRecommend === true ? "border-emerald-400 bg-emerald-50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-300" : "border-border text-muted-foreground hover:border-emerald-300")}
+                className={`flex-1 py-2.5 rounded-xl text-sm font-medium border transition-colors ${
+                  wouldRecommend === true
+                    ? 'bg-primary text-primary-foreground border-primary'
+                    : 'bg-background text-foreground border-border hover:border-primary/40'
+                }`}
               >
-                👍 Sim, com certeza!
+                Sim, com certeza!
               </button>
               <button
                 onClick={() => setWouldRecommend(false)}
-                className={cn("flex-1 py-3 rounded-xl border text-sm font-medium transition-all", wouldRecommend === false ? "border-destructive/40 bg-destructive/5 text-destructive" : "border-border text-muted-foreground")}
+                className={`flex-1 py-2.5 rounded-xl text-sm font-medium border transition-colors ${
+                  wouldRecommend === false
+                    ? 'bg-muted text-foreground border-muted-foreground/40'
+                    : 'bg-background text-foreground border-border hover:border-muted-foreground/40'
+                }`}
               >
-                👎 Talvez não
+                Não agora
               </button>
             </div>
           </div>
         )}
 
         {rating > 0 && (
-          <div>
-            <label className="text-sm font-medium block mb-2 text-foreground">
-              Quer deixar um comentário? <span className="text-muted-foreground font-normal">(opcional)</span>
-            </label>
+          <div className="bg-card rounded-2xl shadow-sm border border-border p-5 space-y-2">
+            <p className="text-sm font-medium text-foreground">
+              Quer deixar algum comentário?{' '}
+              <span className="font-normal text-muted-foreground">(opcional)</span>
+            </p>
             <Textarea
+              placeholder="Conte o que achou do serviço, atendimento, resultado..."
               value={comment}
-              onChange={e => setComment(e.target.value)}
-              placeholder="Conte como foi sua experiência..."
+              onChange={(e) => setComment(e.target.value)}
               rows={3}
-              className="resize-none rounded-xl"
               maxLength={500}
+              className="resize-none text-sm rounded-xl"
             />
           </div>
         )}
 
         <Button
+          className="w-full h-12 text-base font-semibold rounded-2xl"
+          disabled={!rating || submitting}
           onClick={handleSubmit}
-          disabled={submitting || rating === 0}
           size="lg"
-          className="w-full h-12 rounded-xl text-base font-semibold"
         >
           {submitting ? 'Enviando...' : 'Enviar avaliação'}
         </Button>
+
+        <p className="text-center text-xs text-muted-foreground">
+          Sua resposta ajuda a melhorar nosso serviço.
+        </p>
       </div>
     </div>
   );

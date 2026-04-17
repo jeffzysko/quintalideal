@@ -274,6 +274,7 @@ export type Database = {
           id: string
           last_accessed_at: string | null
           last_lead_activity_at: string | null
+          logo_url: string | null
           meta_pixel_id: string | null
           nome_franquia: string
           orcamento_plan_active: boolean
@@ -308,6 +309,7 @@ export type Database = {
           id?: string
           last_accessed_at?: string | null
           last_lead_activity_at?: string | null
+          logo_url?: string | null
           meta_pixel_id?: string | null
           nome_franquia: string
           orcamento_plan_active?: boolean
@@ -342,6 +344,7 @@ export type Database = {
           id?: string
           last_accessed_at?: string | null
           last_lead_activity_at?: string | null
+          logo_url?: string | null
           meta_pixel_id?: string | null
           nome_franquia?: string
           orcamento_plan_active?: boolean
