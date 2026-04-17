@@ -70,7 +70,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
   const [overColumnId, setOverColumnId] = useState<string | null>(null);
   const [localStatusOverrides, setLocalStatusOverrides] = useState<Record<string, string>>({});
   const [movingLeads, setMovingLeads] = useState<Set<string>>(new Set());
-  const [kanbanTipDismissed, setKanbanTipDismissed] = useState(() => !!localStorage.getItem('kanban-tip-dismissed'));
+  
   const [tempFilter, setTempFilter] = useState<string>('all');
   const [originFilter, setOriginFilter] = useState<string>('all');
   const [cityFilter, setCityFilter] = useState<string>('all');
