@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MessageCircle, Phone, Mail, MapPin, Droplets, Camera, ClipboardList, Settings2, X, ChevronDown, Package, FileText, HelpCircle, Plus, TrendingUp } from 'lucide-react';
+import { MessageCircle, Phone, Mail, MapPin, Droplets, Camera, ClipboardList, ClipboardCheck, Settings2, X, ChevronDown, Package, FileText, HelpCircle, Plus, TrendingUp } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 import { BackButton } from '@/components/BackButton';
