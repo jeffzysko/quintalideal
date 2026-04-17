@@ -527,6 +527,7 @@ export default function LeadDetail() {
                 ))}
               </SelectContent>
             </Select>
+            </div>
           </div>
 
           {/* Linha 2: Pipeline visual de status */}
