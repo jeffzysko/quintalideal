@@ -163,11 +163,33 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const [saving, setSaving] = useState(false);
   const [savingNotes, setSavingNotes] = useState(false);
+  const [reviewToken, setReviewToken] = useState<string | null>(project.review_token);
+  const [sendingReview, setSendingReview] = useState(false);
   const finalPhotoRef = useRef<HTMLInputElement>(null);
+
+  // Fetch lead + franchise info for WhatsApp messages
+  const { data: leadInfo } = useQuery({
+    queryKey: ['post-sale-lead-info', project.lead_id, project.franchise_id],
+    queryFn: async () => {
+      const [leadRes, franRes] = await Promise.all([
+        supabase.from('leads').select('nome, telefone').eq('id', project.lead_id).maybeSingle(),
+        supabase.from('franchises').select('slug_url').eq('id', project.franchise_id).maybeSingle(),
+      ]);
+      return {
+        nome: leadRes.data?.nome || 'cliente',
+        telefone: leadRes.data?.telefone || '',
+        slug: franRes.data?.slug_url || '',
+      };
+    },
+  });
 
   useEffect(() => {
     setFinalPhotos(project.final_photo_urls || []);
   }, [project.final_photo_urls]);
+
+  useEffect(() => {
+    setReviewToken(project.review_token);
+  }, [project.review_token]);
 
   const statusInfo = STATUS_CONFIG[status] || STATUS_CONFIG.agendado;
 
