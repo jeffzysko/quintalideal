@@ -379,24 +379,42 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
               />
               {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
             </div>
-            <div className="space-y-1.5">
+            <div className="space-y-1.5 relative">
               <Label htmlFor="ml-cidade" className="text-sm font-semibold">Cidade</Label>
-              <Input
-                id="ml-cidade"
-                placeholder="Cidade"
-                value={cidade}
-                onChange={(e) => setCidade(e.target.value)}
-                className="h-12 text-base rounded-xl"
-              />
+              <div className="relative">
+                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground pointer-events-none" />
+                <Input
+                  id="ml-cidade"
+                  placeholder="Digite a cidade"
+                  value={cidade}
+                  onChange={(e) => setCidade(e.target.value)}
+                  onFocus={() => setCityFocused(true)}
+                  onBlur={() => setTimeout(() => setCityFocused(false), 150)}
+                  autoComplete="off"
+                  className="h-12 text-base rounded-xl pl-9"
+                />
+              </div>
+              {cityFocused && filteredCities.length > 0 && (
+                <div className="absolute z-50 left-0 right-0 top-full mt-1 bg-popover border border-border rounded-xl shadow-lg max-h-56 overflow-y-auto">
+                  {filteredCities.map((c) => {
+                    const label = c.pais === 'UY' ? `${c.nome}, Uruguai` : `${c.nome}${c.estado ? ` - ${c.estado}` : ''}`;
+                    return (
+                      <button
+                        key={`${c.nome}-${c.pais}`}
+                        type="button"
+                        onMouseDown={(e) => { e.preventDefault(); setCidade(c.nome); setCityFocused(false); }}
+                        className="w-full text-left px-3 py-2 text-sm hover:bg-muted flex items-center gap-2"
+                      >
+                        <Check className="w-3.5 h-3.5 text-primary" />
+                        {label}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
           </div>
 
-  const filteredCities = useMemo(() => {
-    if (!cidade || cidade.length < 2) return [];
-    const q = cidade.toLowerCase();
-    if (cidades.some((c) => c.nome.toLowerCase() === q)) return [];
-    return cidades.filter((c) => c.nome.toLowerCase().includes(q)).slice(0, 6);
-  }, [cidade]);
 
           <div className="space-y-2">
             <Label className="text-sm font-semibold">De onde veio este lead?</Label>
