@@ -725,10 +725,13 @@ export default function LeadDetail() {
                   <TabsTrigger
                     key={tab.value}
                     value={tab.value}
-                    className="flex items-center gap-1.5 px-4 py-3 text-xs font-medium rounded-none border-b-2 text-muted-foreground border-transparent data-[state=active]:text-primary data-[state=active]:border-primary hover:text-foreground transition-colors bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none"
+                    className="flex items-center gap-1.5 px-4 py-3 text-xs font-medium rounded-none border-b-2 text-muted-foreground border-transparent data-[state=active]:text-primary data-[state=active]:border-primary hover:text-foreground transition-colors bg-transparent data-[state=active]:bg-transparent data-[state=active]:shadow-none relative"
                   >
                     <Icon className="w-3.5 h-3.5" />
                     {tab.label}
+                    {(tab as any).dot && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-success ml-0.5" aria-hidden />
+                    )}
                   </TabsTrigger>
                 );
               })}
