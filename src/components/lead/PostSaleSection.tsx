@@ -11,9 +11,10 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Calendar } from '@/components/ui/calendar';
 import {
   CalendarIcon, Star, Save, Plus, Wrench, CheckCircle2, CalendarDays, HelpCircle,
-  ListChecks, Check, Image as ImageIcon, Camera, ShieldCheck, X, Loader2,
+  Image as ImageIcon, Camera, ShieldCheck, X, Loader2,
   Link2, Copy, Users, MessageCircle,
 } from 'lucide-react';
+import { PostSaleChecklistManager } from './PostSaleChecklistManager';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { format, addMonths } from 'date-fns';
