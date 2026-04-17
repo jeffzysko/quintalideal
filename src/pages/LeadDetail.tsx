@@ -835,9 +835,7 @@ export default function LeadDetail() {
             <TabsContent value="visita" className="mt-0">
               <motion.div key="visita" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="p-4">
                 {(franchiseId || lead.franquia_id) ? (
-                  <TechnicalVisitErrorBoundary>
-                    <TechnicalVisitSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
-                  </TechnicalVisitErrorBoundary>
+                  <TechnicalVisitSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
                 ) : (
                   <div className="p-4 text-sm text-muted-foreground">Franquia não vinculada a este lead.</div>
                 )}
