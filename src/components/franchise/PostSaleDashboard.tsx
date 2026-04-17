@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-import { Wrench, CalendarDays, CheckCircle2, Star, AlertTriangle, ChevronRight } from 'lucide-react';
+import { Wrench, CalendarDays, CheckCircle2, Star, AlertTriangle, ChevronRight, DollarSign, ListChecks } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { MetricGrid } from '@/components/dashboard/MetricGrid';
@@ -39,6 +39,27 @@ export function PostSaleDashboard({ franchiseId, basePath = '/painel/lead' }: Po
     staleTime: 2 * 60 * 1000,
   });
 
+  const projectIds = projects.map((p: any) => p.id);
+  const { data: checklistAgg = {} } = useQuery({
+    queryKey: ['post-sale-checklist-agg', franchiseId, projectIds.length],
+    queryFn: async () => {
+      if (projectIds.length === 0) return {};
+      const { data } = await supabase
+        .from('post_sale_checklist')
+        .select('project_id, completed')
+        .in('project_id', projectIds);
+      const agg: Record<string, { total: number; done: number }> = {};
+      (data || []).forEach((row: any) => {
+        if (!agg[row.project_id]) agg[row.project_id] = { total: 0, done: 0 };
+        agg[row.project_id].total++;
+        if (row.completed) agg[row.project_id].done++;
+      });
+      return agg;
+    },
+    enabled: projectIds.length > 0,
+    staleTime: 2 * 60 * 1000,
+  });
+
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
@@ -53,10 +74,22 @@ export function PostSaleDashboard({ franchiseId, basePath = '/painel/lead' }: Po
   const ratings = projects.filter(p => p.satisfaction_rating != null).map(p => p.satisfaction_rating as number);
   const avgRating = ratings.length > 0 ? (ratings.reduce((a, b) => a + b, 0) / ratings.length).toFixed(1) : '-';
 
+  const realizedThisMonth = projects.reduce((sum, p: any) => {
+    if (p.status !== 'concluido' || p.final_value == null) return sum;
+    const d = p.completion_date ? new Date(p.completion_date) : new Date(p.updated_at);
+    if (d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear()) {
+      return sum + Number(p.final_value);
+    }
+    return sum;
+  }, 0);
+  const realizedFormatted = realizedThisMonth > 0
+    ? realizedThisMonth.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 })
+    : 'R$ 0';
+
   const metrics: MetricCardProps[] = [
     { icon: Wrench, label: 'Em andamento', value: activeProjects.length, color: 'text-primary' },
-    { icon: CalendarDays, label: 'Agendados', value: agendados, color: 'text-amber-600' },
     { icon: CheckCircle2, label: 'Concluidos este mes', value: completedThisMonth, color: 'text-emerald-600' },
+    { icon: DollarSign, label: 'Realizado este mes', value: realizedFormatted, color: 'text-emerald-600' },
     { icon: Star, label: 'Satisfacao media', value: avgRating === '-' ? '-' : `${avgRating} ⭐`, color: 'text-violet-600' },
   ];
 
@@ -125,7 +158,7 @@ export function PostSaleDashboard({ franchiseId, basePath = '/painel/lead' }: Po
                               </Badge>
                             )}
                           </div>
-                          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                          <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
                             {p.installation_date && (
                               <span className="flex items-center gap-1">
                                 <CalendarDays className="w-3 h-3" />
@@ -135,6 +168,20 @@ export function PostSaleDashboard({ franchiseId, basePath = '/painel/lead' }: Po
                             <Badge className={`${statusCfg.bgColor} ${statusCfg.color} border text-[10px]`} variant="outline">
                               {statusCfg.emoji} {statusCfg.label}
                             </Badge>
+                            {(() => {
+                              const cl = (checklistAgg as any)[p.id];
+                              if (!cl || cl.total === 0) return null;
+                              const pct = (cl.done / cl.total) * 100;
+                              return (
+                                <span className="flex items-center gap-1.5 min-w-[100px]">
+                                  <ListChecks className="w-3 h-3" />
+                                  <span className="flex-1 h-1 rounded-full bg-muted overflow-hidden max-w-[60px]">
+                                    <span className="block h-full bg-emerald-500 rounded-full" style={{ width: `${pct}%` }} />
+                                  </span>
+                                  <span className="text-[10px]">{cl.done}/{cl.total}</span>
+                                </span>
+                              );
+                            })()}
                           </div>
                         </div>
                         <ChevronRight className="w-4 h-4 text-muted-foreground shrink-0" />
