@@ -89,7 +89,7 @@ export function StageChangeDrawer({
   return (
     <Drawer open={open} onOpenChange={(o) => { if (!o) resetAndClose(); else onOpenChange(o); }}>
       <DrawerContent>
-        {step === 'select' ? (
+        {step === 'select' && (
           <>
             <DrawerHeader>
               <DrawerTitle className="text-base">Para qual etapa deseja mover este lead?</DrawerTitle>
@@ -135,7 +135,9 @@ export function StageChangeDrawer({
               })}
             </div>
           </>
-        ) : (
+        )}
+
+        {step === 'loss_reason' && (
           <>
             <DrawerHeader>
               <div className="flex items-center gap-2">
@@ -198,6 +200,60 @@ export function StageChangeDrawer({
               >
                 Confirmar perda
               </Button>
+            </div>
+          </>
+        )}
+
+        {step === 'sale_value' && (
+          <>
+            <DrawerHeader>
+              <div className="flex items-center gap-2">
+                <button onClick={() => setStep('select')} className="p-1 rounded-lg hover:bg-muted/60 transition-colors">
+                  <ArrowLeft className="w-4 h-4 text-muted-foreground" />
+                </button>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <PartyPopper className="w-4 h-4 text-emerald-600" />
+                    <DrawerTitle className="text-base">Qual o valor total da venda?</DrawerTitle>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Esse valor substitui a estimativa do lead e alimenta os relatórios de receita.
+                  </p>
+                </div>
+              </div>
+            </DrawerHeader>
+            <div className="px-4 pb-6 space-y-4">
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Valor da venda (R$)</label>
+                <div className="relative">
+                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    inputMode="decimal"
+                    autoFocus
+                    value={saleValueInput}
+                    onChange={(e) => setSaleValueInput(e.target.value)}
+                    placeholder="Ex: 35.000,00"
+                    className="pl-9 text-base md:text-sm h-11"
+                  />
+                </div>
+                {parsedSaleValue > 0 && (
+                  <p className="text-[11px] text-emerald-600 mt-1.5 font-medium">
+                    {parsedSaleValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  </p>
+                )}
+              </div>
+              <Button
+                onClick={handleConfirmSale}
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
+                disabled={parsedSaleValue <= 0}
+              >
+                <PartyPopper className="w-4 h-4" />
+                Registrar venda
+              </Button>
+              <p className="text-[10px] text-muted-foreground text-center">
+                Se houver uma proposta aceita vinculada, o valor é atualizado automaticamente pelo sistema.
+              </p>
             </div>
           </>
         )}
