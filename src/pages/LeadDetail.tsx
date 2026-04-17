@@ -30,6 +30,7 @@ import { WhatsAppTemplates } from '@/components/lead/WhatsAppTemplates';
 import { LeadTagsSection } from '@/components/lead/LeadTagsSection';
 import { PostSaleSection } from '@/components/lead/PostSaleSection';
 import { TechnicalVisitSection } from '@/components/lead/TechnicalVisitSection';
+import { TechnicalVisitErrorBoundary } from '@/components/lead/TechnicalVisitErrorBoundary';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
@@ -833,8 +834,12 @@ export default function LeadDetail() {
 
             <TabsContent value="visita" className="mt-0">
               <motion.div key="visita" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.2 }} className="p-4">
-                {(franchiseId || lead.franquia_id) && (
-                  <TechnicalVisitSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
+                {(franchiseId || lead.franquia_id) ? (
+                  <TechnicalVisitErrorBoundary>
+                    <TechnicalVisitSection leadId={lead.id} franchiseId={(franchiseId || lead.franquia_id)!} />
+                  </TechnicalVisitErrorBoundary>
+                ) : (
+                  <div className="p-4 text-sm text-muted-foreground">Franquia não vinculada a este lead.</div>
                 )}
               </motion.div>
             </TabsContent>
