@@ -118,7 +118,7 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
   }, [orcamento, intencao, espaco, moradia, tempOverride]);
 
   const detailsFilledCount = [
-    email, cidade, modelo, orcamento, intencao, espaco, moradia, observacoes,
+    modelo, orcamento, intencao, espaco, moradia, observacoes,
     photoFiles.length > 0 ? 'photos' : '',
   ].filter(Boolean).length;
 
@@ -363,7 +363,33 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
             )}
           </div>
 
-          {/* ORIGEM */}
+          {/* EMAIL + CIDADE */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="space-y-1.5">
+              <Label htmlFor="ml-email" className="text-sm font-semibold">E-mail</Label>
+              <Input
+                id="ml-email"
+                type="email"
+                placeholder="email@exemplo.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={cn('h-12 text-base rounded-xl', errors.email && 'border-destructive')}
+              />
+              {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
+            </div>
+            <div className="space-y-1.5">
+              <Label htmlFor="ml-cidade" className="text-sm font-semibold">Cidade</Label>
+              <Input
+                id="ml-cidade"
+                placeholder="Cidade"
+                value={cidade}
+                onChange={(e) => setCidade(e.target.value)}
+                className="h-12 text-base rounded-xl"
+              />
+            </div>
+          </div>
+
+
           <div className="space-y-2">
             <Label className="text-sm font-semibold">De onde veio este lead?</Label>
             <div className="flex flex-wrap gap-2">
@@ -436,29 +462,6 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
         {/* DETALHES */}
         {showDetails && (
           <div className="px-5 pb-4 space-y-4 border-t border-border/30 pt-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">E-mail</Label>
-                <Input
-                  type="email"
-                  placeholder="email@exemplo.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className={cn('h-10 rounded-xl text-sm', errors.email && 'border-destructive')}
-                />
-                {errors.email && <p className="text-xs text-destructive">{errors.email}</p>}
-              </div>
-              <div className="space-y-1.5">
-                <Label className="text-xs font-medium">Cidade</Label>
-                <Input
-                  placeholder="Cidade"
-                  value={cidade}
-                  onChange={(e) => setCidade(e.target.value)}
-                  className="h-10 rounded-xl text-sm"
-                />
-              </div>
-            </div>
-
             <div className="space-y-1.5">
               <Label className="text-xs font-medium">Modelo de interesse</Label>
               <Select value={modelo} onValueChange={setModelo}>
