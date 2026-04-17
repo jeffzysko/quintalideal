@@ -563,6 +563,7 @@ export type Database = {
           utm_campaign: string | null
           utm_medium: string | null
           utm_source: string | null
+          valor_venda: number | null
         }
         Insert: {
           assigned_to?: string | null
@@ -598,6 +599,7 @@ export type Database = {
           utm_campaign?: string | null
           utm_medium?: string | null
           utm_source?: string | null
+          valor_venda?: number | null
         }
         Update: {
           assigned_to?: string | null
@@ -633,6 +635,7 @@ export type Database = {
           utm_campaign?: string | null
           utm_medium?: string | null
           utm_source?: string | null
+          valor_venda?: number | null
         }
         Relationships: [
           {

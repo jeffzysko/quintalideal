@@ -46,7 +46,7 @@ export const LeadCard = memo(function LeadCard({
   basePath: string;
   overlay?: boolean;
   franchiseName?: string;
-  onMoveStage?: (leadId: string, newStatus: string, lossReason?: string) => void;
+  onMoveStage?: (leadId: string, newStatus: string, extra?: { lossReason?: string; valorVenda?: number }) => void;
   franchiseId?: string;
   whatsAppPlanActive?: boolean;
   isSelected?: boolean;

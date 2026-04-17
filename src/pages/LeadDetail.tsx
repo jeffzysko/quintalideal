@@ -52,6 +52,7 @@ interface Lead {
   pontuacao_quintal: number | null;
   modelo_recomendado: string | null;
   modelo_vendido: string | null;
+  valor_venda: number | null;
   respostas_questionario: Record<string, string> | null;
   foto1: string | null;
   foto2: string | null;
@@ -161,6 +162,7 @@ export default function LeadDetail() {
   const [status, setStatus] = useState('');
   const [observacoes, setObservacoes] = useState('');
   const [modeloVendido, setModeloVendido] = useState('');
+  const [valorVendaInput, setValorVendaInput] = useState('');
   const [tempOverride, setTempOverride] = useState<LeadTemperature | ''>('');
   const [saving, setSaving] = useState(false);
   const [editNome, setEditNome] = useState('');
@@ -188,7 +190,7 @@ export default function LeadDetail() {
     queryFn: async () => {
       const { data } = await supabase
         .from('leads')
-        .select('id, nome, telefone, email, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, respostas_questionario, foto1, foto2, foto3, foto4, status_lead, observacoes, created_at, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, franquia_id, lead_origin, loss_reason, assigned_to')
+        .select('id, nome, telefone, email, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, valor_venda, respostas_questionario, foto1, foto2, foto3, foto4, status_lead, observacoes, created_at, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, franquia_id, lead_origin, loss_reason, assigned_to')
         .eq('id', id!)
         .maybeSingle();
       return data ? (data as Lead) : null;
@@ -232,6 +234,11 @@ export default function LeadDetail() {
       setStatus(lead.status_lead);
       setObservacoes(lead.observacoes || '');
       setModeloVendido(lead.modelo_vendido || '');
+      setValorVendaInput(
+        lead.valor_venda != null
+          ? lead.valor_venda.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+          : ''
+      );
       setEditNome(lead.nome || '');
       setEditTelefone(lead.telefone || '');
       setEditEmail(lead.email || '');
@@ -242,6 +249,12 @@ export default function LeadDetail() {
     }
   }, [lead?.id]);
 
+  const parsedValorVenda = (() => {
+    const cleaned = valorVendaInput.replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '');
+    const n = parseFloat(cleaned);
+    return isNaN(n) ? 0 : n;
+  })();
+
   const save = async () => {
     if (!lead) return;
     if (!editNome.trim()) { toast.error('Nome é obrigatório'); return; }
@@ -249,6 +262,10 @@ export default function LeadDetail() {
     if (editTelefone.trim()) {
       const digits = editTelefone.replace(/\D/g, '');
       if (!isValidBRPhone(digits)) { toast.error('Telefone inválido (ex: 11999998888)'); return; }
+    }
+    if (status === 'vendido' && parsedValorVenda <= 0) {
+      toast.error('Informe o valor total da venda para registrar o fechamento.');
+      return;
     }
     setSaving(true);
 
@@ -296,6 +313,7 @@ export default function LeadDetail() {
         status_lead: status as any,
         observacoes,
         modelo_vendido: status === 'vendido' && modeloVendido ? modeloVendido : null,
+        valor_venda: status === 'vendido' ? parsedValorVenda : null,
         respostas_questionario: Object.keys(updatedRespostas).length > 0 ? updatedRespostas : null,
       })
       .eq('id', lead.id);
@@ -976,29 +994,52 @@ export default function LeadDetail() {
             </div>
 
             {status === 'vendido' && (
-              <div>
-                <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  Modelo Vendido
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <HelpCircle className="w-3.5 h-3.5 text-muted-foreground/60 cursor-help" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <p className="text-xs max-w-[200px]">O modelo confirmado na venda</p>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </label>
-                <Select value={modeloVendido} onValueChange={setModeloVendido}>
-                  <SelectTrigger className="bg-muted/50"><SelectValue placeholder="Selecione" /></SelectTrigger>
-                  <SelectContent>
-                    {poolModels.map(m => (
-                      <SelectItem key={m} value={m}>{m}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+              <>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    Valor da venda <span className="text-destructive">*</span>
+                  </label>
+                  <Input
+                    type="text"
+                    inputMode="decimal"
+                    value={valorVendaInput}
+                    onChange={e => setValorVendaInput(e.target.value)}
+                    placeholder="Ex: 35.000,00"
+                    className="bg-muted/50"
+                  />
+                  {parsedValorVenda > 0 && (
+                    <p className="text-[11px] text-emerald-600 mt-1 font-medium">
+                      {parsedValorVenda.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                    </p>
+                  )}
+                  <p className="text-[10px] text-muted-foreground mt-1">
+                    Substitui a estimativa do lead. Atualizado automaticamente quando uma proposta vinculada é aceita.
+                  </p>
+                </div>
+                <div>
+                  <label className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                    Modelo Vendido
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <HelpCircle className="w-3.5 h-3.5 text-muted-foreground/60 cursor-help" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p className="text-xs max-w-[200px]">O modelo confirmado na venda</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </label>
+                  <Select value={modeloVendido} onValueChange={setModeloVendido}>
+                    <SelectTrigger className="bg-muted/50"><SelectValue placeholder="Selecione" /></SelectTrigger>
+                    <SelectContent>
+                      {poolModels.map(m => (
+                        <SelectItem key={m} value={m}>{m}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              </>
             )}
 
             <div>

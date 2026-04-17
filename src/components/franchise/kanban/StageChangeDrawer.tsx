@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { STATUS_LABELS, STATUS_CHART_COLORS } from '@/lib/lead-constants';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
 import { Textarea } from '@/components/ui/textarea';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
 import { COLUMNS } from './types';
-import { ArrowLeft, HelpCircle } from 'lucide-react';
+import { ArrowLeft, HelpCircle, DollarSign, PartyPopper } from 'lucide-react';
 
 const LOSS_REASONS = [
   { key: 'preco_alto', emoji: '💰', label: 'Preço alto' },
@@ -29,16 +30,18 @@ export function StageChangeDrawer({
   onOpenChange: (open: boolean) => void;
   leadId: string | null;
   currentStatus: string;
-  onConfirm: (leadId: string, newStatus: string, lossReason?: string) => void;
+  onConfirm: (leadId: string, newStatus: string, extra?: { lossReason?: string; valorVenda?: number }) => void;
 }) {
-  const [step, setStep] = useState<'select' | 'loss_reason'>('select');
+  const [step, setStep] = useState<'select' | 'loss_reason' | 'sale_value'>('select');
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
   const [lossNote, setLossNote] = useState('');
+  const [saleValueInput, setSaleValueInput] = useState('');
 
   const resetAndClose = () => {
     setStep('select');
     setSelectedReasons([]);
     setLossNote('');
+    setSaleValueInput('');
     onOpenChange(false);
   };
 
@@ -46,6 +49,8 @@ export function StageChangeDrawer({
     if (!leadId) return;
     if (status === 'perdido') {
       setStep('loss_reason');
+    } else if (status === 'vendido') {
+      setStep('sale_value');
     } else {
       onConfirm(leadId, status);
       resetAndClose();
@@ -58,7 +63,20 @@ export function StageChangeDrawer({
     const parts = [...reasons];
     if (lossNote.trim()) parts.push(lossNote.trim());
     const lossReason = parts.join(' | ') || 'Motivo desconhecido';
-    onConfirm(leadId, 'perdido', lossReason);
+    onConfirm(leadId, 'perdido', { lossReason });
+    resetAndClose();
+  };
+
+  const parsedSaleValue = (() => {
+    const cleaned = saleValueInput.replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '');
+    const n = parseFloat(cleaned);
+    return isNaN(n) ? 0 : n;
+  })();
+
+  const handleConfirmSale = () => {
+    if (!leadId) return;
+    if (parsedSaleValue <= 0) return;
+    onConfirm(leadId, 'vendido', { valorVenda: parsedSaleValue });
     resetAndClose();
   };
 
@@ -71,7 +89,7 @@ export function StageChangeDrawer({
   return (
     <Drawer open={open} onOpenChange={(o) => { if (!o) resetAndClose(); else onOpenChange(o); }}>
       <DrawerContent>
-        {step === 'select' ? (
+        {step === 'select' && (
           <>
             <DrawerHeader>
               <DrawerTitle className="text-base">Para qual etapa deseja mover este lead?</DrawerTitle>
@@ -117,7 +135,9 @@ export function StageChangeDrawer({
               })}
             </div>
           </>
-        ) : (
+        )}
+
+        {step === 'loss_reason' && (
           <>
             <DrawerHeader>
               <div className="flex items-center gap-2">
@@ -180,6 +200,60 @@ export function StageChangeDrawer({
               >
                 Confirmar perda
               </Button>
+            </div>
+          </>
+        )}
+
+        {step === 'sale_value' && (
+          <>
+            <DrawerHeader>
+              <div className="flex items-center gap-2">
+                <button onClick={() => setStep('select')} className="p-1 rounded-lg hover:bg-muted/60 transition-colors">
+                  <ArrowLeft className="w-4 h-4 text-muted-foreground" />
+                </button>
+                <div>
+                  <div className="flex items-center gap-1.5">
+                    <PartyPopper className="w-4 h-4 text-emerald-600" />
+                    <DrawerTitle className="text-base">Qual o valor total da venda?</DrawerTitle>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    Esse valor substitui a estimativa do lead e alimenta os relatórios de receita.
+                  </p>
+                </div>
+              </div>
+            </DrawerHeader>
+            <div className="px-4 pb-6 space-y-4">
+              <div>
+                <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Valor da venda (R$)</label>
+                <div className="relative">
+                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    type="text"
+                    inputMode="decimal"
+                    autoFocus
+                    value={saleValueInput}
+                    onChange={(e) => setSaleValueInput(e.target.value)}
+                    placeholder="Ex: 35.000,00"
+                    className="pl-9 text-base md:text-sm h-11"
+                  />
+                </div>
+                {parsedSaleValue > 0 && (
+                  <p className="text-[11px] text-emerald-600 mt-1.5 font-medium">
+                    {parsedSaleValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
+                  </p>
+                )}
+              </div>
+              <Button
+                onClick={handleConfirmSale}
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
+                disabled={parsedSaleValue <= 0}
+              >
+                <PartyPopper className="w-4 h-4" />
+                Registrar venda
+              </Button>
+              <p className="text-[10px] text-muted-foreground text-center">
+                Se houver uma proposta aceita vinculada, o valor é atualizado automaticamente pelo sistema.
+              </p>
             </div>
           </>
         )}
