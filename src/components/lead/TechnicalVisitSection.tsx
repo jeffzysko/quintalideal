@@ -615,3 +615,5 @@ function FeasibilityCard({
     </button>
   );
 }
+
+export default TechnicalVisitSection;
