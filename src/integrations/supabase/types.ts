@@ -837,54 +837,66 @@ export type Database = {
           created_at: string
           final_photo_urls: string[] | null
           final_value: number | null
+          followup_30_sent: boolean | null
+          followup_90_sent: boolean | null
           franchise_id: string
           id: string
           installation_date: string | null
           internal_notes: string | null
           lead_id: string
           responsible_name: string | null
+          review_token: string | null
           satisfaction_note: string | null
           satisfaction_rating: number | null
           status: string
           updated_at: string
           warranty_months: number | null
           warranty_notes: string | null
+          would_recommend: boolean | null
         }
         Insert: {
           completion_date?: string | null
           created_at?: string
           final_photo_urls?: string[] | null
           final_value?: number | null
+          followup_30_sent?: boolean | null
+          followup_90_sent?: boolean | null
           franchise_id: string
           id?: string
           installation_date?: string | null
           internal_notes?: string | null
           lead_id: string
           responsible_name?: string | null
+          review_token?: string | null
           satisfaction_note?: string | null
           satisfaction_rating?: number | null
           status?: string
           updated_at?: string
           warranty_months?: number | null
           warranty_notes?: string | null
+          would_recommend?: boolean | null
         }
         Update: {
           completion_date?: string | null
           created_at?: string
           final_photo_urls?: string[] | null
           final_value?: number | null
+          followup_30_sent?: boolean | null
+          followup_90_sent?: boolean | null
           franchise_id?: string
           id?: string
           installation_date?: string | null
           internal_notes?: string | null
           lead_id?: string
           responsible_name?: string | null
+          review_token?: string | null
           satisfaction_note?: string | null
           satisfaction_rating?: number | null
           status?: string
           updated_at?: string
           warranty_months?: number | null
           warranty_notes?: string | null
+          would_recommend?: boolean | null
         }
         Relationships: [
           {
@@ -920,6 +932,47 @@ export type Database = {
             columns: ["lead_id"]
             isOneToOne: true
             referencedRelation: "leads_map"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      post_sale_reviews: {
+        Row: {
+          comment: string | null
+          created_at: string
+          id: string
+          project_id: string
+          rating: number | null
+          submitted_at: string | null
+          token: string
+          would_recommend: boolean | null
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          project_id: string
+          rating?: number | null
+          submitted_at?: string | null
+          token?: string
+          would_recommend?: boolean | null
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string
+          id?: string
+          project_id?: string
+          rating?: number | null
+          submitted_at?: string | null
+          token?: string
+          would_recommend?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "post_sale_reviews_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "post_sale_projects"
             referencedColumns: ["id"]
           },
         ]
@@ -1828,6 +1881,15 @@ export type Database = {
           _token: string
         }
         Returns: boolean
+      }
+      submit_post_sale_review: {
+        Args: {
+          _note?: string
+          _rating: number
+          _recommend?: boolean
+          _token: string
+        }
+        Returns: undefined
       }
     }
     Enums: {
