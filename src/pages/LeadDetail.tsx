@@ -30,7 +30,7 @@ import { WhatsAppTemplates } from '@/components/lead/WhatsAppTemplates';
 import { LeadTagsSection } from '@/components/lead/LeadTagsSection';
 import { PostSaleSection } from '@/components/lead/PostSaleSection';
 import { TechnicalVisitSection } from '@/components/lead/TechnicalVisitSection';
-import { TechnicalVisitErrorBoundary } from '@/components/lead/TechnicalVisitErrorBoundary';
+
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 
