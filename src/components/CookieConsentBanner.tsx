@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Cookie, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
+import { useAuth } from '@/hooks/useAuth';
 
 const CONSENT_KEY = 'cookie_consent';
 
@@ -15,10 +16,10 @@ export function getConsentStatus(): ConsentStatus {
 }
 
 export function CookieConsentBanner() {
+  const { user } = useAuth();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    // Show banner only if no consent decision exists
     const timer = setTimeout(() => {
       if (!getConsentStatus()) setVisible(true);
     }, 1500);
@@ -33,7 +34,6 @@ export function CookieConsentBanner() {
   const handleReject = () => {
     localStorage.setItem(CONSENT_KEY, 'rejected');
     setVisible(false);
-    // Disable analytics tracking by removing session
     sessionStorage.removeItem('qi_session_id');
   };
 
@@ -50,6 +50,11 @@ export function CookieConsentBanner() {
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 300, damping: 30 }}
           className="fixed bottom-0 left-0 right-0 z-[100] p-3 sm:p-4"
+          style={{
+            paddingBottom: user
+              ? 'calc(3.5rem + env(safe-area-inset-bottom, 0px) + 0.75rem)'
+              : 'calc(env(safe-area-inset-bottom, 0px) + 0.75rem)',
+          }}
         >
           <div className="max-w-2xl mx-auto rounded-2xl border border-border/50 bg-card/95 backdrop-blur-xl shadow-2xl p-4 sm:p-5">
             <div className="flex items-start gap-3">
