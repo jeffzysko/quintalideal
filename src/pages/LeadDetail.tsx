@@ -544,7 +544,9 @@ export default function LeadDetail() {
             return (
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">Funil</span>
+                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                    Etapa do funil <span className="hidden sm:inline normal-case tracking-normal text-muted-foreground/70 font-normal">· toque para mover</span>
+                  </span>
                   {isLost ? (
                     <span className="text-[10px] font-semibold text-destructive">💔 Perdido</span>
                   ) : (
