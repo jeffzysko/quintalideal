@@ -206,8 +206,6 @@ export function TechnicalVisitSection({ leadId, franchiseId }: Props) {
     update('status', visit.status === 'concluida' ? 'pendente' : 'concluida');
   };
 
-  const numOrNull = (v: string) => (v === '' ? null : parseInt(v, 10) || null);
-
   if (isLoading) {
     return (
       <div className="flex justify-center py-10">
