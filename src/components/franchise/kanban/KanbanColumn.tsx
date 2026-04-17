@@ -58,25 +58,38 @@ export const KanbanColumn = memo(function KanbanColumn({
   return (
     <div
       ref={setNodeRef}
-      className={`flex flex-col rounded-2xl border transition-all duration-200 min-w-[250px] w-[250px] shrink-0 ${
+      className={`flex flex-col rounded-2xl border transition-all duration-200 min-w-[280px] w-[280px] shrink-0 ${
         highlighted
           ? 'border-primary/50 bg-primary/5 shadow-lg shadow-primary/5'
           : 'border-border/40 bg-muted/20'
       }`}
     >
-      <div className="p-3 pb-2">
-        <div className="flex items-center gap-2">
-          <div className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: color }} />
-          <h3 className="text-[11px] font-bold text-foreground uppercase tracking-wider truncate">
-            {STATUS_LABELS[status]}
-          </h3>
-          <span className="ml-auto text-[10px] font-semibold text-muted-foreground bg-muted/80 rounded-full px-2 py-0.5">
+      <div className="px-3 pt-3 pb-2">
+        <div className="flex items-center justify-between mb-1">
+          <div className="flex items-center gap-2 min-w-0">
+            <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: color }} />
+            <h3 className="text-sm font-semibold text-foreground truncate">
+              {STATUS_LABELS[status]}
+            </h3>
+          </div>
+          <span className="text-xs font-bold text-muted-foreground bg-muted/60 rounded-full px-2 py-0.5 min-w-[24px] text-center shrink-0">
             {leads.length}
           </span>
         </div>
+
         {leads.length > 0 && (
-          <div className="mt-1.5 text-[11px] font-semibold text-success">
-            {formatCurrency(totalValue)}
+          <p className="text-xs text-muted-foreground">
+            <span className="font-semibold text-foreground">{formatCurrency(totalValue)}</span>
+            {' '}em potencial
+          </p>
+        )}
+
+        {leads.length > 0 && (
+          <div className="mt-2 h-0.5 rounded-full bg-muted/40 overflow-hidden">
+            <div
+              className="h-full rounded-full opacity-60 transition-all duration-500"
+              style={{ backgroundColor: color, width: '100%' }}
+            />
           </div>
         )}
       </div>
@@ -87,12 +100,12 @@ export const KanbanColumn = memo(function KanbanColumn({
       >
         {leads.length === 0 ? (
           <div
-            className={`rounded-xl border-2 border-dashed p-8 text-center transition-colors animate-fade-in ${
+            className={`flex flex-col items-center justify-center h-28 rounded-xl border-2 border-dashed transition-colors animate-fade-in ${
               highlighted ? 'border-primary/40 bg-primary/5' : 'border-border/30'
             }`}
           >
-            <p className="text-xs text-muted-foreground">
-              {highlighted ? 'Solte aqui' : 'Nenhum lead'}
+            <p className="text-xs text-muted-foreground/70">
+              {highlighted ? 'Solte aqui' : 'Nenhum lead aqui'}
             </p>
           </div>
         ) : useVirtual ? (
