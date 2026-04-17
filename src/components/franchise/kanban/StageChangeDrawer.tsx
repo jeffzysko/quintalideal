@@ -30,16 +30,18 @@ export function StageChangeDrawer({
   onOpenChange: (open: boolean) => void;
   leadId: string | null;
   currentStatus: string;
-  onConfirm: (leadId: string, newStatus: string, lossReason?: string) => void;
+  onConfirm: (leadId: string, newStatus: string, extra?: { lossReason?: string; valorVenda?: number }) => void;
 }) {
-  const [step, setStep] = useState<'select' | 'loss_reason'>('select');
+  const [step, setStep] = useState<'select' | 'loss_reason' | 'sale_value'>('select');
   const [selectedReasons, setSelectedReasons] = useState<string[]>([]);
   const [lossNote, setLossNote] = useState('');
+  const [saleValueInput, setSaleValueInput] = useState('');
 
   const resetAndClose = () => {
     setStep('select');
     setSelectedReasons([]);
     setLossNote('');
+    setSaleValueInput('');
     onOpenChange(false);
   };
 
@@ -47,6 +49,8 @@ export function StageChangeDrawer({
     if (!leadId) return;
     if (status === 'perdido') {
       setStep('loss_reason');
+    } else if (status === 'vendido') {
+      setStep('sale_value');
     } else {
       onConfirm(leadId, status);
       resetAndClose();
@@ -59,7 +63,20 @@ export function StageChangeDrawer({
     const parts = [...reasons];
     if (lossNote.trim()) parts.push(lossNote.trim());
     const lossReason = parts.join(' | ') || 'Motivo desconhecido';
-    onConfirm(leadId, 'perdido', lossReason);
+    onConfirm(leadId, 'perdido', { lossReason });
+    resetAndClose();
+  };
+
+  const parsedSaleValue = (() => {
+    const cleaned = saleValueInput.replace(/\./g, '').replace(',', '.').replace(/[^\d.]/g, '');
+    const n = parseFloat(cleaned);
+    return isNaN(n) ? 0 : n;
+  })();
+
+  const handleConfirmSale = () => {
+    if (!leadId) return;
+    if (parsedSaleValue <= 0) return;
+    onConfirm(leadId, 'vendido', { valorVenda: parsedSaleValue });
     resetAndClose();
   };
 
