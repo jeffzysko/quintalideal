@@ -209,12 +209,12 @@ export function PostSaleChecklistManager({ projectId, franchiseId, checklist }: 
   return (
     <Card className="glass-card">
       <CardContent className="p-4 space-y-3">
-        <div className="flex items-center justify-between mb-2">
-          <div className="flex items-center gap-2">
-            <ListChecks className="w-4 h-4 text-primary" />
-            <h3 className="text-sm font-semibold">Etapas da Instalação</h3>
+        <div className="flex items-start justify-between mb-2 gap-2 flex-wrap">
+          <div className="flex items-center gap-2 min-w-0">
+            <ListChecks className="w-4 h-4 text-primary shrink-0" />
+            <h3 className="text-sm font-semibold truncate">Etapas da Instalação</h3>
           </div>
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-1 flex-wrap justify-end">
             {!editing && (
               <>
                 <span className="text-xs font-semibold text-muted-foreground mr-1">
@@ -224,7 +224,7 @@ export function PostSaleChecklistManager({ projectId, franchiseId, checklist }: 
                   <DialogTrigger asChild>
                     <Button size="sm" variant="ghost" className="h-7 px-2 text-xs gap-1">
                       <LayoutTemplate className="w-3.5 h-3.5" />
-                      Modelos
+                      <span className="hidden sm:inline">Modelos</span>
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="max-w-md">
@@ -272,7 +272,7 @@ export function PostSaleChecklistManager({ projectId, franchiseId, checklist }: 
                 </Dialog>
                 <Button size="sm" variant="ghost" className="h-7 px-2 text-xs gap-1" onClick={startEdit}>
                   <Pencil className="w-3.5 h-3.5" />
-                  Editar
+                  <span className="hidden sm:inline">Editar</span>
                 </Button>
               </>
             )}
@@ -282,7 +282,7 @@ export function PostSaleChecklistManager({ projectId, franchiseId, checklist }: 
                   <DialogTrigger asChild>
                     <Button size="sm" variant="ghost" className="h-7 px-2 text-xs gap-1">
                       <BookmarkPlus className="w-3.5 h-3.5" />
-                      Salvar modelo
+                      <span className="hidden sm:inline">Salvar modelo</span>
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="max-w-sm">
