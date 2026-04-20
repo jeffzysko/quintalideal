@@ -274,14 +274,18 @@
     display: none;
   }
 
-  /* ─── Glass Card ─── */
+  /* ─── Glass Card (static container) ─── */
   .glass-card {
     @apply bg-card/80 backdrop-blur-xl border border-border/50;
     box-shadow: var(--shadow-md);
-    transition: box-shadow 0.25s ease, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .glass-card:active {
+  /* Interactive variant — use only on clickable cards */
+  .glass-card-interactive {
+    @apply glass-card cursor-pointer;
+    transition: box-shadow 0.25s ease, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .glass-card-interactive:active {
     transform: scale(0.995);
   }
 
@@ -330,22 +334,25 @@
     box-shadow: 0 0 40px hsl(178 100% 43% / 0.2), 0 0 80px hsl(178 100% 43% / 0.1);
   }
 
-  /* ─── Card Variants ─── */
+  /* ─── Card Variants (static container by default) ─── */
   .card-premium {
     @apply bg-card border border-border/50 rounded-xl;
     box-shadow: var(--shadow-sm);
+  }
+
+  /* Interactive variant — use only on clickable cards */
+  .card-premium-interactive {
+    @apply card-premium cursor-pointer;
     transition: box-shadow 0.25s ease, transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
     will-change: transform;
   }
-
   @media (hover: hover) {
-    .card-premium:hover {
+    .card-premium-interactive:hover {
       box-shadow: var(--shadow-lg);
       transform: translateY(-2px);
     }
   }
-
-  .card-premium:active {
+  .card-premium-interactive:active {
     transform: scale(0.98);
   }
 
@@ -354,7 +361,7 @@
   }
 
   @media (hover: hover) {
-    .card-glow-blue:hover {
+    .card-premium-interactive.card-glow-blue:hover {
       box-shadow: var(--shadow-md), 0 0 0 1px hsl(225 76% 48% / 0.15), 0 12px 40px hsl(225 76% 48% / 0.1);
     }
   }
