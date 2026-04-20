@@ -67,7 +67,14 @@ export default function BrandCatalogPage() {
   useEffect(() => { load(); }, [brandId]);
 
   const openNew = () => { setEditing({ ...EMPTY }); setOpen(true); };
-  const openEdit = (m: PoolModel) => { setEditing(m); setOpen(true); };
+  const openEdit = (m: PoolModel) => {
+    // Backward-compat: if gallery is empty but legacy imagem_principal exists, seed gallery
+    const gallery = m.gallery_urls && m.gallery_urls.length > 0
+      ? m.gallery_urls
+      : (m.imagem_principal ? [m.imagem_principal] : []);
+    setEditing({ ...m, gallery_urls: gallery, imagem_principal: m.imagem_principal ?? gallery[0] ?? null });
+    setOpen(true);
+  };
 
   const uploadPhoto = async (file: File): Promise<string | null> => {
     const ext = file.name.split('.').pop();
