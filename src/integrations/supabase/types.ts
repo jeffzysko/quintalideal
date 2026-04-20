@@ -78,6 +78,54 @@ export type Database = {
           },
         ]
       }
+      brands: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          logo_url: string | null
+          name: string
+          payment_terms: string | null
+          primary_color: string | null
+          proposal_footer: string | null
+          proposal_header: string | null
+          proposal_validity_days: number | null
+          secondary_color: string | null
+          slogan: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name: string
+          payment_terms?: string | null
+          primary_color?: string | null
+          proposal_footer?: string | null
+          proposal_header?: string | null
+          proposal_validity_days?: number | null
+          secondary_color?: string | null
+          slogan?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          logo_url?: string | null
+          name?: string
+          payment_terms?: string | null
+          primary_color?: string | null
+          proposal_footer?: string | null
+          proposal_header?: string | null
+          proposal_validity_days?: number | null
+          secondary_color?: string | null
+          slogan?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       error_logs: {
         Row: {
           created_at: string
@@ -263,9 +311,66 @@ export type Database = {
         }
         Relationships: []
       }
+      franchise_model_prices: {
+        Row: {
+          created_at: string
+          custom_price: number | null
+          franchise_id: string
+          id: string
+          is_active: boolean
+          pool_model_id: string
+        }
+        Insert: {
+          created_at?: string
+          custom_price?: number | null
+          franchise_id: string
+          id?: string
+          is_active?: boolean
+          pool_model_id: string
+        }
+        Update: {
+          created_at?: string
+          custom_price?: number | null
+          franchise_id?: string
+          id?: string
+          is_active?: boolean
+          pool_model_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "franchise_model_prices_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchise_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "franchise_model_prices_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchises"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "franchise_model_prices_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchises_public"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "franchise_model_prices_pool_model_id_fkey"
+            columns: ["pool_model_id"]
+            isOneToOne: false
+            referencedRelation: "pool_models"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       franchises: {
         Row: {
           ativa: boolean
+          brand_id: string | null
           cidade_base: string
           cidades_atendidas: string[] | null
           created_at: string
@@ -301,6 +406,7 @@ export type Database = {
         }
         Insert: {
           ativa?: boolean
+          brand_id?: string | null
           cidade_base: string
           cidades_atendidas?: string[] | null
           created_at?: string
@@ -336,6 +442,7 @@ export type Database = {
         }
         Update: {
           ativa?: boolean
+          brand_id?: string | null
           cidade_base?: string
           cidades_atendidas?: string[] | null
           created_at?: string
@@ -369,7 +476,15 @@ export type Database = {
           zapi_phone_number?: string | null
           zapi_token?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "franchises_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       lead_activities: {
         Row: {
@@ -744,6 +859,7 @@ export type Database = {
       }
       pool_models: {
         Row: {
+          brand_id: string | null
           categoria_tamanho: Database["public"]["Enums"]["categoria_tamanho"]
           comprimento: number | null
           created_at: string
@@ -760,6 +876,7 @@ export type Database = {
           tamanho: string | null
         }
         Insert: {
+          brand_id?: string | null
           categoria_tamanho: Database["public"]["Enums"]["categoria_tamanho"]
           comprimento?: number | null
           created_at?: string
@@ -776,6 +893,7 @@ export type Database = {
           tamanho?: string | null
         }
         Update: {
+          brand_id?: string | null
           categoria_tamanho?: Database["public"]["Enums"]["categoria_tamanho"]
           comprimento?: number | null
           created_at?: string
@@ -791,7 +909,15 @@ export type Database = {
           profundidade?: number | null
           tamanho?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "pool_models_brand_id_fkey"
+            columns: ["brand_id"]
+            isOneToOne: false
+            referencedRelation: "brands"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       post_sale_checklist: {
         Row: {
@@ -1016,6 +1142,7 @@ export type Database = {
       profiles: {
         Row: {
           avatar_url: string | null
+          blocked_at: string | null
           created_at: string
           franquia_id: string | null
           full_name: string | null
@@ -1026,6 +1153,7 @@ export type Database = {
         }
         Insert: {
           avatar_url?: string | null
+          blocked_at?: string | null
           created_at?: string
           franquia_id?: string | null
           full_name?: string | null
@@ -1036,6 +1164,7 @@ export type Database = {
         }
         Update: {
           avatar_url?: string | null
+          blocked_at?: string | null
           created_at?: string
           franquia_id?: string | null
           full_name?: string | null
