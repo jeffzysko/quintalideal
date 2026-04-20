@@ -67,7 +67,14 @@ export default function BrandCatalogPage() {
   useEffect(() => { load(); }, [brandId]);
 
   const openNew = () => { setEditing({ ...EMPTY }); setOpen(true); };
-  const openEdit = (m: PoolModel) => { setEditing(m); setOpen(true); };
+  const openEdit = (m: PoolModel) => {
+    // Backward-compat: if gallery is empty but legacy imagem_principal exists, seed gallery
+    const gallery = m.gallery_urls && m.gallery_urls.length > 0
+      ? m.gallery_urls
+      : (m.imagem_principal ? [m.imagem_principal] : []);
+    setEditing({ ...m, gallery_urls: gallery, imagem_principal: m.imagem_principal ?? gallery[0] ?? null });
+    setOpen(true);
+  };
 
   const uploadPhoto = async (file: File): Promise<string | null> => {
     const ext = file.name.split('.').pop();
@@ -87,25 +94,35 @@ export default function BrandCatalogPage() {
   const handleGalleryAdd = async (files: FileList) => {
     setUploading(true);
     const current = editing.gallery_urls ?? [];
-    const slots = Math.max(0, 3 - current.length); // up to 3 extras (4 total with main)
+    const slots = Math.max(0, 3 - current.length);
     const uploads = await Promise.all(Array.from(files).slice(0, slots).map(uploadPhoto));
     setUploading(false);
-    setEditing((p) => ({ ...p, gallery_urls: [...current, ...uploads.filter(Boolean) as string[]] }));
+    const next = [...current, ...uploads.filter(Boolean) as string[]];
+    setEditing((p) => ({ ...p, gallery_urls: next, imagem_principal: p.imagem_principal ?? next[0] ?? null }));
   };
 
   const removeGallery = (idx: number) => {
-    setEditing((p) => ({ ...p, gallery_urls: (p.gallery_urls ?? []).filter((_, i) => i !== idx) }));
+    setEditing((p) => {
+      const next = (p.gallery_urls ?? []).filter((_, i) => i !== idx);
+      // Keep imagem_principal in sync if it pointed at the removed one
+      const removedUrl = (p.gallery_urls ?? [])[idx];
+      const newMain = p.imagem_principal === removedUrl ? (next[0] ?? null) : p.imagem_principal;
+      return { ...p, gallery_urls: next, imagem_principal: newMain };
+    });
   };
 
   const handleSave = async () => {
     if (!editing.nome_modelo?.trim()) { toast.error('Informe o nome do modelo'); return; }
     if (!brandId) return;
     setSaving(true);
+    // Ensure imagem_principal stays in sync with the first gallery photo for legacy compatibility
+    const gallery = editing.gallery_urls ?? [];
+    const mainImage = editing.imagem_principal ?? gallery[0] ?? null;
     const payload = {
       brand_id: brandId,
       nome_modelo: editing.nome_modelo!,
       descricao: editing.descricao ?? null,
-      imagem_principal: editing.imagem_principal ?? null,
+      imagem_principal: mainImage,
       gallery_urls: editing.gallery_urls ?? [],
       categoria_tamanho: (editing.categoria_tamanho ?? 'media') as CategoriaTamanho,
       comprimento: editing.comprimento ?? null,
@@ -162,11 +179,13 @@ export default function BrandCatalogPage() {
         <Card><CardContent className="py-12 text-center text-muted-foreground">Nenhum modelo cadastrado.</CardContent></Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {models.map((m) => (
+          {models.map((m) => {
+            const cover = m.gallery_urls?.[0] || m.imagem_principal || null;
+            return (
             <Card key={m.id} className="overflow-hidden">
               <div className="aspect-video bg-muted">
-                {m.imagem_principal ? (
-                  <img src={m.imagem_principal} alt={m.nome_modelo} className="w-full h-full object-cover" />
+                {cover ? (
+                  <img src={cover} alt={m.nome_modelo} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">Sem foto</div>
                 )}
@@ -193,7 +212,7 @@ export default function BrandCatalogPage() {
                 </div>
               </CardContent>
             </Card>
-          ))}
+          );})}
         </div>
       )}
 
