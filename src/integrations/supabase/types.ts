@@ -864,6 +864,7 @@ export type Database = {
           comprimento: number | null
           created_at: string
           descricao: string | null
+          gallery_urls: string[] | null
           id: string
           imagem_principal: string | null
           largura: number | null
@@ -881,6 +882,7 @@ export type Database = {
           comprimento?: number | null
           created_at?: string
           descricao?: string | null
+          gallery_urls?: string[] | null
           id?: string
           imagem_principal?: string | null
           largura?: number | null
@@ -898,6 +900,7 @@ export type Database = {
           comprimento?: number | null
           created_at?: string
           descricao?: string | null
+          gallery_urls?: string[] | null
           id?: string
           imagem_principal?: string | null
           largura?: number | null
