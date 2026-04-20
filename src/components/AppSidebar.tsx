@@ -84,6 +84,7 @@ const ADMIN_TABS: SidebarNavItem[] = [
 
 const SUPER_ADMIN_TABS: SidebarNavItem[] = [
   { title: 'Funil Geral', url: '/admin?tab=kanban', icon: Kanban, matchTab: 'kanban' },
+  { title: 'Marcas', url: '/admin/marcas', icon: Building2, matchPaths: ['/admin/marcas'] },
   { title: 'Usuarios', url: '/admin?tab=users', icon: Users, matchTab: 'users' },
   { title: 'E-mails', url: '/admin?tab=emails', icon: Mail, matchTab: 'emails' },
   { title: 'WhatsApp', url: '/admin?tab=whatsapp', icon: MessageCircle, matchTab: 'whatsapp' },
