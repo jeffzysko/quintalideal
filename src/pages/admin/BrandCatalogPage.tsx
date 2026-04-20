@@ -162,11 +162,13 @@ export default function BrandCatalogPage() {
         <Card><CardContent className="py-12 text-center text-muted-foreground">Nenhum modelo cadastrado.</CardContent></Card>
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {models.map((m) => (
+          {models.map((m) => {
+            const cover = m.gallery_urls?.[0] || m.imagem_principal || null;
+            return (
             <Card key={m.id} className="overflow-hidden">
               <div className="aspect-video bg-muted">
-                {m.imagem_principal ? (
-                  <img src={m.imagem_principal} alt={m.nome_modelo} className="w-full h-full object-cover" />
+                {cover ? (
+                  <img src={cover} alt={m.nome_modelo} className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">Sem foto</div>
                 )}
