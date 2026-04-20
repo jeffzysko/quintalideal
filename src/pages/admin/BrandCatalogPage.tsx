@@ -195,7 +195,7 @@ export default function BrandCatalogPage() {
                 </div>
               </CardContent>
             </Card>
-          ))}
+          );})}
         </div>
       )}
 
