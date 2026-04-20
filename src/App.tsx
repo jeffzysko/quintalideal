@@ -77,6 +77,8 @@ const SejaParceiro = lazy(() => import("./pages/SejaParceiro"));
 const CatalogoPiscinas = lazy(() => import("./pages/CatalogoPiscinas"));
 const RelatorioCRM = lazy(() => import("./pages/RelatorioCRM"));
 const PublicReview = lazy(() => import("./pages/PublicReview"));
+const BrandsPage = lazy(() => import("./pages/admin/BrandsPage"));
+const BrandCatalogPage = lazy(() => import("./pages/admin/BrandCatalogPage"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -218,6 +220,14 @@ function AppRouteTree() {
         <Route
           path="/superadmin/status"
           element={<ProtectedRoute allowedRoles={['super_admin']}><SuperAdminStatus /></ProtectedRoute>}
+        />
+        <Route
+          path="/admin/marcas"
+          element={<ProtectedRoute allowedRoles={['super_admin']}><BrandsPage /></ProtectedRoute>}
+        />
+        <Route
+          path="/admin/marcas/:brandId/catalogo"
+          element={<ProtectedRoute allowedRoles={['super_admin']}><BrandCatalogPage /></ProtectedRoute>}
         />
       </Route>
 
