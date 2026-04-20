@@ -122,7 +122,7 @@ export default function BrandCatalogPage() {
       brand_id: brandId,
       nome_modelo: editing.nome_modelo!,
       descricao: editing.descricao ?? null,
-      imagem_principal: editing.imagem_principal ?? null,
+      imagem_principal: mainImage,
       gallery_urls: editing.gallery_urls ?? [],
       categoria_tamanho: (editing.categoria_tamanho ?? 'media') as CategoriaTamanho,
       comprimento: editing.comprimento ?? null,
