@@ -79,7 +79,7 @@ export default function CatalogoPiscinas() {
           ) : (
             <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               {filtered.map(model => (
-                <Card key={model.id} className="glass-card overflow-hidden group hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setSelectedModel(model)}>
+                <Card key={model.id} className="glass-card-interactive overflow-hidden group" onClick={() => setSelectedModel(model)}>
                   <div className="relative aspect-[4/3] overflow-hidden">
                     <img
                       src={model.image}
