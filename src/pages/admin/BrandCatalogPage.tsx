@@ -11,9 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { Plus, Pencil, Trash2, ArrowLeft, Loader2, X } from 'lucide-react';
 import { toast } from 'sonner';
-import { PageHeader } from '@/components/PageHeader';
 
-type CategoriaTamanho = 'compacta' | 'media' | 'grande' | 'extra_grande';
+type CategoriaTamanho = 'pequena' | 'media' | 'grande';
 
 interface PoolModel {
   id: string;
@@ -143,15 +142,19 @@ export default function BrandCatalogPage() {
         <ArrowLeft className="h-4 w-4 mr-1.5" /> Voltar para marcas
       </Button>
 
-      <PageHeader
-        title={brandName ? `Catálogo - ${brandName}` : 'Catálogo'}
-        description="Modelos de piscina vinculados a esta marca."
-        actions={
-          <Button onClick={openNew}>
-            <Plus className="h-4 w-4 mr-2" /> Adicionar modelo
-          </Button>
-        }
-      />
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">
+            {brandName ? `Catálogo - ${brandName}` : 'Catálogo'}
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Modelos de piscina vinculados a esta marca.
+          </p>
+        </div>
+        <Button onClick={openNew}>
+          <Plus className="h-4 w-4 mr-2" /> Adicionar modelo
+        </Button>
+      </div>
 
       {loading ? (
         <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
@@ -213,10 +216,9 @@ export default function BrandCatalogPage() {
               <Select value={editing.categoria_tamanho ?? 'media'} onValueChange={(v) => setEditing((p) => ({ ...p, categoria_tamanho: v as CategoriaTamanho }))}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="compacta">Compacta</SelectItem>
+                  <SelectItem value="pequena">Pequena</SelectItem>
                   <SelectItem value="media">Média</SelectItem>
                   <SelectItem value="grande">Grande</SelectItem>
-                  <SelectItem value="extra_grande">Extra grande</SelectItem>
                 </SelectContent>
               </Select>
             </div>

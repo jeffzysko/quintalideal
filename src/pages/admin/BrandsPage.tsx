@@ -13,7 +13,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Plus, Pencil, BookOpen, Building2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import { PageHeader } from '@/components/PageHeader';
 
 interface Brand {
   id: string;
@@ -147,15 +146,17 @@ export default function BrandsPage() {
 
   return (
     <div className="container max-w-6xl py-6 space-y-6">
-      <PageHeader
-        title="Marcas"
-        description="Gerencie as marcas do sistema, suas identidades visuais e catálogos."
-        actions={
-          <Button onClick={openNew}>
-            <Plus className="h-4 w-4 mr-2" /> Nova marca
-          </Button>
-        }
-      />
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Marcas</h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Gerencie as marcas do sistema, suas identidades visuais e catálogos.
+          </p>
+        </div>
+        <Button onClick={openNew}>
+          <Plus className="h-4 w-4 mr-2" /> Nova marca
+        </Button>
+      </div>
 
       {loading ? (
         <div className="flex justify-center py-12">
