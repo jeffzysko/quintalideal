@@ -94,20 +94,30 @@ export default function BrandCatalogPage() {
   const handleGalleryAdd = async (files: FileList) => {
     setUploading(true);
     const current = editing.gallery_urls ?? [];
-    const slots = Math.max(0, 3 - current.length); // up to 3 extras (4 total with main)
+    const slots = Math.max(0, 3 - current.length);
     const uploads = await Promise.all(Array.from(files).slice(0, slots).map(uploadPhoto));
     setUploading(false);
-    setEditing((p) => ({ ...p, gallery_urls: [...current, ...uploads.filter(Boolean) as string[]] }));
+    const next = [...current, ...uploads.filter(Boolean) as string[]];
+    setEditing((p) => ({ ...p, gallery_urls: next, imagem_principal: p.imagem_principal ?? next[0] ?? null }));
   };
 
   const removeGallery = (idx: number) => {
-    setEditing((p) => ({ ...p, gallery_urls: (p.gallery_urls ?? []).filter((_, i) => i !== idx) }));
+    setEditing((p) => {
+      const next = (p.gallery_urls ?? []).filter((_, i) => i !== idx);
+      // Keep imagem_principal in sync if it pointed at the removed one
+      const removedUrl = (p.gallery_urls ?? [])[idx];
+      const newMain = p.imagem_principal === removedUrl ? (next[0] ?? null) : p.imagem_principal;
+      return { ...p, gallery_urls: next, imagem_principal: newMain };
+    });
   };
 
   const handleSave = async () => {
     if (!editing.nome_modelo?.trim()) { toast.error('Informe o nome do modelo'); return; }
     if (!brandId) return;
     setSaving(true);
+    // Ensure imagem_principal stays in sync with the first gallery photo for legacy compatibility
+    const gallery = editing.gallery_urls ?? [];
+    const mainImage = editing.imagem_principal ?? gallery[0] ?? null;
     const payload = {
       brand_id: brandId,
       nome_modelo: editing.nome_modelo!,
