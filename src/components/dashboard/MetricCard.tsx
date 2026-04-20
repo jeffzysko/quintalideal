@@ -49,7 +49,7 @@ export const MetricCard = memo(function MetricCard({ icon: Icon, label, value, p
       transition={{ delay, type: 'spring', stiffness: 300, damping: 24 }}
     >
       <Card
-        className={`card-premium group active:scale-[0.98] transition-transform ${onClick ? 'cursor-pointer' : ''}`}
+        className={`${onClick ? 'card-premium-interactive' : 'card-premium'} group`}
         onClick={onClick}
       >
         <CardContent className="space-y-3 p-4 sm:p-5">

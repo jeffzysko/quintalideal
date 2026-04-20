@@ -131,7 +131,7 @@ export function WebhookHealthWidget({ franchiseId }: Props) {
     >
       <Card
         className={cn(
-          'card-premium cursor-pointer transition-all hover:shadow-md active:scale-[0.99]',
+          'card-premium-interactive',
           isCritical && 'border-destructive/30',
           !isHealthy && !isCritical && 'border-amber-300/40',
         )}
