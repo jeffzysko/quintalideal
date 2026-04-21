@@ -1,8 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { POOL_MODELS, CATEGORIES, CATEGORY_COLORS, type PoolModel } from '@/lib/pool-catalog';
-import { PanelHeader } from '@/components/PanelHeader';
-import { BackButton } from '@/components/BackButton';
+import { PageHeader } from '@/components/PageHeader';
 import { NotificationBell } from '@/components/NotificationBell';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { Card, CardContent } from '@/components/ui/card';
@@ -31,13 +30,17 @@ export default function CatalogoPiscinas() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-background pb-bottomnav">
-        <PanelHeader title="Catalogo de Modelos">
-          <BackButton fallback="/hoje" />
-          <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
-          <NotificationBell />
-          <UserAvatarMenu />
-        </PanelHeader>
+      <div className="min-h-screen bg-background pb-24 md:pb-12">
+        <PageHeader
+          title="Catálogo de Modelos"
+          fallbackPath="/hoje"
+          rightSlot={
+            <div className="flex items-center gap-1">
+              <NotificationBell />
+              <UserAvatarMenu />
+            </div>
+          }
+        />
 
         <div className="max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4">
           {/* Filters */}

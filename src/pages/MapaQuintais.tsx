@@ -3,14 +3,11 @@ import { motion } from 'framer-motion';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MapPin, BarChart3, Users, TrendingUp } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+
 
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
-import { PanelHeader } from '@/components/PanelHeader';
-import { BackButton } from '@/components/BackButton';
-import { NotificationBell } from '@/components/NotificationBell';
-import { UserAvatarMenu } from '@/components/UserAvatarMenu';
+import { PageHeader } from '@/components/PageHeader';
 import { LeafletHeatmap } from '@/components/admin/LeafletHeatmap';
 
 interface CityData {
@@ -101,16 +98,12 @@ export default function MapaQuintais() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-background">
-      <PanelHeader title="Mapa de Calor">
-        <BackButton fallback="/admin" />
-        <Badge variant="outline" className="text-[10px] md:text-xs px-2 md:px-3 py-1 md:py-1.5 border-primary/30 text-primary whitespace-nowrap animate-pulse-glow hidden sm:flex">
-          {totalQuintais} quintais
-        </Badge>
-        <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
-        <NotificationBell />
-        <UserAvatarMenu />
-      </PanelHeader>
+    <div className="min-h-screen bg-background pb-24 md:pb-12">
+      <PageHeader
+        title="Mapa de Calor"
+        subtitle={`${totalQuintais} quintais mapeados`}
+        fallbackPath="/admin"
+      />
 
       <div className="px-4 md:px-6 py-4 md:py-6 max-w-5xl mx-auto">
         <Breadcrumbs className="md:hidden" items={[

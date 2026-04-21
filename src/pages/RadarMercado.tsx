@@ -13,10 +13,7 @@ import { PieChart, Pie, Cell } from 'recharts';
 
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
-import { PanelHeader } from '@/components/PanelHeader';
-import { BackButton } from '@/components/BackButton';
-import { NotificationBell } from '@/components/NotificationBell';
-import { UserAvatarMenu } from '@/components/UserAvatarMenu';
+import { PageHeader } from '@/components/PageHeader';
 
 interface LeadData {
   cidade: string | null;
@@ -331,16 +328,12 @@ export default function RadarMercado() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-background pb-bottomnav">
-      <PanelHeader title="Radar de Mercado">
-        <BackButton fallback="/admin" />
-        <Badge variant="outline" className="text-[10px] sm:text-xs px-2 sm:px-3 py-1 sm:py-1.5 border-primary/30 text-primary animate-pulse-glow hidden sm:flex">
-          {totalLeads} testes
-        </Badge>
-        <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
-        <NotificationBell />
-        <UserAvatarMenu />
-      </PanelHeader>
+    <div className="min-h-screen bg-background pb-24 md:pb-12">
+      <PageHeader
+        title="Radar de Mercado"
+        subtitle={`${totalLeads} testes realizados`}
+        fallbackPath="/admin"
+      />
 
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
         <Breadcrumbs className="md:hidden" items={[

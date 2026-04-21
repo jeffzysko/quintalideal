@@ -1,10 +1,7 @@
 import { Copy, CheckCircle2, Webhook, Shield, Zap, Code2, FileJson, Lock, Send, HelpCircle, AlertTriangle, List, MailOpen, MessageCircleQuestion } from 'lucide-react';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { BackButton } from '@/components/BackButton';
-import { PanelHeader } from '@/components/PanelHeader';
-import { NotificationBell } from '@/components/NotificationBell';
-import { UserAvatarMenu } from '@/components/UserAvatarMenu';
+import { PageHeader } from '@/components/PageHeader';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 
 const PAYLOAD_EXAMPLE = `{
@@ -178,13 +175,12 @@ const FIELDS = [
 export default function WebhookDocs() {
 
   return (
-    <div className="min-h-screen bg-background pb-bottomnav relative overflow-hidden">
-      <PanelHeader title="Webhook Docs">
-        <BackButton fallback="/admin" />
-        <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
-        <NotificationBell />
-        <UserAvatarMenu />
-      </PanelHeader>
+    <div className="min-h-screen bg-background pb-24 md:pb-12 relative overflow-hidden">
+      <PageHeader
+        title="Webhook Docs"
+        subtitle="Documentação técnica de integração via webhook"
+        fallbackPath="/admin"
+      />
 
       {/* Background orbs */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
