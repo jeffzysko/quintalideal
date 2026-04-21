@@ -759,9 +759,13 @@ const CLOSING_PHRASES_ES = [
   'Este modelo atiende muy bien lo que buscas y tiende a ser una elección extremadamente satisfactoria.',
 ];
 
-export function generateClosingPhrase(input: QuizInputV2, lang: 'pt' | 'es' = 'pt'): string {
+export function generateClosingPhrase(input: QuizInputV2, lang: 'pt' | 'es' = 'pt', brandName?: string): string {
   const phrases = lang === 'es' ? CLOSING_PHRASES_ES : CLOSING_PHRASES_PT;
   // Deterministic selection based on input to avoid randomness on re-renders
   const idx = (input.space_bucket.length + input.objective_main.length + input.usage_profile.length) % phrases.length;
-  return phrases[idx];
+  const base = phrases[idx];
+  const brand = brandName?.trim();
+  if (!brand) return base;
+  if (lang === 'es') return `${base} ${brand} te acompañará en cada paso.`;
+  return `${base} A ${brand} vai te acompanhar em cada passo.`;
 }

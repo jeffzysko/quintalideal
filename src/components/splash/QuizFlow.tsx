@@ -43,6 +43,7 @@ interface QuizFlowProps {
   brandPrimaryColor?: string;
   brandSecondaryColor?: string;
   brandSlogan?: string;
+  brandScoreLabel?: string;
   isTestMode?: boolean;
 }
 
@@ -54,7 +55,7 @@ function StepFallback() {
   );
 }
 
-export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseWhatsapp, brandId, brandName, brandLogoUrl, brandPrimaryColor, brandSecondaryColor, brandSlogan, isTestMode }: QuizFlowProps) {
+export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseWhatsapp, brandId, brandName, brandLogoUrl, brandPrimaryColor, brandSecondaryColor, brandSlogan, brandScoreLabel, isTestMode }: QuizFlowProps) {
   const [searchParams] = useSearchParams();
   const referredBy = searchParams.get('ref') || '';
   const testBrandIdParam = searchParams.get('brand') || undefined;
@@ -78,9 +79,11 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
 
   const quizQuestions = getQuizQuestions(lang);
   // Total quiz option steps (not counting city)
-  const QUIZ_OPTION_STEPS = quizQuestions.length; // 6 (espaco, moradia, uso, intencao, preferencia, orcamento)
-  const CITY_STEP = QUIZ_OPTION_STEPS; // step index 6 = city
-  const TOTAL_STEPS = QUIZ_OPTION_STEPS + 1; // 7 total
+  const QUIZ_OPTION_STEPS = quizQuestions.length; // 5 (espaco, uso, intencao, preferencia, orcamento)
+  const CITY_STEP = QUIZ_OPTION_STEPS; // step index = city
+  const TOTAL_STEPS = QUIZ_OPTION_STEPS + 1;
+  // Index of the preference step (with image layout) inside answerKeys
+  const PREF_STEP_INDEX = 3;
 
   useEffect(() => {
     trackEvent('landing_page_viewed', analyticsCtx);
@@ -121,7 +124,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
     loadModels();
   }, [brandId, isTestMode, testBrandIdParam]);
 
-  const answerKeys = ['espaco', 'moradia', 'uso', 'intencao', 'preferencia', 'orcamento', 'cidade'];
+  const answerKeys = ['espaco', 'uso', 'intencao', 'preferencia', 'orcamento', 'cidade'];
 
   const handleQuizAnswer = useCallback((value: string) => {
     const key = answerKeys[quizStep];
