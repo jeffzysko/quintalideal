@@ -425,11 +425,36 @@ export default function AdminDashboard() {
     ] : []),
   ];
 
+  const HEADER_BY_TAB: Record<typeof activeTab, { title: string; subtitle: string }> = {
+    overview: { title: 'Dashboard', subtitle: 'Visão geral da plataforma' },
+    analytics: { title: 'Analytics', subtitle: 'Métricas e performance' },
+    'performance-qi': { title: 'Performance QI', subtitle: 'Análise de qualidade e indicadores' },
+    leads: {
+      title: 'Leads',
+      subtitle: isSuperAdmin ? 'Todos os leads da plataforma' : 'Leads atribuídos à sua operação',
+    },
+    kanban: { title: 'Funil', subtitle: 'Pipeline visual de leads em andamento' },
+    franchises: { title: 'Franquias', subtitle: 'Gerencie todas as unidades' },
+    cities: { title: 'Territórios', subtitle: 'Cobertura por cidade e atribuição de leads' },
+    users: { title: 'Usuários', subtitle: 'Gerencie acessos da plataforma' },
+    emails: { title: 'E-mails', subtitle: 'Templates de comunicação' },
+    whatsapp: { title: 'WhatsApp', subtitle: 'Templates e configurações' },
+    candidaturas: { title: 'Candidaturas', subtitle: 'Solicitações de novas franquias' },
+    errors: { title: 'Logs de Erro', subtitle: 'Monitoramento de falhas' },
+    'franchise-view': { title: 'Visão Franquia', subtitle: 'Inspecione o painel de uma unidade específica' },
+  };
+  const activeHeader = HEADER_BY_TAB[activeTab];
+
   return (
     <PageTransition>
     <div className="min-h-screen bg-background pb-[var(--bottom-nav-height)] md:pb-12">
       <AdminWelcomeWizard />
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 sm:py-6 md:py-8">
+        {/* Page header — always first, sticky above filters and tabs */}
+        {activeHeader && (
+          <PageSectionHeader title={activeHeader.title} subtitle={activeHeader.subtitle} />
+        )}
+
         <div className="flex items-center justify-between gap-3 mb-2">
           <Breadcrumbs className="md:hidden" items={[{ label: 'Admin' }]} />
           {['overview', 'leads', 'kanban'].includes(activeTab) && (
@@ -445,7 +470,7 @@ export default function AdminDashboard() {
           )}
         </div>
         {/* Mobile: Select dropdown (desktop uses sidebar) */}
-        <div className="md:hidden mb-4">
+        <div className="md:hidden mb-4 relative z-10">
           <Select value={activeTab} onValueChange={(v) => handleAdminTabChange(v as typeof activeTab)}>
             <SelectTrigger className="w-full bg-card border-border/50">
               <SelectValue />
