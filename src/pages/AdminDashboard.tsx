@@ -623,9 +623,42 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === 'analytics' && (
-          <Suspense fallback={<TabFallback />}>
-            <AdminAnalytics franchiseMap={franchiseMap} role={role} />
-          </Suspense>
+          <Tabs defaultValue="analytics" className="w-full">
+            <TabsList className="w-full h-auto rounded-xl bg-muted/50 border border-border/40 p-1 gap-0.5 overflow-x-auto scrollbar-hide flex flex-nowrap justify-start mb-4">
+              <TabsTrigger value="analytics" className="shrink-0 gap-1.5 rounded-lg text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm px-3 py-2.5 whitespace-nowrap">
+                <Activity className="w-3.5 h-3.5 shrink-0" /> Analytics
+              </TabsTrigger>
+              <TabsTrigger value="performance-qi" className="shrink-0 gap-1.5 rounded-lg text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm px-3 py-2.5 whitespace-nowrap">
+                <Target className="w-3.5 h-3.5 shrink-0" /> Performance QI
+              </TabsTrigger>
+              <TabsTrigger value="relatorios" className="shrink-0 gap-1.5 rounded-lg text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm px-3 py-2.5 whitespace-nowrap">
+                <BarChart2 className="w-3.5 h-3.5 shrink-0" /> Relatórios
+              </TabsTrigger>
+              <TabsTrigger value="audit" className="shrink-0 gap-1.5 rounded-lg text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm px-3 py-2.5 whitespace-nowrap">
+                <Gauge className="w-3.5 h-3.5 shrink-0" /> Performance Audit
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="analytics">
+              <Suspense fallback={<TabFallback />}>
+                <AdminAnalytics franchiseMap={franchiseMap} role={role} />
+              </Suspense>
+            </TabsContent>
+            <TabsContent value="performance-qi">
+              <Suspense fallback={<TabFallback />}>
+                <PerformanceQI franchiseMap={franchiseMap} franchises={franchises as any} />
+              </Suspense>
+            </TabsContent>
+            <TabsContent value="relatorios">
+              <Suspense fallback={<TabFallback />}>
+                <RelatorioCRMPage />
+              </Suspense>
+            </TabsContent>
+            <TabsContent value="audit">
+              <Suspense fallback={<TabFallback />}>
+                <PerformanceAuditPage />
+              </Suspense>
+            </TabsContent>
+          </Tabs>
         )}
 
         {activeTab === 'performance-qi' && (
