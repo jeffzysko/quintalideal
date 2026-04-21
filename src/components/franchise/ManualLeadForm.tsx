@@ -100,8 +100,15 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
   const photoInputRef = useRef<HTMLInputElement>(null);
 
   const { data: poolModels = POOL_MODELS_FALLBACK } = useQuery({
-    queryKey: ['pool-models'],
+    queryKey: ['franchise-catalog-models', franchiseId],
     queryFn: async () => {
+      if (franchiseId) {
+        const { data } = await supabase.rpc('get_franchise_catalog', { p_franchise_id: franchiseId });
+        const list = (data || [])
+          .filter((m: any) => m.is_active)
+          .map((m: any) => m.name as string);
+        if (list.length > 0) return list;
+      }
       const { data } = await supabase.from('pool_models').select('nome_modelo').order('nome_modelo');
       const list = data?.map((m) => m.nome_modelo) || [];
       return list.length > 0 ? list : POOL_MODELS_FALLBACK;
