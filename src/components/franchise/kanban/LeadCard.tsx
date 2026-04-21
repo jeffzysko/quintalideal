@@ -188,6 +188,14 @@ export const LeadCard = memo(function LeadCard({
         </div>
       )}
 
+      {!overlay && getActivityCount(lead.activity_count) > 0 && (
+        <span
+          className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary z-10 pointer-events-none"
+          title="Lead com atividades registradas"
+          aria-label="Lead com atividades registradas"
+        />
+      )}
+
       <div
         className="p-3"
         onClick={!overlay ? () => navigate(`${basePath}/${lead.id}`) : undefined}
