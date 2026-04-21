@@ -311,6 +311,7 @@ export default function SuperAdminReceita() {
           )}
         </>
       )}
+      </div>
     </div>
   );
 }
