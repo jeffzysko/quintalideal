@@ -1,49 +1,91 @@
+import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { motion } from 'framer-motion';
-import { Home, Settings, FileText, Kanban, Plus, LayoutDashboard } from 'lucide-react';
+import {
+  Sun,
+  Settings,
+  FileText,
+  Kanban,
+  Plus,
+  LayoutDashboard,
+  Package,
+  MoreHorizontal,
+  Building2,
+  Users,
+  BarChart2,
+  Star,
+  CalendarDays,
+  BookOpen,
+  TrendingUp,
+  HelpCircle,
+  Bell,
+  Radar,
+  Activity,
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
 
 interface NavItem {
-  icon: typeof Home;
+  icon: typeof Sun;
   label: string;
   path: string;
   matchPaths?: string[];
   isAction?: boolean;
 }
 
-function getNavForRole(role: string | null): NavItem[] {
-  if (role === 'super_admin') {
-    return [
-      { icon: Home, label: 'Inicio', path: '/hoje' },
-      { icon: LayoutDashboard, label: 'Painel', path: '/admin', matchPaths: ['/admin'] },
-      { icon: Plus, label: '', path: '/propostas/nova', isAction: true },
-      { icon: FileText, label: 'Propostas', path: '/propostas', matchPaths: ['/propostas'] },
-      { icon: Settings, label: 'Perfil', path: '/perfil' },
-    ];
-  }
+const SUPER_ADMIN_PRIMARY: NavItem[] = [
+  { icon: LayoutDashboard, label: 'Painel', path: '/admin', matchPaths: ['/admin'] },
+  { icon: Building2, label: 'Franquias', path: '/admin?tab=franchises' },
+  { icon: Plus, label: '', path: '/propostas/nova', isAction: true },
+  { icon: Star, label: 'Marcas', path: '/admin/marcas', matchPaths: ['/admin/marcas'] },
+];
 
-  return [
-    { icon: Home, label: 'Hoje', path: '/hoje' },
-    { icon: Kanban, label: 'CRM', path: '/franquia', matchPaths: ['/franquia', '/painel'] },
-    { icon: Plus, label: '', path: '/propostas/nova', isAction: true },
-    { icon: FileText, label: 'Propostas', path: '/propostas', matchPaths: ['/propostas'] },
-    { icon: Settings, label: 'Perfil', path: '/perfil' },
-  ];
-}
+const SUPER_ADMIN_MORE: NavItem[] = [
+  { icon: Sun, label: 'Início', path: '/hoje' },
+  { icon: Users, label: 'Usuários', path: '/admin?tab=users' },
+  { icon: BarChart2, label: 'Relatórios', path: '/superadmin/receita' },
+  { icon: Radar, label: 'Radar de Mercado', path: '/admin/radar' },
+  { icon: Activity, label: 'Status do Sistema', path: '/superadmin/status' },
+  { icon: CalendarDays, label: 'Agenda', path: '/agenda' },
+  { icon: Bell, label: 'Notificações', path: '/notificacoes' },
+  { icon: Settings, label: 'Configurações', path: '/perfil' },
+  { icon: HelpCircle, label: 'Suporte', path: '/suporte' },
+];
+
+const FRANCHISE_PRIMARY: NavItem[] = [
+  { icon: Sun, label: 'Hoje', path: '/hoje' },
+  { icon: Kanban, label: 'Leads', path: '/franquia', matchPaths: ['/franquia', '/painel'] },
+  { icon: Plus, label: '', path: '/propostas/nova', isAction: true },
+  { icon: FileText, label: 'Propostas', path: '/propostas', matchPaths: ['/propostas'] },
+];
+
+const FRANCHISE_MORE: NavItem[] = [
+  { icon: Package, label: 'Pós-venda', path: '/franquia?tab=pos-venda' },
+  { icon: BarChart2, label: 'Relatórios', path: '/relatorio-crm' },
+  { icon: BookOpen, label: 'Catálogo de Piscinas', path: '/catalogo' },
+  { icon: CalendarDays, label: 'Agenda', path: '/agenda' },
+  { icon: TrendingUp, label: 'Metas', path: '/franquia?tab=achievements' },
+  { icon: Bell, label: 'Notificações', path: '/notificacoes' },
+  { icon: Star, label: 'Planos', path: '/planos' },
+  { icon: Settings, label: 'Configurações', path: '/perfil' },
+  { icon: HelpCircle, label: 'Suporte', path: '/suporte' },
+];
 
 export function BottomNav() {
   const { user, role } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const [moreOpen, setMoreOpen] = useState(false);
 
   if (!user || !role) return null;
 
-  const authenticatedPrefixes = ['/admin', '/franquia', '/hoje', '/agenda', '/perfil', '/suporte', '/docs', '/notificacoes', '/lead', '/painel', '/radar', '/propostas', '/catalogo'];
+  const authenticatedPrefixes = ['/admin', '/franquia', '/hoje', '/agenda', '/perfil', '/suporte', '/docs', '/notificacoes', '/lead', '/painel', '/radar', '/propostas', '/catalogo', '/relatorio-crm', '/superadmin', '/planos'];
   const isAuthenticatedPage = authenticatedPrefixes.some(p => location.pathname.startsWith(p));
   if (!isAuthenticatedPage) return null;
 
-  const navItems = getNavForRole(role);
+  const primary = role === 'super_admin' ? SUPER_ADMIN_PRIMARY : FRANCHISE_PRIMARY;
+  const more = role === 'super_admin' ? SUPER_ADMIN_MORE : FRANCHISE_MORE;
 
   const isActive = (item: NavItem) => {
     if (item.isAction) return false;
@@ -51,6 +93,11 @@ export function BottomNav() {
     if (location.pathname === basePath) return true;
     if (item.matchPaths) return item.matchPaths.some(p => location.pathname.startsWith(p));
     return false;
+  };
+
+  const handleNav = (path: string) => {
+    setMoreOpen(false);
+    navigate(path);
   };
 
   return (
@@ -61,7 +108,7 @@ export function BottomNav() {
       aria-label="Navegação principal"
     >
       <div className="flex items-stretch justify-around h-14">
-        {navItems.map((item) => {
+        {primary.map((item) => {
           const active = isActive(item);
 
           if (item.isAction) {
@@ -86,10 +133,8 @@ export function BottomNav() {
             <button
               key={item.label}
               onClick={() => navigate(item.path)}
-              data-tour={item.label === 'Hoje' || item.label === 'Inicio' ? 'nav-hoje' : item.label === 'Propostas' ? 'nav-propostas' : item.label === 'CRM' ? 'nav-crm' : undefined}
               className={cn(
                 'flex flex-col items-center justify-center gap-0.5 flex-1 relative transition-colors min-h-[48px]',
-                '-webkit-tap-highlight-color: transparent',
                 active ? 'text-primary' : 'text-muted-foreground active:text-foreground',
               )}
               aria-current={active ? 'page' : undefined}
@@ -109,6 +154,35 @@ export function BottomNav() {
             </button>
           );
         })}
+
+        <Drawer open={moreOpen} onOpenChange={setMoreOpen}>
+          <DrawerTrigger asChild>
+            <button
+              className="flex flex-col items-center justify-center gap-0.5 flex-1 relative transition-colors min-h-[48px] text-muted-foreground active:text-foreground"
+              aria-label="Mais opções"
+            >
+              <MoreHorizontal className="w-5 h-5" strokeWidth={2} />
+              <span className="text-[10px] leading-tight font-medium">Mais</span>
+            </button>
+          </DrawerTrigger>
+          <DrawerContent>
+            <DrawerHeader>
+              <DrawerTitle>Mais opções</DrawerTitle>
+            </DrawerHeader>
+            <div className="grid grid-cols-3 gap-2 p-4 pb-8">
+              {more.map((item) => (
+                <button
+                  key={item.label}
+                  onClick={() => handleNav(item.path)}
+                  className="flex flex-col items-center justify-center gap-2 p-3 rounded-lg hover:bg-muted active:bg-muted/80 transition-colors text-center"
+                >
+                  <item.icon className="w-5 h-5 text-foreground" />
+                  <span className="text-[11px] font-medium leading-tight text-foreground">{item.label}</span>
+                </button>
+              ))}
+            </div>
+          </DrawerContent>
+        </Drawer>
       </div>
     </nav>
   );
