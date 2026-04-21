@@ -584,6 +584,7 @@ export default function AdminDashboard() {
               </Suspense>
             </TabsContent>
           </Tabs>
+          </>
         )}
 
         {activeTab === 'performance-qi' && (
