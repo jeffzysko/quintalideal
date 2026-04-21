@@ -22,6 +22,8 @@ import { WhatsAppSettings } from '@/components/admin/WhatsAppSettings';
 import { AdminWhatsAppPlans } from '@/components/admin/AdminWhatsAppPlans';
 import { WhatsAppInstanceConfig } from '@/components/franchise/WhatsAppInstanceConfig';
 import { FranchiseCatalog } from '@/components/franchise/FranchiseCatalog';
+import { AdminEmailTemplates } from '@/components/admin/AdminEmailTemplates';
+import NotificationPreferences from '@/pages/NotificationPreferences';
 
 import { motion } from 'framer-motion';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
