@@ -472,53 +472,6 @@ export default function AdminDashboard() {
     <PageTransition>
     <div className="min-h-screen bg-background pb-24 md:pb-12">
       <AdminWelcomeWizard />
-      <PageHeader
-        title="Fábrica"
-        rightSlot={
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('/hoje')}
-              aria-label="Hoje"
-              className="h-9 w-9 text-muted-foreground hover:text-foreground"
-            >
-              <CalendarClock className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('/admin/radar')}
-              aria-label="Radar"
-              className="hidden xs:inline-flex h-9 w-9 text-muted-foreground hover:text-foreground"
-            >
-              <Target className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('/mapa')}
-              aria-label="Mapa"
-              className="hidden xs:inline-flex h-9 w-9 text-muted-foreground hover:text-foreground"
-            >
-              <MapPin className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={exportCSV}
-              aria-label="CSV"
-              className="hidden xs:inline-flex h-9 w-9 text-muted-foreground hover:text-foreground"
-            >
-              <Download className="w-4 h-4" />
-            </Button>
-            <div className="h-5 w-px bg-border/40 mx-0.5 hidden xs:block" />
-            <NotificationBell />
-            <UserAvatarMenu />
-          </div>
-        }
-      />
-
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
         <div className="flex items-center justify-between gap-3 mb-2">
           <Breadcrumbs className="md:hidden" items={[{ label: 'Admin' }]} />
