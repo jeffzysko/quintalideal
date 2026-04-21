@@ -13,6 +13,12 @@ interface Franchise {
   whatsapp: string | null;
   ativa: boolean;
   meta_pixel_id: string | null;
+  brand_id: string | null;
+  brand_name: string | null;
+  brand_logo_url: string | null;
+  brand_primary_color: string | null;
+  brand_secondary_color: string | null;
+  brand_slogan: string | null;
 }
 
 export default function FranchiseLanding() {
@@ -66,7 +72,7 @@ export default function FranchiseLanding() {
             ? 'Esta franquia está temporariamente indisponível. Tente novamente mais tarde.'
             : 'Não encontramos a página que você procura. Verifique o link e tente novamente.'}
         </p>
-        <p className="text-sm text-muted-foreground">Entre em contato com a Quintal Ideal para mais informações.</p>
+        <p className="text-sm text-muted-foreground">Entre em contato para mais informações.</p>
         <Button onClick={() => navigate('/')} className="gap-2 mt-2">
           <Home className="w-4 h-4" /> Voltar ao início
         </Button>
@@ -82,6 +88,13 @@ export default function FranchiseLanding() {
         franchiseName={franchise.nome_franquia}
         franchiseId={franchise.id}
         franchiseWhatsapp={franchise.whatsapp || undefined}
+        brandId={franchise.brand_id || undefined}
+        brandName={franchise.brand_name || undefined}
+        brandLogoUrl={franchise.brand_logo_url || undefined}
+        brandPrimaryColor={franchise.brand_primary_color || '#16a34a'}
+        brandSecondaryColor={franchise.brand_secondary_color || '#15803d'}
+        brandSlogan={franchise.brand_slogan || undefined}
+        isTestMode={false}
       />
     </>
   );
