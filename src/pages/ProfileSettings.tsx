@@ -87,8 +87,11 @@ export default function ProfileSettings() {
     if (location.hash === '#integracoes') return 'integracoes';
     if (location.hash === '#franquia') return 'franquia';
     if (location.hash === '#notificacoes') return 'notificacoes';
+    if (location.hash === '#preferencias') return 'preferencias';
     if (location.hash === '#automacoes') return 'automacoes';
     if (location.hash === '#whatsapp') return 'whatsapp';
+    if (location.hash === '#emails') return 'emails';
+    if (location.hash === '#catalogo') return 'catalogo';
     return 'pessoal';
   };
 
