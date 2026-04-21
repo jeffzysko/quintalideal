@@ -95,9 +95,12 @@ export function SectionHeader({
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className={cn('relative mb-4', className)}
+      className={cn('sticky top-0 z-40 -mx-4 md:-mx-6 mb-4', className)}
     >
-      <div className="relative px-4 md:px-6 pt-2.5">
+      {/* Full-width blur backdrop (matches PageHeader) */}
+      <div className="absolute inset-0 backdrop-blur-2xl bg-background/60" />
+
+      <div className="relative px-4 md:px-6 pt-2.5 pb-2.5">
         <header className="relative mx-auto max-w-7xl rounded-2xl overflow-hidden">
           {/* Animated glow border */}
           <div className="absolute inset-0 rounded-2xl p-px overflow-hidden">
