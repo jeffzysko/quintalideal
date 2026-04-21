@@ -90,6 +90,7 @@ export type Database = {
           proposal_footer: string | null
           proposal_header: string | null
           proposal_validity_days: number | null
+          score_label: string | null
           secondary_color: string | null
           slogan: string | null
           updated_at: string
@@ -105,6 +106,7 @@ export type Database = {
           proposal_footer?: string | null
           proposal_header?: string | null
           proposal_validity_days?: number | null
+          score_label?: string | null
           secondary_color?: string | null
           slogan?: string | null
           updated_at?: string
@@ -120,6 +122,7 @@ export type Database = {
           proposal_footer?: string | null
           proposal_header?: string | null
           proposal_validity_days?: number | null
+          score_label?: string | null
           secondary_color?: string | null
           slogan?: string | null
           updated_at?: string
@@ -2168,6 +2171,7 @@ export type Database = {
           brand_logo_url: string
           brand_name: string
           brand_primary_color: string
+          brand_score_label: string
           brand_secondary_color: string
           brand_slogan: string
           id: string
