@@ -18,7 +18,6 @@ import {
   MessageCircle,
   DollarSign,
   ChevronDown,
-  Gauge,
   Download,
   Compass,
   Users2,
