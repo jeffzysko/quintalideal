@@ -170,6 +170,8 @@ export default function PublicProposal() {
     ? proposal.subtotal * (proposal.global_discount / 100)
     : proposal.global_discount;
   const proposalNumber = proposal.id.slice(0, 4).toUpperCase();
+  const brand = proposal.brand;
+  const brandPrimary = brand?.primary_color || undefined;
 
   return (
     <>
@@ -186,7 +188,15 @@ export default function PublicProposal() {
         <header className="sticky top-0 z-20 backdrop-blur-xl bg-background/80 border-b border-border/50 print:static">
           <div className="max-w-3xl mx-auto px-5 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <motion.img src={logoQuintalIdeal} alt="Quintal Ideal" className="h-9 w-auto dark:brightness-0 dark:invert" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} />
+              {brand?.logo_url ? (
+                <motion.img src={brand.logo_url} alt={brand.name} className="h-9 w-auto object-contain" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} />
+              ) : brand?.name ? (
+                <motion.span className="text-base font-black tracking-tight" style={{ color: brandPrimary }} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
+                  {brand.name}
+                </motion.span>
+              ) : (
+                <motion.img src={logoQuintalIdeal} alt="Quintal Ideal" className="h-9 w-auto dark:brightness-0 dark:invert" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} />
+              )}
               <div className="hidden sm:block h-6 w-px bg-border" />
               <div className="hidden sm:block">
                 <p className="text-xs font-bold text-foreground leading-tight">{proposal.franchise?.nome_franquia}</p>
@@ -219,6 +229,18 @@ export default function PublicProposal() {
             </motion.p>
             {proposal.validity_date && <CountdownTimer validityDate={proposal.validity_date} />}
           </motion.div>
+
+          {/* ═══ BRAND INTRO ═══ */}
+          {brand?.proposal_header && brand.proposal_header.trim() && (
+            <SectionCard delay={0.02}>
+              <div className="p-5">
+                <p className="text-sm text-foreground/90 whitespace-pre-wrap leading-relaxed">{brand.proposal_header}</p>
+                {brand.slogan && (
+                  <p className="text-xs italic text-muted-foreground mt-3" style={{ color: brandPrimary }}>{brand.slogan}</p>
+                )}
+              </div>
+            </SectionCard>
+          )}
 
           {/* ═══ ACTION DONE MESSAGES ═══ */}
           <AnimatePresence>
@@ -457,11 +479,13 @@ export default function PublicProposal() {
             )}
           </motion.div>
 
-          {proposal.payment_conditions && (
+          {(proposal.payment_conditions || brand?.payment_terms) && (
             <SectionCard>
               <div className="p-5 space-y-2">
                 <h3 className="font-bold text-sm text-foreground">Condições de Pagamento</h3>
-                <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">{proposal.payment_conditions}</p>
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
+                  {proposal.payment_conditions || brand?.payment_terms}
+                </p>
               </div>
             </SectionCard>
           )}
@@ -518,7 +542,11 @@ export default function PublicProposal() {
                   <p className="text-center text-sm text-muted-foreground font-semibold">O que você gostaria de fazer?</p>
                   <div className="flex flex-wrap gap-3 justify-center">
                     <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                      <Button onClick={() => setAcceptOpen(true)} className="gap-2 bg-gradient-to-r from-success to-success/80 hover:from-success/90 hover:to-success/70 text-success-foreground rounded-xl shadow-lg h-12 px-7 font-bold text-sm">
+                      <Button
+                        onClick={() => setAcceptOpen(true)}
+                        className={`gap-2 text-white rounded-xl shadow-lg h-12 px-7 font-bold text-sm hover:opacity-90 transition-opacity ${!brandPrimary ? 'bg-gradient-to-r from-success to-success/80 text-success-foreground' : ''}`}
+                        style={brandPrimary ? { backgroundColor: brandPrimary } : undefined}
+                      >
                         <Check className="w-4 h-4" /> Aceitar Proposta <ArrowRight className="w-4 h-4 ml-1" />
                       </Button>
                     </motion.div>
@@ -541,6 +569,11 @@ export default function PublicProposal() {
           )}
 
           <TrustBadges />
+          {brand?.proposal_footer && brand.proposal_footer.trim() && (
+            <div className="text-center text-xs text-muted-foreground/80 leading-relaxed whitespace-pre-wrap px-4 pt-2">
+              {brand.proposal_footer}
+            </div>
+          )}
           <VerificationFooter proposal={proposal} />
         </main>
 
@@ -550,7 +583,11 @@ export default function PublicProposal() {
             style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
             <div className="flex gap-2">
               <motion.div className="flex-1" whileTap={{ scale: 0.97 }}>
-                <Button onClick={() => setAcceptOpen(true)} className="w-full gap-1.5 h-12 bg-gradient-to-r from-success to-success/80 text-success-foreground rounded-xl shadow-lg font-bold">
+                <Button
+                  onClick={() => setAcceptOpen(true)}
+                  className={`w-full gap-1.5 h-12 text-white rounded-xl shadow-lg font-bold hover:opacity-90 transition-opacity ${!brandPrimary ? 'bg-gradient-to-r from-success to-success/80 text-success-foreground' : ''}`}
+                  style={brandPrimary ? { backgroundColor: brandPrimary } : undefined}
+                >
                   <Check className="w-4 h-4" /> Aceitar
                 </Button>
               </motion.div>

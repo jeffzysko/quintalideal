@@ -52,6 +52,17 @@ export interface ProposalData {
     avatar_url: string | null;
     telefone: string | null;
   } | null;
+  brand?: {
+    name: string;
+    logo_url: string | null;
+    primary_color: string | null;
+    secondary_color: string | null;
+    slogan: string | null;
+    proposal_header: string | null;
+    proposal_footer: string | null;
+    payment_terms: string | null;
+    proposal_validity_days: number | null;
+  } | null;
 }
 
 export const formatCurrency = (v: number) => Number(v).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
