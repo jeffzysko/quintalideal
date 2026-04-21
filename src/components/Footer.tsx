@@ -13,7 +13,7 @@ export function Footer() {
         <p className="text-center text-xs text-muted-foreground/40">
           Desenvolvido por{' '}
           <a
-            href="https://hallowcomunicacao.com.br"
+            href="https://hallow.com.br"
             target="_blank"
             rel="noopener noreferrer"
             className="text-muted-foreground/60 hover:text-muted-foreground transition-colors underline-offset-2 hover:underline"
@@ -52,7 +52,7 @@ export function PublicFooter() {
       <p className="text-center text-xs text-muted-foreground/40 mt-2">
         Desenvolvido por{' '}
         <a
-          href="https://hallowcomunicacao.com.br"
+          href="https://hallow.com.br"
           target="_blank"
           rel="noopener noreferrer"
           className="text-muted-foreground/60 hover:text-muted-foreground transition-colors underline-offset-2 hover:underline"
