@@ -5,6 +5,7 @@ import { QuizFlow } from '@/components/splash/QuizFlow';
 import { MetaPixel } from '@/components/MetaPixel';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, Home } from 'lucide-react';
+import { PublicFooter } from '@/components/Footer';
 
 interface Franchise {
   id: string;

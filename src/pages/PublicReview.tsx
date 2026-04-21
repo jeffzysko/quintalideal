@@ -5,6 +5,7 @@ import { Star, CheckCircle2, MessageCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
+import { PublicFooter } from '@/components/Footer';
 
 interface FranchiseInfo {
   nome_franquia: string;
