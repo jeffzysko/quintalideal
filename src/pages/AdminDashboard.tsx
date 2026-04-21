@@ -427,7 +427,7 @@ export default function AdminDashboard() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-background pb-24 md:pb-12">
+    <div className="min-h-screen bg-background pb-[var(--bottom-nav-height)] md:pb-12">
       <AdminWelcomeWizard />
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 sm:py-6 md:py-8">
         <div className="flex items-center justify-between gap-3 mb-2">

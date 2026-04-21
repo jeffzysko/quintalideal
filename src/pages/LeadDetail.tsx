@@ -443,7 +443,7 @@ export default function LeadDetail() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-background pb-24 md:pb-12">
+    <div className="min-h-screen bg-background pb-[var(--bottom-nav-height)] md:pb-12">
       <PageHeader
         title={lead.nome || 'Detalhes do Lead'}
         fallbackPath={returnTo}

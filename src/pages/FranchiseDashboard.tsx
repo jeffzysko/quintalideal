@@ -667,7 +667,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-background pb-24 md:pb-12">
+    <div className="min-h-screen bg-background pb-[var(--bottom-nav-height)] md:pb-12">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-4 sm:py-6 md:py-8">
         <Breadcrumbs className="md:hidden" items={[{ label: 'Franquia' }]} />
         {content}

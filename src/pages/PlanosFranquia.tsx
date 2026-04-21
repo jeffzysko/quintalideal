@@ -152,7 +152,7 @@ export default function PlanosFranquia() {
 
   return (
     <PageTransition>
-    <div className="p-4 md:p-6 space-y-8 max-w-4xl mx-auto pb-24">
+    <div className="p-4 md:p-6 space-y-8 max-w-4xl mx-auto pb-[var(--bottom-nav-height)]">
       <PageHeader
         title="Planos e Assinaturas"
         subtitle="Expanda os recursos da sua franquia com nossos planos adicionais."
