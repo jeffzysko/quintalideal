@@ -15,26 +15,15 @@ import {
   Users,
   BarChart2,
   Star,
-  CalendarDays,
-  BookOpen,
   TrendingUp,
   HelpCircle,
-  Bell,
-  Radar,
   Activity,
-  Eye,
-  Inbox,
+  Users2,
   AlertTriangle,
   MessageCircle,
   DollarSign,
-  Map,
-  Mail,
-  Gauge,
-  PieChart,
-  Code,
-  Download,
+  Store,
   Compass,
-  BellRing,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
@@ -47,42 +36,32 @@ interface NavItem {
   isAction?: boolean;
 }
 
-// ── Super Admin: 4 primary + FAB + Mais ──
+// ── Super Admin: Dashboard, Analytics, Gestão (drawer), Mais (drawer) ──
 const SUPER_ADMIN_PRIMARY: NavItem[] = [
-  { icon: LayoutDashboard, label: 'Painel', path: '/admin', matchPaths: ['/admin'] },
-  { icon: Building2, label: 'Franquias', path: '/admin?tab=franchises' },
+  { icon: LayoutDashboard, label: 'Dashboard', path: '/admin', matchPaths: ['/admin'] },
+  { icon: TrendingUp, label: 'Analytics', path: '/admin?tab=analytics' },
   { icon: Plus, label: '', path: '/propostas/nova', isAction: true },
-  { icon: Star, label: 'Marcas', path: '/admin/marcas' },
+  // 4th slot is filled by the "Gestão" button below (rendered separately)
+];
+
+const SUPER_ADMIN_GESTAO: NavItem[] = [
+  { icon: Store, label: 'Franquias', path: '/admin?tab=franchises' },
+  { icon: Building2, label: 'Marcas', path: '/admin/marcas' },
+  { icon: Users, label: 'Usuários', path: '/admin?tab=users' },
 ];
 
 const SUPER_ADMIN_MORE: NavItem[] = [
-  { icon: Sun, label: 'Início', path: '/hoje' },
-  { icon: Kanban, label: 'Funil Geral', path: '/admin?tab=kanban' },
-  { icon: Inbox, label: 'Leads', path: '/admin?tab=leads' },
-  { icon: Eye, label: 'Visão Franquia', path: '/admin?tab=franchise-view' },
-  { icon: PieChart, label: 'Analytics', path: '/admin?tab=analytics' },
-  { icon: Gauge, label: 'Performance QI', path: '/admin?tab=performance-qi' },
-  { icon: Map, label: 'Cidades', path: '/admin?tab=cities' },
-  { icon: Inbox, label: 'Candidaturas', path: '/admin?tab=candidaturas' },
-  { icon: Users, label: 'Usuários', path: '/admin?tab=users' },
-  { icon: Compass, label: 'Modo Explorar', path: '/explorar' },
+  { icon: Users2, label: 'Leads', path: '/admin?tab=leads' },
+  { icon: Compass, label: 'Explorar', path: '/explorar' },
+  { icon: Activity, label: 'Status', path: '/superadmin/status' },
+  { icon: AlertTriangle, label: 'Logs de Erro', path: '/admin?tab=errors' },
   { icon: DollarSign, label: 'Faturamento', path: '/superadmin/receita' },
   { icon: MessageCircle, label: 'WhatsApp', path: '/admin?tab=whatsapp' },
-  { icon: Mail, label: 'Templates de E-mail', path: '/admin?tab=emails' },
-  { icon: Activity, label: 'Status do Sistema', path: '/superadmin/status' },
-  { icon: AlertTriangle, label: 'Logs de Erro', path: '/admin?tab=errors' },
-  { icon: Gauge, label: 'Performance Audit', path: '/admin/performance' },
-  { icon: Radar, label: 'Radar de Mercado', path: '/admin/radar' },
-  { icon: CalendarDays, label: 'Agenda', path: '/agenda' },
-  { icon: Bell, label: 'Notificações', path: '/notificacoes' },
-  { icon: BellRing, label: 'Preferências de Notificação', path: '/notificacoes/preferencias' },
-  { icon: Code, label: 'Docs do Webhook', path: '/docs/webhook' },
-  { icon: Download, label: 'Instalar App', path: '/install' },
   { icon: Settings, label: 'Configurações', path: '/perfil' },
   { icon: HelpCircle, label: 'Suporte', path: '/suporte' },
 ];
 
-// ── Franquia: 4 primary + FAB + Mais ──
+// ── Franquia: Hoje, Leads, FAB, Propostas, Mais ──
 const FRANCHISE_PRIMARY: NavItem[] = [
   { icon: Sun, label: 'Hoje', path: '/hoje' },
   { icon: Kanban, label: 'Leads', path: '/franquia', matchPaths: ['/franquia', '/painel'] },
@@ -92,15 +71,9 @@ const FRANCHISE_PRIMARY: NavItem[] = [
 
 const FRANCHISE_MORE: NavItem[] = [
   { icon: Package, label: 'Pós-venda', path: '/franquia?tab=pos-venda' },
-  { icon: BookOpen, label: 'Catálogo de Piscinas', path: '/catalogo' },
-  { icon: TrendingUp, label: 'Metas', path: '/franquia?tab=achievements' },
   { icon: BarChart2, label: 'Relatórios', path: '/relatorio-crm' },
-  { icon: CalendarDays, label: 'Agenda', path: '/agenda' },
+  { icon: TrendingUp, label: 'Metas', path: '/franquia?tab=achievements' },
   { icon: Star, label: 'Planos', path: '/planos' },
-  { icon: Bell, label: 'Notificações', path: '/notificacoes' },
-  { icon: BellRing, label: 'Preferências de Notificação', path: '/notificacoes/preferencias' },
-  { icon: Code, label: 'Docs do Webhook', path: '/docs/webhook' },
-  { icon: Download, label: 'Instalar App', path: '/install' },
   { icon: Settings, label: 'Configurações', path: '/perfil' },
   { icon: HelpCircle, label: 'Suporte', path: '/suporte' },
 ];
@@ -110,6 +83,7 @@ export function BottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
   const [moreOpen, setMoreOpen] = useState(false);
+  const [gestaoOpen, setGestaoOpen] = useState(false);
 
   if (!user || !role) return null;
 
@@ -117,8 +91,9 @@ export function BottomNav() {
   const isAuthenticatedPage = authenticatedPrefixes.some(p => location.pathname.startsWith(p));
   if (!isAuthenticatedPage) return null;
 
-  const primary = role === 'super_admin' ? SUPER_ADMIN_PRIMARY : FRANCHISE_PRIMARY;
-  const more = role === 'super_admin' ? SUPER_ADMIN_MORE : FRANCHISE_MORE;
+  const isSuperAdmin = role === 'super_admin';
+  const primary = isSuperAdmin ? SUPER_ADMIN_PRIMARY : FRANCHISE_PRIMARY;
+  const more = isSuperAdmin ? SUPER_ADMIN_MORE : FRANCHISE_MORE;
 
   const isActive = (item: NavItem) => {
     if (item.isAction) return false;
@@ -130,6 +105,7 @@ export function BottomNav() {
 
   const handleNav = (path: string) => {
     setMoreOpen(false);
+    setGestaoOpen(false);
     navigate(path);
   };
 
@@ -187,6 +163,38 @@ export function BottomNav() {
             </button>
           );
         })}
+
+        {/* Super Admin: Gestão drawer in 4th slot */}
+        {isSuperAdmin && (
+          <Drawer open={gestaoOpen} onOpenChange={setGestaoOpen}>
+            <DrawerTrigger asChild>
+              <button
+                className="flex flex-col items-center justify-center gap-0.5 flex-1 relative transition-colors min-h-[48px] text-muted-foreground active:text-foreground"
+                aria-label="Gestão"
+              >
+                <Store className="w-5 h-5" strokeWidth={2} />
+                <span className="text-[10px] leading-tight font-medium">Gestão</span>
+              </button>
+            </DrawerTrigger>
+            <DrawerContent>
+              <DrawerHeader>
+                <DrawerTitle>Gestão</DrawerTitle>
+              </DrawerHeader>
+              <div className="grid grid-cols-3 gap-2 p-4 pb-8">
+                {SUPER_ADMIN_GESTAO.map((item) => (
+                  <button
+                    key={item.label}
+                    onClick={() => handleNav(item.path)}
+                    className="flex flex-col items-center justify-center gap-2 p-3 rounded-lg hover:bg-muted active:bg-muted/80 transition-colors text-center"
+                  >
+                    <item.icon className="w-5 h-5 text-foreground" />
+                    <span className="text-[11px] font-medium leading-tight text-foreground">{item.label}</span>
+                  </button>
+                ))}
+              </div>
+            </DrawerContent>
+          </Drawer>
+        )}
 
         <Drawer open={moreOpen} onOpenChange={setMoreOpen}>
           <DrawerTrigger asChild>

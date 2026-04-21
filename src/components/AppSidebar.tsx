@@ -1,10 +1,7 @@
 import { useState, useEffect } from 'react';
 import {
-  Home,
-  CalendarDays,
   Settings,
   HelpCircle,
-  Bell,
   Users,
   Building2,
   Kanban,
@@ -12,27 +9,20 @@ import {
   LogOut,
   FileText,
   Star,
-  BookOpen,
   Package,
   LayoutDashboard,
   BarChart2,
   Activity,
-  Radar,
   Sun,
-  Eye,
-  Inbox,
   AlertTriangle,
   MessageCircle,
   DollarSign,
   ChevronDown,
-  Map,
-  Mail,
-  Gauge,
-  PieChart,
-  Code,
   Download,
   Compass,
-  BellRing,
+  Users2,
+  Store,
+  Code,
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -57,10 +47,11 @@ import {
 interface SidebarNavItem {
   title: string;
   url: string;
-  icon: typeof Home;
+  icon: typeof Sun;
   matchPaths?: string[];
   matchTab?: string;
   dataTour?: string;
+  external?: boolean;
 }
 
 interface NavGroup {
@@ -72,6 +63,9 @@ interface NavGroup {
 }
 
 // ── Super Admin ──
+// NOTE: routes follow real existing paths. Items the user asked to "unify" (Analytics,
+// Performance QI, Performance Audit, Relatórios) live as tabs inside /admin?tab=analytics
+// once the page consolidation lands; here we expose only the unified entry point.
 const SUPER_ADMIN_GROUPS: NavGroup[] = [
   {
     id: 'sa-overview',
@@ -79,9 +73,7 @@ const SUPER_ADMIN_GROUPS: NavGroup[] = [
     collapsible: false,
     items: [
       { title: 'Dashboard', url: '/admin', icon: LayoutDashboard, matchTab: 'overview' },
-      { title: 'Início', url: '/hoje', icon: Sun },
-      { title: 'Analytics', url: '/admin?tab=analytics', icon: PieChart, matchTab: 'analytics' },
-      { title: 'Performance QI', url: '/admin?tab=performance-qi', icon: Gauge, matchTab: 'performance-qi' },
+      { title: 'Analytics', url: '/admin?tab=analytics', icon: TrendingUp, matchTab: 'analytics' },
     ],
   },
   {
@@ -90,15 +82,21 @@ const SUPER_ADMIN_GROUPS: NavGroup[] = [
     collapsible: true,
     defaultOpen: true,
     items: [
-      { title: 'Funil Geral', url: '/admin?tab=kanban', icon: Kanban, matchTab: 'kanban' },
-      { title: 'Leads', url: '/admin?tab=leads', icon: Inbox, matchTab: 'leads' },
-      { title: 'Franquias', url: '/admin?tab=franchises', icon: Building2, matchTab: 'franchises' },
-      { title: 'Visão Franquia', url: '/admin?tab=franchise-view', icon: Eye, matchTab: 'franchise-view' },
-      { title: 'Cidades', url: '/admin?tab=cities', icon: Map, matchTab: 'cities' },
-      { title: 'Marcas', url: '/admin/marcas', icon: Star, matchPaths: ['/admin/marcas'] },
-      { title: 'Candidaturas', url: '/admin?tab=candidaturas', icon: Inbox, matchTab: 'candidaturas' },
+      { title: 'Franquias', url: '/admin?tab=franchises', icon: Store, matchTab: 'franchises' },
+      { title: 'Marcas', url: '/admin/marcas', icon: Building2, matchPaths: ['/admin/marcas'] },
       { title: 'Usuários', url: '/admin?tab=users', icon: Users, matchTab: 'users' },
-      { title: 'Modo Explorar', url: '/explorar', icon: Compass, matchPaths: ['/explorar'] },
+    ],
+  },
+  {
+    id: 'sa-monitoramento',
+    label: 'Monitoramento',
+    collapsible: true,
+    defaultOpen: false,
+    items: [
+      { title: 'Leads', url: '/admin?tab=leads', icon: Users2, matchTab: 'leads' },
+      { title: 'Explorar', url: '/explorar', icon: Compass, matchPaths: ['/explorar'] },
+      { title: 'Status do Sistema', url: '/superadmin/status', icon: Activity, matchPaths: ['/superadmin/status'] },
+      { title: 'Logs de Erro', url: '/admin?tab=errors', icon: AlertTriangle, matchTab: 'errors' },
     ],
   },
   {
@@ -117,20 +115,6 @@ const SUPER_ADMIN_GROUPS: NavGroup[] = [
     defaultOpen: false,
     items: [
       { title: 'WhatsApp', url: '/admin?tab=whatsapp', icon: MessageCircle, matchTab: 'whatsapp' },
-      { title: 'Templates de E-mail', url: '/admin?tab=emails', icon: Mail, matchTab: 'emails' },
-      { title: 'Notificações', url: '/notificacoes', icon: Bell },
-    ],
-  },
-  {
-    id: 'sa-monitoramento',
-    label: 'Monitoramento',
-    collapsible: true,
-    defaultOpen: false,
-    items: [
-      { title: 'Status do Sistema', url: '/superadmin/status', icon: Activity, matchPaths: ['/superadmin/status'] },
-      { title: 'Logs de Erro', url: '/admin?tab=errors', icon: AlertTriangle, matchTab: 'errors' },
-      { title: 'Performance Audit', url: '/admin/performance', icon: Gauge, matchPaths: ['/admin/performance'] },
-      { title: 'Radar de Mercado', url: '/admin/radar', icon: Radar, matchPaths: ['/admin/radar'] },
     ],
   },
   {
@@ -139,11 +123,7 @@ const SUPER_ADMIN_GROUPS: NavGroup[] = [
     collapsible: true,
     defaultOpen: false,
     items: [
-      { title: 'Agenda', url: '/agenda', icon: CalendarDays },
-      { title: 'Perfil & Configurações', url: '/perfil', icon: Settings },
-      { title: 'Preferências de Notificação', url: '/notificacoes/preferencias', icon: BellRing, matchPaths: ['/notificacoes/preferencias'] },
-      { title: 'Docs do Webhook', url: '/docs/webhook', icon: Code, matchPaths: ['/docs/webhook'] },
-      { title: 'Instalar App', url: '/install', icon: Download, matchPaths: ['/install'] },
+      { title: 'Configurações', url: '/perfil', icon: Settings, matchPaths: ['/perfil'] },
       { title: 'Suporte', url: '/suporte', icon: HelpCircle },
     ],
   },
@@ -158,7 +138,6 @@ const FRANCHISE_GROUPS: NavGroup[] = [
     items: [
       { title: 'Hoje', url: '/hoje', icon: Sun },
       { title: 'Leads', url: '/franquia?tab=funnel', icon: Kanban, matchTab: 'funnel' },
-      { title: 'Agenda', url: '/agenda', icon: CalendarDays },
     ],
   },
   {
@@ -169,8 +148,6 @@ const FRANCHISE_GROUPS: NavGroup[] = [
     items: [
       { title: 'Propostas', url: '/propostas', icon: FileText, matchPaths: ['/propostas'], dataTour: 'nav-propostas' },
       { title: 'Pós-venda', url: '/franquia?tab=pos-venda', icon: Package, matchTab: 'pos-venda' },
-      { title: 'Catálogo de Piscinas', url: '/catalogo', icon: BookOpen, matchPaths: ['/catalogo'], dataTour: 'nav-catalogo' },
-      { title: 'Metas', url: '/franquia?tab=achievements', icon: TrendingUp, matchTab: 'achievements' },
     ],
   },
   {
@@ -180,12 +157,9 @@ const FRANCHISE_GROUPS: NavGroup[] = [
     defaultOpen: false,
     items: [
       { title: 'Relatórios', url: '/relatorio-crm', icon: BarChart2, matchPaths: ['/relatorio-crm'] },
+      { title: 'Metas', url: '/franquia?tab=achievements', icon: TrendingUp, matchTab: 'achievements' },
       { title: 'Planos', url: '/planos', icon: Star, matchPaths: ['/planos'], dataTour: 'nav-planos' },
-      { title: 'Notificações', url: '/notificacoes', icon: Bell },
-      { title: 'Perfil & Configurações', url: '/perfil', icon: Settings },
-      { title: 'Preferências de Notificação', url: '/notificacoes/preferencias', icon: BellRing, matchPaths: ['/notificacoes/preferencias'] },
-      { title: 'Docs do Webhook', url: '/docs/webhook', icon: Code, matchPaths: ['/docs/webhook'] },
-      { title: 'Instalar App', url: '/install', icon: Download, matchPaths: ['/install'] },
+      { title: 'Configurações', url: '/perfil', icon: Settings, matchPaths: ['/perfil'] },
       { title: 'Suporte', url: '/suporte', icon: HelpCircle },
     ],
   },
@@ -279,6 +253,28 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  tooltip={collapsed ? 'Instalar app' : undefined}
+                  onClick={() => navigate('/install')}
+                  className="text-muted-foreground hover:text-foreground"
+                >
+                  <Download className="h-4 w-4 shrink-0" />
+                  <span className="truncate text-xs">Instalar app</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              {isAdmin && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    tooltip={collapsed ? 'Docs do Webhook' : undefined}
+                    onClick={() => navigate('/docs/webhook')}
+                    className="text-muted-foreground hover:text-foreground"
+                  >
+                    <Code className="h-4 w-4 shrink-0" />
+                    <span className="truncate text-xs">Docs do Webhook</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
               <SidebarMenuItem>
                 <SidebarMenuButton tooltip={collapsed ? 'Sair' : undefined} onClick={() => void signOut()}>
                   <LogOut className="h-4 w-4 shrink-0 text-destructive" />
