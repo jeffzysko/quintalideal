@@ -542,7 +542,11 @@ export default function PublicProposal() {
                   <p className="text-center text-sm text-muted-foreground font-semibold">O que você gostaria de fazer?</p>
                   <div className="flex flex-wrap gap-3 justify-center">
                     <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
-                      <Button onClick={() => setAcceptOpen(true)} className="gap-2 bg-gradient-to-r from-success to-success/80 hover:from-success/90 hover:to-success/70 text-success-foreground rounded-xl shadow-lg h-12 px-7 font-bold text-sm">
+                      <Button
+                        onClick={() => setAcceptOpen(true)}
+                        className="gap-2 text-white rounded-xl shadow-lg h-12 px-7 font-bold text-sm hover:opacity-90 transition-opacity"
+                        style={brandPrimary ? { backgroundColor: brandPrimary } : undefined}
+                      >
                         <Check className="w-4 h-4" /> Aceitar Proposta <ArrowRight className="w-4 h-4 ml-1" />
                       </Button>
                     </motion.div>
