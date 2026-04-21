@@ -1,11 +1,10 @@
 import { useState, useEffect, useMemo, useRef, lazy, Suspense } from 'react';
 import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-query';
-import { toast } from 'sonner';
+
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Globe, Kanban, CalendarClock, MessageCircle, FileText, ShieldAlert, Gauge, BarChart2 } from 'lucide-react';
+import { Users, TrendingUp, Building2, MapPin, BarChart3, Target, Activity, Mail, Eye, Globe, Kanban, MessageCircle, FileText, ShieldAlert, Gauge, BarChart2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -18,11 +17,8 @@ import { AdminLeadsTable } from '@/components/admin/AdminLeadsTable';
 import { AdminInactiveAlerts } from '@/components/admin/AdminInactiveAlerts';
 import { AdminPerformanceComparison } from '@/components/admin/AdminPerformanceComparison';
 import { TableSkeleton } from '@/components/ui/table-skeleton';
-import { STATUS_LABELS, LeadRow } from '@/lib/lead-constants';
+import { LeadRow } from '@/lib/lead-constants';
 import { classifyLead } from '@/lib/leadScoring';
-import { UserAvatarMenu } from '@/components/UserAvatarMenu';
-import { NotificationBell } from '@/components/NotificationBell';
-import { PageHeader } from '@/components/PageHeader';
 import { MetricGrid } from '@/components/dashboard/MetricGrid';
 import { TimeRangeSelector, filterByTimeRange, type TimeRange } from '@/components/dashboard/TimeRangeSelector';
 import { SectionHeader } from '@/components/dashboard/SectionHeader';
@@ -375,45 +371,6 @@ export default function AdminDashboard() {
     return Array.from(set) as string[];
   }, [orgFilteredLeads]);
 
-  const exportCSV = async () => {
-    try {
-      let query = supabase
-        .from('leads')
-        .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, lead_origin, respostas_questionario');
-
-      if (filterFranquia !== 'all') query = query.eq('franquia_id', filterFranquia);
-      if (filterStatus !== 'all') query = query.eq('status_lead', filterStatus as any);
-      if (filterModelo !== 'all') query = query.eq('modelo_recomendado', filterModelo);
-      if (filterCidade) query = query.ilike('cidade', `%${filterCidade}%`);
-      if (search) query = query.ilike('nome', `%${search}%`);
-
-      const { data, error } = await query.order('created_at', { ascending: false });
-      if (error) throw error;
-      const exportLeads = (data || []) as any[];
-
-      const headers = ['Nome', 'Telefone', 'Email', 'Cidade', 'Franquia Atribuída', 'Franquia Origem', 'Pontuação', 'Modelo', 'Status', 'Territorial', 'Referência', 'Data'];
-      const rows = exportLeads.map(l => [
-        l.nome || '', l.telefone || '', l.email || '', l.cidade || '',
-        l.franquia_id ? (franchiseMap[l.franquia_id] || '') : '',
-        l.origin_franchise_id ? (franchiseMap[l.origin_franchise_id] || '') : '',
-        String(l.pontuacao_quintal || 0), l.modelo_recomendado || '',
-        STATUS_LABELS[l.status_lead] || l.status_lead,
-        l.territory_match_status || '',
-        l.referred_by || '',
-        new Date(l.created_at).toLocaleDateString('pt-BR'),
-      ]);
-      const csv = '\ufeff' + [headers.join(','), ...rows.map(r => r.map(c => `"${c}"`).join(','))].join('\n');
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `leads-quintal-ideal-${new Date().toISOString().slice(0, 10)}.csv`;
-      a.click();
-      URL.revokeObjectURL(url);
-    } catch (_err) {
-      toast.error('Erro ao exportar CSV.');
-    }
-  };
 
   const totalLeads = currentLeads.length;
   const newLeads = currentLeads.filter(l => l.status_lead === 'novo').length;
@@ -472,53 +429,6 @@ export default function AdminDashboard() {
     <PageTransition>
     <div className="min-h-screen bg-background pb-24 md:pb-12">
       <AdminWelcomeWizard />
-      <PageHeader
-        title="Fábrica"
-        rightSlot={
-          <div className="flex items-center gap-1">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('/hoje')}
-              aria-label="Hoje"
-              className="h-9 w-9 text-muted-foreground hover:text-foreground"
-            >
-              <CalendarClock className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('/admin/radar')}
-              aria-label="Radar"
-              className="hidden xs:inline-flex h-9 w-9 text-muted-foreground hover:text-foreground"
-            >
-              <Target className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate('/mapa')}
-              aria-label="Mapa"
-              className="hidden xs:inline-flex h-9 w-9 text-muted-foreground hover:text-foreground"
-            >
-              <MapPin className="w-4 h-4" />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={exportCSV}
-              aria-label="CSV"
-              className="hidden xs:inline-flex h-9 w-9 text-muted-foreground hover:text-foreground"
-            >
-              <Download className="w-4 h-4" />
-            </Button>
-            <div className="h-5 w-px bg-border/40 mx-0.5 hidden xs:block" />
-            <NotificationBell />
-            <UserAvatarMenu />
-          </div>
-        }
-      />
-
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
         <div className="flex items-center justify-between gap-3 mb-2">
           <Breadcrumbs className="md:hidden" items={[{ label: 'Admin' }]} />
