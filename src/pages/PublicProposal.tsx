@@ -230,6 +230,18 @@ export default function PublicProposal() {
             {proposal.validity_date && <CountdownTimer validityDate={proposal.validity_date} />}
           </motion.div>
 
+          {/* ═══ BRAND INTRO ═══ */}
+          {brand?.proposal_header && brand.proposal_header.trim() && (
+            <SectionCard delay={0.02}>
+              <div className="p-5">
+                <p className="text-sm text-foreground/90 whitespace-pre-wrap leading-relaxed">{brand.proposal_header}</p>
+                {brand.slogan && (
+                  <p className="text-xs italic text-muted-foreground mt-3" style={{ color: brandPrimary }}>{brand.slogan}</p>
+                )}
+              </div>
+            </SectionCard>
+          )}
+
           {/* ═══ ACTION DONE MESSAGES ═══ */}
           <AnimatePresence>
             {actionDone === 'accepted' && (
