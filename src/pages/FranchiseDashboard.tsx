@@ -29,8 +29,7 @@ import { WelcomeWizard } from '@/components/franchise/WelcomeWizard';
 import { AchievementsDashboard } from '@/components/franchise/AchievementsDashboard';
 import { MetricGrid } from '@/components/dashboard/MetricGrid';
 import { TimeRangeSelector, filterByTimeRange, type TimeRange } from '@/components/dashboard/TimeRangeSelector';
-import { SectionHeader } from '@/components/dashboard/SectionHeader';
-import { SectionHeader as PageSectionHeader } from '@/components/SectionHeader';
+import { SectionHeader, SectionHeader as PageSectionHeader } from '@/components/SectionHeader';
 import { AlertBanner } from '@/components/dashboard/AlertBanner';
 import type { MetricCardProps } from '@/components/dashboard/MetricCard';
 import { InsightCards } from '@/components/dashboard/InsightCards';
@@ -334,7 +333,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
 
       {/* Time Range + KPIs */}
       <div className="flex items-center justify-between mb-3 sm:mb-4">
-        <SectionHeader icon={BarChart3} title="Visão Geral" subtitle={timeRange === 'all' ? 'Todo o período' : `Últimos ${timeRange} dias`} />
+        <SectionHeader variant="section" icon={BarChart3} title="Visão Geral" subtitle={timeRange === 'all' ? 'Todo o período' : `Últimos ${timeRange} dias`} />
         <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
       </div>
 
@@ -668,7 +667,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-background pb-24 md:pb-12">
+    <div className="min-h-screen bg-background pb-[var(--bottom-nav-height)] md:pb-12">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-4 sm:py-6 md:py-8">
         <Breadcrumbs className="md:hidden" items={[{ label: 'Franquia' }]} />
         {content}

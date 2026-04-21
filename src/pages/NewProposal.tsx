@@ -497,7 +497,7 @@ export default function NewProposal() {
 
   if (orcamentoLoading) {
     return (
-      <div className="min-h-screen bg-background pb-24 md:pb-12">
+      <div className="min-h-screen bg-background pb-[var(--bottom-nav-height)] md:pb-12">
         <PageHeader title="Nova Proposta" fallbackPath="/propostas" />
         <div className="max-w-5xl mx-auto px-4 md:px-6 py-4 sm:py-6 space-y-4">
           {Array.from({ length: 3 }).map((_, i) => (
@@ -510,7 +510,7 @@ export default function NewProposal() {
 
   if (!hasOrcamentoAccess) {
     return (
-      <div className="min-h-screen bg-background pb-24 md:pb-12">
+      <div className="min-h-screen bg-background pb-[var(--bottom-nav-height)] md:pb-12">
         <PageHeader title="Nova Proposta" fallbackPath="/propostas" />
         <OrcamentoUpgradeWall />
       </div>
@@ -518,7 +518,7 @@ export default function NewProposal() {
   }
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-12">
+    <div className="min-h-screen bg-background pb-[var(--bottom-nav-height)] md:pb-12">
       <PageHeader
         title={isEditMode ? 'Editar Proposta' : 'Nova Proposta'}
         fallbackPath="/propostas"

@@ -21,8 +21,7 @@ import { LeadRow } from '@/lib/lead-constants';
 import { classifyLead } from '@/lib/leadScoring';
 import { MetricGrid } from '@/components/dashboard/MetricGrid';
 import { TimeRangeSelector, filterByTimeRange, type TimeRange } from '@/components/dashboard/TimeRangeSelector';
-import { SectionHeader } from '@/components/dashboard/SectionHeader';
-import { SectionHeader as PageSectionHeader } from '@/components/SectionHeader';
+import { SectionHeader, SectionHeader as PageSectionHeader } from '@/components/SectionHeader';
 import type { MetricCardProps } from '@/components/dashboard/MetricCard';
 import { InsightCards } from '@/components/dashboard/InsightCards';
 import { ExecutiveSummary } from '@/components/admin/ExecutiveSummary';
@@ -428,7 +427,7 @@ export default function AdminDashboard() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-background pb-24 md:pb-12">
+    <div className="min-h-screen bg-background pb-[var(--bottom-nav-height)] md:pb-12">
       <AdminWelcomeWizard />
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 sm:py-6 md:py-8">
         <div className="flex items-center justify-between gap-3 mb-2">
@@ -469,7 +468,7 @@ export default function AdminDashboard() {
             <PageSectionHeader title="Dashboard" subtitle="Visão geral da plataforma" />
             {/* Time range + KPIs */}
             <div className="flex items-center justify-between mb-3 sm:mb-4">
-              <SectionHeader icon={BarChart3} title="Métricas" subtitle={timeRange === 'all' ? 'Todo o período' : `Últimos ${timeRange} dias vs período anterior`} />
+              <SectionHeader variant="section" icon={BarChart3} title="Métricas" subtitle={timeRange === 'all' ? 'Todo o período' : `Últimos ${timeRange} dias vs período anterior`} />
               <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
             </div>
 

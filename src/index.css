@@ -10,6 +10,9 @@
 
 @layer base {
   :root {
+    /* ─── Layout tokens ─── */
+    --bottom-nav-height: 6rem;
+
     /* ─── Color System (Quintal Ideal) ─── */
     --background: 0 0% 100%;
     --background-elevated: 220 33% 97%;

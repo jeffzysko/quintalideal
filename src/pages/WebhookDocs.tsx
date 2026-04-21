@@ -175,7 +175,7 @@ const FIELDS = [
 export default function WebhookDocs() {
 
   return (
-    <div className="min-h-screen bg-background pb-24 md:pb-12 relative overflow-hidden">
+    <div className="min-h-screen bg-background pb-[var(--bottom-nav-height)] md:pb-12 relative overflow-hidden">
       <PageHeader
         title="Webhook Docs"
         subtitle="Documentação técnica de integração via webhook"

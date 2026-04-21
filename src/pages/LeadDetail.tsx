@@ -28,6 +28,7 @@ import { LeadLinkedProposals } from '@/components/lead/LeadLinkedProposals';
 
 import { WhatsAppTemplates } from '@/components/lead/WhatsAppTemplates';
 import { LeadTagsSection } from '@/components/lead/LeadTagsSection';
+import { LeadAvatar, getInitials } from '@/components/lead/LeadAvatar';
 import { PostSaleSection } from '@/components/lead/PostSaleSection';
 import { TechnicalVisitSection } from '@/components/lead/TechnicalVisitSection';
 
@@ -116,24 +117,7 @@ const answerLabels: Record<string, string> = {
   '30-50': 'R$ 30 a 50 mil',
 };
 
-function getInitials(nome: string | null): string {
-  if (!nome) return '?';
-  const parts = nome.trim().split(' ').filter(Boolean);
-  if (parts.length === 0) return '?';
-  if (parts.length === 1) return parts[0][0].toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-}
-
-const AVATAR_COLORS = [
-  '#6366f1', '#8b5cf6', '#ec4899', '#f59e0b',
-  '#10b981', '#3b82f6', '#ef4444', '#14b8a6',
-];
-
-function getAvatarColor(nome: string | null): string {
-  if (!nome) return AVATAR_COLORS[0];
-  const idx = nome.charCodeAt(0) % AVATAR_COLORS.length;
-  return AVATAR_COLORS[idx];
-}
+// Avatar utilities live in `@/components/lead/LeadAvatar` (shared).
 
 function estimateValueRange(respostas: Record<string, string> | null): string | null {
   if (!respostas) return null;
@@ -459,7 +443,7 @@ export default function LeadDetail() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-background pb-24 md:pb-12">
+    <div className="min-h-screen bg-background pb-[var(--bottom-nav-height)] md:pb-12">
       <PageHeader
         title={lead.nome || 'Detalhes do Lead'}
         fallbackPath={returnTo}
@@ -483,12 +467,7 @@ export default function LeadDetail() {
         <div className="bg-gradient-to-b from-muted/40 to-background px-4 pt-4 pb-5">
           {/* Linha 1: Avatar do lead + Nome + Avatar do responsável */}
           <div className="flex items-center gap-3 mb-4">
-            <div
-              className="w-14 h-14 rounded-2xl flex items-center justify-center text-lg font-bold text-white shrink-0 shadow-md"
-              style={{ backgroundColor: getAvatarColor(lead.nome) }}
-            >
-              {getInitials(lead.nome)}
-            </div>
+            <LeadAvatar name={lead.nome} size="lg" className="!rounded-2xl shadow-md" />
 
             <div className="flex-1 min-w-0">
               <h1 className="text-xl font-bold text-foreground leading-tight truncate">

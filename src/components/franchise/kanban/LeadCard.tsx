@@ -30,19 +30,9 @@ import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 import { COLUMNS, type LeadWithQuiz } from './types';
 import { LeadCardAssignee } from './LeadCardAssignee';
+import { LeadAvatar } from '@/components/lead/LeadAvatar';
 
 const DESTRUCTIVE_STAGES = ['perdido', 'descartado'];
-
-const AVATAR_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#14b8a6', '#f97316'];
-function getInitials(nome: string | null) {
-  if (!nome) return '?';
-  const p = nome.trim().split(/\s+/);
-  return p.length === 1 ? p[0][0].toUpperCase() : (p[0][0] + p[p.length - 1][0]).toUpperCase();
-}
-function getAvatarColor(nome: string | null) {
-  if (!nome) return AVATAR_COLORS[0];
-  return AVATAR_COLORS[nome.charCodeAt(0) % AVATAR_COLORS.length];
-}
 
 export const LeadCard = memo(function LeadCard({
   lead,
@@ -204,12 +194,7 @@ export const LeadCard = memo(function LeadCard({
       >
         {/* Linha 1: Avatar + Nome + Responsável + Grip */}
         <div className="flex items-center gap-2 mb-2">
-          <div
-            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-            style={{ backgroundColor: getAvatarColor(lead.nome) }}
-          >
-            {getInitials(lead.nome)}
-          </div>
+          <LeadAvatar name={lead.nome} size="sm" />
           <p className="text-sm font-semibold text-foreground truncate flex-1 leading-tight">
             {lead.nome || '—'}
           </p>

@@ -470,7 +470,7 @@ export default function HojePage() {
   return (
     <PageTransition>
       <PullToRefresh onRefresh={handlePullRefresh}>
-        <div className="min-h-screen bg-background pb-24 md:pb-12">
+        <div className="min-h-screen bg-background pb-[var(--bottom-nav-height)] md:pb-12">
           <PageHeader
             title="Hoje"
             rightSlot={
@@ -518,19 +518,23 @@ export default function HojePage() {
                   />
 
                   {/* ── Quick metrics row ── */}
-                  <div className="flex gap-3 overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-4 mb-6 [&::-webkit-scrollbar]:hidden">
-                    <div className="min-w-[160px] sm:min-w-0">
-                      <StatCard title="Novos hoje" value={newLeads.length} icon={Inbox} onClick={() => navigate(isAdmin ? '/admin?tab=leads' : '/franquia?tab=funnel')} />
+                  <div className="relative -mx-4 sm:mx-0 mb-6">
+                    <div className="flex gap-3 overflow-x-auto pb-2 px-4 sm:px-0 sm:grid sm:grid-cols-4 [&::-webkit-scrollbar]:hidden">
+                      <div className="min-w-[160px] sm:min-w-0">
+                        <StatCard title="Novos hoje" value={newLeads.length} icon={Inbox} onClick={() => navigate(isAdmin ? '/admin?tab=leads' : '/franquia?tab=funnel')} />
+                      </div>
+                      <div className="min-w-[160px] sm:min-w-0">
+                        <StatCard title="Para contatar" value={staleLeads.length} icon={PhoneCall} iconColor="text-amber-600" onClick={() => navigate('/franquia?tab=funnel')} />
+                      </div>
+                      <div className="min-w-[160px] sm:min-w-0">
+                        <StatCard title="Propostas abertas" value={metrics?.openProposals ?? 0} icon={FileText} iconColor="text-violet-600" onClick={() => navigate('/propostas')} />
+                      </div>
+                      <div className="min-w-[160px] sm:min-w-0">
+                        <StatCard title="Fechados no mês" value={metrics?.closedThisMonth ?? 0} icon={Trophy} iconColor="text-emerald-600" onClick={() => navigate('/relatorio-crm')} />
+                      </div>
                     </div>
-                    <div className="min-w-[160px] sm:min-w-0">
-                      <StatCard title="Para contatar" value={staleLeads.length} icon={PhoneCall} iconColor="text-amber-600" onClick={() => navigate('/franquia?tab=funnel')} />
-                    </div>
-                    <div className="min-w-[160px] sm:min-w-0">
-                      <StatCard title="Propostas abertas" value={metrics?.openProposals ?? 0} icon={FileText} iconColor="text-violet-600" onClick={() => navigate('/propostas')} />
-                    </div>
-                    <div className="min-w-[160px] sm:min-w-0">
-                      <StatCard title="Fechados no mês" value={metrics?.closedThisMonth ?? 0} icon={Trophy} iconColor="text-emerald-600" onClick={() => navigate('/relatorio-crm')} />
-                    </div>
+                    {/* Fade indicator (mobile only) */}
+                    <div className="pointer-events-none absolute top-0 right-0 h-full w-8 bg-gradient-to-l from-background to-transparent sm:hidden" />
                   </div>
 
                   {/* ── Urgent now ── */}
