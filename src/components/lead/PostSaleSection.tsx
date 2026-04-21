@@ -567,7 +567,7 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
                 )}
 
                 <Button
-                  className="w-full gap-2 bg-emerald-500 hover:bg-emerald-600 text-white"
+                  className="w-full gap-2 bg-whatsapp hover:bg-whatsapp-hover text-white"
                   onClick={async () => {
                     if (!leadInfo?.telefone) { toast.error('Lead sem telefone cadastrado.'); return; }
                     setSendingReview(true);

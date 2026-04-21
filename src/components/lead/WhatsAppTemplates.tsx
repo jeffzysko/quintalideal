@@ -175,7 +175,7 @@ export function WhatsAppTemplates(props: WhatsAppTemplatesProps) {
                       )}
                     </Button>
                     <Button
-                      className="h-9 flex-1 text-xs gap-1.5 active:scale-[0.97] transition-transform bg-[#25D366] hover:bg-[#1da851] text-white border-0"
+                      className="h-9 flex-1 text-xs gap-1.5 active:scale-[0.97] transition-transform bg-whatsapp hover:bg-whatsapp-hover text-white border-0"
                       onClick={() => sendWhatsApp(tpl.message)}
                     >
                       <MessageCircle className="w-3.5 h-3.5" />

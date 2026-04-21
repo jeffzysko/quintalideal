@@ -307,7 +307,7 @@ export default function PublicProposal() {
                 </div>
                 {sellerPhone && (
                   <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button size="sm" className="shrink-0 bg-[#25D366] hover:bg-[#20BD5A] text-white rounded-xl shadow-md print:hidden" asChild>
+                    <Button size="sm" className="shrink-0 bg-whatsapp hover:bg-whatsapp-hover text-white rounded-xl shadow-md print:hidden" asChild>
                       <a href={`https://wa.me/${toWhatsAppPhone(sellerPhone)}`} target="_blank" rel="noopener noreferrer">
                         <Phone className="w-4 h-4 mr-1.5" /> Falar
                       </a>
