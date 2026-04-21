@@ -10,7 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff, Camera, MapPin, Shield, Puzzle, Bell, Workflow, Users, Clock, Globe, MessageSquare } from 'lucide-react';
+import { Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff, Camera, MapPin, Shield, Puzzle, Bell, Workflow, Users, Clock, Globe, MessageSquare, Package } from 'lucide-react';
 import { BackButton } from '@/components/BackButton';
 import { NotificationBell } from '@/components/NotificationBell';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
@@ -21,6 +21,7 @@ import { toast } from 'sonner';
 import { WhatsAppSettings } from '@/components/admin/WhatsAppSettings';
 import { AdminWhatsAppPlans } from '@/components/admin/AdminWhatsAppPlans';
 import { WhatsAppInstanceConfig } from '@/components/franchise/WhatsAppInstanceConfig';
+import { FranchiseCatalog } from '@/components/franchise/FranchiseCatalog';
 
 import { motion } from 'framer-motion';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -489,6 +490,16 @@ export default function ProfileSettings() {
               )}
               {isFranchise && (
                 <TabsTrigger
+                  value="catalogo"
+                  className="shrink-0 gap-1.5 rounded-lg text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-3 py-2.5 whitespace-nowrap active:scale-95"
+                >
+                  <Package className="w-3.5 h-3.5 shrink-0" />
+                  <span className="hidden sm:inline">Catálogo</span>
+                  <span className="sm:hidden">Catálogo</span>
+                </TabsTrigger>
+              )}
+              {isFranchise && (
+                <TabsTrigger
                   value="whatsapp"
                   className="shrink-0 gap-1.5 rounded-lg text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-3 py-2.5 whitespace-nowrap active:scale-95"
                 >
@@ -838,6 +849,11 @@ export default function ProfileSettings() {
               <TabsContent value="whatsapp" className="mt-5 space-y-5">
                 <WhatsAppSettings />
                 <AdminWhatsAppPlans />
+              </TabsContent>
+            )}
+            {isFranchise && franchiseId && (
+              <TabsContent value="catalogo" className="mt-5 space-y-5">
+                <FranchiseCatalog franchiseId={franchiseId} />
               </TabsContent>
             )}
             {isFranchise && franchiseId && (

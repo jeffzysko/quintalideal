@@ -2141,6 +2141,25 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      get_franchise_catalog: {
+        Args: { p_franchise_id: string }
+        Returns: {
+          categoria_tamanho: Database["public"]["Enums"]["categoria_tamanho"]
+          comprimento: number
+          custom_price: number
+          gallery_urls: string[]
+          id: string
+          imagem_principal: string
+          is_active: boolean
+          largura: number
+          name: string
+          possui_prainha: boolean
+          possui_spa: boolean
+          preco_max: number
+          preco_min: number
+          profundidade: number
+        }[]
+      }
       get_public_franchise_by_slug: {
         Args: { _slug: string }
         Returns: {
