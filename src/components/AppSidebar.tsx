@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import {
   Home,
   CalendarDays,
@@ -23,10 +24,21 @@ import {
   AlertTriangle,
   MessageCircle,
   DollarSign,
+  ChevronDown,
+  Map,
+  Mail,
+  Gauge,
+  PieChart,
+  Code,
+  Download,
+  Compass,
+  BellRing,
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { cn } from '@/lib/utils';
 
 import {
   Sidebar,
@@ -51,47 +63,151 @@ interface SidebarNavItem {
   dataTour?: string;
 }
 
-// ── Super Admin ──
-const SUPER_ADMIN_MAIN: SidebarNavItem[] = [
-  { title: 'Dashboard', url: '/admin', icon: LayoutDashboard, matchTab: 'overview' },
-  { title: 'Funil Geral', url: '/admin?tab=kanban', icon: Kanban, matchTab: 'kanban' },
-  { title: 'Franquias', url: '/admin?tab=franchises', icon: Building2, matchTab: 'franchises' },
-  { title: 'Visão Franquia', url: '/admin?tab=franchise-view', icon: Eye, matchTab: 'franchise-view' },
-  { title: 'Candidaturas', url: '/admin?tab=candidaturas', icon: Inbox, matchTab: 'candidaturas' },
-  { title: 'Marcas', url: '/admin/marcas', icon: Star, matchPaths: ['/admin/marcas'] },
-  { title: 'Usuários', url: '/admin?tab=users', icon: Users, matchTab: 'users' },
-  { title: 'Faturamento', url: '/superadmin/receita', icon: DollarSign, matchPaths: ['/superadmin/receita'] },
-  { title: 'Configurações', url: '/perfil', icon: Settings },
-];
+interface NavGroup {
+  id: string;
+  label: string;
+  items: SidebarNavItem[];
+  collapsible?: boolean;
+  defaultOpen?: boolean;
+}
 
-const SUPER_ADMIN_EXTRA: SidebarNavItem[] = [
-  { title: 'Início', url: '/hoje', icon: Sun },
-  { title: 'Agenda', url: '/agenda', icon: CalendarDays },
-  { title: 'Notificações', url: '/notificacoes', icon: Bell },
-  { title: 'Radar de Mercado', url: '/admin/radar', icon: Radar, matchPaths: ['/admin/radar'] },
-  { title: 'Status do Sistema', url: '/superadmin/status', icon: Activity, matchPaths: ['/superadmin/status'] },
-  { title: 'Logs de Erro', url: '/admin?tab=errors', icon: AlertTriangle, matchTab: 'errors' },
-  { title: 'WhatsApp', url: '/admin?tab=whatsapp', icon: MessageCircle, matchTab: 'whatsapp' },
-  { title: 'Suporte', url: '/suporte', icon: HelpCircle },
+// ── Super Admin ──
+const SUPER_ADMIN_GROUPS: NavGroup[] = [
+  {
+    id: 'sa-overview',
+    label: 'Visão Geral',
+    collapsible: false,
+    items: [
+      { title: 'Dashboard', url: '/admin', icon: LayoutDashboard, matchTab: 'overview' },
+      { title: 'Início', url: '/hoje', icon: Sun },
+      { title: 'Analytics', url: '/admin?tab=analytics', icon: PieChart, matchTab: 'analytics' },
+      { title: 'Performance QI', url: '/admin?tab=performance-qi', icon: Gauge, matchTab: 'performance-qi' },
+    ],
+  },
+  {
+    id: 'sa-gestao',
+    label: 'Gestão',
+    collapsible: true,
+    defaultOpen: true,
+    items: [
+      { title: 'Funil Geral', url: '/admin?tab=kanban', icon: Kanban, matchTab: 'kanban' },
+      { title: 'Leads', url: '/admin?tab=leads', icon: Inbox, matchTab: 'leads' },
+      { title: 'Franquias', url: '/admin?tab=franchises', icon: Building2, matchTab: 'franchises' },
+      { title: 'Visão Franquia', url: '/admin?tab=franchise-view', icon: Eye, matchTab: 'franchise-view' },
+      { title: 'Cidades', url: '/admin?tab=cities', icon: Map, matchTab: 'cities' },
+      { title: 'Marcas', url: '/admin/marcas', icon: Star, matchPaths: ['/admin/marcas'] },
+      { title: 'Candidaturas', url: '/admin?tab=candidaturas', icon: Inbox, matchTab: 'candidaturas' },
+      { title: 'Usuários', url: '/admin?tab=users', icon: Users, matchTab: 'users' },
+      { title: 'Modo Explorar', url: '/explorar', icon: Compass, matchPaths: ['/explorar'] },
+    ],
+  },
+  {
+    id: 'sa-financeiro',
+    label: 'Financeiro',
+    collapsible: true,
+    defaultOpen: false,
+    items: [
+      { title: 'Faturamento', url: '/superadmin/receita', icon: DollarSign, matchPaths: ['/superadmin/receita'] },
+    ],
+  },
+  {
+    id: 'sa-comunicacao',
+    label: 'Comunicação',
+    collapsible: true,
+    defaultOpen: false,
+    items: [
+      { title: 'WhatsApp', url: '/admin?tab=whatsapp', icon: MessageCircle, matchTab: 'whatsapp' },
+      { title: 'Templates de E-mail', url: '/admin?tab=emails', icon: Mail, matchTab: 'emails' },
+      { title: 'Notificações', url: '/notificacoes', icon: Bell },
+    ],
+  },
+  {
+    id: 'sa-monitoramento',
+    label: 'Monitoramento',
+    collapsible: true,
+    defaultOpen: false,
+    items: [
+      { title: 'Status do Sistema', url: '/superadmin/status', icon: Activity, matchPaths: ['/superadmin/status'] },
+      { title: 'Logs de Erro', url: '/admin?tab=errors', icon: AlertTriangle, matchTab: 'errors' },
+      { title: 'Performance Audit', url: '/admin/performance', icon: Gauge, matchPaths: ['/admin/performance'] },
+      { title: 'Radar de Mercado', url: '/admin/radar', icon: Radar, matchPaths: ['/admin/radar'] },
+    ],
+  },
+  {
+    id: 'sa-config',
+    label: 'Configurações',
+    collapsible: true,
+    defaultOpen: false,
+    items: [
+      { title: 'Agenda', url: '/agenda', icon: CalendarDays },
+      { title: 'Perfil & Configurações', url: '/perfil', icon: Settings },
+      { title: 'Preferências de Notificação', url: '/notificacoes/preferencias', icon: BellRing, matchPaths: ['/notificacoes/preferencias'] },
+      { title: 'Docs do Webhook', url: '/docs/webhook', icon: Code, matchPaths: ['/docs/webhook'] },
+      { title: 'Instalar App', url: '/install', icon: Download, matchPaths: ['/install'] },
+      { title: 'Suporte', url: '/suporte', icon: HelpCircle },
+    ],
+  },
 ];
 
 // ── Franquia ──
-const FRANCHISE_MAIN: SidebarNavItem[] = [
-  { title: 'Hoje', url: '/hoje', icon: Sun },
-  { title: 'Leads', url: '/franquia?tab=funnel', icon: Kanban, matchTab: 'funnel' },
-  { title: 'Propostas', url: '/propostas', icon: FileText, matchPaths: ['/propostas'], dataTour: 'nav-propostas' },
-  { title: 'Pós-venda', url: '/franquia?tab=pos-venda', icon: Package, matchTab: 'pos-venda' },
-  { title: 'Relatórios', url: '/relatorio-crm', icon: BarChart2, matchPaths: ['/relatorio-crm'] },
-  { title: 'Configurações', url: '/perfil', icon: Settings },
+const FRANCHISE_GROUPS: NavGroup[] = [
+  {
+    id: 'fr-principal',
+    label: 'Principal',
+    collapsible: false,
+    items: [
+      { title: 'Hoje', url: '/hoje', icon: Sun },
+      { title: 'Leads', url: '/franquia?tab=funnel', icon: Kanban, matchTab: 'funnel' },
+      { title: 'Agenda', url: '/agenda', icon: CalendarDays },
+    ],
+  },
+  {
+    id: 'fr-ferramentas',
+    label: 'Ferramentas',
+    collapsible: true,
+    defaultOpen: true,
+    items: [
+      { title: 'Propostas', url: '/propostas', icon: FileText, matchPaths: ['/propostas'], dataTour: 'nav-propostas' },
+      { title: 'Pós-venda', url: '/franquia?tab=pos-venda', icon: Package, matchTab: 'pos-venda' },
+      { title: 'Catálogo de Piscinas', url: '/catalogo', icon: BookOpen, matchPaths: ['/catalogo'], dataTour: 'nav-catalogo' },
+      { title: 'Metas', url: '/franquia?tab=achievements', icon: TrendingUp, matchTab: 'achievements' },
+    ],
+  },
+  {
+    id: 'fr-loja',
+    label: 'Minha Loja',
+    collapsible: true,
+    defaultOpen: false,
+    items: [
+      { title: 'Relatórios', url: '/relatorio-crm', icon: BarChart2, matchPaths: ['/relatorio-crm'] },
+      { title: 'Planos', url: '/planos', icon: Star, matchPaths: ['/planos'], dataTour: 'nav-planos' },
+      { title: 'Notificações', url: '/notificacoes', icon: Bell },
+      { title: 'Perfil & Configurações', url: '/perfil', icon: Settings },
+      { title: 'Preferências de Notificação', url: '/notificacoes/preferencias', icon: BellRing, matchPaths: ['/notificacoes/preferencias'] },
+      { title: 'Docs do Webhook', url: '/docs/webhook', icon: Code, matchPaths: ['/docs/webhook'] },
+      { title: 'Instalar App', url: '/install', icon: Download, matchPaths: ['/install'] },
+      { title: 'Suporte', url: '/suporte', icon: HelpCircle },
+    ],
+  },
 ];
 
-const FRANCHISE_EXTRA: SidebarNavItem[] = [
-  { title: 'Agenda', url: '/agenda', icon: CalendarDays },
-  { title: 'Catálogo de Piscinas', url: '/catalogo', icon: BookOpen, matchPaths: ['/catalogo'], dataTour: 'nav-catalogo' },
-  { title: 'Metas', url: '/franquia?tab=achievements', icon: TrendingUp, matchTab: 'achievements' },
-  { title: 'Planos', url: '/planos', icon: Star, matchPaths: ['/planos'], dataTour: 'nav-planos' },
-  { title: 'Suporte', url: '/suporte', icon: HelpCircle },
-];
+const STORAGE_PREFIX = 'sidebar-group-open:';
+
+function useGroupOpen(id: string, defaultOpen: boolean) {
+  const [open, setOpen] = useState<boolean>(() => {
+    if (typeof window === 'undefined') return defaultOpen;
+    const stored = window.localStorage.getItem(STORAGE_PREFIX + id);
+    return stored === null ? defaultOpen : stored === '1';
+  });
+  useEffect(() => {
+    try {
+      window.localStorage.setItem(STORAGE_PREFIX + id, open ? '1' : '0');
+    } catch {
+      /* noop */
+    }
+  }, [id, open]);
+  return [open, setOpen] as const;
+}
 
 export function AppSidebar() {
   const { state } = useSidebar();
@@ -116,15 +232,13 @@ export function AppSidebar() {
     return false;
   };
 
-  const handleNav = (url: string) => navigate(url);
-
   const renderNavItem = (item: SidebarNavItem) => {
     const active = isActive(item);
     return (
       <SidebarMenuItem key={item.title + item.url}>
         <SidebarMenuButton asChild isActive={active} tooltip={collapsed ? item.title : undefined}>
           <button
-            onClick={() => handleNav(item.url)}
+            onClick={() => navigate(item.url)}
             data-tour={item.dataTour}
             className={`w-full flex items-center gap-2 ${active ? 'bg-primary/10 text-primary font-medium' : ''}`}
           >
@@ -136,8 +250,7 @@ export function AppSidebar() {
     );
   };
 
-  const mainItems = isAdmin ? SUPER_ADMIN_MAIN : FRANCHISE_MAIN;
-  const extraItems = isAdmin ? SUPER_ADMIN_EXTRA : FRANCHISE_EXTRA;
+  const groups = isAdmin ? SUPER_ADMIN_GROUPS : FRANCHISE_GROUPS;
 
   return (
     <Sidebar collapsible="icon" className="border-r border-border/40">
@@ -152,19 +265,14 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Principal</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>{mainItems.map(renderNavItem)}</SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-
-        <SidebarGroup>
-          <SidebarGroupLabel>Mais</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>{extraItems.map(renderNavItem)}</SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {groups.map((group) => (
+          <NavGroupSection
+            key={group.id}
+            group={group}
+            renderNavItem={renderNavItem}
+            collapsedSidebar={collapsed}
+          />
+        ))}
       </SidebarContent>
 
       <SidebarFooter className="p-0">
@@ -182,5 +290,52 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarFooter>
     </Sidebar>
+  );
+}
+
+function NavGroupSection({
+  group,
+  renderNavItem,
+  collapsedSidebar,
+}: {
+  group: NavGroup;
+  renderNavItem: (item: SidebarNavItem) => JSX.Element;
+  collapsedSidebar: boolean;
+}) {
+  const [open, setOpen] = useGroupOpen(group.id, group.defaultOpen ?? true);
+
+  // When sidebar is collapsed (icon-only), always render items flat.
+  if (!group.collapsible || collapsedSidebar) {
+    return (
+      <SidebarGroup>
+        {!collapsedSidebar && <SidebarGroupLabel>{group.label}</SidebarGroupLabel>}
+        <SidebarGroupContent>
+          <SidebarMenu>{group.items.map(renderNavItem)}</SidebarMenu>
+        </SidebarGroupContent>
+      </SidebarGroup>
+    );
+  }
+
+  return (
+    <SidebarGroup>
+      <Collapsible open={open} onOpenChange={setOpen}>
+        <CollapsibleTrigger asChild>
+          <button
+            type="button"
+            className="w-full flex items-center justify-between px-2 py-1.5 text-xs font-medium text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors"
+          >
+            <span className="uppercase tracking-wider">{group.label}</span>
+            <ChevronDown
+              className={cn('h-3.5 w-3.5 transition-transform duration-200', open ? 'rotate-0' : '-rotate-90')}
+            />
+          </button>
+        </CollapsibleTrigger>
+        <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down">
+          <SidebarGroupContent>
+            <SidebarMenu>{group.items.map(renderNavItem)}</SidebarMenu>
+          </SidebarGroupContent>
+        </CollapsibleContent>
+      </Collapsible>
+    </SidebarGroup>
   );
 }
