@@ -650,7 +650,7 @@ export function calculateLegacyScore(input: QuizInputV2): number {
 
 // ── Main Recommendation Function ──
 
-export function recommendPoolsV2(input: QuizInputV2, allModels: PoolModelData[]): RecommendationResultV2 {
+export function recommendPoolsV2(input: QuizInputV2, allModels: PoolModelData[], brandName?: string): RecommendationResultV2 {
   const profile = detectCustomerProfile(input);
 
   const eligible = filterModels(allModels, input);
@@ -665,7 +665,7 @@ export function recommendPoolsV2(input: QuizInputV2, allModels: PoolModelData[])
 
   const recommendedSize = recommendBestSize(primaryModel.nome_modelo, input);
   const reasoning = generateReasoning(primaryModel.nome_modelo, input, profile);
-  const closingPhrase = generateClosingPhrase(input);
+  const closingPhrase = generateClosingPhrase(input, 'pt', brandName);
 
   // Diverse alternatives: filter out same-category models
   const alternatives: PoolAlternativeV2[] = selectDiverseAlternatives(ranked, primaryModel, isWeak ? 3 : 2);
@@ -692,7 +692,7 @@ export function recommendPoolsV2(input: QuizInputV2, allModels: PoolModelData[])
   }
 
   const isHot = detectHotLead(input, primaryScore);
-  const salesScript = generateSalesScript('', input, primaryModel.nome_modelo);
+  const salesScript = generateSalesScript('', input, primaryModel.nome_modelo, 'pt', brandName);
 
   return {
     primary_model: primaryModel,
