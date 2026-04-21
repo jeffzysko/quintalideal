@@ -221,11 +221,13 @@ export function getQuizQuestions(lang: Lang) {
       ],
     },
     {
-      question: t('quiz_q2', lang),
+      question: t('quiz_q3', lang),
       options: [
-        { value: 'minha', label: t('quiz_q2_o1', lang), emoji: '🏠' },
-        { value: 'construindo', label: t('quiz_q2_o2', lang), emoji: '🏗️' },
-        { value: 'planejando', label: t('quiz_q2_o3', lang), emoji: '📋' },
+        { value: 'relaxar', label: t('quiz_q3_o1', lang), emoji: '🧘' },
+        { value: 'filhos', label: t('quiz_q3_o2', lang), emoji: '👨‍👩‍👧' },
+        { value: 'familia', label: t('quiz_q3_o3', lang), emoji: '👨‍👩‍👧‍👦' },
+        { value: 'amigos', label: t('quiz_q3_o4', lang), emoji: '🎉' },
+        { value: 'valorizar', label: t('quiz_q3_o5', lang), emoji: '🏡' },
       ],
     },
     {
