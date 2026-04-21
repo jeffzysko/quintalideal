@@ -165,7 +165,7 @@ export default function ProposalsList() {
         />
 
         {orcamentoLoading ? (
-          <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4">
+          <div className="max-w-5xl mx-auto px-4 md:px-6 py-4 sm:py-6 space-y-4">
             {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="h-[72px] skeleton rounded-xl" />
             ))}
@@ -173,7 +173,7 @@ export default function ProposalsList() {
         ) : !hasOrcamentoAccess ? (
           <OrcamentoUpgradeWall />
         ) : (
-        <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
+        <div className="max-w-5xl mx-auto px-4 md:px-6 py-4 sm:py-6">
           {/* Desktop breadcrumbs + title */}
           <div className="hidden md:flex items-center justify-between mb-5">
             <div>

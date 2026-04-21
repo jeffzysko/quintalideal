@@ -335,7 +335,7 @@ export default function RadarMercado() {
         fallbackPath="/admin"
       />
 
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 sm:py-8">
         <Breadcrumbs className="md:hidden" items={[
           { label: 'Admin', href: '/admin' },
           { label: 'Radar de Mercado' },

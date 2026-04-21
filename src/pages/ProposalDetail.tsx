@@ -241,7 +241,7 @@ export default function ProposalDetail() {
           fallbackPath="/propostas"
         />
 
-        <div className="max-w-4xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-5">
+        <div className="max-w-4xl mx-auto px-4 md:px-6 py-4 sm:py-6 space-y-5">
           {/* Header + link sharing */}
           <div className="hidden md:block"><Breadcrumbs /></div>
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">

@@ -42,7 +42,7 @@ export default function CatalogoPiscinas() {
           }
         />
 
-        <div className="max-w-5xl mx-auto px-3 sm:px-4 py-4 sm:py-6 space-y-4">
+        <div className="max-w-5xl mx-auto px-4 md:px-6 py-4 sm:py-6 space-y-4">
           {/* Filters */}
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
