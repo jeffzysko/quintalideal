@@ -14,7 +14,8 @@ import {
   Building2,
   Users,
   BarChart2,
-  Star,
+  CreditCard,
+  Trophy,
   TrendingUp,
   HelpCircle,
   Activity,
@@ -36,21 +37,16 @@ interface NavItem {
   isAction?: boolean;
 }
 
-// ── Super Admin: Dashboard, Analytics, Gestão (drawer), Mais (drawer) ──
+// ── Super Admin: Dashboard, Analytics, Franquias, Mais (drawer) ──
 const SUPER_ADMIN_PRIMARY: NavItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/admin', matchPaths: ['/admin'] },
   { icon: TrendingUp, label: 'Analytics', path: '/admin?tab=analytics' },
-  { icon: Plus, label: '', path: '/propostas/nova', isAction: true },
-  // 4th slot is filled by the "Gestão" button below (rendered separately)
-];
-
-const SUPER_ADMIN_GESTAO: NavItem[] = [
   { icon: Store, label: 'Franquias', path: '/admin?tab=franchises' },
-  { icon: Building2, label: 'Marcas', path: '/admin/marcas' },
-  { icon: Users, label: 'Usuários', path: '/admin?tab=users' },
 ];
 
 const SUPER_ADMIN_MORE: NavItem[] = [
+  { icon: Building2, label: 'Marcas', path: '/admin/marcas' },
+  { icon: Users, label: 'Usuários', path: '/admin?tab=users' },
   { icon: Users2, label: 'Leads', path: '/admin?tab=leads' },
   { icon: Compass, label: 'Explorar', path: '/explorar' },
   { icon: Activity, label: 'Status', path: '/superadmin/status' },
@@ -61,19 +57,19 @@ const SUPER_ADMIN_MORE: NavItem[] = [
   { icon: HelpCircle, label: 'Suporte', path: '/suporte' },
 ];
 
-// ── Franquia: Hoje, Leads, FAB, Propostas, Mais ──
+// ── Franquia: Hoje, Leads, FAB, Propostas, Pós-venda, Mais ──
 const FRANCHISE_PRIMARY: NavItem[] = [
   { icon: Sun, label: 'Hoje', path: '/hoje' },
   { icon: Kanban, label: 'Leads', path: '/franquia', matchPaths: ['/franquia', '/painel'] },
   { icon: Plus, label: '', path: '/propostas/nova', isAction: true },
   { icon: FileText, label: 'Propostas', path: '/propostas', matchPaths: ['/propostas'] },
+  { icon: Package, label: 'Pós-venda', path: '/franquia?tab=pos-venda' },
 ];
 
 const FRANCHISE_MORE: NavItem[] = [
-  { icon: Package, label: 'Pós-venda', path: '/franquia?tab=pos-venda' },
+  { icon: Trophy, label: 'Metas', path: '/franquia?tab=achievements' },
   { icon: BarChart2, label: 'Relatórios', path: '/relatorio-crm' },
-  { icon: TrendingUp, label: 'Metas', path: '/franquia?tab=achievements' },
-  { icon: Star, label: 'Planos', path: '/planos' },
+  { icon: CreditCard, label: 'Planos', path: '/planos' },
   { icon: Settings, label: 'Configurações', path: '/perfil' },
   { icon: HelpCircle, label: 'Suporte', path: '/suporte' },
 ];
@@ -83,7 +79,6 @@ export function BottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
   const [moreOpen, setMoreOpen] = useState(false);
-  const [gestaoOpen, setGestaoOpen] = useState(false);
 
   if (!user || !role) return null;
 
@@ -105,7 +100,6 @@ export function BottomNav() {
 
   const handleNav = (path: string) => {
     setMoreOpen(false);
-    setGestaoOpen(false);
     navigate(path);
   };
 
@@ -164,37 +158,6 @@ export function BottomNav() {
           );
         })}
 
-        {/* Super Admin: Gestão drawer in 4th slot */}
-        {isSuperAdmin && (
-          <Drawer open={gestaoOpen} onOpenChange={setGestaoOpen}>
-            <DrawerTrigger asChild>
-              <button
-                className="flex flex-col items-center justify-center gap-0.5 flex-1 relative transition-colors min-h-[48px] text-muted-foreground active:text-foreground"
-                aria-label="Gestão"
-              >
-                <Store className="w-5 h-5" strokeWidth={2} />
-                <span className="text-[10px] leading-tight font-medium">Gestão</span>
-              </button>
-            </DrawerTrigger>
-            <DrawerContent>
-              <DrawerHeader>
-                <DrawerTitle>Gestão</DrawerTitle>
-              </DrawerHeader>
-              <div className="grid grid-cols-3 gap-2 p-4 pb-8">
-                {SUPER_ADMIN_GESTAO.map((item) => (
-                  <button
-                    key={item.label}
-                    onClick={() => handleNav(item.path)}
-                    className="flex flex-col items-center justify-center gap-2 p-3 rounded-lg hover:bg-muted active:bg-muted/80 transition-colors text-center"
-                  >
-                    <item.icon className="w-5 h-5 text-foreground" />
-                    <span className="text-[11px] font-medium leading-tight text-foreground">{item.label}</span>
-                  </button>
-                ))}
-              </div>
-            </DrawerContent>
-          </Drawer>
-        )}
 
         <Drawer open={moreOpen} onOpenChange={setMoreOpen}>
           <DrawerTrigger asChild>
