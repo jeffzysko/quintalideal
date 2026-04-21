@@ -112,6 +112,10 @@ export default {
           "blue-dark": "hsl(var(--brand-blue-dark, 214 68% 14%))",
           "light-blue": "hsl(var(--brand-blue-light, 223 100% 93%))",
         },
+        whatsapp: {
+          DEFAULT: "#25D366",
+          hover: "#1ebe5d",
+        },
       },
       /* ─── Border Radius Scale ─── */
       borderRadius: {

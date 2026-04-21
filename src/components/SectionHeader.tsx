@@ -23,7 +23,7 @@ export function SectionHeader({ title, subtitle, rightSlot }: SectionHeaderProps
       transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
       className="relative mb-4"
     >
-      <div className="relative px-3 pt-2.5">
+      <div className="relative px-4 md:px-6 pt-2.5">
         <header className="relative mx-auto max-w-7xl rounded-2xl overflow-hidden">
           {/* Animated glow border */}
           <div className="absolute inset-0 rounded-2xl p-px overflow-hidden">
@@ -48,7 +48,7 @@ export function SectionHeader({ title, subtitle, rightSlot }: SectionHeaderProps
                 '0 8px 32px -8px hsl(var(--primary) / 0.08), 0 4px 16px -4px rgba(0,0,0,0.1), inset 0 1px 0 0 hsl(0 0% 100% / 0.06)',
             }}
           >
-            <div className="h-14 md:h-16 flex items-center justify-between px-3 md:px-6 gap-2">
+            <div className="h-14 md:h-16 flex items-center justify-between px-4 md:px-6 gap-2">
               {/* Title + subtitle */}
               <div className="flex-1 min-w-0">
                 <h1 className="text-sm md:text-base font-semibold tracking-tight text-foreground flex items-center gap-1.5">

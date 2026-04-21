@@ -205,7 +205,7 @@ export const LeadCard = memo(function LeadCard({
         {/* Linha 1: Avatar + Nome + Responsável + Grip */}
         <div className="flex items-center gap-2 mb-2">
           <div
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold text-white shrink-0"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
             style={{ backgroundColor: getAvatarColor(lead.nome) }}
           >
             {getInitials(lead.nome)}
