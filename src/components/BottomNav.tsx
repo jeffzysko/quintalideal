@@ -79,7 +79,6 @@ export function BottomNav() {
   const location = useLocation();
   const navigate = useNavigate();
   const [moreOpen, setMoreOpen] = useState(false);
-  const [gestaoOpen, setGestaoOpen] = useState(false);
 
   if (!user || !role) return null;
 
@@ -101,7 +100,6 @@ export function BottomNav() {
 
   const handleNav = (path: string) => {
     setMoreOpen(false);
-    setGestaoOpen(false);
     navigate(path);
   };
 
