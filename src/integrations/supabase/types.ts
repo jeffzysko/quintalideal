@@ -2164,6 +2164,12 @@ export type Database = {
         Args: { _slug: string }
         Returns: {
           ativa: boolean
+          brand_id: string
+          brand_logo_url: string
+          brand_name: string
+          brand_primary_color: string
+          brand_secondary_color: string
+          brand_slogan: string
           id: string
           meta_pixel_id: string
           nome_franquia: string
