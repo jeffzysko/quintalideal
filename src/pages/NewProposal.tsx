@@ -7,7 +7,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { PanelHeader } from '@/components/PanelHeader';
+import { PageHeader } from '@/components/PageHeader';
 import { BackButton } from '@/components/BackButton';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 
@@ -497,10 +497,8 @@ export default function NewProposal() {
 
   if (orcamentoLoading) {
     return (
-      <div className="min-h-screen bg-background pb-bottomnav sm:pb-0">
-        <PanelHeader title="Nova Proposta">
-          <BackButton fallback="/propostas" />
-        </PanelHeader>
+      <div className="min-h-screen bg-background pb-24 md:pb-12">
+        <PageHeader title="Nova Proposta" fallbackPath="/propostas" />
         <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="h-[72px] skeleton rounded-xl" />
@@ -512,22 +510,20 @@ export default function NewProposal() {
 
   if (!hasOrcamentoAccess) {
     return (
-      <div className="min-h-screen bg-background pb-bottomnav sm:pb-0">
-        <PanelHeader title="Nova Proposta">
-          <BackButton fallback="/propostas" />
-        </PanelHeader>
+      <div className="min-h-screen bg-background pb-24 md:pb-12">
+        <PageHeader title="Nova Proposta" fallbackPath="/propostas" />
         <OrcamentoUpgradeWall />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background pb-bottomnav sm:pb-0">
-      {/* Mobile header — same pattern as HojePage */}
-      <PanelHeader title={isEditMode ? "Editar Proposta" : "Nova Proposta"}>
-        <BackButton fallback="/propostas" />
-        {actionButtons}
-      </PanelHeader>
+    <div className="min-h-screen bg-background pb-24 md:pb-12">
+      <PageHeader
+        title={isEditMode ? 'Editar Proposta' : 'Nova Proposta'}
+        fallbackPath="/propostas"
+        rightSlot={actionButtons}
+      />
 
       <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
         {/* Desktop header */}

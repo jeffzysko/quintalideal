@@ -362,13 +362,11 @@ export default function Suporte() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen flex flex-col bg-background pb-bottomnav">
-      <PanelHeader title="Suporte & Guia">
-        <BackButton fallback="/franquia" />
-        <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
-        <NotificationBell />
-        <UserAvatarMenu />
-      </PanelHeader>
+    <div className="min-h-screen flex flex-col bg-background pb-24 md:pb-12">
+      <PageHeader
+        title="Suporte"
+        fallbackPath="/franquia"
+      />
 
       {/* Background orbs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">

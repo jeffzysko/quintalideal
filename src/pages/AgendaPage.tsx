@@ -270,6 +270,7 @@ export default function AgendaPage() {
             action={{ label: 'Ver leads', onClick: () => navigate('/franquia') }}
           />
         ) : isMobile ? renderMobileView() : renderDesktopView()}
+        </div>
       </div>
       </PullToRefresh>
     </PageTransition>

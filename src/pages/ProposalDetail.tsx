@@ -7,8 +7,7 @@ import { toast } from 'sonner';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { PageTransition } from '@/components/PageTransition';
-import { PanelHeader } from '@/components/PanelHeader';
-import { BackButton } from '@/components/BackButton';
+import { PageHeader } from '@/components/PageHeader';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -236,10 +235,11 @@ export default function ProposalDetail() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-background pb-bottomnav sm:pb-0">
-        <PanelHeader title="Detalhe da Proposta">
-          <BackButton fallback="/propostas" />
-        </PanelHeader>
+      <div className="min-h-screen bg-background pb-24 md:pb-12">
+        <PageHeader
+          title={proposal.client_name || 'Proposta'}
+          fallbackPath="/propostas"
+        />
 
         <div className="max-w-4xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-5">
           {/* Header + link sharing */}
