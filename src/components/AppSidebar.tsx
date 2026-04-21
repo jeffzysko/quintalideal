@@ -55,8 +55,8 @@ const SUPER_ADMIN_MAIN: SidebarNavItem[] = [
   { title: 'Dashboard', url: '/admin', icon: LayoutDashboard, matchTab: 'overview' },
   { title: 'Funil Geral', url: '/admin?tab=kanban', icon: Kanban, matchTab: 'kanban' },
   { title: 'Franquias', url: '/admin?tab=franchises', icon: Building2, matchTab: 'franchises' },
-  { title: 'Visão Franquia', url: '/admin?tab=inspect', icon: Eye, matchTab: 'inspect' },
-  { title: 'Aplicações', url: '/admin?tab=applications', icon: Inbox, matchTab: 'applications' },
+  { title: 'Visão Franquia', url: '/admin?tab=franchise-view', icon: Eye, matchTab: 'franchise-view' },
+  { title: 'Candidaturas', url: '/admin?tab=candidaturas', icon: Inbox, matchTab: 'candidaturas' },
   { title: 'Marcas', url: '/admin/marcas', icon: Star, matchPaths: ['/admin/marcas'] },
   { title: 'Usuários', url: '/admin?tab=users', icon: Users, matchTab: 'users' },
   { title: 'Relatórios', url: '/superadmin/receita', icon: BarChart2, matchPaths: ['/superadmin/receita'] },
@@ -70,8 +70,7 @@ const SUPER_ADMIN_EXTRA: SidebarNavItem[] = [
   { title: 'Radar de Mercado', url: '/admin/radar', icon: Radar, matchPaths: ['/admin/radar'] },
   { title: 'Status do Sistema', url: '/superadmin/status', icon: Activity, matchPaths: ['/superadmin/status'] },
   { title: 'Logs de Erro', url: '/admin?tab=errors', icon: AlertTriangle, matchTab: 'errors' },
-  { title: 'Cron Jobs', url: '/admin?tab=cron', icon: Activity, matchTab: 'cron' },
-  { title: 'Planos WhatsApp', url: '/admin?tab=whatsapp-plans', icon: MessageCircle, matchTab: 'whatsapp-plans' },
+  { title: 'WhatsApp', url: '/admin?tab=whatsapp', icon: MessageCircle, matchTab: 'whatsapp' },
   { title: 'Suporte', url: '/suporte', icon: HelpCircle },
 ];
 
