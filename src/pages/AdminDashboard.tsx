@@ -3,6 +3,7 @@ import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-quer
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Globe, Kanban, CalendarClock, MessageCircle, FileText, ShieldAlert, Gauge, BarChart2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -472,36 +473,44 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-background pb-bottomnav">
       <AdminWelcomeWizard />
       <PanelHeader title="Fábrica">
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => navigate('/hoje')}
-          className="inline-flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors min-h-[44px] min-w-[44px]"
           aria-label="Hoje"
+          className="h-11 w-11 text-muted-foreground hover:text-foreground"
         >
           <CalendarClock className="w-4 h-4" />
-        </button>
+        </Button>
         {/* Hide secondary actions on very small screens */}
-        <button
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => navigate('/admin/radar')}
-          className="hidden xs:inline-flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors min-h-[44px] min-w-[44px]"
           aria-label="Radar"
+          className="hidden xs:inline-flex h-11 w-11 text-muted-foreground hover:text-foreground"
         >
           <Target className="w-4 h-4" />
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={() => navigate('/mapa')}
-          className="hidden xs:inline-flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors min-h-[44px] min-w-[44px]"
           aria-label="Mapa"
+          className="hidden xs:inline-flex h-11 w-11 text-muted-foreground hover:text-foreground"
         >
           <MapPin className="w-4 h-4" />
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="ghost"
+          size="icon"
           onClick={exportCSV}
-          className="hidden xs:inline-flex items-center justify-center gap-1.5 px-2 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors min-h-[44px] min-w-[44px]"
           aria-label="CSV"
+          className="hidden xs:inline-flex h-11 w-11 text-muted-foreground hover:text-foreground"
         >
           <Download className="w-4 h-4" />
-        </button>
-        
+        </Button>
+
         <div className="h-5 w-px bg-border/40 mx-0.5 hidden xs:block" />
         <NotificationBell />
         <UserAvatarMenu />

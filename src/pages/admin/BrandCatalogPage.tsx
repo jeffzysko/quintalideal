@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -9,8 +9,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetFooter } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
-import { Plus, Pencil, Trash2, ArrowLeft, Loader2, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, Loader2, X } from 'lucide-react';
 import { toast } from 'sonner';
+import { PageHeader } from '@/components/PageHeader';
+import { PageTransition } from '@/components/PageTransition';
 
 type CategoriaTamanho = 'pequena' | 'media' | 'grande';
 
@@ -42,7 +44,6 @@ const EMPTY: Partial<PoolModel> = {
 
 export default function BrandCatalogPage() {
   const { brandId } = useParams<{ brandId: string }>();
-  const navigate = useNavigate();
   const [brandName, setBrandName] = useState('');
   const [models, setModels] = useState<PoolModel[]>([]);
   const [loading, setLoading] = useState(true);
@@ -154,24 +155,19 @@ export default function BrandCatalogPage() {
   };
 
   return (
-    <div className="container max-w-6xl py-6 space-y-6">
-      <Button variant="ghost" size="sm" onClick={() => navigate('/admin/marcas')}>
-        <ArrowLeft className="h-4 w-4 mr-1.5" /> Voltar para marcas
-      </Button>
-
-      <div className="flex items-start justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight">
-            {brandName ? `Catálogo - ${brandName}` : 'Catálogo'}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-1">
-            Modelos de piscina vinculados a esta marca.
-          </p>
-        </div>
-        <Button onClick={openNew}>
-          <Plus className="h-4 w-4 mr-2" /> Adicionar modelo
-        </Button>
-      </div>
+    <PageTransition>
+    <div>
+      <PageHeader
+        title={brandName ? `Catálogo · ${brandName}` : 'Catálogo'}
+        subtitle="Modelos de piscina disponíveis para esta marca"
+        fallbackPath="/admin/marcas"
+        rightSlot={
+          <Button onClick={openNew} size="sm">
+            <Plus className="h-4 w-4 mr-2" /> Adicionar modelo
+          </Button>
+        }
+      />
+      <div className="container max-w-6xl py-6 space-y-6">
 
       {loading ? (
         <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>
@@ -320,6 +316,8 @@ export default function BrandCatalogPage() {
           </SheetFooter>
         </SheetContent>
       </Sheet>
+      </div>
     </div>
+    </PageTransition>
   );
 }
