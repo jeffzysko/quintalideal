@@ -466,6 +466,7 @@ export default function AdminDashboard() {
 
         {activeTab === 'overview' && (
           <>
+            <PageSectionHeader title="Dashboard" subtitle="Visão geral da plataforma" />
             {/* Time range + KPIs */}
             <div className="flex items-center justify-between mb-3 sm:mb-4">
               <SectionHeader icon={BarChart3} title="Métricas" subtitle={timeRange === 'all' ? 'Todo o período' : `Últimos ${timeRange} dias vs período anterior`} />
@@ -545,7 +546,9 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === 'analytics' && (
-          <Tabs defaultValue="analytics" className="w-full">
+          <>
+            <PageSectionHeader title="Analytics" subtitle="Métricas e performance" />
+            <Tabs defaultValue="analytics" className="w-full">
             <TabsList className="w-full h-auto rounded-xl bg-muted/50 border border-border/40 p-1 gap-0.5 overflow-x-auto scrollbar-hide flex flex-nowrap justify-start mb-4">
               <TabsTrigger value="analytics" className="shrink-0 gap-1.5 rounded-lg text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm px-3 py-2.5 whitespace-nowrap">
                 <Activity className="w-3.5 h-3.5 shrink-0" /> Analytics
@@ -584,13 +587,17 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === 'performance-qi' && (
-          <Suspense fallback={<TabFallback />}>
-            <PerformanceQI franchiseMap={franchiseMap} franchises={franchises as any} />
-          </Suspense>
+          <>
+            <PageSectionHeader title="Performance QI" subtitle="Análise de qualidade e indicadores" />
+            <Suspense fallback={<TabFallback />}>
+              <PerformanceQI franchiseMap={franchiseMap} franchises={franchises as any} />
+            </Suspense>
+          </>
         )}
 
         {activeTab === 'leads' && isSuperAdmin && (
           <>
+            <PageSectionHeader title="Leads" subtitle="Todos os leads da plataforma" />
             {(kpisError || tableError) && (
               <div className="flex items-center justify-between gap-3 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
                 <p className="font-medium">Erro ao carregar dados. Verifique sua conexão.</p>
