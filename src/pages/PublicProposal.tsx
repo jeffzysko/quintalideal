@@ -544,7 +544,7 @@ export default function PublicProposal() {
                     <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
                       <Button
                         onClick={() => setAcceptOpen(true)}
-                        className="gap-2 text-white rounded-xl shadow-lg h-12 px-7 font-bold text-sm hover:opacity-90 transition-opacity"
+                        className={`gap-2 text-white rounded-xl shadow-lg h-12 px-7 font-bold text-sm hover:opacity-90 transition-opacity ${!brandPrimary ? 'bg-gradient-to-r from-success to-success/80 text-success-foreground' : ''}`}
                         style={brandPrimary ? { backgroundColor: brandPrimary } : undefined}
                       >
                         <Check className="w-4 h-4" /> Aceitar Proposta <ArrowRight className="w-4 h-4 ml-1" />
