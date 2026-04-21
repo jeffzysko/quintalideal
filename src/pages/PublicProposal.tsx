@@ -12,6 +12,7 @@ import { ptBR } from 'date-fns/locale';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
 import { VideoEmbed } from '@/components/proposals/ProposalVideoSection';
 import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
+import { PublicFooter } from '@/components/Footer';
 
 import {
   type ProposalData,
@@ -576,6 +577,7 @@ export default function PublicProposal() {
           )}
           <VerificationFooter proposal={proposal} />
         </main>
+        <PublicFooter />
 
         {/* ═══ MOBILE BOTTOM BAR ═══ */}
         {canAct && !actionDone && (
