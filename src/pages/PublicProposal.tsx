@@ -583,7 +583,11 @@ export default function PublicProposal() {
             style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}>
             <div className="flex gap-2">
               <motion.div className="flex-1" whileTap={{ scale: 0.97 }}>
-                <Button onClick={() => setAcceptOpen(true)} className="w-full gap-1.5 h-12 bg-gradient-to-r from-success to-success/80 text-success-foreground rounded-xl shadow-lg font-bold">
+                <Button
+                  onClick={() => setAcceptOpen(true)}
+                  className={`w-full gap-1.5 h-12 text-white rounded-xl shadow-lg font-bold hover:opacity-90 transition-opacity ${!brandPrimary ? 'bg-gradient-to-r from-success to-success/80 text-success-foreground' : ''}`}
+                  style={brandPrimary ? { backgroundColor: brandPrimary } : undefined}
+                >
                   <Check className="w-4 h-4" /> Aceitar
                 </Button>
               </motion.div>
