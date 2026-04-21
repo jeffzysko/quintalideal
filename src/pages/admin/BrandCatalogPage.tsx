@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -44,7 +44,6 @@ const EMPTY: Partial<PoolModel> = {
 
 export default function BrandCatalogPage() {
   const { brandId } = useParams<{ brandId: string }>();
-  const navigate = useNavigate();
   const [brandName, setBrandName] = useState('');
   const [models, setModels] = useState<PoolModel[]>([]);
   const [loading, setLoading] = useState(true);
