@@ -19,6 +19,7 @@ interface Franchise {
   brand_primary_color: string | null;
   brand_secondary_color: string | null;
   brand_slogan: string | null;
+  brand_score_label: string | null;
 }
 
 export default function FranchiseLanding() {
@@ -94,6 +95,7 @@ export default function FranchiseLanding() {
         brandPrimaryColor={franchise.brand_primary_color || '#16a34a'}
         brandSecondaryColor={franchise.brand_secondary_color || '#15803d'}
         brandSlogan={franchise.brand_slogan || undefined}
+        brandScoreLabel={franchise.brand_score_label || undefined}
         isTestMode={false}
       />
     </>
