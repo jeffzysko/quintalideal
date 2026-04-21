@@ -170,6 +170,8 @@ export default function PublicProposal() {
     ? proposal.subtotal * (proposal.global_discount / 100)
     : proposal.global_discount;
   const proposalNumber = proposal.id.slice(0, 4).toUpperCase();
+  const brand = proposal.brand;
+  const brandPrimary = brand?.primary_color || undefined;
 
   return (
     <>
