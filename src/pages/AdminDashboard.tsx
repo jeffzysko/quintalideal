@@ -223,7 +223,7 @@ export default function AdminDashboard() {
       while (true) {
         const { data, error } = await supabase
           .from('leads')
-          .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, updated_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin, respostas_questionario')
+          .select('id, nome, cidade, pontuacao_quintal, modelo_recomendado, modelo_vendido, status_lead, created_at, updated_at, franquia_id, telefone, email, ref_code, referred_by, origin_franchise_id, territory_match_status, coverage_match_count, distribution_rule_used, lead_origin, respostas_questionario, activity_count:lead_activities(count)')
           .gte('created_at', twelveMonthsAgo.toISOString())
           .order('created_at', { ascending: false })
           .range(from, from + BATCH - 1);
