@@ -144,6 +144,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
 
     // Last step (city) — run recommendation engine
     const v2Input = normalizeQuizToV2(newAnswers);
+    const result = recommendPoolsV2(v2Input, allModels, brandName);
     const result = recommendPoolsV2(v2Input, allModels);
     setRecommendation(result);
 
