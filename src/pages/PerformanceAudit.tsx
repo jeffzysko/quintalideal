@@ -5,8 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { BackButton } from '@/components/BackButton';
-import { PanelHeader } from '@/components/PanelHeader';
+import { PageHeader } from '@/components/PageHeader';
 import { PageTransition } from '@/components/PageTransition';
 import {
   Activity, AlertTriangle, CheckCircle2, Cpu,
@@ -356,10 +355,12 @@ export default function PerformanceAudit() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-background pb-bottomnav sm:pb-8">
-        <PanelHeader title="Performance Audit">
-          <BackButton fallback="/admin" />
-        </PanelHeader>
+      <div className="min-h-screen bg-background pb-24 md:pb-12">
+        <PageHeader
+          title="Performance Audit"
+          subtitle="Auditoria técnica e métricas de performance"
+          fallbackPath="/admin"
+        />
 
         <div className="max-w-6xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-6">
 
