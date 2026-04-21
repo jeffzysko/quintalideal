@@ -2,7 +2,6 @@ import { useMemo, useCallback, useState, useEffect } from 'react';
 import { PullToRefresh } from '@/components/PullToRefresh';
 import { SwipeableLeadCard } from '@/components/dashboard/SwipeableLeadCard';
 import { SwipeHint } from '@/components/dashboard/SwipeHint';
-import { BackButton } from '@/components/BackButton';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -13,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { StatCard } from '@/components/ui/stat-card';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
-import { PanelHeader } from '@/components/PanelHeader';
+import { PageHeader } from '@/components/PageHeader';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { NotificationBell } from '@/components/NotificationBell';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -471,13 +470,16 @@ export default function HojePage() {
   return (
     <PageTransition>
       <PullToRefresh onRefresh={handlePullRefresh}>
-        <div className="min-h-screen bg-background pb-bottomnav">
-          <PanelHeader title="Hoje">
-            <BackButton fallback={isAdmin ? '/admin' : '/franquia'} />
-            <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
-            <NotificationBell />
-            <UserAvatarMenu />
-          </PanelHeader>
+        <div className="min-h-screen bg-background pb-24 md:pb-12">
+          <PageHeader
+            title="Hoje"
+            rightSlot={
+              <div className="flex items-center gap-1">
+                <NotificationBell />
+                <UserAvatarMenu />
+              </div>
+            }
+          />
 
           <div className="max-w-2xl mx-auto px-4 sm:px-5 py-5 sm:py-8">
             <Breadcrumbs className="md:hidden" items={[

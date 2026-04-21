@@ -7,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { PageTransition } from '@/components/PageTransition';
 import { PullToRefresh } from '@/components/PullToRefresh';
-import { PanelHeader } from '@/components/PanelHeader';
+import { PageHeader } from '@/components/PageHeader';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { NotificationBell } from '@/components/NotificationBell';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -227,13 +227,17 @@ export default function AgendaPage() {
   return (
     <PageTransition>
       <PullToRefresh onRefresh={handleRefresh}>
-      <div className="max-w-6xl mx-auto px-4 pb-28 sm:pb-8 pt-4 sm:pt-6">
-        <PanelHeader title="Agenda">
-          <div className="flex items-center gap-2">
-            <NotificationBell />
-            <UserAvatarMenu />
-          </div>
-        </PanelHeader>
+      <div className="min-h-screen bg-background pb-24 md:pb-12">
+        <PageHeader
+          title="Agenda"
+          rightSlot={
+            <div className="flex items-center gap-1">
+              <NotificationBell />
+              <UserAvatarMenu />
+            </div>
+          }
+        />
+        <div className="max-w-6xl mx-auto px-4 pt-4 sm:pt-6">
 
         {/* Week navigation */}
         <div className="flex flex-wrap items-center gap-2 mt-4 mb-6">

@@ -24,7 +24,7 @@ import { NotificationBell } from '@/components/NotificationBell';
 import { FranchiseReports } from '@/components/franchise/FranchiseReports';
 import { STATUS_LABELS, STATUS_COLORS, LeadRow } from '@/lib/lead-constants';
 import { TableSkeleton } from '@/components/ui/table-skeleton';
-import { PanelHeader } from '@/components/PanelHeader';
+import { PageHeader } from '@/components/PageHeader';
 import { classifyLead } from '@/lib/leadScoring';
 import { KanbanBoard } from '@/components/franchise/KanbanBoard';
 import { WelcomeWizard } from '@/components/franchise/WelcomeWizard';
@@ -664,23 +664,29 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-background pb-bottomnav">
-      <PanelHeader title={franchiseName || 'Dashboard'}>
-        <button
-          onClick={() => navigate('/hoje')}
-          className="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted/60 transition-colors min-h-[44px] min-w-[44px]"
-          aria-label="Hoje"
-        >
-          <CalendarClock className="w-4 h-4" />
-          <span className="hidden sm:inline">Hoje</span>
-        </button>
-        <Badge variant="outline" className="text-[10px] px-2 py-0.5 border-primary/20 text-primary font-medium hidden sm:flex">
-          {allLeads.length} leads
-        </Badge>
-        <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
-        <NotificationBell />
-        <UserAvatarMenu />
-      </PanelHeader>
+    <div className="min-h-screen bg-background pb-24 md:pb-12">
+      <PageHeader
+        title={franchiseName || 'Dashboard'}
+        rightSlot={
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/hoje')}
+              className="gap-1.5 hidden sm:inline-flex"
+              aria-label="Hoje"
+            >
+              <CalendarClock className="w-4 h-4" />
+              <span className="hidden sm:inline">Hoje</span>
+            </Button>
+            <Badge variant="outline" className="text-[10px] px-2 py-0.5 border-primary/20 text-primary font-medium hidden sm:flex">
+              {allLeads.length} leads
+            </Badge>
+            <NotificationBell />
+            <UserAvatarMenu />
+          </div>
+        }
+      />
 
       <div className="max-w-6xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
         <Breadcrumbs className="md:hidden" items={[{ label: 'Franquia' }]} />
