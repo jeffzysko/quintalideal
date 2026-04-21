@@ -163,8 +163,9 @@ export default function PublicReview() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-primary/5 to-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md space-y-6">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-primary/5 to-background">
+      <div className="flex-1 flex items-center justify-center p-4">
+        <div className="w-full max-w-md space-y-6">
         <div className="text-center space-y-2">
           {franchise?.logo_url ? (
             <img src={franchise.logo_url} alt={franchise.nome_franquia} className="h-10 mx-auto object-contain mb-1" />
@@ -265,6 +266,7 @@ export default function PublicReview() {
           Sua resposta ajuda a melhorar nosso serviço.
         </p>
       </div>
+      <PublicFooter />
     </div>
   );
 }
