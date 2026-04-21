@@ -3,7 +3,17 @@ import type { LeadRow } from '@/lib/lead-constants';
 export type LeadWithQuiz = LeadRow & {
   respostas_questionario?: Record<string, string> | null;
   valor_venda?: number | null;
+  activity_count?: number | { count: number }[] | null;
 };
+
+/** Normalizes the activity_count field which Supabase returns as `[{ count: N }]`. */
+export function getActivityCount(
+  raw: LeadWithQuiz['activity_count'],
+): number {
+  if (typeof raw === 'number') return raw;
+  if (Array.isArray(raw) && raw.length > 0) return raw[0]?.count ?? 0;
+  return 0;
+}
 
 export const COLUMNS = ['novo', 'contatado', 'em_negociacao', 'vendido', 'perdido'] as const;
 

@@ -28,7 +28,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
-import { COLUMNS, type LeadWithQuiz } from './types';
+import { COLUMNS, getActivityCount, type LeadWithQuiz } from './types';
 import { LeadCardAssignee } from './LeadCardAssignee';
 import { LeadAvatar } from '@/components/lead/LeadAvatar';
 
@@ -186,6 +186,14 @@ export const LeadCard = memo(function LeadCard({
             className="h-4 w-4 shadow-sm bg-background border-border"
           />
         </div>
+      )}
+
+      {!overlay && getActivityCount(lead.activity_count) > 0 && (
+        <span
+          className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary z-10 pointer-events-none"
+          title="Lead com atividades registradas"
+          aria-label="Lead com atividades registradas"
+        />
       )}
 
       <div
