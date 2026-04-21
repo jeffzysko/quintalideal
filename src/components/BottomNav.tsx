@@ -14,7 +14,8 @@ import {
   Building2,
   Users,
   BarChart2,
-  Star,
+  CreditCard,
+  Trophy,
   TrendingUp,
   HelpCircle,
   Activity,
@@ -36,21 +37,16 @@ interface NavItem {
   isAction?: boolean;
 }
 
-// ── Super Admin: Dashboard, Analytics, Gestão (drawer), Mais (drawer) ──
+// ── Super Admin: Dashboard, Analytics, Franquias, Mais (drawer) ──
 const SUPER_ADMIN_PRIMARY: NavItem[] = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/admin', matchPaths: ['/admin'] },
   { icon: TrendingUp, label: 'Analytics', path: '/admin?tab=analytics' },
-  { icon: Plus, label: '', path: '/propostas/nova', isAction: true },
-  // 4th slot is filled by the "Gestão" button below (rendered separately)
-];
-
-const SUPER_ADMIN_GESTAO: NavItem[] = [
   { icon: Store, label: 'Franquias', path: '/admin?tab=franchises' },
-  { icon: Building2, label: 'Marcas', path: '/admin/marcas' },
-  { icon: Users, label: 'Usuários', path: '/admin?tab=users' },
 ];
 
 const SUPER_ADMIN_MORE: NavItem[] = [
+  { icon: Building2, label: 'Marcas', path: '/admin/marcas' },
+  { icon: Users, label: 'Usuários', path: '/admin?tab=users' },
   { icon: Users2, label: 'Leads', path: '/admin?tab=leads' },
   { icon: Compass, label: 'Explorar', path: '/explorar' },
   { icon: Activity, label: 'Status', path: '/superadmin/status' },
@@ -61,19 +57,19 @@ const SUPER_ADMIN_MORE: NavItem[] = [
   { icon: HelpCircle, label: 'Suporte', path: '/suporte' },
 ];
 
-// ── Franquia: Hoje, Leads, FAB, Propostas, Mais ──
+// ── Franquia: Hoje, Leads, FAB, Propostas, Pós-venda, Mais ──
 const FRANCHISE_PRIMARY: NavItem[] = [
   { icon: Sun, label: 'Hoje', path: '/hoje' },
   { icon: Kanban, label: 'Leads', path: '/franquia', matchPaths: ['/franquia', '/painel'] },
   { icon: Plus, label: '', path: '/propostas/nova', isAction: true },
   { icon: FileText, label: 'Propostas', path: '/propostas', matchPaths: ['/propostas'] },
+  { icon: Package, label: 'Pós-venda', path: '/franquia?tab=pos-venda' },
 ];
 
 const FRANCHISE_MORE: NavItem[] = [
-  { icon: Package, label: 'Pós-venda', path: '/franquia?tab=pos-venda' },
+  { icon: Trophy, label: 'Metas', path: '/franquia?tab=achievements' },
   { icon: BarChart2, label: 'Relatórios', path: '/relatorio-crm' },
-  { icon: TrendingUp, label: 'Metas', path: '/franquia?tab=achievements' },
-  { icon: Star, label: 'Planos', path: '/planos' },
+  { icon: CreditCard, label: 'Planos', path: '/planos' },
   { icon: Settings, label: 'Configurações', path: '/perfil' },
   { icon: HelpCircle, label: 'Suporte', path: '/suporte' },
 ];
