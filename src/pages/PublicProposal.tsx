@@ -479,11 +479,13 @@ export default function PublicProposal() {
             )}
           </motion.div>
 
-          {proposal.payment_conditions && (
+          {(proposal.payment_conditions || brand?.payment_terms) && (
             <SectionCard>
               <div className="p-5 space-y-2">
                 <h3 className="font-bold text-sm text-foreground">Condições de Pagamento</h3>
-                <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">{proposal.payment_conditions}</p>
+                <p className="text-sm text-muted-foreground whitespace-pre-wrap leading-relaxed">
+                  {proposal.payment_conditions || brand?.payment_terms}
+                </p>
               </div>
             </SectionCard>
           )}
