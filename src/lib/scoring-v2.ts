@@ -604,16 +604,17 @@ const MODEL_BENEFITS: Record<string, Record<string, string>> = {
   'Versátil': { pt: 'oferece ótimo custo-benefício com bom aproveitamento de espaço', es: 'ofrece excelente costo-beneficio con buen aprovechamiento de espacio' },
 };
 
-export function generateSalesScript(leadName: string, input: QuizInputV2, modelName: string, lang: 'pt' | 'es' = 'pt'): string {
+export function generateSalesScript(leadName: string, input: QuizInputV2, modelName: string, lang: 'pt' | 'es' = 'pt', brandName?: string): string {
   const firstName = leadName?.split(' ')[0] || '';
   const uso = USAGE_LABELS_SCRIPT[input.objective_main]?.[lang] || '';
   const benefit = MODEL_BENEFITS[modelName]?.[lang] || (lang === 'es' ? 'se adapta perfectamente a lo que buscas' : 'se encaixa perfeitamente no que você busca');
+  const brand = brandName?.trim() || (lang === 'es' ? 'nuestro equipo' : 'nossa equipe');
 
   if (lang === 'es') {
-    return `Hola ${firstName}, vi que estás buscando una piscina para ${uso}. La ${modelName} que sugerimos es perfecta porque ${benefit}. Se adapta muy bien a tu espacio y atiende exactamente lo que buscas.`;
+    return `Hola ${firstName}, vi que estás buscando una piscina para ${uso}. La ${modelName} que te sugerimos en ${brand} es perfecta porque ${benefit}. Se adapta muy bien a tu espacio y atiende exactamente lo que buscas.`;
   }
 
-  return `Oi ${firstName}, vi que você está buscando uma piscina para ${uso}. A ${modelName} que sugerimos é perfeita porque ${benefit}. Ela se encaixa muito bem no seu espaço e atende exatamente o que você busca.`;
+  return `Oi ${firstName}, vi que você está buscando uma piscina para ${uso}. A ${modelName} que sugerimos aqui na ${brand} é perfeita porque ${benefit}. Ela se encaixa muito bem no seu espaço e atende exatamente o que você busca.`;
 }
 
 // ── Legacy Score (backward compat) ──
