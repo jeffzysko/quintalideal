@@ -17,7 +17,7 @@ export function PageHeader({ title, subtitle, icon, fallbackPath, rightSlot }: P
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className="sticky top-0 z-30"
+      className="sticky top-0 z-40"
     >
       {/* Full-width blur backdrop */}
       <div className="absolute inset-0 backdrop-blur-2xl bg-background/60" />
