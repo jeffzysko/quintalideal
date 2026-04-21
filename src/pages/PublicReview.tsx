@@ -265,6 +265,7 @@ export default function PublicReview() {
         <p className="text-center text-xs text-muted-foreground">
           Sua resposta ajuda a melhorar nosso serviço.
         </p>
+        </div>
       </div>
       <PublicFooter />
     </div>
