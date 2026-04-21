@@ -107,12 +107,12 @@ export default function SuperAdminReceita() {
   ];
 
   return (
-    <div className="p-4 md:p-6 space-y-8 max-w-6xl mx-auto pb-24">
+    <div>
       <PageHeader
         title="Receita"
-        subtitle="Visão geral de assinaturas e receita recorrente."
-        fallbackPath="/admin"
+        subtitle="Visão geral de assinaturas e receita recorrente da plataforma"
       />
+      <div className="container max-w-6xl mx-auto px-4 py-6 pb-16 space-y-6">
 
       {isLoading ? (
         <div className="flex justify-center py-12">

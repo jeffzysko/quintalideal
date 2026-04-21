@@ -151,15 +151,14 @@ export default function BrandsPage() {
     <div>
       <PageHeader
         title="Marcas"
-        subtitle="Gerencie as marcas e suas identidades visuais"
-        fallbackPath="/admin"
+        subtitle="Gerencie marcas, identidade visual e catálogos de piscinas"
         rightSlot={
           <Button onClick={openNew} size="sm">
             <Plus className="h-4 w-4 mr-2" /> Nova marca
           </Button>
         }
       />
-      <div className="container max-w-6xl py-6 space-y-6">
+      <div className="container max-w-6xl mx-auto px-4 py-6 pb-16 space-y-6">
 
       {loading ? (
         <div className="flex justify-center py-12">
