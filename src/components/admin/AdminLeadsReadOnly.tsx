@@ -158,7 +158,7 @@ export function AdminLeadsReadOnly({ franchiseMap, franchises }: AdminLeadsReadO
                             {lead.nome || '—'}
                           </TableCell>
                           <TableCell>
-                            <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
+                            <Badge className={`${temp.bgColor} ${temp.color} border text-xs font-semibold`} variant="outline">
                               {temp.emoji} {temp.label}
                             </Badge>
                           </TableCell>
@@ -172,7 +172,7 @@ export function AdminLeadsReadOnly({ franchiseMap, franchises }: AdminLeadsReadO
                             {franchiseMap[lead.franquia_id ?? ''] || '—'}
                           </TableCell>
                           <TableCell>
-                            <Badge variant="outline" className={`text-[10px] ${STATUS_COLORS[lead.status_lead] || ''}`}>
+                            <Badge variant="outline" className={`text-xs ${STATUS_COLORS[lead.status_lead] || ''}`}>
                               {STATUS_LABELS[lead.status_lead] || lead.status_lead}
                             </Badge>
                           </TableCell>
@@ -221,7 +221,7 @@ export function AdminLeadsReadOnly({ franchiseMap, franchises }: AdminLeadsReadO
                             {temp.emoji} {temp.label}
                           </Badge>
                         </span>
-                        <Badge variant="outline" className={`text-[10px] shrink-0 ${STATUS_COLORS[lead.status_lead] || ''}`}>
+                        <Badge variant="outline" className={`text-xs shrink-0 ${STATUS_COLORS[lead.status_lead] || ''}`}>
                           {STATUS_LABELS[lead.status_lead] || lead.status_lead}
                         </Badge>
                       </div>

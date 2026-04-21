@@ -187,7 +187,7 @@ export const LeadCard = memo(function LeadCard({
         <div className="flex items-center gap-1.5 mb-2 flex-wrap">
           <span
             className={cn(
-              'inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full border',
+              'inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full border',
               temp.bgColor,
               temp.color
             )}
@@ -195,19 +195,19 @@ export const LeadCard = memo(function LeadCard({
             {temp.emoji} {temp.label}
           </span>
           {lead.modelo_recomendado && (
-            <span className="text-[11px] text-muted-foreground truncate max-w-[110px]">
+            <span className="text-xs text-muted-foreground truncate max-w-[110px]">
               · {lead.modelo_recomendado}
             </span>
           )}
           {(lead as any).lead_origin === 'manual' && (
-            <span className="text-[10px] text-amber-600 font-medium" title="Lead manual">✏️</span>
+            <span className="text-xs text-amber-600 font-medium" title="Lead manual">✏️</span>
           )}
         </div>
 
         {/* Linha 3: Cidade + Último contato */}
         <div className="flex items-center justify-between gap-2">
           {lead.cidade ? (
-            <span className="text-[11px] text-muted-foreground flex items-center gap-1 truncate">
+            <span className="text-xs text-muted-foreground flex items-center gap-1 truncate">
               <MapPin className="w-3 h-3 shrink-0" />
               {lead.cidade}
             </span>
@@ -219,7 +219,7 @@ export const LeadCard = memo(function LeadCard({
             const days = (Date.now() - new Date(lastTs).getTime()) / (1000 * 60 * 60 * 24);
             const tone = days > 7 ? 'text-destructive' : days > 3 ? 'text-amber-500' : 'text-muted-foreground';
             return (
-              <span className={cn('text-[11px] flex items-center gap-1 shrink-0 font-medium', tone)}>
+              <span className={cn('text-xs flex items-center gap-1 shrink-0 font-medium', tone)}>
                 <Clock className="w-3 h-3" />
                 {formatDistanceToNow(new Date(lastTs), { locale: ptBR, addSuffix: true }).replace('há ', '')}
               </span>
@@ -229,7 +229,7 @@ export const LeadCard = memo(function LeadCard({
 
         {/* Franquia (visão admin) */}
         {franchiseName && (
-          <div className="mt-1.5 text-[10px] text-muted-foreground/80 truncate">
+          <div className="mt-1.5 text-xs text-muted-foreground/80 truncate">
             {franchiseName}
           </div>
         )}
@@ -240,7 +240,7 @@ export const LeadCard = memo(function LeadCard({
             {leadTags.slice(0, 3).map((tag: { name: string; color: string }, i: number) => (
               <span
                 key={i}
-                className="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                className="text-xs font-medium px-1.5 py-0.5 rounded-full"
                 style={{ backgroundColor: tag.color + '25', color: tag.color }}
               >
                 {tag.name}
@@ -259,7 +259,7 @@ export const LeadCard = memo(function LeadCard({
                 e.stopPropagation();
                 window.open(`https://wa.me/${toWhatsAppPhone(lead.telefone!)}`, '_blank');
               }}
-              className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[11px] font-medium text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-colors"
+              className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-medium text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-colors"
               title="Enviar WhatsApp"
             >
               <MessageCircle className="w-3.5 h-3.5" />
@@ -270,7 +270,7 @@ export const LeadCard = memo(function LeadCard({
             <PopoverTrigger asChild>
               <button
                 onClick={(e) => e.stopPropagation()}
-                className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[11px] font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-colors"
+                className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-colors"
                 title="Adicionar nota"
               >
                 <StickyNote className="w-3.5 h-3.5" />
@@ -301,7 +301,7 @@ export const LeadCard = memo(function LeadCard({
               <DropdownMenuTrigger asChild>
                 <button
                   onClick={(e) => e.stopPropagation()}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[11px] font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-colors"
+                  className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-colors"
                   title="Mover etapa"
                 >
                   <ArrowRightLeft className="w-3.5 h-3.5" />

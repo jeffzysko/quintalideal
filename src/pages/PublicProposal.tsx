@@ -200,7 +200,7 @@ export default function PublicProposal() {
               <div className="hidden sm:block h-6 w-px bg-border" />
               <div className="hidden sm:block">
                 <p className="text-xs font-bold text-foreground leading-tight">{proposal.franchise?.nome_franquia}</p>
-                {proposal.franchise?.cidade_base && <p className="text-[10px] text-muted-foreground">{proposal.franchise.cidade_base}</p>}
+                {proposal.franchise?.cidade_base && <p className="text-xs text-muted-foreground">{proposal.franchise.cidade_base}</p>}
               </div>
             </div>
             <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
@@ -341,18 +341,18 @@ export default function PublicProposal() {
               <div className="h-px bg-border/50" />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                 <div>
-                  <span className="text-muted-foreground/70 text-[11px] uppercase tracking-[0.1em] font-semibold">Nome</span>
+                  <span className="text-muted-foreground/70 text-xs uppercase tracking-[0.1em] font-semibold">Nome</span>
                   <p className="font-semibold text-foreground mt-0.5">{proposal.client_name}</p>
                 </div>
                 {proposal.client_document && (
                   <div>
-                    <span className="text-muted-foreground/70 text-[11px] uppercase tracking-[0.1em] font-semibold">{proposal.person_type === 'pj' ? 'CNPJ' : 'CPF'}</span>
+                    <span className="text-muted-foreground/70 text-xs uppercase tracking-[0.1em] font-semibold">{proposal.person_type === 'pj' ? 'CNPJ' : 'CPF'}</span>
                     <p className="font-semibold text-foreground mt-0.5">{proposal.client_document}</p>
                   </div>
                 )}
                 {proposal.client_address && (
                   <div className="sm:col-span-2">
-                    <span className="text-muted-foreground/70 text-[11px] uppercase tracking-[0.1em] font-semibold">Endereço</span>
+                    <span className="text-muted-foreground/70 text-xs uppercase tracking-[0.1em] font-semibold">Endereço</span>
                     <p className="font-semibold text-foreground mt-0.5">{proposal.client_address}</p>
                   </div>
                 )}
@@ -366,7 +366,7 @@ export default function PublicProposal() {
               <div className="flex items-center gap-2.5 mb-4">
                 <div className="w-9 h-9 rounded-xl bg-primary/8 flex items-center justify-center"><FileText className="w-4.5 h-4.5 text-primary" /></div>
                 <h3 className="font-bold text-sm text-foreground">Itens da Proposta</h3>
-                <Badge variant="secondary" className="ml-auto text-[10px] font-bold rounded-full px-2.5">
+                <Badge variant="secondary" className="ml-auto text-xs font-bold rounded-full px-2.5">
                   {proposal.items.length} {proposal.items.length === 1 ? 'item' : 'itens'}
                 </Badge>
               </div>
@@ -376,10 +376,10 @@ export default function PublicProposal() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="border-y border-border/50 bg-muted/30">
-                    <th className="text-left px-5 py-3 font-bold text-muted-foreground text-[11px] uppercase tracking-[0.1em]">Item</th>
-                    <th className="text-center px-3 py-3 font-bold text-muted-foreground text-[11px] uppercase tracking-[0.1em]">Qtd</th>
-                    <th className="text-right px-3 py-3 font-bold text-muted-foreground text-[11px] uppercase tracking-[0.1em]">Unitário</th>
-                    <th className="text-right px-5 py-3 font-bold text-muted-foreground text-[11px] uppercase tracking-[0.1em]">Subtotal</th>
+                    <th className="text-left px-5 py-3 font-bold text-muted-foreground text-xs uppercase tracking-[0.1em]">Item</th>
+                    <th className="text-center px-3 py-3 font-bold text-muted-foreground text-xs uppercase tracking-[0.1em]">Qtd</th>
+                    <th className="text-right px-3 py-3 font-bold text-muted-foreground text-xs uppercase tracking-[0.1em]">Unitário</th>
+                    <th className="text-right px-5 py-3 font-bold text-muted-foreground text-xs uppercase tracking-[0.1em]">Subtotal</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -450,7 +450,7 @@ export default function PublicProposal() {
                   <div className="w-11 h-11 rounded-xl bg-secondary/8 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
                     <CreditCard className="w-5 h-5 text-secondary" />
                   </div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-bold">Pagamento</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-[0.15em] font-bold">Pagamento</p>
                   <p className="font-bold text-sm text-foreground mt-1">{getPaymentLabel(proposal.payment_method)}</p>
                 </div>
               </motion.div>
@@ -461,7 +461,7 @@ export default function PublicProposal() {
                   <div className="w-11 h-11 rounded-xl bg-primary/8 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
                     <Truck className="w-5 h-5 text-primary" />
                   </div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-bold">Entrega</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-[0.15em] font-bold">Entrega</p>
                   <p className="font-bold text-sm text-foreground mt-1">{proposal.delivery_deadline}</p>
                 </div>
               </motion.div>
@@ -472,7 +472,7 @@ export default function PublicProposal() {
                   <div className="w-11 h-11 rounded-xl bg-success/8 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform duration-300">
                     <CalendarDays className="w-5 h-5 text-success" />
                   </div>
-                  <p className="text-[10px] text-muted-foreground uppercase tracking-[0.15em] font-bold">Válida até</p>
+                  <p className="text-xs text-muted-foreground uppercase tracking-[0.15em] font-bold">Válida até</p>
                   <p className="font-bold text-sm text-foreground mt-1">{format(new Date(proposal.validity_date), "dd/MM/yyyy")}</p>
                 </div>
               </motion.div>
@@ -521,7 +521,7 @@ export default function PublicProposal() {
                       >
                         <Download className="w-4 h-4 text-primary shrink-0 group-hover:scale-110 transition-transform" />
                         <span className="text-sm font-medium text-foreground truncate flex-1">{att.file_name}</span>
-                        <span className="text-[11px] text-muted-foreground shrink-0">
+                        <span className="text-xs text-muted-foreground shrink-0">
                           {att.file_size < 1024 * 1024
                             ? `${(att.file_size / 1024).toFixed(1)} KB`
                             : `${(att.file_size / (1024 * 1024)).toFixed(1)} MB`}

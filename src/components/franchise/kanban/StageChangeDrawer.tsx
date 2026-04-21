@@ -123,10 +123,10 @@ export function StageChangeDrawer({
                       <span className={cn("text-sm font-semibold", isActive ? "text-primary" : "text-foreground")}>
                         {STATUS_LABELS[status]}
                       </span>
-                      <p className="text-[11px] text-muted-foreground mt-0.5">{descriptions[status]}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5">{descriptions[status]}</p>
                     </div>
                     {isActive && (
-                      <Badge variant="secondary" className="text-[10px] bg-primary/10 text-primary shrink-0 mt-0.5">
+                      <Badge variant="secondary" className="text-xs bg-primary/10 text-primary shrink-0 mt-0.5">
                         Atual
                       </Badge>
                     )}
@@ -238,7 +238,7 @@ export function StageChangeDrawer({
                   />
                 </div>
                 {parsedSaleValue > 0 && (
-                  <p className="text-[11px] text-emerald-600 mt-1.5 font-medium">
+                  <p className="text-xs text-emerald-600 mt-1.5 font-medium">
                     {parsedSaleValue.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                   </p>
                 )}
@@ -251,7 +251,7 @@ export function StageChangeDrawer({
                 <PartyPopper className="w-4 h-4" />
                 Registrar venda
               </Button>
-              <p className="text-[10px] text-muted-foreground text-center">
+              <p className="text-xs text-muted-foreground text-center">
                 Se houver uma proposta aceita vinculada, o valor é atualizado automaticamente pelo sistema.
               </p>
             </div>

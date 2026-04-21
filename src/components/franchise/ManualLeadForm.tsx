@@ -473,7 +473,7 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
                 >
                   <span className="text-lg">{t.emoji}</span>
                   <span className="font-semibold">{t.label}</span>
-                  <span className="text-[10px] opacity-70">{t.desc}</span>
+                  <span className="text-xs opacity-70">{t.desc}</span>
                 </button>
               ))}
             </div>
@@ -585,7 +585,7 @@ export function ManualLeadForm({ franchiseId, trigger, onSuccess }: ManualLeadFo
                     className="flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-muted-foreground/20 hover:border-primary/50 aspect-square text-muted-foreground hover:text-primary transition-colors"
                   >
                     <Plus className="w-5 h-5" />
-                    <span className="text-[10px]">Foto</span>
+                    <span className="text-xs">Foto</span>
                   </button>
                 )}
               </div>

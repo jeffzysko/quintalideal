@@ -95,14 +95,14 @@ export function AdminErrorLogs({ franchiseMap }: { franchiseMap: Record<string, 
   };
 
   const severityBadge = (s: string) => {
-    if (s === 'critical') return <Badge variant="destructive" className="text-[10px] px-1.5"><Flame className="w-3 h-3 mr-0.5" />Critical</Badge>;
-    if (s === 'error') return <Badge className="bg-orange-500/15 text-orange-600 border-orange-500/30 text-[10px] px-1.5"><Bug className="w-3 h-3 mr-0.5" />Error</Badge>;
-    return <Badge className="bg-yellow-500/15 text-yellow-600 border-yellow-500/30 text-[10px] px-1.5"><AlertTriangle className="w-3 h-3 mr-0.5" />Warning</Badge>;
+    if (s === 'critical') return <Badge variant="destructive" className="text-xs px-1.5"><Flame className="w-3 h-3 mr-0.5" />Critical</Badge>;
+    if (s === 'error') return <Badge className="bg-orange-500/15 text-orange-600 border-orange-500/30 text-xs px-1.5"><Bug className="w-3 h-3 mr-0.5" />Error</Badge>;
+    return <Badge className="bg-yellow-500/15 text-yellow-600 border-yellow-500/30 text-xs px-1.5"><AlertTriangle className="w-3 h-3 mr-0.5" />Warning</Badge>;
   };
 
   const sourceBadge = (s: string) => {
-    if (s === 'frontend') return <Badge className="bg-purple-500/15 text-purple-600 border-purple-500/30 text-[10px] px-1.5"><Monitor className="w-3 h-3 mr-0.5" />Frontend</Badge>;
-    return <Badge className="bg-blue-500/15 text-blue-600 border-blue-500/30 text-[10px] px-1.5"><Server className="w-3 h-3 mr-0.5" />Edge Fn</Badge>;
+    if (s === 'frontend') return <Badge className="bg-purple-500/15 text-purple-600 border-purple-500/30 text-xs px-1.5"><Monitor className="w-3 h-3 mr-0.5" />Frontend</Badge>;
+    return <Badge className="bg-blue-500/15 text-blue-600 border-blue-500/30 text-xs px-1.5"><Server className="w-3 h-3 mr-0.5" />Edge Fn</Badge>;
   };
 
   const filters: { key: FilterType; label: string }[] = [
@@ -122,28 +122,28 @@ export function AdminErrorLogs({ franchiseMap }: { franchiseMap: Record<string, 
           <CardContent className="p-3 text-center">
             <Flame className={`w-5 h-5 mx-auto mb-1 ${criticalCount > 0 ? 'text-red-500' : 'text-muted-foreground'}`} />
             <p className="text-2xl font-bold">{criticalCount}</p>
-            <p className="text-[10px] text-muted-foreground">Críticos (24h)</p>
+            <p className="text-xs text-muted-foreground">Críticos (24h)</p>
           </CardContent>
         </Card>
         <Card className={`border ${errorCount > 0 ? 'border-orange-500/50 bg-orange-500/5' : 'border-border/50'}`}>
           <CardContent className="p-3 text-center">
             <Bug className={`w-5 h-5 mx-auto mb-1 ${errorCount > 0 ? 'text-orange-500' : 'text-muted-foreground'}`} />
             <p className="text-2xl font-bold">{errorCount}</p>
-            <p className="text-[10px] text-muted-foreground">Erros (24h)</p>
+            <p className="text-xs text-muted-foreground">Erros (24h)</p>
           </CardContent>
         </Card>
         <Card className={`border ${warningCount > 0 ? 'border-yellow-500/50 bg-yellow-500/5' : 'border-border/50'}`}>
           <CardContent className="p-3 text-center">
             <AlertTriangle className={`w-5 h-5 mx-auto mb-1 ${warningCount > 0 ? 'text-yellow-500' : 'text-muted-foreground'}`} />
             <p className="text-2xl font-bold">{warningCount}</p>
-            <p className="text-[10px] text-muted-foreground">Warnings (24h)</p>
+            <p className="text-xs text-muted-foreground">Warnings (24h)</p>
           </CardContent>
         </Card>
         <Card className="border border-border/50">
           <CardContent className="p-3 text-center">
             <Clock className="w-5 h-5 mx-auto mb-1 text-muted-foreground" />
             <p className="text-sm font-semibold">{lastCritical ? timeAgo(lastCritical.created_at) : '—'}</p>
-            <p className="text-[10px] text-muted-foreground">Último crítico</p>
+            <p className="text-xs text-muted-foreground">Último crítico</p>
           </CardContent>
         </Card>
       </div>
@@ -164,7 +164,7 @@ export function AdminErrorLogs({ franchiseMap }: { franchiseMap: Record<string, 
           ))}
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-[10px] text-muted-foreground">
+          <span className="text-xs text-muted-foreground">
             {dataUpdatedAt ? `Atualizado ${timeAgo(new Date(dataUpdatedAt).toISOString())}` : ''}
           </span>
           <Button variant="ghost" size="sm" className="h-7 w-7 p-0" onClick={() => queryClient.invalidateQueries({ queryKey: ['admin-error-logs'] })}>
@@ -222,7 +222,7 @@ export function AdminErrorLogs({ franchiseMap }: { franchiseMap: Record<string, 
                       <td className="p-2 whitespace-nowrap text-muted-foreground">{timeAgo(e.created_at)}</td>
                       <td className="p-2">{severityBadge(e.severity)}</td>
                       <td className="p-2">{sourceBadge(e.source)}</td>
-                      <td className="p-2 font-mono text-[10px]">{e.function_name || '—'}</td>
+                      <td className="p-2 font-mono text-xs">{e.function_name || '—'}</td>
                       <td className="p-2 max-w-[200px] truncate">{e.message}</td>
                       <td className="p-2 text-muted-foreground">{e.franchise_id ? (franchiseMap[e.franchise_id] || e.franchise_id.slice(0, 8)) : '—'}</td>
                     </tr>
@@ -267,7 +267,7 @@ export function AdminErrorLogs({ franchiseMap }: { franchiseMap: Record<string, 
                 {selectedError.stack && (
                   <div>
                     <p className="text-muted-foreground text-xs mb-1">Stack Trace</p>
-                    <pre className="bg-muted/50 rounded-lg p-3 text-[10px] font-mono overflow-x-auto whitespace-pre-wrap break-words max-h-60">
+                    <pre className="bg-muted/50 rounded-lg p-3 text-xs font-mono overflow-x-auto whitespace-pre-wrap break-words max-h-60">
                       {selectedError.stack}
                     </pre>
                   </div>
@@ -275,7 +275,7 @@ export function AdminErrorLogs({ franchiseMap }: { franchiseMap: Record<string, 
                 {selectedError.metadata && Object.keys(selectedError.metadata).length > 0 && (
                   <div>
                     <p className="text-muted-foreground text-xs mb-1">Metadata</p>
-                    <pre className="bg-muted/50 rounded-lg p-3 text-[10px] font-mono overflow-x-auto whitespace-pre-wrap break-words max-h-60">
+                    <pre className="bg-muted/50 rounded-lg p-3 text-xs font-mono overflow-x-auto whitespace-pre-wrap break-words max-h-60">
                       {JSON.stringify(selectedError.metadata, null, 2)}
                     </pre>
                   </div>

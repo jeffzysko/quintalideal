@@ -114,7 +114,7 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
               className="rounded-xl h-11 font-mono text-sm"
               maxLength={20}
             />
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               Encontre no{' '}
               <a href="https://business.facebook.com/events_manager" target="_blank" rel="noopener noreferrer" className="text-primary underline">
                 Meta Business Suite → Gerenciador de Eventos
@@ -130,7 +130,7 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
               </div>
               <Label className="text-xs font-semibold">Webhook para CRM</Label>
             </div>
-            <p className="text-[11px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground">
               Receba os dados dos leads automaticamente no seu CRM.{' '}
               <a href="/docs/webhook" target="_blank" className="text-primary underline">Ver documentação →</a>
             </p>
@@ -172,7 +172,7 @@ export function FranchiseContactSettings({ franchiseId }: Props) {
                   Gerar
                 </Button>
               </div>
-              <p className="text-[11px] text-muted-foreground">
+              <p className="text-xs text-muted-foreground">
                 Use este secret para validar a autenticidade dos webhooks recebidos.
               </p>
             </div>

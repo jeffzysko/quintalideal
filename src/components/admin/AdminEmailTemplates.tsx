@@ -316,7 +316,7 @@ export function AdminEmailTemplates() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-sm font-semibold text-foreground">{t.name}</span>
-                      <Badge className={`${cat.color} border text-[10px]`}>{cat.label}</Badge>
+                      <Badge className={`${cat.color} border text-xs`}>{cat.label}</Badge>
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5 truncate">{t.trigger}</p>
                   </div>
@@ -354,7 +354,7 @@ export function AdminEmailTemplates() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-sm font-semibold text-foreground">{t.name}</span>
-                        <Badge className={`${cat.color} border text-[10px]`}>{cat.label}</Badge>
+                        <Badge className={`${cat.color} border text-xs`}>{cat.label}</Badge>
                       </div>
                       <p className="text-xs text-muted-foreground mt-1">
                         <strong>Assunto:</strong> {t.subject}

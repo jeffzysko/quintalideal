@@ -209,7 +209,7 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <CalendarDays className="w-4 h-4 text-primary" /> Leads por Mês
             </CardTitle>
-            <p className="text-[11px] text-muted-foreground mt-0.5">Quantos leads novos chegaram em cada mês.</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Quantos leads novos chegaram em cada mês.</p>
           </CardHeader>
           <CardContent className="px-2 sm:px-6">
             <ChartContainer config={{}} className="h-[200px] sm:h-[220px] w-full">
@@ -228,7 +228,7 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <BarChart3 className="w-4 h-4 text-primary" /> Status dos Leads
             </CardTitle>
-            <p className="text-[11px] text-muted-foreground mt-0.5">Como seus leads estão distribuídos entre as etapas de venda.</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Como seus leads estão distribuídos entre as etapas de venda.</p>
           </CardHeader>
           <CardContent className="px-2 sm:px-6">
             <div className="flex flex-col sm:flex-row items-center gap-4">
@@ -263,7 +263,7 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <TrendingUp className="w-4 h-4 text-primary" /> Tendência Semanal
             </CardTitle>
-            <p className="text-[11px] text-muted-foreground mt-0.5">Evolução do número de leads semana a semana. Suba = mais interesse!</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Evolução do número de leads semana a semana. Suba = mais interesse!</p>
           </CardHeader>
           <CardContent className="px-2 sm:px-6">
             <ChartContainer config={{}} className="h-[200px] sm:h-[220px] w-full">
@@ -282,7 +282,7 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <Target className="w-4 h-4 text-primary" /> Distribuição do Índice
             </CardTitle>
-            <p className="text-[11px] text-muted-foreground mt-0.5">Mostra quantos leads têm quintais com boa, média ou baixa compatibilidade.</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Mostra quantos leads têm quintais com boa, média ou baixa compatibilidade.</p>
           </CardHeader>
           <CardContent className="px-2 sm:px-6">
             <ChartContainer config={{}} className="h-[200px] sm:h-[220px] w-full">
@@ -305,7 +305,7 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
               <CardTitle className="text-sm font-semibold flex items-center gap-2">
                 <MapPin className="w-4 h-4 text-primary" /> Top Cidades
               </CardTitle>
-              <p className="text-[11px] text-muted-foreground mt-0.5">Cidades que mais geraram leads para sua franquia.</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Cidades que mais geraram leads para sua franquia.</p>
             </CardHeader>
             <CardContent className="px-3 sm:px-6">
               <div className="space-y-2">
@@ -317,7 +317,7 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-xs sm:text-sm font-medium text-foreground truncate">{c.city}</span>
-                          <span className="text-[10px] sm:text-xs text-muted-foreground shrink-0 ml-2">{c.count} ({pct}%)</span>
+                          <span className="text-xs sm:text-xs text-muted-foreground shrink-0 ml-2">{c.count} ({pct}%)</span>
                         </div>
                         <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                           <motion.div
@@ -342,7 +342,7 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
               <CardTitle className="text-sm font-semibold flex items-center gap-2">
                 <Droplets className="w-4 h-4 text-primary" /> Modelos Mais Indicados
               </CardTitle>
-              <p className="text-[11px] text-muted-foreground mt-0.5">Quais modelos de piscina os leads mais se interessaram.</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Quais modelos de piscina os leads mais se interessaram.</p>
             </CardHeader>
             <CardContent className="px-3 sm:px-6">
               <div className="space-y-2">
@@ -354,7 +354,7 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-xs sm:text-sm font-medium text-foreground truncate">{m.model}</span>
-                          <span className="text-[10px] sm:text-xs text-muted-foreground shrink-0 ml-2">{m.count} ({pct}%)</span>
+                          <span className="text-xs sm:text-xs text-muted-foreground shrink-0 ml-2">{m.count} ({pct}%)</span>
                         </div>
                         <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                           <motion.div
@@ -381,7 +381,7 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
             <CardTitle className="text-sm font-semibold flex items-center gap-2">
               <Share2 className="w-4 h-4 text-primary" /> Origem dos Leads
             </CardTitle>
-            <p className="text-[11px] text-muted-foreground mt-0.5">De onde seus leads estão vindo (baseado em UTM).</p>
+            <p className="text-xs text-muted-foreground mt-0.5">De onde seus leads estão vindo (baseado em UTM).</p>
           </CardHeader>
           <CardContent className="px-3 sm:px-6">
             <div className="space-y-2">
@@ -393,7 +393,7 @@ export function FranchiseReports({ leads }: FranchiseReportsProps) {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-xs sm:text-sm font-medium text-foreground truncate">{s.label}</span>
-                        <span className="text-[10px] sm:text-xs text-muted-foreground shrink-0 ml-2">{s.count} ({pct}%)</span>
+                        <span className="text-xs sm:text-xs text-muted-foreground shrink-0 ml-2">{s.count} ({pct}%)</span>
                       </div>
                       <div className="h-1.5 bg-muted rounded-full overflow-hidden">
                         <motion.div

@@ -32,7 +32,7 @@ export function InactivityBadge({ createdAt, lastActivityAt }: InactivityBadgePr
   const Icon = icon;
 
   return (
-    <div className={`inline-flex items-center gap-1.5 text-[11px] font-medium px-2.5 py-1 rounded-full border ${className}`}>
+    <div className={`inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border ${className}`}>
       <Icon className="w-3 h-3" />
       {label}
     </div>

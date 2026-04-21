@@ -152,7 +152,7 @@ export function PostSaleDashboard({ franchiseId, basePath = '/painel/lead' }: Po
                           <div className="flex items-center gap-2 mb-1">
                             <span className="text-sm font-semibold text-foreground truncate">{leadName}</span>
                             {overdue && (
-                              <Badge variant="outline" className="text-[10px] bg-amber-50 text-amber-700 border-amber-300 gap-0.5 shrink-0">
+                              <Badge variant="outline" className="text-xs bg-amber-50 text-amber-700 border-amber-300 gap-0.5 shrink-0">
                                 <AlertTriangle className="w-3 h-3" />
                                 Atrasado
                               </Badge>
@@ -165,7 +165,7 @@ export function PostSaleDashboard({ franchiseId, basePath = '/painel/lead' }: Po
                                 {new Date(p.installation_date + 'T00:00:00').toLocaleDateString('pt-BR')}
                               </span>
                             )}
-                            <Badge className={`${statusCfg.bgColor} ${statusCfg.color} border text-[10px]`} variant="outline">
+                            <Badge className={`${statusCfg.bgColor} ${statusCfg.color} border text-xs`} variant="outline">
                               {statusCfg.emoji} {statusCfg.label}
                             </Badge>
                             {(() => {
@@ -178,7 +178,7 @@ export function PostSaleDashboard({ franchiseId, basePath = '/painel/lead' }: Po
                                   <span className="flex-1 h-1 rounded-full bg-muted overflow-hidden max-w-[60px]">
                                     <span className="block h-full bg-emerald-500 rounded-full" style={{ width: `${pct}%` }} />
                                   </span>
-                                  <span className="text-[10px]">{cl.done}/{cl.total}</span>
+                                  <span className="text-xs">{cl.done}/{cl.total}</span>
                                 </span>
                               );
                             })()}

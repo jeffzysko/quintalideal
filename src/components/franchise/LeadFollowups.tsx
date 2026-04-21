@@ -177,7 +177,7 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
             </div>
             {leadId ? 'Follow-ups' : 'Próximos Follow-ups'}
             {overdueCount > 0 && (
-              <Badge variant="destructive" className="text-[10px] px-1.5 py-0 animate-pulse">{overdueCount} atrasado{overdueCount > 1 ? 's' : ''}</Badge>
+              <Badge variant="destructive" className="text-xs px-1.5 py-0 animate-pulse">{overdueCount} atrasado{overdueCount > 1 ? 's' : ''}</Badge>
             )}
           </CardTitle>
           {leadId && (
@@ -206,7 +206,7 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
               <div className="space-y-3 p-4 bg-gradient-to-b from-primary/5 to-muted/30 rounded-xl mb-3 border border-primary/10">
                 {/* Type selector as icon grid */}
                 <div>
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2 block">Tipo de ação</label>
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 block">Tipo de ação</label>
                   <div className="grid grid-cols-3 gap-1.5">
                     {FOLLOWUP_TYPES.map(ft => {
                       const Icon = ft.icon;
@@ -230,7 +230,7 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
                             <Icon className={cn('w-4 h-4', isSelected ? 'text-primary' : ft.color)} />
                           </div>
                           <span className={cn(
-                            'text-[10px] font-semibold leading-tight',
+                            'text-xs font-semibold leading-tight',
                             isSelected ? 'text-primary' : 'text-muted-foreground'
                           )}>
                             {ft.label}
@@ -243,7 +243,7 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
 
                 {/* Date picker */}
                 <div>
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5 block">Quando</label>
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1.5 block">Quando</label>
                   <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                     <PopoverTrigger asChild>
                       <Button
@@ -277,7 +277,7 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
 
                 {/* Time selector */}
                 <div>
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5 block">Horário</label>
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1.5 block">Horário</label>
                   <div className="flex flex-wrap gap-1.5">
                     {QUICK_HOURS.map(h => (
                       <button
@@ -303,13 +303,13 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
                       onChange={e => setSelectedTime(e.target.value)}
                       className="text-sm h-8 w-28 rounded-lg bg-card"
                     />
-                    <span className="text-[10px] text-muted-foreground">ou digite o horário</span>
+                    <span className="text-xs text-muted-foreground">ou digite o horário</span>
                   </div>
                 </div>
 
                 {/* Note */}
                 <div>
-                  <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1.5 block">Descrição (opcional)</label>
+                  <label className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-1.5 block">Descrição (opcional)</label>
                   <Input
                     placeholder={`Ex: Apresentar orçamento para ${leadName || 'o lead'}`}
                     value={note}
@@ -363,7 +363,7 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
               <CalendarClock className="w-5 h-5 text-muted-foreground/60" />
             </div>
             <p className="text-xs font-medium text-muted-foreground">Nenhum follow-up pendente</p>
-            <p className="text-[11px] text-muted-foreground/60">Agende o próximo contato para manter o engajamento</p>
+            <p className="text-xs text-muted-foreground/60">Agende o próximo contato para manter o engajamento</p>
             {leadId && (
               <Button size="sm" variant="outline" className="mt-1 h-7 text-xs rounded-lg gap-1.5" onClick={() => setShowForm(true)}>
                 <Plus className="w-3 h-3" />
@@ -416,13 +416,13 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
                     <div className={cn('w-5 h-5 rounded-md flex items-center justify-center', typeConfig.bg)}>
                       <TypeIcon className={cn('w-3 h-3', typeConfig.color)} />
                     </div>
-                    <span className={cn('text-[10px] font-bold uppercase tracking-wider', typeConfig.color)}>{typeConfig.label}</span>
+                    <span className={cn('text-xs font-bold uppercase tracking-wider', typeConfig.color)}>{typeConfig.label}</span>
                   </div>
                 )}
                 <p className={cn('text-xs leading-relaxed', f.completed ? 'line-through text-muted-foreground' : 'text-foreground')}>
                   {parsed.text || 'Follow-up agendado'}
                 </p>
-                <p className={cn('text-[10px] mt-1 flex items-center gap-1', isOverdue ? 'text-destructive font-semibold' : 'text-muted-foreground')}>
+                <p className={cn('text-xs mt-1 flex items-center gap-1', isOverdue ? 'text-destructive font-semibold' : 'text-muted-foreground')}>
                   {isOverdue ? '⚠️' : '📅'}
                   {new Date(f.scheduled_at).toLocaleString('pt-BR', { weekday: 'short', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                 </p>

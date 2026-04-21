@@ -116,14 +116,14 @@ export const AdminAchievementRanking = memo(function AdminAchievementRanking({
                     value={(f.unlocked / f.totalAchievements) * 100}
                     className="h-1.5 flex-1 max-w-[100px]"
                   />
-                  <span className="text-[10px] text-muted-foreground font-medium whitespace-nowrap">
+                  <span className="text-xs text-muted-foreground font-medium whitespace-nowrap">
                     {f.unlocked}/{f.totalAchievements} 🏆
                   </span>
                 </div>
               </div>
               <div className="text-right shrink-0">
                 <p className="text-sm font-bold text-foreground">{f.sold}</p>
-                <p className="text-[10px] text-muted-foreground">vendas</p>
+                <p className="text-xs text-muted-foreground">vendas</p>
               </div>
             </motion.div>
           ))}

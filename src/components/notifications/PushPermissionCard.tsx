@@ -64,7 +64,7 @@ export function PushPermissionCard() {
               <p className="text-xs font-semibold leading-tight">
                 {isSubscribed ? 'Ativadas' : 'Desativadas'}
               </p>
-              <p className="text-[10px] text-muted-foreground leading-tight mt-0.5 truncate">
+              <p className="text-xs text-muted-foreground leading-tight mt-0.5 truncate">
                 {isSubscribed
                   ? 'Alertas ativos no dispositivo.'
                   : 'Ative para não perder leads.'}
@@ -80,7 +80,7 @@ export function PushPermissionCard() {
         {permission === 'denied' && (
           <div className="p-2.5 rounded-lg bg-destructive/5 border border-destructive/20">
             <p className="text-xs font-semibold text-destructive">Permissão bloqueada</p>
-            <p className="text-[10px] text-muted-foreground mt-0.5 leading-relaxed">
+            <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
               {isIOS()
                 ? 'Ajustes → Notificações → Quintal Ideal → ative "Permitir".'
                 : 'Configurações → Apps → Quintal Ideal → Notificações → ative.'}

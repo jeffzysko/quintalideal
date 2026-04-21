@@ -72,18 +72,18 @@ export const MobilePipelineCard = memo(function MobilePipelineCard({
               <p className="text-sm font-semibold text-foreground truncate">{lead.nome || '—'}</p>
               <div className="flex items-center gap-2 mt-0.5">
                 {lead.cidade && (
-                  <span className="text-[11px] text-muted-foreground flex items-center gap-0.5">
+                  <span className="text-xs text-muted-foreground flex items-center gap-0.5">
                     <MapPin className="w-3 h-3" />{lead.cidade}
                   </span>
                 )}
-                <span className="text-[11px] text-muted-foreground">
+                <span className="text-xs text-muted-foreground">
                   {new Date(lead.created_at).toLocaleDateString('pt-BR')}
                 </span>
               </div>
             </div>
           </div>
           <div className="flex flex-col items-end gap-1 shrink-0">
-            <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
+            <Badge className={`${temp.bgColor} ${temp.color} border text-xs font-semibold`} variant="outline">
               {temp.emoji} {temp.label}
             </Badge>
           </div>
@@ -93,12 +93,12 @@ export const MobilePipelineCard = memo(function MobilePipelineCard({
           <div className="flex-1 h-1.5 rounded-full bg-muted/60 overflow-hidden">
             <div className={`h-full rounded-full ${scoreColor} transition-all`} style={{ width: `${lead.pontuacao_quintal || 0}%` }} />
           </div>
-          <span className="text-[11px] font-bold tabular-nums w-7 text-right">{lead.pontuacao_quintal || 0}%</span>
+          <span className="text-xs font-bold tabular-nums w-7 text-right">{lead.pontuacao_quintal || 0}%</span>
         </div>
 
         {franchiseName && (
           <div className="mt-1.5 ml-[46px]">
-            <span className="text-[11px] text-muted-foreground">{franchiseName}</span>
+            <span className="text-xs text-muted-foreground">{franchiseName}</span>
           </div>
         )}
       </div>
@@ -145,7 +145,7 @@ export const MobilePipelineCard = memo(function MobilePipelineCard({
               const fullPhone = toWhatsAppPhone(lead.telefone!);
               window.open(`https://wa.me/${fullPhone}`, '_blank');
             }}
-            className="flex-1 flex items-center justify-center gap-1 py-2 text-[11px] font-medium text-success hover:bg-success/5 transition-colors min-h-[44px]"
+            className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-medium text-success hover:bg-success/5 transition-colors min-h-[44px]"
           >
             <MessageCircle className="w-3.5 h-3.5" />
             WhatsApp
@@ -156,7 +156,7 @@ export const MobilePipelineCard = memo(function MobilePipelineCard({
             e.stopPropagation();
             setNoteOpen(v => !v);
           }}
-          className="flex-1 flex items-center justify-center gap-1 py-2 text-[11px] font-medium text-muted-foreground hover:bg-muted/40 transition-colors min-h-[44px]"
+          className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-medium text-muted-foreground hover:bg-muted/40 transition-colors min-h-[44px]"
         >
           <StickyNote className="w-3.5 h-3.5" />
           Nota
@@ -166,7 +166,7 @@ export const MobilePipelineCard = memo(function MobilePipelineCard({
             e.stopPropagation();
             onStageChange(lead.id);
           }}
-          className="flex-1 flex items-center justify-center gap-1 py-2 text-[11px] font-medium text-primary hover:bg-primary/5 transition-colors min-h-[44px]"
+          className="flex-1 flex items-center justify-center gap-1 py-2 text-xs font-medium text-primary hover:bg-primary/5 transition-colors min-h-[44px]"
         >
           <ChevronRight className="w-3.5 h-3.5" />
           Mover

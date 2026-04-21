@@ -135,7 +135,7 @@ export function ExecutiveSummary({ currentLeads, previousLeads, franchiseCount, 
                 <ShieldAlert className="w-3.5 h-3.5 text-amber-600" />
               </div>
               <h3 className="text-sm font-bold text-foreground">Saúde da Rede</h3>
-              <span className="text-[10px] text-amber-600 font-semibold bg-amber-500/10 px-2 py-0.5 rounded-full ml-auto">
+              <span className="text-xs text-amber-600 font-semibold bg-amber-500/10 px-2 py-0.5 rounded-full ml-auto">
                 {networkHealth.totalInactive}/{networkHealth.totalActive} inativas
               </span>
             </div>

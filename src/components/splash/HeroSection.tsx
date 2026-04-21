@@ -131,7 +131,7 @@ export function HeroSection({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.25em] mb-3 sm:mb-4 text-white/70 text-center"
+              className="text-xs sm:text-xs font-semibold uppercase tracking-[0.25em] mb-3 sm:mb-4 text-white/70 text-center"
             >
               {brandSlogan}
             </m.p>
@@ -140,7 +140,7 @@ export function HeroSection({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.25em] mb-3 sm:mb-4 text-white/50"
+              className="text-xs sm:text-xs font-semibold uppercase tracking-[0.25em] mb-3 sm:mb-4 text-white/50"
             >
               {franchiseName}
             </m.p>
@@ -201,17 +201,17 @@ export function HeroSection({
           >
             <div className="flex items-center gap-1.5 text-white/35">
               <Clock className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
-              <span className="text-[9px] sm:text-[10px] font-medium">{t('hero_trust_time', lang)}</span>
+              <span className="text-[9px] sm:text-xs font-medium">{t('hero_trust_time', lang)}</span>
             </div>
             <div className="w-px h-3 bg-white/15" />
             <div className="flex items-center gap-1.5 text-white/35">
               <Shield className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
-              <span className="text-[9px] sm:text-[10px] font-medium">{t('hero_trust_free', lang)}</span>
+              <span className="text-[9px] sm:text-xs font-medium">{t('hero_trust_free', lang)}</span>
             </div>
             <div className="w-px h-3 bg-white/15" />
             <div className="flex items-center gap-1.5 text-white/35">
               <Droplets className="w-3 sm:w-3.5 h-3 sm:h-3.5" />
-              <span className="text-[9px] sm:text-[10px] font-medium">{t('hero_trust_analyses', lang)}</span>
+              <span className="text-[9px] sm:text-xs font-medium">{t('hero_trust_analyses', lang)}</span>
             </div>
           </m.div>
         </div>

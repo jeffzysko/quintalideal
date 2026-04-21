@@ -109,7 +109,7 @@ export function ProposalLeadSection({ updateForm, franchiseId }: Props) {
             <div className="flex-1 min-w-0">
               <p className="font-medium text-sm text-foreground truncate">{selectedLead.nome || 'Sem nome'}</p>
               <div className="flex items-center gap-2 mt-0.5">
-                <Badge variant="outline" className={cn('text-[10px] px-1.5 py-0', STATUS_COLORS[selectedLead.status_lead])}>
+                <Badge variant="outline" className={cn('text-xs px-1.5 py-0', STATUS_COLORS[selectedLead.status_lead])}>
                   {STATUS_LABELS[selectedLead.status_lead] || selectedLead.status_lead}
                 </Badge>
                 {selectedLead.telefone && <span className="text-xs text-muted-foreground">{selectedLead.telefone}</span>}
@@ -161,7 +161,7 @@ export function ProposalLeadSection({ updateForm, franchiseId }: Props) {
                       <p className="text-sm font-medium text-foreground truncate">{lead.nome || 'Sem nome'}</p>
                       <p className="text-xs text-muted-foreground truncate">{lead.email || lead.telefone || ''}</p>
                     </div>
-                    <Badge variant="outline" className={cn('text-[10px] shrink-0', STATUS_COLORS[lead.status_lead])}>
+                    <Badge variant="outline" className={cn('text-xs shrink-0', STATUS_COLORS[lead.status_lead])}>
                       {STATUS_LABELS[lead.status_lead] || lead.status_lead}
                     </Badge>
                   </button>

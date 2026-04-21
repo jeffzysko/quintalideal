@@ -32,35 +32,35 @@ export function PipelineSummary({ leads, franchiseMap }: { leads: LeadWithQuiz[]
   return (
     <div className="flex flex-wrap items-center gap-3 sm:gap-4 mb-4 p-3 rounded-xl border border-border/40 bg-muted/20 overflow-hidden">
       <div className="flex flex-col">
-        <span className="text-[11px] font-medium text-muted-foreground uppercase tracking-wider">Pipeline Total</span>
+        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Pipeline Total</span>
         <span className="text-lg font-bold text-foreground">{formatCurrency(stats.total)}</span>
-        <span className="text-[11px] text-muted-foreground">{stats.count} leads</span>
+        <span className="text-xs text-muted-foreground">{stats.count} leads</span>
       </div>
       <div className="h-10 w-px bg-border/50 hidden sm:block" />
       <div className="flex items-center gap-3">
         <div className="flex items-center gap-1.5">
           <span className="text-sm">🔥</span>
           <span className="text-sm font-bold text-warning">{stats.temps.quente}</span>
-          <span className="text-[11px] text-muted-foreground">Quentes</span>
+          <span className="text-xs text-muted-foreground">Quentes</span>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="text-sm">☀️</span>
           <span className="text-sm font-bold text-warning">{stats.temps.morno}</span>
-          <span className="text-[11px] text-muted-foreground">Mornos</span>
+          <span className="text-xs text-muted-foreground">Mornos</span>
         </div>
         <div className="flex items-center gap-1.5">
           <span className="text-sm">❄️</span>
           <span className="text-sm font-bold text-info">{stats.temps.frio}</span>
-          <span className="text-[11px] text-muted-foreground">Frios</span>
+          <span className="text-xs text-muted-foreground">Frios</span>
         </div>
       </div>
       {franchiseEntries.length > 0 && (
         <>
           <div className="h-10 w-px bg-border/50 hidden sm:block" />
           <div className="flex flex-col gap-1">
-            <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">Top Franquias</span>
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Top Franquias</span>
             {franchiseEntries.map((f) => (
-              <div key={f.id} className="flex items-center gap-2 text-[11px]">
+              <div key={f.id} className="flex items-center gap-2 text-xs">
                 <span className="text-muted-foreground truncate max-w-[120px]">{f.name}</span>
                 <span className="font-semibold text-foreground">{formatCurrency(f.total)}</span>
                 <span className="text-muted-foreground">({f.count})</span>

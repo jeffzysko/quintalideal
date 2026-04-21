@@ -58,7 +58,7 @@ export function PageHeader({ title, subtitle, icon, fallbackPath, rightSlot }: P
                     <span className="truncate">{title}</span>
                   </h1>
                   {subtitle && (
-                    <p className="text-[10px] md:text-xs text-muted-foreground mt-0.5 hidden sm:block truncate">
+                    <p className="text-xs md:text-xs text-muted-foreground mt-0.5 hidden sm:block truncate">
                       {subtitle}
                     </p>
                   )}

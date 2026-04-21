@@ -122,20 +122,20 @@ export function WebhookLogs({ franchiseId }: Props) {
                         <div className="flex items-center gap-2 flex-wrap">
                           <Badge
                             variant={log.success ? 'default' : 'destructive'}
-                            className="text-[10px] px-1.5 py-0 h-5"
+                            className="text-xs px-1.5 py-0 h-5"
                           >
                             {log.success ? 'Sucesso' : 'Falha'}
                           </Badge>
                           {log.http_status && (
-                            <span className="text-[11px] font-mono text-muted-foreground">
+                            <span className="text-xs font-mono text-muted-foreground">
                               HTTP {log.http_status}
                             </span>
                           )}
-                          <Badge variant="outline" className="text-[10px] px-1.5 py-0 h-5">
+                          <Badge variant="outline" className="text-xs px-1.5 py-0 h-5">
                             {log.event_type === 'teste_webhook' ? 'Teste' : 'Lead'}
                           </Badge>
                           {log.attempt > 1 && (
-                            <span className="text-[10px] text-amber-600 font-medium">
+                            <span className="text-xs text-amber-600 font-medium">
                               tentativa {log.attempt}/3
                             </span>
                           )}
@@ -143,7 +143,7 @@ export function WebhookLogs({ franchiseId }: Props) {
                       </div>
 
                       <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-[11px] text-muted-foreground flex items-center gap-1">
+                        <span className="text-xs text-muted-foreground flex items-center gap-1">
                           <Clock className="w-3 h-3" />
                           {formatDistanceToNow(new Date(log.created_at), { addSuffix: true, locale: ptBR })}
                         </span>
@@ -160,7 +160,7 @@ export function WebhookLogs({ franchiseId }: Props) {
                         <div className="grid grid-cols-2 gap-2 text-xs">
                           <div>
                             <span className="text-muted-foreground">URL:</span>
-                            <p className="font-mono text-[11px] truncate text-foreground">{log.url}</p>
+                            <p className="font-mono text-xs truncate text-foreground">{log.url}</p>
                           </div>
                           <div>
                             <span className="text-muted-foreground">Data/hora:</span>
@@ -172,13 +172,13 @@ export function WebhookLogs({ franchiseId }: Props) {
                         {log.error_message && (
                           <div className="text-xs">
                             <span className="text-muted-foreground">Erro:</span>
-                            <p className="text-destructive font-mono text-[11px]">{log.error_message}</p>
+                            <p className="text-destructive font-mono text-xs">{log.error_message}</p>
                           </div>
                         )}
                         {log.response_body && (
                           <div className="text-xs">
                             <span className="text-muted-foreground">Resposta:</span>
-                            <pre className="text-[11px] font-mono bg-muted/60 rounded-lg p-2 mt-1 overflow-x-auto max-h-24 text-foreground/80">
+                            <pre className="text-xs font-mono bg-muted/60 rounded-lg p-2 mt-1 overflow-x-auto max-h-24 text-foreground/80">
                               {log.response_body}
                             </pre>
                           </div>

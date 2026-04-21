@@ -71,7 +71,7 @@ export const MetricCard = memo(function MetricCard({ icon: Icon, label, value, p
                 </Tooltip>
               )}
               {delta && (
-                <div className={`flex max-w-full items-center gap-0.5 whitespace-nowrap text-[11px] sm:text-xs font-semibold rounded-lg px-1.5 py-0.5 ${
+                <div className={`flex max-w-full items-center gap-0.5 whitespace-nowrap text-xs sm:text-xs font-semibold rounded-lg px-1.5 py-0.5 ${
                   delta.direction === 'up' ? 'text-emerald-600 bg-emerald-500/10' :
                   delta.direction === 'down' ? 'text-destructive bg-destructive/10' :
                   'text-muted-foreground bg-muted'
@@ -87,7 +87,7 @@ export const MetricCard = memo(function MetricCard({ icon: Icon, label, value, p
           <p className="text-2xl sm:text-3xl font-extrabold tracking-tight text-foreground leading-none">
             {value}
           </p>
-          <p className="text-[11px] sm:text-xs text-muted-foreground mt-1.5 font-medium">{label}</p>
+          <p className="text-xs sm:text-xs text-muted-foreground mt-1.5 font-medium">{label}</p>
         </CardContent>
       </Card>
     </motion.div>

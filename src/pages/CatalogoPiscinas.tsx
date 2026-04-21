@@ -90,28 +90,28 @@ export default function CatalogoPiscinas() {
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       loading="lazy"
                     />
-                    <Badge variant="outline" className={cn('absolute top-2 left-2 text-[10px] font-semibold backdrop-blur-sm', CATEGORY_COLORS[model.category])}>
+                    <Badge variant="outline" className={cn('absolute top-2 left-2 text-xs font-semibold backdrop-blur-sm', CATEGORY_COLORS[model.category])}>
                       {model.category}
                     </Badge>
                     {model.id === 'tradicional' && (
-                      <Badge className="absolute top-2 right-2 bg-amber-500 text-white border-0 text-[10px] gap-0.5">
+                      <Badge className="absolute top-2 right-2 bg-amber-500 text-white border-0 text-xs gap-0.5">
                         <Star className="w-3 h-3" /> Mais vendido
                       </Badge>
                     )}
                   </div>
                   <CardContent className="p-3 space-y-1.5">
                     <h3 className="text-sm font-bold text-foreground truncate">{model.name}</h3>
-                    <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
+                    <div className="flex items-center gap-2 text-xs text-muted-foreground">
                       <Ruler className="w-3 h-3 shrink-0" />
                       <span>{model.dimensions}</span>
                       <span className="text-border">|</span>
                       <Droplets className="w-3 h-3 shrink-0" />
                       <span>{model.capacity}</span>
                     </div>
-                    <p className="text-[11px] text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       Ideal para: <span className="font-medium text-foreground">{model.idealFor}</span>
                     </p>
-                    <p className="text-[11px] text-muted-foreground/70 italic truncate">{model.highlight}</p>
+                    <p className="text-xs text-muted-foreground/70 italic truncate">{model.highlight}</p>
                     <Button variant="ghost" size="sm" className="w-full h-8 text-xs text-primary mt-1">
                       Ver detalhes
                     </Button>
@@ -131,7 +131,7 @@ export default function CatalogoPiscinas() {
                   <SheetTitle className="flex items-center gap-2">
                     {selectedModel.name}
                     {selectedModel.id === 'tradicional' && (
-                      <Badge className="bg-amber-500 text-white border-0 text-[10px] gap-0.5">
+                      <Badge className="bg-amber-500 text-white border-0 text-xs gap-0.5">
                         <Star className="w-3 h-3" /> Mais vendido
                       </Badge>
                     )}

@@ -542,7 +542,7 @@ export default function NewProposal() {
 
         {/* Mobile draft saved indicator */}
         {isMobile && lastSaved && (
-          <p className="text-[11px] text-muted-foreground text-center mb-3">
+          <p className="text-xs text-muted-foreground text-center mb-3">
             Rascunho salvo às {lastSaved}
           </p>
         )}
@@ -595,7 +595,7 @@ export default function NewProposal() {
                       className="flex flex-col items-center gap-0.5 min-w-0 px-1.5 py-0.5 active:scale-95 transition-transform min-h-[44px] justify-center"
                     >
                       <div className={cn(
-                        'w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold transition-all',
+                        'w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all',
                         complete ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400' :
                         isActive ? 'bg-primary text-primary-foreground shadow-sm' : 'bg-muted text-muted-foreground'
                       )}>

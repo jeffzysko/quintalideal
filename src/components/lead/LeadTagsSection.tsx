@@ -135,7 +135,7 @@ export function LeadTagsSection({ leadId, franchiseId, inline = false }: LeadTag
       <PopoverTrigger asChild>
         <button
           type="button"
-          className="inline-flex items-center gap-1 h-7 px-2.5 rounded-full text-[11px] font-medium border border-dashed border-border/70 text-muted-foreground hover:text-foreground hover:border-primary/60 hover:bg-primary/5 transition-all"
+          className="inline-flex items-center gap-1 h-7 px-2.5 rounded-full text-xs font-medium border border-dashed border-border/70 text-muted-foreground hover:text-foreground hover:border-primary/60 hover:bg-primary/5 transition-all"
         >
           <Plus className="w-3 h-3" />
           {assignedTags.length === 0 ? 'Adicionar etiqueta' : 'Etiqueta'}
@@ -160,7 +160,7 @@ export function LeadTagsSection({ leadId, franchiseId, inline = false }: LeadTag
         {/* Tag list */}
         <div className="max-h-56 overflow-y-auto p-1.5">
           {filteredTags.length === 0 && !search && (
-            <p className="text-[11px] text-muted-foreground text-center py-4 px-2">
+            <p className="text-xs text-muted-foreground text-center py-4 px-2">
               Nenhuma etiqueta criada ainda. Digite acima para criar a primeira.
             </p>
           )}
@@ -173,7 +173,7 @@ export function LeadTagsSection({ leadId, franchiseId, inline = false }: LeadTag
                 className="w-full flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-muted/60 transition-colors group"
               >
                 <span
-                  className="inline-flex items-center gap-1.5 text-[11px] font-medium px-2 py-0.5 rounded-full"
+                  className="inline-flex items-center gap-1.5 text-xs font-medium px-2 py-0.5 rounded-full"
                   style={{
                     backgroundColor: tag.color + '20',
                     color: tag.color,
@@ -197,7 +197,7 @@ export function LeadTagsSection({ leadId, franchiseId, inline = false }: LeadTag
         {/* Create new */}
         {search.trim() && !exactMatch && (
           <div className="border-t border-border/40 p-2.5 bg-muted/20">
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-1.5 flex items-center gap-1">
+            <p className="text-xs uppercase tracking-wider text-muted-foreground font-semibold mb-1.5 flex items-center gap-1">
               <Sparkles className="w-3 h-3" /> Criar nova
             </p>
             <div className="flex gap-1 mb-2">
@@ -234,7 +234,7 @@ export function LeadTagsSection({ leadId, franchiseId, inline = false }: LeadTag
   const tagChips = assignedTags.map(tag => (
     <span
       key={tag.id}
-      className="group inline-flex items-center gap-1 h-7 pl-2 pr-1 rounded-full text-[11px] font-medium transition-all hover:shadow-sm"
+      className="group inline-flex items-center gap-1 h-7 pl-2 pr-1 rounded-full text-xs font-medium transition-all hover:shadow-sm"
       style={{
         backgroundColor: tag.color + '18',
         color: tag.color,
@@ -267,11 +267,11 @@ export function LeadTagsSection({ leadId, franchiseId, inline = false }: LeadTag
     <div className="rounded-xl border border-border/40 bg-card/30 p-3">
       <div className="flex items-center gap-1.5 mb-2.5">
         <Tag className="w-3.5 h-3.5 text-muted-foreground" />
-        <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+        <span className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
           Etiquetas
         </span>
         {assignedTags.length > 0 && (
-          <span className="text-[10px] text-muted-foreground/60">· {assignedTags.length}</span>
+          <span className="text-xs text-muted-foreground/60">· {assignedTags.length}</span>
         )}
       </div>
       <div className="flex flex-wrap items-center gap-1.5">

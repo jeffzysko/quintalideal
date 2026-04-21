@@ -56,7 +56,7 @@ export function PushNotificationCard() {
               </p>
             </div>
           </div>
-          <Badge variant={isSubscribed ? 'default' : 'secondary'} className="text-[10px]">
+          <Badge variant={isSubscribed ? 'default' : 'secondary'} className="text-xs">
             {isSubscribed ? 'ON' : 'OFF'}
           </Badge>
         </div>

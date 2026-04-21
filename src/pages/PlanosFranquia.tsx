@@ -198,7 +198,7 @@ export default function PlanosFranquia() {
               <FileText className="h-3 w-3" />
               Orçamento Personalizado ativo
               {orcamentoViaWhatsApp && (
-                <span className="ml-1 text-[10px] opacity-80 font-normal">Incluso</span>
+                <span className="ml-1 text-xs opacity-80 font-normal">Incluso</span>
               )}
             </Badge>
           )}
@@ -207,7 +207,7 @@ export default function PlanosFranquia() {
               <MessageCircle className="h-3 w-3" />
               WhatsApp Próprio ativo
               {plan?.zapi_phone_number && (
-                <span className="ml-1 text-[10px] opacity-80 font-normal">• {plan.zapi_phone_number}</span>
+                <span className="ml-1 text-xs opacity-80 font-normal">• {plan.zapi_phone_number}</span>
               )}
             </Badge>
           )}
@@ -307,7 +307,7 @@ export default function PlanosFranquia() {
                               className="w-full bg-primary/80 rounded-t-sm min-h-[2px]"
                               style={{ height: `${Math.max(height, 2)}%` }}
                             />
-                            <span className="text-[10px] text-muted-foreground">{m.month}</span>
+                            <span className="text-xs text-muted-foreground">{m.month}</span>
                           </div>
                         );
                       })}

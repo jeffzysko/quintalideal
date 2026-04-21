@@ -159,7 +159,7 @@ function ScoreGauge({ score, size = 'lg' }: { score: number; size?: 'sm' | 'lg' 
         <span className={cn('font-bold', size === 'lg' ? 'text-3xl' : 'text-lg')} style={{ color }}>
           {score}
         </span>
-        {size === 'lg' && <span className="text-[10px] text-muted-foreground font-medium">/100</span>}
+        {size === 'lg' && <span className="text-xs text-muted-foreground font-medium">/100</span>}
       </div>
     </div>
   );
@@ -172,7 +172,7 @@ function SeverityBadge({ severity }: { severity: Severity }) {
     low: { label: 'Baixo', classes: 'bg-muted text-muted-foreground border-border' },
   };
   const c = config[severity];
-  return <Badge variant="outline" className={cn('text-[10px] font-semibold', c.classes)}>{c.label}</Badge>;
+  return <Badge variant="outline" className={cn('text-xs font-semibold', c.classes)}>{c.label}</Badge>;
 }
 
 function StatusIndicator({ status }: { status: Status }) {
@@ -262,8 +262,8 @@ function RadarChart({ scores }: { scores: typeof SCORES }) {
           const color = val >= 80 ? 'hsl(var(--success))' : val >= 60 ? 'hsl(var(--warning))' : 'hsl(var(--destructive))';
           return (
             <g key={cat.key}>
-              <text x={p.x} y={p.y - 6} textAnchor="middle" className="text-[10px] fill-muted-foreground font-medium">{cat.label}</text>
-              <text x={p.x} y={p.y + 8} textAnchor="middle" className="text-[11px] font-bold" fill={color}>{val}</text>
+              <text x={p.x} y={p.y - 6} textAnchor="middle" className="text-xs fill-muted-foreground font-medium">{cat.label}</text>
+              <text x={p.x} y={p.y + 8} textAnchor="middle" className="text-xs font-bold" fill={color}>{val}</text>
             </g>
           );
         })}
@@ -295,7 +295,7 @@ function VitalCard({ vital }: { vital: WebVital }) {
             transition={{ duration: 0.8, ease: 'easeOut' }}
           />
         </div>
-        <p className="text-[11px] text-muted-foreground leading-relaxed">{vital.description}</p>
+        <p className="text-xs text-muted-foreground leading-relaxed">{vital.description}</p>
       </CardContent>
     </Card>
   );
@@ -481,7 +481,7 @@ export default function PerformanceAudit() {
                         <TableCell className="text-xs text-right tabular-nums">{chunk.rawKB.toFixed(1)}KB</TableCell>
                         <TableCell className="text-xs text-right tabular-nums font-semibold">{chunk.gzipKB.toFixed(1)}KB</TableCell>
                         <TableCell className="text-center"><StatusIndicator status={chunk.status} /></TableCell>
-                        <TableCell className="text-[11px] text-muted-foreground max-w-[300px]">
+                        <TableCell className="text-xs text-muted-foreground max-w-[300px]">
                           {chunk.issue}
                           {chunk.fix && <p className="text-primary font-medium mt-0.5">→ {chunk.fix}</p>}
                         </TableCell>
@@ -523,14 +523,14 @@ export default function PerformanceAudit() {
                           <code className={cn('text-xs font-mono', issue.done ? 'text-muted-foreground line-through' : 'text-foreground')}>{issue.file}:{issue.line}</code>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          {issue.done && <Badge variant="outline" className="text-[10px] text-success border-success/30">Corrigido</Badge>}
+                          {issue.done && <Badge variant="outline" className="text-xs text-success border-success/30">Corrigido</Badge>}
                           <SeverityBadge severity={issue.severity} />
                         </div>
                       </div>
                       <p className="text-xs font-semibold text-foreground mb-1">{issue.type}</p>
-                      <p className="text-[11px] text-muted-foreground mb-2">{issue.impact}</p>
+                      <p className="text-xs text-muted-foreground mb-2">{issue.impact}</p>
                       <div className="bg-muted/50 rounded-lg p-2.5">
-                        <p className="text-[11px] text-primary font-medium">{issue.done ? '✅' : '💡'} {issue.fix}</p>
+                        <p className="text-xs text-primary font-medium">{issue.done ? '✅' : '💡'} {issue.fix}</p>
                       </div>
                     </CardContent>
                   </Card>
@@ -555,14 +555,14 @@ export default function PerformanceAudit() {
                       <div className="flex items-start justify-between gap-2 mb-2">
                         <code className={cn('text-xs font-mono', issue.done ? 'text-muted-foreground line-through' : 'text-foreground')}>{issue.file}</code>
                         <div className="flex items-center gap-1.5">
-                          {issue.done && <Badge variant="outline" className="text-[10px] text-success border-success/30">Corrigido</Badge>}
+                          {issue.done && <Badge variant="outline" className="text-xs text-success border-success/30">Corrigido</Badge>}
                           <SeverityBadge severity={issue.severity} />
                         </div>
                       </div>
                       <p className="text-xs font-semibold text-foreground mb-1">{issue.type}</p>
-                      <p className="text-[11px] text-muted-foreground mb-2">{issue.description}</p>
+                      <p className="text-xs text-muted-foreground mb-2">{issue.description}</p>
                       <div className="bg-muted/50 rounded-lg p-2.5">
-                        <p className="text-[11px] text-primary font-medium">{issue.done ? '✅' : '💡'} {issue.fix}</p>
+                        <p className="text-xs text-primary font-medium">{issue.done ? '✅' : '💡'} {issue.fix}</p>
                       </div>
                     </CardContent>
                   </Card>
@@ -591,7 +591,7 @@ export default function PerformanceAudit() {
                   <div key={category}>
                     <h3 className={cn('text-xs font-bold mb-3 flex items-center gap-2', config.color)}>
                       {config.label}
-                      <Badge variant="outline" className="text-[10px]">{doneCount}/{items.length} concluído</Badge>
+                      <Badge variant="outline" className="text-xs">{doneCount}/{items.length} concluído</Badge>
                     </h3>
                     <div className="space-y-2">
                       {items.map(item => {
@@ -609,11 +609,11 @@ export default function PerformanceAudit() {
                                 <div className="flex-1 min-w-0">
                                   <p className={cn('text-xs font-semibold', item.done ? 'text-muted-foreground line-through' : 'text-foreground')}>{item.title}</p>
                                   <div className="flex gap-3 mt-0.5">
-                                    <span className="text-[10px] text-muted-foreground">Impacto: <strong>{item.impact}</strong></span>
-                                    <span className="text-[10px] text-muted-foreground">Esforço: <strong>{item.effort}</strong></span>
+                                    <span className="text-xs text-muted-foreground">Impacto: <strong>{item.impact}</strong></span>
+                                    <span className="text-xs text-muted-foreground">Esforço: <strong>{item.effort}</strong></span>
                                   </div>
                                 </div>
-                                {item.done && <Badge variant="outline" className="text-[10px] text-success border-success/30 shrink-0">✅</Badge>}
+                                {item.done && <Badge variant="outline" className="text-xs text-success border-success/30 shrink-0">✅</Badge>}
                                 {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
                               </button>
                               <AnimatePresence>
@@ -625,9 +625,9 @@ export default function PerformanceAudit() {
                                     className="overflow-hidden"
                                   >
                                     <div className="px-4 pb-4 space-y-2 border-t border-border/30 pt-3">
-                                      <p className="text-[11px] text-muted-foreground">{item.description}</p>
+                                      <p className="text-xs text-muted-foreground">{item.description}</p>
                                       {item.code && (
-                                        <pre className="bg-muted/80 rounded-lg p-3 text-[11px] font-mono overflow-x-auto text-foreground whitespace-pre-wrap">
+                                        <pre className="bg-muted/80 rounded-lg p-3 text-xs font-mono overflow-x-auto text-foreground whitespace-pre-wrap">
                                           {item.code}
                                         </pre>
                                       )}

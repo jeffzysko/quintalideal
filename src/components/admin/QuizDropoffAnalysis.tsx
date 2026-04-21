@@ -86,7 +86,7 @@ export function QuizDropoffAnalysis({ events, previousEvents }: Props) {
       <CardContent className="px-3 sm:px-6">
         {/* Legend when comparing */}
         {hasPrevious && (
-          <div className="flex items-center gap-4 mb-3 text-[10px] sm:text-xs text-muted-foreground">
+          <div className="flex items-center gap-4 mb-3 text-xs sm:text-xs text-muted-foreground">
             <span className="flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-primary inline-block" /> Atual
             </span>
@@ -108,7 +108,7 @@ export function QuizDropoffAnalysis({ events, previousEvents }: Props) {
               <div key={i}>
                 <div className="flex items-center gap-2 sm:gap-3 group">
                   <div className="w-6 text-center text-sm">{step.emoji}</div>
-                  <div className="w-24 sm:w-32 text-[10px] sm:text-xs text-muted-foreground truncate font-medium group-hover:text-foreground transition-colors">
+                  <div className="w-24 sm:w-32 text-xs sm:text-xs text-muted-foreground truncate font-medium group-hover:text-foreground transition-colors">
                     {step.label}
                   </div>
                   <div className="flex-1 relative h-7 sm:h-8 rounded-xl overflow-hidden bg-muted/40">
@@ -137,8 +137,8 @@ export function QuizDropoffAnalysis({ events, previousEvents }: Props) {
                       }}
                     />
                     <div className="absolute inset-0 flex items-center px-2 sm:px-3">
-                      <span className="text-[10px] sm:text-xs font-extrabold text-foreground z-10">{step.count}</span>
-                      <span className="text-[8px] sm:text-[10px] text-muted-foreground ml-1 sm:ml-2 z-10 font-medium">({step.survivalRate}%)</span>
+                      <span className="text-xs sm:text-xs font-extrabold text-foreground z-10">{step.count}</span>
+                      <span className="text-[8px] sm:text-xs text-muted-foreground ml-1 sm:ml-2 z-10 font-medium">({step.survivalRate}%)</span>
                       {prevStep && (
                         <span className="text-[8px] text-muted-foreground/60 ml-1 z-10">
                           vs {prevStep.count}
@@ -148,7 +148,7 @@ export function QuizDropoffAnalysis({ events, previousEvents }: Props) {
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
                     {i > 0 && step.dropoff > 0 && (
-                      <span className={`text-[9px] sm:text-[10px] font-bold w-12 sm:w-14 text-right px-1 sm:px-1.5 py-0.5 rounded-md ${
+                      <span className={`text-[9px] sm:text-xs font-bold w-12 sm:w-14 text-right px-1 sm:px-1.5 py-0.5 rounded-md ${
                         step.dropoff >= 20 ? 'text-destructive bg-destructive/10' : 
                         step.dropoff >= 10 ? 'text-amber-600 bg-amber-500/10' : 
                         'text-muted-foreground bg-muted/40'
@@ -186,7 +186,7 @@ export function QuizDropoffAnalysis({ events, previousEvents }: Props) {
         {/* Period comparison summary */}
         {hasPrevious && (
           <div className="mt-4 pt-3 border-t border-border/30">
-            <p className="text-[10px] sm:text-xs text-muted-foreground">
+            <p className="text-xs sm:text-xs text-muted-foreground">
               {(() => {
                 const currentCompletion = dropoffData[dropoffData.length - 1].survivalRate;
                 const prevCompletion = prevDropoffData![prevDropoffData!.length - 1].survivalRate;

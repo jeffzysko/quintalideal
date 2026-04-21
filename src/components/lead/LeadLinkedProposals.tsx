@@ -56,7 +56,7 @@ export function LeadLinkedProposals({ leadId, leadName }: Props) {
             <FileText className="w-4 h-4 text-primary" />
             <span className="font-semibold text-sm">Propostas</span>
             {proposals.length > 0 && (
-              <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+              <Badge variant="secondary" className="text-xs px-1.5 py-0">
                 {proposals.length}
               </Badge>
             )}
@@ -96,12 +96,12 @@ export function LeadLinkedProposals({ leadId, leadName }: Props) {
                 >
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{p.client_name}</p>
-                    <p className="text-[11px] text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       {new Date(p.created_at).toLocaleDateString('pt-BR')}
                     </p>
                   </div>
                   <span className="text-sm font-semibold text-foreground shrink-0">{fmt(p.total)}</span>
-                  <Badge variant={cfg.variant} className="text-[10px] shrink-0">{cfg.label}</Badge>
+                  <Badge variant={cfg.variant} className="text-xs shrink-0">{cfg.label}</Badge>
                   <ExternalLink className="w-3.5 h-3.5 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity shrink-0" />
                 </button>
               );

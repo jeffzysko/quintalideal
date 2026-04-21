@@ -310,11 +310,11 @@ export function AchievementsDashboard({ franchiseId, leads }: AchievementsDashbo
                     </p>
                     {a.unlocked && <span className="text-xs">✅</span>}
                   </div>
-                  <p className="text-[11px] text-muted-foreground">{a.description}</p>
+                  <p className="text-xs text-muted-foreground">{a.description}</p>
                   {!a.unlocked && (
                     <div className="mt-1.5 flex items-center gap-2">
                       <Progress value={(a.progress / a.maxProgress) * 100} className="h-1.5 flex-1" />
-                      <span className="text-[10px] text-muted-foreground font-medium">{a.progress}/{a.maxProgress}</span>
+                      <span className="text-xs text-muted-foreground font-medium">{a.progress}/{a.maxProgress}</span>
                     </div>
                   )}
                 </div>
@@ -342,7 +342,7 @@ function MiniStat({ icon: Icon, label, value, color, bg }: {
         </div>
       </div>
       <p className="text-lg font-bold text-foreground leading-tight">{value}</p>
-      <p className="text-[10px] text-muted-foreground font-medium">{label}</p>
+      <p className="text-xs text-muted-foreground font-medium">{label}</p>
     </motion.div>
   );
 }
@@ -353,7 +353,7 @@ function ComparisonPill({ label, current, previous }: { label: string; current: 
   const isDown = diff < 0;
 
   return (
-    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-medium ${
+    <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${
       isUp ? 'bg-emerald-500/10 text-emerald-700' : isDown ? 'bg-red-500/10 text-red-700' : 'bg-muted text-muted-foreground'
     }`}>
       {label}: {current}

@@ -41,7 +41,7 @@ export function SwipeHint() {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 10 }}
           onClick={dismiss}
-          className="absolute right-2 top-1/2 -translate-y-1/2 z-20 flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-foreground/80 text-background text-[10px] font-semibold shadow-lg pointer-events-auto cursor-pointer"
+          className="absolute right-2 top-1/2 -translate-y-1/2 z-20 flex items-center gap-1 px-2.5 py-1.5 rounded-full bg-foreground/80 text-background text-xs font-semibold shadow-lg pointer-events-auto cursor-pointer"
         >
           <motion.div
             animate={{ x: [0, -6, 0] }}

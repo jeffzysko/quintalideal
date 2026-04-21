@@ -125,7 +125,7 @@ function KPICard({ icon: Icon, label, value, color, delay, accentGlow }: {
           >
             {value}
           </motion.p>
-          <p className="text-[10px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1 font-medium">{label}</p>
+          <p className="text-xs sm:text-xs text-muted-foreground mt-0.5 sm:mt-1 font-medium">{label}</p>
         </CardContent>
       </Card>
     </motion.div>
@@ -149,7 +149,7 @@ function SectionCard({ children, title, icon, subtitle, delay, className = '' }:
             {icon}
             {title}
           </CardTitle>
-          {subtitle && <p className="text-[10px] text-muted-foreground">{subtitle}</p>}
+          {subtitle && <p className="text-xs text-muted-foreground">{subtitle}</p>}
         </CardHeader>
         <CardContent>{children}</CardContent>
       </Card>
@@ -425,7 +425,7 @@ export default function RadarMercado() {
             ].map(l => (
               <div key={l.label} className="flex items-center gap-1.5">
                 <div className={`w-3 h-3 rounded-full ${l.color} shadow-sm`} />
-                <span className="text-[10px] text-muted-foreground">{l.label}</span>
+                <span className="text-xs text-muted-foreground">{l.label}</span>
               </div>
             ))}
           </div>
@@ -452,8 +452,8 @@ export default function RadarMercado() {
                   {yardSizes.map((s, i) => (
                     <div key={s.name} className="flex items-center gap-1.5 sm:gap-2">
                       <div className="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: PIE_COLORS[i % PIE_COLORS.length] }} />
-                      <span className="text-[10px] sm:text-xs truncate">{s.name}</span>
-                      <span className="text-[10px] sm:text-xs font-bold">{s.pct}%</span>
+                      <span className="text-xs sm:text-xs truncate">{s.name}</span>
+                      <span className="text-xs sm:text-xs font-bold">{s.pct}%</span>
                     </div>
                   ))}
                 </div>
@@ -602,13 +602,13 @@ export default function RadarMercado() {
                   <Sparkles className="w-5 h-5 text-amber-500 flex-shrink-0 animate-pulse-glow" />
                   <div className="flex-1">
                     <p className="text-sm font-bold">{o.cidade}</p>
-                    <p className="text-[10px] text-muted-foreground">
+                    <p className="text-xs text-muted-foreground">
                       {o.leads} leads · {o.sold} vendidos · Média {o.avgScore}%
                     </p>
                   </div>
                   <div className="text-right">
                     <p className="text-xs font-bold text-amber-600">{o.conversionRate}% conversão</p>
-                    <p className="text-[10px] text-muted-foreground">Oportunidade</p>
+                    <p className="text-xs text-muted-foreground">Oportunidade</p>
                   </div>
                 </motion.div>
               ))}
@@ -630,7 +630,7 @@ export default function RadarMercado() {
                 <span className="text-sm font-bold text-muted-foreground w-7">{i + 1}º</span>
                 <div className="flex-1 min-w-0">
                   <p className="text-sm font-medium truncate">{city.cidade}</p>
-                  <p className="text-[10px] text-muted-foreground">
+                  <p className="text-xs text-muted-foreground">
                     {city.count} leads · Média {city.avgScore}% · {city.sold} vendidos
                   </p>
                 </div>
@@ -659,7 +659,7 @@ export default function RadarMercado() {
           className="text-center py-8 mt-4"
         >
           <div className="mx-auto w-16 h-1 bg-gradient-to-r from-transparent via-primary/30 to-transparent rounded mb-3" />
-          <p className="text-[10px] text-muted-foreground/50">
+          <p className="text-xs text-muted-foreground/50">
             Radar de Mercado RS © {new Date().getFullYear()} · Dados em tempo real
           </p>
         </motion.div>

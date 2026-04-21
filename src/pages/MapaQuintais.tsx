@@ -52,7 +52,7 @@ function KPICard({ icon: Icon, label, value, color, delay, accentGlow }: {
           >
             {value}
           </motion.p>
-          <p className="text-[10px] md:text-xs text-muted-foreground">{label}</p>
+          <p className="text-xs md:text-xs text-muted-foreground">{label}</p>
         </CardContent>
       </Card>
     </motion.div>

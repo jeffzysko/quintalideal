@@ -175,7 +175,7 @@ export function NotificationBell() {
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
                     exit={{ scale: 0 }}
-                    className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold px-1"
+                    className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-xs font-bold px-1"
                   >
                     {unreadCount > 9 ? '9+' : unreadCount}
                   </motion.span>
@@ -245,10 +245,10 @@ export function NotificationBell() {
                         <p className="text-xs text-muted-foreground mt-0.5 truncate">{notif.message}</p>
                       )}
                       <div className="flex items-center gap-2 mt-1">
-                        <span className={`text-[10px] font-medium ${cfg.color}`}>
+                        <span className={`text-xs font-medium ${cfg.color}`}>
                           {cfg.label}
                         </span>
-                        <span className="text-[10px] text-muted-foreground/60">
+                        <span className="text-xs text-muted-foreground/60">
                           {formatDistanceToNow(new Date(notif.created_at), { addSuffix: true, locale: ptBR })}
                         </span>
                       </div>

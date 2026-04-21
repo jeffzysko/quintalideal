@@ -168,7 +168,7 @@ export default function RankingQuintais() {
               ].map((s, i) => (
                 <div key={i} className="text-center">
                   <p className="text-lg md:text-2xl font-bold text-white">{s.value}</p>
-                  <p className="text-[10px] md:text-xs text-white/40">{s.label}</p>
+                  <p className="text-xs md:text-xs text-white/40">{s.label}</p>
                 </div>
               ))}
             </motion.div>
@@ -237,12 +237,12 @@ export default function RankingQuintais() {
 
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-0.5">
-                            <Badge variant="outline" className={`text-[10px] px-2 py-0 ${tier.color} ${tier.bg} border-transparent`}>
+                            <Badge variant="outline" className={`text-xs px-2 py-0 ${tier.color} ${tier.bg} border-transparent`}>
                               <TierIcon className="w-3 h-3 mr-1" />
                               {tier.label}
                             </Badge>
                             {lead.modelo_recomendado && (
-                              <span className="text-[10px] text-muted-foreground flex items-center gap-0.5">
+                              <span className="text-xs text-muted-foreground flex items-center gap-0.5">
                                 <Droplets className="w-3 h-3" />
                                 {lead.modelo_recomendado}
                               </span>

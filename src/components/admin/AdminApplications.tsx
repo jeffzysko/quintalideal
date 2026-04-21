@@ -301,7 +301,7 @@ export function AdminApplications() {
                       </TableCell>
                       <TableCell className="text-xs">{app.email}</TableCell>
                       <TableCell>
-                        <Badge variant={STATUS_MAP[app.status]?.variant || 'outline'} className="text-[10px]">
+                        <Badge variant={STATUS_MAP[app.status]?.variant || 'outline'} className="text-xs">
                           {STATUS_MAP[app.status]?.label || app.status}
                         </Badge>
                       </TableCell>
@@ -360,7 +360,7 @@ export function AdminApplications() {
                 onChange={e => setApproveSlug(e.target.value)}
                 placeholder="nome-da-franquia"
               />
-              <p className="text-[11px] text-muted-foreground">quintalideal.lovable.app/{approveSlug || 'slug'}</p>
+              <p className="text-xs text-muted-foreground">quintalideal.lovable.app/{approveSlug || 'slug'}</p>
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium">Observações internas (opcional)</label>

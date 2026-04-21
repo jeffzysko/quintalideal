@@ -172,7 +172,7 @@ export const AdminPerformanceComparison = memo(function AdminPerformanceComparis
                   <td className="py-2.5 px-2 text-center">
                     <Badge
                       variant="outline"
-                      className={`text-[10px] ${
+                      className={`text-xs ${
                         p.avgResponseTimeHours === null
                           ? 'text-muted-foreground'
                           : p.avgResponseTimeHours <= 2

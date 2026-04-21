@@ -151,13 +151,13 @@ export function WebhookHealthWidget({ franchiseId }: Props) {
               </div>
               <div>
                 <h3 className="text-sm font-bold text-foreground">Webhook CRM</h3>
-                <p className="text-[10px] text-muted-foreground">Últimas 24h</p>
+                <p className="text-xs text-muted-foreground">Últimas 24h</p>
               </div>
             </div>
             <div className="flex items-center gap-2">
               <Badge
                 variant={isHealthy ? 'default' : isCritical ? 'destructive' : 'secondary'}
-                className="text-[10px] font-bold px-2 py-0.5"
+                className="text-xs font-bold px-2 py-0.5"
               >
                 {isHealthy ? (
                   <><CheckCircle2 className="w-3 h-3 mr-1" /> Saudável</>
@@ -175,7 +175,7 @@ export function WebhookHealthWidget({ franchiseId }: Props) {
           <div className="grid grid-cols-3 gap-3">
             <div className="text-center p-2 rounded-lg bg-muted/30">
               <p className="text-lg font-extrabold tabular-nums text-foreground">{totalDeliveries}</p>
-              <p className="text-[10px] text-muted-foreground font-medium">Envios</p>
+              <p className="text-xs text-muted-foreground font-medium">Envios</p>
             </div>
             <div className="text-center p-2 rounded-lg bg-muted/30">
               <div className="flex items-center justify-center gap-1">
@@ -194,20 +194,20 @@ export function WebhookHealthWidget({ franchiseId }: Props) {
                   </span>
                 )}
               </div>
-              <p className="text-[10px] text-muted-foreground font-medium">Taxa de sucesso</p>
+              <p className="text-xs text-muted-foreground font-medium">Taxa de sucesso</p>
             </div>
             <div className="text-center p-2 rounded-lg bg-muted/30">
               <p className={cn('text-lg font-extrabold tabular-nums', failureCount > 0 ? 'text-destructive' : 'text-muted-foreground')}>
                 {failureCount}
               </p>
-              <p className="text-[10px] text-muted-foreground font-medium">Falhas</p>
+              <p className="text-xs text-muted-foreground font-medium">Falhas</p>
             </div>
           </div>
 
           {/* 7-day trend chart */}
           {hasChartData && (
             <div className="mt-3">
-              <p className="text-[10px] text-muted-foreground font-semibold mb-1.5">Taxa de sucesso · 7 dias</p>
+              <p className="text-xs text-muted-foreground font-semibold mb-1.5">Taxa de sucesso · 7 dias</p>
               <div className="h-[72px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={chartData.map(d => ({ ...d, rate: d.rate === -1 ? null : d.rate }))}>
@@ -224,7 +224,7 @@ export function WebhookHealthWidget({ franchiseId }: Props) {
                         const d = payload[0].payload;
                         if (d.total === 0) return null;
                         return (
-                          <div className="rounded-lg border bg-background px-2.5 py-1.5 text-[11px] shadow-lg">
+                          <div className="rounded-lg border bg-background px-2.5 py-1.5 text-xs shadow-lg">
                             <p className="font-semibold">{d.label}</p>
                             <p className="text-muted-foreground">{d.success}/{d.total} envios · {d.rate}%</p>
                           </div>
@@ -249,7 +249,7 @@ export function WebhookHealthWidget({ franchiseId }: Props) {
           {/* Recent failures */}
           {lastFailure && (
             <div className="mt-3 p-2.5 rounded-lg border border-destructive/20 bg-destructive/5">
-              <p className="text-[11px] text-destructive font-medium">
+              <p className="text-xs text-destructive font-medium">
                 Última falha: {lastFailure.error_message || `HTTP ${lastFailure.http_status}`}
                 <span className="text-muted-foreground font-normal ml-1">
                   · {formatDistanceToNow(new Date(lastFailure.created_at), { addSuffix: true, locale: ptBR })}

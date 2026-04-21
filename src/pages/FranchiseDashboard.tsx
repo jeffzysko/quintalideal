@@ -60,7 +60,7 @@ function FranchiseLinkBanner({ slug }: { slug: string }) {
         </div>
         <div className="min-w-0">
           <p className="text-xs font-bold text-foreground mb-0.5 uppercase tracking-wider">Seu link exclusivo</p>
-          <p className="text-[11px] text-muted-foreground mb-0.5">Compartilhe para receber leads</p>
+          <p className="text-xs text-muted-foreground mb-0.5">Compartilhe para receber leads</p>
           <p className="text-sm text-primary font-mono truncate">{url}</p>
         </div>
       </div>
@@ -466,7 +466,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                 <CardTitle className="text-sm font-bold flex items-center justify-between">
                   <span>Leads Recentes ({totalCount})</span>
                   {overdueLeads.length > 0 && (
-                    <Badge variant="outline" className="text-[10px] border-amber-500/30 text-amber-600 animate-pulse">
+                    <Badge variant="outline" className="text-xs border-amber-500/30 text-amber-600 animate-pulse">
                       ⚠️ {overdueLeads.length} aguardando
                     </Badge>
                   )}
@@ -541,7 +541,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                                   </div>
                                 </td>
                                 <td role="cell" className="py-3.5 px-3">
-                                  <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
+                                  <Badge className={`${temp.bgColor} ${temp.color} border text-xs font-semibold`} variant="outline">
                                     {temp.emoji} {temp.label}
                                   </Badge>
                                 </td>
@@ -554,7 +554,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
                                         style={{ width: `${score}%` }}
                                       />
                                     </div>
-                                    <span className="text-[11px] text-muted-foreground whitespace-nowrap">{scoreEmoji} {scoreLabel}</span>
+                                    <span className="text-xs text-muted-foreground whitespace-nowrap">{scoreEmoji} {scoreLabel}</span>
                                   </div>
                                 </td>
                                 <td role="cell" className="py-3.5 px-3">

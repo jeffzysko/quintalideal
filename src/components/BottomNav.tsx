@@ -151,7 +151,7 @@ export function BottomNav() {
                 />
               )}
               <item.icon className={cn('w-5 h-5', active && 'scale-110')} strokeWidth={active ? 2.5 : 2} />
-              <span className={cn('text-[10px] leading-tight', active ? 'font-bold' : 'font-medium')}>
+              <span className={cn('text-xs leading-tight', active ? 'font-bold' : 'font-medium')}>
                 {item.label}
               </span>
             </button>
@@ -166,7 +166,7 @@ export function BottomNav() {
               aria-label="Mais opções"
             >
               <MoreHorizontal className="w-5 h-5" strokeWidth={2} />
-              <span className="text-[10px] leading-tight font-medium">Mais</span>
+              <span className="text-xs leading-tight font-medium">Mais</span>
             </button>
           </DrawerTrigger>
           <DrawerContent>
@@ -181,7 +181,7 @@ export function BottomNav() {
                   className="flex flex-col items-center justify-center gap-2 p-3 rounded-lg hover:bg-muted active:bg-muted/80 transition-colors text-center"
                 >
                   <item.icon className="w-5 h-5 text-foreground" />
-                  <span className="text-[11px] font-medium leading-tight text-foreground">{item.label}</span>
+                  <span className="text-xs font-medium leading-tight text-foreground">{item.label}</span>
                 </button>
               ))}
             </div>

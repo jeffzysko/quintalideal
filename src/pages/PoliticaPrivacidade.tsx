@@ -88,7 +88,7 @@ export default function PoliticaPrivacidade() {
               <Shield className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-primary">LGPD</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-primary">LGPD</span>
               <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">Política de Privacidade</h1>
             </div>
           </div>

@@ -245,7 +245,7 @@ export function PostSaleChecklistManager({ projectId, franchiseId, checklist }: 
                               <div className="flex items-center gap-2">
                                 <p className="text-sm font-semibold truncate">{tpl.name}</p>
                                 {tpl.is_default && (
-                                  <Badge variant="secondary" className="text-[10px] gap-1">
+                                  <Badge variant="secondary" className="text-xs gap-1">
                                     <Star className="w-3 h-3 fill-current" /> Padrão
                                   </Badge>
                                 )}
@@ -372,7 +372,7 @@ export function PostSaleChecklistManager({ projectId, franchiseId, checklist }: 
                 {item.label}
               </span>
               {item.completed && item.completed_at && (
-                <span className="text-[10px] text-muted-foreground shrink-0">
+                <span className="text-xs text-muted-foreground shrink-0">
                   {format(new Date(item.completed_at), "dd/MM", { locale: ptBR })}
                 </span>
               )}

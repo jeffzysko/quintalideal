@@ -175,7 +175,7 @@ export function ResultScreen({ score, poolName, poolDescription, recommendedSize
             <span className="text-3xl sm:text-5xl font-black text-white tracking-tighter" style={{ textShadow: '0 0 40px rgba(30,136,229,0.4)' }}>
               {displayScore}
             </span>
-            <span className="text-[10px] sm:text-xs font-medium text-white/40 mt-0.5">{t('result_points', lang)}</span>
+            <span className="text-xs sm:text-xs font-medium text-white/40 mt-0.5">{t('result_points', lang)}</span>
           </div>
         </motion.div>
 
@@ -193,7 +193,7 @@ export function ResultScreen({ score, poolName, poolDescription, recommendedSize
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.6 }}
-          className="text-white/40 text-[11px] text-center mb-2"
+          className="text-white/40 text-xs text-center mb-2"
         >
           {lang === 'es' ? 'Basado en tu espacio, estilo y presupuesto' : 'Baseado no seu espaço, estilo e orçamento'}
         </motion.p>
@@ -228,7 +228,7 @@ export function ResultScreen({ score, poolName, poolDescription, recommendedSize
                   <img src={recommendedImage} alt={poolName} className="w-full h-full object-cover" loading="eager" />
                   <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/90 backdrop-blur-sm">
                     <Sparkles className="w-3 h-3 text-primary-foreground" />
-                    <span className="text-[10px] font-bold text-primary-foreground uppercase tracking-wider">
+                    <span className="text-xs font-bold text-primary-foreground uppercase tracking-wider">
                       {lang === 'es' ? 'Recomendado' : 'Recomendado'}
                     </span>
                   </div>
@@ -246,7 +246,7 @@ export function ResultScreen({ score, poolName, poolDescription, recommendedSize
             {/* Alternatives */}
             {alternatives.length > 0 && (
               <div className="mt-3">
-                <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-2 px-1">
+                <p className="text-xs font-bold text-white/40 uppercase tracking-widest mb-2 px-1">
                   {lang === 'es' ? 'También pueden gustarte' : 'Você também pode gostar'}
                 </p>
                 <div className="grid grid-cols-2 gap-2">
@@ -324,7 +324,7 @@ export function ResultScreen({ score, poolName, poolDescription, recommendedSize
                     className="h-full bg-gradient-to-r from-emerald-400 to-emerald-300 rounded-full"
                   />
                 </div>
-                <span className="text-emerald-300 text-[10px] font-bold">+{valorization.minPct}–{valorization.maxPct}%</span>
+                <span className="text-emerald-300 text-xs font-bold">+{valorization.minPct}–{valorization.maxPct}%</span>
               </div>
             </motion.div>
 
@@ -347,7 +347,7 @@ export function ResultScreen({ score, poolName, poolDescription, recommendedSize
                   <ArrowRight className="w-5 h-5" />
                 </motion.span>
               </Button>
-              <p className="text-white/30 text-[10px] text-center mt-2">
+              <p className="text-white/30 text-xs text-center mt-2">
                 {t('result_cta_hint', lang)}
               </p>
             </motion.div>

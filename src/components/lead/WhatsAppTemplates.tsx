@@ -137,7 +137,7 @@ export function WhatsAppTemplates(props: WhatsAppTemplatesProps) {
             <MessageCircle className="w-4 h-4 text-success" />
             <h2 className="text-sm font-semibold text-foreground">Mensagens Rápidas</h2>
           </div>
-          <span className="text-[10px] bg-success/10 text-success px-1.5 py-0.5 rounded-full font-medium">
+          <span className="text-xs bg-success/10 text-success px-1.5 py-0.5 rounded-full font-medium">
             WhatsApp
           </span>
         </div>
@@ -159,7 +159,7 @@ export function WhatsAppTemplates(props: WhatsAppTemplatesProps) {
                       {tpl.emoji} {tpl.label}
                     </span>
                   </div>
-                  <p className="text-[11px] sm:text-xs text-muted-foreground leading-relaxed line-clamp-3 whitespace-pre-wrap mb-3">
+                  <p className="text-xs sm:text-xs text-muted-foreground leading-relaxed line-clamp-3 whitespace-pre-wrap mb-3">
                     {tpl.message}
                   </p>
                   <div className="flex flex-col sm:flex-row items-stretch gap-2">
