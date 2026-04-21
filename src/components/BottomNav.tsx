@@ -27,6 +27,14 @@ import {
   AlertTriangle,
   MessageCircle,
   DollarSign,
+  Map,
+  Mail,
+  Gauge,
+  PieChart,
+  Code,
+  Download,
+  Compass,
+  BellRing,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
@@ -39,30 +47,42 @@ interface NavItem {
   isAction?: boolean;
 }
 
+// ── Super Admin: 4 primary + FAB + Mais ──
 const SUPER_ADMIN_PRIMARY: NavItem[] = [
   { icon: LayoutDashboard, label: 'Painel', path: '/admin', matchPaths: ['/admin'] },
   { icon: Building2, label: 'Franquias', path: '/admin?tab=franchises' },
   { icon: Plus, label: '', path: '/propostas/nova', isAction: true },
-  { icon: Eye, label: 'Visão', path: '/admin?tab=franchise-view' },
+  { icon: Star, label: 'Marcas', path: '/admin/marcas' },
 ];
 
 const SUPER_ADMIN_MORE: NavItem[] = [
   { icon: Sun, label: 'Início', path: '/hoje' },
   { icon: Kanban, label: 'Funil Geral', path: '/admin?tab=kanban' },
+  { icon: Inbox, label: 'Leads', path: '/admin?tab=leads' },
+  { icon: Eye, label: 'Visão Franquia', path: '/admin?tab=franchise-view' },
+  { icon: PieChart, label: 'Analytics', path: '/admin?tab=analytics' },
+  { icon: Gauge, label: 'Performance QI', path: '/admin?tab=performance-qi' },
+  { icon: Map, label: 'Cidades', path: '/admin?tab=cities' },
   { icon: Inbox, label: 'Candidaturas', path: '/admin?tab=candidaturas' },
-  { icon: Star, label: 'Marcas', path: '/admin/marcas' },
   { icon: Users, label: 'Usuários', path: '/admin?tab=users' },
+  { icon: Compass, label: 'Modo Explorar', path: '/explorar' },
   { icon: DollarSign, label: 'Faturamento', path: '/superadmin/receita' },
-  { icon: Radar, label: 'Radar de Mercado', path: '/admin/radar' },
+  { icon: MessageCircle, label: 'WhatsApp', path: '/admin?tab=whatsapp' },
+  { icon: Mail, label: 'Templates de E-mail', path: '/admin?tab=emails' },
   { icon: Activity, label: 'Status do Sistema', path: '/superadmin/status' },
   { icon: AlertTriangle, label: 'Logs de Erro', path: '/admin?tab=errors' },
-  { icon: MessageCircle, label: 'WhatsApp', path: '/admin?tab=whatsapp' },
+  { icon: Gauge, label: 'Performance Audit', path: '/admin/performance' },
+  { icon: Radar, label: 'Radar de Mercado', path: '/admin/radar' },
   { icon: CalendarDays, label: 'Agenda', path: '/agenda' },
   { icon: Bell, label: 'Notificações', path: '/notificacoes' },
+  { icon: BellRing, label: 'Preferências de Notificação', path: '/notificacoes/preferencias' },
+  { icon: Code, label: 'Docs do Webhook', path: '/docs/webhook' },
+  { icon: Download, label: 'Instalar App', path: '/install' },
   { icon: Settings, label: 'Configurações', path: '/perfil' },
   { icon: HelpCircle, label: 'Suporte', path: '/suporte' },
 ];
 
+// ── Franquia: 4 primary + FAB + Mais ──
 const FRANCHISE_PRIMARY: NavItem[] = [
   { icon: Sun, label: 'Hoje', path: '/hoje' },
   { icon: Kanban, label: 'Leads', path: '/franquia', matchPaths: ['/franquia', '/painel'] },
@@ -72,12 +92,15 @@ const FRANCHISE_PRIMARY: NavItem[] = [
 
 const FRANCHISE_MORE: NavItem[] = [
   { icon: Package, label: 'Pós-venda', path: '/franquia?tab=pos-venda' },
-  { icon: BarChart2, label: 'Relatórios', path: '/relatorio-crm' },
   { icon: BookOpen, label: 'Catálogo de Piscinas', path: '/catalogo' },
-  { icon: CalendarDays, label: 'Agenda', path: '/agenda' },
   { icon: TrendingUp, label: 'Metas', path: '/franquia?tab=achievements' },
-  { icon: Bell, label: 'Notificações', path: '/notificacoes' },
+  { icon: BarChart2, label: 'Relatórios', path: '/relatorio-crm' },
+  { icon: CalendarDays, label: 'Agenda', path: '/agenda' },
   { icon: Star, label: 'Planos', path: '/planos' },
+  { icon: Bell, label: 'Notificações', path: '/notificacoes' },
+  { icon: BellRing, label: 'Preferências de Notificação', path: '/notificacoes/preferencias' },
+  { icon: Code, label: 'Docs do Webhook', path: '/docs/webhook' },
+  { icon: Download, label: 'Instalar App', path: '/install' },
   { icon: Settings, label: 'Configurações', path: '/perfil' },
   { icon: HelpCircle, label: 'Suporte', path: '/suporte' },
 ];
@@ -90,7 +113,7 @@ export function BottomNav() {
 
   if (!user || !role) return null;
 
-  const authenticatedPrefixes = ['/admin', '/franquia', '/hoje', '/agenda', '/perfil', '/suporte', '/docs', '/notificacoes', '/lead', '/painel', '/radar', '/propostas', '/catalogo', '/relatorio-crm', '/superadmin', '/planos'];
+  const authenticatedPrefixes = ['/admin', '/franquia', '/hoje', '/agenda', '/perfil', '/suporte', '/docs', '/notificacoes', '/lead', '/painel', '/radar', '/propostas', '/catalogo', '/relatorio-crm', '/superadmin', '/planos', '/explorar', '/install'];
   const isAuthenticatedPage = authenticatedPrefixes.some(p => location.pathname.startsWith(p));
   if (!isAuthenticatedPage) return null;
 
@@ -179,7 +202,7 @@ export function BottomNav() {
             <DrawerHeader>
               <DrawerTitle>Mais opções</DrawerTitle>
             </DrawerHeader>
-            <div className="grid grid-cols-3 gap-2 p-4 pb-8">
+            <div className="grid grid-cols-3 gap-2 p-4 pb-8 max-h-[70vh] overflow-y-auto">
               {more.map((item) => (
                 <button
                   key={item.label}
