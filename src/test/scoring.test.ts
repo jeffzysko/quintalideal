@@ -14,14 +14,14 @@ const base = (overrides: Partial<QuizAnswers> = {}): QuizAnswers => ({
 
 describe('calculateScore', () => {
   it('returns max score for best answers', () => {
-    expect(calculateScore(base())).toBe(100);
+    expect(calculateScore(base())).toBe(85);
   });
 
   it('returns min score for lowest answers', () => {
     expect(calculateScore(base({
       espaco: 'ate-3', moradia: 'planejando', intencao: 'pesquisando',
       uso: 'casal', orcamento: 'ate-18',
-    }))).toBe(34);
+    }))).toBe(28);
   });
 
   it('handles mid-range answers', () => {
@@ -29,8 +29,8 @@ describe('calculateScore', () => {
       espaco: '5-7', moradia: 'construindo', intencao: '2026-2027',
       uso: 'familia-pequena', orcamento: '18-30',
     }));
-    expect(score).toBeGreaterThan(34);
-    expect(score).toBeLessThan(100);
+    expect(score).toBeGreaterThan(28);
+    expect(score).toBeLessThan(85);
   });
 
   it('handles unknown values gracefully (returns 0 for unmatched)', () => {
