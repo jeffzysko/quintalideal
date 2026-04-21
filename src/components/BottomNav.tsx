@@ -158,37 +158,6 @@ export function BottomNav() {
           );
         })}
 
-        {/* Super Admin: Gestão drawer in 4th slot */}
-        {isSuperAdmin && (
-          <Drawer open={gestaoOpen} onOpenChange={setGestaoOpen}>
-            <DrawerTrigger asChild>
-              <button
-                className="flex flex-col items-center justify-center gap-0.5 flex-1 relative transition-colors min-h-[48px] text-muted-foreground active:text-foreground"
-                aria-label="Gestão"
-              >
-                <Store className="w-5 h-5" strokeWidth={2} />
-                <span className="text-[10px] leading-tight font-medium">Gestão</span>
-              </button>
-            </DrawerTrigger>
-            <DrawerContent>
-              <DrawerHeader>
-                <DrawerTitle>Gestão</DrawerTitle>
-              </DrawerHeader>
-              <div className="grid grid-cols-3 gap-2 p-4 pb-8">
-                {SUPER_ADMIN_GESTAO.map((item) => (
-                  <button
-                    key={item.label}
-                    onClick={() => handleNav(item.path)}
-                    className="flex flex-col items-center justify-center gap-2 p-3 rounded-lg hover:bg-muted active:bg-muted/80 transition-colors text-center"
-                  >
-                    <item.icon className="w-5 h-5 text-foreground" />
-                    <span className="text-[11px] font-medium leading-tight text-foreground">{item.label}</span>
-                  </button>
-                ))}
-              </div>
-            </DrawerContent>
-          </Drawer>
-        )}
 
         <Drawer open={moreOpen} onOpenChange={setMoreOpen}>
           <DrawerTrigger asChild>
