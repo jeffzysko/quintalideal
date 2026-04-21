@@ -229,11 +229,11 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
       >
         <div className="relative z-10 px-4 sm:px-6 pt-5 sm:pt-8 pb-4 sm:pb-6 max-w-md mx-auto text-center">
           <motion.img
-            src={logoQuintalIdeal}
-            alt="Quintal Ideal"
+            src={brandLogoUrl || logoQuintalIdeal}
+            alt={brandName || 'Quintal Ideal'}
             initial={{ opacity: 0 }}
-            animate={{ opacity: 0.7 }}
-            className="mx-auto w-28 sm:w-32 mb-2 sm:mb-3 brightness-0 invert"
+            animate={{ opacity: brandLogoUrl ? 1 : 0.7 }}
+            className={`mx-auto mb-2 sm:mb-3 ${brandLogoUrl ? 'max-h-14 sm:max-h-16 w-auto' : 'w-28 sm:w-32 brightness-0 invert'}`}
           />
 
           <motion.h1
@@ -531,7 +531,10 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
         >
           <Button
             onClick={handleWhatsApp}
-            className="w-full py-7 text-[15px] rounded-2xl font-bold shadow-xl shadow-primary/25 gradient-blue glow-blue hover:glow-blue-strong hover:scale-[1.01] transition-all duration-300 gap-2 group"
+            style={brandPrimaryColor ? { background: brandPrimaryColor, boxShadow: `0 14px 32px -10px ${brandPrimaryColor}` } : undefined}
+            className={`w-full py-7 text-[15px] rounded-2xl font-bold shadow-xl text-white hover:scale-[1.01] transition-all duration-300 gap-2 group ${
+              brandPrimaryColor ? 'hover:opacity-95' : 'shadow-primary/25 gradient-blue glow-blue hover:glow-blue-strong'
+            }`}
           >
             <MessageCircle className="w-5 h-5" />
             {t('action_whatsapp_cta', lang)}
