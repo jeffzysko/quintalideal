@@ -350,6 +350,8 @@ export default function BrandsPage() {
           </SheetFooter>
         </SheetContent>
       </Sheet>
+      </div>
     </div>
+    </PageTransition>
   );
 }
