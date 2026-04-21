@@ -7,7 +7,8 @@
 
 export interface QuizInputV2 {
   space_bucket: 'ate_3m' | '3_5m' | '5_7m' | '7m_plus';
-  home_status: 'casa_propria' | 'construindo' | 'planejando';
+  /** @deprecated Removed from quiz. Optional; default 'casa_propria' when absent. */
+  home_status?: 'casa_propria' | 'construindo' | 'planejando';
   purchase_intent: '2026' | '2026_2027' | 'pesquisando';
   usage_profile: 'casal' | 'familia_pequena' | 'familia_grande' | 'amigos' | 'premium';
   budget_range: 'ate_18k' | '18_30k' | '30_50k';
@@ -80,9 +81,6 @@ export function normalizeQuizToV2(answers: Record<string, string>): QuizInputV2 
   const spaceMap: Record<string, QuizInputV2['space_bucket']> = {
     'ate-3': 'ate_3m', '3-5': '3_5m', '5-7': '5_7m', 'mais-7': '7m_plus',
   };
-  const homeMap: Record<string, QuizInputV2['home_status']> = {
-    'minha': 'casa_propria', 'construindo': 'construindo', 'planejando': 'planejando',
-  };
   const intentMap: Record<string, QuizInputV2['purchase_intent']> = {
     '2026': '2026', '2026-2027': '2026_2027', 'pesquisando': 'pesquisando',
   };
@@ -106,7 +104,6 @@ export function normalizeQuizToV2(answers: Record<string, string>): QuizInputV2 
 
   return {
     space_bucket: spaceMap[answers.espaco] || 'ate_3m',
-    home_status: homeMap[answers.moradia] || 'casa_propria',
     purchase_intent: intentMap[answers.intencao] || 'pesquisando',
     usage_profile: usoToProfile[usoAnswer] || 'casal',
     budget_range: budgetMap[answers.orcamento] || 'ate_18k',
@@ -607,16 +604,17 @@ const MODEL_BENEFITS: Record<string, Record<string, string>> = {
   'Versátil': { pt: 'oferece ótimo custo-benefício com bom aproveitamento de espaço', es: 'ofrece excelente costo-beneficio con buen aprovechamiento de espacio' },
 };
 
-export function generateSalesScript(leadName: string, input: QuizInputV2, modelName: string, lang: 'pt' | 'es' = 'pt'): string {
+export function generateSalesScript(leadName: string, input: QuizInputV2, modelName: string, lang: 'pt' | 'es' = 'pt', brandName?: string): string {
   const firstName = leadName?.split(' ')[0] || '';
   const uso = USAGE_LABELS_SCRIPT[input.objective_main]?.[lang] || '';
   const benefit = MODEL_BENEFITS[modelName]?.[lang] || (lang === 'es' ? 'se adapta perfectamente a lo que buscas' : 'se encaixa perfeitamente no que você busca');
+  const brand = brandName?.trim() || (lang === 'es' ? 'nuestro equipo' : 'nossa equipe');
 
   if (lang === 'es') {
-    return `Hola ${firstName}, vi que estás buscando una piscina para ${uso}. La ${modelName} que sugerimos es perfecta porque ${benefit}. Se adapta muy bien a tu espacio y atiende exactamente lo que buscas.`;
+    return `Hola ${firstName}, vi que estás buscando una piscina para ${uso}. La ${modelName} que te sugerimos en ${brand} es perfecta porque ${benefit}. Se adapta muy bien a tu espacio y atiende exactamente lo que buscas.`;
   }
 
-  return `Oi ${firstName}, vi que você está buscando uma piscina para ${uso}. A ${modelName} que sugerimos é perfeita porque ${benefit}. Ela se encaixa muito bem no seu espaço e atende exatamente o que você busca.`;
+  return `Oi ${firstName}, vi que você está buscando uma piscina para ${uso}. A ${modelName} que sugerimos aqui na ${brand} é perfeita porque ${benefit}. Ela se encaixa muito bem no seu espaço e atende exatamente o que você busca.`;
 }
 
 // ── Legacy Score (backward compat) ──
@@ -628,11 +626,6 @@ export function calculateLegacyScore(input: QuizInputV2): number {
     case '5_7m': score += 26; break;
     case '3_5m': score += 18; break;
     case 'ate_3m': score += 10; break;
-  }
-  switch (input.home_status) {
-    case 'casa_propria': score += 15; break;
-    case 'construindo': score += 11; break;
-    case 'planejando': score += 6; break;
   }
   switch (input.purchase_intent) {
     case '2026': score += 15; break;
@@ -651,12 +644,14 @@ export function calculateLegacyScore(input: QuizInputV2): number {
     case '18_30k': score += 12; break;
     case 'ate_18k': score += 5; break;
   }
-  return score;
+  // Normalize to 0-100 (max possible without moradia: 35+15+15+20 = 85)
+  // Scale up so a perfect quiz still reads ~100%.
+  return Math.min(100, Math.round((score / 85) * 100));
 }
 
 // ── Main Recommendation Function ──
 
-export function recommendPoolsV2(input: QuizInputV2, allModels: PoolModelData[]): RecommendationResultV2 {
+export function recommendPoolsV2(input: QuizInputV2, allModels: PoolModelData[], brandName?: string): RecommendationResultV2 {
   const profile = detectCustomerProfile(input);
 
   const eligible = filterModels(allModels, input);
@@ -671,7 +666,7 @@ export function recommendPoolsV2(input: QuizInputV2, allModels: PoolModelData[])
 
   const recommendedSize = recommendBestSize(primaryModel.nome_modelo, input);
   const reasoning = generateReasoning(primaryModel.nome_modelo, input, profile);
-  const closingPhrase = generateClosingPhrase(input);
+  const closingPhrase = generateClosingPhrase(input, 'pt', brandName);
 
   // Diverse alternatives: filter out same-category models
   const alternatives: PoolAlternativeV2[] = selectDiverseAlternatives(ranked, primaryModel, isWeak ? 3 : 2);
@@ -698,7 +693,7 @@ export function recommendPoolsV2(input: QuizInputV2, allModels: PoolModelData[])
   }
 
   const isHot = detectHotLead(input, primaryScore);
-  const salesScript = generateSalesScript('', input, primaryModel.nome_modelo);
+  const salesScript = generateSalesScript('', input, primaryModel.nome_modelo, 'pt', brandName);
 
   return {
     primary_model: primaryModel,
@@ -764,9 +759,13 @@ const CLOSING_PHRASES_ES = [
   'Este modelo atiende muy bien lo que buscas y tiende a ser una elección extremadamente satisfactoria.',
 ];
 
-export function generateClosingPhrase(input: QuizInputV2, lang: 'pt' | 'es' = 'pt'): string {
+export function generateClosingPhrase(input: QuizInputV2, lang: 'pt' | 'es' = 'pt', brandName?: string): string {
   const phrases = lang === 'es' ? CLOSING_PHRASES_ES : CLOSING_PHRASES_PT;
   // Deterministic selection based on input to avoid randomness on re-renders
   const idx = (input.space_bucket.length + input.objective_main.length + input.usage_profile.length) % phrases.length;
-  return phrases[idx];
+  const base = phrases[idx];
+  const brand = brandName?.trim();
+  if (!brand) return base;
+  if (lang === 'es') return `${base} ${brand} te acompañará en cada paso.`;
+  return `${base} A ${brand} vai te acompanhar em cada passo.`;
 }

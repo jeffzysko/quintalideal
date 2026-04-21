@@ -1,11 +1,12 @@
 export interface QuizAnswers {
   espaco: string;
-  moradia: string;
   intencao: string;
   uso: string;
   preferencia: string;
   orcamento: string;
   cidade: string;
+  /** @deprecated Removed from quiz; kept optional for backward compatibility with old data. */
+  moradia?: string;
 }
 
 export function calculateScore(answers: QuizAnswers): number {
@@ -17,13 +18,6 @@ export function calculateScore(answers: QuizAnswers): number {
     case '5-7': score += 26; break;
     case '3-5': score += 18; break;
     case 'ate-3': score += 10; break;
-  }
-
-  // Moradia (max 15)
-  switch (answers.moradia) {
-    case 'minha': score += 15; break;
-    case 'construindo': score += 11; break;
-    case 'planejando': score += 6; break;
   }
 
   // Intenção (max 15)
