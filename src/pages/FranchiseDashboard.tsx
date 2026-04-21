@@ -448,6 +448,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
           >
+            <PageSectionHeader title="Leads" subtitle="Sua base completa de leads" />
             {franchiseError && (
               <div className="flex items-center justify-between gap-3 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive mb-4">
                 <p className="font-medium">Erro ao carregar dados. Verifique sua conexão.</p>
@@ -610,6 +611,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
           >
+            <PageSectionHeader title="Funil" subtitle="Pipeline visual de conversão" />
             <KanbanBoard
               leads={allLeads as (LeadRow & { respostas_questionario?: Record<string, string> | null })[]}
               franchiseId={franchiseId!}
@@ -626,6 +628,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
           >
+            <PageSectionHeader title="Metas" subtitle="Acompanhe conquistas e desempenho" />
             {franchiseId && <AchievementsDashboard franchiseId={franchiseId} leads={allLeads} />}
           </motion.div>
         )}
@@ -638,6 +641,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
           >
+            <PageSectionHeader title="Relatórios" subtitle="Indicadores e exportações" />
             <FranchiseReports leads={allLeads} />
           </motion.div>
         )}
@@ -650,6 +654,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.2 }}
           >
+            <PageSectionHeader title="Pós-venda" subtitle="Projetos e satisfação dos clientes" />
             <PostSaleDashboard franchiseId={franchiseId} basePath={leadDetailPath} />
           </motion.div>
         )}
