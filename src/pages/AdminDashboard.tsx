@@ -450,7 +450,6 @@ export default function AdminDashboard() {
 
   const TABS = [
     { key: 'overview' as const, icon: BarChart3, label: 'Inteligência' },
-    { key: 'performance-qi' as const, icon: Target, label: 'Performance QI' },
     { key: 'analytics' as const, icon: Activity, label: 'Analytics' },
     { key: 'leads' as const, icon: Users, label: 'Leads' },
     ...(isSuperAdmin ? [
