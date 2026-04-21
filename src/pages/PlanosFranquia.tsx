@@ -69,7 +69,7 @@ const FAQ = [
 export default function PlanosFranquia() {
   const { franchiseId, role } = useAuth();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
-  const isPrivilegedAdmin = role === 'super_admin' || role === 'admin_fabrica';
+  const isPrivilegedAdmin = role === 'super_admin';
   const { data: stripeMode } = useStripeMode();
   const showTestBanner = isPrivilegedAdmin && stripeMode?.mode === 'test';
 

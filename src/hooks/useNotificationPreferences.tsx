@@ -30,7 +30,7 @@ const DEFAULT_CHANNEL: NotificationChannel = { push: true, email: false, whatsap
 const OFF_CHANNEL: NotificationChannel = { push: false, email: false, whatsapp: false };
 
 function buildDefaults(role: string | null): NotificationSection[] {
-  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const isAdmin = role === 'super_admin';
 
   return [
     {

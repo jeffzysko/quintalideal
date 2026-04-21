@@ -61,7 +61,7 @@ Deno.serve(async (req) => {
       .eq("user_id", userId)
       .maybeSingle();
 
-    const isAdmin = roleData?.role === "admin_fabrica" || roleData?.role === "super_admin";
+    const isAdmin = roleData?.role === "super_admin";
     const isOwnFranchise = profile?.franquia_id === franchiseId;
 
     if (!isAdmin && !isOwnFranchise) {

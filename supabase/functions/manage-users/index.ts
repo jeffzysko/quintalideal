@@ -101,7 +101,7 @@ Deno.serve(async (req) => {
         .from("user_roles")
         .select("role")
         .eq("user_id", callerUser.id)
-        .in("role", ["admin_fabrica", "franquia", "super_admin"])
+        .in("role", ["franquia", "super_admin"])
         .maybeSingle();
 
       if (!callerRole) {
@@ -314,7 +314,7 @@ Deno.serve(async (req) => {
       .from("user_roles")
       .select("role")
       .eq("user_id", callerUser.id)
-      .in("role", ["admin_fabrica", "super_admin"]);
+      .in("role", ["super_admin"]);
 
     if (!roleChecks || roleChecks.length === 0) {
       return new Response(JSON.stringify({ error: "Apenas administradores podem gerenciar usuários" }), {
@@ -420,7 +420,7 @@ Deno.serve(async (req) => {
         resetPageLink = `https://quintalideal.com.br/reset-password?token_hash=${encodeURIComponent(linkData2.properties.hashed_token)}&type=recovery`;
       }
       const roleLabels: Record<string, string> = {
-        admin_fabrica: "Administrador da Fábrica",
+        super_admin: "Super Administrador",
         franquia: "Franquia",
       };
 
@@ -463,7 +463,7 @@ Deno.serve(async (req) => {
       }
 
       // Prevent admin from removing their own admin role
-      if (user_id === callerUser.id && role && role !== "admin_fabrica") {
+      if (user_id === callerUser.id && role && role !== "super_admin") {
         return new Response(JSON.stringify({ error: "Você não pode remover seu próprio papel de administrador." }), {
           status: 400,
           headers: { ...corsHeaders, "Content-Type": "application/json" },
@@ -561,7 +561,7 @@ Deno.serve(async (req) => {
       const { data: roleData } = await adminClient.from("user_roles").select("role").eq("user_id", user_id).maybeSingle();
 
       const roleLabels: Record<string, string> = {
-        admin_fabrica: "Administrador da Fábrica",
+        super_admin: "Super Administrador",
         franquia: "Franquia",
       };
       const roleName = roleLabels[roleData?.role || ""] || roleData?.role || "Usuário";

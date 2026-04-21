@@ -48,7 +48,7 @@ export default function ProposalsList() {
   const { franchiseId, role } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const isAdmin = role === 'super_admin';
   const basePath = isAdmin ? '/admin' : '/franquia';
   const { hasAccess: hasOrcamentoAccess, loading: orcamentoLoading } = useOrcamentoAccess();
   const canQuery = !!franchiseId || isAdmin;

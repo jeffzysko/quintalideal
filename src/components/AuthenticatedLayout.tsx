@@ -23,7 +23,7 @@ export function AuthenticatedLayout() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const isAdmin = role === 'super_admin';
 
   // Determine if footer should show
   const noFooterPaths = new Set(['/hoje']);

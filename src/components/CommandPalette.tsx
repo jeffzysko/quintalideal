@@ -46,7 +46,7 @@ export function CommandPalette() {
   const { theme, setTheme } = useTheme();
   const debounceRef = useRef<ReturnType<typeof setTimeout>>();
 
-  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const isAdmin = role === 'super_admin';
   const isFranchise = role === 'franquia';
 
   // ⌘K / Ctrl+K shortcut

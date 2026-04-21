@@ -337,7 +337,7 @@ function SectionHeader({ icon: Icon, title, count, variant = 'default', delay = 
 export default function HojePage() {
   const navigate = useNavigate();
   const { user, role, franchiseId, loading: authLoading } = useAuth();
-  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const isAdmin = role === 'super_admin';
   const basePath = isAdmin ? '/admin/lead' : '/painel/lead';
   const queryClient = useQueryClient();
 

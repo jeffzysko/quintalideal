@@ -84,7 +84,7 @@ export function NotificationBell() {
   const [open, setOpen] = useState(false);
   const initialLoadDone = useRef(false);
 
-  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const isAdmin = role === 'super_admin';
   const { shouldShow } = useNotificationFilter();
 
   // Filter notifications based on user preferences

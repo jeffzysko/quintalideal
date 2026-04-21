@@ -15,7 +15,7 @@ import { GlobalNotificationControls } from '@/components/notifications/GlobalNot
 
 export default function NotificationPreferences() {
   const { role } = useAuth();
-  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const isAdmin = role === 'super_admin';
   const backPath = isAdmin ? '/admin' : '/painel';
 
   const {

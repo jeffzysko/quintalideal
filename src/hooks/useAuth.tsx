@@ -15,7 +15,7 @@ interface AuthContextType {
 
 type AppRole = Enums<'app_role'>;
 
-const ROLE_PRIORITY: AppRole[] = ['super_admin', 'admin_fabrica', 'franquia'];
+const ROLE_PRIORITY: AppRole[] = ['super_admin', 'franquia'];
 
 const resolvePrimaryRole = (roles: AppRole[]): AppRole | null => {
   return ROLE_PRIORITY.find(role => roles.includes(role)) ?? roles[0] ?? null;
@@ -47,11 +47,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const fetchUserMeta = useCallback(async (userId: string) => {
     const [{ data: rolesData, error: rolesError }, { data: profileData, error: profileError }] = await Promise.all([
       supabase.from('user_roles').select('role').eq('user_id', userId),
-      supabase.from('profiles').select('franquia_id').eq('user_id', userId).maybeSingle(),
+      supabase.from('profiles').select('franquia_id, blocked_at').eq('user_id', userId).maybeSingle(),
     ]);
 
     if (rolesError) { /* role fetch failed silently */ }
     if (profileError) { /* profile fetch failed silently */ }
+
+    // Block users whose profile has been deactivated
+    if (profileData?.blocked_at) {
+      return { role: null, franchiseId: null, inactive: true, blocked: true };
+    }
 
     const roles = (rolesData ?? []).map(item => item.role);
     const primaryRole = resolvePrimaryRole(roles);
@@ -111,6 +116,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (meta.inactive) {
         await supabase.auth.signOut({ scope: 'local' });
+        if ((meta as { blocked?: boolean }).blocked && typeof window !== 'undefined' && window.location.pathname !== '/acesso-bloqueado') {
+          window.location.replace('/acesso-bloqueado');
+        }
         return;
       }
 

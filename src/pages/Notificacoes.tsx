@@ -56,7 +56,7 @@ function groupByDate(notifications: Notification[]): { label: string; items: Not
 export default function NotificacoesPage() {
   const { user, franchiseId, role } = useAuth();
   const navigate = useNavigate();
-  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const isAdmin = role === 'super_admin';
   const { shouldShow } = useNotificationFilter();
 
   const [filterRead, setFilterRead] = useState<'all' | 'unread' | 'read'>('all');
