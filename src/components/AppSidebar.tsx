@@ -22,6 +22,7 @@ import {
   Inbox,
   AlertTriangle,
   MessageCircle,
+  DollarSign,
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -59,7 +60,7 @@ const SUPER_ADMIN_MAIN: SidebarNavItem[] = [
   { title: 'Candidaturas', url: '/admin?tab=candidaturas', icon: Inbox, matchTab: 'candidaturas' },
   { title: 'Marcas', url: '/admin/marcas', icon: Star, matchPaths: ['/admin/marcas'] },
   { title: 'Usuários', url: '/admin?tab=users', icon: Users, matchTab: 'users' },
-  { title: 'Relatórios', url: '/superadmin/receita', icon: BarChart2, matchPaths: ['/superadmin/receita'] },
+  { title: 'Faturamento', url: '/superadmin/receita', icon: DollarSign, matchPaths: ['/superadmin/receita'] },
   { title: 'Configurações', url: '/perfil', icon: Settings },
 ];
 
