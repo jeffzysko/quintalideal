@@ -8,7 +8,8 @@ import {
   TrendingUp,
   LogOut,
   FileText,
-  Star,
+  Trophy,
+  CreditCard,
   Package,
   LayoutDashboard,
   BarChart2,
@@ -148,6 +149,7 @@ const FRANCHISE_GROUPS: NavGroup[] = [
     items: [
       { title: 'Propostas', url: '/propostas', icon: FileText, matchPaths: ['/propostas'], dataTour: 'nav-propostas' },
       { title: 'Pós-venda', url: '/franquia?tab=pos-venda', icon: Package, matchTab: 'pos-venda' },
+      { title: 'Metas', url: '/franquia?tab=achievements', icon: Trophy, matchTab: 'achievements' },
     ],
   },
   {
@@ -157,8 +159,7 @@ const FRANCHISE_GROUPS: NavGroup[] = [
     defaultOpen: false,
     items: [
       { title: 'Relatórios', url: '/relatorio-crm', icon: BarChart2, matchPaths: ['/relatorio-crm'] },
-      { title: 'Metas', url: '/franquia?tab=achievements', icon: TrendingUp, matchTab: 'achievements' },
-      { title: 'Planos', url: '/planos', icon: Star, matchPaths: ['/planos'], dataTour: 'nav-planos' },
+      { title: 'Planos', url: '/planos', icon: CreditCard, matchPaths: ['/planos'], dataTour: 'nav-planos' },
       { title: 'Configurações', url: '/perfil', icon: Settings, matchPaths: ['/perfil'] },
       { title: 'Suporte', url: '/suporte', icon: HelpCircle },
     ],
