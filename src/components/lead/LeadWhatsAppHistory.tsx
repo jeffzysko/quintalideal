@@ -21,9 +21,9 @@ const EVENT_LABELS: Record<string, string> = {
 };
 
 function statusBadge(status: string) {
-  if (status === 'sent') return <Badge className="bg-emerald-500/15 text-emerald-600 border-emerald-500/30 text-[10px] px-1.5">Enviada</Badge>;
-  if (status === 'failed') return <Badge className="bg-red-500/15 text-red-600 border-red-500/30 text-[10px] px-1.5">Falha</Badge>;
-  return <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/30 text-[10px] px-1.5">Pendente</Badge>;
+  if (status === 'sent') return <Badge className="bg-emerald-500/15 text-emerald-600 border-emerald-500/30 text-xs px-1.5">Enviada</Badge>;
+  if (status === 'failed') return <Badge className="bg-red-500/15 text-red-600 border-red-500/30 text-xs px-1.5">Falha</Badge>;
+  return <Badge className="bg-amber-500/15 text-amber-600 border-amber-500/30 text-xs px-1.5">Pendente</Badge>;
 }
 
 export function LeadWhatsAppHistory({ leadId }: Props) {
@@ -67,7 +67,7 @@ export function LeadWhatsAppHistory({ leadId }: Props) {
             <h2 className="text-sm font-semibold text-foreground">Histórico de WhatsApp</h2>
           </div>
           {messages.length > 0 && (
-            <span className="text-[10px] bg-success/10 text-success px-1.5 py-0.5 rounded-full font-medium">
+            <span className="text-xs bg-success/10 text-success px-1.5 py-0.5 rounded-full font-medium">
               {messages.length} {messages.length === 1 ? 'mensagem' : 'mensagens'}
             </span>
           )}
@@ -96,8 +96,8 @@ export function LeadWhatsAppHistory({ leadId }: Props) {
                       <span className="text-xs font-semibold text-foreground">{eventLabel}</span>
                       {statusBadge(msg.status)}
                     </div>
-                    <p className="text-[11px] text-muted-foreground leading-relaxed whitespace-pre-wrap">{preview}</p>
-                    <span className="text-[10px] text-muted-foreground/70 mt-1 block">{date}</span>
+                    <p className="text-xs text-muted-foreground leading-relaxed whitespace-pre-wrap">{preview}</p>
+                    <span className="text-xs text-muted-foreground/70 mt-1 block">{date}</span>
                   </div>
                 </div>
               );

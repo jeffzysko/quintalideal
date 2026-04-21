@@ -56,7 +56,7 @@ export const AdminReferralMetrics = memo(function AdminReferralMetrics({ leads }
                 <kpi.icon className={`w-4 h-4 ${kpi.color}`} />
               </div>
               <p className="text-lg font-extrabold text-foreground">{kpi.value}</p>
-              <p className="text-[10px] text-muted-foreground font-medium">{kpi.label}</p>
+              <p className="text-xs text-muted-foreground font-medium">{kpi.label}</p>
             </motion.div>
           ))}
         </div>

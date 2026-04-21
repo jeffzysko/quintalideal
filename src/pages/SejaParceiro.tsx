@@ -520,7 +520,7 @@ export default function SejaParceiro() {
                   <span className="block text-3xl sm:text-4xl font-bold bg-gradient-to-br from-primary to-secondary bg-clip-text text-transparent">
                     <AnimatedCounter value={sp.metric} suffix={sp.suffix} />
                   </span>
-                  <span className="text-[11px] sm:text-xs text-muted-foreground font-medium mt-1.5 block">{sp.label}</span>
+                  <span className="text-xs sm:text-xs text-muted-foreground font-medium mt-1.5 block">{sp.label}</span>
                 </div>
               </motion.div>
             ))}
@@ -537,7 +537,7 @@ export default function SejaParceiro() {
               { icon: Star, text: '38+ lojas já usam' },
               { icon: Users, text: 'Sem contrato de fidelidade' },
             ].map(t => (
-              <div key={t.text} className="flex items-center gap-1.5 text-[11px] text-muted-foreground/50">
+              <div key={t.text} className="flex items-center gap-1.5 text-xs text-muted-foreground/50">
                 <t.icon className="w-3 h-3" />
                 {t.text}
               </div>
@@ -593,7 +593,7 @@ export default function SejaParceiro() {
                       <s.icon className="w-6 h-6 text-primary" />
                     </motion.div>
                     <div className="absolute -inset-2 rounded-3xl bg-primary/5 opacity-0 group-hover:opacity-100 blur-xl transition-opacity duration-500" />
-                    <span className="absolute -top-2 -right-2 text-[10px] font-bold bg-primary text-primary-foreground w-6 h-6 rounded-full flex items-center justify-center z-20">{s.num}</span>
+                    <span className="absolute -top-2 -right-2 text-xs font-bold bg-primary text-primary-foreground w-6 h-6 rounded-full flex items-center justify-center z-20">{s.num}</span>
                   </div>
                   <h3 className="font-bold text-foreground mb-2 text-base">{s.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed max-w-[260px] mx-auto">{s.description}</p>
@@ -701,7 +701,7 @@ export default function SejaParceiro() {
                       <div className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
                       <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/70" />
                       <div className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
-                      <span className="text-[10px] text-muted-foreground/50 ml-3">quintalideal.app/painel</span>
+                      <span className="text-xs text-muted-foreground/50 ml-3">quintalideal.app/painel</span>
                     </div>
                     <img src={mockupCRM} alt="CRM e Pipeline de Vendas do Quintal Ideal" loading="lazy" width={1280} height={800} className="w-full" />
                   </div>
@@ -727,7 +727,7 @@ export default function SejaParceiro() {
                       <div className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
                       <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/70" />
                       <div className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
-                      <span className="text-[10px] text-muted-foreground/50 ml-3">quintalideal.app/orcamento</span>
+                      <span className="text-xs text-muted-foreground/50 ml-3">quintalideal.app/orcamento</span>
                     </div>
                     <img src={mockupOrcamento} alt="Gerador de Orçamentos do Quintal Ideal" loading="lazy" width={1280} height={800} className="w-full" />
                   </div>
@@ -776,7 +776,7 @@ export default function SejaParceiro() {
                       <div className="w-2.5 h-2.5 rounded-full bg-red-400/70" />
                       <div className="w-2.5 h-2.5 rounded-full bg-yellow-400/70" />
                       <div className="w-2.5 h-2.5 rounded-full bg-green-400/70" />
-                      <span className="text-[10px] text-muted-foreground/50 ml-3">quintalideal.app/dashboard</span>
+                      <span className="text-xs text-muted-foreground/50 ml-3">quintalideal.app/dashboard</span>
                     </div>
                     <img src={mockupDashboard} alt="Dashboard de Métricas do Quintal Ideal" loading="lazy" width={1280} height={800} className="w-full" />
                   </div>
@@ -839,7 +839,7 @@ export default function SejaParceiro() {
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_100%] animate-[shimmer_3s_linear_infinite]" />
                 <div className="absolute -top-1 -right-1">
                   <div className="relative">
-                    <span className="text-[10px] font-bold bg-gradient-to-r from-primary to-secondary text-primary-foreground px-3 py-1.5 rounded-bl-xl rounded-tr-sm uppercase tracking-wider">Mais popular</span>
+                    <span className="text-xs font-bold bg-gradient-to-r from-primary to-secondary text-primary-foreground px-3 py-1.5 rounded-bl-xl rounded-tr-sm uppercase tracking-wider">Mais popular</span>
                   </div>
                 </div>
                 <CardContent className="p-7 sm:p-8 pt-9">

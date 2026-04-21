@@ -160,11 +160,11 @@ export function WhatsAppSettings() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'sent':
-        return <Badge className="bg-success/10 text-success border-success/20 text-[10px]">Enviado</Badge>;
+        return <Badge className="bg-success/10 text-success border-success/20 text-xs">Enviado</Badge>;
       case 'failed':
-        return <Badge variant="destructive" className="text-[10px]">Falha</Badge>;
+        return <Badge variant="destructive" className="text-xs">Falha</Badge>;
       default:
-        return <Badge className="bg-warning/10 text-warning border-warning/20 text-[10px]">Pendente</Badge>;
+        return <Badge className="bg-warning/10 text-warning border-warning/20 text-xs">Pendente</Badge>;
     }
   };
 

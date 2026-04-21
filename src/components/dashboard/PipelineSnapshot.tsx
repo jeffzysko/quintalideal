@@ -63,14 +63,14 @@ export function PipelineSnapshot({ leads }: PipelineSnapshotProps) {
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 p-4 pb-3">
             <div className="flex items-center gap-2">
               <h4 className="text-xs font-bold text-foreground uppercase tracking-wider">Pipeline</h4>
-              <Badge variant="secondary" className="text-[10px] font-bold px-1.5 py-0">{leads.length}</Badge>
+              <Badge variant="secondary" className="text-xs font-bold px-1.5 py-0">{leads.length}</Badge>
             </div>
             <div className="flex items-center gap-3 flex-wrap">
               <span className="text-xs text-muted-foreground">
                 <span className="font-bold text-foreground">{activeTotal}</span> ativos
               </span>
               {conversionRate > 0 && (
-                <Badge variant="outline" className="text-[10px] font-semibold text-emerald-600 border-emerald-200 bg-emerald-50 gap-1">
+                <Badge variant="outline" className="text-xs font-semibold text-emerald-600 border-emerald-200 bg-emerald-50 gap-1">
                   <TrendingUp className="w-3 h-3" />
                   {conversionRate}% conversão
                 </Badge>
@@ -111,7 +111,7 @@ export function PipelineSnapshot({ leads }: PipelineSnapshotProps) {
                   >
                     <span className="text-sm mb-0.5">{STAGE_EMOJI[stage]}</span>
                     <span className={cn('text-lg font-extrabold leading-none', STAGE_TEXT_COLORS[stage])}>{counts[stage]}</span>
-                    <span className="text-[9px] sm:text-[10px] text-muted-foreground font-medium mt-1 text-center leading-tight">{STATUS_LABELS[stage]}</span>
+                    <span className="text-[9px] sm:text-xs text-muted-foreground font-medium mt-1 text-center leading-tight">{STATUS_LABELS[stage]}</span>
                     <span className="text-[9px] text-muted-foreground/60 font-mono">{pct}%</span>
                   </motion.div>
                 );
@@ -125,19 +125,19 @@ export function PipelineSnapshot({ leads }: PipelineSnapshotProps) {
               <div className="flex items-center gap-1.5">
                 <span className="text-xs">🔥</span>
                 <span className="text-xs font-bold text-foreground">{temps.quente}</span>
-                <span className="text-[10px] text-muted-foreground">quentes</span>
+                <span className="text-xs text-muted-foreground">quentes</span>
               </div>
               <ArrowRight className="w-3 h-3 text-muted-foreground/40" />
               <div className="flex items-center gap-1.5">
                 <span className="text-xs">☀️</span>
                 <span className="text-xs font-bold text-foreground">{temps.morno}</span>
-                <span className="text-[10px] text-muted-foreground">mornos</span>
+                <span className="text-xs text-muted-foreground">mornos</span>
               </div>
               <ArrowRight className="w-3 h-3 text-muted-foreground/40" />
               <div className="flex items-center gap-1.5">
                 <span className="text-xs">❄️</span>
                 <span className="text-xs font-bold text-foreground">{temps.frio}</span>
-                <span className="text-[10px] text-muted-foreground">frios</span>
+                <span className="text-xs text-muted-foreground">frios</span>
               </div>
             </div>
           )}

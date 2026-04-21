@@ -20,7 +20,7 @@ function ScoreBar({ score }: { score: number }) {
           transition={{ duration: 0.6, ease: 'easeOut' }}
         />
       </div>
-      <span className="text-[11px] font-bold text-foreground tabular-nums w-8 text-right">{score}%</span>
+      <span className="text-xs font-bold text-foreground tabular-nums w-8 text-right">{score}%</span>
     </div>
   );
 }
@@ -85,7 +85,7 @@ export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePa
                 </div>
                 {/* Temperature indicator dot */}
                 <div className={`absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full ${temp.bgColor} flex items-center justify-center ring-2 ring-card`}>
-                  <span className="text-[10px] leading-none">{temp.emoji}</span>
+                  <span className="text-xs leading-none">{temp.emoji}</span>
                 </div>
               </div>
               <div className="min-w-0 flex-1">
@@ -96,7 +96,7 @@ export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePa
                       <MapPin className="w-3 h-3 shrink-0" /><span className="truncate max-w-[100px]">{lead.cidade}</span>
                     </span>
                   )}
-                  <span className="text-[11px] text-muted-foreground/70 flex items-center gap-0.5">
+                  <span className="text-xs text-muted-foreground/70 flex items-center gap-0.5">
                     <Clock className="w-2.5 h-2.5" />{timeSince()}
                   </span>
                 </div>
@@ -104,7 +104,7 @@ export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePa
             </div>
 
             {/* Status badge */}
-            <Badge className={`${STATUS_COLORS[lead.status_lead] || ''} border text-[10px] font-semibold shrink-0`} variant="secondary">
+            <Badge className={`${STATUS_COLORS[lead.status_lead] || ''} border text-xs font-semibold shrink-0`} variant="secondary">
               {STATUS_LABELS[lead.status_lead] || lead.status_lead}
             </Badge>
           </div>
@@ -116,24 +116,24 @@ export const MobileLeadCard = memo(function MobileLeadCard({ lead, index, basePa
 
           {/* Tags row */}
           <div className="flex items-center gap-1.5 flex-wrap">
-            <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
+            <Badge className={`${temp.bgColor} ${temp.color} border text-xs font-semibold`} variant="outline">
               {temp.emoji} {temp.label}
             </Badge>
             {(lead as any).lead_origin === 'manual' && (
-              <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-[10px] font-semibold" variant="outline">
+              <Badge className="bg-amber-50 text-amber-700 border-amber-200 text-xs font-semibold" variant="outline">
                 ✏️ Manual
               </Badge>
             )}
             <SmartTagBadges lead={lead} max={2} />
             {lead.modelo_recomendado && (
-              <span className="text-[10px] text-muted-foreground bg-muted/60 px-2 py-0.5 rounded-md font-medium">
+              <span className="text-xs text-muted-foreground bg-muted/60 px-2 py-0.5 rounded-md font-medium">
                 🏊 {lead.modelo_recomendado}
               </span>
             )}
           </div>
 
           {franchiseName && (
-            <p className="text-[11px] text-muted-foreground/70 font-medium truncate">
+            <p className="text-xs text-muted-foreground/70 font-medium truncate">
               🏢 {franchiseName}
             </p>
           )}

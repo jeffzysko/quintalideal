@@ -26,7 +26,7 @@ export function ProposalVideoSection({ videoUrl, onChange }: Props) {
           placeholder="https://youtube.com/watch?v=... ou https://loom.com/share/..."
           className="mt-1.5"
         />
-        <p className="text-[11px] text-muted-foreground mt-1.5">
+        <p className="text-xs text-muted-foreground mt-1.5">
           💡 Propostas com vídeo de apresentação têm taxa de aceite significativamente maior.
         </p>
       </CardContent>

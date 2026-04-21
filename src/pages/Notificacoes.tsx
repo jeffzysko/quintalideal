@@ -184,11 +184,11 @@ export default function NotificacoesPage() {
 
           {/* Stats */}
           <div className="flex items-center gap-2 sm:gap-3 mb-4">
-            <Badge variant="secondary" className="text-[10px] sm:text-xs">
+            <Badge variant="secondary" className="text-xs sm:text-xs">
               {total} notificação{total !== 1 ? 'ões' : ''}
             </Badge>
             {filterRead === 'all' && (
-              <Badge variant="outline" className="text-[10px] sm:text-xs border-primary/20 text-primary">
+              <Badge variant="outline" className="text-xs sm:text-xs border-primary/20 text-primary">
                 {notifications.filter(n => !n.read).length} não lida{notifications.filter(n => !n.read).length !== 1 ? 's' : ''}
               </Badge>
             )}
@@ -217,7 +217,7 @@ export default function NotificacoesPage() {
                 <div key={group.label}>
                   {/* Date group header */}
                   <div className="flex items-center gap-3 mb-2">
-                    <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+                    <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                       {group.label}
                     </span>
                     <div className="flex-1 h-px bg-border/40" />
@@ -250,24 +250,24 @@ export default function NotificacoesPage() {
                                 <p className={`text-xs sm:text-sm leading-tight ${!notif.read ? 'font-semibold text-foreground' : 'text-foreground/80'}`}>
                                   {notif.title}
                                 </p>
-                                <span className="text-[9px] sm:text-[10px] text-muted-foreground/60 whitespace-nowrap shrink-0">
+                                <span className="text-[9px] sm:text-xs text-muted-foreground/60 whitespace-nowrap shrink-0">
                                   {format(new Date(notif.created_at), "HH:mm", { locale: ptBR })}
                                 </span>
                               </div>
                               {notif.message && (
-                                <p className="text-[11px] sm:text-xs text-muted-foreground mt-0.5 sm:mt-1 line-clamp-2">{notif.message}</p>
+                                <p className="text-xs sm:text-xs text-muted-foreground mt-0.5 sm:mt-1 line-clamp-2">{notif.message}</p>
                               )}
                               <div className="flex items-center gap-2 mt-1.5 sm:mt-2">
                                 <Badge
                                   variant="outline"
-                                  className={`text-[9px] sm:text-[10px] px-1.5 py-0 border-current/20 ${cfg.color}`}
+                                  className={`text-[9px] sm:text-xs px-1.5 py-0 border-current/20 ${cfg.color}`}
                                 >
                                   {cfg.emoji} {cfg.label}
                                 </Badge>
                                 {!notif.read && (
                                   <button
                                     onClick={(e) => { e.stopPropagation(); markAsRead(notif.id); }}
-                                    className="text-[10px] text-primary hover:underline flex items-center gap-1"
+                                    className="text-xs text-primary hover:underline flex items-center gap-1"
                                   >
                                     <Check className="w-3 h-3" /> Marcar como lida
                                   </button>

@@ -67,7 +67,7 @@ export function PreDiagnosis({ onContinue, lang = 'pt' }: PreDiagnosisProps) {
           className="text-left space-y-3 mb-8 rounded-2xl p-5"
           style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)' }}
         >
-          <p className="text-white/40 text-[10px] uppercase tracking-[0.15em] font-bold mb-3">
+          <p className="text-white/40 text-xs uppercase tracking-[0.15em] font-bold mb-3">
             {t('prediag_still_need', lang)}
           </p>
           {[
@@ -106,7 +106,7 @@ export function PreDiagnosis({ onContinue, lang = 'pt' }: PreDiagnosisProps) {
               <ArrowRight className="w-5 h-5" />
             </motion.span>
           </Button>
-          <p className="text-white/25 text-[10px] mt-2">
+          <p className="text-white/25 text-xs mt-2">
             {t('prediag_hint', lang)}
           </p>
         </motion.div>

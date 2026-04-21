@@ -332,7 +332,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
           >
             <SlidersHorizontal className="w-4 h-4" />
             {hasActiveFilters && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">!</span>
+              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">!</span>
             )}
           </Button>
         </div>
@@ -356,7 +356,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
                 <div className="w-2 h-2 rounded-full shrink-0" style={{ backgroundColor: color }} />
                 {STATUS_LABELS[status]}
                 <span className={cn(
-                  "text-[10px] rounded-full px-1.5 py-0.5",
+                  "text-xs rounded-full px-1.5 py-0.5",
                   isActive ? "bg-primary/10 text-primary font-bold" : "bg-muted/80 text-muted-foreground"
                 )}>
                   {count}
@@ -519,7 +519,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
               <SlidersHorizontal className="w-4 h-4" />
               Filtros
               {hasActiveFilters && (
-                <Badge className="h-4 min-w-4 p-0 px-1 text-[10px] rounded-full bg-primary text-primary-foreground flex items-center justify-center">
+                <Badge className="h-4 min-w-4 p-0 px-1 text-xs rounded-full bg-primary text-primary-foreground flex items-center justify-center">
                   {[
                     tempFilter !== 'all',
                     originFilter !== 'all',

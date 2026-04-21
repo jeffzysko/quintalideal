@@ -192,7 +192,7 @@ export function LeafletHeatmap({ leads, coveredCities = [], franchiseMap = {}, c
         </CardTitle>
         <div className="flex items-center gap-2 flex-wrap">
           {uncoveredCities.length > 0 && (
-            <Badge variant="destructive" className="text-[10px] animate-pulse">
+            <Badge variant="destructive" className="text-xs animate-pulse">
               {uncoveredCities.length} cidade{uncoveredCities.length > 1 ? 's' : ''} sem cobertura
             </Badge>
           )}
@@ -225,7 +225,7 @@ export function LeafletHeatmap({ leads, coveredCities = [], franchiseMap = {}, c
       <CardContent className="p-0 overflow-hidden rounded-b-xl">
         <div ref={mapRef} className="w-full h-[400px] md:h-[500px]" style={{ zIndex: 0 }} />
         {/* Legend */}
-        <div className="flex items-center justify-between px-4 py-2.5 bg-muted/30 text-[10px] text-muted-foreground border-t border-border/30">
+        <div className="flex items-center justify-between px-4 py-2.5 bg-muted/30 text-xs text-muted-foreground border-t border-border/30">
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1">
               <span className="w-2.5 h-2.5 rounded-full bg-primary inline-block" /> Com cobertura

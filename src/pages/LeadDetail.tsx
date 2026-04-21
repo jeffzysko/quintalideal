@@ -525,7 +525,7 @@ export default function LeadDetail() {
                         <div className="flex flex-col items-center gap-0.5">
                           <div className="relative">
                             <div className="w-10 h-10 rounded-full bg-primary/15 border-2 border-background shadow-sm flex items-center justify-center">
-                              <span className="text-[11px] font-bold text-primary">{getInitials(assignedUser.full_name)}</span>
+                              <span className="text-xs font-bold text-primary">{getInitials(assignedUser.full_name)}</span>
                             </div>
                             <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-background border border-border flex items-center justify-center shadow-sm">
                               <ChevronDown className="w-2.5 h-2.5 text-muted-foreground" />
@@ -569,15 +569,15 @@ export default function LeadDetail() {
             return (
               <div className="mb-4">
                 <div className="flex items-center justify-between mb-1.5">
-                  <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                  <span className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
                     Etapa do funil <span className="hidden sm:inline normal-case tracking-normal text-muted-foreground/70 font-normal">· toque para mover</span>
                   </span>
                   {isLost ? (
-                    <span className="text-[10px] font-semibold text-destructive">💔 Perdido</span>
+                    <span className="text-xs font-semibold text-destructive">💔 Perdido</span>
                   ) : (
                     <button
                       onClick={() => handleStatusChange('perdido')}
-                      className="text-[10px] text-muted-foreground hover:text-destructive transition-colors"
+                      className="text-xs text-muted-foreground hover:text-destructive transition-colors"
                     >
                       Marcar perdido
                     </button>
@@ -596,7 +596,7 @@ export default function LeadDetail() {
                         title={`Mover para ${step.label}`}
                       >
                         <div className={`h-1.5 w-full rounded-full transition-all ${isActive && !isLost ? step.color : 'bg-muted'} ${isCurrent ? 'h-2' : ''}`} />
-                        <span className={`text-[10px] font-medium transition-colors ${isCurrent ? 'text-foreground' : isActive ? 'text-muted-foreground' : 'text-muted-foreground/50'}`}>
+                        <span className={`text-xs font-medium transition-colors ${isCurrent ? 'text-foreground' : isActive ? 'text-muted-foreground' : 'text-muted-foreground/50'}`}>
                           {step.label}
                         </span>
                       </button>
@@ -621,7 +621,7 @@ export default function LeadDetail() {
                   <button
                     key={t.val}
                     onClick={() => handleTempChange(active && tempOverride === t.val ? '' : t.val)}
-                    className={`text-[11px] font-medium px-2.5 py-1 rounded-full transition-all ${active ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+                    className={`text-xs font-medium px-2.5 py-1 rounded-full transition-all ${active ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
                     title={tempOverride === t.val ? 'Clique para voltar ao automático' : `Marcar como ${t.label}`}
                   >
                     {t.emoji} {t.label}
@@ -818,7 +818,7 @@ export default function LeadDetail() {
                     maxLength={1000}
                     className="bg-muted/40 resize-none text-sm"
                   />
-                  <p className="text-[10px] text-muted-foreground mt-1">Salva automaticamente ao sair do campo.</p>
+                  <p className="text-xs text-muted-foreground mt-1">Salva automaticamente ao sair do campo.</p>
                 </div>
               </motion.div>
             </TabsContent>
@@ -1031,11 +1031,11 @@ export default function LeadDetail() {
                     className="bg-muted/50"
                   />
                   {parsedValorVenda > 0 && (
-                    <p className="text-[11px] text-emerald-600 mt-1 font-medium">
+                    <p className="text-xs text-emerald-600 mt-1 font-medium">
                       {parsedValorVenda.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' })}
                     </p>
                   )}
-                  <p className="text-[10px] text-muted-foreground mt-1">
+                  <p className="text-xs text-muted-foreground mt-1">
                     Substitui a estimativa do lead. Atualizado automaticamente quando uma proposta vinculada é aceita.
                   </p>
                 </div>

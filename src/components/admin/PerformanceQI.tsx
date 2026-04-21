@@ -409,7 +409,7 @@ export function PerformanceQI({ franchiseMap, franchises }: PerformanceQIProps) 
                     </div>
                     {i > 0 && (
                       <div className="w-[60px] shrink-0 text-right">
-                        <span className={`text-[10px] sm:text-xs font-semibold ${dropRate > 50 ? 'text-destructive' : dropRate > 30 ? 'text-warning' : 'text-success'}`}>
+                        <span className={`text-xs sm:text-xs font-semibold ${dropRate > 50 ? 'text-destructive' : dropRate > 30 ? 'text-warning' : 'text-success'}`}>
                           {dropRate > 0 ? `-${dropRate}%` : '0%'}
                         </span>
                       </div>
@@ -482,7 +482,7 @@ export function PerformanceQI({ franchiseMap, franchises }: PerformanceQIProps) 
             {adherenceData.adherenceRate === null ? (
               <div className="text-center py-6">
                 <p className="text-sm text-muted-foreground mb-1">Sem dados de modelo vendido registrados</p>
-                <p className="text-[11px] text-muted-foreground">Quando vendas forem registradas com o modelo vendido, a aderência aparecerá aqui.</p>
+                <p className="text-xs text-muted-foreground">Quando vendas forem registradas com o modelo vendido, a aderência aparecerá aqui.</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -491,7 +491,7 @@ export function PerformanceQI({ franchiseMap, franchises }: PerformanceQIProps) 
                     <div className={`text-3xl font-bold ${adherenceData.adherenceRate >= 70 ? 'text-success' : adherenceData.adherenceRate >= 50 ? 'text-warning' : 'text-destructive'}`}>
                       {adherenceData.adherenceRate}%
                     </div>
-                    <p className="text-[10px] text-muted-foreground">Aderência geral</p>
+                    <p className="text-xs text-muted-foreground">Aderência geral</p>
                   </div>
                   <div className="flex-1 space-y-1 text-xs text-muted-foreground">
                     <p>{adherenceData.matches} de {adherenceData.tracked} vendas corresponderam à recomendação</p>
@@ -499,12 +499,12 @@ export function PerformanceQI({ franchiseMap, franchises }: PerformanceQIProps) 
                 </div>
                 {adherenceData.faithful.length > 0 && (
                   <div>
-                    <p className="text-[11px] font-semibold text-muted-foreground mb-1.5">Mais fiéis à recomendação</p>
+                    <p className="text-xs font-semibold text-muted-foreground mb-1.5">Mais fiéis à recomendação</p>
                     <div className="space-y-1">
                       {adherenceData.faithful.map((f, i) => (
                         <div key={i} className="flex items-center justify-between text-xs">
                           <span className="text-foreground">{f.model}</span>
-                          <Badge variant="outline" className="text-[10px]">{f.rate}%</Badge>
+                          <Badge variant="outline" className="text-xs">{f.rate}%</Badge>
                         </div>
                       ))}
                     </div>
@@ -512,7 +512,7 @@ export function PerformanceQI({ franchiseMap, franchises }: PerformanceQIProps) 
                 )}
                 {adherenceData.changed.length > 0 && (
                   <div>
-                    <p className="text-[11px] font-semibold text-muted-foreground mb-1.5">Trocas mais frequentes</p>
+                    <p className="text-xs font-semibold text-muted-foreground mb-1.5">Trocas mais frequentes</p>
                     <div className="space-y-1">
                       {adherenceData.changed.map((c, i) => (
                         <div key={i} className="flex items-center justify-between text-xs">
@@ -534,7 +534,7 @@ export function PerformanceQI({ franchiseMap, franchises }: PerformanceQIProps) 
         <CardHeader className="pb-2 px-3 sm:px-6">
           <CardTitle className="text-sm font-semibold flex items-center gap-2">
             <Flame className="w-4 h-4 text-destructive" /> Leads Quentes
-            <Badge variant="destructive" className="text-[10px] ml-1">{hotLeads.length}</Badge>
+            <Badge variant="destructive" className="text-xs ml-1">{hotLeads.length}</Badge>
           </CardTitle>
         </CardHeader>
         <CardContent className="px-3 sm:px-6">
@@ -556,11 +556,11 @@ export function PerformanceQI({ franchiseMap, franchises }: PerformanceQIProps) 
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-foreground truncate">{l.nome || 'Sem nome'}</p>
-                    <p className="text-[10px] text-muted-foreground">{l.cidade || 'Sem cidade'} · {franchiseMap[l.franquia_id || ''] || 'Sem franquia'}</p>
+                    <p className="text-xs text-muted-foreground">{l.cidade || 'Sem cidade'} · {franchiseMap[l.franquia_id || ''] || 'Sem franquia'}</p>
                   </div>
                   <div className="text-right shrink-0">
-                    <Badge variant="outline" className="text-[10px]">{l.modelo_recomendado || '—'}</Badge>
-                    <p className="text-[10px] font-semibold text-primary mt-0.5">{l.pontuacao_quintal || 0}%</p>
+                    <Badge variant="outline" className="text-xs">{l.modelo_recomendado || '—'}</Badge>
+                    <p className="text-xs font-semibold text-primary mt-0.5">{l.pontuacao_quintal || 0}%</p>
                   </div>
                   <ExternalLink className="w-3.5 h-3.5 text-muted-foreground shrink-0" />
                 </motion.div>
@@ -629,7 +629,7 @@ export function PerformanceQI({ franchiseMap, franchises }: PerformanceQIProps) 
             ) : (
               <div className="space-y-4">
                 <div>
-                  <p className="text-[11px] font-semibold text-muted-foreground mb-2">Por Objetivo</p>
+                  <p className="text-xs font-semibold text-muted-foreground mb-2">Por Objetivo</p>
                   <div className="flex flex-wrap gap-2">
                     {profileData.objectives.map(o => (
                       <div key={o.name} className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted/40">
@@ -641,7 +641,7 @@ export function PerformanceQI({ franchiseMap, franchises }: PerformanceQIProps) 
                   </div>
                 </div>
                 <div>
-                  <p className="text-[11px] font-semibold text-muted-foreground mb-2">Por Perfil Detectado</p>
+                  <p className="text-xs font-semibold text-muted-foreground mb-2">Por Perfil Detectado</p>
                   <ChartContainer config={{}} className="h-[160px] w-full">
                     <BarChart data={profileData.profiles} margin={{ left: -10, right: 5, top: 5, bottom: 0 }} layout="vertical">
                       <XAxis type="number" tick={{ fontSize: 10 }} />
@@ -677,12 +677,12 @@ export function PerformanceQI({ franchiseMap, franchises }: PerformanceQIProps) 
                 <motion.div key={f.id} className="p-3 rounded-xl bg-muted/30 space-y-2" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-semibold text-foreground truncate">{f.name}</span>
-                    <Badge variant="outline" className="text-[10px]">{f.conversionRate}% conv.</Badge>
+                    <Badge variant="outline" className="text-xs">{f.conversionRate}% conv.</Badge>
                   </div>
                   <div className="grid grid-cols-3 gap-2 text-center">
-                    <div><p className="text-lg font-bold text-foreground">{f.total}</p><p className="text-[10px] text-muted-foreground">Leads</p></div>
-                    <div><p className="text-lg font-bold text-foreground">{f.hot}</p><p className="text-[10px] text-muted-foreground">🔥 Quentes</p></div>
-                    <div><p className="text-lg font-bold text-foreground">{f.sold}</p><p className="text-[10px] text-muted-foreground">Vendas</p></div>
+                    <div><p className="text-lg font-bold text-foreground">{f.total}</p><p className="text-xs text-muted-foreground">Leads</p></div>
+                    <div><p className="text-lg font-bold text-foreground">{f.hot}</p><p className="text-xs text-muted-foreground">🔥 Quentes</p></div>
+                    <div><p className="text-lg font-bold text-foreground">{f.sold}</p><p className="text-xs text-muted-foreground">Vendas</p></div>
                   </div>
                 </motion.div>
               ))}

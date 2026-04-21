@@ -283,7 +283,7 @@ export function AdminFranchiseManager() {
                         </div>
                       </div>
                       {!f.ativa && (
-                        <Badge variant="secondary" className="text-[10px] bg-destructive/10 text-destructive border-destructive/20 border">
+                        <Badge variant="secondary" className="text-xs bg-destructive/10 text-destructive border-destructive/20 border">
                           Desativada
                         </Badge>
                       )}
@@ -384,7 +384,7 @@ export function AdminFranchiseManager() {
                 onChange={e => setForm(prev => ({ ...prev, cidades_atendidas: e.target.value }))}
                 placeholder="Canoas, Gravataí, Cachoeirinha"
               />
-              <p className="text-[11px] text-muted-foreground">Separe as cidades por vírgula. A cidade base já é incluída automaticamente.</p>
+              <p className="text-xs text-muted-foreground">Separe as cidades por vírgula. A cidade base já é incluída automaticamente.</p>
             </div>
             <div className="space-y-1.5">
               <Label className="text-xs font-medium">Cidade Base *</Label>

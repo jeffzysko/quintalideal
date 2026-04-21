@@ -127,13 +127,13 @@ export function OrganizationSwitcher({ activeFranchiseId, onSwitch, compact }: O
               )}
             >
               <div className="w-7 h-7 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                <span className="text-[10px] font-bold text-primary">
+                <span className="text-xs font-bold text-primary">
                   {f.nome_franquia.replace('Quintal Ideal ', '').charAt(0)}
                 </span>
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold truncate">{f.nome_franquia}</p>
-                <p className="text-[10px] text-muted-foreground">{f.cidade_base}</p>
+                <p className="text-xs text-muted-foreground">{f.cidade_base}</p>
               </div>
               {activeFranchiseId === f.id && <Check className="w-4 h-4 text-primary shrink-0" />}
             </DropdownMenuItem>

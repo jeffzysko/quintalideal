@@ -70,7 +70,7 @@ export function TestPushButton() {
         <div className="flex items-center justify-between gap-3">
           <div className="min-w-0">
             <p className="text-sm font-semibold text-foreground">Testar envio</p>
-            <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">
+            <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
               Envie uma notificação push para este dispositivo para confirmar que está funcionando.
             </p>
           </div>

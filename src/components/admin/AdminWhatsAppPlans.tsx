@@ -151,18 +151,18 @@ export function AdminWhatsAppPlans() {
 
   const getModeBadge = (row: FranchiseWARow) => {
     if (!row.whatsapp_plan_active) {
-      return <Badge variant="outline" className="text-[10px]">Padrão</Badge>;
+      return <Badge variant="outline" className="text-xs">Padrão</Badge>;
     }
     if (row.whatsapp_mode === 'own') {
       return (
-        <Badge className="bg-primary/10 text-primary border-primary/20 text-[10px] gap-1">
+        <Badge className="bg-primary/10 text-primary border-primary/20 text-xs gap-1">
           <Smartphone className="w-3 h-3" />
           Próprio
         </Badge>
       );
     }
     return (
-      <Badge className="bg-muted text-muted-foreground border-border/30 text-[10px] gap-1">
+      <Badge className="bg-muted text-muted-foreground border-border/30 text-xs gap-1">
         <Monitor className="w-3 h-3" />
         Plataforma
       </Badge>
@@ -171,21 +171,21 @@ export function AdminWhatsAppPlans() {
 
   const getConnectionBadge = (row: FranchiseWARow) => {
     if (row.whatsapp_mode !== 'own' || !row.whatsapp_plan_active) {
-      return <span className="text-[10px] text-muted-foreground">—</span>;
+      return <span className="text-xs text-muted-foreground">—</span>;
     }
     if (!row.zapi_instance_id) {
-      return <Badge variant="outline" className="text-[10px] text-amber-600 border-amber-500/30">Não configurado</Badge>;
+      return <Badge variant="outline" className="text-xs text-amber-600 border-amber-500/30">Não configurado</Badge>;
     }
     if (row.zapi_instance_active) {
       return (
-        <Badge className="bg-success/10 text-success border-success/20 text-[10px] gap-1">
+        <Badge className="bg-success/10 text-success border-success/20 text-xs gap-1">
           <Wifi className="w-3 h-3" />
           Conectado
         </Badge>
       );
     }
     return (
-      <Badge className="bg-destructive/10 text-destructive border-destructive/20 text-[10px] gap-1">
+      <Badge className="bg-destructive/10 text-destructive border-destructive/20 text-xs gap-1">
         <WifiOff className="w-3 h-3" />
         Desconectado
       </Badge>
@@ -231,32 +231,32 @@ export function AdminWhatsAppPlans() {
 
   const getStripeBadge = (row: FranchiseWARow) => {
     if (!row.stripe_subscription_status) {
-      return <span className="text-[10px] text-muted-foreground">—</span>;
+      return <span className="text-xs text-muted-foreground">—</span>;
     }
     switch (row.stripe_subscription_status) {
       case 'active':
       case 'trialing':
-        return <Badge variant="success" className="text-[10px]">Ativo</Badge>;
+        return <Badge variant="success" className="text-xs">Ativo</Badge>;
       case 'past_due':
-        return <Badge variant="warning" className="text-[10px]">Inadimplente</Badge>;
+        return <Badge variant="warning" className="text-xs">Inadimplente</Badge>;
       case 'canceled':
       case 'unpaid':
-        return <Badge variant="destructive" className="text-[10px]">Cancelado</Badge>;
+        return <Badge variant="destructive" className="text-xs">Cancelado</Badge>;
       default:
-        return <Badge variant="outline" className="text-[10px]">{row.stripe_subscription_status}</Badge>;
+        return <Badge variant="outline" className="text-xs">{row.stripe_subscription_status}</Badge>;
     }
   };
 
   const getStripeLink = (row: FranchiseWARow) => {
     if (!row.stripe_customer_id) {
-      return <span className="text-[10px] text-muted-foreground">—</span>;
+      return <span className="text-xs text-muted-foreground">—</span>;
     }
     return (
       <a
         href={`https://dashboard.stripe.com/customers/${row.stripe_customer_id}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-1 text-[10px] text-primary hover:underline"
+        className="inline-flex items-center gap-1 text-xs text-primary hover:underline"
       >
         <ExternalLink className="w-3 h-3" />
         Ver no Stripe
@@ -266,18 +266,18 @@ export function AdminWhatsAppPlans() {
 
   const getPlanStatusBadge = (row: FranchiseWARow) => {
     if (!row.whatsapp_plan_active) {
-      return <Badge variant="outline" className="text-[10px] text-muted-foreground">Inativo</Badge>;
+      return <Badge variant="outline" className="text-xs text-muted-foreground">Inativo</Badge>;
     }
     if (row.whatsapp_plan_expires_at) {
       const exp = new Date(row.whatsapp_plan_expires_at);
       if (isBefore(exp, new Date())) {
-        return <Badge className="bg-destructive/10 text-destructive border-destructive/20 text-[10px]">Expirado</Badge>;
+        return <Badge className="bg-destructive/10 text-destructive border-destructive/20 text-xs">Expirado</Badge>;
       }
       if (isBefore(exp, addDays(new Date(), 7))) {
-        return <Badge className="bg-warning/15 text-warning-foreground border-warning/30 text-[10px]">Expirando</Badge>;
+        return <Badge className="bg-warning/15 text-warning-foreground border-warning/30 text-xs">Expirando</Badge>;
       }
     }
-    return <Badge variant="success" className="text-[10px]">Ativo</Badge>;
+    return <Badge variant="success" className="text-xs">Ativo</Badge>;
   };
 
   const getOrcamentoBadge = (row: FranchiseWARow) => {
@@ -287,7 +287,7 @@ export function AdminWhatsAppPlans() {
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
-              <Badge variant="success" className="text-[10px]">Ativo</Badge>
+              <Badge variant="success" className="text-xs">Ativo</Badge>
             </TooltipTrigger>
             {viaWhatsApp && (
               <TooltipContent><p>Incluso no plano WhatsApp</p></TooltipContent>
@@ -296,7 +296,7 @@ export function AdminWhatsAppPlans() {
         </TooltipProvider>
       );
     }
-    return <Badge variant="outline" className="text-[10px] text-muted-foreground">Inativo</Badge>;
+    return <Badge variant="outline" className="text-xs text-muted-foreground">Inativo</Badge>;
   };
 
   const formatDate = (dateStr: string | null) => {
@@ -328,7 +328,7 @@ export function AdminWhatsAppPlans() {
             <Smartphone className="w-4 h-4 text-success" />
             <div>
               <p className="text-lg font-bold">{summary.activeCount}</p>
-              <p className="text-[10px] text-muted-foreground">Planos ativos</p>
+              <p className="text-xs text-muted-foreground">Planos ativos</p>
             </div>
           </div>
         </Card>
@@ -337,7 +337,7 @@ export function AdminWhatsAppPlans() {
             <AlertTriangle className={`w-4 h-4 ${summary.expiringCount > 0 ? 'text-warning-foreground' : 'text-muted-foreground'}`} />
             <div>
               <p className="text-lg font-bold">{summary.expiringCount}</p>
-              <p className="text-[10px] text-muted-foreground">Expirando em 7d</p>
+              <p className="text-xs text-muted-foreground">Expirando em 7d</p>
             </div>
           </div>
         </Card>
@@ -346,7 +346,7 @@ export function AdminWhatsAppPlans() {
             <DollarSign className="w-4 h-4 text-primary" />
             <div>
               <p className="text-lg font-bold">{formatCurrency(summary.mrrStripe)}</p>
-              <p className="text-[10px] text-muted-foreground">MRR Stripe</p>
+              <p className="text-xs text-muted-foreground">MRR Stripe</p>
             </div>
           </div>
         </Card>
@@ -355,7 +355,7 @@ export function AdminWhatsAppPlans() {
             <CreditCard className="w-4 h-4 text-primary" />
             <div>
               <p className="text-lg font-bold">{franchises.filter(f => f.stripe_subscription_status === 'active').length}</p>
-              <p className="text-[10px] text-muted-foreground">Assinaturas ativas</p>
+              <p className="text-xs text-muted-foreground">Assinaturas ativas</p>
             </div>
           </div>
         </Card>

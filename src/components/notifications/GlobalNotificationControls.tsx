@@ -12,7 +12,7 @@ export function GlobalNotificationControls({ onEnableAll, onDisableAll, onImport
   return (
     <Card>
       <CardContent className="p-3 sm:p-4">
-        <p className="text-[10px] font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
+        <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">
           Ações rápidas
         </p>
         <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
@@ -20,7 +20,7 @@ export function GlobalNotificationControls({ onEnableAll, onDisableAll, onImport
             variant="outline"
             size="sm"
             onClick={onEnableAll}
-            className="gap-1 rounded-lg text-[10px] sm:text-xs min-h-[40px] px-2"
+            className="gap-1 rounded-lg text-xs sm:text-xs min-h-[40px] px-2"
           >
             <BellRing className="w-3 h-3 shrink-0" />
             <span className="truncate">Tudo</span>
@@ -29,7 +29,7 @@ export function GlobalNotificationControls({ onEnableAll, onDisableAll, onImport
             variant="outline"
             size="sm"
             onClick={onImportantOnly}
-            className="gap-1 rounded-lg text-[10px] sm:text-xs min-h-[40px] px-2"
+            className="gap-1 rounded-lg text-xs sm:text-xs min-h-[40px] px-2"
           >
             <Shield className="w-3 h-3 shrink-0" />
             <span className="truncate">Importantes</span>
@@ -38,7 +38,7 @@ export function GlobalNotificationControls({ onEnableAll, onDisableAll, onImport
             variant="outline"
             size="sm"
             onClick={onDisableAll}
-            className="gap-1 rounded-lg text-[10px] sm:text-xs min-h-[40px] px-2 text-muted-foreground"
+            className="gap-1 rounded-lg text-xs sm:text-xs min-h-[40px] px-2 text-muted-foreground"
           >
             <BellOff className="w-3 h-3 shrink-0" />
             <span className="truncate">Nenhuma</span>

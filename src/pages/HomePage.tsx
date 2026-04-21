@@ -62,7 +62,7 @@ function TrustBadges() {
           <div key={label} className="flex items-center gap-1.5">
             {i > 0 && <div className="w-px h-3 bg-white/10 -ml-1 mr-1 sm:-ml-1.5 sm:mr-1.5" />}
             <Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-blue-300/60" />
-            <span className="text-[9px] sm:text-[10px] font-medium text-white/40 tracking-wide">{label}</span>
+            <span className="text-[9px] sm:text-xs font-medium text-white/40 tracking-wide">{label}</span>
           </div>
         ))}
       </div>
@@ -365,7 +365,7 @@ export default function HomePage() {
                       >
                         <div className="text-left">
                           <span className="block text-sm font-semibold text-white/90">{f.nome_franquia}</span>
-                          <span className="block text-[11px] text-white/40">{f.cidade_base}</span>
+                          <span className="block text-xs text-white/40">{f.cidade_base}</span>
                         </div>
                         <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white/60 group-hover:translate-x-0.5 transition-all" />
                       </button>
@@ -395,7 +395,7 @@ export default function HomePage() {
                         >
                           <div className="text-left">
                             <span className="block text-sm font-semibold">{nearestFranchise.nome_franquia}</span>
-                            <span className="block text-[11px] text-white/40">{nearestFranchise.cidade_base}</span>
+                            <span className="block text-xs text-white/40">{nearestFranchise.cidade_base}</span>
                           </div>
                           <ChevronRight className="w-4 h-4 text-white/30 group-hover:text-white/60 group-hover:translate-x-0.5 transition-all" />
                         </button>

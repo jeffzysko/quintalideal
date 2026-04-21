@@ -93,7 +93,7 @@ export function LeadTimeline({ leadId }: LeadTimelineProps) {
           <Clock className="w-4 h-4 text-primary" />
           <h2 className="text-sm font-semibold text-foreground">Histórico</h2>
           {activities.length > 0 && (
-            <span className="text-[10px] bg-muted px-1.5 py-0.5 rounded-full text-muted-foreground font-medium">
+            <span className="text-xs bg-muted px-1.5 py-0.5 rounded-full text-muted-foreground font-medium">
               {activities.length}
             </span>
           )}
@@ -167,10 +167,10 @@ export function LeadTimeline({ leadId }: LeadTimelineProps) {
 
                       <div className="bg-muted/30 rounded-lg px-3 py-2 hover:bg-muted/50 transition-colors">
                         <div className="flex items-center justify-between gap-2 mb-0.5">
-                          <span className={`text-[10px] font-semibold uppercase tracking-wider ${config.color}`}>
+                          <span className={`text-xs font-semibold uppercase tracking-wider ${config.color}`}>
                             {config.label}
                           </span>
-                          <span className="text-[10px] text-muted-foreground">{formatDate(act.created_at)}</span>
+                          <span className="text-xs text-muted-foreground">{formatDate(act.created_at)}</span>
                         </div>
                         {act.content && (
                           <p className="text-xs text-foreground leading-relaxed whitespace-pre-wrap">{act.content}</p>

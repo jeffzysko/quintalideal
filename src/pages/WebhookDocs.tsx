@@ -131,7 +131,7 @@ function StepCard({ number, icon: Icon, title, description }: { number: number; 
         <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors duration-300">
           <Icon className="w-5 h-5 text-primary" />
         </div>
-        <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center shadow-sm">
+        <span className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center shadow-sm">
           {number}
         </span>
       </div>
@@ -152,7 +152,7 @@ function SectionHeader({ icon: Icon, title, badge }: { icon: React.ElementType; 
       <div className="flex items-center gap-2">
         <h2 className="text-lg font-bold text-foreground">{title}</h2>
         {badge && (
-          <span className="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+          <span className="text-xs font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-primary/10 text-primary">
             {badge}
           </span>
         )}
@@ -207,7 +207,7 @@ export default function WebhookDocs() {
               <Webhook className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-primary">API Docs</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-primary">API Docs</span>
               <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">Webhook de Leads</h1>
             </div>
           </div>

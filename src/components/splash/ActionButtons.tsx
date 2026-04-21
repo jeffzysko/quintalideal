@@ -286,7 +286,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
                 }}
               >
                 <span className="text-xs sm:text-sm">{classification.emoji}</span>
-                <span className="font-bold text-[10px] sm:text-[11px]" style={{ color: classification.color }}>{classification.label}</span>
+                <span className="font-bold text-xs sm:text-xs" style={{ color: classification.color }}>{classification.label}</span>
               </div>
               <div
                 className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full"
@@ -296,7 +296,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
                 }}
               >
                 <Trophy className="w-3 h-3 text-amber-400" />
-                <span className="font-bold text-[10px] sm:text-[11px] text-amber-300">{ranking.label}</span>
+                <span className="font-bold text-xs sm:text-xs text-amber-300">{ranking.label}</span>
               </div>
             </div>
           </motion.div>
@@ -305,7 +305,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="text-white/45 text-[10px] sm:text-[11px] italic"
+            className="text-white/45 text-xs sm:text-xs italic"
           >
             {socialComparison}
           </motion.p>
@@ -346,7 +346,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
                     <span className="text-[9px] font-bold text-primary uppercase tracking-[0.15em]">{t('action_rec_label', lang)}</span>
                   </div>
                   {fitLabel && (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-primary/10 text-primary border border-primary/20">
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">
                       {fitEmoji} {fitLabel}
                       {matchScore != null && <span className="text-primary/60 ml-0.5">({matchScore}%)</span>}
                     </span>
@@ -355,7 +355,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
                 <h3 className="text-lg font-bold text-foreground mb-1">{poolName}</h3>
 
                 {/* Trust tag */}
-                <p className="text-[10px] text-muted-foreground/70 mb-2 flex items-center gap-1">
+                <p className="text-xs text-muted-foreground/70 mb-2 flex items-center gap-1">
                   <span>✅</span>
                   {lang === 'es' ? 'Recomendación basada en cientos de proyectos similares' : 'Recomendação baseada em centenas de projetos similares'}
                 </p>
@@ -371,7 +371,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
 
             {/* Closing phrase */}
             {!isWeakRecommendation && closingPhrase && (
-              <p className="text-[11px] text-foreground/70 font-medium italic mb-3">{closingPhrase}</p>
+              <p className="text-xs text-foreground/70 font-medium italic mb-3">{closingPhrase}</p>
             )}
 
             {!isWeakRecommendation && poolSpecs && (
@@ -419,7 +419,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
             transition={{ delay: 0.65 }}
             className="mt-4"
           >
-            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">
+            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">
               {lang === 'es' ? 'También pueden gustarte' : 'Você também pode gostar'}
             </p>
             <div className="grid grid-cols-2 gap-2">
@@ -474,7 +474,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
             <div className="p-4">
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-sm">⬆️</span>
-                <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
+                <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
                   {lang === 'es' ? 'Opción de Upgrade' : 'Opção de Upgrade'}
                 </span>
               </div>
@@ -485,7 +485,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
                 <div>
                   <p className="text-sm font-bold text-foreground">{upgradeOption.name}</p>
                   {upgradeOption.recommendedSize && (
-                    <p className="text-[10px] text-muted-foreground">📐 {upgradeOption.recommendedSize}</p>
+                    <p className="text-xs text-muted-foreground">📐 {upgradeOption.recommendedSize}</p>
                   )}
                 </div>
               </div>
@@ -517,10 +517,10 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
           transition={{ delay: 0.78 }}
           className="mt-5 text-center"
         >
-          <p className="text-[11px] text-foreground/60 font-medium mb-1">
+          <p className="text-xs text-foreground/60 font-medium mb-1">
             {lang === 'es' ? '📈 Alta demanda en tu región' : '📈 Alta procura na sua região'}
           </p>
-          <p className="text-[10px] text-muted-foreground">
+          <p className="text-xs text-muted-foreground">
             {t('action_whatsapp_urgency', lang)}
           </p>
         </motion.div>
@@ -549,11 +549,11 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
             </motion.span>
           </Button>
           <div className="flex items-center justify-center gap-3 mt-2.5">
-            <span className="text-[10px] text-muted-foreground flex items-center gap-1">⚡ {lang === 'es' ? 'Rápido' : 'Rápido'}</span>
+            <span className="text-xs text-muted-foreground flex items-center gap-1">⚡ {lang === 'es' ? 'Rápido' : 'Rápido'}</span>
             <span className="w-px h-3 bg-border" />
-            <span className="text-[10px] text-muted-foreground flex items-center gap-1">🤝 {lang === 'es' ? 'Sin compromiso' : 'Sem compromisso'}</span>
+            <span className="text-xs text-muted-foreground flex items-center gap-1">🤝 {lang === 'es' ? 'Sin compromiso' : 'Sem compromisso'}</span>
             <span className="w-px h-3 bg-border" />
-            <span className="text-[10px] text-muted-foreground flex items-center gap-1">🎁 {lang === 'es' ? 'Condiciones especiales' : 'Condições especiais'}</span>
+            <span className="text-xs text-muted-foreground flex items-center gap-1">🎁 {lang === 'es' ? 'Condiciones especiales' : 'Condições especiais'}</span>
           </div>
         </motion.div>
 
@@ -570,7 +570,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
           transition={{ delay: 1.4 }}
           className="space-y-3 mt-8 pb-14"
         >
-          <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1 mb-1">
+          <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-1 mb-1">
             {lang === 'es' ? '📤 Comparte tu resultado' : '📤 Compartilhe seu resultado'}
           </p>
           <div className="grid grid-cols-2 gap-2">
@@ -595,7 +595,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
           {/* Trust footer */}
           <div className="text-center pt-4 space-y-2">
             <img src={logoQuintalIdeal} alt="Quintal Ideal" className="mx-auto w-28 opacity-30 brightness-0 invert" />
-            <p className="text-[10px] text-muted-foreground/50">
+            <p className="text-xs text-muted-foreground/50">
               {t('action_footer', lang)}
             </p>
           </div>

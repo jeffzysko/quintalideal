@@ -63,7 +63,7 @@ export function LeadValueEstimator({ respostas, modeloRecomendado }: LeadValueEs
             </div>
             <h2 className="text-sm font-semibold text-foreground">Valor Estimado</h2>
           </div>
-          <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full ${conf.bg} ${conf.color}`}>
+          <span className={`text-xs font-medium px-1.5 py-0.5 rounded-full ${conf.bg} ${conf.color}`}>
             Confiança {conf.label}
           </span>
         </div>
@@ -74,7 +74,7 @@ export function LeadValueEstimator({ respostas, modeloRecomendado }: LeadValueEs
             <p className="text-lg sm:text-xl font-bold text-foreground">
               {formatCurrency(estimate.min)} — {formatCurrency(estimate.max)}
             </p>
-            <p className="text-[11px] text-muted-foreground mt-0.5">
+            <p className="text-xs text-muted-foreground mt-0.5">
               Estimativa baseada no orçamento e preferências do lead
               {modeloRecomendado && <> · Modelo: <strong>{modeloRecomendado}</strong></>}
             </p>

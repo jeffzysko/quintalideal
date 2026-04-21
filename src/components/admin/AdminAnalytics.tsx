@@ -198,7 +198,7 @@ export function AdminAnalytics({ franchiseMap }: AdminAnalyticsProps) {
         <div className="flex items-center gap-2">
           <Activity className="w-5 h-5 text-primary" />
           <span className="font-semibold text-foreground text-sm sm:text-base">Product Analytics</span>
-          <span className="text-[10px] sm:text-xs text-muted-foreground">({totalSessions} sessões)</span>
+          <span className="text-xs sm:text-xs text-muted-foreground">({totalSessions} sessões)</span>
         </div>
         <div className="flex items-center gap-2 w-full sm:w-auto">
           {Object.keys(franchiseMap).length > 0 && (
@@ -245,7 +245,7 @@ export function AdminAnalytics({ franchiseMap }: AdminAnalyticsProps) {
             <div className="space-y-2">
               {funnelData.map((step, i) => (
                 <div key={step.key} className="flex items-center gap-2 sm:gap-3 group">
-                  <div className="w-20 sm:w-36 text-[10px] sm:text-xs text-muted-foreground truncate font-medium group-hover:text-foreground transition-colors">{step.label}</div>
+                  <div className="w-20 sm:w-36 text-xs sm:text-xs text-muted-foreground truncate font-medium group-hover:text-foreground transition-colors">{step.label}</div>
                   <div className="flex-1 relative h-7 sm:h-9 rounded-xl overflow-hidden bg-muted/40">
                     <div
                       className="absolute inset-y-0 left-0 rounded-xl transition-all duration-700 ease-out"
@@ -256,12 +256,12 @@ export function AdminAnalytics({ franchiseMap }: AdminAnalyticsProps) {
                       }}
                     />
                     <div className="absolute inset-0 flex items-center px-2 sm:px-3.5">
-                      <span className="text-[10px] sm:text-xs font-extrabold text-foreground z-10">{step.count}</span>
-                      <span className="text-[8px] sm:text-[10px] text-muted-foreground ml-1 sm:ml-2 z-10 font-medium">({step.rate}%)</span>
+                      <span className="text-xs sm:text-xs font-extrabold text-foreground z-10">{step.count}</span>
+                      <span className="text-[8px] sm:text-xs text-muted-foreground ml-1 sm:ml-2 z-10 font-medium">({step.rate}%)</span>
                     </div>
                   </div>
                   {i > 0 && step.dropoff > 0 && (
-                    <span className="text-[9px] sm:text-[10px] text-red-500 font-bold w-10 sm:w-14 text-right bg-red-500/8 px-1 sm:px-1.5 py-0.5 rounded-md shrink-0">-{step.dropoff}%</span>
+                    <span className="text-[9px] sm:text-xs text-red-500 font-bold w-10 sm:w-14 text-right bg-red-500/8 px-1 sm:px-1.5 py-0.5 rounded-md shrink-0">-{step.dropoff}%</span>
                   )}
                 </div>
               ))}
@@ -288,9 +288,9 @@ export function AdminAnalytics({ franchiseMap }: AdminAnalyticsProps) {
                   <div key={q.question} className="flex items-center justify-between py-2 border-b border-border/30 last:border-0 gap-2">
                     <div className="min-w-0">
                       <span className="text-xs font-bold text-foreground">P{q.question}</span>
-                      <p className="text-[10px] text-muted-foreground">{q.total} resp.</p>
+                      <p className="text-xs text-muted-foreground">{q.total} resp.</p>
                     </div>
-                    <span className="text-[10px] sm:text-xs bg-primary/10 text-primary px-2 py-1 rounded-md font-medium truncate max-w-[120px] sm:max-w-none">{q.topAnswer}</span>
+                    <span className="text-xs sm:text-xs bg-primary/10 text-primary px-2 py-1 rounded-md font-medium truncate max-w-[120px] sm:max-w-none">{q.topAnswer}</span>
                   </div>
                 ))}
               </div>

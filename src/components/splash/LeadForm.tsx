@@ -104,8 +104,8 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading, lang = 'pt', ste
             className="mb-5"
           >
             <div className="flex items-center justify-between mb-1.5">
-              <span className="text-[11px] text-muted-foreground font-medium">{step}/{totalSteps}</span>
-              <span className="text-[11px] text-primary font-semibold">100%</span>
+              <span className="text-xs text-muted-foreground font-medium">{step}/{totalSteps}</span>
+              <span className="text-xs text-primary font-semibold">100%</span>
             </div>
             <div className="w-full h-1.5 rounded-full bg-muted/60 overflow-hidden">
               <div

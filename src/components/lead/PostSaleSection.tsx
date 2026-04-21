@@ -403,7 +403,7 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
               placeholder="R$ 0,00"
               className="h-10 rounded-xl bg-muted/50"
             />
-            <p className="text-[11px] text-muted-foreground mt-1">Para comparar com o orçamento inicial</p>
+            <p className="text-xs text-muted-foreground mt-1">Para comparar com o orçamento inicial</p>
           </div>
 
           <Button onClick={saveProject} disabled={saving} className="w-full gap-2">
@@ -458,7 +458,7 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
               maxLength={1000}
             />
           </div>
-          <p className="text-[11px] text-muted-foreground">Salve junto com o projeto acima.</p>
+          <p className="text-xs text-muted-foreground">Salve junto com o projeto acima.</p>
         </CardContent>
       </Card>
 
@@ -501,7 +501,7 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
                 className="flex flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-muted-foreground/20 hover:border-primary/50 aspect-square text-muted-foreground hover:text-primary transition-colors disabled:opacity-50"
               >
                 {uploadingPhoto ? <Loader2 className="w-5 h-5 animate-spin" /> : <Camera className="w-5 h-5" />}
-                <span className="text-[10px]">{uploadingPhoto ? 'Enviando' : 'Foto'}</span>
+                <span className="text-xs">{uploadingPhoto ? 'Enviando' : 'Foto'}</span>
               </button>
             )}
           </div>

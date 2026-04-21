@@ -106,11 +106,11 @@ export function QuickActionBar({ onNavigatePipeline, leads = [], pendingFollowup
             <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center', action.bgColor)}>
               <action.icon className={cn('w-5 h-5', action.color)} />
             </div>
-            <span className="text-[10px] font-semibold text-muted-foreground">{action.label}</span>
+            <span className="text-xs font-semibold text-muted-foreground">{action.label}</span>
             {action.badge && action.badge > 0 && (
               <Tooltip>
                 <TooltipTrigger asChild>
-                  <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold px-1 shadow-sm">
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-[20px] flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-xs font-bold px-1 shadow-sm">
                     {action.badge > 9 ? '9+' : action.badge}
                   </span>
                 </TooltipTrigger>

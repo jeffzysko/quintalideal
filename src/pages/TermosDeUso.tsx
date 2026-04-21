@@ -86,7 +86,7 @@ export default function TermosDeUso() {
               <FileText className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-primary">Legal</span>
+              <span className="text-xs font-bold uppercase tracking-widest text-primary">Legal</span>
               <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">Termos de Uso</h1>
             </div>
           </div>

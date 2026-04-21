@@ -152,13 +152,13 @@ export default function AgendaPage() {
         <div className="flex-1 min-w-0">
           <p className={cn('text-xs font-semibold text-foreground truncate', f.completed && 'line-through')}>{leadName}</p>
           <div className="flex items-center gap-1.5 mt-0.5">
-            <span className={cn('text-[10px] font-medium', overdue ? 'text-destructive' : 'text-muted-foreground')}>
+            <span className={cn('text-xs font-medium', overdue ? 'text-destructive' : 'text-muted-foreground')}>
               {format(date, 'HH:mm')}
             </span>
             {overdue && <Badge variant="destructive" className="text-[9px] px-1 py-0 h-3.5 rounded-full">Atrasado</Badge>}
             {today && !overdue && <Badge className="text-[9px] px-1 py-0 h-3.5 rounded-full bg-emerald-500/15 text-emerald-700 border-0">Hoje</Badge>}
           </div>
-          {!compact && parsed.text && <p className="text-[10px] text-muted-foreground/60 truncate mt-0.5">{parsed.text}</p>}
+          {!compact && parsed.text && <p className="text-xs text-muted-foreground/60 truncate mt-0.5">{parsed.text}</p>}
         </div>
       </motion.div>
     );
@@ -173,12 +173,12 @@ export default function AgendaPage() {
         return (
           <div key={key} className={cn('rounded-xl border p-2 min-h-[120px]', today ? 'border-primary/40 bg-primary/5' : 'border-border/40 bg-card/50')}>
             <div className={cn('text-center mb-2 pb-1.5 border-b', today ? 'border-primary/20' : 'border-border/30')}>
-              <p className="text-[10px] font-medium text-muted-foreground uppercase">{format(day, 'EEE', { locale: ptBR })}</p>
+              <p className="text-xs font-medium text-muted-foreground uppercase">{format(day, 'EEE', { locale: ptBR })}</p>
               <p className={cn('text-lg font-bold', today ? 'text-primary' : 'text-foreground')}>{format(day, 'dd')}</p>
             </div>
             <div className="space-y-1.5">
               {items.length === 0 && (
-                <p className="text-[10px] text-muted-foreground/40 text-center pt-4">-</p>
+                <p className="text-xs text-muted-foreground/40 text-center pt-4">-</p>
               )}
               {items.map(f => renderFollowupItem(f, true))}
             </div>
@@ -202,7 +202,7 @@ export default function AgendaPage() {
                 {format(day, "EEEE, dd 'de' MMMM", { locale: ptBR })}
               </p>
               {items.length > 0 && (
-                <Badge variant="secondary" className="text-[10px] px-1.5 py-0 rounded-full">{items.length}</Badge>
+                <Badge variant="secondary" className="text-xs px-1.5 py-0 rounded-full">{items.length}</Badge>
               )}
             </div>
             {items.length === 0 ? (

@@ -449,7 +449,7 @@ export function AdminCityManager() {
               >
                 {tab.label}
                 {tab.count !== undefined && (
-                  <Badge variant="secondary" className="text-[10px] px-1.5 py-0 ml-1">
+                  <Badge variant="secondary" className="text-xs px-1.5 py-0 ml-1">
                     {tab.count}
                   </Badge>
                 )}
@@ -520,10 +520,10 @@ export function AdminCityManager() {
                               <MapPin className="w-3 h-3 text-muted-foreground" />
                               <span>{c.city_name}</span>
                               {c.is_primary_city && (
-                                <Badge variant="secondary" className="text-[10px] py-0 px-1.5">Principal</Badge>
+                                <Badge variant="secondary" className="text-xs py-0 px-1.5">Principal</Badge>
                               )}
                               {isDup && (
-                                <Badge variant="outline" className="text-[10px] py-0 px-1.5 border-amber-500/40 text-amber-600">
+                                <Badge variant="outline" className="text-xs py-0 px-1.5 border-amber-500/40 text-amber-600">
                                   ⚠ Compartilhada
                                 </Badge>
                               )}

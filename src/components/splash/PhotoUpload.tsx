@@ -237,7 +237,7 @@ export function PhotoUpload({ onNext, onBack, lang = 'pt' }: PhotoUploadProps) {
                   />
                   <div className="absolute inset-0 pointer-events-none">
                     <div className="absolute inset-4 border-2 border-dashed border-white/30 rounded-xl" />
-                    <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-sm text-white text-[11px] px-3 py-1.5 rounded-full flex items-center gap-1.5">
+                    <div className="absolute top-6 left-1/2 -translate-x-1/2 bg-black/50 backdrop-blur-sm text-white text-xs px-3 py-1.5 rounded-full flex items-center gap-1.5">
                       <Eye className="w-3.5 h-3.5" />
                       {t('photo_frame', lang)}
                     </div>
@@ -363,7 +363,7 @@ export function PhotoUpload({ onNext, onBack, lang = 'pt' }: PhotoUploadProps) {
                             initial={{ opacity: 0, y: 8 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.1 + Math.min(i * 0.08, 0.15) }}
-                            className="flex items-start gap-2 text-[11px] text-muted-foreground"
+                            className="flex items-start gap-2 text-xs text-muted-foreground"
                           >
                             <span className="text-sm leading-none mt-0.5">{tip.icon}</span>
                             <span>{tip.text}</span>
@@ -374,7 +374,7 @@ export function PhotoUpload({ onNext, onBack, lang = 'pt' }: PhotoUploadProps) {
                   )}
                 </AnimatePresence>
 
-                <p className="text-[10px] text-muted-foreground text-center mb-5">
+                <p className="text-xs text-muted-foreground text-center mb-5">
                   {photos.length}/4 {t('photo_count', lang)}
                 </p>
 

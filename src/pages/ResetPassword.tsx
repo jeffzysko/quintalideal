@@ -44,7 +44,7 @@ function PasswordChecklist({ password }: { password: string }) {
       exit={{ opacity: 0, height: 0 }}
       className="space-y-2 overflow-hidden"
     >
-      <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+      <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
         Sua senha precisa ter:
       </p>
 
@@ -75,7 +75,7 @@ function PasswordChecklist({ password }: { password: string }) {
           />
         </div>
       </div>
-      <p className={`text-[11px] font-semibold ${barColor.replace('bg-', 'text-')}`}>
+      <p className={`text-xs font-semibold ${barColor.replace('bg-', 'text-')}`}>
         {levelLabel}
       </p>
     </motion.div>

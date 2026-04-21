@@ -26,7 +26,7 @@ export const SmartTagBadges = forwardRef<HTMLSpanElement, SmartTagBadgesProps>(
           <span
             key={tag.key}
             ref={i === 0 ? ref : undefined}
-            className={`inline-flex items-center gap-0.5 text-[10px] font-medium px-1.5 py-0.5 rounded-md ${tag.bg} ${tag.color}`}
+            className={`inline-flex items-center gap-0.5 text-xs font-medium px-1.5 py-0.5 rounded-md ${tag.bg} ${tag.color}`}
             title={tag.label}
           >
             {tag.emoji} {tag.label}

@@ -184,7 +184,7 @@ export function UnifiedConversation({ leadId }: Props) {
           <MessageCircle className="w-4 h-4 text-primary" />
           <h2 className="text-sm font-semibold text-foreground">Conversa</h2>
           {events.length > 0 && (
-            <span className="text-[10px] bg-muted px-1.5 py-0.5 rounded-full text-muted-foreground font-medium">
+            <span className="text-xs bg-muted px-1.5 py-0.5 rounded-full text-muted-foreground font-medium">
               {events.length}
             </span>
           )}
@@ -254,10 +254,10 @@ export function UnifiedConversation({ leadId }: Props) {
 
                       <div className="bg-muted/30 rounded-lg px-3 py-2 hover:bg-muted/50 transition-colors">
                         <div className="flex items-center justify-between gap-2 mb-0.5">
-                          <span className={`text-[10px] font-semibold uppercase tracking-wider ${config.color}`}>
+                          <span className={`text-xs font-semibold uppercase tracking-wider ${config.color}`}>
                             {config.emoji} {config.label}
                           </span>
-                          <span className="text-[10px] text-muted-foreground">{formatDate(evt.date)}</span>
+                          <span className="text-xs text-muted-foreground">{formatDate(evt.date)}</span>
                         </div>
                         {evt.content && (
                           <p className="text-xs text-foreground leading-relaxed whitespace-pre-wrap">{evt.content}</p>

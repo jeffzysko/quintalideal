@@ -185,7 +185,7 @@ export function ProposalAttachments({ proposalId, franchiseId, readOnly = false,
               >
                 {att.file_name}
               </a>
-              <span className="text-[11px] text-muted-foreground shrink-0">
+              <span className="text-xs text-muted-foreground shrink-0">
                 {formatFileSize(att.file_size)}
               </span>
               {!readOnly && (
@@ -226,7 +226,7 @@ export function ProposalAttachments({ proposalId, franchiseId, readOnly = false,
       )}
 
       {!readOnly && (
-        <p className="text-[11px] text-muted-foreground">
+        <p className="text-xs text-muted-foreground">
           Máx. {MAX_FILES} arquivos · 10 MB cada · {totalCount}/{MAX_FILES} usados
         </p>
       )}

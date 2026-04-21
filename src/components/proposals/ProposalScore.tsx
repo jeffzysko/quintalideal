@@ -120,7 +120,7 @@ export function ProposalScore({ form, subtotal }: ProposalScoreProps) {
         <CardTitle className="text-base flex items-center gap-2">
           <Sparkles className="w-4 h-4 text-primary" />
           Score da Proposta
-          <Badge className={`${color} border-0 text-[10px] ml-auto`}>{label}</Badge>
+          <Badge className={`${color} border-0 text-xs ml-auto`}>{label}</Badge>
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">

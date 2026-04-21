@@ -421,13 +421,13 @@ export default function ProfileSettings() {
               {(franchiseName || role) && (
                 <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2 mt-2">
                   {franchiseName && (
-                    <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white/10 text-white/80 border border-white/10">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1 rounded-full bg-white/10 text-white/80 border border-white/10">
                       <Building2 className="w-3 h-3" />
                       {franchiseName}
                     </span>
                   )}
                   {role && (
-                    <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-primary/20 text-primary-foreground border border-primary/20">
+                    <span className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-1 rounded-full bg-primary/20 text-primary-foreground border border-primary/20">
                       <Shield className="w-3 h-3" />
                       {role === 'super_admin' ? 'Super Admin' : 'Franquia'}
                     </span>
@@ -583,7 +583,7 @@ export default function ProfileSettings() {
                       disabled
                       className="opacity-60 rounded-xl h-11 text-base sm:text-sm"
                     />
-                    <p className="text-[11px] text-muted-foreground">O e-mail de login não pode ser alterado aqui.</p>
+                    <p className="text-xs text-muted-foreground">O e-mail de login não pode ser alterado aqui.</p>
                   </div>
                 </CardContent>
               </Card>
@@ -648,7 +648,7 @@ export default function ProfileSettings() {
                             className="rounded-xl h-11 text-base sm:text-sm"
                           />
                           {formErrors.whatsapp && <p className="text-xs text-destructive mt-1">{formErrors.whatsapp}</p>}
-                          <p className="text-[11px] text-muted-foreground">
+                          <p className="text-xs text-muted-foreground">
                             {isFranchise ? 'DDD + número. O código do Brasil (55) é adicionado automaticamente.' : 'Com código do país, ex: 5551999999999'}
                           </p>
                         </div>
@@ -665,7 +665,7 @@ export default function ProfileSettings() {
                             className="rounded-xl h-11 text-base sm:text-sm"
                           />
                           {formErrors.email && <p className="text-xs text-destructive mt-1">{formErrors.email}</p>}
-                          <p className="text-[11px] text-muted-foreground">Os leads gerados pelo quiz serão enviados para este e-mail.</p>
+                          <p className="text-xs text-muted-foreground">Os leads gerados pelo quiz serão enviados para este e-mail.</p>
                         </div>
                         {isFranchise && (
                           <div className="space-y-1.5">
@@ -679,7 +679,7 @@ export default function ProfileSettings() {
                               onChange={e => setCidadesAtendidas(e.target.value)}
                               className="rounded-xl h-11 text-base sm:text-sm"
                             />
-                            <p className="text-[11px] text-muted-foreground">Separe as cidades por vírgula. A cidade base já é incluída automaticamente.</p>
+                            <p className="text-xs text-muted-foreground">Separe as cidades por vírgula. A cidade base já é incluída automaticamente.</p>
                           </div>
                         )}
                       </CardContent>

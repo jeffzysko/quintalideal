@@ -299,7 +299,7 @@ export default function ProposalsList() {
                 >
                   {tab.label}
                   <span className={cn(
-                    'text-[10px] min-w-[18px] h-[18px] rounded-full flex items-center justify-center',
+                    'text-xs min-w-[18px] h-[18px] rounded-full flex items-center justify-center',
                     isActive ? 'bg-primary-foreground/20 text-primary-foreground' : 'bg-muted text-muted-foreground'
                   )}>
                     {count}
@@ -348,7 +348,7 @@ export default function ProposalsList() {
                       <div className="flex-1 min-w-0">
                         <div className="flex flex-wrap items-center gap-1 sm:gap-2 mb-0.5">
                           <p className="font-medium text-sm text-foreground truncate">{p.client_name}</p>
-                          <Badge variant="outline" className={cn('text-[10px] shrink-0 border-0', status.classes)}>
+                          <Badge variant="outline" className={cn('text-xs shrink-0 border-0', status.classes)}>
                             {status.label}
                           </Badge>
                         </div>
@@ -362,12 +362,12 @@ export default function ProposalsList() {
                             {p.lead_id ? (
                               <>
                                 <UserCheck className="w-3 h-3 text-primary" />
-                                <span className="text-[10px] text-primary">Lead</span>
+                                <span className="text-xs text-primary">Lead</span>
                               </>
                             ) : (
                               <>
                                 <UserX className="w-3 h-3 text-muted-foreground/60" />
-                                <span className="text-[10px] text-muted-foreground/60">Avulsa</span>
+                                <span className="text-xs text-muted-foreground/60">Avulsa</span>
                               </>
                             )}
                           </span>

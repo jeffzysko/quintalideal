@@ -17,7 +17,7 @@ export function SectionHeader({ icon: Icon, iconBg = 'icon-bg-blue', title, subt
         </div>
         <div>
           <h3 className="text-sm sm:text-base font-bold text-foreground leading-tight">{title}</h3>
-          {subtitle && <p className="text-[11px] text-muted-foreground mt-0.5">{subtitle}</p>}
+          {subtitle && <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>}
         </div>
       </div>
       {children && <div className="flex items-center gap-2">{children}</div>}

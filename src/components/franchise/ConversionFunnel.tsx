@@ -81,7 +81,7 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
             Progresso dos Leads
           </span>
           {lostCount > 0 && (
-            <span className="text-[10px] font-medium text-destructive/70 flex items-center gap-1">
+            <span className="text-xs font-medium text-destructive/70 flex items-center gap-1">
               <TrendingDown className="w-3 h-3" /> {lostCount} perdido{lostCount !== 1 ? 's' : ''}
             </span>
           )}
@@ -116,7 +116,7 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
                   <div className="h-10 rounded-xl bg-muted/40 overflow-hidden relative">
                     <AnimatedBar targetWidth={barWidth} color={step.color} delay={delay} />
                     <span
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-bold"
                       style={{ color: step.color }}
                     >
                       {step.percentage}%
@@ -137,7 +137,7 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
                     <div className="h-10 rounded-xl bg-muted/40 overflow-hidden relative">
                       <AnimatedBar targetWidth={barWidth} color={step.color} delay={delay} />
                       <span
-                        className="absolute right-2 top-1/2 -translate-y-1/2 text-[10px] font-bold"
+                        className="absolute right-2 top-1/2 -translate-y-1/2 text-xs font-bold"
                         style={{ color: step.color }}
                       >
                         {step.percentage}%
@@ -153,7 +153,7 @@ export const ConversionFunnel = memo(function ConversionFunnel({ leads }: Conver
                         <span className="text-xs font-bold text-emerald-600">✓</span>
                       )
                     ) : (
-                      <span className="text-[10px] text-muted-foreground">total</span>
+                      <span className="text-xs text-muted-foreground">total</span>
                     )}
                   </div>
                 </div>

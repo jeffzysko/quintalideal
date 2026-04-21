@@ -175,11 +175,11 @@ export function VerificationFooter({ proposal }: { proposal: ProposalData }) {
             </button>
           </div>
           <div className="text-center space-y-1.5">
-            <p className="text-[11px] text-muted-foreground/70 leading-relaxed max-w-sm mx-auto">
+            <p className="text-xs text-muted-foreground/70 leading-relaxed max-w-sm mx-auto">
               Este código garante a autenticidade desta proposta.
               Verifique diretamente com a <strong className="text-foreground/80">Quintal Ideal</strong> em caso de dúvida.
             </p>
-            <div className="flex items-center justify-center gap-4 text-[10px] text-muted-foreground/50 font-medium">
+            <div className="flex items-center justify-center gap-4 text-xs text-muted-foreground/50 font-medium">
               <span>ID: #{proposal.id.slice(0, 8).toUpperCase()}</span>
               <span>•</span>
               <span>Emitida em {format(new Date(proposal.created_at), "dd/MM/yyyy")}</span>
@@ -244,13 +244,13 @@ export function CountdownTimer({ validityDate }: { validityDate: string }) {
                     {String(value).padStart(2, '0')}
                   </span>
                 </motion.div>
-                <span className="text-[10px] text-muted-foreground mt-1.5 uppercase tracking-[0.15em] font-semibold">{label}</span>
+                <span className="text-xs text-muted-foreground mt-1.5 uppercase tracking-[0.15em] font-semibold">{label}</span>
               </div>
               {i < 2 && <span className="text-xl font-black text-primary/40 -mt-5">:</span>}
             </div>
           ))}
         </div>
-        <p className="text-[11px] text-muted-foreground/60 text-center">
+        <p className="text-xs text-muted-foreground/60 text-center">
           Expira em {format(target, "dd/MM/yyyy 'às' HH:mm")}
         </p>
       </div>

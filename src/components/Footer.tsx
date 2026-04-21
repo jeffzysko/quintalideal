@@ -31,7 +31,7 @@ export function Footer() {
           {/* Brand + inline links */}
           <div className="flex items-center gap-3 mb-4">
             <img src={logoHallow} alt="Hallow Comunicação" className="w-16 opacity-40 brightness-0 dark:invert" />
-            <p className="text-[11px] text-muted-foreground leading-snug flex-1">
+            <p className="text-xs text-muted-foreground leading-snug flex-1">
               Quintal Ideal — Descubra o potencial do seu quintal.
             </p>
           </div>
@@ -55,7 +55,7 @@ export function Footer() {
           {/* Expandable extra links */}
           <button
             onClick={() => setExpanded(v => !v)}
-            className="flex items-center gap-1 text-[11px] text-muted-foreground/70 font-medium mb-2 active:scale-95 transition-transform"
+            className="flex items-center gap-1 text-xs text-muted-foreground/70 font-medium mb-2 active:scale-95 transition-transform"
           >
             Mais links
             <ChevronDown className={cn('w-3 h-3 transition-transform', expanded && 'rotate-180')} />
@@ -73,7 +73,7 @@ export function Footer() {
         </div>
 
         {/* Bottom line */}
-        <div className="mt-4 sm:mt-8 pt-4 sm:pt-5 border-t border-border/30 flex flex-col sm:flex-row items-center justify-between gap-1 text-[10px] text-muted-foreground/50">
+        <div className="mt-4 sm:mt-8 pt-4 sm:pt-5 border-t border-border/30 flex flex-col sm:flex-row items-center justify-between gap-1 text-xs text-muted-foreground/50">
           <p>
             © {new Date().getFullYear()} Quintal Ideal · Feito com ❤️ por{' '}
             <span className="font-semibold text-muted-foreground/70">Hallow Comunicação</span>
@@ -143,7 +143,7 @@ function SocialBlock() {
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
   return (
-    <h4 className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground/70 mb-1">
+    <h4 className="text-xs font-bold uppercase tracking-widest text-muted-foreground/70 mb-1">
       {children}
     </h4>
   );

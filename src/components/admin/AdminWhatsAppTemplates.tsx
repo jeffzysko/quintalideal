@@ -145,7 +145,7 @@ export function AdminWhatsAppTemplates() {
           </CardTitle>
         </CardHeader>
         <CardContent className="px-4 pb-4">
-          <div className="flex flex-wrap items-center gap-2 text-[10px] font-medium">
+          <div className="flex flex-wrap items-center gap-2 text-xs font-medium">
             {FLOW_ORDER.map((key, i, arr) => {
               const tpl = templates.find(t => t.template_key === key);
               if (!tpl) return null;
@@ -184,11 +184,11 @@ export function AdminWhatsAppTemplates() {
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-semibold text-foreground truncate">{tpl.label}</span>
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded-full border ${cat.color}`}>
+                      <span className={`text-xs px-1.5 py-0.5 rounded-full border ${cat.color}`}>
                         {cat.label}
                       </span>
                     </div>
-                    <p className="text-[11px] text-muted-foreground truncate">{tpl.description}</p>
+                    <p className="text-xs text-muted-foreground truncate">{tpl.description}</p>
                   </div>
                 </button>
                 <div className="flex items-center gap-3 shrink-0 ml-2">
@@ -215,9 +215,9 @@ export function AdminWhatsAppTemplates() {
                     <div className="px-4 pb-4 space-y-3 border-t border-border/30 pt-3">
                       {/* Variables hint */}
                       <div className="flex flex-wrap gap-1.5">
-                        <span className="text-[10px] text-muted-foreground font-medium">Variáveis:</span>
+                        <span className="text-xs text-muted-foreground font-medium">Variáveis:</span>
                         {tpl.variables.map(v => (
-                          <span key={v} className="text-[10px] bg-muted/60 text-foreground px-1.5 py-0.5 rounded font-mono">
+                          <span key={v} className="text-xs bg-muted/60 text-foreground px-1.5 py-0.5 rounded font-mono">
                             {`{{${v}}}`}
                           </span>
                         ))}
@@ -267,7 +267,7 @@ export function AdminWhatsAppTemplates() {
         <CardContent className="p-4">
           <p className="text-xs text-muted-foreground leading-relaxed">
             <strong>Como funciona:</strong> As mensagens são disparadas automaticamente via Z-API quando o evento correspondente ocorre. 
-            As variáveis entre <code className="bg-muted px-1 rounded font-mono text-[10px]">{`{{variavel}}`}</code> são substituídas pelos dados reais no momento do envio.
+            As variáveis entre <code className="bg-muted px-1 rounded font-mono text-xs">{`{{variavel}}`}</code> são substituídas pelos dados reais no momento do envio.
             Use o toggle para ativar/desativar templates individualmente. Para configurar as credenciais Z-API, acesse as <strong>Configurações de WhatsApp</strong>.
           </p>
         </CardContent>

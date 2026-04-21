@@ -125,13 +125,13 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                           <div className="min-w-0">
                             <span className="font-semibold text-sm group-hover:text-primary transition-colors block truncate">{lead.nome || '—'}</span>
                             {lead.email && (
-                              <span className="text-[11px] text-muted-foreground/60 truncate block max-w-[180px]">{lead.email}</span>
+                              <span className="text-xs text-muted-foreground/60 truncate block max-w-[180px]">{lead.email}</span>
                             )}
                           </div>
                         </div>
                       </td>
                       <td role="cell" className="py-3 px-4">
-                        <Badge className={`${temp.bgColor} ${temp.color} border text-[10px] font-semibold`} variant="outline">
+                        <Badge className={`${temp.bgColor} ${temp.color} border text-xs font-semibold`} variant="outline">
                           {temp.emoji} {temp.label}
                         </Badge>
                       </td>
@@ -149,7 +149,7 @@ export function AdminLeadsTable({ leads, totalCount, page, pageSize, onPageChang
                       <td role="cell" className="py-3 px-4 hidden md:table-cell text-muted-foreground text-xs">{lead.modelo_recomendado || '—'}</td>
                       <td role="cell" className="py-3 px-4">
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          <Badge className={`${STATUS_COLORS[lead.status_lead] || ''} border text-[10px] font-semibold`} variant="secondary">
+                          <Badge className={`${STATUS_COLORS[lead.status_lead] || ''} border text-xs font-semibold`} variant="secondary">
                             {STATUS_LABELS[lead.status_lead] || lead.status_lead}
                           </Badge>
                           <SmartTagBadges lead={lead} max={1} />

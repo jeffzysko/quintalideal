@@ -169,7 +169,7 @@ export function FranchiseUsersSection({ franchiseId }: FranchiseUsersSectionProp
                           {u.full_name || u.email}
                         </p>
                         {u.is_owner && (
-                          <Badge variant="outline" className="text-[10px] gap-1 bg-amber-500/10 text-amber-700 border-amber-500/20">
+                          <Badge variant="outline" className="text-xs gap-1 bg-amber-500/10 text-amber-700 border-amber-500/20">
                             <Crown className="w-2.5 h-2.5" /> Principal
                           </Badge>
                         )}

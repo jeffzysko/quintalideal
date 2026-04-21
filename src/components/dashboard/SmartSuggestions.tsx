@@ -309,7 +309,7 @@ export function SmartSuggestions({ leads, followups, activities, basePath }: Sma
           <Lightbulb className="w-4 h-4 text-primary" />
         </div>
         <h3 className="text-sm font-bold text-foreground">Sugestões inteligentes</h3>
-        <Badge variant="secondary" className="text-[10px] font-bold px-1.5 py-0">{suggestions.length}</Badge>
+        <Badge variant="secondary" className="text-xs font-bold px-1.5 py-0">{suggestions.length}</Badge>
       </div>
 
       <div className="space-y-2">
@@ -353,12 +353,12 @@ export function SmartSuggestions({ leads, followups, activities, basePath }: Sma
                             {priorityBadge.label}
                           </Badge>
                           {suggestion.metric && (
-                            <span className="text-[10px] text-muted-foreground font-medium">{suggestion.metric}</span>
+                            <span className="text-xs text-muted-foreground font-medium">{suggestion.metric}</span>
                           )}
                         </div>
 
                         <p className="text-sm font-semibold text-foreground leading-snug">{suggestion.title}</p>
-                        <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">{suggestion.description}</p>
+                        <p className="text-xs text-muted-foreground mt-1 leading-relaxed">{suggestion.description}</p>
 
                         {/* Quick action buttons */}
                         <div className="flex items-center gap-2 mt-2.5">
@@ -444,7 +444,7 @@ export function SmartSuggestions({ leads, followups, activities, basePath }: Sma
                   <p className="text-sm font-semibold text-foreground truncate">{lead.nome || 'Sem nome'}</p>
                   <div className="flex items-center gap-2 mt-0.5">
                     {lead.cidade && (
-                      <span className="text-[11px] text-muted-foreground truncate">{lead.cidade}</span>
+                      <span className="text-xs text-muted-foreground truncate">{lead.cidade}</span>
                     )}
                     {lead.pontuacao_quintal != null && (
                       <Badge variant="secondary" className="text-[9px] px-1.5 py-0 font-bold">

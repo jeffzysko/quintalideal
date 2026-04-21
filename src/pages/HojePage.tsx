@@ -152,10 +152,10 @@ function FollowupRow({
 
       <div className="flex-1 min-w-0">
         <p className="text-[13px] font-semibold text-foreground truncate">{leadName}</p>
-        <p className={cn('text-[11px] font-medium mt-0.5', schedule.urgency === 'overdue' ? 'text-destructive' : 'text-muted-foreground')}>
+        <p className={cn('text-xs font-medium mt-0.5', schedule.urgency === 'overdue' ? 'text-destructive' : 'text-muted-foreground')}>
           {schedule.label}
         </p>
-        {parsed.text && <p className="text-[11px] text-muted-foreground/60 truncate mt-0.5">{parsed.text}</p>}
+        {parsed.text && <p className="text-xs text-muted-foreground/60 truncate mt-0.5">{parsed.text}</p>}
       </div>
 
       <ChevronRight className="w-4 h-4 text-muted-foreground/30 shrink-0" />
@@ -207,9 +207,9 @@ function LeadRow({
         <div className="flex-1 min-w-0">
           <p className="text-[13px] font-semibold text-foreground truncate">{lead.nome || '—'}</p>
           {isNew ? (
-            <p className="text-[11px] text-primary font-medium mt-0.5">✨ Novo · {waitLabel}</p>
+            <p className="text-xs text-primary font-medium mt-0.5">✨ Novo · {waitLabel}</p>
           ) : (
-            <p className="text-[11px] text-amber-600 font-semibold mt-0.5">⏱ {waitLabel} sem contato</p>
+            <p className="text-xs text-amber-600 font-semibold mt-0.5">⏱ {waitLabel} sem contato</p>
           )}
         </div>
         {lead.telefone && (
@@ -280,8 +280,8 @@ function HeroGreeting({
       {totalFollowupsToday > 0 && (
         <div className="relative">
           <div className="flex items-center justify-between mb-1.5">
-            <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">Progresso do dia</span>
-            <span className="text-[11px] font-bold text-foreground">
+            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Progresso do dia</span>
+            <span className="text-xs font-bold text-foreground">
               {completedFollowupsToday} de {totalFollowupsToday} follow-ups
             </span>
           </div>
@@ -324,7 +324,7 @@ function SectionHeader({ icon: Icon, title, count, variant = 'default', delay = 
       </div>
       <h3 className="text-sm font-bold text-foreground tracking-tight">{title}</h3>
       {count !== undefined && count > 0 && (
-        <Badge variant={variant === 'danger' ? 'destructive' : 'secondary'} className="text-[10px] font-bold px-1.5 py-0 rounded-full">
+        <Badge variant={variant === 'danger' ? 'destructive' : 'secondary'} className="text-xs font-bold px-1.5 py-0 rounded-full">
           {count}
         </Badge>
       )}
@@ -567,14 +567,14 @@ export default function HojePage() {
                             >
                               <div className="min-w-0">
                                 <p className="text-xs font-semibold text-foreground truncate">{item.label}</p>
-                                <p className="text-[11px] text-muted-foreground truncate">{item.sub}</p>
+                                <p className="text-xs text-muted-foreground truncate">{item.sub}</p>
                               </div>
                               <ChevronRight className="w-4 h-4 text-muted-foreground/50 shrink-0" />
                             </button>
                           ))}
                         </div>
                         {urgentItems.length > 2 && (
-                          <p className="text-[11px] text-amber-700 dark:text-amber-400 mt-2 font-medium">
+                          <p className="text-xs text-amber-700 dark:text-amber-400 mt-2 font-medium">
                             +{urgentItems.length - 2} outro{urgentItems.length - 2 > 1 ? 's' : ''}
                           </p>
                         )}

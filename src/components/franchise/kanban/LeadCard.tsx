@@ -1,8 +1,18 @@
-import { useState, memo } from 'react';
+import { useState, memo, useRef } from 'react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Button } from '@/components/ui/button';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import { classifyLead } from '@/lib/leadScoring';
 import { STATUS_LABELS, STATUS_CHART_COLORS } from '@/lib/lead-constants';
 import { supabase } from '@/lib/supabase';
@@ -20,6 +30,8 @@ import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
 import { COLUMNS, type LeadWithQuiz } from './types';
 import { LeadCardAssignee } from './LeadCardAssignee';
+
+const DESTRUCTIVE_STAGES = ['perdido', 'descartado'];
 
 const AVATAR_COLORS = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981', '#3b82f6', '#14b8a6', '#f97316'];
 function getInitials(nome: string | null) {
@@ -63,6 +75,8 @@ export const LeadCard = memo(function LeadCard({
   const [noteOpen, setNoteOpen] = useState(false);
   const [noteText, setNoteText] = useState('');
   const [savingNote, setSavingNote] = useState(false);
+  const [confirmStage, setConfirmStage] = useState<string | null>(null);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { data: leadTags = [] } = useQuery({
     queryKey: ['lead-card-tags', lead.id],
@@ -121,6 +135,29 @@ export const LeadCard = memo(function LeadCard({
     }
   };
 
+  const handleStageSelect = (newStage: string) => {
+    if (!onMoveStage) return;
+    if (DESTRUCTIVE_STAGES.includes(newStage)) {
+      setConfirmStage(newStage);
+      return;
+    }
+    onMoveStage(lead.id, newStage);
+  };
+
+  const handleTouchStart = () => {
+    if (overlay || !onToggleSelect) return;
+    longPressTimer.current = setTimeout(() => {
+      onToggleSelect(lead.id);
+    }, 500);
+  };
+
+  const clearLongPress = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
   const currentStatus = lead.status_lead;
   const borderAccent = temp.borderAccent;
 
@@ -128,6 +165,10 @@ export const LeadCard = memo(function LeadCard({
     <div
       ref={!overlay ? setNodeRef : undefined}
       style={style}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={clearLongPress}
+      onTouchMove={clearLongPress}
+      onTouchCancel={clearLongPress}
       className={cn(
         'group relative bg-card rounded-xl border-l-[3px] border border-border/40 shadow-sm transition-all cursor-pointer select-none',
         borderAccent,
@@ -141,7 +182,9 @@ export const LeadCard = memo(function LeadCard({
         <div
           className={cn(
             'absolute top-2.5 left-2.5 z-10 transition-opacity',
-            showCheckbox || isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+            showCheckbox || isSelected
+              ? 'opacity-100'
+              : 'opacity-0 sm:group-hover:opacity-100'
           )}
           onClick={(e) => e.stopPropagation()}
           onPointerDown={(e) => e.stopPropagation()}
@@ -149,6 +192,7 @@ export const LeadCard = memo(function LeadCard({
           <Checkbox
             checked={isSelected}
             onCheckedChange={() => onToggleSelect(lead.id)}
+            aria-label={`Selecionar lead ${lead.nome || ''}`}
             className="h-4 w-4 shadow-sm bg-background border-border"
           />
         </div>
@@ -187,7 +231,7 @@ export const LeadCard = memo(function LeadCard({
         <div className="flex items-center gap-1.5 mb-2 flex-wrap">
           <span
             className={cn(
-              'inline-flex items-center gap-1 text-[11px] font-semibold px-2 py-0.5 rounded-full border',
+              'inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full border',
               temp.bgColor,
               temp.color
             )}
@@ -195,19 +239,19 @@ export const LeadCard = memo(function LeadCard({
             {temp.emoji} {temp.label}
           </span>
           {lead.modelo_recomendado && (
-            <span className="text-[11px] text-muted-foreground truncate max-w-[110px]">
+            <span className="text-xs text-muted-foreground truncate max-w-[110px]">
               · {lead.modelo_recomendado}
             </span>
           )}
           {(lead as any).lead_origin === 'manual' && (
-            <span className="text-[10px] text-amber-600 font-medium" title="Lead manual">✏️</span>
+            <span className="text-xs text-amber-600 font-medium" title="Lead manual">✏️</span>
           )}
         </div>
 
         {/* Linha 3: Cidade + Último contato */}
         <div className="flex items-center justify-between gap-2">
           {lead.cidade ? (
-            <span className="text-[11px] text-muted-foreground flex items-center gap-1 truncate">
+            <span className="text-xs text-muted-foreground flex items-center gap-1 truncate">
               <MapPin className="w-3 h-3 shrink-0" />
               {lead.cidade}
             </span>
@@ -219,7 +263,7 @@ export const LeadCard = memo(function LeadCard({
             const days = (Date.now() - new Date(lastTs).getTime()) / (1000 * 60 * 60 * 24);
             const tone = days > 7 ? 'text-destructive' : days > 3 ? 'text-amber-500' : 'text-muted-foreground';
             return (
-              <span className={cn('text-[11px] flex items-center gap-1 shrink-0 font-medium', tone)}>
+              <span className={cn('text-xs flex items-center gap-1 shrink-0 font-medium', tone)}>
                 <Clock className="w-3 h-3" />
                 {formatDistanceToNow(new Date(lastTs), { locale: ptBR, addSuffix: true }).replace('há ', '')}
               </span>
@@ -229,7 +273,7 @@ export const LeadCard = memo(function LeadCard({
 
         {/* Franquia (visão admin) */}
         {franchiseName && (
-          <div className="mt-1.5 text-[10px] text-muted-foreground/80 truncate">
+          <div className="mt-1.5 text-xs text-muted-foreground/80 truncate">
             {franchiseName}
           </div>
         )}
@@ -240,7 +284,7 @@ export const LeadCard = memo(function LeadCard({
             {leadTags.slice(0, 3).map((tag: { name: string; color: string }, i: number) => (
               <span
                 key={i}
-                className="text-[10px] font-medium px-1.5 py-0.5 rounded-full"
+                className="text-xs font-medium px-1.5 py-0.5 rounded-full"
                 style={{ backgroundColor: tag.color + '25', color: tag.color }}
               >
                 {tag.name}
@@ -254,28 +298,34 @@ export const LeadCard = memo(function LeadCard({
       {!overlay && (
         <div className="flex items-center border-t border-border/25 divide-x divide-border/25">
           {lead.telefone && (
-            <button
+            <Button
+              variant="ghost"
+              size="sm"
+              type="button"
               onClick={(e) => {
                 e.stopPropagation();
                 window.open(`https://wa.me/${toWhatsAppPhone(lead.telefone!)}`, '_blank');
               }}
-              className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[11px] font-medium text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950/20 transition-colors"
+              className="flex-1 h-auto py-2 rounded-none text-xs font-medium gap-1.5 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-950/20"
               title="Enviar WhatsApp"
             >
               <MessageCircle className="w-3.5 h-3.5" />
               <span className="hidden sm:inline">Enviar</span>
-            </button>
+            </Button>
           )}
           <Popover open={noteOpen} onOpenChange={setNoteOpen}>
             <PopoverTrigger asChild>
-              <button
+              <Button
+                variant="ghost"
+                size="sm"
+                type="button"
                 onClick={(e) => e.stopPropagation()}
-                className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[11px] font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-colors"
+                className="flex-1 h-auto py-2 rounded-none text-xs font-medium gap-1.5 text-muted-foreground hover:bg-muted/40 hover:text-foreground"
                 title="Adicionar nota"
               >
                 <StickyNote className="w-3.5 h-3.5" />
                 <span className="hidden sm:inline">Nota</span>
-              </button>
+              </Button>
             </PopoverTrigger>
             <PopoverContent className="w-64 p-3" align="start" onClick={(e) => e.stopPropagation()}>
               <p className="text-xs font-semibold mb-2">Nota rápida</p>
@@ -299,14 +349,17 @@ export const LeadCard = memo(function LeadCard({
           {onMoveStage && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <button
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  type="button"
                   onClick={(e) => e.stopPropagation()}
-                  className="flex-1 flex items-center justify-center gap-1.5 py-2 text-[11px] font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground transition-colors"
+                  className="flex-1 h-auto py-2 rounded-none text-xs font-medium gap-1.5 text-muted-foreground hover:bg-muted/40 hover:text-foreground"
                   title="Mover etapa"
                 >
                   <ArrowRightLeft className="w-3.5 h-3.5" />
                   <span className="hidden sm:inline">Mover</span>
-                </button>
+                </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end" className="w-44">
                 {COLUMNS.filter((s) => s !== currentStatus).map((status) => (
@@ -314,7 +367,7 @@ export const LeadCard = memo(function LeadCard({
                     key={status}
                     onClick={(e) => {
                       e.stopPropagation();
-                      onMoveStage(lead.id, status);
+                      handleStageSelect(status);
                     }}
                     className="gap-2 text-xs cursor-pointer"
                   >
@@ -330,6 +383,39 @@ export const LeadCard = memo(function LeadCard({
           )}
         </div>
       )}
+
+      {/* Confirmação para estágios destrutivos */}
+      <AlertDialog
+        open={!!confirmStage}
+        onOpenChange={(o) => !o && setConfirmStage(null)}
+      >
+        <AlertDialogContent onClick={(e) => e.stopPropagation()}>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Mover para "{confirmStage ? STATUS_LABELS[confirmStage] || confirmStage : ''}"?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação marca o lead como{' '}
+              {confirmStage ? (STATUS_LABELS[confirmStage] || confirmStage).toLowerCase() : ''}.
+              Você pode desfazer movendo para outra etapa depois.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive hover:bg-destructive/90 text-destructive-foreground"
+              onClick={() => {
+                if (confirmStage && onMoveStage) {
+                  onMoveStage(lead.id, confirmStage);
+                }
+                setConfirmStage(null);
+              }}
+            >
+              Confirmar
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 });

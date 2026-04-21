@@ -66,7 +66,7 @@ export function ExplorerProgress({ currentStep, onBack, lang = 'pt' }: ExplorerP
                 <div
                   className={`flex items-center justify-center transition-all ${
                     isActive
-                      ? 'px-2.5 py-1 rounded-full bg-primary text-primary-foreground shadow-sm text-[10px] font-semibold gap-1'
+                      ? 'px-2.5 py-1 rounded-full bg-primary text-primary-foreground shadow-sm text-xs font-semibold gap-1'
                       : isDone
                         ? 'w-7 h-7 rounded-full bg-primary/15 text-sm'
                         : 'w-7 h-7 rounded-full text-sm opacity-40'
@@ -97,7 +97,7 @@ export function ExplorerProgress({ currentStep, onBack, lang = 'pt' }: ExplorerP
         key={`discovery-${currentStep}`}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="text-[11px] text-primary font-semibold mt-2 text-right"
+        className="text-xs text-primary font-semibold mt-2 text-right"
       >
         {t('explorer_discovery', lang).replace('{pct}', String(Math.round(progress)))}
       </motion.p>
@@ -108,7 +108,7 @@ export function ExplorerProgress({ currentStep, onBack, lang = 'pt' }: ExplorerP
           key={`reward-${currentStep}`}
           initial={{ opacity: 0, y: 5 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-[11px] text-emerald-600 dark:text-emerald-400 mt-1 text-right font-medium"
+          className="text-xs text-emerald-600 dark:text-emerald-400 mt-1 text-right font-medium"
         >
           {currentStep === 2 && (lang === 'es' ? '✨ Perfecto, ya entendemos tu espacio' : '✨ Perfeito, já entendemos seu espaço')}
           {currentStep === 3 && (lang === 'es' ? '💡 Genial, ahora conseguimos personalizar' : '💡 Ótimo, agora conseguimos personalizar')}

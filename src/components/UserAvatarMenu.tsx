@@ -62,7 +62,7 @@ export function UserAvatarMenu() {
         >
           <Avatar className="h-8 w-8 border-2 border-primary/20 ring-2 ring-primary/5 transition-all group-hover:ring-primary/15 group-hover:border-primary/40">
             {avatarUrl && <AvatarImage src={avatarUrl} alt="Avatar" />}
-            <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/5 text-primary text-[11px] font-bold">
+            <AvatarFallback className="bg-gradient-to-br from-primary/20 to-primary/5 text-primary text-xs font-bold">
               {initials}
             </AvatarFallback>
           </Avatar>
@@ -82,7 +82,7 @@ export function UserAvatarMenu() {
         <div className="px-3 py-2.5 rounded-xl bg-muted/40 mb-1">
           <p className="text-sm font-semibold text-foreground truncate">{email}</p>
           {roleLabel && (
-            <span className={`inline-flex items-center mt-0.5 text-[10px] font-semibold px-2 py-0.5 rounded-full border ${roleBadgeClass}`}>
+            <span className={`inline-flex items-center mt-0.5 text-xs font-semibold px-2 py-0.5 rounded-full border ${roleBadgeClass}`}>
               {roleLabel}
             </span>
           )}
@@ -100,7 +100,7 @@ export function UserAvatarMenu() {
                 key={opt.value}
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); setTheme(opt.value); }}
                 className={cn(
-                  'flex-1 flex items-center justify-center gap-1 rounded-md px-1.5 py-1 text-[10px] font-medium transition-all duration-200',
+                  'flex-1 flex items-center justify-center gap-1 rounded-md px-1.5 py-1 text-xs font-medium transition-all duration-200',
                   theme === opt.value
                     ? 'bg-background text-foreground shadow-sm border border-border/50'
                     : 'text-muted-foreground hover:text-foreground'

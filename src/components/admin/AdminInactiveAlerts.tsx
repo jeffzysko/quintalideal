@@ -108,7 +108,7 @@ export function AdminInactiveAlerts({
         <CardTitle className="text-base flex items-center gap-2">
           <AlertTriangle className="w-4 h-4 text-amber-500" />
           Alertas de Inatividade
-          <Badge variant="outline" className="text-[10px] ml-auto">
+          <Badge variant="outline" className="text-xs ml-auto">
             {alerts.length} alerta{alerts.length > 1 ? 's' : ''}
           </Badge>
         </CardTitle>
@@ -138,19 +138,19 @@ export function AdminInactiveAlerts({
                 <p className="text-sm font-semibold truncate">{alert.name}</p>
                 <div className="flex flex-wrap gap-2 mt-1.5">
                   {alert.accessSeverity !== 'ok' && (
-                    <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+                    <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                       <Clock className="w-3 h-3" />
                       {alert.accessDays === null ? 'Nunca acessou' : `${alert.accessDays}d sem acessar`}
                     </span>
                   )}
                   {alert.activitySeverity !== 'ok' && (
-                    <span className="inline-flex items-center gap-1 text-[11px] text-muted-foreground">
+                    <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
                       <Activity className="w-3 h-3" />
                       {alert.activityDays === null ? 'Sem atividade' : `${alert.activityDays}d sem movimentar leads`}
                     </span>
                   )}
                   {alert.stuckLeads > 0 && (
-                    <Badge variant="outline" className="text-[10px] border-amber-500/30 text-amber-600">
+                    <Badge variant="outline" className="text-xs border-amber-500/30 text-amber-600">
                       {alert.stuckLeads} lead{alert.stuckLeads > 1 ? 's' : ''} parado{alert.stuckLeads > 1 ? 's' : ''}
                     </Badge>
                   )}
@@ -158,7 +158,7 @@ export function AdminInactiveAlerts({
               </div>
               <Badge
                 variant={alert.overallSeverity === 'critical' ? 'destructive' : 'outline'}
-                className="text-[10px] shrink-0"
+                className="text-xs shrink-0"
               >
                 {alert.overallSeverity === 'critical' ? 'Crítico' : 'Atenção'}
               </Badge>

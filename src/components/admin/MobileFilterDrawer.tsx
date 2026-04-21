@@ -67,7 +67,7 @@ export function MobileFilterDrawer({
               <SlidersHorizontal className="w-4 h-4 text-primary" />
               Filtros
               {activeCount > 0 && (
-                <Badge variant="secondary" className="text-[10px] h-5 px-1.5 bg-primary/10 text-primary">
+                <Badge variant="secondary" className="text-xs h-5 px-1.5 bg-primary/10 text-primary">
                   {activeCount}
                 </Badge>
               )}

@@ -276,7 +276,7 @@ export function CSVLeadImport({ franchiseId, trigger, onSuccess }: CSVLeadImport
               <Upload className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
               <p className="text-sm font-medium text-foreground">Arraste seu CSV aqui</p>
               <p className="text-xs text-muted-foreground mt-1">ou clique para selecionar o arquivo</p>
-              <p className="text-[10px] text-muted-foreground mt-2">Máx. 500 leads · Arquivo .csv até 5MB</p>
+              <p className="text-xs text-muted-foreground mt-2">Máx. 500 leads · Arquivo .csv até 5MB</p>
               <input
                 ref={fileRef}
                 type="file"
@@ -293,12 +293,12 @@ export function CSVLeadImport({ franchiseId, trigger, onSuccess }: CSVLeadImport
               <p className="text-xs font-semibold text-foreground">Colunas aceitas:</p>
               <div className="flex flex-wrap gap-1.5">
                 {EXPECTED_HEADERS.map(h => (
-                  <Badge key={h} variant="secondary" className="text-[10px]">
+                  <Badge key={h} variant="secondary" className="text-xs">
                     {h}{(h === 'nome' || h === 'telefone') && ' *'}
                   </Badge>
                 ))}
               </div>
-              <p className="text-[10px] text-muted-foreground">* Campos obrigatórios. Separador: vírgula ou ponto-e-vírgula.</p>
+              <p className="text-xs text-muted-foreground">* Campos obrigatórios. Separador: vírgula ou ponto-e-vírgula.</p>
             </div>
 
             <Button variant="ghost" size="sm" className="w-full text-xs gap-2" onClick={downloadTemplate}>
@@ -347,7 +347,7 @@ export function CSVLeadImport({ franchiseId, trigger, onSuccess }: CSVLeadImport
                           {row.valid ? (
                             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                           ) : (
-                            <span className="text-destructive text-[10px]">{row.errors.join(', ')}</span>
+                            <span className="text-destructive text-xs">{row.errors.join(', ')}</span>
                           )}
                         </td>
                       </tr>

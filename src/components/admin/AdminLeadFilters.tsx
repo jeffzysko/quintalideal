@@ -70,7 +70,7 @@ export function AdminLeadFilters({
           >
             <SlidersHorizontal className="w-4 h-4" />
             {activeCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center">
+              <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary text-primary-foreground text-xs font-bold flex items-center justify-center">
                 {activeCount}
               </span>
             )}

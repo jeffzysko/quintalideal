@@ -35,7 +35,7 @@ export function NotificationToggleRow({ item, onToggleChannel }: Props) {
               {priority.label}
             </Badge>
           </div>
-          <p className="text-[10px] text-muted-foreground mt-0.5 leading-relaxed">
+          <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">
             {item.description}
           </p>
         </div>

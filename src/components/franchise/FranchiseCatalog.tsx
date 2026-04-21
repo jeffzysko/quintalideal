@@ -201,7 +201,7 @@ export function FranchiseCatalog({ franchiseId }: FranchiseCatalogProps) {
                   </div>
 
                   <div className="space-y-1">
-                    <Label className="text-[11px] text-muted-foreground">Preço base da marca</Label>
+                    <Label className="text-xs text-muted-foreground">Preço base da marca</Label>
                     <p
                       className={`text-xs ${hasOverride ? 'line-through text-muted-foreground' : 'text-foreground font-medium'}`}
                     >
@@ -235,7 +235,7 @@ export function FranchiseCatalog({ franchiseId }: FranchiseCatalogProps) {
                       <Label htmlFor={`active-${m.id}`} className="text-xs font-medium cursor-pointer">
                         Ativo na minha loja
                       </Label>
-                      <p className="text-[11px] text-muted-foreground">
+                      <p className="text-xs text-muted-foreground">
                         Se desativado, não aparece no cadastro de leads
                       </p>
                     </div>
