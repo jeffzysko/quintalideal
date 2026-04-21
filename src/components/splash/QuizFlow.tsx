@@ -84,13 +84,42 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
 
   useEffect(() => {
     trackEvent('landing_page_viewed', analyticsCtx);
-    supabase
-      .from('pool_models')
-      .select('nome_modelo, categoria_tamanho, tamanho, preco_min, preco_max, possui_prainha, possui_spa, profundidade, comprimento, largura, descricao')
-      .then(({ data }) => {
-        if (data) setAllModels(data as PoolModelData[]);
-      });
-  }, []);
+
+    const loadModels = async () => {
+      // Resolve which brand to filter by
+      let effectiveBrandId: string | undefined = brandId;
+
+      // Test mode (/explorar): allow ?brand=uuid override, else fallback to first active franchise's brand
+      if (isTestMode && !effectiveBrandId) {
+        if (testBrandIdParam) {
+          effectiveBrandId = testBrandIdParam;
+        } else {
+          const { data: firstFranchise } = await supabase
+            .from('franchises')
+            .select('brand_id')
+            .eq('ativa', true)
+            .not('brand_id', 'is', null)
+            .limit(1)
+            .maybeSingle();
+          effectiveBrandId = firstFranchise?.brand_id || undefined;
+        }
+      }
+
+      let query = supabase
+        .from('pool_models')
+        .select('nome_modelo, categoria_tamanho, tamanho, preco_min, preco_max, possui_prainha, possui_spa, profundidade, comprimento, largura, descricao')
+        .order('categoria_tamanho', { ascending: true });
+
+      if (effectiveBrandId) {
+        query = query.eq('brand_id', effectiveBrandId);
+      }
+
+      const { data } = await query;
+      if (data) setAllModels(data as PoolModelData[]);
+    };
+
+    loadModels();
+  }, [brandId, isTestMode, testBrandIdParam]);
 
   const answerKeys = ['espaco', 'moradia', 'uso', 'intencao', 'preferencia', 'orcamento', 'cidade'];
 
