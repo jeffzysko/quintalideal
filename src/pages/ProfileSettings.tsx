@@ -852,6 +852,11 @@ export default function ProfileSettings() {
               </TabsContent>
             )}
             {isFranchise && franchiseId && (
+              <TabsContent value="catalogo" className="mt-5 space-y-5">
+                <FranchiseCatalog franchiseId={franchiseId} />
+              </TabsContent>
+            )}
+            {isFranchise && franchiseId && (
               <TabsContent value="whatsapp" className="mt-5 space-y-5">
                 <WhatsAppInstanceConfig franchiseId={franchiseId} />
               </TabsContent>
