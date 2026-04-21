@@ -10,7 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff, Camera, MapPin, Shield, Puzzle, Bell, Workflow, Users, Clock, Globe, MessageSquare, Package } from 'lucide-react';
+import { Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff, Camera, MapPin, Shield, Puzzle, Bell, Workflow, Users, Clock, Globe, MessageSquare, Package, BellRing } from 'lucide-react';
 import { BackButton } from '@/components/BackButton';
 import { NotificationBell } from '@/components/NotificationBell';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
@@ -22,6 +22,8 @@ import { WhatsAppSettings } from '@/components/admin/WhatsAppSettings';
 import { AdminWhatsAppPlans } from '@/components/admin/AdminWhatsAppPlans';
 import { WhatsAppInstanceConfig } from '@/components/franchise/WhatsAppInstanceConfig';
 import { FranchiseCatalog } from '@/components/franchise/FranchiseCatalog';
+import { AdminEmailTemplates } from '@/components/admin/AdminEmailTemplates';
+import NotificationPreferences from '@/pages/NotificationPreferences';
 
 import { motion } from 'framer-motion';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -85,8 +87,11 @@ export default function ProfileSettings() {
     if (location.hash === '#integracoes') return 'integracoes';
     if (location.hash === '#franquia') return 'franquia';
     if (location.hash === '#notificacoes') return 'notificacoes';
+    if (location.hash === '#preferencias') return 'preferencias';
     if (location.hash === '#automacoes') return 'automacoes';
     if (location.hash === '#whatsapp') return 'whatsapp';
+    if (location.hash === '#emails') return 'emails';
+    if (location.hash === '#catalogo') return 'catalogo';
     return 'pessoal';
   };
 
@@ -508,6 +513,24 @@ export default function ProfileSettings() {
                   <span className="sm:hidden">Whats</span>
                 </TabsTrigger>
               )}
+              {isAdmin && (
+                <TabsTrigger
+                  value="emails"
+                  className="shrink-0 gap-1.5 rounded-lg text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-3 py-2.5 whitespace-nowrap active:scale-95"
+                >
+                  <Mail className="w-3.5 h-3.5 shrink-0" />
+                  <span className="hidden sm:inline">E-mails</span>
+                  <span className="sm:hidden">E-mails</span>
+                </TabsTrigger>
+              )}
+              <TabsTrigger
+                value="preferencias"
+                className="shrink-0 gap-1.5 rounded-lg text-xs font-medium transition-colors data-[state=active]:bg-background data-[state=active]:shadow-sm [@media(hover:hover)]:hover:bg-muted px-3 py-2.5 whitespace-nowrap active:scale-95"
+              >
+                <BellRing className="w-3.5 h-3.5 shrink-0" />
+                <span className="hidden sm:inline">Preferências</span>
+                <span className="sm:hidden">Pref.</span>
+              </TabsTrigger>
             </TabsList>
 
             {/* ──── TAB: PESSOAL ──── */}
@@ -861,6 +884,14 @@ export default function ProfileSettings() {
                 <WhatsAppInstanceConfig franchiseId={franchiseId} />
               </TabsContent>
             )}
+            {isAdmin && (
+              <TabsContent value="emails" className="mt-5 space-y-5">
+                <AdminEmailTemplates />
+              </TabsContent>
+            )}
+            <TabsContent value="preferencias" className="mt-5">
+              <NotificationPreferences />
+            </TabsContent>
           </Tabs>
         </motion.div>
       </div>

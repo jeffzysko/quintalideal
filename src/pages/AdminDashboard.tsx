@@ -3,7 +3,8 @@ import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-quer
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Globe, Kanban, CalendarClock, MessageCircle, FileText, ShieldAlert } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Globe, Kanban, CalendarClock, MessageCircle, FileText, ShieldAlert, Gauge, BarChart2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -49,6 +50,8 @@ const AdminLeadsReadOnly = lazy(() => import('@/components/admin/AdminLeadsReadO
 const AdminApplications = lazy(() => import('@/components/admin/AdminApplications').then(m => ({ default: m.AdminApplications })));
 const AdminErrorLogs = lazy(() => import('@/components/admin/AdminErrorLogs').then(m => ({ default: m.AdminErrorLogs })));
 const AdminCronJobs = lazy(() => import('@/components/admin/AdminCronJobs').then(m => ({ default: m.AdminCronJobs })));
+const PerformanceAuditPage = lazy(() => import('@/pages/PerformanceAudit'));
+const RelatorioCRMPage = lazy(() => import('@/pages/RelatorioCRM'));
 
 function TabFallback() {
   return (
@@ -447,7 +450,6 @@ export default function AdminDashboard() {
 
   const TABS = [
     { key: 'overview' as const, icon: BarChart3, label: 'Inteligência' },
-    { key: 'performance-qi' as const, icon: Target, label: 'Performance QI' },
     { key: 'analytics' as const, icon: Activity, label: 'Analytics' },
     { key: 'leads' as const, icon: Users, label: 'Leads' },
     ...(isSuperAdmin ? [
@@ -620,9 +622,42 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === 'analytics' && (
-          <Suspense fallback={<TabFallback />}>
-            <AdminAnalytics franchiseMap={franchiseMap} role={role} />
-          </Suspense>
+          <Tabs defaultValue="analytics" className="w-full">
+            <TabsList className="w-full h-auto rounded-xl bg-muted/50 border border-border/40 p-1 gap-0.5 overflow-x-auto scrollbar-hide flex flex-nowrap justify-start mb-4">
+              <TabsTrigger value="analytics" className="shrink-0 gap-1.5 rounded-lg text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm px-3 py-2.5 whitespace-nowrap">
+                <Activity className="w-3.5 h-3.5 shrink-0" /> Analytics
+              </TabsTrigger>
+              <TabsTrigger value="performance-qi" className="shrink-0 gap-1.5 rounded-lg text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm px-3 py-2.5 whitespace-nowrap">
+                <Target className="w-3.5 h-3.5 shrink-0" /> Performance QI
+              </TabsTrigger>
+              <TabsTrigger value="relatorios" className="shrink-0 gap-1.5 rounded-lg text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm px-3 py-2.5 whitespace-nowrap">
+                <BarChart2 className="w-3.5 h-3.5 shrink-0" /> Relatórios
+              </TabsTrigger>
+              <TabsTrigger value="audit" className="shrink-0 gap-1.5 rounded-lg text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm px-3 py-2.5 whitespace-nowrap">
+                <Gauge className="w-3.5 h-3.5 shrink-0" /> Performance Audit
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value="analytics">
+              <Suspense fallback={<TabFallback />}>
+                <AdminAnalytics franchiseMap={franchiseMap} role={role} />
+              </Suspense>
+            </TabsContent>
+            <TabsContent value="performance-qi">
+              <Suspense fallback={<TabFallback />}>
+                <PerformanceQI franchiseMap={franchiseMap} franchises={franchises as any} />
+              </Suspense>
+            </TabsContent>
+            <TabsContent value="relatorios">
+              <Suspense fallback={<TabFallback />}>
+                <RelatorioCRMPage />
+              </Suspense>
+            </TabsContent>
+            <TabsContent value="audit">
+              <Suspense fallback={<TabFallback />}>
+                <PerformanceAuditPage />
+              </Suspense>
+            </TabsContent>
+          </Tabs>
         )}
 
         {activeTab === 'performance-qi' && (
