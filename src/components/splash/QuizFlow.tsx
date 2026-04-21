@@ -54,9 +54,10 @@ function StepFallback() {
   );
 }
 
-export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseWhatsapp, brandName, brandLogoUrl, brandPrimaryColor, brandSecondaryColor, brandSlogan, isTestMode }: QuizFlowProps) {
+export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseWhatsapp, brandId, brandName, brandLogoUrl, brandPrimaryColor, brandSecondaryColor, brandSlogan, isTestMode }: QuizFlowProps) {
   const [searchParams] = useSearchParams();
   const referredBy = searchParams.get('ref') || '';
+  const testBrandIdParam = searchParams.get('brand') || undefined;
 
   const [lang, setLang] = useState<Lang>('pt');
   const [step, setStep] = useState<Step>('hero');
