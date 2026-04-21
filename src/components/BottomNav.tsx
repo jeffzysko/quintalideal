@@ -26,6 +26,7 @@ import {
   Inbox,
   AlertTriangle,
   MessageCircle,
+  DollarSign,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
@@ -51,7 +52,7 @@ const SUPER_ADMIN_MORE: NavItem[] = [
   { icon: Inbox, label: 'Candidaturas', path: '/admin?tab=candidaturas' },
   { icon: Star, label: 'Marcas', path: '/admin/marcas' },
   { icon: Users, label: 'Usuários', path: '/admin?tab=users' },
-  { icon: BarChart2, label: 'Relatórios', path: '/superadmin/receita' },
+  { icon: DollarSign, label: 'Faturamento', path: '/superadmin/receita' },
   { icon: Radar, label: 'Radar de Mercado', path: '/admin/radar' },
   { icon: Activity, label: 'Status do Sistema', path: '/superadmin/status' },
   { icon: AlertTriangle, label: 'Logs de Erro', path: '/admin?tab=errors' },
