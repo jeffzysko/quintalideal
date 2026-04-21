@@ -145,7 +145,6 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
     // Last step (city) — run recommendation engine
     const v2Input = normalizeQuizToV2(newAnswers);
     const result = recommendPoolsV2(v2Input, allModels, brandName);
-    const result = recommendPoolsV2(v2Input, allModels);
     setRecommendation(result);
 
     trackEvent('quiz_completed', {
@@ -339,8 +338,8 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
 
   const currentQuizQuestion = quizStep < quizQuestions.length ? quizQuestions[quizStep] : null;
 
-  // Inject images into preference step (step index 4 = preferencia)
-  const enrichedQuestion = currentQuizQuestion && quizStep === 4 ? {
+  // Inject images into preference step
+  const enrichedQuestion = currentQuizQuestion && quizStep === PREF_STEP_INDEX ? {
     ...currentQuizQuestion,
     options: currentQuizQuestion.options.map(opt => ({
       ...opt,
@@ -381,7 +380,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
             options={enrichedQuestion.options}
             onAnswer={handleQuizAnswer}
             explorerStep={quizStep + 1}
-            useImageLayout={quizStep === 4}
+            useImageLayout={quizStep === PREF_STEP_INDEX}
             onBack={() => {
               if (quizStep === 0) setStep('photos');
               else setQuizStep(prev => prev - 1);
