@@ -1,27 +1,101 @@
 import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
+import { LucideIcon } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+type SectionHeaderVariant = 'page' | 'section' | 'inline';
 
 interface SectionHeaderProps {
   title: string;
   subtitle?: string;
+  /**
+   * Lucide icon component (used by `section` variant).
+   * Pass the component reference directly, e.g. `icon={BarChart3}`.
+   */
+  icon?: LucideIcon;
+  /** Tailwind class for the icon background bubble (only `section` variant). */
+  iconBg?: string;
+  /** Right-side slot for actions (buttons, selectors, etc.). */
   rightSlot?: ReactNode;
+  /** Visual variant. Defaults to `page` (sticky-style glass card). */
+  variant?: SectionHeaderVariant;
+  className?: string;
 }
 
 /**
- * Cabeçalho contextual usado dentro de páginas com navegação interna por abas
- * (ex: AdminDashboard, FranchiseDashboard). Visualmente idêntico ao
- * `<PageHeader>`, exceto por não ter botão de voltar e não ser sticky
- * (a barra de abas da página já cumpre esse papel).
- *
- * Para páginas standalone (sem abas internas), use `<PageHeader>`.
+ * Unified section heading component with three variants:
+ * - `page`     → Glass-card header for tabbed pages (matches `<PageHeader>`).
+ * - `section`  → Icon + title block for inner sections of a page.
+ * - `inline`   → Compact title with bottom border for sub-sections.
  */
-export function SectionHeader({ title, subtitle, rightSlot }: SectionHeaderProps) {
+export function SectionHeader({
+  title,
+  subtitle,
+  icon: Icon,
+  iconBg = 'icon-bg-blue',
+  rightSlot,
+  variant = 'page',
+  className,
+}: SectionHeaderProps) {
+  if (variant === 'inline') {
+    return (
+      <div
+        className={cn(
+          'flex items-center justify-between border-b border-border/30 pb-3 mb-4',
+          className
+        )}
+      >
+        <div className="min-w-0">
+          <h3 className="text-sm font-semibold text-foreground">{title}</h3>
+          {subtitle && (
+            <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>
+          )}
+        </div>
+        {rightSlot && <div className="shrink-0 ml-3">{rightSlot}</div>}
+      </div>
+    );
+  }
+
+  if (variant === 'section') {
+    return (
+      <div
+        className={cn(
+          'flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4 sm:mb-5',
+          className
+        )}
+      >
+        <div className="flex items-center gap-2.5">
+          {Icon && (
+            <div
+              className={cn(
+                'w-9 h-9 rounded-xl flex items-center justify-center shrink-0',
+                iconBg
+              )}
+            >
+              <Icon className="w-[18px] h-[18px] text-primary" />
+            </div>
+          )}
+          <div>
+            <h3 className="text-sm sm:text-base font-bold text-foreground leading-tight">
+              {title}
+            </h3>
+            {subtitle && (
+              <p className="text-xs text-muted-foreground mt-0.5">{subtitle}</p>
+            )}
+          </div>
+        </div>
+        {rightSlot && <div className="flex items-center gap-2">{rightSlot}</div>}
+      </div>
+    );
+  }
+
+  // variant === 'page' → glass card (default)
   return (
     <motion.div
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className="relative mb-4"
+      className={cn('relative mb-4', className)}
     >
       <div className="relative px-4 md:px-6 pt-2.5">
         <header className="relative mx-auto max-w-7xl rounded-2xl overflow-hidden">
@@ -49,7 +123,6 @@ export function SectionHeader({ title, subtitle, rightSlot }: SectionHeaderProps
             }}
           >
             <div className="h-14 md:h-16 flex items-center justify-between px-4 md:px-6 gap-2">
-              {/* Title + subtitle */}
               <div className="flex-1 min-w-0">
                 <h1 className="text-sm md:text-base font-semibold tracking-tight text-foreground flex items-center gap-1.5">
                   <span className="truncate">{title}</span>
@@ -61,8 +134,9 @@ export function SectionHeader({ title, subtitle, rightSlot }: SectionHeaderProps
                 )}
               </div>
 
-              {/* Right slot */}
-              {rightSlot && <div className="shrink-0 flex items-center gap-2">{rightSlot}</div>}
+              {rightSlot && (
+                <div className="shrink-0 flex items-center gap-2">{rightSlot}</div>
+              )}
             </div>
           </div>
         </header>
