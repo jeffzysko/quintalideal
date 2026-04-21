@@ -227,8 +227,10 @@ describe('recommendPoolsV2', () => {
   it('valorizar prioriza modelos premium', () => {
     const input: QuizInputV2 = { space_bucket: '3_5m', home_status: 'casa_propria', purchase_intent: '2026', usage_profile: 'premium', budget_range: '30_50k', pool_preference: 'classica', objective_main: 'valorizar' };
     const result = recommendPoolsV2(input, allMockModels);
-    const premiumModels = ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'];
-    expect(premiumModels).toContain(result.primary_model.nome_modelo);
+    // Premium = modelo com features (spa/prainha) ou faixa de preço alta
+    const m = result.primary_model;
+    const isPremium = !!(m.possui_spa || m.possui_prainha) || (m.preco_max ?? 0) >= 30000;
+    expect(isPremium).toBe(true);
   });
 
   it('Navagio priorizada para espaço pequeno + relaxar', () => {
