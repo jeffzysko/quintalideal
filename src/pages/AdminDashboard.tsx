@@ -644,32 +644,74 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === 'leads' && !isSuperAdmin && (
-          <Suspense fallback={<TabFallback />}>
-            <AdminLeadsReadOnly franchiseMap={franchiseMap} franchises={franchises} />
-          </Suspense>
+          <>
+            <PageSectionHeader title="Leads" subtitle="Leads atribuídos à sua operação" />
+            <Suspense fallback={<TabFallback />}>
+              <AdminLeadsReadOnly franchiseMap={franchiseMap} franchises={franchises} />
+            </Suspense>
+          </>
         )}
 
         {activeTab === 'kanban' && (
-          <Suspense fallback={<TabFallback />}>
-            <KanbanBoard
-              leads={orgFilteredLeads as any}
-              franchiseId="admin"
-              basePath="/admin/lead"
-              franchiseMap={franchiseMap}
-            />
-          </Suspense>
+          <>
+            <PageSectionHeader title="Funil" subtitle="Pipeline visual de leads em andamento" />
+            <Suspense fallback={<TabFallback />}>
+              <KanbanBoard
+                leads={orgFilteredLeads as any}
+                franchiseId="admin"
+                basePath="/admin/lead"
+                franchiseMap={franchiseMap}
+              />
+            </Suspense>
+          </>
         )}
 
-        {activeTab === 'franchises' && <Suspense fallback={<TabFallback />}><AdminFranchiseManager /></Suspense>}
-        {activeTab === 'cities' && <Suspense fallback={<TabFallback />}><AdminCityManager /></Suspense>}
-        {activeTab === 'users' && <Suspense fallback={<TabFallback />}><AdminUserManager /></Suspense>}
-        {activeTab === 'emails' && <Suspense fallback={<TabFallback />}><AdminEmailTemplates /></Suspense>}
-        {activeTab === 'whatsapp' && <Suspense fallback={<TabFallback />}><AdminWhatsAppTemplates /></Suspense>}
-        {activeTab === 'candidaturas' && <Suspense fallback={<TabFallback />}><AdminApplications /></Suspense>}
-        {activeTab === 'errors' && <Suspense fallback={<TabFallback />}><AdminErrorLogs franchiseMap={franchiseMap} /></Suspense>}
+        {activeTab === 'franchises' && (
+          <>
+            <PageSectionHeader title="Franquias" subtitle="Gerencie todas as unidades" />
+            <Suspense fallback={<TabFallback />}><AdminFranchiseManager /></Suspense>
+          </>
+        )}
+        {activeTab === 'cities' && (
+          <>
+            <PageSectionHeader title="Territórios" subtitle="Cobertura por cidade e atribuição de leads" />
+            <Suspense fallback={<TabFallback />}><AdminCityManager /></Suspense>
+          </>
+        )}
+        {activeTab === 'users' && (
+          <>
+            <PageSectionHeader title="Usuários" subtitle="Contas e permissões" />
+            <Suspense fallback={<TabFallback />}><AdminUserManager /></Suspense>
+          </>
+        )}
+        {activeTab === 'emails' && (
+          <>
+            <PageSectionHeader title="E-mails" subtitle="Templates de comunicação transacional" />
+            <Suspense fallback={<TabFallback />}><AdminEmailTemplates /></Suspense>
+          </>
+        )}
+        {activeTab === 'whatsapp' && (
+          <>
+            <PageSectionHeader title="WhatsApp" subtitle="Gestão de instâncias e planos" />
+            <Suspense fallback={<TabFallback />}><AdminWhatsAppTemplates /></Suspense>
+          </>
+        )}
+        {activeTab === 'candidaturas' && (
+          <>
+            <PageSectionHeader title="Candidaturas" subtitle="Solicitações de novas franquias" />
+            <Suspense fallback={<TabFallback />}><AdminApplications /></Suspense>
+          </>
+        )}
+        {activeTab === 'errors' && (
+          <>
+            <PageSectionHeader title="Logs de Erro" subtitle="Monitoramento de falhas" />
+            <Suspense fallback={<TabFallback />}><AdminErrorLogs franchiseMap={franchiseMap} /></Suspense>
+          </>
+        )}
 
         {activeTab === 'franchise-view' && (
           <Suspense fallback={<TabFallback />}>
+            <PageSectionHeader title="Visão Franquia" subtitle="Inspecione o painel de uma unidade específica" />
             <div className="space-y-6">
               <Card className="border-border/50 shadow-sm">
                 <CardHeader>
