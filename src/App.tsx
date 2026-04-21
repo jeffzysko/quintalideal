@@ -138,80 +138,80 @@ function AppRouteTree() {
 
       {/* Authenticated pages with sidebar (desktop) / BottomNav (mobile) */}
       <Route element={<AuthenticatedLayout />}>
-        <Route path="/install" element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><InstallPage /></ProtectedRoute>} />
-        <Route path="/explorar" element={<ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}><ExplorarPage /></ProtectedRoute>} />
+        <Route path="/install" element={<ProtectedRoute allowedRoles={['franquia', 'super_admin']}><InstallPage /></ProtectedRoute>} />
+        <Route path="/explorar" element={<ProtectedRoute allowedRoles={['super_admin']}><ExplorarPage /></ProtectedRoute>} />
         <Route
           path="/suporte"
-          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><Suporte /></ProtectedRoute>}
+          element={<ProtectedRoute allowedRoles={['franquia', 'super_admin']}><Suporte /></ProtectedRoute>}
         />
         <Route
           path="/perfil"
-          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><ProfileSettings /></ProtectedRoute>}
+          element={<ProtectedRoute allowedRoles={['franquia', 'super_admin']}><ProfileSettings /></ProtectedRoute>}
         />
         <Route
           path="/notificacoes"
-          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><Notificacoes /></ProtectedRoute>}
+          element={<ProtectedRoute allowedRoles={['franquia', 'super_admin']}><Notificacoes /></ProtectedRoute>}
         />
         <Route
           path="/hoje"
-          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><HojePage /></ProtectedRoute>}
+          element={<ProtectedRoute allowedRoles={['franquia', 'super_admin']}><HojePage /></ProtectedRoute>}
         />
         <Route
           path="/agenda"
-          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><AgendaPage /></ProtectedRoute>}
+          element={<ProtectedRoute allowedRoles={['franquia', 'super_admin']}><AgendaPage /></ProtectedRoute>}
         />
         <Route
           path="/notificacoes/preferencias"
-          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><NotificationPreferences /></ProtectedRoute>}
+          element={<ProtectedRoute allowedRoles={['franquia', 'super_admin']}><NotificationPreferences /></ProtectedRoute>}
         />
         <Route path="/painel" element={<PainelRouter />} />
         <Route
           path="/franquia"
-          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><FranchiseDashboard /></ProtectedRoute>}
+          element={<ProtectedRoute allowedRoles={['franquia', 'super_admin']}><FranchiseDashboard /></ProtectedRoute>}
         />
         <Route
           path="/planos"
-          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><PlanosFranquia /></ProtectedRoute>}
+          element={<ProtectedRoute allowedRoles={['franquia', 'super_admin']}><PlanosFranquia /></ProtectedRoute>}
         />
         <Route
           path="/propostas"
-          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><ProposalsList /></ProtectedRoute>}
+          element={<ProtectedRoute allowedRoles={['franquia', 'super_admin']}><ProposalsList /></ProtectedRoute>}
         />
         <Route
           path="/propostas/nova"
-          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><NewProposal /></ProtectedRoute>}
+          element={<ProtectedRoute allowedRoles={['franquia', 'super_admin']}><NewProposal /></ProtectedRoute>}
         />
         <Route
           path="/propostas/:id"
-          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><ProposalDetail /></ProtectedRoute>}
+          element={<ProtectedRoute allowedRoles={['franquia', 'super_admin']}><ProposalDetail /></ProtectedRoute>}
         />
         <Route
           path="/catalogo"
-          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><CatalogoPiscinas /></ProtectedRoute>}
+          element={<ProtectedRoute allowedRoles={['franquia', 'super_admin']}><CatalogoPiscinas /></ProtectedRoute>}
         />
         <Route
           path="/relatorio-crm"
-          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><RelatorioCRM /></ProtectedRoute>}
+          element={<ProtectedRoute allowedRoles={['franquia', 'super_admin']}><RelatorioCRM /></ProtectedRoute>}
         />
         <Route
           path="/painel/lead/:id"
-          element={<ProtectedRoute allowedRoles={['franquia', 'admin_fabrica', 'super_admin']}><LeadDetail /></ProtectedRoute>}
+          element={<ProtectedRoute allowedRoles={['franquia', 'super_admin']}><LeadDetail /></ProtectedRoute>}
         />
         <Route
           path="/admin"
-          element={<ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}><AdminDashboard /></ProtectedRoute>}
+          element={<ProtectedRoute allowedRoles={['super_admin']}><AdminDashboard /></ProtectedRoute>}
         />
         <Route
           path="/admin/radar"
-          element={<ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}><RadarMercado /></ProtectedRoute>}
+          element={<ProtectedRoute allowedRoles={['super_admin']}><RadarMercado /></ProtectedRoute>}
         />
         <Route
           path="/admin/lead/:id"
-          element={<ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}><LeadDetail /></ProtectedRoute>}
+          element={<ProtectedRoute allowedRoles={['super_admin']}><LeadDetail /></ProtectedRoute>}
         />
         <Route
           path="/admin/performance"
-          element={<ProtectedRoute allowedRoles={['admin_fabrica', 'super_admin']}><PerformanceAudit /></ProtectedRoute>}
+          element={<ProtectedRoute allowedRoles={['super_admin']}><PerformanceAudit /></ProtectedRoute>}
         />
         <Route
           path="/superadmin/receita"

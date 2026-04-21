@@ -135,7 +135,7 @@ export function UserAvatarMenu() {
           </DropdownMenuItem>
         )}
 
-        {(role === 'franquia' || role === 'admin_fabrica' || role === 'super_admin') && (
+        {(role === 'franquia' || role === 'super_admin') && (
           <DropdownMenuItem onClick={() => go('/perfil#integracoes')} className="cursor-pointer rounded-lg px-3 py-2 text-sm gap-2.5">
             <Webhook className="w-4 h-4 text-muted-foreground" />
             Integrações

@@ -57,7 +57,7 @@ export default function ProfileSettings() {
   const [formErrors, setFormErrors] = useState<Record<string, string>>({});
 
   const isFranchise = role === 'franquia' && !!franchiseId;
-  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const isAdmin = role === 'super_admin';
   
   // For admins, use selected franchise; for franchise users, use their own
   const effectiveFranchiseId = isAdmin ? selectedFranchiseId : franchiseId;

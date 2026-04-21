@@ -94,7 +94,7 @@ export default function NewProposal() {
   const [searchParams] = useSearchParams();
   const editId = searchParams.get('edit');
   const isMobile = useIsMobile();
-  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const isAdmin = role === 'super_admin';
   const { hasAccess: hasOrcamentoAccess, loading: orcamentoLoading } = useOrcamentoAccess();
   // For admins without a franchise, allow selecting one
   const [selectedFranchiseId, setSelectedFranchiseId] = useState<string | null>(null);

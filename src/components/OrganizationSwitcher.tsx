@@ -31,7 +31,7 @@ export function OrganizationSwitcher({ activeFranchiseId, onSwitch, compact }: O
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
 
-  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const isAdmin = role === 'super_admin';
 
   useEffect(() => {
     if (!isAdmin) return;

@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase';
 
 export function useOrcamentoAccess() {
   const { franchiseId, role } = useAuth();
-  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const isAdmin = role === 'super_admin';
 
   const { data, isLoading } = useQuery({
     queryKey: ['orcamento-access', franchiseId],

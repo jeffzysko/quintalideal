@@ -52,7 +52,7 @@ Deno.serve(async (req) => {
       .from("user_roles")
       .select("role")
       .eq("user_id", user.id)
-      .in("role", ["admin_fabrica", "super_admin", "franquia"])
+      .in("role", ["super_admin", "franquia"])
       .maybeSingle();
 
     if (!roleData) {
@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    const isAdmin = roleData.role === "admin_fabrica" || roleData.role === "super_admin";
+    const isAdmin = roleData.role === "super_admin";
 
     const body = await req.json();
     const { action, franchiseId } = body;

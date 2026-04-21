@@ -15,7 +15,7 @@ interface AuthContextType {
 
 type AppRole = Enums<'app_role'>;
 
-const ROLE_PRIORITY: AppRole[] = ['super_admin', 'admin_fabrica', 'franquia'];
+const ROLE_PRIORITY: AppRole[] = ['super_admin', 'franquia'];
 
 const resolvePrimaryRole = (roles: AppRole[]): AppRole | null => {
   return ROLE_PRIORITY.find(role => roles.includes(role)) ?? roles[0] ?? null;

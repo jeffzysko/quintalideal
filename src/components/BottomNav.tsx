@@ -13,7 +13,7 @@ interface NavItem {
 }
 
 function getNavForRole(role: string | null): NavItem[] {
-  if (role === 'admin_fabrica' || role === 'super_admin') {
+  if (role === 'super_admin') {
     return [
       { icon: Home, label: 'Inicio', path: '/hoje' },
       { icon: LayoutDashboard, label: 'Painel', path: '/admin', matchPaths: ['/admin'] },

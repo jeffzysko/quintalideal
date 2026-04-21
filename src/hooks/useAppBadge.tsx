@@ -8,7 +8,7 @@ import { useAuth } from '@/hooks/useAuth';
  */
 export function useAppBadge() {
   const { user, franchiseId, role } = useAuth();
-  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const isAdmin = role === 'super_admin';
 
   const updateBadge = useCallback(async () => {
     if (!user || !('setAppBadge' in navigator)) return;

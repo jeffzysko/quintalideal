@@ -52,7 +52,7 @@ interface FollowupRow {
 export default function AgendaPage() {
   const navigate = useNavigate();
   const { role, franchiseId, loading: authLoading } = useAuth();
-  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const isAdmin = role === 'super_admin';
   const basePath = isAdmin ? '/admin/lead' : '/painel/lead';
   const queryClient = useQueryClient();
   const isMobile = useIsMobile();

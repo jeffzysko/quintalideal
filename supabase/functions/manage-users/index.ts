@@ -101,7 +101,7 @@ Deno.serve(async (req) => {
         .from("user_roles")
         .select("role")
         .eq("user_id", callerUser.id)
-        .in("role", ["admin_fabrica", "franquia", "super_admin"])
+        .in("role", ["franquia", "super_admin"])
         .maybeSingle();
 
       if (!callerRole) {
@@ -314,7 +314,7 @@ Deno.serve(async (req) => {
       .from("user_roles")
       .select("role")
       .eq("user_id", callerUser.id)
-      .in("role", ["admin_fabrica", "super_admin"]);
+      .in("role", ["super_admin"]);
 
     if (!roleChecks || roleChecks.length === 0) {
       return new Response(JSON.stringify({ error: "Apenas administradores podem gerenciar usuários" }), {

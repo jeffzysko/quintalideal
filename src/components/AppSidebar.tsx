@@ -156,7 +156,7 @@ export function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const isAdmin = role === 'admin_fabrica' || role === 'super_admin';
+  const isAdmin = role === 'super_admin';
   const isSuperAdmin = role === 'super_admin';
   const showNewBadges = useState(() => shouldShowNewBadges())[0];
 
