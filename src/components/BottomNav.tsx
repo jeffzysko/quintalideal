@@ -22,6 +22,10 @@ import {
   Bell,
   Radar,
   Activity,
+  Eye,
+  Inbox,
+  AlertTriangle,
+  MessageCircle,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
@@ -38,15 +42,20 @@ const SUPER_ADMIN_PRIMARY: NavItem[] = [
   { icon: LayoutDashboard, label: 'Painel', path: '/admin', matchPaths: ['/admin'] },
   { icon: Building2, label: 'Franquias', path: '/admin?tab=franchises' },
   { icon: Plus, label: '', path: '/propostas/nova', isAction: true },
-  { icon: Star, label: 'Marcas', path: '/admin/marcas', matchPaths: ['/admin/marcas'] },
+  { icon: Eye, label: 'Visão', path: '/admin?tab=inspect' },
 ];
 
 const SUPER_ADMIN_MORE: NavItem[] = [
   { icon: Sun, label: 'Início', path: '/hoje' },
+  { icon: Kanban, label: 'Funil Geral', path: '/admin?tab=kanban' },
+  { icon: Inbox, label: 'Aplicações', path: '/admin?tab=applications' },
+  { icon: Star, label: 'Marcas', path: '/admin/marcas' },
   { icon: Users, label: 'Usuários', path: '/admin?tab=users' },
   { icon: BarChart2, label: 'Relatórios', path: '/superadmin/receita' },
   { icon: Radar, label: 'Radar de Mercado', path: '/admin/radar' },
   { icon: Activity, label: 'Status do Sistema', path: '/superadmin/status' },
+  { icon: AlertTriangle, label: 'Logs de Erro', path: '/admin?tab=errors' },
+  { icon: MessageCircle, label: 'Planos WhatsApp', path: '/admin?tab=whatsapp-plans' },
   { icon: CalendarDays, label: 'Agenda', path: '/agenda' },
   { icon: Bell, label: 'Notificações', path: '/notificacoes' },
   { icon: Settings, label: 'Configurações', path: '/perfil' },
