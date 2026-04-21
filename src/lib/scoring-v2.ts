@@ -7,7 +7,8 @@
 
 export interface QuizInputV2 {
   space_bucket: 'ate_3m' | '3_5m' | '5_7m' | '7m_plus';
-  home_status: 'casa_propria' | 'construindo' | 'planejando';
+  /** @deprecated Removed from quiz. Optional; default 'casa_propria' when absent. */
+  home_status?: 'casa_propria' | 'construindo' | 'planejando';
   purchase_intent: '2026' | '2026_2027' | 'pesquisando';
   usage_profile: 'casal' | 'familia_pequena' | 'familia_grande' | 'amigos' | 'premium';
   budget_range: 'ate_18k' | '18_30k' | '30_50k';
@@ -80,9 +81,6 @@ export function normalizeQuizToV2(answers: Record<string, string>): QuizInputV2 
   const spaceMap: Record<string, QuizInputV2['space_bucket']> = {
     'ate-3': 'ate_3m', '3-5': '3_5m', '5-7': '5_7m', 'mais-7': '7m_plus',
   };
-  const homeMap: Record<string, QuizInputV2['home_status']> = {
-    'minha': 'casa_propria', 'construindo': 'construindo', 'planejando': 'planejando',
-  };
   const intentMap: Record<string, QuizInputV2['purchase_intent']> = {
     '2026': '2026', '2026-2027': '2026_2027', 'pesquisando': 'pesquisando',
   };
@@ -106,7 +104,6 @@ export function normalizeQuizToV2(answers: Record<string, string>): QuizInputV2 
 
   return {
     space_bucket: spaceMap[answers.espaco] || 'ate_3m',
-    home_status: homeMap[answers.moradia] || 'casa_propria',
     purchase_intent: intentMap[answers.intencao] || 'pesquisando',
     usage_profile: usoToProfile[usoAnswer] || 'casal',
     budget_range: budgetMap[answers.orcamento] || 'ate_18k',
@@ -629,11 +626,6 @@ export function calculateLegacyScore(input: QuizInputV2): number {
     case '3_5m': score += 18; break;
     case 'ate_3m': score += 10; break;
   }
-  switch (input.home_status) {
-    case 'casa_propria': score += 15; break;
-    case 'construindo': score += 11; break;
-    case 'planejando': score += 6; break;
-  }
   switch (input.purchase_intent) {
     case '2026': score += 15; break;
     case '2026_2027': score += 9; break;
@@ -651,7 +643,9 @@ export function calculateLegacyScore(input: QuizInputV2): number {
     case '18_30k': score += 12; break;
     case 'ate_18k': score += 5; break;
   }
-  return score;
+  // Normalize to 0-100 (max possible without moradia: 35+15+15+20 = 85)
+  // Scale up so a perfect quiz still reads ~100%.
+  return Math.min(100, Math.round((score / 85) * 100));
 }
 
 // ── Main Recommendation Function ──
