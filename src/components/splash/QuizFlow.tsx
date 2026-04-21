@@ -37,6 +37,12 @@ interface QuizFlowProps {
   franchiseName?: string;
   franchiseId?: string;
   franchiseWhatsapp?: string;
+  brandId?: string;
+  brandName?: string;
+  brandLogoUrl?: string;
+  brandPrimaryColor?: string;
+  brandSecondaryColor?: string;
+  brandSlogan?: string;
   isTestMode?: boolean;
 }
 
@@ -48,7 +54,7 @@ function StepFallback() {
   );
 }
 
-export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseWhatsapp, isTestMode }: QuizFlowProps) {
+export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseWhatsapp, brandName, brandLogoUrl, brandPrimaryColor, brandSecondaryColor, brandSlogan, isTestMode }: QuizFlowProps) {
   const [searchParams] = useSearchParams();
   const referredBy = searchParams.get('ref') || '';
 
@@ -318,6 +324,11 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
           franchiseSlug={franchiseSlug}
           lang={lang}
           onLangChange={setLang}
+          brandName={brandName}
+          brandLogoUrl={brandLogoUrl}
+          brandPrimaryColor={brandPrimaryColor}
+          brandSecondaryColor={brandSecondaryColor}
+          brandSlogan={brandSlogan}
         />
       )}
       <Suspense fallback={<StepFallback />}>
@@ -411,6 +422,9 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
               },
             }))}
             lang={lang}
+            brandName={brandName}
+            brandLogoUrl={brandLogoUrl}
+            brandPrimaryColor={brandPrimaryColor}
           />
         )}
       </Suspense>

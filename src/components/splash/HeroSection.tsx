@@ -11,10 +11,52 @@ interface HeroSectionProps {
   franchiseSlug?: string;
   lang: Lang;
   onLangChange: (lang: Lang) => void;
+  brandName?: string;
+  brandLogoUrl?: string;
+  brandPrimaryColor?: string;
+  brandSecondaryColor?: string;
+  brandSlogan?: string;
 }
 
-export function HeroSection({ onStart, franchiseName, franchiseSlug, lang, onLangChange }: HeroSectionProps) {
+function hexToRgba(hex: string, alpha: number): string {
+  const cleaned = hex.replace('#', '').trim();
+  if (cleaned.length !== 6 && cleaned.length !== 3) return `rgba(8,20,40,${alpha})`;
+  const full = cleaned.length === 3
+    ? cleaned.split('').map(c => c + c).join('')
+    : cleaned;
+  const r = parseInt(full.slice(0, 2), 16);
+  const g = parseInt(full.slice(2, 4), 16);
+  const b = parseInt(full.slice(4, 6), 16);
+  if ([r, g, b].some(n => Number.isNaN(n))) return `rgba(8,20,40,${alpha})`;
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+export function HeroSection({
+  onStart,
+  franchiseName,
+  franchiseSlug,
+  lang,
+  onLangChange,
+  brandName,
+  brandLogoUrl,
+  brandPrimaryColor,
+  brandSecondaryColor,
+  brandSlogan,
+}: HeroSectionProps) {
   const showLangSwitch = franchiseSlug ? UY_ENABLED_SLUGS.has(franchiseSlug) : false;
+
+  // Build branded gradient when brand colors are provided; otherwise keep the dark default.
+  const useBrandGradient = !!(brandPrimaryColor && brandSecondaryColor);
+  const overlayBackground = useBrandGradient
+    ? `linear-gradient(180deg, ${hexToRgba(brandPrimaryColor!, 0.55)} 0%, ${hexToRgba(brandPrimaryColor!, 0.4)} 30%, ${hexToRgba(brandSecondaryColor!, 0.7)} 60%, ${hexToRgba(brandSecondaryColor!, 0.95)} 100%)`
+    : 'linear-gradient(180deg, rgba(8,20,40,0.4) 0%, rgba(8,20,40,0.2) 30%, rgba(8,20,40,0.5) 60%, rgba(8,20,40,0.92) 100%)';
+
+  const ctaStyle = brandPrimaryColor
+    ? {
+        background: `linear-gradient(135deg, ${brandPrimaryColor}, ${brandSecondaryColor || brandPrimaryColor})`,
+        boxShadow: `0 10px 30px -8px ${hexToRgba(brandPrimaryColor, 0.55)}`,
+      }
+    : undefined;
 
   return (
     <LazyMotion features={domAnimation}>
@@ -22,9 +64,7 @@ export function HeroSection({ onStart, franchiseName, franchiseSlug, lang, onLan
         {/* Background */}
         <div className="absolute inset-0">
           <img src={heroPool} alt="" className="w-full h-full object-cover scale-105" loading="eager" fetchPriority="high" decoding="async" />
-          <div className="absolute inset-0" style={{
-            background: 'linear-gradient(180deg, rgba(8,20,40,0.4) 0%, rgba(8,20,40,0.2) 30%, rgba(8,20,40,0.5) 60%, rgba(8,20,40,0.92) 100%)'
-          }} />
+          <div className="absolute inset-0" style={{ background: overlayBackground }} />
         </div>
 
         {/* Language toggle */}
@@ -57,16 +97,45 @@ export function HeroSection({ onStart, franchiseName, franchiseSlug, lang, onLan
 
         {/* Content */}
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-5 pb-10 sm:py-10 max-w-lg mx-auto w-full" style={{ marginTop: '-5vh' }}>
-          <m.img
-            src={logoQuintalIdeal}
-            alt="Quintal Ideal"
-            initial={{ opacity: 0, scale: 0.85 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="mx-auto mb-5 sm:mb-6 w-36 sm:w-44 md:w-52 h-auto drop-shadow-2xl brightness-0 invert"
-          />
+          {brandLogoUrl ? (
+            <m.img
+              src={brandLogoUrl}
+              alt={brandName || 'Marca'}
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="mx-auto mb-5 sm:mb-6 max-h-16 sm:max-h-20 md:max-h-24 w-auto drop-shadow-2xl"
+            />
+          ) : brandName ? (
+            <m.h2
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="mx-auto mb-5 sm:mb-6 text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight drop-shadow-2xl"
+            >
+              {brandName}
+            </m.h2>
+          ) : (
+            <m.img
+              src={logoQuintalIdeal}
+              alt="Quintal Ideal"
+              initial={{ opacity: 0, scale: 0.85 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+              className="mx-auto mb-5 sm:mb-6 w-36 sm:w-44 md:w-52 h-auto drop-shadow-2xl brightness-0 invert"
+            />
+          )}
 
-          {franchiseName && (
+          {brandSlogan ? (
+            <m.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="text-[11px] sm:text-xs font-semibold uppercase tracking-[0.25em] mb-3 sm:mb-4 text-white/70 text-center"
+            >
+              {brandSlogan}
+            </m.p>
+          ) : franchiseName && (
             <m.p
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -108,7 +177,10 @@ export function HeroSection({ onStart, franchiseName, franchiseSlug, lang, onLan
             <Button
               onClick={onStart}
               size="lg"
-              className="text-[15px] px-8 py-7 rounded-2xl font-bold gap-3 w-full gradient-blue glow-blue hover:glow-blue-strong hover:scale-[1.02] active:scale-[0.98] transition-all duration-300"
+              style={ctaStyle}
+              className={`text-[15px] px-8 py-7 rounded-2xl font-bold gap-3 w-full text-white hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 ${
+                ctaStyle ? '' : 'gradient-blue glow-blue hover:glow-blue-strong'
+              }`}
             >
               {t('hero_cta', lang)}
               <m.span
