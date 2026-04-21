@@ -28,7 +28,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/useAuth';
 import { cn } from '@/lib/utils';
-import { COLUMNS, type LeadWithQuiz } from './types';
+import { COLUMNS, getActivityCount, type LeadWithQuiz } from './types';
 import { LeadCardAssignee } from './LeadCardAssignee';
 import { LeadAvatar } from '@/components/lead/LeadAvatar';
 
