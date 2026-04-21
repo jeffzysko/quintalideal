@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { PageHeader } from '@/components/PageHeader';
 import { PageTransition } from '@/components/PageTransition';
 import { PullToRefresh } from '@/components/PullToRefresh';
-import { BackButton } from '@/components/BackButton';
+
 import { NotificationBell } from '@/components/NotificationBell';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -49,7 +49,7 @@ export default function ProposalsList() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const isAdmin = role === 'super_admin';
-  const basePath = isAdmin ? '/admin' : '/franquia';
+  
   const { hasAccess: hasOrcamentoAccess, loading: orcamentoLoading } = useOrcamentoAccess();
   const canQuery = !!franchiseId || isAdmin;
 

@@ -6,8 +6,6 @@ import { useNotificationPreferences } from '@/hooks/useNotificationPreferences';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
 import { PageHeader } from '@/components/PageHeader';
-import { UserAvatarMenu } from '@/components/UserAvatarMenu';
-import { NotificationBell } from '@/components/NotificationBell';
 import { PushPermissionCard } from '@/components/notifications/PushPermissionCard';
 import { TestPushButton } from '@/components/notifications/TestPushButton';
 import { NotificationSectionCard } from '@/components/notifications/NotificationSectionCard';

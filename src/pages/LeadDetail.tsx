@@ -10,7 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { MessageCircle, Phone, Mail, MapPin, Droplets, Camera, ClipboardList, ClipboardCheck, Settings2, X, ChevronDown, Package, FileText, HelpCircle, Plus, TrendingUp } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
-import { BackButton } from '@/components/BackButton';
+
 import { PageHeader } from '@/components/PageHeader';
 import { NotificationBell } from '@/components/NotificationBell';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';

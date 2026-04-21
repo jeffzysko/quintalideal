@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { PageHeader } from '@/components/PageHeader';
-import { BackButton } from '@/components/BackButton';
+
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 
 import { useIsMobile } from '@/hooks/use-mobile';
