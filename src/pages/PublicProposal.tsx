@@ -565,6 +565,11 @@ export default function PublicProposal() {
           )}
 
           <TrustBadges />
+          {brand?.proposal_footer && brand.proposal_footer.trim() && (
+            <div className="text-center text-xs text-muted-foreground/80 leading-relaxed whitespace-pre-wrap px-4 pt-2">
+              {brand.proposal_footer}
+            </div>
+          )}
           <VerificationFooter proposal={proposal} />
         </main>
 
