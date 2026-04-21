@@ -29,12 +29,12 @@ interface Franchise {
 }
 
 const ROLE_LABELS: Record<string, string> = {
-  admin_fabrica: 'Admin Fábrica',
+  super_admin: 'Super Admin',
   franquia: 'Franquia',
 };
 
 const ROLE_COLORS: Record<string, string> = {
-  admin_fabrica: 'bg-primary/10 text-primary border-primary/20',
+  super_admin: 'bg-primary/10 text-primary border-primary/20',
   franquia: 'bg-violet-500/10 text-violet-700 border-violet-500/20',
 };
 
@@ -208,7 +208,7 @@ export function AdminUserManager() {
   }
 
   async function handleResendAll() {
-    const nonAdminUsers = users.filter(u => !u.roles.includes('admin_fabrica'));
+    const nonAdminUsers = users.filter(u => !u.roles.includes('super_admin'));
     if (nonAdminUsers.length === 0) {
       toast.info('Nenhum usuário para reenviar.');
       return;
@@ -305,7 +305,7 @@ export function AdminUserManager() {
                       <TableCell className="text-muted-foreground text-sm">{user.email}</TableCell>
                       <TableCell>
                         {user.roles.map((r) => {
-                          const Icon = r === 'admin_fabrica' ? Shield : r === 'franquia' ? Building2 : Eye;
+                          const Icon = r === 'super_admin' ? Shield : r === 'franquia' ? Building2 : Eye;
                           return (
                             <Badge key={r} variant="outline" className={`text-xs gap-1 ${ROLE_COLORS[r] || ''}`}>
                               <Icon className="w-3 h-3" />
@@ -396,7 +396,6 @@ export function AdminUserManager() {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="admin_fabrica">Admin Fábrica</SelectItem>
                   <SelectItem value="franquia">Franquia</SelectItem>
                 </SelectContent>
               </Select>
@@ -454,7 +453,7 @@ export function AdminUserManager() {
           <AlertDialogHeader>
             <AlertDialogTitle>Reenviar Convites para Todos</AlertDialogTitle>
             <AlertDialogDescription>
-              Essa ação enviará um e-mail de convite para <strong>todos os usuários não-admin</strong> ({users.filter(u => !u.roles.includes('admin_fabrica') && !u.roles.includes('super_admin')).length} usuário(s)). Deseja continuar?
+              Essa ação enviará um e-mail de convite para <strong>todos os usuários não-admin</strong> ({users.filter(u => !u.roles.includes('super_admin')).length} usuário(s)). Deseja continuar?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

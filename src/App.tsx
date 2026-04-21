@@ -79,6 +79,7 @@ const RelatorioCRM = lazy(() => import("./pages/RelatorioCRM"));
 const PublicReview = lazy(() => import("./pages/PublicReview"));
 const BrandsPage = lazy(() => import("./pages/admin/BrandsPage"));
 const BrandCatalogPage = lazy(() => import("./pages/admin/BrandCatalogPage"));
+const AcessoBloqueado = lazy(() => import("./pages/AcessoBloqueado"));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -122,6 +123,7 @@ function AppRouteTree() {
     <Routes>
       {/* Public pages WITHOUT footer/sidebar */}
       <Route path="/" element={<HomePage />} />
+      <Route path="/acesso-bloqueado" element={<AcessoBloqueado />} />
 
       {/* Public pages WITH footer */}
       <Route element={<LayoutWithFooter />}>

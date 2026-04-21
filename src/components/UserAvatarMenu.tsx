@@ -31,13 +31,11 @@ export function UserAvatarMenu() {
   const initials = email ? email.substring(0, 2).toUpperCase() : 'U';
 
   const roleLabel =
-    role === 'admin_fabrica' ? 'Administrador' :
     role === 'franquia' ? 'Franquia' :
     role === 'super_admin' ? 'Super Admin' : '';
 
   const roleBadgeClass =
     role === 'super_admin' ? 'bg-primary/15 text-primary border-primary/25' :
-    role === 'admin_fabrica' ? 'bg-amber-500/15 text-amber-600 border-amber-500/25' :
     role === 'franquia' ? 'bg-emerald-500/15 text-emerald-600 border-emerald-500/25' :
     'bg-muted text-muted-foreground border-border';
 

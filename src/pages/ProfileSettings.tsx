@@ -421,7 +421,7 @@ export default function ProfileSettings() {
                   {role && (
                     <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2.5 py-1 rounded-full bg-primary/20 text-primary-foreground border border-primary/20">
                       <Shield className="w-3 h-3" />
-                      {role === 'super_admin' ? 'Super Admin' : role === 'admin_fabrica' ? 'Admin' : 'Franquia'}
+                      {role === 'super_admin' ? 'Super Admin' : 'Franquia'}
                     </span>
                   )}
                 </div>
