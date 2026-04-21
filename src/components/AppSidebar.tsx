@@ -18,6 +18,10 @@ import {
   Activity,
   Radar,
   Sun,
+  Eye,
+  Inbox,
+  AlertTriangle,
+  MessageCircle,
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -51,6 +55,8 @@ const SUPER_ADMIN_MAIN: SidebarNavItem[] = [
   { title: 'Dashboard', url: '/admin', icon: LayoutDashboard, matchTab: 'overview' },
   { title: 'Funil Geral', url: '/admin?tab=kanban', icon: Kanban, matchTab: 'kanban' },
   { title: 'Franquias', url: '/admin?tab=franchises', icon: Building2, matchTab: 'franchises' },
+  { title: 'Visão Franquia', url: '/admin?tab=inspect', icon: Eye, matchTab: 'inspect' },
+  { title: 'Aplicações', url: '/admin?tab=applications', icon: Inbox, matchTab: 'applications' },
   { title: 'Marcas', url: '/admin/marcas', icon: Star, matchPaths: ['/admin/marcas'] },
   { title: 'Usuários', url: '/admin?tab=users', icon: Users, matchTab: 'users' },
   { title: 'Relatórios', url: '/superadmin/receita', icon: BarChart2, matchPaths: ['/superadmin/receita'] },
@@ -63,6 +69,9 @@ const SUPER_ADMIN_EXTRA: SidebarNavItem[] = [
   { title: 'Notificações', url: '/notificacoes', icon: Bell },
   { title: 'Radar de Mercado', url: '/admin/radar', icon: Radar, matchPaths: ['/admin/radar'] },
   { title: 'Status do Sistema', url: '/superadmin/status', icon: Activity, matchPaths: ['/superadmin/status'] },
+  { title: 'Logs de Erro', url: '/admin?tab=errors', icon: AlertTriangle, matchTab: 'errors' },
+  { title: 'Cron Jobs', url: '/admin?tab=cron', icon: Activity, matchTab: 'cron' },
+  { title: 'Planos WhatsApp', url: '/admin?tab=whatsapp-plans', icon: MessageCircle, matchTab: 'whatsapp-plans' },
   { title: 'Suporte', url: '/suporte', icon: HelpCircle },
 ];
 
