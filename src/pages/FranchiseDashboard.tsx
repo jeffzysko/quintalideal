@@ -30,6 +30,7 @@ import { AchievementsDashboard } from '@/components/franchise/AchievementsDashbo
 import { MetricGrid } from '@/components/dashboard/MetricGrid';
 import { TimeRangeSelector, filterByTimeRange, type TimeRange } from '@/components/dashboard/TimeRangeSelector';
 import { SectionHeader } from '@/components/dashboard/SectionHeader';
+import { SectionHeader as PageSectionHeader } from '@/components/SectionHeader';
 import { AlertBanner } from '@/components/dashboard/AlertBanner';
 import type { MetricCardProps } from '@/components/dashboard/MetricCard';
 import { InsightCards } from '@/components/dashboard/InsightCards';
