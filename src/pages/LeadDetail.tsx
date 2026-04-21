@@ -73,13 +73,13 @@ interface Lead {
   assigned_to?: string | null;
 }
 
-const statusConfig: Record<string, { label: string; color: string }> = {
-  novo: { label: 'Novo', color: 'bg-card text-foreground border-border' },
-  contatado: { label: 'Contatado', color: 'bg-sky-100 dark:bg-sky-900/40 text-sky-800 dark:text-sky-300 border-sky-200 dark:border-sky-700' },
-  em_negociacao: { label: 'Em Negociação', color: 'bg-amber-100 dark:bg-amber-900/40 text-amber-800 dark:text-amber-300 border-amber-200 dark:border-amber-700' },
-  vendido: { label: 'Vendido', color: 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-800 dark:text-emerald-300 border-emerald-200 dark:border-emerald-700' },
-  perdido: { label: 'Perdido', color: 'bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300 border-red-200 dark:border-red-700' },
-};
+import { STATUS_CONFIG as SHARED_STATUS_CONFIG } from '@/lib/lead-constants';
+const statusConfig: Record<string, { label: string; color: string }> = Object.fromEntries(
+  Object.entries(SHARED_STATUS_CONFIG).map(([k, v]) => [
+    k,
+    { label: v.label, color: `${v.bgClass} ${v.textClass} ${v.borderClass}` },
+  ])
+);
 
 const questionLabels: Record<string, { label: string; icon: string }> = {
   espaco: { label: 'Espaço disponível', icon: '📏' },

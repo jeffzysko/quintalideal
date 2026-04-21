@@ -499,7 +499,7 @@ export default function NewProposal() {
     return (
       <div className="min-h-screen bg-background pb-24 md:pb-12">
         <PageHeader title="Nova Proposta" fallbackPath="/propostas" />
-        <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4">
+        <div className="max-w-5xl mx-auto px-4 md:px-6 py-4 sm:py-6 space-y-4">
           {Array.from({ length: 3 }).map((_, i) => (
             <div key={i} className="h-[72px] skeleton rounded-xl" />
           ))}
@@ -525,7 +525,7 @@ export default function NewProposal() {
         rightSlot={actionButtons}
       />
 
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-6">
+      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 sm:py-6">
         {/* Desktop header */}
         <div className="hidden md:flex items-center justify-between mb-5">
           <div>

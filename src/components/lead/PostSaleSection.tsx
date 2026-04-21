@@ -96,7 +96,7 @@ export function PostSaleSection({ leadId, franchiseId }: PostSaleSectionProps) {
 
   if (isLoading) {
     return (
-      <Card className="glass-card">
+      <Card className="rounded-xl border border-border/40 bg-card shadow-sm">
         <CardContent className="p-5">
           <div className="animate-pulse space-y-3">
             <div className="h-4 bg-muted rounded w-1/3" />
@@ -109,7 +109,7 @@ export function PostSaleSection({ leadId, franchiseId }: PostSaleSectionProps) {
 
   if (!project) {
     return (
-      <Card className="glass-card">
+      <Card className="rounded-xl border border-border/40 bg-card shadow-sm">
         <CardContent className="p-6 flex flex-col items-center text-center">
           <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-3">
             <CheckCircle2 className="w-7 h-7 text-emerald-600" />
@@ -316,7 +316,7 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
   return (
     <div className="space-y-4">
       {/* Status */}
-      <Card className="glass-card">
+      <Card className="rounded-xl border border-border/40 bg-card shadow-sm">
         <CardContent className="p-4 space-y-4">
           <div className="flex items-center gap-2 mb-1">
             <Wrench className="w-4 h-4 text-primary" />
@@ -414,7 +414,7 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
       </Card>
 
       {/* Warranty */}
-      <Card className="glass-card">
+      <Card className="rounded-xl border border-border/40 bg-card shadow-sm">
         <CardContent className="p-4 space-y-3">
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-4 h-4 text-primary" />
@@ -470,7 +470,7 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
       />
 
       {/* Final result photos */}
-      <Card className="glass-card">
+      <Card className="rounded-xl border border-border/40 bg-card shadow-sm">
         <CardContent className="p-4 space-y-3">
           <div className="flex items-center gap-2 mb-1">
             <ImageIcon className="w-4 h-4 text-primary" />
@@ -518,7 +518,7 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
 
       {/* Satisfaction via WhatsApp - only when concluido */}
       {status === 'concluido' && (
-        <Card className="glass-card border-amber-200/50 bg-amber-50/30 dark:bg-amber-950/10">
+        <Card className="rounded-xl border border-amber-200/50 bg-amber-50/30 dark:bg-amber-950/10 shadow-sm">
           <CardContent className="p-4 space-y-4">
             <div className="flex items-center gap-2">
               <Star className="w-4 h-4 text-amber-500" />
@@ -567,7 +567,7 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
                 )}
 
                 <Button
-                  className="w-full gap-2 bg-emerald-500 hover:bg-emerald-600 text-white"
+                  className="w-full gap-2 bg-whatsapp hover:bg-whatsapp-hover text-white"
                   onClick={async () => {
                     if (!leadInfo?.telefone) { toast.error('Lead sem telefone cadastrado.'); return; }
                     setSendingReview(true);
@@ -639,7 +639,7 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
 
       {/* Referral program - when satisfied */}
       {status === 'concluido' && (project.satisfaction_rating || 0) >= 4 && (
-        <Card className="glass-card border-emerald-200/50 bg-emerald-50/30 dark:bg-emerald-950/10">
+        <Card className="rounded-xl border border-emerald-200/50 bg-emerald-50/30 dark:bg-emerald-950/10 shadow-sm">
           <CardContent className="p-4 space-y-3">
             <div className="flex items-center gap-2">
               <Users className="w-4 h-4 text-emerald-600" />
@@ -673,7 +673,7 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
       )}
 
       {/* Internal notes */}
-      <Card className="glass-card">
+      <Card className="rounded-xl border border-border/40 bg-card shadow-sm">
         <CardContent className="p-4 space-y-3">
           <div className="flex items-center gap-2 mb-1">
             <CalendarDays className="w-4 h-4 text-primary" />

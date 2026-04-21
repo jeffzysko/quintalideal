@@ -136,7 +136,7 @@ export default function NotificacoesPage() {
           }
         />
 
-        <div className="max-w-5xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
+        <div className="max-w-5xl mx-auto px-4 md:px-6 py-4 sm:py-6 md:py-8">
           <Breadcrumbs className="md:hidden" items={[
             { label: isAdmin ? 'Admin' : 'Painel', href: backPath },
             { label: 'Notificações' },
