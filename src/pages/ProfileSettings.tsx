@@ -21,6 +21,7 @@ import { toast } from 'sonner';
 import { WhatsAppSettings } from '@/components/admin/WhatsAppSettings';
 import { AdminWhatsAppPlans } from '@/components/admin/AdminWhatsAppPlans';
 import { WhatsAppInstanceConfig } from '@/components/franchise/WhatsAppInstanceConfig';
+import { FranchiseCatalog } from '@/components/franchise/FranchiseCatalog';
 
 import { motion } from 'framer-motion';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
