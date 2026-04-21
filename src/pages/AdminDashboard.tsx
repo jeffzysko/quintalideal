@@ -3,9 +3,8 @@ import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-quer
 import { toast } from 'sonner';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, TrendingUp, Building2, MapPin, Download, BarChart3, Target, Activity, Mail, Eye, Globe, Kanban, CalendarClock, MessageCircle, FileText, ShieldAlert, Gauge, BarChart2 } from 'lucide-react';
+import { Users, TrendingUp, Building2, BarChart3, Activity, Mail, Eye, Globe, Kanban, MessageCircle, FileText, ShieldAlert, Gauge, BarChart2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -20,9 +19,6 @@ import { AdminPerformanceComparison } from '@/components/admin/AdminPerformanceC
 import { TableSkeleton } from '@/components/ui/table-skeleton';
 import { STATUS_LABELS, LeadRow } from '@/lib/lead-constants';
 import { classifyLead } from '@/lib/leadScoring';
-import { UserAvatarMenu } from '@/components/UserAvatarMenu';
-import { NotificationBell } from '@/components/NotificationBell';
-import { PageHeader } from '@/components/PageHeader';
 import { MetricGrid } from '@/components/dashboard/MetricGrid';
 import { TimeRangeSelector, filterByTimeRange, type TimeRange } from '@/components/dashboard/TimeRangeSelector';
 import { SectionHeader } from '@/components/dashboard/SectionHeader';
