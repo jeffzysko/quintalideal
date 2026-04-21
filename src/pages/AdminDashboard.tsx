@@ -468,7 +468,7 @@ export default function AdminDashboard() {
             <PageSectionHeader title="Dashboard" subtitle="Visão geral da plataforma" />
             {/* Time range + KPIs */}
             <div className="flex items-center justify-between mb-3 sm:mb-4">
-              <SectionHeader icon={BarChart3} title="Métricas" subtitle={timeRange === 'all' ? 'Todo o período' : `Últimos ${timeRange} dias vs período anterior`} />
+              <SectionHeader variant="section" icon={BarChart3} title="Métricas" subtitle={timeRange === 'all' ? 'Todo o período' : `Últimos ${timeRange} dias vs período anterior`} />
               <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
             </div>
 

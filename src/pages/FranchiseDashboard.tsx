@@ -333,7 +333,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
 
       {/* Time Range + KPIs */}
       <div className="flex items-center justify-between mb-3 sm:mb-4">
-        <SectionHeader icon={BarChart3} title="Visão Geral" subtitle={timeRange === 'all' ? 'Todo o período' : `Últimos ${timeRange} dias`} />
+        <SectionHeader variant="section" icon={BarChart3} title="Visão Geral" subtitle={timeRange === 'all' ? 'Todo o período' : `Últimos ${timeRange} dias`} />
         <TimeRangeSelector value={timeRange} onChange={setTimeRange} />
       </div>
 
