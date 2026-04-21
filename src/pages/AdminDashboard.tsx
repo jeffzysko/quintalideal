@@ -22,6 +22,7 @@ import { classifyLead } from '@/lib/leadScoring';
 import { MetricGrid } from '@/components/dashboard/MetricGrid';
 import { TimeRangeSelector, filterByTimeRange, type TimeRange } from '@/components/dashboard/TimeRangeSelector';
 import { SectionHeader } from '@/components/dashboard/SectionHeader';
+import { SectionHeader as PageSectionHeader } from '@/components/SectionHeader';
 import type { MetricCardProps } from '@/components/dashboard/MetricCard';
 import { InsightCards } from '@/components/dashboard/InsightCards';
 import { ExecutiveSummary } from '@/components/admin/ExecutiveSummary';
@@ -465,6 +466,7 @@ export default function AdminDashboard() {
 
         {activeTab === 'overview' && (
           <>
+            <PageSectionHeader title="Dashboard" subtitle="Visão geral da plataforma" />
             {/* Time range + KPIs */}
             <div className="flex items-center justify-between mb-3 sm:mb-4">
               <SectionHeader icon={BarChart3} title="Métricas" subtitle={timeRange === 'all' ? 'Todo o período' : `Últimos ${timeRange} dias vs período anterior`} />
@@ -544,7 +546,9 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === 'analytics' && (
-          <Tabs defaultValue="analytics" className="w-full">
+          <>
+            <PageSectionHeader title="Analytics" subtitle="Métricas e performance" />
+            <Tabs defaultValue="analytics" className="w-full">
             <TabsList className="w-full h-auto rounded-xl bg-muted/50 border border-border/40 p-1 gap-0.5 overflow-x-auto scrollbar-hide flex flex-nowrap justify-start mb-4">
               <TabsTrigger value="analytics" className="shrink-0 gap-1.5 rounded-lg text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm px-3 py-2.5 whitespace-nowrap">
                 <Activity className="w-3.5 h-3.5 shrink-0" /> Analytics
@@ -580,16 +584,21 @@ export default function AdminDashboard() {
               </Suspense>
             </TabsContent>
           </Tabs>
+          </>
         )}
 
         {activeTab === 'performance-qi' && (
-          <Suspense fallback={<TabFallback />}>
-            <PerformanceQI franchiseMap={franchiseMap} franchises={franchises as any} />
-          </Suspense>
+          <>
+            <PageSectionHeader title="Performance QI" subtitle="Análise de qualidade e indicadores" />
+            <Suspense fallback={<TabFallback />}>
+              <PerformanceQI franchiseMap={franchiseMap} franchises={franchises as any} />
+            </Suspense>
+          </>
         )}
 
         {activeTab === 'leads' && isSuperAdmin && (
           <>
+            <PageSectionHeader title="Leads" subtitle="Todos os leads da plataforma" />
             {(kpisError || tableError) && (
               <div className="flex items-center justify-between gap-3 rounded-xl border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
                 <p className="font-medium">Erro ao carregar dados. Verifique sua conexão.</p>
@@ -635,32 +644,74 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === 'leads' && !isSuperAdmin && (
-          <Suspense fallback={<TabFallback />}>
-            <AdminLeadsReadOnly franchiseMap={franchiseMap} franchises={franchises} />
-          </Suspense>
+          <>
+            <PageSectionHeader title="Leads" subtitle="Leads atribuídos à sua operação" />
+            <Suspense fallback={<TabFallback />}>
+              <AdminLeadsReadOnly franchiseMap={franchiseMap} franchises={franchises} />
+            </Suspense>
+          </>
         )}
 
         {activeTab === 'kanban' && (
-          <Suspense fallback={<TabFallback />}>
-            <KanbanBoard
-              leads={orgFilteredLeads as any}
-              franchiseId="admin"
-              basePath="/admin/lead"
-              franchiseMap={franchiseMap}
-            />
-          </Suspense>
+          <>
+            <PageSectionHeader title="Funil" subtitle="Pipeline visual de leads em andamento" />
+            <Suspense fallback={<TabFallback />}>
+              <KanbanBoard
+                leads={orgFilteredLeads as any}
+                franchiseId="admin"
+                basePath="/admin/lead"
+                franchiseMap={franchiseMap}
+              />
+            </Suspense>
+          </>
         )}
 
-        {activeTab === 'franchises' && <Suspense fallback={<TabFallback />}><AdminFranchiseManager /></Suspense>}
-        {activeTab === 'cities' && <Suspense fallback={<TabFallback />}><AdminCityManager /></Suspense>}
-        {activeTab === 'users' && <Suspense fallback={<TabFallback />}><AdminUserManager /></Suspense>}
-        {activeTab === 'emails' && <Suspense fallback={<TabFallback />}><AdminEmailTemplates /></Suspense>}
-        {activeTab === 'whatsapp' && <Suspense fallback={<TabFallback />}><AdminWhatsAppTemplates /></Suspense>}
-        {activeTab === 'candidaturas' && <Suspense fallback={<TabFallback />}><AdminApplications /></Suspense>}
-        {activeTab === 'errors' && <Suspense fallback={<TabFallback />}><AdminErrorLogs franchiseMap={franchiseMap} /></Suspense>}
+        {activeTab === 'franchises' && (
+          <>
+            <PageSectionHeader title="Franquias" subtitle="Gerencie todas as unidades" />
+            <Suspense fallback={<TabFallback />}><AdminFranchiseManager /></Suspense>
+          </>
+        )}
+        {activeTab === 'cities' && (
+          <>
+            <PageSectionHeader title="Territórios" subtitle="Cobertura por cidade e atribuição de leads" />
+            <Suspense fallback={<TabFallback />}><AdminCityManager /></Suspense>
+          </>
+        )}
+        {activeTab === 'users' && (
+          <>
+            <PageSectionHeader title="Usuários" subtitle="Contas e permissões" />
+            <Suspense fallback={<TabFallback />}><AdminUserManager /></Suspense>
+          </>
+        )}
+        {activeTab === 'emails' && (
+          <>
+            <PageSectionHeader title="E-mails" subtitle="Templates de comunicação transacional" />
+            <Suspense fallback={<TabFallback />}><AdminEmailTemplates /></Suspense>
+          </>
+        )}
+        {activeTab === 'whatsapp' && (
+          <>
+            <PageSectionHeader title="WhatsApp" subtitle="Gestão de instâncias e planos" />
+            <Suspense fallback={<TabFallback />}><AdminWhatsAppTemplates /></Suspense>
+          </>
+        )}
+        {activeTab === 'candidaturas' && (
+          <>
+            <PageSectionHeader title="Candidaturas" subtitle="Solicitações de novas franquias" />
+            <Suspense fallback={<TabFallback />}><AdminApplications /></Suspense>
+          </>
+        )}
+        {activeTab === 'errors' && (
+          <>
+            <PageSectionHeader title="Logs de Erro" subtitle="Monitoramento de falhas" />
+            <Suspense fallback={<TabFallback />}><AdminErrorLogs franchiseMap={franchiseMap} /></Suspense>
+          </>
+        )}
 
         {activeTab === 'franchise-view' && (
           <Suspense fallback={<TabFallback />}>
+            <PageSectionHeader title="Visão Franquia" subtitle="Inspecione o painel de uma unidade específica" />
             <div className="space-y-6">
               <Card className="border-border/50 shadow-sm">
                 <CardHeader>
