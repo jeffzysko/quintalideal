@@ -67,9 +67,11 @@ interface ActionButtonsProps {
   brandName?: string;
   brandLogoUrl?: string;
   brandPrimaryColor?: string;
+  brandScoreLabel?: string;
 }
 
-export function ActionButtons({ score, poolName, poolDescription, poolSpecs, recommendedSize, whatsappNumber, assignedFranchiseName, assignedCidadeBase, leadName, refCode: _refCode, franchiseId, alternatives = [], fitLevel, matchScore, reasoning, closingPhrase, isWeakRecommendation, customerProfile: _customerProfile, upgradeOption, lang = 'pt', brandName, brandLogoUrl, brandPrimaryColor }: ActionButtonsProps) {
+export function ActionButtons({ score, poolName, poolDescription, poolSpecs, recommendedSize, whatsappNumber, assignedFranchiseName, assignedCidadeBase, leadName, refCode: _refCode, franchiseId, alternatives = [], fitLevel, matchScore, reasoning, closingPhrase, isWeakRecommendation, customerProfile: _customerProfile, upgradeOption, lang = 'pt', brandName, brandLogoUrl, brandPrimaryColor, brandScoreLabel }: ActionButtonsProps) {
+  const scoreLabel = brandScoreLabel || 'Índice do Quintal';
   const ranking = getRankingGaucho(score);
   const classification = getYardClassification(score);
   const socialComparison = getSocialComparison(score);
@@ -100,6 +102,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
     const phone = whatsappNumber || '5551999999999';
     const message = encodeURIComponent(
       t('wa_message', lang)
+        .replace('{score_label}', scoreLabel)
         .replace('{score}', String(score))
         .replace('{label}', classification.label)
         .replace('{pool}', poolName)
@@ -139,7 +142,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
     ctx.fillStyle = 'rgba(255,255,255,0.4)';
     ctx.font = '500 28px Inter, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('ÍNDICE DO QUINTAL', 540, 200);
+    ctx.fillText(scoreLabel.toUpperCase(), 540, 200);
     ctx.fillStyle = '#ffffff';
     ctx.font = '800 36px Inter, sans-serif';
     ctx.fillText('QUINTAL IDEAL', 540, 250);
