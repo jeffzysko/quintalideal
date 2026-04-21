@@ -5,9 +5,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useNotificationPreferences } from '@/hooks/useNotificationPreferences';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
-import { PanelHeader } from '@/components/PanelHeader';
-import { UserAvatarMenu } from '@/components/UserAvatarMenu';
-import { NotificationBell } from '@/components/NotificationBell';
+import { PageHeader } from '@/components/PageHeader';
 import { PushPermissionCard } from '@/components/notifications/PushPermissionCard';
 import { TestPushButton } from '@/components/notifications/TestPushButton';
 import { NotificationSectionCard } from '@/components/notifications/NotificationSectionCard';
@@ -33,11 +31,11 @@ export default function NotificationPreferences() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-background pb-bottomnav">
-        <PanelHeader title="Preferências">
-          <NotificationBell />
-          <UserAvatarMenu />
-        </PanelHeader>
+      <div className="min-h-screen bg-background pb-24 md:pb-12">
+        <PageHeader
+          title="Preferências de Notificação"
+          fallbackPath="/perfil"
+        />
 
         <div className="max-w-2xl mx-auto px-3 sm:px-4 md:px-6 py-3 sm:py-6 md:py-8">
           <Breadcrumbs className="md:hidden" items={[

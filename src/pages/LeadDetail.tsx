@@ -10,8 +10,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { MessageCircle, Phone, Mail, MapPin, Droplets, Camera, ClipboardList, ClipboardCheck, Settings2, X, ChevronDown, Package, FileText, HelpCircle, Plus, TrendingUp } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
-import { BackButton } from '@/components/BackButton';
-import { PanelHeader } from '@/components/PanelHeader';
+
+import { PageHeader } from '@/components/PageHeader';
 import { NotificationBell } from '@/components/NotificationBell';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
@@ -459,16 +459,20 @@ export default function LeadDetail() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-background">
-      <PanelHeader title={lead.nome || 'Detalhes do Lead'}>
-        <BackButton fallback={returnTo} />
-        <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
-        <Button variant="ghost" size="icon" onClick={() => setManageOpen(true)} title="Gerenciar lead">
-          <Settings2 className="w-4 h-4" />
-        </Button>
-        <NotificationBell />
-        <UserAvatarMenu />
-      </PanelHeader>
+    <div className="min-h-screen bg-background pb-24 md:pb-12">
+      <PageHeader
+        title={lead.nome || 'Detalhes do Lead'}
+        fallbackPath={returnTo}
+        rightSlot={
+          <div className="flex items-center gap-1">
+            <Button variant="ghost" size="icon" onClick={() => setManageOpen(true)} title="Gerenciar lead">
+              <Settings2 className="w-4 h-4" />
+            </Button>
+            <NotificationBell />
+            <UserAvatarMenu />
+          </div>
+        }
+      />
 
       <div className="max-w-2xl mx-auto">
         <div className="px-3 sm:px-4 pt-3">

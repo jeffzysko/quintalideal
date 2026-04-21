@@ -1,7 +1,6 @@
 import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
 import { BackButton } from '@/components/BackButton';
-import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 
 interface PageHeaderProps {
   title: string;
@@ -22,6 +21,9 @@ export function PageHeader({ title, subtitle, icon, fallbackPath, rightSlot }: P
     >
       {/* Full-width blur backdrop */}
       <div className="absolute inset-0 backdrop-blur-2xl bg-background/60" />
+
+      {/* Safe area spacer — pushes content below the Dynamic Island / notch */}
+      <div className="relative w-full" style={{ height: 'env(safe-area-inset-top, 0px)' }} />
 
       <div className="relative px-3 pt-2.5">
         <header className="relative mx-auto max-w-7xl rounded-2xl overflow-hidden">
@@ -46,30 +48,9 @@ export function PageHeader({ title, subtitle, icon, fallbackPath, rightSlot }: P
             }}
           >
             <div className="h-14 md:h-16 flex items-center justify-between px-3 md:px-6 gap-2">
-              {/* Left: Back + Logo + Title */}
+              {/* Left: Back + Title */}
               <div className="flex items-center gap-2 md:gap-3 min-w-0">
                 {fallbackPath && <BackButton fallback={fallbackPath} />}
-
-                <motion.div
-                  className="hidden sm:block shrink-0"
-                  style={{ filter: 'drop-shadow(0 0 8px hsl(var(--primary) / 0.4))' }}
-                  animate={{
-                    filter: [
-                      'drop-shadow(0 0 6px hsl(207 90% 54% / 0.3))',
-                      'drop-shadow(0 0 12px hsl(207 90% 54% / 0.5))',
-                      'drop-shadow(0 0 6px hsl(207 90% 54% / 0.3))',
-                    ],
-                  }}
-                  transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                >
-                  <img
-                    src={logoQuintalIdeal}
-                    alt="Quintal Ideal"
-                    className="h-7 md:h-9 w-auto dark:brightness-0 dark:invert"
-                  />
-                </motion.div>
-
-                <div className="h-5 w-px bg-border/40 hidden sm:block" />
 
                 <div className="min-w-0">
                   <h1 className="text-sm md:text-base font-semibold tracking-tight text-foreground flex items-center gap-1.5">

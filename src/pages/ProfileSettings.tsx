@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Save, User, Mail, Phone, Building2, Lock, Eye, EyeOff, Camera, MapPin, Shield, Puzzle, Bell, Workflow, Users, Clock, Globe, MessageSquare, Package, BellRing } from 'lucide-react';
-import { BackButton } from '@/components/BackButton';
+
 import { NotificationBell } from '@/components/NotificationBell';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { FranchiseUsersSection } from '@/components/franchise/FranchiseUsersSection';
@@ -28,7 +28,7 @@ import NotificationPreferences from '@/pages/NotificationPreferences';
 import { motion } from 'framer-motion';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
-import { PanelHeader } from '@/components/PanelHeader';
+import { PageHeader } from '@/components/PageHeader';
 
 import { formatPhoneBR, unformatPhone, isValidBRPhone, isValidEmail } from '@/lib/validation';
 
@@ -358,13 +358,16 @@ export default function ProfileSettings() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-background pb-bottomnav">
-      <PanelHeader title="Configurações">
-        <BackButton fallback={backPath} />
-        <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
-        <NotificationBell />
-        <UserAvatarMenu />
-      </PanelHeader>
+    <div className="min-h-screen bg-background pb-24 md:pb-12">
+      <PageHeader
+        title="Configurações"
+        rightSlot={
+          <div className="flex items-center gap-1">
+            <NotificationBell />
+            <UserAvatarMenu />
+          </div>
+        }
+      />
 
       <div className="max-w-3xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8 space-y-6">
         <Breadcrumbs className="md:hidden" items={[

@@ -7,10 +7,10 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { PanelHeader } from '@/components/PanelHeader';
+import { PageHeader } from '@/components/PageHeader';
 import { PageTransition } from '@/components/PageTransition';
 import { PullToRefresh } from '@/components/PullToRefresh';
-import { BackButton } from '@/components/BackButton';
+
 import { NotificationBell } from '@/components/NotificationBell';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -49,7 +49,7 @@ export default function ProposalsList() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const isAdmin = role === 'super_admin';
-  const basePath = isAdmin ? '/admin' : '/franquia';
+  
   const { hasAccess: hasOrcamentoAccess, loading: orcamentoLoading } = useOrcamentoAccess();
   const canQuery = !!franchiseId || isAdmin;
 
@@ -153,13 +153,16 @@ export default function ProposalsList() {
   return (
     <PageTransition>
       <PullToRefresh onRefresh={handleRefresh}>
-      <div className="min-h-screen bg-background pb-bottomnav sm:pb-0">
-        <PanelHeader title="Propostas">
-          <BackButton fallback={basePath} />
-          <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
-          <NotificationBell />
-          <UserAvatarMenu />
-        </PanelHeader>
+      <div className="min-h-screen bg-background pb-24 md:pb-12">
+        <PageHeader
+          title="Propostas"
+          rightSlot={
+            <div className="flex items-center gap-1">
+              <NotificationBell />
+              <UserAvatarMenu />
+            </div>
+          }
+        />
 
         {orcamentoLoading ? (
           <div className="max-w-5xl mx-auto px-3 sm:px-6 py-4 sm:py-6 space-y-4">

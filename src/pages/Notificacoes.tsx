@@ -12,7 +12,7 @@ import { Card } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
-import { PanelHeader } from '@/components/PanelHeader';
+import { PageHeader } from '@/components/PageHeader';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { NotificationBell } from '@/components/NotificationBell';
 import { motion } from 'framer-motion';
@@ -125,11 +125,16 @@ export default function NotificacoesPage() {
 
   return (
     <PageTransition>
-      <div className="min-h-screen bg-background pb-bottomnav">
-        <PanelHeader title="Notificações">
-          <NotificationBell />
-          <UserAvatarMenu />
-        </PanelHeader>
+      <div className="min-h-screen bg-background pb-24 md:pb-12">
+        <PageHeader
+          title="Notificações"
+          rightSlot={
+            <div className="flex items-center gap-1">
+              <NotificationBell />
+              <UserAvatarMenu />
+            </div>
+          }
+        />
 
         <div className="max-w-5xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
           <Breadcrumbs className="md:hidden" items={[

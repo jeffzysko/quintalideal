@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { BackButton } from '@/components/BackButton';
-import { PanelHeader } from '@/components/PanelHeader';
-import { NotificationBell } from '@/components/NotificationBell';
-import { UserAvatarMenu } from '@/components/UserAvatarMenu';
+import { PageHeader } from '@/components/PageHeader';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import {
   CalendarClock,
@@ -363,13 +360,11 @@ export default function Suporte() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen flex flex-col bg-background pb-bottomnav">
-      <PanelHeader title="Suporte & Guia">
-        <BackButton fallback="/franquia" />
-        <div className="h-5 w-px bg-border/40 mx-1 hidden sm:block" />
-        <NotificationBell />
-        <UserAvatarMenu />
-      </PanelHeader>
+    <div className="min-h-screen flex flex-col bg-background pb-24 md:pb-12">
+      <PageHeader
+        title="Suporte"
+        fallbackPath="/franquia"
+      />
 
       {/* Background orbs */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">

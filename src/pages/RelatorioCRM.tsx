@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/hooks/useAuth';
-import { PanelHeader } from '@/components/PanelHeader';
+import { PageHeader } from '@/components/PageHeader';
 import { NotificationBell } from '@/components/NotificationBell';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -285,13 +285,16 @@ export default function RelatorioCRM() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-background">
-      <PanelHeader title="Relatorio de Conversao">
-        <div className="flex items-center gap-2">
-          <NotificationBell />
-          <UserAvatarMenu />
-        </div>
-      </PanelHeader>
+    <div className="min-h-screen bg-background pb-24 md:pb-12">
+      <PageHeader
+        title="Relatórios"
+        rightSlot={
+          <div className="flex items-center gap-1">
+            <NotificationBell />
+            <UserAvatarMenu />
+          </div>
+        }
+      />
 
       <div className="max-w-6xl mx-auto p-4 space-y-6">
         {/* Filters */}
