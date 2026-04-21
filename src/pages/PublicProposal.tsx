@@ -188,7 +188,15 @@ export default function PublicProposal() {
         <header className="sticky top-0 z-20 backdrop-blur-xl bg-background/80 border-b border-border/50 print:static">
           <div className="max-w-3xl mx-auto px-5 py-3 flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <motion.img src={logoQuintalIdeal} alt="Quintal Ideal" className="h-9 w-auto dark:brightness-0 dark:invert" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} />
+              {brand?.logo_url ? (
+                <motion.img src={brand.logo_url} alt={brand.name} className="h-9 w-auto object-contain" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} />
+              ) : brand?.name ? (
+                <motion.span className="text-base font-black tracking-tight" style={{ color: brandPrimary }} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }}>
+                  {brand.name}
+                </motion.span>
+              ) : (
+                <motion.img src={logoQuintalIdeal} alt="Quintal Ideal" className="h-9 w-auto dark:brightness-0 dark:invert" initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} />
+              )}
               <div className="hidden sm:block h-6 w-px bg-border" />
               <div className="hidden sm:block">
                 <p className="text-xs font-bold text-foreground leading-tight">{proposal.franchise?.nome_franquia}</p>
