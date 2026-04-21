@@ -317,6 +317,8 @@ export default function BrandCatalogPage() {
           </SheetFooter>
         </SheetContent>
       </Sheet>
+      </div>
     </div>
+    </PageTransition>
   );
 }
