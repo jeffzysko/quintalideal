@@ -147,21 +147,18 @@ const SPACE_MAX_COMPRIMENTO: Record<QuizInputV2['space_bucket'], number> = {
   'ate_3m': 3.5, '3_5m': 5.5, '5_7m': 7.5, '7m_plus': 999,
 };
 
-const MODEL_MIN_SPACE: Record<string, number> = {
-  'Tortuga': 5.0, 'Atalaia': 7.0, 'Farol da Barra': 4.0,
-};
-
-// ── CAMADA A: Hard Filter ──
+// ── CAMADA A: Hard Filter (brand-agnostic, attribute-based) ──
 
 export function filterModels(models: PoolModelData[], input: QuizInputV2): PoolModelData[] {
   const maxSpace = SPACE_MAX_COMPRIMENTO[input.space_bucket];
   const budget = BUDGET_RANGES[input.budget_range];
 
   return models.filter(m => {
-    const minSpace = MODEL_MIN_SPACE[m.nome_modelo];
-    if (minSpace && minSpace > maxSpace) return false;
+    // Attribute-based: model length must fit (with small tolerance via scoring)
+    if (m.comprimento != null && m.comprimento > maxSpace * 1.15) return false;
 
-    if (input.space_bucket === 'ate_3m' && input.pool_preference === 'prainha' && m.nome_modelo === 'Tortuga') {
+    // Models with prainha need decent length: avoid in tiny spaces (<3m) when prainha is preferred and model is too long
+    if (input.space_bucket === 'ate_3m' && input.pool_preference === 'prainha' && m.possui_prainha && m.comprimento != null && m.comprimento > 3.5) {
       return false;
     }
 
@@ -176,12 +173,12 @@ export function filterModels(models: PoolModelData[], input: QuizInputV2): PoolM
 
 function scoreSpace(model: PoolModelData, input: QuizInputV2): number {
   const maxSpace = SPACE_MAX_COMPRIMENTO[input.space_bucket];
-  const minSpace = MODEL_MIN_SPACE[model.nome_modelo] || 0;
-  const modelMin = model.comprimento ? Math.min(model.comprimento, minSpace || model.comprimento) : minSpace;
+  const modelLen = model.comprimento ?? 0;
 
-  if (modelMin <= maxSpace * 0.7) return 28;
-  if (modelMin <= maxSpace) return 21;
-  if (modelMin <= maxSpace * 1.2) return 10;
+  if (modelLen === 0) return 14; // unknown = neutral
+  if (modelLen <= maxSpace * 0.7) return 28;
+  if (modelLen <= maxSpace) return 21;
+  if (modelLen <= maxSpace * 1.15) return 10;
   return -999;
 }
 
@@ -198,57 +195,95 @@ function scoreBudget(model: PoolModelData, input: QuizInputV2): number {
   return -999;
 }
 
-const USAGE_AFFINITY: Record<QuizInputV2['usage_profile'], string[]> = {
-  'familia_grande': ['Tradicional', 'Bonaire', 'Tropical', 'Tortuga'],
-  'familia_pequena': ['Tradicional', 'Tropical', 'Italiana', 'Bonaire'],
-  'amigos': ['Cancún', 'Tropical', 'Atalaia', 'Tradicional'],
-  'casal': ['Navagio', 'Italiana', 'Tradicional', 'Bonaire'],
-  'premium': ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'],
-};
-
-function scoreUsage(model: PoolModelData, input: QuizInputV2): number {
-  const favored = USAGE_AFFINITY[input.usage_profile] || [];
-  if (favored.includes(model.nome_modelo)) return 20;
-  return 10;
+// Categorize model by size attributes (brand-agnostic)
+function modelSizeBucket(model: PoolModelData): 'compact' | 'medium' | 'large' | 'xlarge' {
+  const len = model.comprimento ?? 0;
+  if (len > 0) {
+    if (len <= 3.5) return 'compact';
+    if (len <= 5.5) return 'medium';
+    if (len <= 7.5) return 'large';
+    return 'xlarge';
+  }
+  // Fallback to categoria_tamanho enum
+  const cat = (model.categoria_tamanho || '').toLowerCase();
+  if (cat.includes('peq') || cat === 'p') return 'compact';
+  if (cat.includes('med') || cat === 'm') return 'medium';
+  if (cat.includes('gra') || cat === 'g') return 'large';
+  return 'xlarge';
 }
 
-const PREFERENCE_AFFINITY: Record<QuizInputV2['pool_preference'], string[]> = {
-  'prainha': ['Tortuga', 'Atalaia', 'Tradicional', 'Farol da Barra'],
-  'spa': ['Navagio', 'Tradicional', 'Atalaia', 'Bonaire'],
-  'classica': ['Italiana', 'Tropical', 'Cancún', 'Tradicional', 'Farol da Barra'],
-  'indeciso': [],
-};
+function scoreUsage(model: PoolModelData, input: QuizInputV2): number {
+  const bucket = modelSizeBucket(model);
+
+  switch (input.usage_profile) {
+    case 'familia_grande':
+      if (bucket === 'large' || bucket === 'xlarge') return 20;
+      if (bucket === 'medium') return 14;
+      return 6;
+    case 'familia_pequena':
+      if (bucket === 'medium' || bucket === 'large') return 20;
+      return 12;
+    case 'amigos':
+      if (bucket === 'large' || bucket === 'xlarge') return 20;
+      if (model.possui_prainha) return 16;
+      return 10;
+    case 'casal':
+      if (bucket === 'compact' || bucket === 'medium') return 20;
+      if (model.possui_spa) return 16;
+      return 8;
+    case 'premium':
+      if (model.possui_spa || model.possui_prainha) return 20;
+      if (bucket === 'large' || bucket === 'xlarge') return 16;
+      return 10;
+  }
+}
 
 function scorePreference(model: PoolModelData, input: QuizInputV2): number {
   if (input.pool_preference === 'indeciso') return 6;
-  const favored = PREFERENCE_AFFINITY[input.pool_preference] || [];
-  if (favored.includes(model.nome_modelo)) return 12;
-  if (input.pool_preference === 'prainha' && model.possui_prainha) return 10;
-  if (input.pool_preference === 'spa' && model.possui_spa) return 10;
+
+  if (input.pool_preference === 'prainha') {
+    if (model.possui_prainha) return 12;
+    return 4;
+  }
+  if (input.pool_preference === 'spa') {
+    if (model.possui_spa) return 12;
+    return 4;
+  }
+  // Classica: prefer models without prainha/spa (cleaner classic shape)
+  if (input.pool_preference === 'classica') {
+    if (!model.possui_prainha && !model.possui_spa) return 12;
+    return 6;
+  }
   return 4;
 }
 
-// ── NEW: Objective Score (weight 12) ──
-
-const OBJECTIVE_AFFINITY: Record<QuizInputV2['objective_main'], string[]> = {
-  'valorizar': ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'],
-  'familia': ['Tradicional', 'Bonaire', 'Tropical', 'Tortuga', 'Cancún'],
-  'social': ['Cancún', 'Tropical', 'Atalaia', 'Tradicional', 'Tortuga'],
-  'relaxar': ['Navagio', 'Italiana', 'Tradicional', 'Bonaire'],
-};
+// ── Objective Score ──
 
 function scoreObjective(model: PoolModelData, input: QuizInputV2): number {
-  const favored = OBJECTIVE_AFFINITY[input.objective_main] || [];
-  const baseBonus = favored.includes(model.nome_modelo) ? 12 : 4;
+  const bucket = modelSizeBucket(model);
+  const hasPremiumFeatures = !!(model.possui_spa || model.possui_prainha);
+  const priceMax = model.preco_max ?? 0;
 
-  // Extra boost for "valorizar" on premium features
-  if (input.objective_main === 'valorizar') {
-    let extra = 0;
-    if (model.possui_spa || model.possui_prainha) extra += 3;
-    return baseBonus + extra;
+  switch (input.objective_main) {
+    case 'valorizar': {
+      let s = 4;
+      if (hasPremiumFeatures) s += 5;
+      if (bucket === 'large' || bucket === 'xlarge') s += 4;
+      if (priceMax >= 35000) s += 3;
+      return Math.min(15, s);
+    }
+    case 'familia':
+      if (bucket === 'medium' || bucket === 'large') return 12;
+      return 6;
+    case 'social':
+      if (bucket === 'large' || bucket === 'xlarge') return 12;
+      if (model.possui_prainha) return 10;
+      return 6;
+    case 'relaxar':
+      if (model.possui_spa) return 12;
+      if (bucket === 'compact' || bucket === 'medium') return 10;
+      return 6;
   }
-
-  return baseBonus;
 }
 
 function scoreIntent(model: PoolModelData, input: QuizInputV2): number {
@@ -263,59 +298,83 @@ function scoreIntent(model: PoolModelData, input: QuizInputV2): number {
   }
 }
 
-const PROFILE_AFFINITY: Record<CustomerProfile, string[]> = {
-  'RELAXADOR': ['Navagio', 'Tradicional', 'Bonaire'],
-  'FAMILIA': ['Tradicional', 'Bonaire', 'Tropical', 'Tortuga'],
-  'SOCIAL': ['Cancún', 'Tropical', 'Atalaia', 'Tradicional'],
-  'PREMIUM': ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'],
-  'COMPACTO': ['Italiana', 'Navagio', 'Tropical', 'Cancún'],
-};
-
 function profileBonus(model: PoolModelData, profile: CustomerProfile): number {
-  const favored = PROFILE_AFFINITY[profile] || [];
-  return favored.includes(model.nome_modelo) ? 10 : 0;
+  const bucket = modelSizeBucket(model);
+  const hasPremium = !!(model.possui_spa || model.possui_prainha);
+
+  switch (profile) {
+    case 'RELAXADOR':
+      if (model.possui_spa) return 10;
+      if (bucket === 'compact' || bucket === 'medium') return 6;
+      return 0;
+    case 'FAMILIA':
+      if (bucket === 'medium' || bucket === 'large') return 10;
+      return 0;
+    case 'SOCIAL':
+      if (bucket === 'large' || bucket === 'xlarge') return 10;
+      if (model.possui_prainha) return 7;
+      return 0;
+    case 'PREMIUM':
+      if (hasPremium && (bucket === 'large' || bucket === 'xlarge')) return 10;
+      if (hasPremium || bucket === 'xlarge') return 7;
+      return 0;
+    case 'COMPACTO':
+      if (bucket === 'compact') return 10;
+      if (bucket === 'medium') return 5;
+      return 0;
+  }
 }
 
 function specialBonus(model: PoolModelData, input: QuizInputV2): number {
   let bonus = 0;
+  const bucket = modelSizeBucket(model);
 
-  // Rule 0: Borda Infinita penalty — complex to install, deprioritize
-  if (model.nome_modelo === 'Borda Infinita') bonus -= 15;
-
-  // Rule 1: Compacta Premium relax compacta
+  // Rule 1: Compact + relax → small pools (with spa bonus)
   if (
     (input.space_bucket === 'ate_3m' || input.space_bucket === '3_5m') &&
     input.objective_main === 'relaxar' &&
-    model.nome_modelo === 'Navagio'
-  ) bonus += 20;
+    bucket === 'compact'
+  ) {
+    bonus += 15;
+    if (model.possui_spa) bonus += 5;
+  }
 
-  // Rule 3: Premium grande
+  // Rule 2: Large space + high budget + premium attributes → premium boost
   if (
     input.space_bucket === '7m_plus' &&
     input.budget_range === '30_50k' &&
-    model.nome_modelo === 'Atalaia'
-  ) bonus += 15;
+    (bucket === 'xlarge' || bucket === 'large') &&
+    (model.possui_spa || model.possui_prainha)
+  ) {
+    bonus += 15;
+  }
 
-  // Rule 4: Sofisticação compacta
+  // Rule 3: Sofisticação compacta — small space, premium objective, mid+ budget
   if (
     input.space_bucket === '3_5m' &&
     input.objective_main === 'valorizar' &&
     input.budget_range !== 'ate_18k' &&
-    ['Navagio', 'Bonaire'].includes(model.nome_modelo)
-  ) bonus += 10;
+    bucket === 'compact' &&
+    (model.possui_spa || model.possui_prainha || (model.preco_max ?? 0) >= 25000)
+  ) {
+    bonus += 10;
+  }
 
-  // Rule 5: Família orçamento controlado
+  // Rule 4: Family + controlled budget → medium/large affordable models
   if (
     (input.usage_profile === 'familia_pequena' || input.usage_profile === 'familia_grande') &&
     (input.budget_range === 'ate_18k' || input.budget_range === '18_30k') &&
-    ['Tradicional', 'Tropical', 'Italiana', 'Cancún'].includes(model.nome_modelo)
-  ) bonus += 8;
+    (bucket === 'medium' || bucket === 'large') &&
+    model.preco_min != null && model.preco_min <= 25000
+  ) {
+    bonus += 8;
+  }
 
-  // Rule 6: Valorizar — boost premium models
+  // Rule 5: Valorizar — boost premium-featured models
   if (input.objective_main === 'valorizar') {
-    const premiumModels = ['Atalaia', 'Bonaire', 'Navagio', 'Tradicional'];
-    if (premiumModels.includes(model.nome_modelo)) bonus += 10;
-    if (model.possui_spa || model.possui_prainha) bonus += 5;
+    if (model.possui_spa || model.possui_prainha) bonus += 8;
+    if ((model.preco_max ?? 0) >= 35000) bonus += 5;
+    if (bucket === 'large' || bucket === 'xlarge') bonus += 3;
   }
 
   return bonus;
