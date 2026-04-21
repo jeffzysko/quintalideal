@@ -22,7 +22,7 @@ import { STATUS_LABELS, LeadRow } from '@/lib/lead-constants';
 import { classifyLead } from '@/lib/leadScoring';
 import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { NotificationBell } from '@/components/NotificationBell';
-import { PanelHeader } from '@/components/PanelHeader';
+import { PageHeader } from '@/components/PageHeader';
 import { MetricGrid } from '@/components/dashboard/MetricGrid';
 import { TimeRangeSelector, filterByTimeRange, type TimeRange } from '@/components/dashboard/TimeRangeSelector';
 import { SectionHeader } from '@/components/dashboard/SectionHeader';
@@ -470,51 +470,54 @@ export default function AdminDashboard() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-background pb-bottomnav">
+    <div className="min-h-screen bg-background pb-24 md:pb-12">
       <AdminWelcomeWizard />
-      <PanelHeader title="Fábrica">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate('/hoje')}
-          aria-label="Hoje"
-          className="h-11 w-11 text-muted-foreground hover:text-foreground"
-        >
-          <CalendarClock className="w-4 h-4" />
-        </Button>
-        {/* Hide secondary actions on very small screens */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate('/admin/radar')}
-          aria-label="Radar"
-          className="hidden xs:inline-flex h-11 w-11 text-muted-foreground hover:text-foreground"
-        >
-          <Target className="w-4 h-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => navigate('/mapa')}
-          aria-label="Mapa"
-          className="hidden xs:inline-flex h-11 w-11 text-muted-foreground hover:text-foreground"
-        >
-          <MapPin className="w-4 h-4" />
-        </Button>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={exportCSV}
-          aria-label="CSV"
-          className="hidden xs:inline-flex h-11 w-11 text-muted-foreground hover:text-foreground"
-        >
-          <Download className="w-4 h-4" />
-        </Button>
-
-        <div className="h-5 w-px bg-border/40 mx-0.5 hidden xs:block" />
-        <NotificationBell />
-        <UserAvatarMenu />
-      </PanelHeader>
+      <PageHeader
+        title="Fábrica"
+        rightSlot={
+          <div className="flex items-center gap-1">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/hoje')}
+              aria-label="Hoje"
+              className="h-9 w-9 text-muted-foreground hover:text-foreground"
+            >
+              <CalendarClock className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/admin/radar')}
+              aria-label="Radar"
+              className="hidden xs:inline-flex h-9 w-9 text-muted-foreground hover:text-foreground"
+            >
+              <Target className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => navigate('/mapa')}
+              aria-label="Mapa"
+              className="hidden xs:inline-flex h-9 w-9 text-muted-foreground hover:text-foreground"
+            >
+              <MapPin className="w-4 h-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={exportCSV}
+              aria-label="CSV"
+              className="hidden xs:inline-flex h-9 w-9 text-muted-foreground hover:text-foreground"
+            >
+              <Download className="w-4 h-4" />
+            </Button>
+            <div className="h-5 w-px bg-border/40 mx-0.5 hidden xs:block" />
+            <NotificationBell />
+            <UserAvatarMenu />
+          </div>
+        }
+      />
 
       <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
         <div className="flex items-center justify-between gap-3 mb-2">
