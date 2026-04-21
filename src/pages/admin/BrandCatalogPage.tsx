@@ -167,7 +167,7 @@ export default function BrandCatalogPage() {
           </Button>
         }
       />
-      <div className="container max-w-6xl py-6 space-y-6">
+      <div className="container max-w-6xl mx-auto px-4 py-6 pb-16 space-y-6">
 
       {loading ? (
         <div className="flex justify-center py-12"><Loader2 className="h-6 w-6 animate-spin text-muted-foreground" /></div>

@@ -7,7 +7,8 @@ interface PageHeaderProps {
   title: string;
   subtitle?: string;
   icon?: ReactNode;
-  fallbackPath: string;
+  /** When provided, renders a back button. Omit for top-level destinations. */
+  fallbackPath?: string;
   rightSlot?: ReactNode;
 }
 
@@ -47,7 +48,7 @@ export function PageHeader({ title, subtitle, icon, fallbackPath, rightSlot }: P
             <div className="h-14 md:h-16 flex items-center justify-between px-3 md:px-6 gap-2">
               {/* Left: Back + Logo + Title */}
               <div className="flex items-center gap-2 md:gap-3 min-w-0">
-                <BackButton fallback={fallbackPath} />
+                {fallbackPath && <BackButton fallback={fallbackPath} />}
 
                 <motion.div
                   className="hidden sm:block shrink-0"

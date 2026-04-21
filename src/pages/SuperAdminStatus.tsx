@@ -87,8 +87,8 @@ export default function SuperAdminStatus() {
   if (isLoading || !status) {
     return (
       <div>
-        <PageHeader title="Status do Sistema" subtitle="Carregando..." fallbackPath="/superadmin/receita" />
-        <div className="container max-w-6xl mx-auto py-8 px-4 text-sm text-muted-foreground">Carregando...</div>
+        <PageHeader title="Status do Sistema" subtitle="Carregando..." />
+        <div className="container max-w-6xl mx-auto px-4 py-6 pb-16 text-sm text-muted-foreground">Carregando...</div>
       </div>
     );
   }
@@ -111,8 +111,8 @@ export default function SuperAdminStatus() {
   return (
     <PageTransition>
     <div>
-      <PageHeader title="Status do Sistema" subtitle="Monitoramento das integrações críticas" fallbackPath="/superadmin/receita" />
-      <div className="container max-w-6xl mx-auto py-8 px-4 space-y-6">
+      <PageHeader title="Status do Sistema" subtitle="Monitoramento em tempo real das integrações críticas" />
+      <div className="container max-w-6xl mx-auto px-4 py-6 pb-16 space-y-6">
 
       {/* Cards de integração */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
