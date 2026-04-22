@@ -43,6 +43,7 @@ export interface ScoredModelV3 {
   motivo_eliminacao?: string;
   razao_principal: string;
   label_compatibilidade: CompatLabel;
+  mostrado_fora_do_perfil?: boolean;
 }
 
 export interface RecommendationResultV3 {
@@ -155,11 +156,11 @@ function normalizeCategoria(m: PoolModelData): 'pequeno' | 'medio' | 'grande' | 
 
 function applyHardFilters(m: PoolModelData, input: QuizInputV3): { eliminado: boolean; motivo?: string } {
   const price = getModelPrice(m);
-  if (price != null && price > input.orcamento * 1.15) {
+  if (price != null && price > input.orcamento * 2.5) {
     return { eliminado: true, motivo: 'Acima do orçamento disponível' };
   }
   const len = getModelLength(m);
-  if (len != null && len > input.espaco_disponivel) {
+  if (len != null && len > input.espaco_disponivel * 1.5) {
     return { eliminado: true, motivo: 'Espaço insuficiente para este modelo' };
   }
   return { eliminado: false };
@@ -328,6 +329,18 @@ export function recommendPoolsV3(
   models: PoolModelData[],
 ): RecommendationResultV3 {
   const allScored: ScoredModelV3[] = models.map(m => {
+    // Diagnostic log (temporary) — exposes which field names exist and their values
+    console.log('[scoring-v3] model diagnostic', {
+      nome_modelo: m.nome_modelo,
+      preco_min: m.preco_min,
+      preco_max: m.preco_max,
+      preco_usado: getModelPrice(m),
+      comprimento: m.comprimento,
+      comprimento_usado: getModelLength(m),
+      categoria_tamanho: m.categoria_tamanho,
+      input_orcamento: input.orcamento,
+      input_espaco_disponivel: input.espaco_disponivel,
+    });
     const filterResult = applyHardFilters(m, input);
 
     const subO = subScoreOrcamento(m, input);
@@ -375,11 +388,24 @@ export function recommendPoolsV3(
     .filter(s => !s.eliminado)
     .sort((a, b) => b.totalScore - a.totalScore);
 
+  let top3 = viaveis.slice(0, 3);
+
+  // Safety net: if no model passed the filters, fall back to the 3 highest scored
+  // overall and flag them as "mostrado_fora_do_perfil" so the user never sees an
+  // empty result screen due to misconfigured pricing/length data.
+  if (top3.length === 0 && allScored.length > 0) {
+    console.warn('[scoring-v3] safety net triggered — all models eliminated, returning top scored anyway');
+    top3 = [...allScored]
+      .sort((a, b) => b.totalScore - a.totalScore)
+      .slice(0, 3)
+      .map(s => ({ ...s, mostrado_fora_do_perfil: true }));
+  }
+
   return {
-    top3: viaveis.slice(0, 3),
+    top3,
     allScored,
     hasEliminados: allScored.some(s => s.eliminado),
-    mensagemSemResultado: viaveis.length === 0
+    mensagemSemResultado: top3.length === 0
       ? 'Nenhum modelo disponível se encaixa no orçamento e espaço informados. Converse com nosso consultor para opções personalizadas.'
       : undefined,
   };
