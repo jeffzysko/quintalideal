@@ -1,17 +1,16 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, Trophy, ArrowRight, Sparkles, Ruler, Waves, Droplets, Instagram, X, MapPin } from 'lucide-react';
+import { MessageCircle, Trophy, ArrowRight, Instagram, X, MapPin } from 'lucide-react';
 import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 import { getRankingGaucho, getYardClassification, getSharePhrase, getSocialComparison } from '@/lib/ranking';
 import { getPoolImage } from '@/lib/poolImages';
-import { ValorizationSimulator } from './ValorizationSimulator';
 import { trackEvent } from '@/lib/analytics';
 import { trackMetaEvent } from '@/components/MetaPixel';
 import { SITE_URL, SITE_DOMAIN } from '@/lib/constants';
 import { type Lang, t } from '@/lib/i18n';
 
-import { type FitLevel, getFitLevelLabel, getFitLevelEmoji } from '@/lib/scoring-v2';
+import { type FitLevel } from '@/lib/scoring-v2';
 import type { RecommendationResultV3 } from '@/lib/scoring-v3';
 import { RecommendationCardsV3 } from './RecommendationCardsV3';
 
@@ -73,13 +72,11 @@ interface ActionButtonsProps {
   v3Result?: RecommendationResultV3;
 }
 
-export function ActionButtons({ score, poolName, poolDescription, poolSpecs, recommendedSize, whatsappNumber, assignedFranchiseName, assignedCidadeBase, leadName, refCode: _refCode, franchiseId, alternatives = [], fitLevel, matchScore, reasoning, closingPhrase, isWeakRecommendation, customerProfile: _customerProfile, upgradeOption, lang = 'pt', brandName, brandLogoUrl, brandPrimaryColor, brandScoreLabel, v3Result }: ActionButtonsProps) {
+export function ActionButtons({ score, poolName, whatsappNumber, assignedFranchiseName, assignedCidadeBase, leadName, refCode: _refCode, franchiseId, customerProfile: _customerProfile, lang = 'pt', brandName, brandLogoUrl, brandPrimaryColor, brandScoreLabel, v3Result }: ActionButtonsProps) {
   const scoreLabel = brandScoreLabel || 'Índice do Quintal';
   const ranking = getRankingGaucho(score);
   const classification = getYardClassification(score);
   const socialComparison = getSocialComparison(score);
-  const fitLabel = fitLevel ? getFitLevelLabel(fitLevel, lang) : null;
-  const fitEmoji = fitLevel ? getFitLevelEmoji(fitLevel) : null;
   
   const [showInstaGuide, setShowInstaGuide] = useState(false);
 
@@ -315,156 +312,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
         </div>
       </motion.div>
 
-      {/* === POOL CARD === */}
       <div className="px-3 sm:px-6 max-w-md mx-auto -mt-3 relative z-20">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="rounded-2xl overflow-hidden border border-border bg-card shadow-lg"
-        >
-          {getPoolImage(poolName) && (
-            <div className="aspect-[16/9] w-full overflow-hidden">
-              <img
-                src={getPoolImage(poolName)}
-                alt={`Piscina ${poolName}`}
-                className="w-full h-full object-cover"
-                loading="eager"
-              />
-            </div>
-          )}
-          <div className="p-5">
-            {/* Weak recommendation header */}
-            {isWeakRecommendation ? (
-              <p className="text-xs text-muted-foreground leading-relaxed mb-3">
-                {lang === 'es'
-                  ? 'Encontramos algunas opciones que pueden funcionar bien para tu espacio:'
-                  : 'Encontramos algumas opções que podem funcionar bem para o seu espaço:'}
-              </p>
-            ) : (
-              <>
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="w-3.5 h-3.5 text-primary" />
-                    <span className="text-[9px] font-bold text-primary uppercase tracking-[0.15em]">{t('action_rec_label', lang)}</span>
-                  </div>
-                  {fitLabel && (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-primary/10 text-primary border border-primary/20">
-                      {fitEmoji} {fitLabel}
-                      {matchScore != null && <span className="text-primary/60 ml-0.5">({matchScore}%)</span>}
-                    </span>
-                  )}
-                </div>
-                <h3 className="text-lg font-bold text-foreground mb-1">{poolName}</h3>
-
-                {/* Trust tag */}
-                <p className="text-xs text-muted-foreground/70 mb-2 flex items-center gap-1">
-                  <span>✅</span>
-                  {lang === 'es' ? 'Recomendación basada en cientos de proyectos similares' : 'Recomendação baseada em centenas de projetos similares'}
-                </p>
-              </>
-            )}
-
-            {/* Reasoning */}
-            {!isWeakRecommendation && reasoning ? (
-              <p className="text-xs text-muted-foreground leading-relaxed mb-2">{reasoning}</p>
-            ) : (
-              !isWeakRecommendation && poolDescription && <p className="text-xs text-muted-foreground leading-relaxed mb-2">{poolDescription}</p>
-            )}
-
-            {/* Closing phrase */}
-            {!isWeakRecommendation && closingPhrase && (
-              <p className="text-xs text-foreground/70 font-medium italic mb-3">{closingPhrase}</p>
-            )}
-
-            {!isWeakRecommendation && poolSpecs && (
-              <div className="grid grid-cols-2 gap-2">
-                {recommendedSize && (
-                  <div className="flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2.5">
-                    <Ruler className="w-4 h-4 text-muted-foreground shrink-0" />
-                    <div>
-                      <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{t('action_size', lang)}</p>
-                      <p className="text-xs font-semibold text-foreground">{recommendedSize}</p>
-                    </div>
-                  </div>
-                )}
-                {poolSpecs.profundidade && (
-                  <div className="flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2.5">
-                    <Waves className="w-4 h-4 text-muted-foreground shrink-0" />
-                    <div>
-                      <p className="text-[9px] text-muted-foreground uppercase tracking-wider">{t('action_depth', lang)}</p>
-                      <p className="text-xs font-semibold text-foreground">{poolSpecs.profundidade}m</p>
-                    </div>
-                  </div>
-                )}
-                {poolSpecs.possui_prainha && (
-                  <div className="flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2.5">
-                    <span className="text-sm">🏖️</span>
-                    <p className="text-xs font-semibold text-foreground">{t('action_beach', lang)}</p>
-                  </div>
-                )}
-                {poolSpecs.possui_spa && (
-                  <div className="flex items-center gap-2 rounded-xl bg-muted/50 px-3 py-2.5">
-                    <Droplets className="w-4 h-4 text-muted-foreground shrink-0" />
-                    <p className="text-xs font-semibold text-foreground">{t('action_spa', lang)}</p>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        </motion.div>
-
-        {/* Alternatives */}
-        {alternatives.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.65 }}
-            className="mt-4"
-          >
-            <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-2 px-1">
-              {lang === 'es' ? 'También pueden gustarte' : 'Você também pode gostar'}
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              {alternatives.map((alt, i) => (
-                <motion.div
-                  key={alt.name}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.7 + Math.min(i * 0.1, 0.15) }}
-                  className="rounded-xl overflow-hidden border border-border bg-card"
-                >
-                  {alt.image && (
-                    <div className="aspect-[16/10] overflow-hidden">
-                      <img src={alt.image} alt={alt.name} className="w-full h-full object-cover" loading="lazy" />
-                    </div>
-                  )}
-                  <div className="p-2.5">
-                    <p className="text-xs font-semibold text-foreground mb-0.5">{alt.name}</p>
-                    <div className="flex flex-wrap gap-1">
-                      {alt.specs?.tamanho && (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
-                          📐 {alt.specs.tamanho}
-                        </span>
-                      )}
-                      {alt.specs?.possui_prainha && (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-primary/10 text-primary">🏖️ Prainha</span>
-                      )}
-                      {alt.specs?.possui_spa && (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-accent text-accent-foreground">💆 Hidro</span>
-                      )}
-                      {alt.specs?.profundidade && (
-                        <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-muted text-muted-foreground">
-                          ↕ {alt.specs.profundidade}m
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        )}
 
         {/* V3 — Cards de compatibilidade (novo motor 3-camadas) */}
         {v3Result && (
@@ -476,35 +324,7 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
           />
         )}
 
-        {/* Upgrade option */}
-        {upgradeOption && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.72 }}
-            className="mt-4 rounded-2xl overflow-hidden border border-amber-500/20 bg-amber-500/5"
-          >
-            <div className="p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-sm">⬆️</span>
-                <span className="text-xs font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider">
-                  {lang === 'es' ? 'Opción de Upgrade' : 'Opção de Upgrade'}
-                </span>
-              </div>
-              <div className="flex items-center gap-3">
-                {upgradeOption.image && (
-                  <img src={upgradeOption.image} alt={upgradeOption.name} className="w-16 h-12 rounded-lg object-cover" loading="lazy" />
-                )}
-                <div>
-                  <p className="text-sm font-bold text-foreground">{upgradeOption.name}</p>
-                  {upgradeOption.recommendedSize && (
-                    <p className="text-xs text-muted-foreground">📐 {upgradeOption.recommendedSize}</p>
-                  )}
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
+
 
         {/* Assigned franchise info */}
         {assignedFranchiseName && (
@@ -570,10 +390,6 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
           </div>
         </motion.div>
 
-        {/* Valorization Simulator */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1 }}>
-          <ValorizationSimulator score={score} lang={lang} />
-        </motion.div>
 
 
         {/* Share row */}
