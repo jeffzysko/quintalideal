@@ -347,6 +347,7 @@ export default function HojePage() {
       return data;
     },
     enabled: !!user?.id,
+    staleTime: 60 * 1000,
   });
 
   const { data: leads = [], isLoading: loadingLeads, isError: leadsError, refetch: refetchLeads } = useQuery({
@@ -365,6 +366,7 @@ export default function HojePage() {
       return (data || []) as LeadRow[];
     },
     enabled: !authLoading && (!!franchiseId || isAdmin),
+    staleTime: 60 * 1000,
   });
 
   const { data: followups = [], isLoading: loadingFollowups } = useQuery({
@@ -381,6 +383,7 @@ export default function HojePage() {
       return (data || []) as Followup[];
     },
     enabled: !authLoading && (!!franchiseId || isAdmin),
+    staleTime: 60 * 1000,
   });
 
   // Completed follow-ups for today (for progress bar)
@@ -400,6 +403,7 @@ export default function HojePage() {
       return count || 0;
     },
     enabled: !authLoading && (!!franchiseId || isAdmin),
+    staleTime: 60 * 1000,
   });
 
   // Open proposals & closed-this-month (for stat cards)
@@ -417,6 +421,7 @@ export default function HojePage() {
       return { openProposals: openProposals || 0, closedThisMonth: closedThisMonth || 0 };
     },
     enabled: !authLoading && (!!franchiseId || isAdmin),
+    staleTime: 60 * 1000,
   });
 
   const leadNameMap = useMemo(() => {

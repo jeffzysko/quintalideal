@@ -88,6 +88,7 @@ export default function AgendaPage() {
       return (data || []) as FollowupRow[];
     },
     enabled: !authLoading && (!!franchiseId || isAdmin),
+    staleTime: 60 * 1000,
   });
 
   const pendingCount = followups.filter(f => !f.completed).length;

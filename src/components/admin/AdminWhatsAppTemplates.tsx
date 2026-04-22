@@ -55,6 +55,7 @@ export function AdminWhatsAppTemplates() {
       if (error) throw error;
       return (data || []) as DbTemplate[];
     },
+    staleTime: 5 * 60 * 1000,
   });
 
   const updateMutation = useMutation({

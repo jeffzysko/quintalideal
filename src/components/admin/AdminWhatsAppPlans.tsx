@@ -65,6 +65,7 @@ export function AdminWhatsAppPlans() {
       if (error) throw error;
       return (data || []) as FranchiseWARow[];
     },
+    staleTime: 2 * 60 * 1000,
   });
 
   const summary = useMemo(() => {

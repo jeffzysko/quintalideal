@@ -48,6 +48,7 @@ export default function ProposalDetail() {
       return data;
     },
     enabled: !!id,
+    staleTime: 2 * 60 * 1000,
   });
 
   const { data: items } = useQuery({
@@ -58,36 +59,40 @@ export default function ProposalDetail() {
       return data || [];
     },
     enabled: !!id,
+    staleTime: 2 * 60 * 1000,
   });
 
   const { data: views } = useQuery({
     queryKey: ['proposal-views', id],
     queryFn: async () => {
-      const { data, error } = await supabase.from('proposal_views').select('*').eq('proposal_id', id!).order('viewed_at', { ascending: false });
+      const { data, error } = await supabase.from('proposal_views').select('*').eq('proposal_id', id!).order('viewed_at', { ascending: false }).limit(500);
       if (error) throw error;
       return data || [];
     },
     enabled: !!id,
+    staleTime: 2 * 60 * 1000,
   });
 
   const { data: questions, refetch: refetchQuestions } = useQuery({
     queryKey: ['proposal-questions', id],
     queryFn: async () => {
-      const { data, error } = await supabase.from('proposal_questions').select('*').eq('proposal_id', id!).order('asked_at', { ascending: false });
+      const { data, error } = await supabase.from('proposal_questions').select('*').eq('proposal_id', id!).order('asked_at', { ascending: false }).limit(100);
       if (error) throw error;
       return data || [];
     },
     enabled: !!id,
+    staleTime: 2 * 60 * 1000,
   });
 
   const { data: negotiations } = useQuery({
     queryKey: ['proposal-negotiations', id],
     queryFn: async () => {
-      const { data, error } = await supabase.from('proposal_negotiations' as any).select('*').eq('proposal_id', id!).order('created_at', { ascending: false });
+      const { data, error } = await supabase.from('proposal_negotiations' as any).select('*').eq('proposal_id', id!).order('created_at', { ascending: false }).limit(100);
       if (error) return [];
       return (data || []) as any[];
     },
     enabled: !!id,
+    staleTime: 2 * 60 * 1000,
   });
 
   const [answerText, setAnswerText] = useState<Record<string, string>>({});
