@@ -302,20 +302,27 @@ export default function RelatorioCRM({ embedded = false, franchiseIdOverride }: 
 
   // legacy CSV columns retained via dropdown handler above
 
-  return (
-    <PageTransition>
-    <div className="min-h-screen bg-background pb-[var(--bottom-nav-height)] md:pb-12">
-      <PageHeader
-        title="Relatórios"
-        rightSlot={
-          <div className="flex items-center gap-1">
-            <NotificationBell />
-            <UserAvatarMenu />
-          </div>
-        }
-      />
+  const inner = (
+    <div className={embedded ? '' : 'min-h-screen bg-background pb-[var(--bottom-nav-height)] md:pb-12'}>
+      {!embedded && (
+        <PageHeader
+          title="Relatórios"
+          rightSlot={
+            <div className="flex items-center gap-1">
+              <NotificationBell />
+              <UserAvatarMenu />
+            </div>
+          }
+        />
+      )}
 
-      <div className="max-w-6xl mx-auto p-4 space-y-6">
+      <div className={embedded ? 'space-y-6' : 'max-w-6xl mx-auto p-4 space-y-6'}>
+        {isAggregateView && (
+          <div className="rounded-lg border border-border/50 bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+            Visão consolidada da rede inteira.
+          </div>
+        )}
+
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-3">
           <Select value={period} onValueChange={setPeriod}>
@@ -323,7 +330,7 @@ export default function RelatorioCRM({ embedded = false, franchiseIdOverride }: 
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {PERIOD_OPTIONS.map(o => (
+              {periodOptions.map(o => (
                 <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
               ))}
             </SelectContent>
@@ -349,10 +356,10 @@ export default function RelatorioCRM({ embedded = false, franchiseIdOverride }: 
             </Popover>
           )}
 
-          {assignees.length > 0 && (
+          {!isAggregateView && assignees.length > 0 && (
             <Select value={assignedFilter} onValueChange={setAssignedFilter}>
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Responsavel" />
+                <SelectValue placeholder="Responsável" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos</SelectItem>
@@ -363,6 +370,7 @@ export default function RelatorioCRM({ embedded = false, franchiseIdOverride }: 
               </SelectContent>
             </Select>
           )}
+
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
