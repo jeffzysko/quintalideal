@@ -216,7 +216,7 @@ export function AppSidebar() {
           <button
             onClick={() => navigate(item.url)}
             data-tour={item.dataTour}
-            className={`w-full flex items-center gap-2 ${active ? 'bg-primary/10 text-primary font-medium' : ''}`}
+            className={`w-full flex items-center gap-2 group-data-[collapsible=icon]:justify-center ${active ? 'bg-primary/10 text-primary font-medium' : ''}`}
           >
             <item.icon className="h-4 w-4 shrink-0" />
             <span className="truncate group-data-[collapsible=icon]:hidden">{item.title}</span>
