@@ -68,9 +68,14 @@ interface RelatorioCRMProps {
   franchiseIdOverride?: string | null;
 }
 
-export default function RelatorioCRM() {
-  const { user, franchiseId } = useAuth();
-  const [period, setPeriod] = useState('30');
+export default function RelatorioCRM({ embedded = false, franchiseIdOverride }: RelatorioCRMProps = {}) {
+  const { user, franchiseId, role } = useAuth();
+  const isSuperAdmin = role === 'super_admin';
+  // Effective franchise id: override (when provided, including null for "all") wins; otherwise the user's own franchise.
+  const effectiveFranchiseId = franchiseIdOverride !== undefined ? franchiseIdOverride : franchiseId;
+  const isAggregateView = isSuperAdmin && effectiveFranchiseId === null;
+  const periodOptions = isSuperAdmin ? PERIOD_OPTIONS_FULL : PERIOD_OPTIONS_SIMPLE;
+  const [period, setPeriod] = useState(isSuperAdmin ? '30' : 'this_month');
   const [customRange, setCustomRange] = useState<DateRange | undefined>();
   const [assignedFilter, setAssignedFilter] = useState('all');
   const [isExporting, setIsExporting] = useState(false);
