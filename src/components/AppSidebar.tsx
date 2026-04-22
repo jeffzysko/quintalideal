@@ -259,7 +259,7 @@ export function AppSidebar() {
                 <SidebarMenuButton
                   tooltip="Instalar app"
                   onClick={() => navigate('/install')}
-                  className="text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
                 >
                   <Download className="h-4 w-4 shrink-0" />
                   <span className="truncate text-xs group-data-[collapsible=icon]:hidden">Instalar app</span>
@@ -270,7 +270,7 @@ export function AppSidebar() {
                   <SidebarMenuButton
                     tooltip="Docs do Webhook"
                     onClick={() => navigate('/docs/webhook')}
-                    className="text-muted-foreground hover:text-foreground"
+                    className="text-muted-foreground hover:text-sidebar-foreground hover:bg-sidebar-accent transition-colors"
                   >
                     <Code className="h-4 w-4 shrink-0" />
                     <span className="truncate text-xs group-data-[collapsible=icon]:hidden">Docs do Webhook</span>
@@ -278,7 +278,11 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               )}
               <SidebarMenuItem>
-                <SidebarMenuButton tooltip="Sair" onClick={() => void signOut()}>
+                <SidebarMenuButton
+                  tooltip="Sair"
+                  onClick={() => void signOut()}
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10 transition-colors"
+                >
                   <LogOut className="h-4 w-4 shrink-0 text-destructive" />
                   <span className="truncate text-destructive group-data-[collapsible=icon]:hidden">Sair</span>
                 </SidebarMenuButton>
