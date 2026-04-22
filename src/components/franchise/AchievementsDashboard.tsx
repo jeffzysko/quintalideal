@@ -234,6 +234,9 @@ export function AchievementsDashboard({ franchiseId, leads }: AchievementsDashbo
 
   return (
     <div className="space-y-5">
+      {/* Network benchmark (anonymous) */}
+      <FranchiseBenchmarkCard franchiseId={franchiseId} />
+
       {/* Header stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <MiniStat icon={Trophy} label="Vendas totais" value={soldTotal} color="text-emerald-600" bg="bg-emerald-500/10" />
