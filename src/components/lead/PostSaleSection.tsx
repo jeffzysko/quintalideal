@@ -675,7 +675,7 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
       {/* Internal notes */}
       <Card className="rounded-xl border border-border/40 bg-card shadow-sm">
         <CardContent className="p-4 space-y-3">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-3">
             <CalendarDays className="w-4 h-4 text-primary" />
             <h3 className="text-sm font-semibold text-foreground">Notas internas</h3>
           </div>
