@@ -466,6 +466,16 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
           </motion.div>
         )}
 
+        {/* V3 — Cards de compatibilidade (novo motor 3-camadas) */}
+        {v3Result && (
+          <RecommendationCardsV3
+            result={v3Result}
+            whatsappNumber={whatsappNumber}
+            leadName={leadName}
+            lang={lang}
+          />
+        )}
+
         {/* Upgrade option */}
         {upgradeOption && (
           <motion.div
