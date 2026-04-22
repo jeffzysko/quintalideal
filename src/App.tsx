@@ -98,8 +98,17 @@ function LazyFallback() {
 }
 
 import { AuthenticatedLayout } from '@/components/AuthenticatedLayout';
+import { useAuth } from '@/hooks/useAuth';
 
 const NO_FOOTER_PATHS = new Set(['/', '/explorar']);
+
+/** Franquia users hitting /ranking are redirected to the anonymous benchmarking view. */
+function RankingGate() {
+  const { role, loading } = useAuth();
+  if (loading) return <PageSkeleton />;
+  if (role === 'franquia') return <Navigate to="/franquia?tab=achievements" replace />;
+  return <RankingQuintais />;
+}
 
 function LayoutWithFooter() {
   const { pathname } = useLocation();
