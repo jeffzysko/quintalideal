@@ -402,11 +402,11 @@ export function ActionButtons({ score, poolName, whatsappNumber, assignedFranchi
           <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest px-1 mb-1">
             {lang === 'es' ? '📤 Comparte tu resultado' : '📤 Compartilhe seu resultado'}
           </p>
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-3">
             <Button
               variant="outline"
               onClick={handleShareWhatsApp}
-              className="py-5 text-xs rounded-2xl font-medium border-border hover:bg-accent gap-1.5 flex-col h-auto"
+              className="min-h-[52px] py-5 text-xs rounded-2xl font-medium border-border hover:bg-accent gap-1.5 flex-col h-auto"
             >
               <MessageCircle className="w-4 h-4 text-green-500" />
               WhatsApp
@@ -414,7 +414,7 @@ export function ActionButtons({ score, poolName, whatsappNumber, assignedFranchi
             <Button
               variant="outline"
               onClick={handleInstagramShare}
-              className="py-5 text-xs rounded-2xl font-medium border-border hover:bg-accent gap-1.5 flex-col h-auto"
+              className="min-h-[52px] py-5 text-xs rounded-2xl font-medium border-border hover:bg-accent gap-1.5 flex-col h-auto"
             >
               <Instagram className="w-4 h-4 text-pink-500" />
               {t('action_share_insta', lang)}
