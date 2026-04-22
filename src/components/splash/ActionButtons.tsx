@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageCircle, Trophy, ArrowRight, Sparkles, Ruler, Waves, Droplets, Instagram, X, MapPin } from 'lucide-react';
+import { MessageCircle, Trophy, ArrowRight, Instagram, X, MapPin } from 'lucide-react';
 import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 import { getRankingGaucho, getYardClassification, getSharePhrase, getSocialComparison } from '@/lib/ranking';
 import { getPoolImage } from '@/lib/poolImages';
-import { ValorizationSimulator } from './ValorizationSimulator';
 import { trackEvent } from '@/lib/analytics';
 import { trackMetaEvent } from '@/components/MetaPixel';
 import { SITE_URL, SITE_DOMAIN } from '@/lib/constants';
