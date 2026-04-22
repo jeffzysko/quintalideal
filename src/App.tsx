@@ -12,6 +12,7 @@ import { supabase } from "@/lib/supabase";
 
 import { CommandPalette } from "@/components/CommandPalette";
 import HomePage from "./pages/HomePage";
+import { PageSkeleton } from "@/components/PageSkeleton";
 import { Footer } from "@/components/Footer";
 import { CookieConsentBanner } from "@/components/CookieConsentBanner";
 import { ScrollToTop } from "@/components/ScrollToTop";
