@@ -228,22 +228,45 @@
     box-shadow: 0 0 0 2px hsl(var(--background)), 0 0 0 4px hsl(var(--primary) / 0.3);
   }
 
-  /* ─── Mobile-first touch targets ─── */
-  @media (pointer: coarse) {
-    button, a, [role="button"], [role="tab"], [role="menuitem"] {
-      min-height: 44px;
-      min-width: 44px;
-    }
+  /* ─── Prevent iOS zoom on focus (global, all pointer types) ─── */
+  input, textarea, select, [role="combobox"] {
+    font-size: max(16px, 1rem);
+  }
 
+  /* ─── Touch targets — mandatory minimum 44×44 for interactive elements ─── */
+  button,
+  a,
+  [role="button"],
+  [role="tab"],
+  [role="menuitem"],
+  [role="checkbox"],
+  [role="switch"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  @media (pointer: coarse) {
     input, select, textarea, [role="combobox"] {
       min-height: 44px;
-      font-size: 16px; /* prevents iOS zoom on focus */
     }
   }
 
-  /* Prevent horizontal overflow — only on body to preserve html scroll */
-  body {
+  /* Inline icon buttons: expand hit area without affecting visual size */
+  .icon-button {
+    padding: 10px;
+    margin: -10px;
+  }
+
+  /* Prevent horizontal overflow + disable rubber-band on Y */
+  html, body {
     overflow-x: hidden;
+    overscroll-behavior-y: none;
+  }
+
+  /* Smooth momentum scroll on iOS for opted-in containers */
+  .scrollable {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
   }
 
   /* Bottom nav spacing for mobile authenticated views */
@@ -255,6 +278,17 @@
 
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .main-content-with-bottom-nav {
+    padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* PWA standalone: push content below the status bar */
+  @media (display-mode: standalone) {
+    .pt-standalone-safe {
+      padding-top: env(safe-area-inset-top, 0px);
+    }
   }
 }
 
