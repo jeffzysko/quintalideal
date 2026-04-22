@@ -258,9 +258,14 @@
   }
 
   /* Prevent horizontal overflow + disable rubber-band on Y */
-  html, body {
-    overflow-x: hidden;
+  html {
     overscroll-behavior-y: none;
+  }
+  body {
+    overscroll-behavior-y: none;
+  }
+  #root {
+    overflow-x: hidden;
   }
 
   /* Smooth momentum scroll on iOS for opted-in containers */
