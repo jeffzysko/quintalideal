@@ -231,7 +231,7 @@ export function AppSidebar() {
   return (
     <Sidebar collapsible="icon" className="border-r border-border/40">
       <SidebarHeader className="p-3">
-        <div className="flex items-center gap-2 overflow-hidden">
+        <div className="flex items-center gap-2 overflow-hidden group-data-[collapsible=icon]:hidden">
           <img
             src={logoQuintalIdeal}
             alt="Quintal Ideal"
@@ -257,7 +257,7 @@ export function AppSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  tooltip={collapsed ? 'Instalar app' : undefined}
+                  tooltip="Instalar app"
                   onClick={() => navigate('/install')}
                   className="text-muted-foreground hover:text-foreground"
                 >
@@ -268,7 +268,7 @@ export function AppSidebar() {
               {isAdmin && (
                 <SidebarMenuItem>
                   <SidebarMenuButton
-                    tooltip={collapsed ? 'Docs do Webhook' : undefined}
+                    tooltip="Docs do Webhook"
                     onClick={() => navigate('/docs/webhook')}
                     className="text-muted-foreground hover:text-foreground"
                   >
@@ -278,7 +278,7 @@ export function AppSidebar() {
                 </SidebarMenuItem>
               )}
               <SidebarMenuItem>
-                <SidebarMenuButton tooltip={collapsed ? 'Sair' : undefined} onClick={() => void signOut()}>
+                <SidebarMenuButton tooltip="Sair" onClick={() => void signOut()}>
                   <LogOut className="h-4 w-4 shrink-0 text-destructive" />
                   <span className="truncate text-destructive">Sair</span>
                 </SidebarMenuButton>
@@ -287,6 +287,8 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarFooter>
+
+      <SidebarRail />
     </Sidebar>
   );
 }
