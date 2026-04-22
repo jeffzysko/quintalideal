@@ -24,13 +24,19 @@ import { format, subDays, startOfMonth, endOfMonth, subMonths, differenceInDays,
 import { ptBR } from 'date-fns/locale';
 import { DateRange } from 'react-day-picker';
 
-const PERIOD_OPTIONS = [
-  { value: '7', label: 'Ultimos 7 dias' },
-  { value: '30', label: 'Ultimos 30 dias' },
-  { value: '90', label: 'Ultimos 90 dias' },
-  { value: 'this_month', label: 'Este mes' },
-  { value: 'last_month', label: 'Mes anterior' },
+const PERIOD_OPTIONS_FULL = [
+  { value: '7', label: 'Últimos 7 dias' },
+  { value: '30', label: 'Últimos 30 dias' },
+  { value: '90', label: 'Últimos 90 dias' },
+  { value: 'this_month', label: 'Este mês' },
+  { value: 'last_month', label: 'Mês anterior' },
   { value: 'custom', label: 'Personalizado' },
+];
+
+const PERIOD_OPTIONS_SIMPLE = [
+  { value: 'this_month', label: 'Este mês' },
+  { value: 'last_month', label: 'Mês anterior' },
+  { value: '30', label: 'Últimos 30 dias' },
 ];
 
 const FUNNEL_ORDER = ['novo', 'contatado', 'em_negociacao', 'vendido', 'perdido'];
@@ -55,9 +61,21 @@ function getDateRange(period: string, customRange?: DateRange): { from: Date; to
   }
 }
 
-export default function RelatorioCRM() {
-  const { user, franchiseId } = useAuth();
-  const [period, setPeriod] = useState('30');
+interface RelatorioCRMProps {
+  /** When true, hides PageHeader (used inside admin tabs). */
+  embedded?: boolean;
+  /** Override the franchise id used for queries. Pass `null` (super_admin only) for aggregated network view. `undefined` = use current user's franchise. */
+  franchiseIdOverride?: string | null;
+}
+
+export default function RelatorioCRM({ embedded = false, franchiseIdOverride }: RelatorioCRMProps = {}) {
+  const { user, franchiseId, role } = useAuth();
+  const isSuperAdmin = role === 'super_admin';
+  // Effective franchise id: override (when provided, including null for "all") wins; otherwise the user's own franchise.
+  const effectiveFranchiseId = franchiseIdOverride !== undefined ? franchiseIdOverride : franchiseId;
+  const isAggregateView = isSuperAdmin && effectiveFranchiseId === null;
+  const periodOptions = isSuperAdmin ? PERIOD_OPTIONS_FULL : PERIOD_OPTIONS_SIMPLE;
+  const [period, setPeriod] = useState(isSuperAdmin ? '30' : 'this_month');
   const [customRange, setCustomRange] = useState<DateRange | undefined>();
   const [assignedFilter, setAssignedFilter] = useState('all');
   const [isExporting, setIsExporting] = useState(false);
@@ -65,64 +83,65 @@ export default function RelatorioCRM() {
   const { from, to } = getDateRange(period, customRange);
 
   const { data: franchise } = useQuery({
-    queryKey: ['crm-report-franchise', franchiseId],
+    queryKey: ['crm-report-franchise', effectiveFranchiseId],
     queryFn: async () => {
-      if (!franchiseId) return null;
-      const { data } = await supabase.from('franchises').select('nome_franquia').eq('id', franchiseId).maybeSingle();
+      if (!effectiveFranchiseId) return null;
+      const { data } = await supabase.from('franchises').select('nome_franquia').eq('id', effectiveFranchiseId).maybeSingle();
       return data;
     },
-    enabled: !!franchiseId,
+    enabled: !!effectiveFranchiseId,
   });
 
   // Fetch leads
   const { data: leads = [], isLoading } = useQuery({
-    queryKey: ['crm-report-leads', franchiseId, from.toISOString(), to.toISOString()],
+    queryKey: ['crm-report-leads', effectiveFranchiseId ?? 'all', isAggregateView, from.toISOString(), to.toISOString()],
     queryFn: async () => {
-      if (!franchiseId) return [];
-      const { data, error } = await supabase
+      if (!effectiveFranchiseId && !isAggregateView) return [];
+      let query = supabase
         .from('leads')
         .select('id, nome, telefone, cidade, status_lead, created_at, updated_at, loss_reason, assigned_to, franquia_id')
-        .eq('franquia_id', franchiseId)
         .gte('created_at', from.toISOString())
         .lte('created_at', to.toISOString())
         .order('created_at', { ascending: false });
+      if (effectiveFranchiseId) query = query.eq('franquia_id', effectiveFranchiseId);
+      const { data, error } = await query;
       if (error) throw error;
       return data || [];
     },
-    enabled: !!franchiseId,
+    enabled: !!effectiveFranchiseId || isAggregateView,
   });
 
   // Fetch proposals for ticket medio
   const { data: proposals = [] } = useQuery({
-    queryKey: ['crm-report-proposals', franchiseId, from.toISOString(), to.toISOString()],
+    queryKey: ['crm-report-proposals', effectiveFranchiseId ?? 'all', isAggregateView, from.toISOString(), to.toISOString()],
     queryFn: async () => {
-      if (!franchiseId) return [];
-      const { data, error } = await supabase
+      if (!effectiveFranchiseId && !isAggregateView) return [];
+      let query = supabase
         .from('proposals')
         .select('id, total, status, lead_id, created_at')
-        .eq('franchise_id', franchiseId)
         .in('status', ['aceita'])
         .gte('created_at', from.toISOString())
         .lte('created_at', to.toISOString());
+      if (effectiveFranchiseId) query = query.eq('franchise_id', effectiveFranchiseId);
+      const { data, error } = await query;
       if (error) throw error;
       return data || [];
     },
-    enabled: !!franchiseId,
+    enabled: !!effectiveFranchiseId || isAggregateView,
   });
 
   // Fetch profiles for assigned_to names
   const { data: profiles = [] } = useQuery({
-    queryKey: ['crm-report-profiles', franchiseId],
+    queryKey: ['crm-report-profiles', effectiveFranchiseId ?? 'all', isAggregateView],
     queryFn: async () => {
-      if (!franchiseId) return [];
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('user_id, full_name')
-        .eq('franquia_id', franchiseId);
+      if (!effectiveFranchiseId && !isAggregateView) return [];
+      let query = supabase.from('profiles').select('user_id, full_name');
+      if (effectiveFranchiseId) query = query.eq('franquia_id', effectiveFranchiseId);
+      const { data, error } = await query;
       if (error) throw error;
       return data || [];
     },
-    enabled: !!franchiseId,
+    enabled: !!effectiveFranchiseId || isAggregateView,
   });
 
   const profileMap = useMemo(() => {
@@ -223,14 +242,14 @@ export default function RelatorioCRM() {
   }, [leads, profileMap]);
 
   const periodLabel = useMemo(() => {
-    const opt = PERIOD_OPTIONS.find(o => o.value === period);
+    const opt = periodOptions.find(o => o.value === period);
     if (period === 'custom' && customRange?.from && customRange?.to) {
       return `${format(customRange.from, 'dd/MM/yyyy')} a ${format(customRange.to, 'dd/MM/yyyy')}`;
     }
     return opt?.label || '';
-  }, [period, customRange]);
+  }, [period, customRange, periodOptions]);
 
-  const partnerName = franchise?.nome_franquia || 'Parceiro';
+  const partnerName = isAggregateView ? 'Rede completa' : (franchise?.nome_franquia || 'Parceiro');
 
   const handleExportCSV = () => {
     setIsExporting(true);
@@ -283,20 +302,27 @@ export default function RelatorioCRM() {
 
   // legacy CSV columns retained via dropdown handler above
 
-  return (
-    <PageTransition>
-    <div className="min-h-screen bg-background pb-[var(--bottom-nav-height)] md:pb-12">
-      <PageHeader
-        title="Relatórios"
-        rightSlot={
-          <div className="flex items-center gap-1">
-            <NotificationBell />
-            <UserAvatarMenu />
-          </div>
-        }
-      />
+  const inner = (
+    <div className={embedded ? '' : 'min-h-screen bg-background pb-[var(--bottom-nav-height)] md:pb-12'}>
+      {!embedded && (
+        <PageHeader
+          title="Relatórios"
+          rightSlot={
+            <div className="flex items-center gap-1">
+              <NotificationBell />
+              <UserAvatarMenu />
+            </div>
+          }
+        />
+      )}
 
-      <div className="max-w-6xl mx-auto p-4 space-y-6">
+      <div className={embedded ? 'space-y-6' : 'max-w-6xl mx-auto p-4 space-y-6'}>
+        {isAggregateView && (
+          <div className="rounded-lg border border-border/50 bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+            Visão consolidada da rede inteira.
+          </div>
+        )}
+
         {/* Filters */}
         <div className="flex flex-wrap items-center gap-3">
           <Select value={period} onValueChange={setPeriod}>
@@ -304,7 +330,7 @@ export default function RelatorioCRM() {
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              {PERIOD_OPTIONS.map(o => (
+              {periodOptions.map(o => (
                 <SelectItem key={o.value} value={o.value}>{o.label}</SelectItem>
               ))}
             </SelectContent>
@@ -330,10 +356,10 @@ export default function RelatorioCRM() {
             </Popover>
           )}
 
-          {assignees.length > 0 && (
+          {!isAggregateView && assignees.length > 0 && (
             <Select value={assignedFilter} onValueChange={setAssignedFilter}>
               <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Responsavel" />
+                <SelectValue placeholder="Responsável" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">Todos</SelectItem>
@@ -344,6 +370,7 @@ export default function RelatorioCRM() {
               </SelectContent>
             </Select>
           )}
+
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -497,8 +524,10 @@ export default function RelatorioCRM() {
         )}
       </div>
     </div>
-    </PageTransition>
   );
+
+  if (embedded) return inner;
+  return <PageTransition>{inner}</PageTransition>;
 }
 
 function SummaryCard({ icon: Icon, label, value }: { icon: typeof Users; label: string; value: string }) {
