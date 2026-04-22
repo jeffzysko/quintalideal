@@ -10,7 +10,7 @@ import { trackMetaEvent } from '@/components/MetaPixel';
 import { SITE_URL, SITE_DOMAIN } from '@/lib/constants';
 import { type Lang, t } from '@/lib/i18n';
 
-import { type FitLevel, getFitLevelLabel, getFitLevelEmoji } from '@/lib/scoring-v2';
+import { type FitLevel } from '@/lib/scoring-v2';
 import type { RecommendationResultV3 } from '@/lib/scoring-v3';
 import { RecommendationCardsV3 } from './RecommendationCardsV3';
 
