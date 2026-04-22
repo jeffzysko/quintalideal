@@ -173,7 +173,10 @@ export function BottomNav() {
             <DrawerHeader>
               <DrawerTitle>Mais opções</DrawerTitle>
             </DrawerHeader>
-            <div className="grid grid-cols-3 gap-2 p-4 pb-8 max-h-[70vh] overflow-y-auto">
+            <div
+              className="grid grid-cols-3 gap-2 p-4 pb-8 max-h-[70vh] overflow-y-auto"
+              style={{ overscrollBehavior: 'contain' }}
+            >
               {more.map((item) => (
                 <button
                   key={item.label}
