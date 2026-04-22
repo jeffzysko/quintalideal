@@ -311,6 +311,37 @@
     display: none;
   }
 
+  /* ─── Mobile Kanban: snap-scroll columns ─── */
+  .kanban-snap-x {
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1rem;
+    overscroll-behavior-x: contain;
+  }
+  .kanban-snap-x > * {
+    scroll-snap-align: start;
+  }
+
+  /* ─── Sticky form footer (Sheet/Dialog confirm bar) ─── */
+  .form-sticky-footer {
+    position: sticky;
+    bottom: 0;
+    background: hsl(var(--background));
+    padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid hsl(var(--border));
+    margin-inline: -1.5rem;
+    margin-bottom: -1.5rem;
+    z-index: 10;
+  }
+
+  /* ─── Lead detail tab content: clear the BottomNav on mobile ─── */
+  @media (max-width: 767px) {
+    .tab-content-mobile-safe {
+      padding-bottom: calc(var(--bottom-nav-height) + 1rem + env(safe-area-inset-bottom, 0px));
+    }
+  }
+
+  /* ─── Disable iframe-only PWA badge if present ─── */
+
   /* ─── Glass Card (static container) ─── */
   .glass-card {
     @apply bg-card/80 backdrop-blur-xl border border-border/50;
