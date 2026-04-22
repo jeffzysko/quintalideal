@@ -9,6 +9,7 @@ import { supabase } from '@/lib/supabase';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import { fireConfetti, haptic } from '@/lib/celebrations';
+import { FranchiseBenchmarkCard } from './FranchiseBenchmarkCard';
 import type { LeadRow } from '@/lib/lead-constants';
 
 interface AchievementsDashboardProps {
