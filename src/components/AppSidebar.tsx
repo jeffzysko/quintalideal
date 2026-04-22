@@ -219,7 +219,7 @@ export function AppSidebar() {
             className={`w-full flex items-center gap-2 ${active ? 'bg-primary/10 text-primary font-medium' : ''}`}
           >
             <item.icon className="h-4 w-4 shrink-0" />
-            <span className="truncate">{item.title}</span>
+            <span className="truncate group-data-[collapsible=icon]:hidden">{item.title}</span>
           </button>
         </SidebarMenuButton>
       </SidebarMenuItem>
@@ -262,7 +262,7 @@ export function AppSidebar() {
                   className="text-muted-foreground hover:text-foreground"
                 >
                   <Download className="h-4 w-4 shrink-0" />
-                  <span className="truncate text-xs">Instalar app</span>
+                  <span className="truncate text-xs group-data-[collapsible=icon]:hidden">Instalar app</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
               {isAdmin && (
@@ -273,14 +273,14 @@ export function AppSidebar() {
                     className="text-muted-foreground hover:text-foreground"
                   >
                     <Code className="h-4 w-4 shrink-0" />
-                    <span className="truncate text-xs">Docs do Webhook</span>
+                    <span className="truncate text-xs group-data-[collapsible=icon]:hidden">Docs do Webhook</span>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               )}
               <SidebarMenuItem>
                 <SidebarMenuButton tooltip="Sair" onClick={() => void signOut()}>
                   <LogOut className="h-4 w-4 shrink-0 text-destructive" />
-                  <span className="truncate text-destructive">Sair</span>
+                  <span className="truncate text-destructive group-data-[collapsible=icon]:hidden">Sair</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>
@@ -322,7 +322,7 @@ function NavGroupSection({
         <CollapsibleTrigger asChild>
           <button
             type="button"
-            className="w-full flex items-center justify-between px-2 py-1.5 text-xs font-medium text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors"
+            className="w-full flex items-center justify-between px-2 py-1.5 text-xs font-medium text-sidebar-foreground/70 hover:text-sidebar-foreground transition-colors group-data-[collapsible=icon]:hidden"
           >
             <span className="uppercase tracking-wider">{group.label}</span>
             <ChevronDown
