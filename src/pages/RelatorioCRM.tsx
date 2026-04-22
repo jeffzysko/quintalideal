@@ -524,8 +524,10 @@ export default function RelatorioCRM({ embedded = false, franchiseIdOverride }: 
         )}
       </div>
     </div>
-    </PageTransition>
   );
+
+  if (embedded) return inner;
+  return <PageTransition>{inner}</PageTransition>;
 }
 
 function SummaryCard({ icon: Icon, label, value }: { icon: typeof Users; label: string; value: string }) {
