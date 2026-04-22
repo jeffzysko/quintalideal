@@ -1109,8 +1109,10 @@ export default function LeadDetail() {
                     <AlertDialogAction
                       className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                       onClick={async () => {
-                        await supabase.from('lead_activities').delete().eq('lead_id', lead.id);
-                        await supabase.from('lead_followups').delete().eq('lead_id', lead.id);
+                        await Promise.all([
+                          supabase.from('lead_activities').delete().eq('lead_id', lead.id),
+                          supabase.from('lead_followups').delete().eq('lead_id', lead.id),
+                        ]);
                         const { error } = await supabase.from('leads').delete().eq('id', lead.id);
                         if (error) {
                           toast.error('Erro ao excluir lead.');
