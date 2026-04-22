@@ -158,7 +158,7 @@ const translations = {
   action_spa: { pt: 'Com hidro/SPA', es: 'Con hidro/SPA' },
   action_whatsapp_cta: { pt: 'Quero falar com um especialista agora', es: 'Quiero hablar con un especialista ahora' },
   action_whatsapp_hint: { pt: '⚡ Atendimento rápido · Sem compromisso · Condições especiais', es: '⚡ Atención rápida · Sin compromiso · Condiciones especiales' },
-  action_whatsapp_urgency: { pt: 'Seu resultado está pronto — fale agora e garanta as melhores condições', es: 'Tu resultado está listo — habla ahora y asegura las mejores condiciones' },
+  action_whatsapp_urgency: { pt: 'Seu resultado está pronto. Fale agora e garanta as melhores condições!', es: 'Tu resultado está listo. ¡Habla ahora y asegura las mejores condiciones!' },
   action_challenge_title: { pt: 'Será que o quintal dos seus amigos tem mais potencial que o seu?', es: '¿El patio de tus amigos tiene más potencial que el tuyo?' },
   action_challenge_subtitle: { pt: 'Desafie seus amigos e descubra!', es: '¡Desafía a tus amigos y descúbrelo!' },
   action_challenge_btn: { pt: 'Desafiar um amigo', es: 'Desafiar a un amigo' },
