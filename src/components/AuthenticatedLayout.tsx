@@ -51,10 +51,9 @@ export function AuthenticatedLayout() {
     );
   }
 
-  // Desktop: sidebar + header. On tablets (<1024px) start collapsed (icon-only).
-  const isTablet = typeof window !== 'undefined' && window.innerWidth < 1024;
+  // Desktop: sidebar + header. Default open; user can collapse to icon-only.
   return (
-    <SidebarProvider defaultOpen={!isTablet}>
+    <SidebarProvider defaultOpen>
       <DesktopShell topNavItems={topNavItems} pathname={pathname} navigate={navigate} showFooter={showFooter} />
     </SidebarProvider>
   );
