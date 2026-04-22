@@ -24,13 +24,19 @@ import { format, subDays, startOfMonth, endOfMonth, subMonths, differenceInDays,
 import { ptBR } from 'date-fns/locale';
 import { DateRange } from 'react-day-picker';
 
-const PERIOD_OPTIONS = [
-  { value: '7', label: 'Ultimos 7 dias' },
-  { value: '30', label: 'Ultimos 30 dias' },
-  { value: '90', label: 'Ultimos 90 dias' },
-  { value: 'this_month', label: 'Este mes' },
-  { value: 'last_month', label: 'Mes anterior' },
+const PERIOD_OPTIONS_FULL = [
+  { value: '7', label: 'Últimos 7 dias' },
+  { value: '30', label: 'Últimos 30 dias' },
+  { value: '90', label: 'Últimos 90 dias' },
+  { value: 'this_month', label: 'Este mês' },
+  { value: 'last_month', label: 'Mês anterior' },
   { value: 'custom', label: 'Personalizado' },
+];
+
+const PERIOD_OPTIONS_SIMPLE = [
+  { value: 'this_month', label: 'Este mês' },
+  { value: 'last_month', label: 'Mês anterior' },
+  { value: '30', label: 'Últimos 30 dias' },
 ];
 
 const FUNNEL_ORDER = ['novo', 'contatado', 'em_negociacao', 'vendido', 'perdido'];
@@ -53,6 +59,13 @@ function getDateRange(period: string, customRange?: DateRange): { from: Date; to
       };
     default: return { from: subDays(now, 30), to: now };
   }
+}
+
+interface RelatorioCRMProps {
+  /** When true, hides PageHeader (used inside admin tabs). */
+  embedded?: boolean;
+  /** Override the franchise id used for queries. Pass `null` (super_admin only) for aggregated network view. `undefined` = use current user's franchise. */
+  franchiseIdOverride?: string | null;
 }
 
 export default function RelatorioCRM() {
