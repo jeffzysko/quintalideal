@@ -3,6 +3,7 @@ import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { VitePWA } from "vite-plugin-pwa";
+import compression from "vite-plugin-compression";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -16,6 +17,10 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     mode === "development" && componentTagger(),
+    mode === "production" &&
+      compression({ algorithm: "gzip", ext: ".gz", threshold: 1024 }),
+    mode === "production" &&
+      compression({ algorithm: "brotliCompress", ext: ".br", threshold: 1024 }),
     VitePWA({
       registerType: "prompt",
       devOptions: {
@@ -103,7 +108,9 @@ export default defineConfig(({ mode }) => ({
       },
       workbox: {
         importScripts: ["/push-sw.js"],
-        globPatterns: ["**/*.{js,css,html,ico,woff2}"],
+        // Only precache truly static, hashed assets. HTML is handled at runtime
+        // (NetworkFirst) so users always get the latest shell after a deploy.
+        globPatterns: ["**/*.{js,css,ico,woff2}"],
         globIgnores: [
           "**/Admin*",
           "**/Kanban*",
@@ -115,7 +122,7 @@ export default defineConfig(({ mode }) => ({
           "**/vendor-dnd*",
         ],
         navigateFallback: "/index.html",
-        navigateFallbackDenylist: [/^\/~oauth/, /^\/api/],
+        navigateFallbackDenylist: [/^\/~oauth/, /^\/api/, /^\/proposta\//, /^\/avaliar\//],
         skipWaiting: false,
         clientsClaim: true,
         cleanupOutdatedCaches: true,
@@ -123,6 +130,18 @@ export default defineConfig(({ mode }) => ({
           { url: "/offline.html", revision: "v3" },
         ],
         runtimeCaching: [
+          // HTML / app shell: always try network first, fall back to cache.
+          // Prevents stale builds being served after a deploy.
+          {
+            urlPattern: ({ request }) => request.mode === "navigate",
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "html-shell",
+              networkTimeoutSeconds: 5,
+              expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 },
+              cacheableResponse: { statuses: [0, 200] },
+            },
+          },
           {
             urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
             handler: "CacheFirst",
@@ -165,6 +184,8 @@ export default defineConfig(({ mode }) => ({
   build: {
     target: "es2020",
     cssCodeSplit: true,
+    sourcemap: false,
+    chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
         manualChunks: {
@@ -176,13 +197,16 @@ export default defineConfig(({ mode }) => ({
             "@radix-ui/react-dialog",
             "@radix-ui/react-tooltip",
             "@radix-ui/react-popover",
+            "@radix-ui/react-select",
+            "@radix-ui/react-dropdown-menu",
+            "@radix-ui/react-tabs",
           ],
+          "vendor-forms": ["react-hook-form", "@hookform/resolvers", "zod"],
           "vendor-charts": ["recharts"],
           "vendor-maps": ["leaflet"],
-          "vendor-dnd": ["@dnd-kit/core", "@dnd-kit/sortable"],
+          "vendor-dnd": ["@dnd-kit/core", "@dnd-kit/sortable", "@dnd-kit/utilities"],
         },
       },
     },
   },
 }));
-
