@@ -377,56 +377,124 @@ export function AdminWhatsAppPlans() {
           {franchises.length === 0 ? (
             <p className="text-sm text-muted-foreground text-center py-8">Nenhuma franquia ativa encontrada.</p>
           ) : (
-            <div className="overflow-x-auto -mx-6">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="text-xs">Franquia</TableHead>
-                    <TableHead className="text-xs">Modo</TableHead>
-                    <TableHead className="text-xs">Instância</TableHead>
-                    <TableHead className="text-xs">Conexão</TableHead>
-                    <TableHead className="text-xs">Status</TableHead>
-                    <TableHead className="text-xs">Status Stripe</TableHead>
-                    <TableHead className="text-xs">Assinatura</TableHead>
-                    <TableHead className="text-xs">Validade</TableHead>
-                    <TableHead className="text-xs">Orçamento</TableHead>
-                    <TableHead className="text-xs text-right">Plano</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {franchises.map(f => {
-                    const isExpired = f.whatsapp_plan_active && f.whatsapp_plan_expires_at && isBefore(new Date(f.whatsapp_plan_expires_at), new Date());
-                    const isExpiringSoon = f.whatsapp_plan_active && f.whatsapp_plan_expires_at && !isExpired && isBefore(new Date(f.whatsapp_plan_expires_at), addDays(new Date(), 7));
-                    return (
-                    <TableRow key={f.id} className={isExpired ? 'bg-destructive/5' : isExpiringSoon ? 'bg-warning/5' : ''}>
-                      <TableCell className="text-xs font-medium">{f.nome_franquia}</TableCell>
-                      <TableCell>{getModeBadge(f)}</TableCell>
-                      <TableCell>{getInstanceBadge(f)}</TableCell>
-                      <TableCell>{getConnectionBadge(f)}</TableCell>
-                      <TableCell>{getPlanStatusBadge(f)}</TableCell>
-                      <TableCell>{getStripeBadge(f)}</TableCell>
-                      <TableCell>{getStripeLink(f)}</TableCell>
-                      <TableCell className="text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          {(isExpired || isExpiringSoon) && <AlertTriangle className="w-3 h-3 text-warning-foreground" />}
-                          {formatDate(f.whatsapp_plan_expires_at)}
-                        </span>
-                      </TableCell>
-                      <TableCell>{getOrcamentoBadge(f)}</TableCell>
-                      <TableCell className="text-right">
+            <>
+              {/* Desktop table */}
+              <div className="hidden md:block overflow-x-auto w-full -mx-6">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="text-xs">Franquia</TableHead>
+                      <TableHead className="text-xs">Modo</TableHead>
+                      <TableHead className="text-xs">Instância</TableHead>
+                      <TableHead className="text-xs">Conexão</TableHead>
+                      <TableHead className="text-xs">Status</TableHead>
+                      <TableHead className="text-xs">Status Stripe</TableHead>
+                      <TableHead className="text-xs">Assinatura</TableHead>
+                      <TableHead className="text-xs">Validade</TableHead>
+                      <TableHead className="text-xs">Orçamento</TableHead>
+                      <TableHead className="text-xs text-right">Plano</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {franchises.map(f => {
+                      const isExpired = f.whatsapp_plan_active && f.whatsapp_plan_expires_at && isBefore(new Date(f.whatsapp_plan_expires_at), new Date());
+                      const isExpiringSoon = f.whatsapp_plan_active && f.whatsapp_plan_expires_at && !isExpired && isBefore(new Date(f.whatsapp_plan_expires_at), addDays(new Date(), 7));
+                      return (
+                      <TableRow key={f.id} className={isExpired ? 'bg-destructive/5' : isExpiringSoon ? 'bg-warning/5' : ''}>
+                        <TableCell className="text-xs font-medium">{f.nome_franquia}</TableCell>
+                        <TableCell>{getModeBadge(f)}</TableCell>
+                        <TableCell>{getInstanceBadge(f)}</TableCell>
+                        <TableCell>{getConnectionBadge(f)}</TableCell>
+                        <TableCell>{getPlanStatusBadge(f)}</TableCell>
+                        <TableCell>{getStripeBadge(f)}</TableCell>
+                        <TableCell>{getStripeLink(f)}</TableCell>
+                        <TableCell className="text-xs text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            {(isExpired || isExpiringSoon) && <AlertTriangle className="w-3 h-3 text-warning-foreground" />}
+                            {formatDate(f.whatsapp_plan_expires_at)}
+                          </span>
+                        </TableCell>
+                        <TableCell>{getOrcamentoBadge(f)}</TableCell>
+                        <TableCell className="text-right">
+                          <Switch
+                            checked={f.whatsapp_plan_active}
+                            disabled={togglingId === f.id}
+                            onCheckedChange={(val) => handleToggle(f, val)}
+                            aria-label={`Ativar plano WhatsApp para ${f.nome_franquia}`}
+                          />
+                        </TableCell>
+                      </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Mobile stacked cards */}
+              <div className="md:hidden space-y-3">
+                {franchises.map(f => {
+                  const isExpired = f.whatsapp_plan_active && f.whatsapp_plan_expires_at && isBefore(new Date(f.whatsapp_plan_expires_at), new Date());
+                  const isExpiringSoon = f.whatsapp_plan_active && f.whatsapp_plan_expires_at && !isExpired && isBefore(new Date(f.whatsapp_plan_expires_at), addDays(new Date(), 7));
+                  return (
+                    <div
+                      key={f.id}
+                      className={`rounded-xl border border-border/50 p-4 space-y-3 ${
+                        isExpired ? 'bg-destructive/5' : isExpiringSoon ? 'bg-warning/5' : 'bg-card'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className="text-sm font-semibold text-foreground truncate">{f.nome_franquia}</h3>
+                        {getPlanStatusBadge(f)}
+                      </div>
+
+                      <dl className="grid grid-cols-2 gap-x-3 gap-y-2 text-xs">
+                        <div>
+                          <dt className="text-muted-foreground mb-0.5">Modo</dt>
+                          <dd>{getModeBadge(f)}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-muted-foreground mb-0.5">Conexão</dt>
+                          <dd>{getConnectionBadge(f)}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-muted-foreground mb-0.5">Instância</dt>
+                          <dd>{getInstanceBadge(f)}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-muted-foreground mb-0.5">Stripe</dt>
+                          <dd>{getStripeBadge(f)}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-muted-foreground mb-0.5">Orçamento</dt>
+                          <dd>{getOrcamentoBadge(f)}</dd>
+                        </div>
+                        <div>
+                          <dt className="text-muted-foreground mb-0.5">Validade</dt>
+                          <dd className="text-muted-foreground flex items-center gap-1">
+                            {(isExpired || isExpiringSoon) && <AlertTriangle className="w-3 h-3 text-warning-foreground" />}
+                            {formatDate(f.whatsapp_plan_expires_at)}
+                          </dd>
+                        </div>
+                        <div className="col-span-2">
+                          <dt className="text-muted-foreground mb-0.5">Assinatura</dt>
+                          <dd>{getStripeLink(f)}</dd>
+                        </div>
+                      </dl>
+
+                      <div className="pt-2 border-t border-border/40 flex items-center justify-between gap-3">
+                        <span className="text-xs font-medium text-foreground">Plano WhatsApp</span>
                         <Switch
                           checked={f.whatsapp_plan_active}
                           disabled={togglingId === f.id}
                           onCheckedChange={(val) => handleToggle(f, val)}
                           aria-label={`Ativar plano WhatsApp para ${f.nome_franquia}`}
                         />
-                      </TableCell>
-                    </TableRow>
-                    );
-                  })}
-                </TableBody>
-              </Table>
-            </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
