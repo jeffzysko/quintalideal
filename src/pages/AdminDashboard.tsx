@@ -597,7 +597,7 @@ export default function AdminDashboard() {
             </TabsContent>
             <TabsContent value="relatorios">
               <Suspense fallback={<TabFallback />}>
-                <RelatorioCRMPage />
+                <RelatorioCRMPage embedded franchiseIdOverride={orgFilter} />
               </Suspense>
             </TabsContent>
             <TabsContent value="audit">
