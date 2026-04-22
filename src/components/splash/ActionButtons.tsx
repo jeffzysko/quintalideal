@@ -336,7 +336,7 @@ export function ActionButtons({ score, poolName, whatsappNumber, assignedFranchi
           >
             <MapPin className="w-5 h-5 text-primary mx-auto mb-1.5" />
             <p className="text-xs text-muted-foreground mb-0.5">
-              {lang === 'es' ? 'Un especialista de tu región puede ayudarte ahora' : 'Um especialista Quintal Ideal da sua região pode te ajudar agora'}
+              {lang === 'es' ? 'Un asociado de Quintal Ideal de tu región puede ayudarte ahora' : 'Um parceiro do Quintal Ideal da sua região pode te ajudar agora'}
             </p>
             <p className="text-sm font-bold text-foreground">{assignedFranchiseName}</p>
             {assignedCidadeBase && <p className="text-xs text-muted-foreground">{assignedCidadeBase}</p>}
