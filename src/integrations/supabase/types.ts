@@ -2144,6 +2144,10 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      get_franchise_benchmarks: {
+        Args: { p_franchise_id: string }
+        Returns: Json
+      }
       get_franchise_catalog: {
         Args: { p_franchise_id: string }
         Returns: {
