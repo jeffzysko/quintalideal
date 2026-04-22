@@ -12,6 +12,8 @@ import { SITE_URL, SITE_DOMAIN } from '@/lib/constants';
 import { type Lang, t } from '@/lib/i18n';
 
 import { type FitLevel, getFitLevelLabel, getFitLevelEmoji } from '@/lib/scoring-v2';
+import type { RecommendationResultV3 } from '@/lib/scoring-v3';
+import { RecommendationCardsV3 } from './RecommendationCardsV3';
 
 interface PoolSpecs {
   tamanho?: string;
@@ -68,9 +70,10 @@ interface ActionButtonsProps {
   brandLogoUrl?: string;
   brandPrimaryColor?: string;
   brandScoreLabel?: string;
+  v3Result?: RecommendationResultV3;
 }
 
-export function ActionButtons({ score, poolName, poolDescription, poolSpecs, recommendedSize, whatsappNumber, assignedFranchiseName, assignedCidadeBase, leadName, refCode: _refCode, franchiseId, alternatives = [], fitLevel, matchScore, reasoning, closingPhrase, isWeakRecommendation, customerProfile: _customerProfile, upgradeOption, lang = 'pt', brandName, brandLogoUrl, brandPrimaryColor, brandScoreLabel }: ActionButtonsProps) {
+export function ActionButtons({ score, poolName, poolDescription, poolSpecs, recommendedSize, whatsappNumber, assignedFranchiseName, assignedCidadeBase, leadName, refCode: _refCode, franchiseId, alternatives = [], fitLevel, matchScore, reasoning, closingPhrase, isWeakRecommendation, customerProfile: _customerProfile, upgradeOption, lang = 'pt', brandName, brandLogoUrl, brandPrimaryColor, brandScoreLabel, v3Result }: ActionButtonsProps) {
   const scoreLabel = brandScoreLabel || 'Índice do Quintal';
   const ranking = getRankingGaucho(score);
   const classification = getYardClassification(score);
@@ -461,6 +464,16 @@ export function ActionButtons({ score, poolName, poolDescription, poolSpecs, rec
               ))}
             </div>
           </motion.div>
+        )}
+
+        {/* V3 — Cards de compatibilidade (novo motor 3-camadas) */}
+        {v3Result && (
+          <RecommendationCardsV3
+            result={v3Result}
+            whatsappNumber={whatsappNumber}
+            leadName={leadName}
+            lang={lang}
+          />
         )}
 
         {/* Upgrade option */}
