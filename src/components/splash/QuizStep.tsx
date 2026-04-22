@@ -88,7 +88,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.12 + Math.min(i * 0.05, 0.15) }}
                       onClick={() => handleSelect(opt.value)}
-                      className={`w-full flex items-center gap-3 sm:gap-4 p-3.5 sm:p-4 rounded-2xl border-2 transition-all duration-200 text-left group relative overflow-hidden active:scale-[0.98] ${
+                      className={`w-full flex items-center gap-3 sm:gap-4 p-3.5 sm:p-4 min-h-[52px] sm:min-h-0 rounded-2xl border-2 transition-all duration-200 text-left group relative overflow-hidden active:scale-[0.98] ${
                         isSelected
                           ? 'border-primary bg-primary/5 shadow-md'
                           : 'border-border bg-background hover:border-primary/40 hover:bg-accent/30'
