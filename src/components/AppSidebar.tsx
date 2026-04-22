@@ -212,7 +212,7 @@ export function AppSidebar() {
     const active = isActive(item);
     return (
       <SidebarMenuItem key={item.title + item.url}>
-        <SidebarMenuButton asChild isActive={active} tooltip={collapsed ? item.title : undefined}>
+        <SidebarMenuButton asChild isActive={active} tooltip={item.title}>
           <button
             onClick={() => navigate(item.url)}
             data-tour={item.dataTour}
