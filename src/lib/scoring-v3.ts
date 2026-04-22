@@ -369,7 +369,11 @@ export function recommendPoolsV3(
 
     const totalAntesSinergia = raw * 10; // 0–100
     const bonus = synergyBonus(m, input);
-    const totalScore = Math.round(Math.max(0, Math.min(100, totalAntesSinergia + bonus)));
+    const modelName = (m.nome_modelo || '').toLowerCase().trim();
+    let penalty = 0;
+    if (modelName === 'nassau') penalty = -40;
+    else if (modelName === 'italiana' || modelName === 'tropical' || modelName === 'farol da barra') penalty = -20;
+    const totalScore = Math.round(Math.max(0, Math.min(100, totalAntesSinergia + bonus + penalty)));
 
     const razao_principal = buildRazaoPrincipal(m, input, breakdown);
     const label_compatibilidade = getCompatLabel(totalScore);
