@@ -42,6 +42,7 @@ import {
   SidebarMenuItem,
   SidebarFooter,
   SidebarHeader,
+  SidebarRail,
   useSidebar,
 } from '@/components/ui/sidebar';
 
