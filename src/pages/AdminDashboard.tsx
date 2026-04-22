@@ -458,19 +458,8 @@ export default function AdminDashboard() {
           <PageSectionHeader title={activeHeader.title} subtitle={activeHeader.subtitle} />
         )}
 
-        <div className="flex items-center justify-between gap-3 mb-6">
-          <Breadcrumbs className="md:hidden" items={[{ label: 'Admin' }]} />
-          {['overview', 'leads', 'kanban', 'analytics'].includes(activeTab) && (
-            <OrganizationSwitcher
-              activeFranchiseId={orgFilter}
-              onSwitch={(id) => {
-                setOrgFilter(id);
-                setFilterFranquia(id || 'all');
-                updateLeadListPage(1);
-              }}
-              compact
-            />
-          )}
+        <div className="md:hidden mb-3">
+          <Breadcrumbs items={[{ label: 'Admin' }]} />
         </div>
         {/* Mobile: Select dropdown (desktop uses sidebar) */}
         <div className="md:hidden mb-4 relative z-10">
