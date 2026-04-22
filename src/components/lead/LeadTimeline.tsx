@@ -55,7 +55,8 @@ export function LeadTimeline({ leadId }: LeadTimelineProps) {
       .from('lead_activities')
       .select('*')
       .eq('lead_id', leadId)
-      .order('created_at', { ascending: false });
+      .order('created_at', { ascending: false })
+      .limit(150);
     if (data) setActivities(data as Activity[]);
     setLoading(false);
   };

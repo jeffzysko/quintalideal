@@ -32,7 +32,9 @@ export function PostSaleDashboard({ franchiseId, basePath = '/painel/lead' }: Po
         .from('post_sale_projects')
         .select('*, leads!inner(nome, cidade)')
         .eq('franchise_id', franchiseId)
-        .order('installation_date', { ascending: true, nullsFirst: false });
+        .order('installation_date', { ascending: true, nullsFirst: false })
+        .order('created_at', { ascending: false })
+        .limit(200);
       return data || [];
     },
     enabled: !!franchiseId,

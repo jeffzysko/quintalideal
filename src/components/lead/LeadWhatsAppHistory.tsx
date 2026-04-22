@@ -40,6 +40,7 @@ export function LeadWhatsAppHistory({ leadId }: Props) {
       return data || [];
     },
     enabled: !!leadId,
+    staleTime: 30 * 1000,
   });
 
   if (isLoading) {

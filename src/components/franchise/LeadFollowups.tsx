@@ -94,6 +94,7 @@ export function LeadFollowups({ franchiseId, leadId, leadName }: LeadFollowupsPr
       return rows;
     },
     enabled: !!franchiseId,
+    staleTime: 60 * 1000,
   });
 
   const buildScheduledDate = (): Date | null => {

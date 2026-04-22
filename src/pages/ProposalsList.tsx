@@ -74,6 +74,7 @@ export default function ProposalsList() {
       return data || [];
     },
     enabled: canQuery,
+    staleTime: 60 * 1000,
   });
 
   // Realtime subscription to auto-refresh list

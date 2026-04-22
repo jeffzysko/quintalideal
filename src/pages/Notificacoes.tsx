@@ -89,6 +89,7 @@ export default function NotificacoesPage() {
       return { notifications: (data || []) as Notification[], total: count || 0 };
     },
     enabled: !!user,
+    staleTime: 30 * 1000,
   });
 
   const allNotifications = data?.notifications || [];
