@@ -1,3 +1,4 @@
+import { memo } from 'react';
 import { cn } from '@/lib/utils';
 
 const AVATAR_COLORS = [
@@ -32,7 +33,7 @@ const sizeClasses: Record<NonNullable<LeadAvatarProps['size']>, string> = {
   lg: 'w-14 h-14 text-lg',
 };
 
-export function LeadAvatar({ name, size = 'md', className }: LeadAvatarProps) {
+export const LeadAvatar = memo(function LeadAvatar({ name, size = 'md', className }: LeadAvatarProps) {
   return (
     <div
       className={cn(
@@ -46,4 +47,4 @@ export function LeadAvatar({ name, size = 'md', className }: LeadAvatarProps) {
       {getInitials(name)}
     </div>
   );
-}
+});

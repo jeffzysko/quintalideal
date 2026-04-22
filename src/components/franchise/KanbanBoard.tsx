@@ -34,6 +34,7 @@ import { cn } from '@/lib/utils';
 
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuth } from '@/hooks/useAuth';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 
 import { COLUMNS, estimateLeadValue, type LeadWithQuiz } from './kanban/types';
 import { LeadCard } from './kanban/LeadCard';
@@ -111,8 +112,10 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
     return Array.from(set).sort();
   }, [leads]);
 
+  const debouncedNameSearch = useDebouncedValue(nameSearch, 250);
+
   const filteredLeads = useMemo(() => {
-    const search = nameSearch.trim().toLowerCase();
+    const search = debouncedNameSearch.trim().toLowerCase();
     return leads.filter((lead) => {
       if (search && !(lead.nome || '').toLowerCase().includes(search)) return false;
       if (tempFilter !== 'all') {
@@ -137,7 +140,7 @@ export function KanbanBoard({ leads, franchiseId, basePath, franchiseMap }: Kanb
       }
       return true;
     });
-  }, [leads, tempFilter, originFilter, cityFilter, franchiseFilter, nameSearch, dateFrom, dateTo, franchiseMap]);
+  }, [leads, tempFilter, originFilter, cityFilter, franchiseFilter, debouncedNameSearch, dateFrom, dateTo, franchiseMap]);
 
   const hasActiveFilters = tempFilter !== 'all' || originFilter !== 'all' || cityFilter !== 'all' || franchiseFilter !== 'all' || nameSearch.trim() !== '' || !!dateFrom || !!dateTo;
 

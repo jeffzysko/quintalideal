@@ -181,7 +181,7 @@ export default function BrandCatalogPage() {
             <Card key={m.id} className="overflow-hidden">
               <div className="aspect-video bg-muted">
                 {cover ? (
-                  <img src={cover} alt={m.nome_modelo} className="w-full h-full object-cover" />
+                  <img src={cover} alt={m.nome_modelo} loading="lazy" decoding="async" className="w-full h-full object-cover" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-xs text-muted-foreground">Sem foto</div>
                 )}
@@ -284,7 +284,7 @@ export default function BrandCatalogPage() {
               <Label>Foto principal</Label>
               <div className="flex items-center gap-3">
                 {editing.imagem_principal && (
-                  <img src={editing.imagem_principal} alt="" className="h-16 w-16 rounded object-cover border" />
+                  <img src={editing.imagem_principal} alt="" loading="lazy" decoding="async" className="h-16 w-16 rounded object-cover border" />
                 )}
                 <Input type="file" accept="image/*" disabled={uploading} onChange={(e) => e.target.files?.[0] && handleMainPhoto(e.target.files[0])} />
               </div>
@@ -295,7 +295,7 @@ export default function BrandCatalogPage() {
               <div className="flex flex-wrap gap-2">
                 {(editing.gallery_urls ?? []).map((url, i) => (
                   <div key={i} className="relative">
-                    <img src={url} alt="" className="h-16 w-16 rounded object-cover border" />
+                    <img src={url} alt="" loading="lazy" decoding="async" className="h-16 w-16 rounded object-cover border" />
                     <button onClick={() => removeGallery(i)} className="absolute -top-1 -right-1 bg-destructive text-destructive-foreground rounded-full p-0.5">
                       <X className="h-3 w-3" />
                     </button>
