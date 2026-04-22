@@ -9,6 +9,7 @@ import { supabase } from '@/lib/supabase';
 import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import { fireConfetti, haptic } from '@/lib/celebrations';
+import { FranchiseBenchmarkCard } from './FranchiseBenchmarkCard';
 import type { LeadRow } from '@/lib/lead-constants';
 
 interface AchievementsDashboardProps {
@@ -233,6 +234,9 @@ export function AchievementsDashboard({ franchiseId, leads }: AchievementsDashbo
 
   return (
     <div className="space-y-5">
+      {/* Network benchmark (anonymous) */}
+      <FranchiseBenchmarkCard franchiseId={franchiseId} />
+
       {/* Header stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <MiniStat icon={Trophy} label="Vendas totais" value={soldTotal} color="text-emerald-600" bg="bg-emerald-500/10" />
