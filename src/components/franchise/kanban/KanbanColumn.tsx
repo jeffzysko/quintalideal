@@ -64,7 +64,7 @@ export const KanbanColumn = memo(function KanbanColumn({
           : 'border-border/40 bg-muted/20'
       }`}
     >
-      <div className="px-3 pt-3 pb-2">
+      <div className="px-4 pt-4 pb-3">
         <div className="flex items-center justify-between mb-1">
           <div className="flex items-center gap-2 min-w-0">
             <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: color }} />
@@ -96,7 +96,7 @@ export const KanbanColumn = memo(function KanbanColumn({
 
       <div
         ref={parentRef}
-        className="flex flex-col gap-2 p-2 pt-0 overflow-y-auto max-h-[calc(100vh-280px)] scrollbar-none"
+        className="flex flex-col gap-3 p-2 pt-0 overflow-y-auto max-h-[calc(100vh-280px)] scrollbar-none"
       >
         {leads.length === 0 ? (
           <div

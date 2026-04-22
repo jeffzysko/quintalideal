@@ -136,7 +136,7 @@ function FollowupRow({
     >
       <motion.button
         whileTap={{ scale: 0.8 }}
-        className="h-9 w-9 rounded-xl flex items-center justify-center shrink-0 hover:bg-muted/60 transition-colors"
+        className="h-10 w-10 rounded-xl flex items-center justify-center shrink-0 hover:bg-muted/60 transition-colors"
         aria-label="Marcar como concluído"
         onClick={(e) => { e.stopPropagation(); onComplete(f.id); }}
       >
@@ -152,10 +152,10 @@ function FollowupRow({
 
       <div className="flex-1 min-w-0">
         <p className="text-[13px] font-semibold text-foreground truncate">{leadName}</p>
-        <p className={cn('text-xs font-medium mt-0.5', schedule.urgency === 'overdue' ? 'text-destructive' : 'text-muted-foreground')}>
+        <p className={cn('text-xs font-medium mt-1', schedule.urgency === 'overdue' ? 'text-destructive' : 'text-muted-foreground')}>
           {schedule.label}
         </p>
-        {parsed.text && <p className="text-xs text-muted-foreground/60 truncate mt-0.5">{parsed.text}</p>}
+        {parsed.text && <p className="text-xs text-muted-foreground/60 truncate mt-1">{parsed.text}</p>}
       </div>
 
       <ChevronRight className="w-4 h-4 text-muted-foreground/30 shrink-0" />
@@ -213,14 +213,14 @@ function LeadRow({
           )}
         </div>
         {lead.telefone && (
-          <div className="flex items-center gap-0.5 shrink-0">
+          <div className="flex items-center gap-1.5 shrink-0">
             <motion.div whileTap={{ scale: 0.85 }}>
-              <Button size="icon" variant="ghost" className="h-8 w-8 rounded-xl" onClick={handleWhatsApp} aria-label="WhatsApp">
+              <Button size="icon" variant="ghost" className="h-11 w-11 rounded-xl" onClick={handleWhatsApp} aria-label="WhatsApp">
                 <MessageCircle className="w-4 h-4 text-green-600" />
               </Button>
             </motion.div>
             <motion.div whileTap={{ scale: 0.85 }}>
-              <Button size="icon" variant="ghost" className="h-8 w-8 rounded-xl" onClick={handleCall} aria-label="Ligar">
+              <Button size="icon" variant="ghost" className="h-11 w-11 rounded-xl" onClick={handleCall} aria-label="Ligar">
                 <Phone className="w-4 h-4 text-emerald-600" />
               </Button>
             </motion.div>
