@@ -242,14 +242,14 @@ export default function RelatorioCRM({ embedded = false, franchiseIdOverride }: 
   }, [leads, profileMap]);
 
   const periodLabel = useMemo(() => {
-    const opt = PERIOD_OPTIONS.find(o => o.value === period);
+    const opt = periodOptions.find(o => o.value === period);
     if (period === 'custom' && customRange?.from && customRange?.to) {
       return `${format(customRange.from, 'dd/MM/yyyy')} a ${format(customRange.to, 'dd/MM/yyyy')}`;
     }
     return opt?.label || '';
-  }, [period, customRange]);
+  }, [period, customRange, periodOptions]);
 
-  const partnerName = franchise?.nome_franquia || 'Parceiro';
+  const partnerName = isAggregateView ? 'Rede completa' : (franchise?.nome_franquia || 'Parceiro');
 
   const handleExportCSV = () => {
     setIsExporting(true);
