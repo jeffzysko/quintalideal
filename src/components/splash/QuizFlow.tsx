@@ -466,6 +466,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
             brandLogoUrl={brandLogoUrl}
             brandPrimaryColor={brandPrimaryColor}
             brandScoreLabel={brandScoreLabel}
+            v3Result={recommendationV3 || undefined}
           />
         )}
       </Suspense>
