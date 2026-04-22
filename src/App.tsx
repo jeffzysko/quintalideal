@@ -125,7 +125,6 @@ function AppRouteTree() {
       {/* Public pages WITH footer */}
       <Route element={<LayoutWithFooter />}>
         <Route path="/mapa" element={<MapaQuintais />} />
-        <Route path="/ranking" element={<RankingQuintais />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
