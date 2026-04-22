@@ -22,6 +22,7 @@ import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { EmptyState } from '@/components/ui/empty-state';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 
 const STATUS_MAP: Record<string, { label: string; classes: string }> = {
   rascunho: { label: 'Rascunho', classes: 'bg-muted text-muted-foreground' },
@@ -56,6 +57,7 @@ export default function ProposalsList() {
   const [statusFilter, setStatusFilter] = useState('todas');
   const [leadFilter, setLeadFilter] = useState<'todas' | 'com_lead' | 'avulsa'>('todas');
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search, 250);
 
   const proposalsQueryKey = ['proposals', franchiseId, isAdmin];
 
@@ -104,12 +106,12 @@ export default function ProposalsList() {
     } else if (leadFilter === 'avulsa') {
       list = list.filter((p: any) => !p.lead_id);
     }
-    if (search.trim()) {
-      const q = search.toLowerCase().trim();
+    if (debouncedSearch.trim()) {
+      const q = debouncedSearch.toLowerCase().trim();
       list = list.filter((p: any) => p.client_name?.toLowerCase().includes(q));
     }
     return list;
-  }, [proposals, statusFilter, leadFilter, search]);
+  }, [proposals, statusFilter, leadFilter, debouncedSearch]);
 
   // Stats
   const stats = useMemo(() => {
