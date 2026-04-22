@@ -457,7 +457,7 @@ export default function AdminDashboard() {
 
         <div className="flex items-center justify-between gap-3 mb-6">
           <Breadcrumbs className="md:hidden" items={[{ label: 'Admin' }]} />
-          {['overview', 'leads', 'kanban'].includes(activeTab) && (
+          {['overview', 'leads', 'kanban', 'analytics'].includes(activeTab) && (
             <OrganizationSwitcher
               activeFranchiseId={orgFilter}
               onSwitch={(id) => {
