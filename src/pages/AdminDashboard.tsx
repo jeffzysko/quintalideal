@@ -428,9 +428,16 @@ export default function AdminDashboard() {
     ] : []),
   ];
 
+  const ANALYTICS_SUB_HEADER: Record<typeof analyticsSubTab, { title: string; subtitle: string }> = {
+    analytics: { title: 'Analytics', subtitle: 'Métricas de produto e funil de conversão' },
+    'performance-qi': { title: 'Performance QI', subtitle: 'Análise de qualidade e indicadores' },
+    relatorios: { title: 'Relatórios', subtitle: 'KPIs e gráficos do período' },
+    audit: { title: 'Performance Audit', subtitle: 'Auditoria técnica de performance' },
+  };
+
   const HEADER_BY_TAB: Record<typeof activeTab, { title: string; subtitle: string }> = {
     overview: { title: 'Dashboard', subtitle: 'Visão geral da plataforma' },
-    analytics: { title: 'Analytics', subtitle: 'Métricas e performance' },
+    analytics: ANALYTICS_SUB_HEADER[analyticsSubTab],
     'performance-qi': { title: 'Performance QI', subtitle: 'Análise de qualidade e indicadores' },
     leads: {
       title: 'Leads',
@@ -562,7 +569,7 @@ export default function AdminDashboard() {
 
         {activeTab === 'analytics' && (
           <>
-            <Tabs defaultValue="analytics" className="w-full">
+            <Tabs value={analyticsSubTab} onValueChange={(v) => setAnalyticsSubTab(v as typeof analyticsSubTab)} className="w-full">
             <TabsList className="w-full h-auto rounded-xl bg-muted/50 border border-border/40 p-1 gap-0.5 overflow-x-auto scrollbar-hide flex flex-nowrap justify-start mb-4">
               <TabsTrigger value="analytics" className="shrink-0 gap-1.5 rounded-lg text-xs font-medium data-[state=active]:bg-background data-[state=active]:shadow-sm px-3 py-2.5 whitespace-nowrap">
                 <Activity className="w-3.5 h-3.5 shrink-0" /> Analytics
@@ -588,6 +595,13 @@ export default function AdminDashboard() {
               </Suspense>
             </TabsContent>
             <TabsContent value="relatorios">
+              <div className="flex items-center justify-end mb-4">
+                <OrganizationSwitcher
+                  activeFranchiseId={orgFilter}
+                  onSwitch={setOrgFilter}
+                  compact
+                />
+              </div>
               <Suspense fallback={<TabFallback />}>
                 <RelatorioCRMPage embedded franchiseIdOverride={orgFilter} />
               </Suspense>
