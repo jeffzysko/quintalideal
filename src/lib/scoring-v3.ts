@@ -170,22 +170,24 @@ function applyHardFilters(m: PoolModelData, input: QuizInputV3): { eliminado: bo
 
 function subScoreOrcamento(m: PoolModelData, input: QuizInputV3): number {
   const price = getModelPrice(m);
-  if (price == null) return 5;
+  if (price == null) return 7;
   const ratio = price / input.orcamento;
-  if (ratio <= 0.70) return 7;
-  if (ratio <= 0.85) return 10;
-  if (ratio <= 1.00) return 8;
-  if (ratio <= 1.15) return 4;
+  if (ratio <= 0.60) return 8;
+  if (ratio <= 0.80) return 10;
+  if (ratio <= 1.00) return 9;
+  if (ratio <= 1.30) return 5;
+  if (ratio <= 2.50) return 2;
   return 0;
 }
 
 function subScoreEspaco(m: PoolModelData, input: QuizInputV3): number {
   const len = getModelLength(m);
-  if (len == null) return 5;
+  if (len == null) return 7;
   const ratio = len / input.espaco_disponivel;
-  if (ratio <= 0.75) return 7;
-  if (ratio <= 0.90) return 10;
-  if (ratio <= 1.00) return 8;
+  if (ratio <= 0.60) return 7;
+  if (ratio <= 0.80) return 9;
+  if (ratio <= 1.00) return 10;
+  if (ratio <= 1.30) return 6;
   return 0;
 }
 
@@ -268,9 +270,9 @@ function synergyBonus(m: PoolModelData, input: QuizInputV3): number {
 // ── Label de compatibilidade ──
 
 export function getCompatLabel(score: number): CompatLabel {
-  if (score >= 85) return 'Combinação perfeita';
-  if (score >= 70) return 'Excelente escolha';
-  if (score >= 55) return 'Boa opção';
+  if (score >= 78) return 'Combinação perfeita';
+  if (score >= 63) return 'Excelente escolha';
+  if (score >= 48) return 'Boa opção';
   return 'Opção alternativa';
 }
 
