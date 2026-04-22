@@ -13,20 +13,23 @@ import { Search, Ruler, Droplets, ArrowDown, Star, FileText } from 'lucide-react
 import { PageTransition } from '@/components/PageTransition';
 import { EmptyState } from '@/components/ui/empty-state';
 import { cn } from '@/lib/utils';
+import { useDebouncedValue } from '@/hooks/useDebouncedValue';
 
 export default function CatalogoPiscinas() {
   const navigate = useNavigate();
   const [category, setCategory] = useState<string>('Todos');
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebouncedValue(search, 250);
   const [selectedModel, setSelectedModel] = useState<PoolModel | null>(null);
 
   const filtered = useMemo(() => {
+    const q = debouncedSearch.toLowerCase();
     return POOL_MODELS.filter(m => {
       if (category !== 'Todos' && m.category !== category) return false;
-      if (search && !m.name.toLowerCase().includes(search.toLowerCase())) return false;
+      if (q && !m.name.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [category, search]);
+  }, [category, debouncedSearch]);
 
   return (
     <PageTransition>
@@ -87,8 +90,11 @@ export default function CatalogoPiscinas() {
                     <img
                       src={model.image}
                       alt={model.name}
+                      width={400}
+                      height={300}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                       loading="lazy"
+                      decoding="async"
                     />
                     <Badge variant="outline" className={cn('absolute top-2 left-2 text-xs font-semibold backdrop-blur-sm', CATEGORY_COLORS[model.category])}>
                       {model.category}
@@ -143,7 +149,11 @@ export default function CatalogoPiscinas() {
                     <img
                       src={selectedModel.image}
                       alt={selectedModel.name}
+                      width={800}
+                      height={600}
                       className="w-full aspect-[4/3] object-cover"
+                      loading="lazy"
+                      decoding="async"
                     />
                   </div>
 
