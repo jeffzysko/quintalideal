@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, useLocation, Outlet } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation, Outlet, Navigate } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -98,8 +98,17 @@ function LazyFallback() {
 }
 
 import { AuthenticatedLayout } from '@/components/AuthenticatedLayout';
+import { useAuth } from '@/hooks/useAuth';
 
 const NO_FOOTER_PATHS = new Set(['/', '/explorar']);
+
+/** Franquia users hitting /ranking are redirected to the anonymous benchmarking view. */
+function RankingGate() {
+  const { role, loading } = useAuth();
+  if (loading) return <PageSkeleton />;
+  if (role === 'franquia') return <Navigate to="/franquia?tab=achievements" replace />;
+  return <RankingQuintais />;
+}
 
 function LayoutWithFooter() {
   const { pathname } = useLocation();
@@ -125,7 +134,6 @@ function AppRouteTree() {
       {/* Public pages WITH footer */}
       <Route element={<LayoutWithFooter />}>
         <Route path="/mapa" element={<MapaQuintais />} />
-        <Route path="/ranking" element={<RankingQuintais />} />
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
@@ -227,6 +235,10 @@ function AppRouteTree() {
         <Route
           path="/admin/marcas/:brandId/catalogo"
           element={<ProtectedRoute allowedRoles={['super_admin']}><BrandCatalogPage /></ProtectedRoute>}
+        />
+        <Route
+          path="/ranking"
+          element={<ProtectedRoute allowedRoles={['super_admin', 'franquia']}><RankingGate /></ProtectedRoute>}
         />
       </Route>
 

@@ -36,7 +36,7 @@ export function AuthenticatedLayout() {
   const topNavItems = [
     ...(isAdmin ? [{ icon: Radar, label: 'Radar de Mercado', path: '/admin/radar' }] : []),
     { icon: Map, label: 'Mapa', path: '/mapa' },
-    { icon: Trophy, label: 'Ranking', path: '/ranking' },
+    ...(isAdmin ? [{ icon: Trophy, label: 'Ranking', path: '/ranking' }] : []),
   ];
 
   // Mobile: simple layout (BottomNav is rendered globally)
