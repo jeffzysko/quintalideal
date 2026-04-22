@@ -516,10 +516,12 @@ export default function ProposalDetail() {
                     className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
                     onClick={async () => {
                       try {
-                        await supabase.from('proposal_items').delete().eq('proposal_id', proposal.id);
-                        await supabase.from('proposal_views').delete().eq('proposal_id', proposal.id);
-                        await supabase.from('proposal_questions').delete().eq('proposal_id', proposal.id);
-                        await supabase.from('proposal_negotiations').delete().eq('proposal_id', proposal.id);
+                        await Promise.all([
+                          supabase.from('proposal_items').delete().eq('proposal_id', proposal.id),
+                          supabase.from('proposal_views').delete().eq('proposal_id', proposal.id),
+                          supabase.from('proposal_questions').delete().eq('proposal_id', proposal.id),
+                          supabase.from('proposal_negotiations').delete().eq('proposal_id', proposal.id),
+                        ]);
                         await supabase.from('proposals').delete().eq('id', proposal.id);
                         toast.success('Proposta excluída com sucesso');
                         navigate('/propostas');

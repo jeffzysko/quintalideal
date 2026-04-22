@@ -164,22 +164,23 @@ export default function NewProposal() {
   useEffect(() => {
     if (!editId || editLoaded) return;
     const loadProposal = async () => {
-      const { data: proposal, error } = await supabase
-        .from('proposals')
-        .select('*')
-        .eq('id', editId)
-        .single();
+      const [{ data: proposal, error }, { data: items }] = await Promise.all([
+        supabase
+          .from('proposals')
+          .select('*')
+          .eq('id', editId)
+          .single(),
+        supabase
+          .from('proposal_items')
+          .select('*')
+          .eq('proposal_id', editId)
+          .order('sort_order'),
+      ]);
       if (error || !proposal) {
         toast.error('Proposta não encontrada');
         navigate('/propostas');
         return;
       }
-      // Load items
-      const { data: items } = await supabase
-        .from('proposal_items')
-        .select('*')
-        .eq('proposal_id', editId)
-        .order('sort_order');
 
       const formItems: ProposalItem[] = (items && items.length > 0)
         ? items.map(it => ({
