@@ -83,64 +83,65 @@ export default function RelatorioCRM({ embedded = false, franchiseIdOverride }: 
   const { from, to } = getDateRange(period, customRange);
 
   const { data: franchise } = useQuery({
-    queryKey: ['crm-report-franchise', franchiseId],
+    queryKey: ['crm-report-franchise', effectiveFranchiseId],
     queryFn: async () => {
-      if (!franchiseId) return null;
-      const { data } = await supabase.from('franchises').select('nome_franquia').eq('id', franchiseId).maybeSingle();
+      if (!effectiveFranchiseId) return null;
+      const { data } = await supabase.from('franchises').select('nome_franquia').eq('id', effectiveFranchiseId).maybeSingle();
       return data;
     },
-    enabled: !!franchiseId,
+    enabled: !!effectiveFranchiseId,
   });
 
   // Fetch leads
   const { data: leads = [], isLoading } = useQuery({
-    queryKey: ['crm-report-leads', franchiseId, from.toISOString(), to.toISOString()],
+    queryKey: ['crm-report-leads', effectiveFranchiseId ?? 'all', isAggregateView, from.toISOString(), to.toISOString()],
     queryFn: async () => {
-      if (!franchiseId) return [];
-      const { data, error } = await supabase
+      if (!effectiveFranchiseId && !isAggregateView) return [];
+      let query = supabase
         .from('leads')
         .select('id, nome, telefone, cidade, status_lead, created_at, updated_at, loss_reason, assigned_to, franquia_id')
-        .eq('franquia_id', franchiseId)
         .gte('created_at', from.toISOString())
         .lte('created_at', to.toISOString())
         .order('created_at', { ascending: false });
+      if (effectiveFranchiseId) query = query.eq('franquia_id', effectiveFranchiseId);
+      const { data, error } = await query;
       if (error) throw error;
       return data || [];
     },
-    enabled: !!franchiseId,
+    enabled: !!effectiveFranchiseId || isAggregateView,
   });
 
   // Fetch proposals for ticket medio
   const { data: proposals = [] } = useQuery({
-    queryKey: ['crm-report-proposals', franchiseId, from.toISOString(), to.toISOString()],
+    queryKey: ['crm-report-proposals', effectiveFranchiseId ?? 'all', isAggregateView, from.toISOString(), to.toISOString()],
     queryFn: async () => {
-      if (!franchiseId) return [];
-      const { data, error } = await supabase
+      if (!effectiveFranchiseId && !isAggregateView) return [];
+      let query = supabase
         .from('proposals')
         .select('id, total, status, lead_id, created_at')
-        .eq('franchise_id', franchiseId)
         .in('status', ['aceita'])
         .gte('created_at', from.toISOString())
         .lte('created_at', to.toISOString());
+      if (effectiveFranchiseId) query = query.eq('franchise_id', effectiveFranchiseId);
+      const { data, error } = await query;
       if (error) throw error;
       return data || [];
     },
-    enabled: !!franchiseId,
+    enabled: !!effectiveFranchiseId || isAggregateView,
   });
 
   // Fetch profiles for assigned_to names
   const { data: profiles = [] } = useQuery({
-    queryKey: ['crm-report-profiles', franchiseId],
+    queryKey: ['crm-report-profiles', effectiveFranchiseId ?? 'all', isAggregateView],
     queryFn: async () => {
-      if (!franchiseId) return [];
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('user_id, full_name')
-        .eq('franquia_id', franchiseId);
+      if (!effectiveFranchiseId && !isAggregateView) return [];
+      let query = supabase.from('profiles').select('user_id, full_name');
+      if (effectiveFranchiseId) query = query.eq('franquia_id', effectiveFranchiseId);
+      const { data, error } = await query;
       if (error) throw error;
       return data || [];
     },
-    enabled: !!franchiseId,
+    enabled: !!effectiveFranchiseId || isAggregateView,
   });
 
   const profileMap = useMemo(() => {
