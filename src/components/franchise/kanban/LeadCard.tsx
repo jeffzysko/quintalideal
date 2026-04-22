@@ -197,11 +197,11 @@ export const LeadCard = memo(function LeadCard({
       )}
 
       <div
-        className="p-3"
+        className="p-4 space-y-2"
         onClick={!overlay ? () => navigate(`${basePath}/${lead.id}`) : undefined}
       >
         {/* Linha 1: Avatar + Nome + Responsável + Grip */}
-        <div className="flex items-center gap-2 mb-2">
+        <div className="flex items-center gap-2">
           <LeadAvatar name={lead.nome} size="sm" />
           <p className="text-sm font-semibold text-foreground truncate flex-1 leading-tight">
             {lead.nome || '—'}
@@ -221,7 +221,7 @@ export const LeadCard = memo(function LeadCard({
         </div>
 
         {/* Linha 2: Temperatura + Modelo + Indicador manual */}
-        <div className="flex items-center gap-1.5 mb-2 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
           <span
             className={cn(
               'inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full border',
@@ -244,7 +244,7 @@ export const LeadCard = memo(function LeadCard({
         {/* Linha 3: Cidade + Último contato */}
         <div className="flex items-center justify-between gap-2">
           {lead.cidade ? (
-            <span className="text-xs text-muted-foreground flex items-center gap-1 truncate">
+            <span className="text-xs text-muted-foreground flex items-center gap-1.5 truncate">
               <MapPin className="w-3 h-3 shrink-0" />
               {lead.cidade}
             </span>
@@ -256,7 +256,7 @@ export const LeadCard = memo(function LeadCard({
             const days = (Date.now() - new Date(lastTs).getTime()) / (1000 * 60 * 60 * 24);
             const tone = days > 7 ? 'text-destructive' : days > 3 ? 'text-amber-500' : 'text-muted-foreground';
             return (
-              <span className={cn('text-xs flex items-center gap-1 shrink-0 font-medium', tone)}>
+              <span className={cn('text-xs flex items-center gap-1.5 shrink-0 font-medium', tone)}>
                 <Clock className="w-3 h-3" />
                 {formatDistanceToNow(new Date(lastTs), { locale: ptBR, addSuffix: true }).replace('há ', '')}
               </span>
@@ -299,7 +299,7 @@ export const LeadCard = memo(function LeadCard({
                 e.stopPropagation();
                 window.open(`https://wa.me/${toWhatsAppPhone(lead.telefone!)}`, '_blank');
               }}
-              className="flex-1 h-auto py-2 rounded-none text-xs font-medium gap-1.5 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-950/20"
+              className="flex-1 h-auto py-2.5 rounded-none text-xs font-medium gap-1.5 text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 dark:hover:bg-emerald-950/20"
               title="Enviar WhatsApp"
             >
               <MessageCircle className="w-3.5 h-3.5" />
@@ -313,7 +313,7 @@ export const LeadCard = memo(function LeadCard({
                 size="sm"
                 type="button"
                 onClick={(e) => e.stopPropagation()}
-                className="flex-1 h-auto py-2 rounded-none text-xs font-medium gap-1.5 text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+                className="flex-1 h-auto py-2.5 rounded-none text-xs font-medium gap-1.5 text-muted-foreground hover:bg-muted/40 hover:text-foreground"
                 title="Adicionar nota"
               >
                 <StickyNote className="w-3.5 h-3.5" />
@@ -331,7 +331,7 @@ export const LeadCard = memo(function LeadCard({
               />
               <Button
                 size="sm"
-                className="w-full h-7 text-xs gap-1"
+                className="w-full h-9 text-xs gap-1"
                 disabled={!noteText.trim() || savingNote}
                 onClick={handleSaveNote}
               >
@@ -347,7 +347,7 @@ export const LeadCard = memo(function LeadCard({
                   size="sm"
                   type="button"
                   onClick={(e) => e.stopPropagation()}
-                  className="flex-1 h-auto py-2 rounded-none text-xs font-medium gap-1.5 text-muted-foreground hover:bg-muted/40 hover:text-foreground"
+                  className="flex-1 h-auto py-2.5 rounded-none text-xs font-medium gap-1.5 text-muted-foreground hover:bg-muted/40 hover:text-foreground"
                   title="Mover etapa"
                 >
                   <ArrowRightLeft className="w-3.5 h-3.5" />

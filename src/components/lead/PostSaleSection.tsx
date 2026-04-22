@@ -318,7 +318,7 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
       {/* Status */}
       <Card className="rounded-xl border border-border/40 bg-card shadow-sm">
         <CardContent className="p-4 space-y-4">
-          <div className="flex items-center gap-2 mb-1">
+          <div className="flex items-center gap-2 mb-3">
             <Wrench className="w-4 h-4 text-primary" />
             <h3 className="text-sm font-semibold text-foreground">Status do Projeto</h3>
             <TooltipProvider>
@@ -406,7 +406,7 @@ function PostSaleForm({ project }: { project: PostSaleProject }) {
             <p className="text-xs text-muted-foreground mt-1">Para comparar com o orçamento inicial</p>
           </div>
 
-          <Button onClick={saveProject} disabled={saving} className="w-full gap-2">
+          <Button onClick={saveProject} disabled={saving} size="lg" className="w-full gap-2">
             {saving ? <div className="animate-spin w-4 h-4 border-2 border-primary-foreground border-t-transparent rounded-full" /> : <Save className="w-4 h-4" />}
             {saving ? 'Salvando...' : 'Salvar projeto'}
           </Button>
