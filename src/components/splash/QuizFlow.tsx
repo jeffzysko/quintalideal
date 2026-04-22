@@ -3,6 +3,7 @@ import { AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import { HeroSection } from './HeroSection';
 import { normalizeQuizToV2, recommendPoolsV2, type PoolModelData, type RecommendationResultV2 } from '@/lib/scoring-v2';
+import { normalizeQuizToV3, recommendPoolsV3, type RecommendationResultV3 } from '@/lib/scoring-v3';
 // Legacy scoring kept for backward compat reference
 import { supabase } from '@/lib/supabase';
 import { toast } from 'sonner';
@@ -66,6 +67,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   const [quizStep, setQuizStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [recommendation, setRecommendation] = useState<RecommendationResultV2 | null>(null);
+  const [recommendationV3, setRecommendationV3] = useState<RecommendationResultV3 | null>(null);
   const [leadName, setLeadName] = useState('');
   const [leadRefCode, setLeadRefCode] = useState('');
   const [saving, setSaving] = useState(false);
@@ -146,6 +148,11 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
     const v2Input = normalizeQuizToV2(newAnswers);
     const result = recommendPoolsV2(v2Input, allModels, brandName);
     setRecommendation(result);
+
+    // V3 paralelo (motor 3-camadas) — alimenta a UI nova de cards de compatibilidade
+    const v3Input = normalizeQuizToV3(newAnswers);
+    const resultV3 = recommendPoolsV3(v3Input, allModels);
+    setRecommendationV3(resultV3);
 
     trackEvent('quiz_completed', {
       ...analyticsCtx,
