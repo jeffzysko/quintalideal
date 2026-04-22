@@ -81,22 +81,27 @@ export function RecommendationCardsV3({ result, whatsappNumber, leadName, lang =
   return (
     <div className="mt-6">
       <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-3 px-1">
-        {lang === 'es' ? 'Recomendaciones para ti' : 'Recomendações para você'}
+        {lang === 'es' ? 'Piscinas Recomendadas para Ti' : 'Piscinas Recomendadas para Você'}
       </p>
       <div className="space-y-3">
         {result.top3.map((scored, i) => {
           const cls = labelClasses(scored.label_compatibilidade);
           const img = getPoolImage(scored.model.nome_modelo);
+          const isPrimary = i === 0;
           return (
             <motion.div
               key={scored.model.nome_modelo}
               initial={{ opacity: 0, y: 12 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 + i * 0.08 }}
-              className="rounded-2xl overflow-hidden border border-border bg-card"
+              className={`rounded-2xl overflow-hidden bg-card ${
+                isPrimary
+                  ? 'border-2 border-primary shadow-xl shadow-primary/10 ring-1 ring-primary/20'
+                  : 'border border-border'
+              }`}
             >
               {img && (
-                <div className="aspect-[16/9] w-full overflow-hidden">
+                <div className={`${isPrimary ? 'aspect-[16/10]' : 'aspect-[16/9]'} w-full overflow-hidden`}>
                   <img
                     src={img}
                     alt={scored.model.nome_modelo}
@@ -105,15 +110,20 @@ export function RecommendationCardsV3({ result, whatsappNumber, leadName, lang =
                   />
                 </div>
               )}
-              <div className="p-4">
-                <div className="mb-2">
+              <div className={isPrimary ? 'p-5' : 'p-4'}>
+                <div className="mb-2 flex flex-wrap items-center gap-1.5">
+                  {isPrimary && (
+                    <span className="inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-primary text-primary-foreground">
+                      {lang === 'es' ? 'Modelo Recomendado' : 'Modelo Recomendado'}
+                    </span>
+                  )}
                   <span
                     className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${cls.badge}`}
                   >
                     {scored.label_compatibilidade}
                   </span>
                 </div>
-                <h3 className="text-base font-bold text-foreground mb-1">
+                <h3 className={`font-bold text-foreground mb-1 ${isPrimary ? 'text-lg' : 'text-base'}`}>
                   {scored.model.nome_modelo}
                 </h3>
                 <p className="text-sm text-muted-foreground mb-3">
