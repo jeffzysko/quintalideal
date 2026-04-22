@@ -455,7 +455,7 @@ export default function AdminDashboard() {
           <PageSectionHeader title={activeHeader.title} subtitle={activeHeader.subtitle} />
         )}
 
-        <div className="flex items-center justify-between gap-3 mb-2">
+        <div className="flex items-center justify-between gap-3 mb-6">
           <Breadcrumbs className="md:hidden" items={[{ label: 'Admin' }]} />
           {['overview', 'leads', 'kanban'].includes(activeTab) && (
             <OrganizationSwitcher
