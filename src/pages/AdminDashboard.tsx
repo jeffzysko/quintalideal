@@ -100,8 +100,11 @@ export default function AdminDashboard() {
   const [viewFranchiseId, setViewFranchiseId] = useState<string>('');
   const [timeRange, setTimeRange] = useState<TimeRange>('30');
 
-  // Global org filter from Organization Switcher
+  // Org filter (used inside the Relatórios sub-tab of Analytics only)
   const [orgFilter, setOrgFilter] = useState<string | null>(null);
+
+  // Active sub-tab inside Analytics (controls PageHeader title)
+  const [analyticsSubTab, setAnalyticsSubTab] = useState<'analytics' | 'performance-qi' | 'relatorios' | 'audit'>('analytics');
 
   const [filterFranquia, setFilterFranquia] = useState('all');
   const [filterStatus, setFilterStatus] = useState('all');
