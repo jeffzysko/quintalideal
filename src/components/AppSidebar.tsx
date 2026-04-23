@@ -26,6 +26,7 @@ import {
   Code,
   LayoutGrid,
   CalendarDays,
+  Mail,
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -122,6 +123,7 @@ const SUPER_ADMIN_GROUPS: NavGroup[] = [
     defaultOpen: true,
     items: [
       { title: 'WhatsApp', url: '/admin?tab=whatsapp', icon: MessageCircle, matchTab: 'whatsapp' },
+      { title: 'E-mails da Plataforma', url: '/admin?tab=emails', icon: Mail, matchTab: 'emails' },
     ],
   },
   {
