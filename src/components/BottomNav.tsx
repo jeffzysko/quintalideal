@@ -72,6 +72,8 @@ const FRANCHISE_PRIMARY: NavItem[] = [
 ];
 
 const FRANCHISE_MORE: NavItem[] = [
+  { icon: CalendarDays, label: 'Agenda', path: '/agenda' },
+  { icon: LayoutGrid, label: 'Catálogo', path: '/catalogo' },
   { icon: Trophy, label: 'Metas', path: '/franquia?tab=achievements' },
   { icon: BarChart2, label: 'Relatórios', path: '/relatorio-crm' },
   { icon: CreditCard, label: 'Planos', path: '/planos' },
