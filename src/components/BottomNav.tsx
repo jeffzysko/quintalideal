@@ -25,6 +25,8 @@ import {
   DollarSign,
   Store,
   Compass,
+  LayoutGrid,
+  CalendarDays,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from '@/components/ui/drawer';
