@@ -24,6 +24,8 @@ import {
   Users2,
   Store,
   Code,
+  LayoutGrid,
+  CalendarDays,
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
@@ -76,6 +78,7 @@ const SUPER_ADMIN_GROUPS: NavGroup[] = [
     items: [
       { title: 'Dashboard', url: '/admin', icon: LayoutDashboard, matchTab: 'overview' },
       { title: 'Analytics', url: '/admin?tab=analytics', icon: TrendingUp, matchTab: 'analytics' },
+      { title: 'Agenda', url: '/agenda', icon: CalendarDays, matchPaths: ['/agenda'] },
     ],
   },
   {
@@ -86,6 +89,7 @@ const SUPER_ADMIN_GROUPS: NavGroup[] = [
     items: [
       { title: 'Franquias', url: '/admin?tab=franchises', icon: Store, matchTab: 'franchises' },
       { title: 'Marcas', url: '/admin/marcas', icon: Building2, matchPaths: ['/admin/marcas'] },
+      { title: 'Catálogo', url: '/catalogo', icon: LayoutGrid, matchPaths: ['/catalogo'] },
       { title: 'Usuários', url: '/admin?tab=users', icon: Users, matchTab: 'users' },
     ],
   },
@@ -98,6 +102,7 @@ const SUPER_ADMIN_GROUPS: NavGroup[] = [
       { title: 'Leads', url: '/admin?tab=leads', icon: Users2, matchTab: 'leads' },
       { title: 'Explorar', url: '/explorar', icon: Compass, matchPaths: ['/explorar'] },
       { title: 'Status do Sistema', url: '/superadmin/status', icon: Activity, matchPaths: ['/superadmin/status'] },
+      { title: 'Performance', url: '/admin/performance', icon: Activity, matchPaths: ['/admin/performance'] },
       { title: 'Logs de Erro', url: '/admin?tab=errors', icon: AlertTriangle, matchTab: 'errors' },
     ],
   },
@@ -114,7 +119,7 @@ const SUPER_ADMIN_GROUPS: NavGroup[] = [
     id: 'sa-comunicacao',
     label: 'Comunicação',
     collapsible: true,
-    defaultOpen: false,
+    defaultOpen: true,
     items: [
       { title: 'WhatsApp', url: '/admin?tab=whatsapp', icon: MessageCircle, matchTab: 'whatsapp' },
     ],
@@ -139,6 +144,7 @@ const FRANCHISE_GROUPS: NavGroup[] = [
     collapsible: false,
     items: [
       { title: 'Hoje', url: '/hoje', icon: Sun },
+      { title: 'Agenda', url: '/agenda', icon: CalendarDays, matchPaths: ['/agenda'] },
       { title: 'Leads', url: '/franquia?tab=funnel', icon: Kanban, matchTab: 'funnel' },
     ],
   },
@@ -149,6 +155,7 @@ const FRANCHISE_GROUPS: NavGroup[] = [
     defaultOpen: true,
     items: [
       { title: 'Propostas', url: '/propostas', icon: FileText, matchPaths: ['/propostas'], dataTour: 'nav-propostas' },
+      { title: 'Catálogo', url: '/catalogo', icon: LayoutGrid, matchPaths: ['/catalogo'] },
       { title: 'Pós-venda', url: '/franquia?tab=pos-venda', icon: Package, matchTab: 'pos-venda' },
       { title: 'Metas', url: '/franquia?tab=achievements', icon: Trophy, matchTab: 'achievements' },
     ],
