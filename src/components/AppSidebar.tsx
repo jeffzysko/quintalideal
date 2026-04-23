@@ -119,7 +119,7 @@ const SUPER_ADMIN_GROUPS: NavGroup[] = [
     id: 'sa-comunicacao',
     label: 'Comunicação',
     collapsible: true,
-    defaultOpen: false,
+    defaultOpen: true,
     items: [
       { title: 'WhatsApp', url: '/admin?tab=whatsapp', icon: MessageCircle, matchTab: 'whatsapp' },
     ],
