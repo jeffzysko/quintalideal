@@ -144,6 +144,7 @@ const FRANCHISE_GROUPS: NavGroup[] = [
     collapsible: false,
     items: [
       { title: 'Hoje', url: '/hoje', icon: Sun },
+      { title: 'Agenda', url: '/agenda', icon: CalendarDays, matchPaths: ['/agenda'] },
       { title: 'Leads', url: '/franquia?tab=funnel', icon: Kanban, matchTab: 'funnel' },
     ],
   },
@@ -154,6 +155,7 @@ const FRANCHISE_GROUPS: NavGroup[] = [
     defaultOpen: true,
     items: [
       { title: 'Propostas', url: '/propostas', icon: FileText, matchPaths: ['/propostas'], dataTour: 'nav-propostas' },
+      { title: 'Catálogo', url: '/catalogo', icon: LayoutGrid, matchPaths: ['/catalogo'] },
       { title: 'Pós-venda', url: '/franquia?tab=pos-venda', icon: Package, matchTab: 'pos-venda' },
       { title: 'Metas', url: '/franquia?tab=achievements', icon: Trophy, matchTab: 'achievements' },
     ],
