@@ -80,7 +80,16 @@ export default function RelatorioCRM({ embedded = false, franchiseIdOverride }: 
   const [assignedFilter, setAssignedFilter] = useState('all');
   const [isExporting, setIsExporting] = useState(false);
 
-  const { from, to } = getDateRange(period, customRange);
+  // IMPORTANT: memoize so `from`/`to` are stable across renders.
+  // `getDateRange` calls `new Date()` internally, so calling it on each render
+  // produces new Date instances → new ISO strings in queryKey → infinite refetch
+  // loop that keeps the KPI cards stuck in loading state.
+  const { from, to } = useMemo(
+    () => getDateRange(period, customRange),
+    // Re-evaluate only when the user actually changes the filter.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [period, customRange?.from?.getTime(), customRange?.to?.getTime()],
+  );
 
   const { data: franchise } = useQuery({
     queryKey: ['crm-report-franchise', effectiveFranchiseId],
