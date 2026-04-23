@@ -89,6 +89,7 @@ const SUPER_ADMIN_GROUPS: NavGroup[] = [
     items: [
       { title: 'Franquias', url: '/admin?tab=franchises', icon: Store, matchTab: 'franchises' },
       { title: 'Marcas', url: '/admin/marcas', icon: Building2, matchPaths: ['/admin/marcas'] },
+      { title: 'Catálogo', url: '/catalogo', icon: LayoutGrid, matchPaths: ['/catalogo'] },
       { title: 'Usuários', url: '/admin?tab=users', icon: Users, matchTab: 'users' },
     ],
   },
