@@ -48,10 +48,13 @@ const SUPER_ADMIN_PRIMARY: NavItem[] = [
 
 const SUPER_ADMIN_MORE: NavItem[] = [
   { icon: Building2, label: 'Marcas', path: '/admin/marcas' },
+  { icon: LayoutGrid, label: 'Catálogo', path: '/catalogo' },
   { icon: Users, label: 'Usuários', path: '/admin?tab=users' },
   { icon: Users2, label: 'Leads', path: '/admin?tab=leads' },
   { icon: Compass, label: 'Explorar', path: '/explorar' },
+  { icon: CalendarDays, label: 'Agenda', path: '/agenda' },
   { icon: Activity, label: 'Status', path: '/superadmin/status' },
+  { icon: Activity, label: 'Performance', path: '/admin/performance' },
   { icon: AlertTriangle, label: 'Logs de Erro', path: '/admin?tab=errors' },
   { icon: DollarSign, label: 'Faturamento', path: '/superadmin/receita' },
   { icon: MessageCircle, label: 'WhatsApp', path: '/admin?tab=whatsapp' },
