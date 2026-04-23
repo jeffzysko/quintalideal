@@ -78,6 +78,7 @@ const SUPER_ADMIN_GROUPS: NavGroup[] = [
     items: [
       { title: 'Dashboard', url: '/admin', icon: LayoutDashboard, matchTab: 'overview' },
       { title: 'Analytics', url: '/admin?tab=analytics', icon: TrendingUp, matchTab: 'analytics' },
+      { title: 'Agenda', url: '/agenda', icon: CalendarDays, matchPaths: ['/agenda'] },
     ],
   },
   {
