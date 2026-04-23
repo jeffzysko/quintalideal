@@ -24,6 +24,8 @@ import {
   Users2,
   Store,
   Code,
+  LayoutGrid,
+  CalendarDays,
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
