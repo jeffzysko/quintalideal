@@ -45,18 +45,12 @@ export function HeroSection({
 }: HeroSectionProps) {
   const showLangSwitch = franchiseSlug ? UY_ENABLED_SLUGS.has(franchiseSlug) : false;
 
-  // Build branded gradient when brand colors are provided; otherwise keep the dark default.
-  const useBrandGradient = !!(brandPrimaryColor && brandSecondaryColor);
-  const overlayBackground = useBrandGradient
-    ? `linear-gradient(180deg, ${hexToRgba(brandPrimaryColor!, 0.55)} 0%, ${hexToRgba(brandPrimaryColor!, 0.4)} 30%, ${hexToRgba(brandSecondaryColor!, 0.7)} 60%, ${hexToRgba(brandSecondaryColor!, 0.95)} 100%)`
-    : 'linear-gradient(180deg, rgba(8,20,40,0.4) 0%, rgba(8,20,40,0.2) 30%, rgba(8,20,40,0.5) 60%, rgba(8,20,40,0.92) 100%)';
+  // Always use Quintal Ideal default dark/blue gradient for visual consistency
+  // Brand colors are no longer used to override the hero background
+  const overlayBackground = 'linear-gradient(180deg, rgba(8,20,40,0.55) 0%, rgba(8,20,40,0.25) 30%, rgba(8,20,40,0.5) 60%, rgba(8,20,40,0.95) 100%)';
 
-  const ctaStyle = brandPrimaryColor
-    ? {
-        background: `linear-gradient(135deg, ${brandPrimaryColor}, ${brandSecondaryColor || brandPrimaryColor})`,
-        boxShadow: `0 10px 30px -8px ${hexToRgba(brandPrimaryColor, 0.55)}`,
-      }
-    : undefined;
+  // CTA always uses default Quintal Ideal blue gradient (no brand override)
+  const ctaStyle = undefined;
 
   return (
     <LazyMotion features={domAnimation}>
@@ -97,53 +91,40 @@ export function HeroSection({
 
         {/* Content */}
         <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-5 pb-10 sm:py-10 max-w-lg mx-auto w-full" style={{ marginTop: '-5vh' }}>
-          {brandLogoUrl ? (
-            <m.img
-              src={brandLogoUrl}
-              alt={brandName || 'Marca'}
-              initial={{ opacity: 0, scale: 0.85 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="mx-auto mb-5 sm:mb-6 max-h-16 sm:max-h-20 md:max-h-24 w-auto drop-shadow-2xl"
-            />
-          ) : brandName ? (
-            <m.h2
-              initial={{ opacity: 0, scale: 0.85 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="mx-auto mb-5 sm:mb-6 text-2xl sm:text-3xl md:text-4xl font-extrabold text-white tracking-tight drop-shadow-2xl"
-            >
-              {brandName}
-            </m.h2>
-          ) : (
-            <m.img
-              src={logoQuintalIdeal}
-              alt="Quintal Ideal"
-              initial={{ opacity: 0, scale: 0.85 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-              className="mx-auto mb-5 sm:mb-6 w-36 sm:w-44 md:w-52 h-auto drop-shadow-2xl brightness-0 invert"
-            />
-          )}
+          {/* Always show Quintal Ideal master logo for brand consistency */}
+          <m.img
+            src={logoQuintalIdeal}
+            alt="Quintal Ideal"
+            initial={{ opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="mx-auto mb-4 sm:mb-5 w-32 sm:w-40 md:w-48 h-auto drop-shadow-2xl brightness-0 invert"
+          />
 
-          {brandSlogan ? (
-            <m.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="text-xs sm:text-xs font-semibold uppercase tracking-[0.25em] mb-3 sm:mb-4 text-white/70 text-center"
+          {/* Franchise identity card — replaces brand slogan */}
+          {(brandLogoUrl || franchiseName) && (
+            <m.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35, duration: 0.5 }}
+              className="mb-4 sm:mb-5 inline-flex items-center gap-2.5 px-4 py-2 rounded-full bg-white/[0.08] backdrop-blur-md border border-white/[0.12] shadow-lg shadow-black/10"
             >
-              {brandSlogan}
-            </m.p>
-          ) : franchiseName && (
-            <m.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 }}
-              className="text-xs sm:text-xs font-semibold uppercase tracking-[0.25em] mb-3 sm:mb-4 text-white/50"
-            >
-              {franchiseName}
-            </m.p>
+              {brandLogoUrl && (
+                <img
+                  src={brandLogoUrl}
+                  alt={brandName || 'Logo'}
+                  className="h-5 w-auto max-w-[80px] object-contain"
+                />
+              )}
+              {brandLogoUrl && franchiseName && (
+                <div className="w-px h-3.5 bg-white/20" />
+              )}
+              {franchiseName && (
+                <span className="text-[11px] sm:text-xs font-semibold text-white/85 tracking-wide whitespace-nowrap">
+                  {franchiseName}
+                </span>
+              )}
+            </m.div>
           )}
 
           <m.h1
