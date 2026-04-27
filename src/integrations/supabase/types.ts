@@ -665,6 +665,8 @@ export type Database = {
           id: string
           lead_city_normalized: string | null
           lead_origin: string
+          location_detected_name: string | null
+          location_detection_status: string | null
           loss_reason: string | null
           modelo_recomendado: string | null
           modelo_vendido: string | null
@@ -701,6 +703,8 @@ export type Database = {
           id?: string
           lead_city_normalized?: string | null
           lead_origin?: string
+          location_detected_name?: string | null
+          location_detection_status?: string | null
           loss_reason?: string | null
           modelo_recomendado?: string | null
           modelo_vendido?: string | null
@@ -737,6 +741,8 @@ export type Database = {
           id?: string
           lead_city_normalized?: string | null
           lead_origin?: string
+          location_detected_name?: string | null
+          location_detection_status?: string | null
           loss_reason?: string | null
           modelo_recomendado?: string | null
           modelo_vendido?: string | null
