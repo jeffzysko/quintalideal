@@ -736,20 +736,6 @@ export default function AdminDashboard() {
             <Suspense fallback={<TabFallback />}><AdminErrorLogs franchiseMap={franchiseMap} /></Suspense>
           </>
         )}
-        {activeTab === 'location-audit' && (
-          <Suspense fallback={<TabFallback />}>
-            <div className="space-y-6">
-              <PageHeader 
-                title="Auditoria GPS" 
-                subtitle="Monitoramento de precisão e sucesso na detecção automática de cidades"
-                icon={<GPSIcon className="w-4 h-4 text-primary" />}
-              />
-              <div className="px-1">
-                <LocationAuditSection franchises={franchises} />
-              </div>
-            </div>
-          </Suspense>
-        )}
 
         {activeTab === 'franchise-view' && (
           <Suspense fallback={<TabFallback />}>
