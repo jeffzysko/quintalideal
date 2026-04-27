@@ -106,7 +106,7 @@ const SUPER_ADMIN_GROUPS: NavGroup[] = [
       { title: 'Status do Sistema', url: '/superadmin/status', icon: Activity, matchPaths: ['/superadmin/status'] },
       { title: 'Performance', url: '/admin/performance', icon: Activity, matchPaths: ['/admin/performance'] },
       { title: 'Logs de Erro', url: '/admin?tab=errors', icon: AlertTriangle, matchTab: 'errors' },
-      { title: 'Auditoria GPS', url: '/admin?tab=location-audit', icon: ShieldCheck, matchTab: 'location-audit' },
+      
     ],
   },
   {

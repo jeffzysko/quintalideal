@@ -4,7 +4,7 @@ import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-quer
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, TrendingUp, Building2, MapPin, BarChart3, Target, Activity, Mail, Eye, Globe, Kanban, MessageCircle, FileText, ShieldAlert, Gauge, BarChart2, ShieldCheck as GPSIcon } from 'lucide-react';
+import { Users, TrendingUp, Building2, MapPin, BarChart3, Target, Activity, Mail, Eye, Globe, Kanban, MessageCircle, FileText, ShieldAlert, Gauge, BarChart2 } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -50,7 +50,7 @@ const AdminErrorLogs = lazy(() => import('@/components/admin/AdminErrorLogs').th
 const AdminCronJobs = lazy(() => import('@/components/admin/AdminCronJobs').then(m => ({ default: m.AdminCronJobs })));
 const PerformanceAuditPage = lazy(() => import('@/pages/PerformanceAudit'));
 const RelatorioCRMPage = lazy(() => import('@/pages/RelatorioCRM'));
-const LocationAuditSection = lazy(() => import('@/components/admin/LocationAuditSection').then(m => ({ default: m.LocationAuditSection })));
+
 
 function TabFallback() {
   return (
@@ -62,7 +62,7 @@ function TabFallback() {
 
 const PAGE_SIZE = 25;
 
-const getAdminTabFromSearch = (search: string): 'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'whatsapp' | 'franchise-view' | 'candidaturas' | 'errors' | 'location-audit' => {
+const getAdminTabFromSearch = (search: string): 'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'whatsapp' | 'franchise-view' | 'candidaturas' | 'errors' => {
   const urlTab = new URLSearchParams(search).get('tab');
   if (urlTab === 'leads') return 'leads';
   if (urlTab === 'kanban') return 'kanban';
@@ -76,7 +76,7 @@ const getAdminTabFromSearch = (search: string): 'overview' | 'leads' | 'kanban' 
   if (urlTab === 'franchise-view') return 'franchise-view';
   if (urlTab === 'candidaturas') return 'candidaturas';
   if (urlTab === 'errors') return 'errors';
-  if (urlTab === 'location-audit') return 'location-audit';
+  
   return 'overview';
 };
 
@@ -93,7 +93,7 @@ export default function AdminDashboard() {
   // Live updates: invalidates queries when leads change in the DB
   useLeadsRealtime();
   const { signOut: _signOut, role } = useAuth();
-  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'whatsapp' | 'franchise-view' | 'candidaturas' | 'errors' | 'location-audit'>(() => getAdminTabFromSearch(location.search));
+  const [activeTab, setActiveTab] = useState<'overview' | 'leads' | 'kanban' | 'analytics' | 'performance-qi' | 'franchises' | 'cities' | 'users' | 'emails' | 'whatsapp' | 'franchise-view' | 'candidaturas' | 'errors'>(() => getAdminTabFromSearch(location.search));
 
   // Sync activeTab when URL changes externally (e.g. sidebar navigation)
   useEffect(() => {
@@ -461,7 +461,7 @@ export default function AdminDashboard() {
     whatsapp: { title: 'WhatsApp', subtitle: 'Gestão de instâncias e planos' },
     candidaturas: { title: 'Candidaturas', subtitle: 'Solicitações de novas franquias' },
     errors: { title: 'Logs de Erro', subtitle: 'Monitoramento de falhas' },
-    'location-audit': { title: 'Auditoria GPS', subtitle: 'Acompanhamento de detecção automática de cidade' },
+    
     'franchise-view': { title: 'Visão Franquia', subtitle: 'Inspecione o painel de uma unidade específica' },
   };
   const activeHeader = HEADER_BY_TAB[activeTab];
