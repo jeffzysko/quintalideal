@@ -3,9 +3,10 @@ import { Input } from '@/components/ui/input';
 import { useState, useMemo } from 'react';
 import { cidades, type CityOption } from '@/lib/cities';
 import { ExplorerProgress } from './ExplorerProgress';
-import { MapPin, Search, Check } from 'lucide-react';
+import { MapPin, Search, Check, Navigation } from 'lucide-react';
 import { type Lang, t, UY_ENABLED_SLUGS } from '@/lib/i18n';
 import { haptic } from '@/lib/celebrations';
+import { toast } from 'sonner';
 
 interface QuizOption {
   value: string;
@@ -36,6 +37,8 @@ function formatCityLabel(city: CityOption): string {
 export function QuizStep({ step, totalSteps: _totalSteps, question, options, type = 'options', onAnswer, onBack, explorerStep, franchiseSlug, lang = 'pt', useImageLayout = false }: QuizStepProps) {
   const [citySearch, setCitySearch] = useState('');
   const [selectedValue, setSelectedValue] = useState<string | null>(null);
+  const [isDetectingLocation, setIsDetectingLocation] = useState(false);
+  const [suggestedCity, setSuggestedCity] = useState<string | null>(null);
 
   const showUY = franchiseSlug ? UY_ENABLED_SLUGS.has(franchiseSlug) : false;
 
@@ -45,6 +48,58 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
     const pool = showUY ? cidades : cidades.filter(c => c.pais === 'BR');
     return pool.filter(c => c.nome.toLowerCase().includes(search)).slice(0, 8);
   }, [citySearch, showUY]);
+
+  const handleDetectLocation = async () => {
+    if (!navigator.geolocation) {
+      toast.error('Geolocalização não suportada pelo seu navegador');
+      return;
+    }
+
+    setIsDetectingLocation(true);
+    haptic('medium');
+
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          // Using a free reverse geocoding API (BigDataCloud or similar open ones)
+          const response = await fetch(
+            `https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${latitude}&longitude=${longitude}&localityLanguage=pt`
+          );
+          const data = await response.json();
+          const cityName = data.city || data.locality;
+
+          if (cityName) {
+            // Find closest match in our city list
+            const search = cityName.toLowerCase();
+            const match = cidades.find(c => c.nome.toLowerCase().includes(search));
+            if (match) {
+              setSuggestedCity(match.nome);
+              setCitySearch(match.nome);
+              toast.success(`Localização detectada: ${match.nome}`);
+            } else {
+              setCitySearch(cityName);
+              toast.info(`Cidade detectada: ${cityName}`);
+            }
+          }
+        } catch (error) {
+          console.error('Error detecting city:', error);
+          toast.error('Erro ao detectar cidade automaticamente');
+        } finally {
+          setIsDetectingLocation(false);
+        }
+      },
+      (error) => {
+        setIsDetectingLocation(false);
+        if (error.code === error.PERMISSION_DENIED) {
+          toast.error('Permissão de localização negada');
+        } else {
+          toast.error('Erro ao obter sua localização');
+        }
+      },
+      { timeout: 10000 }
+    );
+  };
 
   const handleSelect = (value: string) => {
     setSelectedValue(value);
@@ -188,7 +243,26 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
                     inputMode="text"
                     enterKeyHint="search"
                   />
+                  <button
+                    onClick={handleDetectLocation}
+                    disabled={isDetectingLocation}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2 rounded-xl text-primary hover:bg-primary/10 transition-colors disabled:opacity-50"
+                    title="Detectar minha localização"
+                  >
+                    <Navigation className={`w-4 h-4 ${isDetectingLocation ? 'animate-pulse' : ''}`} />
+                  </button>
                 </div>
+                
+                {!citySearch && !suggestedCity && (
+                  <button
+                    onClick={handleDetectLocation}
+                    className="w-full mt-4 flex items-center justify-center gap-2 py-3 rounded-2xl border border-primary/20 bg-primary/5 text-primary text-sm font-medium hover:bg-primary/10 transition-colors active:scale-[0.98]"
+                  >
+                    <Navigation className="w-4 h-4" />
+                    Detectar minha cidade automaticamente
+                  </button>
+                )}
+
                 {filteredCities.length > 0 && (
                   <motion.div
                     initial={{ opacity: 0, y: -5 }}
