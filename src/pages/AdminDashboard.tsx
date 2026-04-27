@@ -453,6 +453,7 @@ export default function AdminDashboard() {
     whatsapp: { title: 'WhatsApp', subtitle: 'Gestão de instâncias e planos' },
     candidaturas: { title: 'Candidaturas', subtitle: 'Solicitações de novas franquias' },
     errors: { title: 'Logs de Erro', subtitle: 'Monitoramento de falhas' },
+    'location-audit': { title: 'Auditoria GPS', subtitle: 'Acompanhamento de detecção automática de cidade' },
     'franchise-view': { title: 'Visão Franquia', subtitle: 'Inspecione o painel de uma unidade específica' },
   };
   const activeHeader = HEADER_BY_TAB[activeTab];
