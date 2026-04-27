@@ -114,6 +114,12 @@ export default function AdminDashboard() {
   const [filterModelo, setFilterModelo] = useState('all');
   const [filterTemperatura, setFilterTemperatura] = useState('all');
   const [page, setPage] = useState(() => getLeadListPageFromSearch(location.search));
+  
+  // Sync page state when URL changes (e.g. back button)
+  useEffect(() => {
+    const pageFromUrl = getLeadListPageFromSearch(location.search);
+    if (pageFromUrl !== page) setPage(pageFromUrl);
+  }, [location.search]);
   const didInitSearch = useRef(false);
   const didInitCity = useRef(false);
   const didInitFilters = useRef(false);
@@ -732,7 +738,16 @@ export default function AdminDashboard() {
         )}
         {activeTab === 'location-audit' && (
           <Suspense fallback={<TabFallback />}>
-            <LocationAuditSection franchises={franchises} />
+            <div className="space-y-6">
+              <PageHeader 
+                title="Auditoria GPS" 
+                subtitle="Monitoramento de precisão e sucesso na detecção automática de cidades"
+                icon={<GPSIcon className="w-4 h-4 text-primary" />}
+              />
+              <div className="px-1">
+                <LocationAuditSection franchises={franchises} />
+              </div>
+            </div>
           </Suspense>
         )}
 
