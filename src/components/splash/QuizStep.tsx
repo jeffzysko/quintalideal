@@ -121,12 +121,12 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
       <div className="w-full max-w-lg mx-auto flex-1 flex flex-col">
         <ExplorerProgress currentStep={explorerStep} onBack={onBack} lang={lang} />
 
-        <div className="flex-1 flex flex-col justify-center -mt-10 sm:-mt-4">
+        <div className="flex-1 flex flex-col justify-start sm:justify-center mt-4 sm:-mt-4 overflow-y-auto no-scrollbar pb-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08, duration: 0.4 }}
-            className="glass-card rounded-3xl p-5 sm:p-8"
+            className="glass-card rounded-3xl p-5 sm:p-8 shrink-0 mb-6"
           >
             <h2 className="text-base sm:text-xl md:text-2xl font-bold mb-4 sm:mb-8 text-foreground leading-snug tracking-tight">
               {question}
