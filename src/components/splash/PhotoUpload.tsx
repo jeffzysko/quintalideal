@@ -284,16 +284,19 @@ export function PhotoUpload({ onNext, onBack, lang = 'pt' }: PhotoUploadProps) {
                 </div>
 
                 {photos.length < 4 && (
-                  <div className="flex gap-3 my-4">
+                  <div className="flex flex-col gap-3 my-4">
                     <button
                       onClick={() => { setReplacingIndex(null); openCamera(); }}
-                      className="flex-1 py-4 rounded-2xl border-2 border-dashed border-primary/30 flex flex-col items-center justify-center cursor-pointer hover:bg-primary/5 hover:border-primary/50 transition-all"
+                      className="w-full py-6 rounded-2xl border-2 border-primary bg-primary/5 flex items-center justify-center gap-3 cursor-pointer hover:bg-primary/10 transition-all active:scale-[0.98]"
                     >
-                      <Camera className="w-6 h-6 text-primary/50 mb-1" />
-                      <span className="text-xs text-muted-foreground font-medium">{t('photo_take', lang)}</span>
+                      <Camera className="w-6 h-6 text-primary" />
+                      <div className="text-left">
+                        <span className="block text-sm font-bold text-foreground">{t('photo_take', lang)}</span>
+                        <span className="block text-[10px] text-muted-foreground">Usar câmera do celular</span>
+                      </div>
                     </button>
-                    <label className="flex-1 py-4 rounded-2xl border-2 border-dashed border-primary/20 flex flex-col items-center justify-center cursor-pointer hover:bg-accent/30 hover:border-primary/40 transition-all">
-                      <ImagePlus className="w-6 h-6 text-primary/35 mb-1" />
+                    <label className="w-full py-4 rounded-2xl border-2 border-dashed border-border flex items-center justify-center gap-3 cursor-pointer hover:bg-accent/30 transition-all active:scale-[0.98]">
+                      <ImagePlus className="w-5 h-5 text-muted-foreground" />
                       <span className="text-xs text-muted-foreground font-medium">{t('photo_gallery', lang)}</span>
                       <input
                         type="file"
