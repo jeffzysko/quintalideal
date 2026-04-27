@@ -223,6 +223,8 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
           franquia_id: franchiseId || null,
           pontuacao_quintal: score,
           modelo_recomendado: poolName,
+          location_detection_status: locationLog?.status || null,
+          location_detected_name: locationLog?.raw || null,
           respostas_questionario: {
             ...answers,
             location_detection_log: locationLog,
