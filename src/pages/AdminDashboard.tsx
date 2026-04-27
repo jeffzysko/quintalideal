@@ -10,6 +10,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
 import { useAuth } from '@/hooks/useAuth';
+import { PageHeader } from '@/components/PageHeader';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis } from 'recharts';
 import { AdminLeadFilters } from '@/components/admin/AdminLeadFilters';
@@ -21,7 +22,7 @@ import { LeadRow } from '@/lib/lead-constants';
 import { classifyLead } from '@/lib/leadScoring';
 import { MetricGrid } from '@/components/dashboard/MetricGrid';
 import { TimeRangeSelector, filterByTimeRange, type TimeRange } from '@/components/dashboard/TimeRangeSelector';
-import { SectionHeader, SectionHeader as PageSectionHeader } from '@/components/SectionHeader';
+import { SectionHeader } from '@/components/SectionHeader';
 import type { MetricCardProps } from '@/components/dashboard/MetricCard';
 import { InsightCards } from '@/components/dashboard/InsightCards';
 import { ExecutiveSummary } from '@/components/admin/ExecutiveSummary';
@@ -461,13 +462,13 @@ export default function AdminDashboard() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-background pb-[var(--bottom-nav-height)] md:pb-12">
-      <AdminWelcomeWizard />
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 sm:py-6 md:py-8">
-        {/* Page header — always first, sticky above filters and tabs */}
-        {activeHeader && (
-          <PageSectionHeader title={activeHeader.title} subtitle={activeHeader.subtitle} />
-        )}
+      <div className="min-h-screen bg-background pb-[var(--bottom-nav-height)] md:pb-12">
+        <PageHeader
+          title={activeHeader.title}
+          subtitle={activeHeader.subtitle}
+        />
+        <AdminWelcomeWizard />
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 sm:py-6 md:py-8">
 
         <div className="md:hidden mb-3">
           <Breadcrumbs items={[{ label: 'Admin' }]} />
