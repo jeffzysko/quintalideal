@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,6 +8,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer
 import { MapPin, CheckCircle2, AlertTriangle, ShieldAlert, Loader2, Calendar } from 'lucide-react';
 import { format, subDays, parseISO, isValid } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { toast } from 'sonner';
 
 interface LocationAuditSectionProps {
   franchises: any[];
@@ -17,20 +18,35 @@ export function LocationAuditSection({ franchises }: LocationAuditSectionProps) 
   const [periodDays, setPeriodDays] = useState('30');
   const [filterFranchise, setFilterFranchise] = useState('all');
 
-  const { data: leads = [], isLoading } = useQuery({
+  const { data: leads = [], isLoading, error } = useQuery({
     queryKey: ['location-audit-leads', periodDays],
     queryFn: async () => {
-      const since = subDays(new Date(), Number(periodDays));
-      const { data, error } = await supabase
-        .from('leads')
-        .select('id, created_at, franquia_id, location_detection_status, location_detected_name, cidade')
-        .gte('created_at', since.toISOString())
-        .order('created_at', { ascending: true });
-      
-      if (error) throw error;
-      return data || [];
+      try {
+        const since = subDays(new Date(), Number(periodDays));
+        const { data, error } = await supabase
+          .from('leads')
+          .select('id, created_at, franquia_id, location_detection_status, location_detected_name, cidade')
+          .gte('created_at', since.toISOString())
+          .order('created_at', { ascending: true });
+        
+        if (error) {
+          console.error("Supabase error in location-audit:", error);
+          throw error;
+        }
+        return data || [];
+      } catch (err) {
+        console.error("Fetch error in location-audit:", err);
+        throw err;
+      }
     },
+    retry: 1,
   });
+
+  useEffect(() => {
+    if (error) {
+      toast.error("Erro ao carregar dados de auditoria GPS");
+    }
+  }, [error]);
 
   const stats = useMemo(() => {
     let filtered = leads;

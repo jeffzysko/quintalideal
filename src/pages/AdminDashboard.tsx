@@ -114,6 +114,12 @@ export default function AdminDashboard() {
   const [filterModelo, setFilterModelo] = useState('all');
   const [filterTemperatura, setFilterTemperatura] = useState('all');
   const [page, setPage] = useState(() => getLeadListPageFromSearch(location.search));
+  
+  // Sync page state when URL changes (e.g. back button)
+  useEffect(() => {
+    const pageFromUrl = getLeadListPageFromSearch(location.search);
+    if (pageFromUrl !== page) setPage(pageFromUrl);
+  }, [location.search]);
   const didInitSearch = useRef(false);
   const didInitCity = useRef(false);
   const didInitFilters = useRef(false);
