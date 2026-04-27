@@ -18,18 +18,15 @@ interface HeroSectionProps {
   brandSlogan?: string;
 }
 
-function hexToRgba(hex: string, alpha: number): string {
-  const cleaned = hex.replace('#', '').trim();
-  if (cleaned.length !== 6 && cleaned.length !== 3) return `rgba(8,20,40,${alpha})`;
-  const full = cleaned.length === 3
-    ? cleaned.split('').map(c => c + c).join('')
-    : cleaned;
-  const r = parseInt(full.slice(0, 2), 16);
-  const g = parseInt(full.slice(2, 4), 16);
-  const b = parseInt(full.slice(4, 6), 16);
-  if ([r, g, b].some(n => Number.isNaN(n))) return `rgba(8,20,40,${alpha})`;
-  return `rgba(${r},${g},${b},${alpha})`;
-}
+export function HeroSection({
+  onStart,
+  franchiseName,
+  franchiseSlug,
+  lang,
+  onLangChange,
+  brandName,
+  brandLogoUrl,
+}: HeroSectionProps) {
 
 export function HeroSection({
   onStart,
