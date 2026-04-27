@@ -66,6 +66,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
   const [photoUrls, setPhotoUrls] = useState<string[]>([]);
   const [quizStep, setQuizStep] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [locationLog, setLocationLog] = useState<any>(null);
   const [recommendation, setRecommendation] = useState<RecommendationResultV2 | null>(null);
   const [recommendationV3, setRecommendationV3] = useState<RecommendationResultV3 | null>(null);
   const [leadName, setLeadName] = useState('');
@@ -128,7 +129,10 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
 
   const answerKeys = ['espaco', 'uso', 'intencao', 'preferencia', 'orcamento', 'cidade'];
 
-  const handleQuizAnswer = useCallback((value: string) => {
+  const handleQuizAnswer = useCallback((value: string, metadata?: any) => {
+    if (metadata?.location_meta) {
+      setLocationLog(metadata.location_meta);
+    }
     const key = answerKeys[quizStep];
     const newAnswers = { ...answers, [key]: value };
     setAnswers(newAnswers);
@@ -221,6 +225,7 @@ export function QuizFlow({ franchiseSlug, franchiseName, franchiseId, franchiseW
           modelo_recomendado: poolName,
           respostas_questionario: {
             ...answers,
+            location_detection_log: locationLog,
             customer_profile: recommendation.customer_profile,
             objective_main: recommendation.reasoning ? answers.uso : undefined,
             match_score: recommendation.primary_score,
