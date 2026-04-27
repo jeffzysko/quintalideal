@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from 'recharts';
 import { MapPin, CheckCircle2, AlertTriangle, ShieldAlert, Loader2, Calendar } from 'lucide-react';
-import { format, subDays } from 'date-fns';
+import { format, subDays, parseISO, isValid } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 interface LocationAuditSectionProps {
@@ -43,7 +43,12 @@ export function LocationAuditSection({ franchises }: LocationAuditSectionProps) 
     const failList: { raw: string; detected: string; count: number }[] = [];
 
     filtered.forEach(l => {
-      const dateKey = format(new Date(l.created_at), 'yyyy-MM-dd');
+      if (!l.created_at) return;
+      
+      const date = parseISO(l.created_at);
+      if (!isValid(date)) return;
+
+      const dateKey = format(date, 'yyyy-MM-dd');
       if (!dailyMap.has(dateKey)) {
         dailyMap.set(dateKey, { date: dateKey, match: 0, fallback: 0, error: 0 });
       }
@@ -229,3 +234,5 @@ export function LocationAuditSection({ franchises }: LocationAuditSectionProps) 
     </div>
   );
 }
+
+export default LocationAuditSection;
