@@ -117,7 +117,7 @@ export function HeroSection({
             transition={{ delay: 0.35, duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             className="text-center text-[1.75rem] sm:text-[2rem] md:text-[2.75rem] font-extrabold leading-[1.08] mb-3 sm:mb-4 text-white tracking-tight"
           >
-            {t('hero_title_1', lang)} para<br />
+            {t('hero_title_1', lang)}{' '}
             <span className="bg-gradient-to-r from-blue-300 via-blue-200 to-cyan-300 bg-clip-text text-transparent">
               {t('hero_title_2', lang)}
             </span>

@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LazyMotion, domAnimation, m, AnimatePresence } from 'framer-motion';
-import { Search, MapPin, Droplets, Shield, Clock, ChevronRight, ChevronDown } from 'lucide-react';
+import { Search, MapPin, Droplets, Shield, Clock, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/lib/supabase';
 import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
@@ -72,21 +72,7 @@ function TrustBadges() {
 
 /* ── Scroll indicator ── */
 function ScrollHint() {
-  return (
-    <m.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 2 }}
-      className="absolute bottom-6 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 pointer-events-none"
-    >
-      <m.div
-        animate={{ y: [0, 6, 0] }}
-        transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-      >
-        <ChevronDown className="w-4 h-4 text-white/20" />
-      </m.div>
-    </m.div>
-  );
+  return null;
 }
 
 export default function HomePage() {
@@ -244,8 +230,7 @@ export default function HomePage() {
             transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="text-center text-[1.65rem] sm:text-[2.25rem] md:text-[2.85rem] lg:text-[3.4rem] font-extrabold leading-[1.05] mb-3 sm:mb-4 text-white tracking-tight"
           >
-            A piscina ideal para
-            <br />
+            A piscina ideal para{' '}
             <span className="bg-gradient-to-r from-sky-300 via-blue-200 to-cyan-300 bg-clip-text text-transparent">
               o seu quintal
             </span>
