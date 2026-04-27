@@ -70,10 +70,6 @@ function TrustBadges() {
   );
 }
 
-/* ── Scroll indicator ── */
-function ScrollHint() {
-  return null;
-}
 
 export default function HomePage() {
   const navigate = useNavigate();
