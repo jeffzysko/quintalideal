@@ -27,7 +27,7 @@ import {
   LayoutGrid,
   CalendarDays,
   Mail,
-  ShieldCheck,
+  
 } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';

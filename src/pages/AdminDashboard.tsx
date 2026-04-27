@@ -433,7 +433,7 @@ export default function AdminDashboard() {
       { key: 'emails' as const, icon: Mail, label: 'E-mails' },
       { key: 'whatsapp' as const, icon: MessageCircle, label: 'WhatsApp' },
       { key: 'errors' as const, icon: ShieldAlert, label: 'Erros' },
-      { key: 'location-audit' as const, icon: GPSIcon, label: 'Auditoria GPS' },
+      
       { key: 'franchise-view' as const, icon: Eye, label: 'Visão Franquia' },
     ] : []),
   ];
