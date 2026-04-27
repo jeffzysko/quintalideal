@@ -3,10 +3,10 @@ import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Legend, ResponsiveContainer } from 'recharts';
 import { MapPin, CheckCircle2, AlertTriangle, ShieldAlert, Loader2, Calendar } from 'lucide-react';
-import { format, subDays, startOfDay } from 'date-fns';
+import { format, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 interface LocationAuditSectionProps {
@@ -14,7 +14,7 @@ interface LocationAuditSectionProps {
   franchises: any[];
 }
 
-export function LocationAuditSection({ franchiseMap, franchises }: LocationAuditSectionProps) {
+export function LocationAuditSection({ franchises }: LocationAuditSectionProps) {
   const [periodDays, setPeriodDays] = useState('30');
   const [filterFranchise, setFilterFranchise] = useState('all');
 
