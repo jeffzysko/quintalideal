@@ -97,7 +97,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
               setCitySearch(match.nome);
               setLocationLog({ status: 'match', raw: cityName, normalized: match.nome });
               toast.success(`Localização detectada: ${match.nome}`);
-              haptic('success');
+              haptic('heavy');
             } else {
               setCitySearch(cityName);
               setLocationLog({ status: 'fallback', raw: cityName });
