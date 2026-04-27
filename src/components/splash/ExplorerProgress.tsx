@@ -13,8 +13,7 @@ interface ExplorerProgressProps {
 const STEPS_PT = [
   { emoji: '📸', label: 'Foto' },
   { emoji: '📏', label: 'Espaço' },
-  { emoji: '🏠', label: 'Casa' },
-  { emoji: '🌞', label: 'Uso' },
+  { emoji: '🏠', label: 'Uso' },
   { emoji: '📅', label: 'Plano' },
   { emoji: '💧', label: 'Preferência' },
   { emoji: '💰', label: 'Orçamento' },
@@ -23,8 +22,7 @@ const STEPS_PT = [
 const STEPS_ES = [
   { emoji: '📸', label: 'Foto' },
   { emoji: '📏', label: 'Espacio' },
-  { emoji: '🏠', label: 'Casa' },
-  { emoji: '🌞', label: 'Uso' },
+  { emoji: '🏠', label: 'Uso' },
   { emoji: '📅', label: 'Plan' },
   { emoji: '💧', label: 'Preferencia' },
   { emoji: '💰', label: 'Presupuesto' },
