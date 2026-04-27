@@ -4,7 +4,7 @@ import { useQuery, useQueryClient, keepPreviousData } from '@tanstack/react-quer
 import { supabase } from '@/lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Users, TrendingUp, Building2, MapPin, BarChart3, Target, Activity, Mail, Eye, Globe, Kanban, MessageCircle, FileText, ShieldAlert, Gauge, BarChart2, ShieldCheck } from 'lucide-react';
+import { Users, TrendingUp, Building2, MapPin, BarChart3, Target, Activity, Mail, Eye, Globe, Kanban, MessageCircle, FileText, ShieldAlert, Gauge, BarChart2, ShieldCheck as GPSIcon } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
@@ -426,6 +426,7 @@ export default function AdminDashboard() {
       { key: 'emails' as const, icon: Mail, label: 'E-mails' },
       { key: 'whatsapp' as const, icon: MessageCircle, label: 'WhatsApp' },
       { key: 'errors' as const, icon: ShieldAlert, label: 'Erros' },
+      { key: 'location-audit' as const, icon: GPSIcon, label: 'Auditoria GPS' },
       { key: 'franchise-view' as const, icon: Eye, label: 'Visão Franquia' },
     ] : []),
   ];
