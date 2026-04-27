@@ -70,10 +70,6 @@ function TrustBadges() {
   );
 }
 
-/* ── Scroll indicator ── */
-function ScrollHint() {
-  return null;
-}
 
 export default function HomePage() {
   const navigate = useNavigate();
@@ -230,9 +226,10 @@ export default function HomePage() {
             transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
             className="text-center text-[1.65rem] sm:text-[2.25rem] md:text-[2.85rem] lg:text-[3.4rem] font-extrabold leading-[1.05] mb-3 sm:mb-4 text-white tracking-tight"
           >
-            A piscina ideal para{' '}
+            A piscina ideal
+            <br />
             <span className="bg-gradient-to-r from-sky-300 via-blue-200 to-cyan-300 bg-clip-text text-transparent">
-              o seu quintal
+              para o seu quintal
             </span>
           </m.h1>
 
@@ -413,9 +410,6 @@ export default function HomePage() {
           {/* Trust badges */}
           <TrustBadges />
         </div>
-
-        {/* Scroll hint */}
-        <ScrollHint />
       </div>
     </LazyMotion>
   );
