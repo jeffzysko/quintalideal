@@ -10,7 +10,6 @@ import { format, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 interface LocationAuditSectionProps {
-  franchiseMap: Record<string, string>;
   franchises: any[];
 }
 
