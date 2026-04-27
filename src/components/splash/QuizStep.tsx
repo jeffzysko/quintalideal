@@ -116,19 +116,21 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -60 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="h-[100dvh] flex flex-col px-3 sm:px-6 py-3 sm:py-6 gradient-hero"
+      className="fixed inset-0 flex flex-col px-3 sm:px-6 py-3 sm:py-6 gradient-hero overflow-hidden"
     >
-      <div className="w-full max-w-lg mx-auto flex-1 flex flex-col">
-        <ExplorerProgress currentStep={explorerStep} onBack={onBack} lang={lang} />
+      <div className="w-full max-w-lg mx-auto h-full flex flex-col relative z-10">
+        <div className="shrink-0">
+          <ExplorerProgress currentStep={explorerStep} onBack={onBack} lang={lang} />
+        </div>
 
-        <div className="flex-1 flex flex-col justify-start sm:justify-center mt-4 sm:-mt-4 overflow-y-auto no-scrollbar pb-10">
+        <div className="flex-1 flex flex-col justify-start mt-2 overflow-y-auto no-scrollbar pb-20">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.08, duration: 0.4 }}
-            className="glass-card rounded-3xl p-5 sm:p-8 shrink-0 mb-6"
+            className="glass-card rounded-3xl p-5 sm:p-8 shrink-0 mb-4"
           >
-            <h2 className="text-base sm:text-xl md:text-2xl font-bold mb-4 sm:mb-8 text-foreground leading-snug tracking-tight">
+            <h2 className="text-base sm:text-xl font-bold mb-4 sm:mb-8 text-foreground leading-tight tracking-tight">
               {question}
             </h2>
 
