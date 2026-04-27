@@ -116,14 +116,14 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: -60 }}
       transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-      className="fixed inset-0 flex flex-col px-3 sm:px-6 py-3 sm:py-6 gradient-hero overflow-hidden"
+      className="min-h-screen flex flex-col px-3 sm:px-6 py-3 sm:py-6 gradient-hero"
     >
-      <div className="w-full max-w-lg mx-auto h-full flex flex-col relative z-10">
+      <div className="w-full max-w-lg mx-auto flex-1 flex flex-col relative z-10">
         <div className="shrink-0">
           <ExplorerProgress currentStep={explorerStep} onBack={onBack} lang={lang} />
         </div>
 
-        <div className="flex-1 flex flex-col justify-start mt-2 overflow-y-auto no-scrollbar pb-20">
+        <div className="flex-1 flex flex-col justify-center mt-2 pb-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
