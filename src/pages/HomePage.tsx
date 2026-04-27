@@ -242,7 +242,7 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5, duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center text-[1.55rem] sm:text-[2.1rem] md:text-[2.75rem] lg:text-[3.25rem] font-extrabold leading-[1.1] mb-3 sm:mb-4 text-white tracking-tight"
+            className="text-center text-[1.65rem] sm:text-[2.25rem] md:text-[2.85rem] lg:text-[3.4rem] font-extrabold leading-[1.05] mb-3 sm:mb-4 text-white tracking-tight"
           >
             A piscina ideal para
             <br />
@@ -256,10 +256,9 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7, duration: 0.6 }}
-            className="text-center text-[13px] sm:text-sm md:text-base text-white/50 mb-7 sm:mb-9 max-w-[280px] sm:max-w-xs mx-auto leading-relaxed"
+            className="text-center text-[13px] sm:text-sm md:text-base text-white/60 mb-7 sm:mb-9 max-w-[300px] sm:max-w-sm mx-auto leading-relaxed"
           >
-            Digite sua cidade para encontrar a unidade
-            parceira mais proxima para fazer o quiz.
+            Encontre a unidade parceira da sua cidade e descubra o modelo ideal em 60 segundos.
           </m.p>
 
           {/* ── Search card with glassmorphism ── */}
