@@ -70,16 +70,24 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
           const cityName = data.city || data.locality;
 
           if (cityName) {
+            // Normalize: remove generic terms like "região metropolitana de", "grande", etc.
+            const cleanCityName = cityName
+              .replace(/região metropolitana de\s+/i, '')
+              .replace(/grande\s+/i, '')
+              .replace(/\s+-\s+RS/i, '')
+              .trim();
+
             // Find closest match in our city list
-            const search = cityName.toLowerCase();
+            const search = cleanCityName.toLowerCase();
             const match = cidades.find(c => c.nome.toLowerCase().includes(search));
+            
             if (match) {
               setSuggestedCity(match.nome);
               setCitySearch(match.nome);
               toast.success(`Localização detectada: ${match.nome}`);
             } else {
-              setCitySearch(cityName);
-              toast.info(`Cidade detectada: ${cityName}`);
+              setCitySearch(cleanCityName);
+              toast.info(`Cidade detectada: ${cleanCityName}`);
             }
           }
         } catch (error) {
