@@ -462,13 +462,13 @@ export default function AdminDashboard() {
 
   return (
     <PageTransition>
-    <div className="min-h-screen bg-background pb-[var(--bottom-nav-height)] md:pb-12">
-      <AdminWelcomeWizard />
-      <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 sm:py-6 md:py-8">
-        {/* Page header — always first, sticky above filters and tabs */}
-        {activeHeader && (
-          <PageSectionHeader title={activeHeader.title} subtitle={activeHeader.subtitle} />
-        )}
+      <div className="min-h-screen bg-background pb-[var(--bottom-nav-height)] md:pb-12">
+        <PageHeader
+          title={activeHeader.title}
+          subtitle={activeHeader.subtitle}
+        />
+        <AdminWelcomeWizard />
+        <div className="max-w-7xl mx-auto px-4 md:px-6 py-4 sm:py-6 md:py-8">
 
         <div className="md:hidden mb-3">
           <Breadcrumbs items={[{ label: 'Admin' }]} />
