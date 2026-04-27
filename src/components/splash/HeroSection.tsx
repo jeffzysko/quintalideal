@@ -27,19 +27,6 @@ export function HeroSection({
   brandName,
   brandLogoUrl,
 }: HeroSectionProps) {
-
-export function HeroSection({
-  onStart,
-  franchiseName,
-  franchiseSlug,
-  lang,
-  onLangChange,
-  brandName,
-  brandLogoUrl,
-  brandPrimaryColor,
-  brandSecondaryColor,
-  brandSlogan,
-}: HeroSectionProps) {
   const showLangSwitch = franchiseSlug ? UY_ENABLED_SLUGS.has(franchiseSlug) : false;
 
   // Always use Quintal Ideal default dark/blue gradient for visual consistency
