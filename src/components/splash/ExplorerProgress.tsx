@@ -92,31 +92,30 @@ export function ExplorerProgress({ currentStep, onBack, lang = 'pt' }: ExplorerP
         <Progress value={progress} className="h-1 bg-muted" />
       </div>
 
-      {/* Discovery percentage */}
-      <motion.p
-        key={`discovery-${currentStep}`}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="text-xs text-primary font-semibold mt-2 text-right"
-      >
-        {t('explorer_discovery', lang).replace('{pct}', String(Math.round(progress)))}
-      </motion.p>
-
-      {/* Micro-reward message */}
-      {currentStep >= 2 && currentStep <= 6 && (
+      {/* Micro-reward message as primary feedback */}
+      <div className="flex items-center justify-between mt-2 h-4">
         <motion.p
           key={`reward-${currentStep}`}
-          initial={{ opacity: 0, y: 5 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="text-xs text-emerald-600 dark:text-emerald-400 mt-1 text-right font-medium"
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="text-[10px] sm:text-xs text-emerald-600 dark:text-emerald-400 font-medium italic"
         >
-          {currentStep === 2 && (lang === 'es' ? '✨ Perfecto, ya entendemos tu espacio' : '✨ Perfeito, já entendemos seu espaço')}
-          {currentStep === 3 && (lang === 'es' ? '💡 Genial, ahora conseguimos personalizar' : '💡 Ótimo, agora conseguimos personalizar')}
-          {currentStep === 4 && (lang === 'es' ? '🎯 Estamos cerca de tu resultado' : '🎯 Estamos perto do seu resultado')}
-          {currentStep === 5 && (lang === 'es' ? '🏊 Casi listo, falta poco' : '🏊 Quase lá, falta pouco')}
-          {currentStep === 6 && (lang === 'es' ? '🔥 Última pregunta!' : '🔥 Última pergunta!')}
+          {currentStep === 2 && (lang === 'es' ? '✨ Entendemos tu espacio' : '✨ Entendemos seu espaço')}
+          {currentStep === 3 && (lang === 'es' ? '💡 Personalizando...' : '💡 Personalizando...')}
+          {currentStep === 4 && (lang === 'es' ? '🎯 Casi listo' : '🎯 Quase lá')}
+          {currentStep === 5 && (lang === 'es' ? '🏊 Falta poco' : '🏊 Falta pouco')}
+          {currentStep === 6 && (lang === 'es' ? '🔥 ¡Última!' : '🔥 Última!')}
         </motion.p>
-      )}
+
+        <motion.p
+          key={`discovery-${currentStep}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="text-[10px] sm:text-xs text-primary font-bold"
+        >
+          {Math.round(progress)}%
+        </motion.p>
+      </div>
 
       {/* Minimal step info */}
       <motion.div
