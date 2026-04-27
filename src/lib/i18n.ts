@@ -200,8 +200,7 @@ export function getExplorerSteps(lang: Lang) {
   return [
     { emoji: '📸', title: t('exp_step_0_title', lang), message: t('exp_step_0_msg', lang) },
     { emoji: '📏', title: t('exp_step_1_title', lang), message: t('exp_step_1_msg', lang) },
-    { emoji: '🏠', title: t('exp_step_2_title', lang), message: t('exp_step_2_msg', lang) },
-    { emoji: '🌞', title: t('exp_step_3_title', lang), message: t('exp_step_3_msg', lang) },
+    { emoji: '🏠', title: t('exp_step_3_title', lang), message: t('exp_step_3_msg', lang) },
     { emoji: '📅', title: t('exp_step_4_title', lang), message: t('exp_step_4_msg', lang) },
     { emoji: '💧', title: t('exp_step_5_title', lang), message: t('exp_step_5_msg', lang) },
     { emoji: '💰', title: t('exp_step_6_title', lang), message: t('exp_step_6_msg', lang) },
