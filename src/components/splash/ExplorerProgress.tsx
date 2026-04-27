@@ -118,21 +118,16 @@ export function ExplorerProgress({ currentStep, onBack, lang = 'pt' }: ExplorerP
         </motion.p>
       )}
 
-      {/* Step info */}
+      {/* Minimal step info */}
       <motion.div
         key={currentStep}
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
+        initial={{ opacity: 0, y: 5 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
-        className="mt-3 flex items-center gap-3"
+        className="mt-3 flex items-center gap-2 py-2 px-3 bg-accent/30 rounded-xl border border-accent/20"
       >
-        <div className="w-10 h-10 rounded-xl bg-accent flex items-center justify-center text-lg shrink-0">
-          {stepInfo.emoji}
-        </div>
-        <div>
-          <p className="font-semibold text-sm text-foreground">{stepInfo.title}</p>
-          <p className="text-xs text-muted-foreground">{stepInfo.message}</p>
-        </div>
+        <span className="text-base shrink-0">{stepInfo.emoji}</span>
+        <span className="font-medium text-xs text-foreground/80">{stepInfo.title}</span>
       </motion.div>
     </div>
   );
