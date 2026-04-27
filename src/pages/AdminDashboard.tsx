@@ -10,6 +10,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { PageTransition } from '@/components/PageTransition';
 import { useAuth } from '@/hooks/useAuth';
+import { PageHeader } from '@/components/PageHeader';
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
 import { BarChart, Bar, XAxis, YAxis } from 'recharts';
 import { AdminLeadFilters } from '@/components/admin/AdminLeadFilters';
