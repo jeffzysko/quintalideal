@@ -105,13 +105,15 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading, lang = 'pt', ste
           >
             <div className="flex items-center justify-between mb-1.5">
               <span className="text-xs text-muted-foreground font-medium">{step}/{totalSteps}</span>
-              <span className="text-xs text-primary font-semibold">100%</span>
+              <span className="text-xs text-primary font-bold">100%</span>
             </div>
-            <div className="w-full h-1.5 rounded-full bg-muted/60 overflow-hidden">
+            <div className="w-full h-2 rounded-full bg-muted/60 overflow-hidden shadow-inner">
               <div
-                className="h-full rounded-full bg-primary transition-all duration-500"
+                className="h-full rounded-full bg-primary transition-all duration-700 ease-out relative"
                 style={{ width: `${(step / totalSteps) * 100}%` }}
-              />
+              >
+                <div className="absolute inset-0 bg-white/20 animate-pulse" />
+              </div>
             </div>
           </motion.div>
         )}
@@ -152,6 +154,7 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading, lang = 'pt', ste
               className="py-6 rounded-2xl text-base bg-background border-border"
               maxLength={100}
               autoComplete="name"
+              enterKeyHint="next"
             />
             {errors.nome && <p className="text-sm text-destructive mt-1.5" aria-live="polite">{errors.nome}</p>}
           </motion.div>
@@ -166,7 +169,9 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading, lang = 'pt', ste
               placeholder={t('lead_whatsapp_placeholder', lang)}
               className="py-6 rounded-2xl text-base bg-background border-border"
               type="tel"
+              inputMode="tel"
               autoComplete="tel"
+              enterKeyHint="next"
             />
             {errors.telefone && <p className="text-sm text-destructive mt-1.5" aria-live="polite">{errors.telefone}</p>}
           </motion.div>
@@ -183,6 +188,8 @@ export function LeadForm({ onSubmit, onCheckDuplicate, loading, lang = 'pt', ste
               type="email"
               maxLength={255}
               autoComplete="email"
+              inputMode="email"
+              enterKeyHint="done"
             />
             {errors.email && <p className="text-sm text-destructive mt-1.5" aria-live="polite">{errors.email}</p>}
           </motion.div>

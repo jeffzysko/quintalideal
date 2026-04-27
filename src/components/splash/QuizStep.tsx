@@ -185,6 +185,8 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
                     placeholder={t('quiz_city_placeholder', lang)}
                     className="pl-11 py-6 rounded-2xl text-base bg-background border-border"
                     autoFocus
+                    inputMode="text"
+                    enterKeyHint="search"
                   />
                 </div>
                 {filteredCities.length > 0 && (
