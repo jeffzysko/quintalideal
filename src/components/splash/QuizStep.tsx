@@ -123,7 +123,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
           <ExplorerProgress currentStep={explorerStep} onBack={onBack} lang={lang} />
         </div>
 
-        <div className="flex-1 flex flex-col justify-start mt-2 overflow-y-auto no-scrollbar pb-20">
+        <div className="flex-1 flex flex-col justify-center mt-2 pb-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
