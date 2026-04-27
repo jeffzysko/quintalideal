@@ -1,7 +1,7 @@
 import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { LazyMotion, domAnimation, m, AnimatePresence } from 'framer-motion';
-import { Search, MapPin, Droplets, Shield, Clock, ChevronRight, ChevronDown } from 'lucide-react';
+import { Search, MapPin, Droplets, Shield, Clock, ChevronRight } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/lib/supabase';
 import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
