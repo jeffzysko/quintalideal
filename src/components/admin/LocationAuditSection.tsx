@@ -77,7 +77,7 @@ export function LocationAuditSection({ franchises }: LocationAuditSectionProps) 
 
     const chartData = Array.from(dailyMap.values()).map(d => ({
       ...d,
-      formattedDate: format(new Date(d.date), 'dd/MM', { locale: ptBR })
+      formattedDate: format(parseISO(d.date), 'dd/MM', { locale: ptBR })
     }));
 
     return {
