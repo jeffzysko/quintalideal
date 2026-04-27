@@ -728,6 +728,11 @@ export default function AdminDashboard() {
             <Suspense fallback={<TabFallback />}><AdminErrorLogs franchiseMap={franchiseMap} /></Suspense>
           </>
         )}
+        {activeTab === 'location-audit' && (
+          <Suspense fallback={<TabFallback />}>
+            <LocationAuditSection franchises={franchises} franchiseMap={franchiseMap} />
+          </Suspense>
+        )}
 
         {activeTab === 'franchise-view' && (
           <Suspense fallback={<TabFallback />}>
