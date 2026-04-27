@@ -22,7 +22,7 @@ import { LeadRow } from '@/lib/lead-constants';
 import { classifyLead } from '@/lib/leadScoring';
 import { MetricGrid } from '@/components/dashboard/MetricGrid';
 import { TimeRangeSelector, filterByTimeRange, type TimeRange } from '@/components/dashboard/TimeRangeSelector';
-import { SectionHeader, SectionHeader as PageSectionHeader } from '@/components/SectionHeader';
+import { SectionHeader } from '@/components/SectionHeader';
 import type { MetricCardProps } from '@/components/dashboard/MetricCard';
 import { InsightCards } from '@/components/dashboard/InsightCards';
 import { ExecutiveSummary } from '@/components/admin/ExecutiveSummary';
