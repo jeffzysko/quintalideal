@@ -21,7 +21,7 @@ interface QuizStepProps {
   question: string;
   options?: QuizOption[];
   type?: 'options' | 'city';
-  onAnswer: (value: string) => void;
+  onAnswer: (value: string, metadata?: any) => void;
   onBack: () => void;
   explorerStep: number;
   franchiseSlug?: string;
@@ -39,6 +39,7 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
   const [selectedValue, setSelectedValue] = useState<string | null>(null);
   const [isDetectingLocation, setIsDetectingLocation] = useState(false);
   const [suggestedCity, setSuggestedCity] = useState<string | null>(null);
+  const [locationLog, setLocationLog] = useState<{ status: 'match' | 'fallback' | 'error'; raw?: string; normalized?: string } | null>(null);
 
   const showUY = franchiseSlug ? UY_ENABLED_SLUGS.has(franchiseSlug) : false;
 
@@ -70,24 +71,37 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
           const cityName = data.city || data.locality;
 
           if (cityName) {
-            // Normalize: remove generic terms like "região metropolitana de", "grande", etc.
-            const cleanCityName = cityName
-              .replace(/região metropolitana de\s+/i, '')
-              .replace(/grande\s+/i, '')
-              .replace(/\s+-\s+RS/i, '')
-              .trim();
+            // Helper for robust matching (fuzzy/normalization)
+            const normalize = (str: string) => 
+              str.toLowerCase()
+                 .normalize("NFD")
+                 .replace(/[\u0300-\u036f]/g, "") // Remove accents
+                 .replace(/regiao metropolitana de\s+/i, '')
+                 .replace(/grande\s+/i, '')
+                 .replace(/\s+-\s+rs/i, '')
+                 .replace(/[^a-z0-9 ]/g, '') // Remove special chars
+                 .trim();
 
-            // Find closest match in our city list
-            const search = cleanCityName.toLowerCase();
-            const match = cidades.find(c => c.nome.toLowerCase().includes(search));
+            const normalizedInput = normalize(cityName);
+
+            // Find match with better tolerance
+            const match = cidades.find(c => {
+              const normalizedCity = normalize(c.nome);
+              return normalizedCity === normalizedInput || 
+                     normalizedCity.includes(normalizedInput) || 
+                     normalizedInput.includes(normalizedCity);
+            });
             
             if (match) {
               setSuggestedCity(match.nome);
               setCitySearch(match.nome);
+              setLocationLog({ status: 'match', raw: cityName, normalized: match.nome });
               toast.success(`Localização detectada: ${match.nome}`);
+              haptic('success');
             } else {
-              setCitySearch(cleanCityName);
-              toast.info(`Cidade detectada: ${cleanCityName}`);
+              setCitySearch(cityName);
+              setLocationLog({ status: 'fallback', raw: cityName });
+              toast.info(`Cidade detectada: ${cityName}. Não encontrada na lista, você pode ajustar manualmente.`);
             }
           }
         } catch (error) {
@@ -112,7 +126,10 @@ export function QuizStep({ step, totalSteps: _totalSteps, question, options, typ
   const handleSelect = (value: string) => {
     setSelectedValue(value);
     haptic('light');
-    setTimeout(() => onAnswer(value), 350);
+    
+    // If we have a location log, pass it back along with the answer
+    const metadata = locationLog ? { location_meta: locationLog } : undefined;
+    setTimeout(() => onAnswer(value, metadata), 350);
   };
 
   const hasImages = useImageLayout && options?.some(o => o.image);
