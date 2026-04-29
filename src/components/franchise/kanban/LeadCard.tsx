@@ -20,7 +20,7 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
-import { MapPin, GripVertical, MessageCircle, StickyNote, ArrowRightLeft, Send, Clock, AlertTriangle, AlertCircle } from 'lucide-react';
+import { MapPin, GripVertical, MessageCircle, StickyNote, ArrowRightLeft, Send, Clock, AlertTriangle, AlertCircle, CalendarClock } from 'lucide-react';
 import { differenceInDays } from 'date-fns';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
