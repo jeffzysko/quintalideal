@@ -24,6 +24,7 @@ import {
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { EmptyState } from '@/components/ui/empty-state';
+import { STATUS_LABELS, STATUS_CHART_COLORS } from '@/lib/lead-constants';
 
 // Reuse from HojePage pattern
 function parseFollowupType(note: string | null) {
@@ -46,7 +47,7 @@ interface FollowupRow {
   note: string | null;
   scheduled_at: string;
   completed: boolean;
-  leads: { nome: string | null } | null;
+  leads: { nome: string | null; status_lead: string } | null;
 }
 
 export default function AgendaPage() {
@@ -78,7 +79,7 @@ export default function AgendaPage() {
       const to = weekEnd.toISOString();
       let query = supabase
         .from('lead_followups')
-        .select('id, lead_id, note, scheduled_at, completed, leads(nome)')
+        .select('id, lead_id, note, scheduled_at, completed, leads(nome, status_lead)')
         .gte('scheduled_at', from)
         .lte('scheduled_at', to)
         .order('scheduled_at', { ascending: true });
@@ -122,6 +123,9 @@ export default function AgendaPage() {
     const overdue = isPast(date) && !isToday(date) && !f.completed;
     const today = isToday(date) && !f.completed;
     const leadName = f.leads?.nome || 'Lead sem nome';
+    const leadStatus = f.leads?.status_lead;
+    const statusLabel = leadStatus ? (STATUS_LABELS[leadStatus] || leadStatus) : null;
+    const statusColor = leadStatus ? STATUS_CHART_COLORS[leadStatus] : null;
 
     return (
       <motion.div
@@ -151,13 +155,31 @@ export default function AgendaPage() {
         </div>
 
         <div className="flex-1 min-w-0">
-          <p className={cn('text-xs font-semibold text-foreground truncate', f.completed && 'line-through')}>{leadName}</p>
-          <div className="flex items-center gap-1.5 mt-0.5">
+          <div className="flex items-center gap-2 mb-0.5">
+            <p className={cn('text-xs font-semibold text-foreground truncate', f.completed && 'line-through')}>
+              {leadName}
+            </p>
+            {leadStatus && (
+              <Badge 
+                variant="outline" 
+                className="text-[9px] px-1.5 py-0 h-3.5 border-none font-bold"
+                style={{ backgroundColor: `${statusColor}15`, color: statusColor }}
+              >
+                {statusLabel}
+              </Badge>
+            )}
+          </div>
+          
+          <div className="flex items-center gap-1.5">
             <span className={cn('text-xs font-medium', overdue ? 'text-destructive' : 'text-muted-foreground')}>
               {format(date, 'HH:mm')}
             </span>
             {overdue && <Badge variant="destructive" className="text-[9px] px-1 py-0 h-3.5 rounded-full">Atrasado</Badge>}
             {today && !overdue && <Badge className="text-[9px] px-1 py-0 h-3.5 rounded-full bg-emerald-500/15 text-emerald-700 border-0">Hoje</Badge>}
+            
+            <span className="text-[10px] text-primary/60 font-medium ml-auto flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
+              Ver lead <ChevronRight className="w-2.5 h-2.5" />
+            </span>
           </div>
           {!compact && parsed.text && <p className="text-xs text-muted-foreground/60 truncate mt-0.5">{parsed.text}</p>}
         </div>

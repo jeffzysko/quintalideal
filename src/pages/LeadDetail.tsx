@@ -1,4 +1,6 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '@/lib/supabase';
@@ -7,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { MessageCircle, Phone, Mail, MapPin, Droplets, Camera, ClipboardList, ClipboardCheck, Settings2, X, ChevronDown, Package, FileText, HelpCircle, Plus, TrendingUp } from 'lucide-react';
+import { MessageCircle, Phone, Mail, MapPin, Droplets, Camera, ClipboardList, ClipboardCheck, Settings2, X, ChevronDown, Package, FileText, HelpCircle, Plus, TrendingUp, CalendarClock } from 'lucide-react';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Input } from '@/components/ui/input';
 
@@ -213,6 +215,24 @@ export default function LeadDetail() {
     },
     enabled: !!leadFranchiseId,
     staleTime: 5 * 60 * 1000,
+  });
+
+  const { data: nextFollowup } = useQuery({
+    queryKey: ['lead-next-followup', id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('lead_followups')
+        .select('scheduled_at, note')
+        .eq('lead_id', id!)
+        .eq('completed', false)
+        .gte('scheduled_at', new Date().toISOString())
+        .order('scheduled_at', { ascending: true })
+        .limit(1)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!id,
+    staleTime: 2 * 60 * 1000,
   });
 
   useEffect(() => {
@@ -480,6 +500,15 @@ export default function LeadDetail() {
                   </span>
                 )}
                 <InactivityBadge createdAt={lead.created_at} lastActivityAt={lastActivityAt} />
+                {nextFollowup && (
+                  <button 
+                    onClick={() => setActiveTab('conversa')}
+                    className="text-[10px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full flex items-center gap-1.5 hover:bg-primary/20 transition-colors"
+                  >
+                    <CalendarClock className="w-3 h-3" />
+                    <span>Próximo follow-up: {formatDistanceToNow(new Date(nextFollowup.scheduled_at), { locale: ptBR, addSuffix: true })}</span>
+                  </button>
+                )}
               </div>
             </div>
 

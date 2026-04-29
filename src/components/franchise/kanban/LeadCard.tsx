@@ -20,7 +20,7 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
-import { MapPin, GripVertical, MessageCircle, StickyNote, ArrowRightLeft, Send, Clock, AlertTriangle, AlertCircle } from 'lucide-react';
+import { MapPin, GripVertical, MessageCircle, StickyNote, ArrowRightLeft, Send, Clock, AlertTriangle, AlertCircle, CalendarClock } from 'lucide-react';
 import { differenceInDays } from 'date-fns';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -98,6 +98,23 @@ export const LeadCard = memo(function LeadCard({
     },
     enabled: !!assignedTo,
     staleTime: 10 * 60 * 1000,
+  });
+  
+  const { data: nextFollowup } = useQuery({
+    queryKey: ['lead-next-followup', lead.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('lead_followups')
+        .select('scheduled_at, note')
+        .eq('lead_id', lead.id)
+        .eq('completed', false)
+        .gte('scheduled_at', new Date().toISOString())
+        .order('scheduled_at', { ascending: true })
+        .limit(1)
+        .maybeSingle();
+      return data;
+    },
+    staleTime: 2 * 60 * 1000,
   });
 
   const style = !overlay
@@ -252,9 +269,19 @@ export const LeadCard = memo(function LeadCard({
         {/* Linha 1: Avatar + Nome + Responsável + Grip */}
         <div className="flex items-center gap-2">
           <LeadAvatar name={lead.nome} size="sm" />
-          <p className="text-sm font-semibold text-foreground truncate flex-1 leading-tight">
-            {lead.nome || '—'}
-          </p>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-foreground truncate leading-tight">
+              {lead.nome || '—'}
+            </p>
+            {nextFollowup && (
+              <div className="flex items-center gap-1 mt-0.5 text-[10px] text-primary font-medium">
+                <CalendarClock className="w-2.5 h-2.5" />
+                <span>
+                  Follow-up: {formatDistanceToNow(new Date(nextFollowup.scheduled_at), { locale: ptBR, addSuffix: true })}
+                </span>
+              </div>
+            )}
+          </div>
           {assignedUser && <LeadCardAssignee assignedName={assignedUser} />}
           {!overlay && (
             <div
