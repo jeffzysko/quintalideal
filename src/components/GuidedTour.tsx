@@ -123,29 +123,50 @@ export function GuidedTour({ steps, storageKey, delay = 1500, onComplete }: Guid
     if (!active || step >= steps.length) return;
     const currentStep = steps[step];
     
-    try {
-      const el = currentStep.target ? document.querySelector(currentStep.target) : null;
-      if (el) {
-        const rect = el.getBoundingClientRect();
-        setTargetRect({ top: rect.top, left: rect.left, width: rect.width, height: rect.height });
-        // Scroll into view if needed
-        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      } else {
+    const findElement = () => {
+      try {
+        const el = currentStep.target ? document.querySelector(currentStep.target) : null;
+        if (el && el instanceof HTMLElement) {
+          const rect = el.getBoundingClientRect();
+          // Only update if visible and has dimensions
+          if (rect.width > 0 && rect.height > 0) {
+            setTargetRect({ top: rect.top, left: rect.left, width: rect.width, height: rect.height });
+            return true;
+          }
+        }
         setTargetRect(null);
+        return false;
+      } catch (err) {
+        setTargetRect(null);
+        return false;
       }
-    } catch (err) {
-      console.warn('GuidedTour: Invalid selector or element not found', currentStep.target);
-      setTargetRect(null);
+    };
+
+    if (findElement()) {
+      // Success
+    } else {
+      // If not found immediately, retry once after a small delay (could be rendering)
+      setTimeout(findElement, 100);
     }
   }, [active, step, steps]);
 
   useEffect(() => {
     updatePosition();
+    
+    const handleScroll = () => {
+      window.requestAnimationFrame(updatePosition);
+    };
+
     window.addEventListener('resize', updatePosition);
-    window.addEventListener('scroll', updatePosition, true);
+    window.addEventListener('scroll', handleScroll, true);
+    
+    // Also re-check periodically because some elements might appear after animations
+    const interval = setInterval(updatePosition, 1000);
+
     return () => {
       window.removeEventListener('resize', updatePosition);
-      window.removeEventListener('scroll', updatePosition, true);
+      window.removeEventListener('scroll', handleScroll, true);
+      clearInterval(interval);
     };
   }, [updatePosition]);
 
