@@ -139,6 +139,32 @@ export default function ProposalDetail() {
 
     // Send email when status is "enviada"
     if (status === 'enviada') {
+      // Automatic follow-up after 48h if not opened
+      if (proposal.lead_id) {
+        const checkDate = new Date();
+        checkDate.setHours(checkDate.getHours() + 48);
+        
+        const { data: existingFollowups } = await supabase
+          .from('lead_followups')
+          .select('id')
+          .eq('lead_id', proposal.lead_id)
+          .eq('status', 'pendente')
+          .gt('scheduled_at', new Date().toISOString())
+          .lt('scheduled_at', checkDate.toISOString());
+
+        if (!existingFollowups || existingFollowups.length === 0) {
+          await supabase.from('lead_followups').insert({
+            lead_id: proposal.lead_id,
+            franchise_id: proposal.franchise_id,
+            user_id: proposal.created_by,
+            scheduled_at: checkDate.toISOString(),
+            note: `Follow-up automático: cliente não abriu a proposta [https://quintalideal.com.br/proposta/${proposal.id}]`,
+            tipo: 'automatico',
+            status: 'pendente'
+          } as any);
+        }
+      }
+
       if (proposal.client_email?.trim()) {
         supabase.functions.invoke('send-proposal-email', {
           body: { proposal_id: proposal.id, type: 'update' },
