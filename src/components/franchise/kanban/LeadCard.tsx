@@ -25,7 +25,7 @@ import { differenceInDays } from 'date-fns';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Textarea } from '@/components/ui/textarea';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/useAuth';
@@ -217,7 +217,6 @@ export const LeadCard = memo(function LeadCard({
             const Icon = badgeConfig.icon;
 
             return (
-              <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>
                     <span className={cn(
@@ -233,7 +232,6 @@ export const LeadCard = memo(function LeadCard({
                     <p>Sem atividade há {days} dias</p>
                   </TooltipContent>
                 </Tooltip>
-              </TooltipProvider>
             );
           })()}
 
