@@ -149,7 +149,7 @@ const FRANCHISE_GROUPS: NavGroup[] = [
     items: [
       { title: 'Hoje', url: '/hoje', icon: Sun },
       { title: 'Agenda', url: '/agenda', icon: CalendarDays, matchPaths: ['/agenda'] },
-      { title: 'Leads', url: '/franquia?tab=funnel', icon: Kanban, matchTab: 'funnel' },
+      { title: 'Leads', url: '/franquia?tab=funnel', icon: Kanban, matchTab: 'funnel', dataTour: 'funnel-tab' },
     ],
   },
   {
@@ -240,7 +240,7 @@ export function AppSidebar() {
   const groups = isAdmin ? SUPER_ADMIN_GROUPS : FRANCHISE_GROUPS;
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-border/40">
+    <Sidebar collapsible="icon" className="border-r border-border/40" data-tour="sidebar">
       <SidebarHeader className="p-3">
         <div className="flex items-center gap-2 overflow-hidden group-data-[collapsible=icon]:hidden">
           <img

@@ -663,6 +663,7 @@ export type Database = {
           foto4: string | null
           franquia_id: string | null
           id: string
+          last_followup_reminder_at: string | null
           lead_city_normalized: string | null
           lead_origin: string
           location_detected_name: string | null
@@ -701,6 +702,7 @@ export type Database = {
           foto4?: string | null
           franquia_id?: string | null
           id?: string
+          last_followup_reminder_at?: string | null
           lead_city_normalized?: string | null
           lead_origin?: string
           location_detected_name?: string | null
@@ -739,6 +741,7 @@ export type Database = {
           foto4?: string | null
           franquia_id?: string | null
           id?: string
+          last_followup_reminder_at?: string | null
           lead_city_normalized?: string | null
           lead_origin?: string
           location_detected_name?: string | null

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { SidebarProvider, SidebarTrigger, useSidebar } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/AppSidebar';
@@ -11,6 +11,8 @@ import { Footer } from '@/components/Footer';
 import { Map, Trophy, Radar } from 'lucide-react';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
+import { CommandPalette } from '@/components/CommandPalette';
+import { Search } from 'lucide-react';
 
 /**
  * Layout for all authenticated pages.
@@ -22,6 +24,7 @@ export function AuthenticatedLayout() {
   const isMobile = useIsMobile();
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const [paletteOpen, setCommandPaletteOpen] = useState(false);
 
   const isAdmin = role === 'super_admin';
 
@@ -46,6 +49,7 @@ export function AuthenticatedLayout() {
         <div className="flex-1">
           <Outlet />
         </div>
+        <CommandPalette open={paletteOpen} onOpenChange={setCommandPaletteOpen} />
         {showFooter && <Footer />}
       </div>
     );
@@ -54,7 +58,8 @@ export function AuthenticatedLayout() {
   // Desktop: sidebar + header. Default open; user can collapse to icon-only.
   return (
     <SidebarProvider defaultOpen>
-      <DesktopShell topNavItems={topNavItems} pathname={pathname} navigate={navigate} showFooter={showFooter} />
+      <DesktopShell topNavItems={topNavItems} pathname={pathname} navigate={navigate} showFooter={showFooter} onOpenPalette={() => setCommandPaletteOpen(true)} />
+      <CommandPalette open={paletteOpen} onOpenChange={setCommandPaletteOpen} />
     </SidebarProvider>
   );
 }
@@ -65,11 +70,13 @@ function DesktopShell({
   pathname,
   navigate,
   showFooter,
+  onOpenPalette,
 }: {
   topNavItems: { icon: React.ElementType; label: string; path: string }[];
   pathname: string;
   navigate: (path: string) => void;
   showFooter: boolean;
+  onOpenPalette: () => void;
 }) {
   const { state } = useSidebar();
   const sidebarOpen = state === 'expanded';
@@ -89,6 +96,14 @@ function DesktopShell({
             <Breadcrumbs />
           </div>
           <div className="flex items-center gap-1">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="ghost" size="icon" className="h-9 w-9" onClick={onOpenPalette}>
+                  <Search className="h-4 w-4" />
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Buscar (⌘K)</TooltipContent>
+            </Tooltip>
             {topNavItems.map((item) => (
               <Tooltip key={item.path}>
                 <TooltipTrigger asChild>

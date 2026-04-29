@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase';
 import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 import heroPool from '@/assets/hero-pool.webp';
 import { cidades, type CityOption } from '@/lib/cities';
+import { MetaPixel } from '@/components/MetaPixel';
 
 interface FranchiseMatch {
   id: string;
@@ -168,6 +169,7 @@ export default function HomePage() {
   return (
     <LazyMotion features={domAnimation}>
       <div className="h-[100dvh] flex flex-col relative overflow-hidden">
+        <MetaPixel pixelId={import.meta.env.VITE_META_PIXEL_ID || ''} />
         {/* ── Background image with cinematic overlay ── */}
         <m.div
           initial={{ scale: 1.15, opacity: 0 }}

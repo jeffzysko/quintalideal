@@ -16,6 +16,7 @@ import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { getNotificationType } from '@/lib/notification-types';
 import { useNotificationFilter } from '@/hooks/useNotificationFilter';
+import { useAppBadge } from '@/hooks/useAppBadge';
 
 interface Notification {
   id: string;
@@ -86,6 +87,7 @@ export function NotificationBell() {
 
   const isAdmin = role === 'super_admin';
   const { shouldShow } = useNotificationFilter();
+  const { updateBadge } = useAppBadge();
 
   // Filter notifications based on user preferences
   const visibleNotifications = notifications.filter(n => shouldShow(n.type));
@@ -105,6 +107,7 @@ export function NotificationBell() {
     if (data) {
       setNotifications(data as Notification[]);
       initialLoadDone.current = true;
+      updateBadge();
     }
   }, [user, franchiseId, isAdmin]);
 
@@ -136,6 +139,7 @@ export function NotificationBell() {
   const markAsRead = async (id: string) => {
     await supabase.from('notifications').update({ read: true }).eq('id', id);
     setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
+    updateBadge();
   };
 
   const markAllAsRead = async () => {
@@ -143,6 +147,7 @@ export function NotificationBell() {
     if (unreadIds.length === 0) return;
     await supabase.from('notifications').update({ read: true }).in('id', unreadIds);
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    updateBadge();
   };
 
   const handleNotificationClick = (notif: Notification) => {

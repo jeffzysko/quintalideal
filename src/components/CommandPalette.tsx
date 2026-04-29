@@ -36,8 +36,11 @@ interface LeadResult {
   pontuacao_quintal: number | null;
 }
 
-export function CommandPalette() {
-  const [open, setOpen] = useState(false);
+export function CommandPalette({ open: externalOpen, onOpenChange }: { open?: boolean, onOpenChange?: (open: boolean) => void } = {}) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  
+  const open = externalOpen !== undefined ? externalOpen : internalOpen;
+  const setOpen = onOpenChange || setInternalOpen;
   const [query, setQuery] = useState('');
   const [leads, setLeads] = useState<LeadResult[]>([]);
   const [searching, setSearching] = useState(false);
