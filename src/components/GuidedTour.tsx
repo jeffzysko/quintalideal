@@ -158,15 +158,23 @@ export function GuidedTour({ steps, storageKey, delay = 1500, onComplete }: Guid
     const viewH = window.innerHeight;
 
     if (targetRect) {
-      const pos = getTooltipPosition(
-        targetRect,
-        ttRect.width,
-        ttRect.height,
-        steps[step]?.placement,
-        viewW,
-        viewH,
-      );
-      setTooltipPos({ top: pos.top, left: pos.left });
+      try {
+        const pos = getTooltipPosition(
+          targetRect,
+          ttRect.width,
+          ttRect.height,
+          steps[step]?.placement,
+          viewW,
+          viewH,
+        );
+        setTooltipPos({ top: pos.top, left: pos.left });
+      } catch (err) {
+        console.error('GuidedTour: Error calculating tooltip position', err);
+        setTooltipPos({
+          top: viewH / 2 - ttRect.height / 2,
+          left: viewW / 2 - ttRect.width / 2,
+        });
+      }
     } else {
       // Center as modal
       setTooltipPos({
