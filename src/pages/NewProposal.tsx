@@ -417,23 +417,56 @@ export default function NewProposal() {
       localStorage.removeItem(`proposal_draft_${franchiseId}`);
 
       // Send email to client when status is "enviada" and client has email
-      if (finalStatus === 'enviada' && form.client_email.trim()) {
-        const emailType = isEditMode ? 'update' : 'new';
-        supabase.functions.invoke('send-proposal-email', {
-          body: { proposal_id: proposalId, type: emailType },
-        }).then(({ error }) => {
-          if (error) {
-            console.error('Erro ao enviar e-mail da proposta:', error);
-            toast.error('Proposta salva, mas houve um erro ao enviar o e-mail para o cliente.');
-          } else {
-            toast.success('📧 E-mail enviado para o cliente!');
-          }
-        });
-      }
-
-      // Event 3: WhatsApp auto trigger when proposal is sent
+      // Finalization logic when proposal is sent
       if (finalStatus === 'enviada') {
+        const emailType = isEditMode ? 'update' : 'new';
+        if (form.client_email.trim()) {
+          supabase.functions.invoke('send-proposal-email', {
+            body: { proposal_id: proposalId, type: emailType },
+          }).then(({ data, error }) => {
+            if (error) {
+              console.error('Erro ao enviar e-mail da proposta:', error);
+              toast.error('Proposta salva, mas houve um erro ao enviar o e-mail para o cliente.');
+            } else if (data?.sent === false && data?.reason === 'client_email_missing') {
+              toast.warning('⚠️ Email não enviado: cliente sem email cadastrado. Compartilhe o link manualmente.');
+            } else {
+              toast.success('📧 E-mail enviado para o cliente!');
+            }
+          });
+        } else {
+          toast.warning('⚠️ Email não enviado: cliente sem email cadastrado. Compartilhe o link manualmente.');
+        }
+
+        // WhatsApp auto trigger
         triggerWhatsAppAuto({ trigger_event: 'proposal_sent', proposal_id: proposalId, franchise_id: franchiseId });
+        triggerWhatsAppAuto({ trigger_event: 'proposal_sent', proposal_id: proposalId, franchise_id: franchiseId });
+        
+        // Automatic follow-up after 48h if not opened
+        if (form.lead_id) {
+          const checkDate = new Date();
+          checkDate.setHours(checkDate.getHours() + 48);
+          
+          const { data: existingFollowups } = await supabase
+            .from('lead_followups')
+            .select('id')
+            .eq('lead_id', form.lead_id)
+            .eq('status', 'pendente')
+            .gt('scheduled_at', new Date().toISOString())
+            .lt('scheduled_at', checkDate.toISOString());
+
+          if (!existingFollowups || existingFollowups.length === 0) {
+            await supabase.from('lead_followups').insert({
+              lead_id: form.lead_id,
+              franchise_id: franchiseId,
+              user_id: user.id,
+              scheduled_at: checkDate.toISOString(),
+              note: `Follow-up automático: cliente não abriu a proposta [https://quintalideal.com.br/proposta/${proposalId}]`,
+              tipo: 'automatico',
+              status: 'pendente'
+            } as any);
+          }
+        }
+
         // Log usage event (async, non-blocking)
         supabase.from('usage_logs' as any).insert({
           franchise_id: franchiseId,

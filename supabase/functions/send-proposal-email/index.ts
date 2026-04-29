@@ -7,7 +7,7 @@ const corsHeaders = {
 };
 
 const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY")!;
-const SENDER = "Quintal Ideal <noreply@hallow.com.br>";
+const DEFAULT_SENDER = "Quintal Ideal <noreply@quintalideal.com.br>";
 const BRAND_PINK = "#e80685";
 const BRAND_BLUE = "#08a1d6";
 const BRAND_GRADIENT = "linear-gradient(135deg, #e80685, #08a1d6)";
@@ -182,7 +182,7 @@ Deno.serve(async (req) => {
     }
 
     if (!proposal.client_email) {
-      return new Response(JSON.stringify({ skipped: true, reason: "no_client_email" }), {
+      return new Response(JSON.stringify({ sent: false, reason: 'client_email_missing' }), {
         status: 200,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
@@ -223,7 +223,9 @@ Deno.serve(async (req) => {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: SENDER,
+        from: franchise?.nome_franquia 
+          ? `${franchise.nome_franquia} via Quintal Ideal <noreply@quintalideal.com.br>`
+          : DEFAULT_SENDER,
         to: [proposal.client_email],
         subject,
         html: htmlContent,
