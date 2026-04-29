@@ -99,6 +99,23 @@ export const LeadCard = memo(function LeadCard({
     enabled: !!assignedTo,
     staleTime: 10 * 60 * 1000,
   });
+  
+  const { data: nextFollowup } = useQuery({
+    queryKey: ['lead-next-followup', lead.id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('lead_followups')
+        .select('scheduled_at, note')
+        .eq('lead_id', lead.id)
+        .eq('completed', false)
+        .gte('scheduled_at', new Date().toISOString())
+        .order('scheduled_at', { ascending: true })
+        .limit(1)
+        .maybeSingle();
+      return data;
+    },
+    staleTime: 2 * 60 * 1000,
+  });
 
   const style = !overlay
     ? {
