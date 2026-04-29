@@ -37,6 +37,7 @@ import { useLeadsRealtime } from '@/hooks/useLeadsRealtime';
 import { OnboardingChecklist } from '@/components/franchise/OnboardingChecklist';
 import { FirstAccessModal } from '@/components/franchise/FirstAccessModal';
 import { PostSaleDashboard } from '@/components/franchise/PostSaleDashboard';
+import { GuidedTour } from '@/components/GuidedTour';
 
 const PAGE_SIZE = 20;
 
@@ -328,17 +329,17 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
 
   const content = (
     <>
-      <GuidedTour
-        steps={[
-          { target: '[data-tour="sidebar"]', title: 'Menu Lateral', description: 'Navegue por todas as ferramentas da plataforma aqui.', placement: 'right' },
-          { target: '[data-tour="funnel-tab"]', title: 'Aba de Leads', description: 'Acompanhe seu funil de vendas e mova os leads entre as etapas.', placement: 'bottom' },
-          { target: '[data-tour="nav-propostas"]', title: 'Nova Proposta', description: 'Crie orçamentos profissionais em segundos para seus clientes.', placement: 'right' },
-          { target: '/perfil#whatsapp', title: 'Configurações de WhatsApp', description: 'Configure sua instância para automações e notificações.', fallbackModal: true }
-        ]}
-        storageKey="guided-tour-completed"
-      />
-      <WelcomeWizard franchiseName={franchiseName || undefined} />
-      {franchiseSlug && <FranchiseLinkBanner slug={franchiseSlug} />}
+          <GuidedTour
+            steps={[
+              { target: '[data-tour="sidebar"]', title: 'Menu Lateral', description: 'Navegue por todas as ferramentas da plataforma aqui.', placement: 'right' },
+              { target: '[data-tour="funnel-tab"]', title: 'Aba de Leads', description: 'Acompanhe seu funil de vendas e mova os leads entre as etapas.', placement: 'bottom' },
+              { target: '[data-tour="nav-propostas"]', title: 'Nova Proposta', description: 'Crie orçamentos profissionais em segundos para seus clientes.', placement: 'right' },
+              { target: '/perfil#whatsapp', title: 'Configurações de WhatsApp', description: 'Configure sua instância para automações e notificações.', fallbackModal: true }
+            ]}
+            storageKey="guided-tour-completed"
+          />
+          <WelcomeWizard franchiseName={franchiseName || undefined} />
+          {franchiseSlug && <FranchiseLinkBanner slug={franchiseSlug} />}
 
       {/* Time Range + KPIs */}
       <div className="flex items-center justify-between mb-3 sm:mb-4">

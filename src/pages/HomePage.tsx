@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase';
 import logoQuintalIdeal from '@/assets/lettering-quintal-ideal.svg';
 import heroPool from '@/assets/hero-pool.webp';
 import { cidades, type CityOption } from '@/lib/cities';
+import { MetaPixel } from '@/components/MetaPixel';
 
 interface FranchiseMatch {
   id: string;
