@@ -215,6 +215,24 @@ export default function LeadDetail() {
     staleTime: 5 * 60 * 1000,
   });
 
+  const { data: nextFollowup } = useQuery({
+    queryKey: ['lead-next-followup', id],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('lead_followups')
+        .select('scheduled_at, note')
+        .eq('lead_id', id!)
+        .eq('completed', false)
+        .gte('scheduled_at', new Date().toISOString())
+        .order('scheduled_at', { ascending: true })
+        .limit(1)
+        .maybeSingle();
+      return data;
+    },
+    enabled: !!id,
+    staleTime: 2 * 60 * 1000,
+  });
+
   useEffect(() => {
     if (lead) {
       setStatus(lead.status_lead);
