@@ -8,11 +8,11 @@ import { UserAvatarMenu } from '@/components/UserAvatarMenu';
 import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Footer } from '@/components/Footer';
-import { Map, Trophy, Radar } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Map, Trophy, Radar, Search } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { CommandPalette } from '@/components/CommandPalette';
-import { Search } from 'lucide-react';
+import { useProposalRealtime } from '@/hooks/useProposalRealtime';
 
 /**
  * Layout for all authenticated pages.
@@ -20,11 +20,14 @@ import { Search } from 'lucide-react';
  * - Mobile: no sidebar (BottomNav handles navigation)
  */
 export function AuthenticatedLayout() {
-  const { user, role } = useAuth();
+  const { user, role, franchiseId } = useAuth();
   const isMobile = useIsMobile();
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const [paletteOpen, setCommandPaletteOpen] = useState(false);
+
+  // Ativa notificações de propostas em tempo real para franqueados
+  useProposalRealtime(role === 'franquia' ? franchiseId : null);
 
   const isAdmin = role === 'super_admin';
 
