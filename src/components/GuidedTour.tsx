@@ -122,13 +122,19 @@ export function GuidedTour({ steps, storageKey, delay = 1500, onComplete }: Guid
   const updatePosition = useCallback(() => {
     if (!active || step >= steps.length) return;
     const currentStep = steps[step];
-    const el = document.querySelector(currentStep.target);
-    if (el) {
-      const rect = el.getBoundingClientRect();
-      setTargetRect({ top: rect.top, left: rect.left, width: rect.width, height: rect.height });
-      // Scroll into view if needed
-      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    } else {
+    
+    try {
+      const el = currentStep.target ? document.querySelector(currentStep.target) : null;
+      if (el) {
+        const rect = el.getBoundingClientRect();
+        setTargetRect({ top: rect.top, left: rect.left, width: rect.width, height: rect.height });
+        // Scroll into view if needed
+        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      } else {
+        setTargetRect(null);
+      }
+    } catch (err) {
+      console.warn('GuidedTour: Invalid selector or element not found', currentStep.target);
       setTargetRect(null);
     }
   }, [active, step, steps]);
