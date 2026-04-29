@@ -46,7 +46,7 @@ interface FollowupRow {
   note: string | null;
   scheduled_at: string;
   completed: boolean;
-  leads: { nome: string | null } | null;
+  leads: { nome: string | null; status_lead: string } | null;
 }
 
 export default function AgendaPage() {
@@ -78,7 +78,7 @@ export default function AgendaPage() {
       const to = weekEnd.toISOString();
       let query = supabase
         .from('lead_followups')
-        .select('id, lead_id, note, scheduled_at, completed, leads(nome)')
+        .select('id, lead_id, note, scheduled_at, completed, leads(nome, status_lead)')
         .gte('scheduled_at', from)
         .lte('scheduled_at', to)
         .order('scheduled_at', { ascending: true });
@@ -122,6 +122,9 @@ export default function AgendaPage() {
     const overdue = isPast(date) && !isToday(date) && !f.completed;
     const today = isToday(date) && !f.completed;
     const leadName = f.leads?.nome || 'Lead sem nome';
+    const leadStatus = f.leads?.status_lead;
+    const statusLabel = leadStatus ? (STATUS_LABELS[leadStatus] || leadStatus) : null;
+    const statusColor = leadStatus ? STATUS_CHART_COLORS[leadStatus] : null;
 
     return (
       <motion.div
