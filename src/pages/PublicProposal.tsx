@@ -36,6 +36,7 @@ export default function PublicProposal() {
   const [proposal, setProposal] = useState<ProposalData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [itemImages, setItemImages] = useState<Record<string, string>>({});
 
   const [acceptOpen, setAcceptOpen] = useState(false);
   const [refuseOpen, setRefuseOpen] = useState(false);
@@ -62,6 +63,28 @@ export default function PublicProposal() {
   }, [token]);
 
   useEffect(() => { fetchProposal(); }, [fetchProposal]);
+
+  useEffect(() => {
+    if (!proposal?.items?.length) return;
+    
+    const fetchImages = async () => {
+      const productNames = proposal.items.map(i => i.product_name);
+      const { data: models } = await supabase
+        .from('pool_models')
+        .select('nome_modelo, imagem_principal, gallery_urls')
+        .in('nome_modelo', productNames);
+        
+      if (models) {
+        const imageMap: Record<string, string> = {};
+        models.forEach(m => {
+          imageMap[m.nome_modelo] = m.imagem_principal || (m.gallery_urls && m.gallery_urls[0]) || '';
+        });
+        setItemImages(imageMap);
+      }
+    };
+    
+    fetchImages();
+  }, [proposal?.items]);
 
   // Fetch attachments when proposal loads
   useEffect(() => {
