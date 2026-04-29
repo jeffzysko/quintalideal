@@ -1420,24 +1420,51 @@ export type Database = {
       }
       proposal_views: {
         Row: {
+          client_name: string | null
+          franchise_id: string | null
           id: string
           proposal_id: string
           user_agent: string | null
           viewed_at: string
         }
         Insert: {
+          client_name?: string | null
+          franchise_id?: string | null
           id?: string
           proposal_id: string
           user_agent?: string | null
           viewed_at?: string
         }
         Update: {
+          client_name?: string | null
+          franchise_id?: string | null
           id?: string
           proposal_id?: string
           user_agent?: string | null
           viewed_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "proposal_views_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchise_safe"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proposal_views_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchises"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "proposal_views_franchise_id_fkey"
+            columns: ["franchise_id"]
+            isOneToOne: false
+            referencedRelation: "franchises_public"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "proposal_views_proposal_id_fkey"
             columns: ["proposal_id"]
