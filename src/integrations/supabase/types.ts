@@ -543,6 +543,8 @@ export type Database = {
           lead_id: string
           note: string | null
           scheduled_at: string
+          status: string | null
+          tipo: string | null
           user_id: string
         }
         Insert: {
@@ -553,6 +555,8 @@ export type Database = {
           lead_id: string
           note?: string | null
           scheduled_at: string
+          status?: string | null
+          tipo?: string | null
           user_id: string
         }
         Update: {
@@ -563,6 +567,8 @@ export type Database = {
           lead_id?: string
           note?: string | null
           scheduled_at?: string
+          status?: string | null
+          tipo?: string | null
           user_id?: string
         }
         Relationships: [
