@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { triggerWhatsAppAuto } from '@/lib/whatsapp-auto';
@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Check, X, MessageCircle, Download, CreditCard, Truck, CalendarDays, Phone, User, FileText, RefreshCw, Sparkles, ArrowRight, Loader2, Paperclip } from 'lucide-react';
+import { Check, X, MessageCircle, Download, CreditCard, Truck, CalendarDays, Phone, User, FileText, RefreshCw, Sparkles, ArrowRight, Loader2, Paperclip, Eye } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
@@ -97,10 +97,58 @@ export default function PublicProposal() {
       .then(({ data }) => { if (data) setAttachments(data); });
   }, [proposal?.id]);
 
+  const [viewCount, setViewCount] = useState(0);
+  const [hasViewedBefore, setHasViewedBefore] = useState(false);
+
   useEffect(() => {
     if (!token || !proposal) return;
-    supabase.rpc('public_register_proposal_view', { _token: token, _user_agent: navigator.userAgent });
+    
+    // Register view and get total count
+    supabase.rpc('public_register_proposal_view', { _token: token, _user_agent: navigator.userAgent })
+      .then(() => {
+        // Fetch view count after registering
+        supabase
+          .from('proposal_views')
+          .select('id', { count: 'exact', head: true })
+          .eq('proposal_id', proposal.id)
+          .then(({ count }) => {
+            if (count !== null) setViewCount(count);
+          });
+      });
+
+    // Check localStorage for repeat viewer
+    const viewKey = `proposal_viewed_${proposal.id}`;
+    if (localStorage.getItem(viewKey)) {
+      setHasViewedBefore(true);
+    } else {
+      localStorage.setItem(viewKey, 'true');
+    }
   }, [token, proposal?.id]);
+
+  // Section Analytics
+  useEffect(() => {
+    if (!proposal?.id) return;
+
+    const viewedSections = new Set<string>();
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const section = (entry.target as HTMLElement).dataset.section;
+        if (entry.isIntersecting && section && !viewedSections.has(section)) {
+          viewedSections.add(section);
+          supabase.from('proposal_section_views').insert({
+            proposal_id: proposal.id,
+            section: section,
+            viewed_at: new Date().toISOString()
+          });
+        }
+      });
+    }, { threshold: 0.5 });
+
+    const sections = document.querySelectorAll('[data-section]');
+    sections.forEach(s => observer.observe(s));
+
+    return () => observer.disconnect();
+  }, [proposal?.id]);
 
   const expired = proposal?.validity_date ? _isPast(new Date(proposal.validity_date + 'T23:59:59')) : false;
   const isFinal = proposal?.status === 'aceita' || proposal?.status === 'recusada';
@@ -245,13 +293,27 @@ export default function PublicProposal() {
             <motion.h2 variants={staggerItem} className="text-3xl sm:text-[2.75rem] font-black text-foreground tracking-tight leading-[1.1]">
               Olá, {proposal.client_name.split(' ')[0]}! 👋
             </motion.h2>
+            {viewCount > 0 && (
+              <motion.p variants={staggerItem} className="text-xs text-muted-foreground flex items-center justify-center gap-1.5">
+                <Eye className="w-3 h-3" /> Esta proposta foi visualizada {viewCount} {viewCount === 1 ? 'vez' : 'vezes'}
+              </motion.p>
+            )}
             <motion.p variants={staggerItem} className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto leading-relaxed">
               Preparamos uma proposta exclusiva para você.<br className="hidden sm:block" />Confira todos os detalhes abaixo.
             </motion.p>
             <motion.p variants={staggerItem} className="text-xs text-muted-foreground/50 font-medium">
               Emitida em {format(new Date(proposal.created_at), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
             </motion.p>
-            {proposal.validity_date && <CountdownTimer validityDate={proposal.validity_date} />}
+            {proposal.validity_date && (
+              <div className="space-y-3">
+                <CountdownTimer validityDate={proposal.validity_date} />
+                {hasViewedBefore && viewCount > 2 && (
+                  <motion.p variants={staggerItem} className="text-xs font-semibold text-primary/80 animate-pulse">
+                    Você já conferiu esta proposta {viewCount} vezes — que tal aprovar hoje?
+                  </motion.p>
+                )}
+              </div>
+            )}
           </motion.div>
 
           {/* ═══ BRAND INTRO ═══ */}

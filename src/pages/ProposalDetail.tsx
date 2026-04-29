@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { Copy, Share2, Eye, Clock, FileText, MessageCircle, Check, X, Edit, RefreshCw, CopyPlus, ChevronRight, Handshake, StickyNote, CalendarPlus, Trash2 } from 'lucide-react';
+import { Copy, Share2, Eye, Clock, FileText, MessageCircle, Check, X, Edit, RefreshCw, CopyPlus, ChevronRight, Handshake, StickyNote, CalendarPlus, Trash2, QrCode, DownloadCloud } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -122,9 +122,26 @@ export default function ProposalDetail() {
 
   const shareWhatsApp = () => {
     const clientName = proposal.client_name || 'Cliente';
-    const validityText = proposal.validity_date ? `Ela é válida até ${format(new Date(proposal.validity_date), "dd/MM/yyyy")}.` : '';
-    const msg = encodeURIComponent(`Olá ${clientName}, segue o link da sua proposta comercial personalizada:\n\n${publicUrl}\n\n${validityText} Qualquer dúvida estou à disposição!`);
-    window.open(`https://wa.me/?text=${msg}`, '_blank');
+    const total = proposal.total || 0;
+    const proposalId = proposal.id.slice(0, 4).toUpperCase();
+    const validUntil = proposal.validity_date ? format(new Date(proposal.validity_date), "dd/MM/yyyy") : '';
+    
+    const whatsappMessage = encodeURIComponent(
+      `Olá ${clientName}! 👋\n\n` +
+      `Preparei um orçamento especial para você com as melhores condições.\n\n` +
+      `📋 *Proposta #${proposalId}*\n` +
+      `💰 Total: ${formatCurrency(total)}\n` +
+      (validUntil ? `📅 Válida até: ${validUntil}\n\n` : `\n`) +
+      `Acesse e aprove online em segundos:\n${publicUrl}\n\n` +
+      `Qualquer dúvida, estou à disposição! 😊`
+    );
+    
+    const clientPhoneClean = proposal.client_phone ? proposal.client_phone.replace(/\D/g, '') : '';
+    const whatsappUrl = clientPhoneClean 
+      ? `https://wa.me/55${clientPhoneClean}?text=${whatsappMessage}`
+      : `https://wa.me/?text=${whatsappMessage}`;
+      
+    window.open(whatsappUrl, '_blank');
   };
 
   const updateStatus = async (status: string) => {
@@ -307,6 +324,7 @@ export default function ProposalDetail() {
             </div>
             <div className="flex gap-2 flex-wrap">
               <Button size="sm" variant="outline" onClick={copyLink} className="gap-1.5 h-10"><Copy className="w-3.5 h-3.5" /> Copiar link</Button>
+              <QRCodeButton url={publicUrl} />
               <Button size="sm" variant="outline" onClick={shareWhatsApp} className="gap-1.5 h-10"><Share2 className="w-3.5 h-3.5" /> WhatsApp</Button>
             </div>
           </div>
