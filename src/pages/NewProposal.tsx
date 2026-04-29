@@ -417,6 +417,7 @@ export default function NewProposal() {
       localStorage.removeItem(`proposal_draft_${franchiseId}`);
 
       // Send email to client when status is "enviada" and client has email
+      // Finalization logic when proposal is sent
       if (finalStatus === 'enviada') {
         const emailType = isEditMode ? 'update' : 'new';
         if (form.client_email.trim()) {
@@ -435,10 +436,9 @@ export default function NewProposal() {
         } else {
           toast.warning('⚠️ Email não enviado: cliente sem email cadastrado. Compartilhe o link manualmente.');
         }
-      }
 
-      // Event 3: WhatsApp auto trigger when proposal is sent
-      if (finalStatus === 'enviada') {
+        // WhatsApp auto trigger
+        triggerWhatsAppAuto({ trigger_event: 'proposal_sent', proposal_id: proposalId, franchise_id: franchiseId });
         triggerWhatsAppAuto({ trigger_event: 'proposal_sent', proposal_id: proposalId, franchise_id: franchiseId });
         
         // Automatic follow-up after 48h if not opened
