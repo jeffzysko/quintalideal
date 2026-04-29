@@ -334,7 +334,7 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
               { target: '[data-tour="sidebar"]', title: 'Menu Lateral', description: 'Navegue por todas as ferramentas da plataforma aqui.', placement: 'right' },
               { target: '[data-tour="funnel-tab"]', title: 'Aba de Leads', description: 'Acompanhe seu funil de vendas e mova os leads entre as etapas.', placement: 'bottom' },
               { target: '[data-tour="nav-propostas"]', title: 'Nova Proposta', description: 'Crie orçamentos profissionais em segundos para seus clientes.', placement: 'right' },
-              { target: '/perfil#whatsapp', title: 'Configurações de WhatsApp', description: 'Configure sua instância para automações e notificações.', fallbackModal: true }
+              { target: '[data-tour="nav-perfil"]', title: 'Configurações', description: 'Configure seu perfil e instâncias de WhatsApp.', placement: 'right' }
             ]}
             storageKey="guided-tour-completed"
           />
