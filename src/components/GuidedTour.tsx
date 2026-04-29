@@ -77,6 +77,7 @@ function getTooltipPosition(
     // clamp
     left = Math.max(12, Math.min(left, viewW - tooltipW - 12));
     top = Math.max(12, Math.min(top, viewH - tooltipH - 12));
+    
     // check if it overlaps target
     const tRight = left + tooltipW;
     const tBottom = top + tooltipH;
@@ -86,7 +87,7 @@ function getTooltipPosition(
     const eBottom = targetRect.top + targetRect.height + PADDING;
 
     const overlaps = !(tRight < eLeft || left > eRight || tBottom < eTop || top > eBottom);
-    if (overlaps && p !== 'bottom') return null;
+    if (overlaps && p !== 'bottom' && p !== 'top') return null;
 
     return { top, left, actual: p };
   };
@@ -107,6 +108,7 @@ export function GuidedTour({ steps, storageKey, delay = 1500, onComplete }: Guid
   const [active, setActive] = useState(false);
   const [step, setStep] = useState(0);
   const [targetRect, setTargetRect] = useState<Rect | null>(null);
+  const [missingCount, setMissingCount] = useState(0);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [tooltipPos, setTooltipPos] = useState<{ top: number; left: number } | null>(null);
 
@@ -119,71 +121,6 @@ export function GuidedTour({ steps, storageKey, delay = 1500, onComplete }: Guid
     }
   }, [storageKey, delay]);
 
-  const updatePosition = useCallback(() => {
-    if (!active || step >= steps.length) return;
-    const currentStep = steps[step];
-    
-    try {
-      const el = currentStep.target ? document.querySelector(currentStep.target) : null;
-      if (el) {
-        const rect = el.getBoundingClientRect();
-        setTargetRect({ top: rect.top, left: rect.left, width: rect.width, height: rect.height });
-        // Scroll into view if needed
-        el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      } else {
-        setTargetRect(null);
-      }
-    } catch (err) {
-      console.warn('GuidedTour: Invalid selector or element not found', currentStep.target);
-      setTargetRect(null);
-    }
-  }, [active, step, steps]);
-
-  useEffect(() => {
-    updatePosition();
-    window.addEventListener('resize', updatePosition);
-    window.addEventListener('scroll', updatePosition, true);
-    return () => {
-      window.removeEventListener('resize', updatePosition);
-      window.removeEventListener('scroll', updatePosition, true);
-    };
-  }, [updatePosition]);
-
-  // Position tooltip after render
-  useEffect(() => {
-    if (!tooltipRef.current) return;
-    const tt = tooltipRef.current;
-    const ttRect = tt.getBoundingClientRect();
-    const viewW = window.innerWidth;
-    const viewH = window.innerHeight;
-
-    if (targetRect) {
-      try {
-        const pos = getTooltipPosition(
-          targetRect,
-          ttRect.width,
-          ttRect.height,
-          steps[step]?.placement,
-          viewW,
-          viewH,
-        );
-        setTooltipPos({ top: pos.top, left: pos.left });
-      } catch (err) {
-        console.error('GuidedTour: Error calculating tooltip position', err);
-        setTooltipPos({
-          top: viewH / 2 - ttRect.height / 2,
-          left: viewW / 2 - ttRect.width / 2,
-        });
-      }
-    } else {
-      // Center as modal
-      setTooltipPos({
-        top: viewH / 2 - ttRect.height / 2,
-        left: viewW / 2 - ttRect.width / 2,
-      });
-    }
-  }, [targetRect, step, active]);
-
   const handleClose = useCallback(() => {
     localStorage.setItem(storageKey, 'true');
     setActive(false);
@@ -194,6 +131,8 @@ export function GuidedTour({ steps, storageKey, delay = 1500, onComplete }: Guid
     if (step < steps.length - 1) {
       setStep(s => s + 1);
       setTooltipPos(null);
+      setTargetRect(null);
+      setMissingCount(0);
     } else {
       handleClose();
     }
@@ -203,8 +142,88 @@ export function GuidedTour({ steps, storageKey, delay = 1500, onComplete }: Guid
     if (step > 0) {
       setStep(s => s - 1);
       setTooltipPos(null);
+      setTargetRect(null);
+      setMissingCount(0);
     }
   }, [step]);
+
+  const updatePosition = useCallback(() => {
+    if (!active || step >= steps.length) return;
+    const currentStep = steps[step];
+    
+    try {
+      const el = currentStep.target ? document.querySelector(currentStep.target) : null;
+      if (el && el instanceof HTMLElement) {
+        const rect = el.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          setTargetRect({ top: rect.top, left: rect.left, width: rect.width, height: rect.height });
+          setMissingCount(0);
+          return;
+        }
+      }
+      setTargetRect(null);
+      setMissingCount(prev => prev + 1);
+    } catch (err) {
+      setTargetRect(null);
+      setMissingCount(prev => prev + 1);
+    }
+  }, [active, step, steps]);
+
+  useEffect(() => {
+    if (!active) return;
+    
+    updatePosition();
+    
+    const handleScrollResize = () => {
+      window.requestAnimationFrame(updatePosition);
+    };
+
+    window.addEventListener('resize', handleScrollResize);
+    window.addEventListener('scroll', handleScrollResize, true);
+    
+    const interval = setInterval(updatePosition, 1000);
+
+    return () => {
+      window.removeEventListener('resize', handleScrollResize);
+      window.removeEventListener('scroll', handleScrollResize, true);
+      clearInterval(interval);
+    };
+  }, [active, updatePosition]);
+
+  // Auto-skip logic
+  useEffect(() => {
+    if (missingCount > 3) { // Skip if missing for 3 consecutive interval checks (~3s)
+      handleNext();
+    }
+  }, [missingCount, handleNext]);
+
+  // Position tooltip after render or target change
+  useEffect(() => {
+    if (!active || !tooltipRef.current) return;
+    
+    const tt = tooltipRef.current;
+    const ttRect = tt.getBoundingClientRect();
+    const viewW = window.innerWidth;
+    const viewH = window.innerHeight;
+
+    if (targetRect) {
+      const pos = getTooltipPosition(
+        targetRect,
+        ttRect.width,
+        ttRect.height,
+        steps[step]?.placement,
+        viewW,
+        viewH,
+      );
+      setTooltipPos({ top: pos.top, left: pos.left });
+    } else {
+      // Center as modal if target missing
+      setTooltipPos({
+        top: viewH / 2 - ttRect.height / 2,
+        left: viewW / 2 - ttRect.width / 2,
+      });
+    }
+  }, [targetRect, step, active, steps]);
 
   if (!active) return null;
 
@@ -213,133 +232,131 @@ export function GuidedTour({ steps, storageKey, delay = 1500, onComplete }: Guid
 
   return createPortal(
     <AnimatePresence>
-      {active && (
-        <div className="fixed inset-0 z-[9999]" style={{ pointerEvents: 'auto' }}>
-          {/* SVG Overlay with cutout */}
-          <motion.svg
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="fixed inset-0 w-full h-full"
-            style={{ pointerEvents: 'none' }}
-          >
-            <defs>
-              <mask id="tour-mask">
-                <rect x="0" y="0" width="100%" height="100%" fill="white" />
-                {targetRect && (
-                  <motion.rect
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    x={targetRect.left - PADDING}
-                    y={targetRect.top - PADDING}
-                    width={targetRect.width + PADDING * 2}
-                    height={targetRect.height + PADDING * 2}
-                    rx="12"
-                    fill="black"
-                  />
-                )}
-              </mask>
-            </defs>
-            <rect
-              x="0"
-              y="0"
-              width="100%"
-              height="100%"
-              fill="rgba(0,0,0,0.6)"
-              mask="url(#tour-mask)"
-              style={{ pointerEvents: 'auto' }}
-              onClick={handleClose}
-            />
-          </motion.svg>
-
-          {/* Spotlight ring */}
-          {targetRect && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              className="fixed rounded-xl ring-2 ring-primary/60 ring-offset-2 ring-offset-transparent"
-              style={{
-                top: targetRect.top - PADDING,
-                left: targetRect.left - PADDING,
-                width: targetRect.width + PADDING * 2,
-                height: targetRect.height + PADDING * 2,
-                pointerEvents: 'none',
-                boxShadow: '0 0 0 4px hsl(var(--primary) / 0.15)',
-              }}
-            />
-          )}
-
-          {/* Tooltip */}
-          <motion.div
-            ref={tooltipRef}
-            key={step}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: tooltipPos ? 1 : 0, y: tooltipPos ? 0 : 10 }}
-            exit={{ opacity: 0, y: -10 }}
-            transition={{ duration: 0.25 }}
-            className="fixed z-[10000] w-[min(340px,calc(100vw-24px))] rounded-2xl bg-card border border-border shadow-2xl"
-            style={{
-              top: tooltipPos?.top ?? -9999,
-              left: tooltipPos?.left ?? -9999,
-              pointerEvents: 'auto',
-            }}
-          >
-            {/* Close button */}
-            <button
-              onClick={handleClose}
-              className="absolute top-3 right-3 w-7 h-7 rounded-full bg-muted/60 flex items-center justify-center hover:bg-muted transition-colors"
-            >
-              <X className="w-3.5 h-3.5 text-muted-foreground" />
-            </button>
-
-            <div className="p-5">
-              {Icon && (
-                <div className={`w-11 h-11 rounded-xl ${current.bg || 'bg-primary/10'} flex items-center justify-center mb-3`}>
-                  <Icon className={`w-5.5 h-5.5 ${current.color || 'text-primary'}`} />
-                </div>
+      <div className="fixed inset-0 z-[9999]" style={{ pointerEvents: 'auto' }}>
+        {/* SVG Overlay with cutout */}
+        <motion.svg
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="fixed inset-0 w-full h-full"
+          style={{ pointerEvents: 'none' }}
+        >
+          <defs>
+            <mask id="tour-mask">
+              <rect x="0" y="0" width="100%" height="100%" fill="white" />
+              {targetRect && (
+                <motion.rect
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  x={targetRect.left - PADDING}
+                  y={targetRect.top - PADDING}
+                  width={targetRect.width + PADDING * 2}
+                  height={targetRect.height + PADDING * 2}
+                  rx="12"
+                  fill="black"
+                />
               )}
-              <h3 className="text-[15px] font-bold text-foreground mb-1.5 pr-6">{current.title}</h3>
-              <p className="text-[13px] text-muted-foreground leading-relaxed">{current.description}</p>
+            </mask>
+          </defs>
+          <rect
+            x="0"
+            y="0"
+            width="100%"
+            height="100%"
+            fill="rgba(0,0,0,0.6)"
+            mask="url(#tour-mask)"
+            style={{ pointerEvents: 'auto' }}
+            onClick={handleClose}
+          />
+        </motion.svg>
+
+        {/* Spotlight ring */}
+        {targetRect && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed rounded-xl ring-2 ring-primary/60 ring-offset-2 ring-offset-transparent"
+            style={{
+              top: targetRect.top - PADDING,
+              left: targetRect.left - PADDING,
+              width: targetRect.width + PADDING * 2,
+              height: targetRect.height + PADDING * 2,
+              pointerEvents: 'none',
+              boxShadow: '0 0 0 4px hsl(var(--primary) / 0.15)',
+            }}
+          />
+        )}
+
+        {/* Tooltip */}
+        <motion.div
+          ref={tooltipRef}
+          key={step}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: tooltipPos ? 1 : 0, y: tooltipPos ? 0 : 10 }}
+          exit={{ opacity: 0, y: -10 }}
+          transition={{ duration: 0.25 }}
+          className="fixed z-[10000] w-[min(340px,calc(100vw-24px))] rounded-2xl bg-card border border-border shadow-2xl"
+          style={{
+            top: tooltipPos?.top ?? -9999,
+            left: tooltipPos?.left ?? -9999,
+            pointerEvents: 'auto',
+          }}
+        >
+          {/* Close button */}
+          <button
+            onClick={handleClose}
+            className="absolute top-3 right-3 w-7 h-7 rounded-full bg-muted/60 flex items-center justify-center hover:bg-muted transition-colors"
+          >
+            <X className="w-3.5 h-3.5 text-muted-foreground" />
+          </button>
+
+          <div className="p-5">
+            {Icon && (
+              <div className={`w-11 h-11 rounded-xl ${current.bg || 'bg-primary/10'} flex items-center justify-center mb-3`}>
+                <Icon className={`w-5.5 h-5.5 ${current.color || 'text-primary'}`} />
+              </div>
+            )}
+            <h3 className="text-[15px] font-bold text-foreground mb-1.5 pr-6">{current.title}</h3>
+            <p className="text-[13px] text-muted-foreground leading-relaxed">{current.description}</p>
+          </div>
+
+          <div className="flex items-center justify-between px-5 py-3 border-t border-border/40 bg-muted/20 rounded-b-2xl">
+            {/* Step dots */}
+            <div className="flex items-center gap-1.5">
+              {steps.map((_, i) => (
+                <div
+                  key={i}
+                  className={`h-1.5 rounded-full transition-all duration-300 ${
+                    i === step ? 'bg-primary w-4' : i < step ? 'bg-primary/40 w-1.5' : 'bg-muted-foreground/20 w-1.5'
+                  }`}
+                />
+              ))}
             </div>
 
-            <div className="flex items-center justify-between px-5 py-3 border-t border-border/40 bg-muted/20 rounded-b-2xl">
-              {/* Step dots */}
-              <div className="flex items-center gap-1.5">
-                {steps.map((_, i) => (
-                  <div
-                    key={i}
-                    className={`h-1.5 rounded-full transition-all duration-300 ${
-                      i === step ? 'bg-primary w-4' : i < step ? 'bg-primary/40 w-1.5' : 'bg-muted-foreground/20 w-1.5'
-                    }`}
-                  />
-                ))}
-              </div>
-
-              <div className="flex items-center gap-2">
-                {step > 0 && (
-                  <Button variant="ghost" size="sm" className="text-xs h-8 px-3" onClick={handlePrev}>
-                    Voltar
-                  </Button>
-                )}
-                {step < steps.length - 1 && step === 0 && (
-                  <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-8 px-3" onClick={handleClose}>
-                    Pular
-                  </Button>
-                )}
-                <Button size="sm" className="gap-1.5 h-8 px-4 rounded-xl" onClick={handleNext}>
-                  {step < steps.length - 1 ? (
-                    <>Próximo <ArrowRight className="w-3.5 h-3.5" /></>
-                  ) : (
-                    '✨ Começar!'
-                  )}
+            <div className="flex items-center gap-2">
+              {step > 0 && (
+                <Button variant="ghost" size="sm" className="text-xs h-8 px-3" onClick={handlePrev}>
+                  Voltar
                 </Button>
-              </div>
+              )}
+              {step < steps.length - 1 && step === 0 && (
+                <Button variant="ghost" size="sm" className="text-xs text-muted-foreground h-8 px-3" onClick={handleClose}>
+                  Pular
+                </Button>
+              )}
+              <Button size="sm" className="gap-1.5 h-8 px-4 rounded-xl" onClick={handleNext}>
+                {step < steps.length - 1 ? (
+                  <>Próximo <ArrowRight className="w-3.5 h-3.5" /></>
+                ) : (
+                  '✨ Começar!'
+                )}
+              </Button>
             </div>
-          </motion.div>
-        </div>
-      )}
+          </div>
+        </motion.div>
+      </div>
     </AnimatePresence>,
     document.body,
   );
