@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Check, X, MessageCircle, Download, CreditCard, Truck, CalendarDays, Phone, User, FileText, RefreshCw, Sparkles, ArrowRight, Loader2, Paperclip } from 'lucide-react';
+import { Check, X, MessageCircle, Download, CreditCard, Truck, CalendarDays, Phone, User, FileText, RefreshCw, Sparkles, ArrowRight, Loader2, Paperclip, Eye } from 'lucide-react';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
@@ -97,10 +97,58 @@ export default function PublicProposal() {
       .then(({ data }) => { if (data) setAttachments(data); });
   }, [proposal?.id]);
 
+  const [viewCount, setViewCount] = useState(0);
+  const [hasViewedBefore, setHasViewedBefore] = useState(false);
+
   useEffect(() => {
     if (!token || !proposal) return;
-    supabase.rpc('public_register_proposal_view', { _token: token, _user_agent: navigator.userAgent });
+    
+    // Register view and get total count
+    supabase.rpc('public_register_proposal_view', { _token: token, _user_agent: navigator.userAgent })
+      .then(() => {
+        // Fetch view count after registering
+        supabase
+          .from('proposal_views')
+          .select('id', { count: 'exact', head: true })
+          .eq('proposal_id', proposal.id)
+          .then(({ count }) => {
+            if (count !== null) setViewCount(count);
+          });
+      });
+
+    // Check localStorage for repeat viewer
+    const viewKey = `proposal_viewed_${proposal.id}`;
+    if (localStorage.getItem(viewKey)) {
+      setHasViewedBefore(true);
+    } else {
+      localStorage.setItem(viewKey, 'true');
+    }
   }, [token, proposal?.id]);
+
+  // Section Analytics
+  useEffect(() => {
+    if (!proposal?.id) return;
+
+    const viewedSections = new Set<string>();
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const section = (entry.target as HTMLElement).dataset.section;
+        if (entry.isIntersecting && section && !viewedSections.has(section)) {
+          viewedSections.add(section);
+          supabase.from('proposal_section_views').insert({
+            proposal_id: proposal.id,
+            section: section,
+            viewed_at: new Date().toISOString()
+          });
+        }
+      });
+    }, { threshold: 0.5 });
+
+    const sections = document.querySelectorAll('[data-section]');
+    sections.forEach(s => observer.observe(s));
+
+    return () => observer.disconnect();
+  }, [proposal?.id]);
 
   const expired = proposal?.validity_date ? _isPast(new Date(proposal.validity_date + 'T23:59:59')) : false;
   const isFinal = proposal?.status === 'aceita' || proposal?.status === 'recusada';
@@ -245,13 +293,27 @@ export default function PublicProposal() {
             <motion.h2 variants={staggerItem} className="text-3xl sm:text-[2.75rem] font-black text-foreground tracking-tight leading-[1.1]">
               Olá, {proposal.client_name.split(' ')[0]}! 👋
             </motion.h2>
+            {viewCount > 0 && (
+              <motion.p variants={staggerItem} className="text-xs text-muted-foreground flex items-center justify-center gap-1.5">
+                <Eye className="w-3 h-3" /> Esta proposta foi visualizada {viewCount} {viewCount === 1 ? 'vez' : 'vezes'}
+              </motion.p>
+            )}
             <motion.p variants={staggerItem} className="text-muted-foreground text-sm sm:text-base max-w-md mx-auto leading-relaxed">
               Preparamos uma proposta exclusiva para você.<br className="hidden sm:block" />Confira todos os detalhes abaixo.
             </motion.p>
             <motion.p variants={staggerItem} className="text-xs text-muted-foreground/50 font-medium">
               Emitida em {format(new Date(proposal.created_at), "dd 'de' MMMM 'de' yyyy", { locale: ptBR })}
             </motion.p>
-            {proposal.validity_date && <CountdownTimer validityDate={proposal.validity_date} />}
+            {proposal.validity_date && (
+              <div className="space-y-3">
+                <CountdownTimer validityDate={proposal.validity_date} />
+                {hasViewedBefore && viewCount > 2 && (
+                  <motion.p variants={staggerItem} className="text-xs font-semibold text-primary/80 animate-pulse">
+                    Você já conferiu esta proposta {viewCount} vezes — que tal aprovar hoje?
+                  </motion.p>
+                )}
+              </div>
+            )}
           </motion.div>
 
           {/* ═══ BRAND INTRO ═══ */}
@@ -330,26 +392,36 @@ export default function PublicProposal() {
                   <p className="text-xs text-muted-foreground">{proposal.franchise?.nome_franquia} • Consultor comercial</p>
                 </div>
                 {sellerPhone && (
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-                    <Button size="sm" className="shrink-0 bg-whatsapp hover:bg-whatsapp-hover text-white rounded-xl shadow-md print:hidden" asChild>
-                      <a href={`https://wa.me/${toWhatsAppPhone(sellerPhone)}`} target="_blank" rel="noopener noreferrer">
-                        <Phone className="w-4 h-4 mr-1.5" /> Falar
+                  <div className="flex items-center gap-2">
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <a
+                        href={`https://wa.me/55${toWhatsAppPhone(sellerPhone)}?text=${encodeURIComponent(`Olá! Estou visualizando a proposta #${proposalNumber} e gostaria de tirar uma dúvida.`)}`}
+                        target="_blank" rel="noopener noreferrer"
+                        className="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center text-success hover:bg-success hover:text-white transition-all shadow-sm border border-success/20"
+                      >
+                        <MessageCircle className="w-5 h-5" />
                       </a>
-                    </Button>
-                  </motion.div>
+                    </motion.div>
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <a
+                        href={`tel:${sellerPhone}`}
+                        className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all shadow-sm border border-primary/20"
+                      >
+                        <Phone className="w-5 h-5" />
+                      </a>
+                    </motion.div>
+                  </div>
                 )}
               </div>
             </SectionCard>
           )}
-
           {/* ═══ VIDEO ═══ */}
           {proposal.video_url && (
-            <SectionCard>
-              <div className="p-5 space-y-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center"><span className="text-sm">🎬</span></div>
-                  <h3 className="font-bold text-sm text-foreground">Uma mensagem do seu consultor</h3>
-                </div>
+            <SectionCard data-section="video">
+              <div className="p-5 space-y-4">
+                <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                  <RefreshCw className="w-4 h-4 text-primary animate-spin-slow" /> Conheça mais sobre o projeto
+                </h3>
                 <VideoEmbed url={proposal.video_url} />
               </div>
             </SectionCard>
@@ -384,8 +456,9 @@ export default function PublicProposal() {
             </div>
           </SectionCard>
 
+
           {/* ═══ ITEMS ═══ */}
-          <SectionCard delay={0.1} className="overflow-hidden">
+          <SectionCard delay={0.1} className="overflow-hidden" data-section="items">
             <div className="p-5 pb-0">
               <div className="flex items-center gap-2.5 mb-4">
                 <div className="w-9 h-9 rounded-xl bg-primary/8 flex items-center justify-center"><FileText className="w-4.5 h-4.5 text-primary" /></div>
@@ -463,7 +536,7 @@ export default function PublicProposal() {
               ))}
             </motion.div>
             {/* Total section */}
-            <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="relative m-5 mt-4 rounded-2xl overflow-hidden">
+            <motion.div data-section="total" initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="relative m-5 mt-4 rounded-2xl overflow-hidden">
               <div className="absolute inset-0 opacity-[0.06]" style={{ background: 'linear-gradient(135deg, hsl(207 90% 42%), hsl(322 85% 50%))' }} />
               <div className="absolute inset-0 bg-card/60 backdrop-blur-sm" />
               <div className="relative p-5 space-y-3 border border-border/30 rounded-2xl">
@@ -493,7 +566,7 @@ export default function PublicProposal() {
           </SectionCard>
 
           {/* ═══ CONDITIONS ═══ */}
-          <motion.div data-pdf-section variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <motion.div data-section="payment" data-pdf-section variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {proposal.payment_method && (
               <motion.div variants={staggerItem}>
                 <div className="group relative rounded-2xl border border-border/40 bg-card/80 backdrop-blur-sm p-5 text-center transition-all duration-300 hover:border-secondary/30 hover:shadow-lg hover:-translate-y-0.5">
@@ -585,7 +658,7 @@ export default function PublicProposal() {
           )}
 
           {canAct && !actionDone && (
-            <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="hidden sm:block print:hidden">
+            <motion.div data-section="actions" initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="hidden sm:block print:hidden">
               <div className="relative rounded-2xl overflow-hidden border border-border/40">
                 <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, hsl(322 85% 50%), hsl(207 90% 42%), hsl(140 20% 72%))' }} />
                 <div className="bg-card/80 backdrop-blur-sm p-7 space-y-5">
