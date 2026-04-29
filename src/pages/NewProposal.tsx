@@ -417,18 +417,24 @@ export default function NewProposal() {
       localStorage.removeItem(`proposal_draft_${franchiseId}`);
 
       // Send email to client when status is "enviada" and client has email
-      if (finalStatus === 'enviada' && form.client_email.trim()) {
+      if (finalStatus === 'enviada') {
         const emailType = isEditMode ? 'update' : 'new';
-        supabase.functions.invoke('send-proposal-email', {
-          body: { proposal_id: proposalId, type: emailType },
-        }).then(({ error }) => {
-          if (error) {
-            console.error('Erro ao enviar e-mail da proposta:', error);
-            toast.error('Proposta salva, mas houve um erro ao enviar o e-mail para o cliente.');
-          } else {
-            toast.success('📧 E-mail enviado para o cliente!');
-          }
-        });
+        if (form.client_email.trim()) {
+          supabase.functions.invoke('send-proposal-email', {
+            body: { proposal_id: proposalId, type: emailType },
+          }).then(({ data, error }) => {
+            if (error) {
+              console.error('Erro ao enviar e-mail da proposta:', error);
+              toast.error('Proposta salva, mas houve um erro ao enviar o e-mail para o cliente.');
+            } else if (data?.sent === false && data?.reason === 'client_email_missing') {
+              toast.warning('⚠️ Email não enviado: cliente sem email cadastrado. Compartilhe o link manualmente.');
+            } else {
+              toast.success('📧 E-mail enviado para o cliente!');
+            }
+          });
+        } else {
+          toast.warning('⚠️ Email não enviado: cliente sem email cadastrado. Compartilhe o link manualmente.');
+        }
       }
 
       // Event 3: WhatsApp auto trigger when proposal is sent
