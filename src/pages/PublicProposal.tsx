@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { triggerWhatsAppAuto } from '@/lib/whatsapp-auto';
@@ -392,7 +392,29 @@ export default function PublicProposal() {
                   <p className="text-xs text-muted-foreground">{proposal.franchise?.nome_franquia} • Consultor comercial</p>
                 </div>
                 {sellerPhone && (
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <div className="flex items-center gap-2">
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <a
+                        href={`https://wa.me/55${toWhatsAppPhone(sellerPhone)}?text=${encodeURIComponent(`Olá! Estou visualizando a proposta #${proposalNumber} e gostaria de tirar uma dúvida.`)}`}
+                        target="_blank" rel="noopener noreferrer"
+                        className="w-10 h-10 rounded-full bg-success/10 flex items-center justify-center text-success hover:bg-success hover:text-white transition-all shadow-sm border border-success/20"
+                      >
+                        <MessageCircle className="w-5 h-5" />
+                      </a>
+                    </motion.div>
+                    <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                      <a
+                        href={`tel:${sellerPhone}`}
+                        className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary hover:bg-primary hover:text-white transition-all shadow-sm border border-primary/20"
+                      >
+                        <Phone className="w-5 h-5" />
+                      </a>
+                    </motion.div>
+                  </div>
+                )}
+              </div>
+            </SectionCard>
+          )}
                     <Button size="sm" className="shrink-0 bg-whatsapp hover:bg-whatsapp-hover text-white rounded-xl shadow-md print:hidden" asChild>
                       <a href={`https://wa.me/${toWhatsAppPhone(sellerPhone)}`} target="_blank" rel="noopener noreferrer">
                         <Phone className="w-4 h-4 mr-1.5" /> Falar
