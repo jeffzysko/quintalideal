@@ -411,8 +411,21 @@ export default function PublicProposal() {
                     <motion.tr key={item.id} initial={{ opacity: 0, x: -10 }} whileInView={{ opacity: 1, x: 0 }} viewport={{ once: true }} transition={{ delay: i * 0.05 }}
                       className={`border-b border-border/30 last:border-0 transition-colors hover:bg-muted/20 ${i % 2 === 0 ? '' : 'bg-muted/10'}`}>
                       <td className="px-5 py-4">
-                        <p className="font-semibold text-foreground">{item.product_name}</p>
-                        {item.description && <p className="text-xs text-muted-foreground mt-0.5">{item.description}</p>}
+                        <div className="flex items-center gap-4">
+                          <div className="w-20 h-[60px] rounded-lg overflow-hidden bg-muted flex items-center justify-center shrink-0 border border-border/50">
+                            {itemImages[item.product_name] ? (
+                              <img src={itemImages[item.product_name]} alt={item.product_name} className="w-full h-full object-cover" />
+                            ) : (
+                              <div className="w-full h-full flex flex-col items-center justify-center text-[10px] text-muted-foreground/60 bg-muted/40">
+                                <span className="text-lg">🏊</span>
+                              </div>
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-semibold text-foreground truncate">{item.product_name}</p>
+                            {item.description && <p className="text-xs text-muted-foreground mt-0.5 line-clamp-1">{item.description}</p>}
+                          </div>
+                        </div>
                       </td>
                       <td className="text-center px-3 py-4 text-muted-foreground tabular-nums">{item.quantity}</td>
                       <td className="text-right px-3 py-4 text-muted-foreground tabular-nums">{formatCurrency(item.unit_price)}</td>
@@ -426,10 +439,23 @@ export default function PublicProposal() {
             <motion.div variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }} className="sm:hidden space-y-2.5 px-5">
               {proposal.items.map((item) => (
                 <motion.div key={item.id} variants={staggerItem}
-                  className="rounded-xl border border-border/30 bg-muted/20 p-4 space-y-2 transition-all hover:border-primary/20 hover:bg-primary/3">
-                  <p className="font-bold text-foreground text-sm">{item.product_name}</p>
-                  {item.description && <p className="text-xs text-muted-foreground">{item.description}</p>}
-                  <div className="flex justify-between items-center pt-1">
+                  className="rounded-xl border border-border/30 bg-muted/20 p-4 space-y-3 transition-all hover:border-primary/20 hover:bg-primary/3">
+                  <div className="flex gap-4">
+                    <div className="w-20 h-[60px] rounded-lg overflow-hidden bg-muted flex items-center justify-center shrink-0 border border-border/50">
+                      {itemImages[item.product_name] ? (
+                        <img src={itemImages[item.product_name]} alt={item.product_name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center text-[10px] text-muted-foreground/60 bg-muted/40">
+                          <span className="text-lg">🏊</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-foreground text-sm truncate">{item.product_name}</p>
+                      {item.description && <p className="text-xs text-muted-foreground line-clamp-2">{item.description}</p>}
+                    </div>
+                  </div>
+                  <div className="flex justify-between items-center pt-1 border-t border-border/10">
                     <span className="text-xs text-muted-foreground tabular-nums">{item.quantity}x {formatCurrency(item.unit_price)}</span>
                     <span className="font-black text-foreground tabular-nums">{formatCurrency(item.subtotal)}</span>
                   </div>
