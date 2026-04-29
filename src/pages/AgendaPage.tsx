@@ -24,6 +24,7 @@ import {
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { EmptyState } from '@/components/ui/empty-state';
+import { STATUS_LABELS, STATUS_CHART_COLORS } from '@/lib/lead-constants';
 
 // Reuse from HojePage pattern
 function parseFollowupType(note: string | null) {
