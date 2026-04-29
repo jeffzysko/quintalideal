@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { triggerWhatsAppAuto } from '@/lib/whatsapp-auto';
@@ -446,8 +446,20 @@ export default function PublicProposal() {
             </div>
           </SectionCard>
 
+          {/* ═══ VIDEO ═══ */}
+          {proposal.video_url && (
+            <SectionCard data-section="video">
+              <div className="p-5 space-y-4">
+                <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                  <RefreshCw className="w-4 h-4 text-primary animate-spin-slow" /> Conheça mais sobre o projeto
+                </h3>
+                <VideoEmbed url={proposal.video_url} />
+              </div>
+            </SectionCard>
+          )}
+
           {/* ═══ ITEMS ═══ */}
-          <SectionCard delay={0.1} className="overflow-hidden">
+          <SectionCard delay={0.1} className="overflow-hidden" data-section="items">
             <div className="p-5 pb-0">
               <div className="flex items-center gap-2.5 mb-4">
                 <div className="w-9 h-9 rounded-xl bg-primary/8 flex items-center justify-center"><FileText className="w-4.5 h-4.5 text-primary" /></div>
@@ -525,7 +537,7 @@ export default function PublicProposal() {
               ))}
             </motion.div>
             {/* Total section */}
-            <motion.div initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="relative m-5 mt-4 rounded-2xl overflow-hidden">
+            <motion.div data-section="total" initial={{ opacity: 0, y: 10 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="relative m-5 mt-4 rounded-2xl overflow-hidden">
               <div className="absolute inset-0 opacity-[0.06]" style={{ background: 'linear-gradient(135deg, hsl(207 90% 42%), hsl(322 85% 50%))' }} />
               <div className="absolute inset-0 bg-card/60 backdrop-blur-sm" />
               <div className="relative p-5 space-y-3 border border-border/30 rounded-2xl">
@@ -555,7 +567,7 @@ export default function PublicProposal() {
           </SectionCard>
 
           {/* ═══ CONDITIONS ═══ */}
-          <motion.div data-pdf-section variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <motion.div data-section="payment" data-pdf-section variants={stagger} initial="hidden" whileInView="show" viewport={{ once: true }} className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {proposal.payment_method && (
               <motion.div variants={staggerItem}>
                 <div className="group relative rounded-2xl border border-border/40 bg-card/80 backdrop-blur-sm p-5 text-center transition-all duration-300 hover:border-secondary/30 hover:shadow-lg hover:-translate-y-0.5">
@@ -647,7 +659,7 @@ export default function PublicProposal() {
           )}
 
           {canAct && !actionDone && (
-            <motion.div initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="hidden sm:block print:hidden">
+            <motion.div data-section="actions" initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="hidden sm:block print:hidden">
               <div className="relative rounded-2xl overflow-hidden border border-border/40">
                 <div className="h-1 w-full" style={{ background: 'linear-gradient(90deg, hsl(322 85% 50%), hsl(207 90% 42%), hsl(140 20% 72%))' }} />
                 <div className="bg-card/80 backdrop-blur-sm p-7 space-y-5">

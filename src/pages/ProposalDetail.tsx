@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { supabase } from '@/lib/supabase';
@@ -15,7 +15,8 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { Copy, Share2, Eye, Clock, FileText, MessageCircle, Check, X, Edit, RefreshCw, CopyPlus, ChevronRight, Handshake, StickyNote, CalendarPlus, Trash2, QrCode, DownloadCloud } from 'lucide-react';
+import { Copy, Share2, Eye, Clock, FileText, MessageCircle, Check, X, Edit, RefreshCw, CopyPlus, ChevronRight, Handshake, StickyNote, CalendarPlus, Trash2 } from 'lucide-react';
+import { QRCodeButton } from '@/components/proposals/QRCodeButton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
