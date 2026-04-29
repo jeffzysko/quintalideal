@@ -107,6 +107,7 @@ export function GuidedTour({ steps, storageKey, delay = 1500, onComplete }: Guid
   const [active, setActive] = useState(false);
   const [step, setStep] = useState(0);
   const [targetRect, setTargetRect] = useState<Rect | null>(null);
+  const [missingCount, setMissingCount] = useState(0);
   const tooltipRef = useRef<HTMLDivElement>(null);
   const [tooltipPos, setTooltipPos] = useState<{ top: number; left: number } | null>(null);
 
