@@ -415,25 +415,13 @@ export default function PublicProposal() {
               </div>
             </SectionCard>
           )}
-                    <Button size="sm" className="shrink-0 bg-whatsapp hover:bg-whatsapp-hover text-white rounded-xl shadow-md print:hidden" asChild>
-                      <a href={`https://wa.me/${toWhatsAppPhone(sellerPhone)}`} target="_blank" rel="noopener noreferrer">
-                        <Phone className="w-4 h-4 mr-1.5" /> Falar
-                      </a>
-                    </Button>
-                  </motion.div>
-                )}
-              </div>
-            </SectionCard>
-          )}
-
           {/* ═══ VIDEO ═══ */}
           {proposal.video_url && (
-            <SectionCard>
-              <div className="p-5 space-y-3">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-secondary/10 flex items-center justify-center"><span className="text-sm">🎬</span></div>
-                  <h3 className="font-bold text-sm text-foreground">Uma mensagem do seu consultor</h3>
-                </div>
+            <SectionCard data-section="video">
+              <div className="p-5 space-y-4">
+                <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
+                  <RefreshCw className="w-4 h-4 text-primary animate-spin-slow" /> Conheça mais sobre o projeto
+                </h3>
                 <VideoEmbed url={proposal.video_url} />
               </div>
             </SectionCard>
@@ -468,17 +456,6 @@ export default function PublicProposal() {
             </div>
           </SectionCard>
 
-          {/* ═══ VIDEO ═══ */}
-          {proposal.video_url && (
-            <SectionCard data-section="video">
-              <div className="p-5 space-y-4">
-                <h3 className="font-bold text-sm text-foreground flex items-center gap-2">
-                  <RefreshCw className="w-4 h-4 text-primary animate-spin-slow" /> Conheça mais sobre o projeto
-                </h3>
-                <VideoEmbed url={proposal.video_url} />
-              </div>
-            </SectionCard>
-          )}
 
           {/* ═══ ITEMS ═══ */}
           <SectionCard delay={0.1} className="overflow-hidden" data-section="items">
