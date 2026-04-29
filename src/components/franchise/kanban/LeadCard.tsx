@@ -20,11 +20,12 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
-import { MapPin, GripVertical, MessageCircle, StickyNote, ArrowRightLeft, Send, Clock, AlertTriangle } from 'lucide-react';
+import { MapPin, GripVertical, MessageCircle, StickyNote, ArrowRightLeft, Send, Clock, AlertTriangle, AlertCircle } from 'lucide-react';
 import { differenceInDays } from 'date-fns';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Textarea } from '@/components/ui/textarea';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/hooks/useAuth';
@@ -189,12 +190,59 @@ export const LeadCard = memo(function LeadCard({
         </div>
       )}
 
-      {!overlay && getActivityCount(lead.activity_count) > 0 && (
-        <span
-          className="absolute top-2 right-2 w-2 h-2 rounded-full bg-primary z-10 pointer-events-none"
-          title="Lead com atividades registradas"
-          aria-label="Lead com atividades registradas"
-        />
+      {!overlay && (
+        <div className="absolute top-2 right-2 flex items-center gap-1.5 z-10">
+          {(() => {
+            const isExcluded = ['vendido', 'perdido'].includes(lead.status_lead);
+            if (isExcluded) return null;
+
+            const lastTs = (lead as any).updated_at || lead.created_at;
+            const days = differenceInDays(new Date(), new Date(lastTs));
+
+            if (days < 3) return null;
+
+            let badgeConfig = {
+              color: 'bg-amber-500 text-white',
+              icon: Clock,
+              label: `${days}d`,
+              pulse: false
+            };
+
+            if (days >= 7) {
+              badgeConfig = { color: 'bg-red-500 text-white', icon: AlertCircle, label: '7d+', pulse: true };
+            } else if (days >= 5) {
+              badgeConfig = { color: 'bg-orange-500 text-white', icon: AlertTriangle, label: `${days}d`, pulse: false };
+            }
+
+            const Icon = badgeConfig.icon;
+
+            return (
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <span className={cn(
+                      "flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-bold shadow-sm cursor-help",
+                      badgeConfig.color,
+                      badgeConfig.pulse && "animate-pulse"
+                    )}>
+                      <Icon className="w-3 h-3" />
+                      {badgeConfig.label}
+                    </span>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Sem atividade há {days} dias</p>
+                  </TooltipContent>
+                </Tooltip>
+            );
+          })()}
+
+          {getActivityCount(lead.activity_count) > 0 && (
+            <span
+              className="w-2 h-2 rounded-full bg-primary pointer-events-none"
+              title="Lead com atividades registradas"
+              aria-label="Lead com atividades registradas"
+            />
+          )}
+        </div>
       )}
 
       <div
@@ -254,25 +302,10 @@ export const LeadCard = memo(function LeadCard({
           )}
           {(() => {
             const lastTs = (lead as any).updated_at || lead.created_at;
-            const days = differenceInDays(new Date(), new Date(lastTs));
-            let tone = 'text-muted-foreground';
-            let Icon = Clock;
-            
-            if (days >= 7) {
-              tone = 'text-destructive';
-              Icon = AlertTriangle;
-            } else if (days >= 5) {
-              tone = 'text-orange-500';
-              Icon = AlertTriangle;
-            } else if (days >= 3) {
-              tone = 'text-amber-500';
-              Icon = Clock;
-            }
-
             return (
-              <span className={cn('text-xs flex items-center gap-1.5 shrink-0 font-bold', tone)}>
-                <Icon className="w-3 h-3" />
-                {days >= 3 ? `${days}d parado` : formatDistanceToNow(new Date(lastTs), { locale: ptBR, addSuffix: true }).replace('há ', '')}
+              <span className="text-xs flex items-center gap-1.5 shrink-0 text-muted-foreground">
+                <Clock className="w-3 h-3" />
+                {formatDistanceToNow(new Date(lastTs), { locale: ptBR, addSuffix: true }).replace('há ', '')}
               </span>
             );
           })()}
