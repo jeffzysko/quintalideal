@@ -502,7 +502,7 @@ export default function LeadDetail() {
                 <InactivityBadge createdAt={lead.created_at} lastActivityAt={lastActivityAt} />
                 {nextFollowup && (
                   <button 
-                    onClick={() => setActiveTab('followups')}
+                    onClick={() => setActiveTab('conversa')}
                     className="text-[10px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full flex items-center gap-1.5 hover:bg-primary/20 transition-colors"
                   >
                     <CalendarClock className="w-3 h-3" />
