@@ -120,6 +120,22 @@ export function GuidedTour({ steps, storageKey, delay = 1500, onComplete }: Guid
     }
   }, [storageKey, delay]);
 
+  const handleClose = useCallback(() => {
+    localStorage.setItem(storageKey, 'true');
+    setActive(false);
+    onComplete?.();
+  }, [storageKey, onComplete]);
+
+  const handleNext = useCallback(() => {
+    if (step < steps.length - 1) {
+      setStep(s => s + 1);
+      setTooltipPos(null);
+      setMissingCount(0);
+    } else {
+      handleClose();
+    }
+  }, [step, steps.length, handleClose]);
+
   const updatePosition = useCallback(() => {
     if (!active || step >= steps.length) return;
     const currentStep = steps[step];
@@ -129,9 +145,9 @@ export function GuidedTour({ steps, storageKey, delay = 1500, onComplete }: Guid
         const el = currentStep.target ? document.querySelector(currentStep.target) : null;
         if (el && el instanceof HTMLElement) {
           const rect = el.getBoundingClientRect();
-          // Only update if visible and has dimensions
           if (rect.width > 0 && rect.height > 0) {
             setTargetRect({ top: rect.top, left: rect.left, width: rect.width, height: rect.height });
+            setMissingCount(0);
             return true;
           }
         }
@@ -146,10 +162,21 @@ export function GuidedTour({ steps, storageKey, delay = 1500, onComplete }: Guid
     if (findElement()) {
       // Success
     } else {
-      // If not found immediately, retry once after a small delay (could be rendering)
-      setTimeout(findElement, 100);
+      setMissingCount(prev => prev + 1);
+      // If not found after several attempts (e.g. 5 seconds of checks), 
+      // and we are requested to auto-skip, we could.
+      // But for now, let's just center it.
     }
   }, [active, step, steps]);
+
+  useEffect(() => {
+    // If element is missing for too long (e.g. 5 interval cycles), 
+    // and it's not the last step, we could auto-skip.
+    // The user explicitly asked for "seguindo para o próximo passo automaticamente"
+    if (missingCount > 10) { // 10 seconds (since interval is 1s)
+      handleNext();
+    }
+  }, [missingCount, handleNext]);
 
   useEffect(() => {
     updatePosition();
@@ -161,7 +188,6 @@ export function GuidedTour({ steps, storageKey, delay = 1500, onComplete }: Guid
     window.addEventListener('resize', updatePosition);
     window.addEventListener('scroll', handleScroll, true);
     
-    // Also re-check periodically because some elements might appear after animations
     const interval = setInterval(updatePosition, 1000);
 
     return () => {
@@ -170,9 +196,6 @@ export function GuidedTour({ steps, storageKey, delay = 1500, onComplete }: Guid
       clearInterval(interval);
     };
   }, [updatePosition]);
-
-  // Position tooltip after render
-  useEffect(() => {
     if (!tooltipRef.current) return;
     const tt = tooltipRef.current;
     const ttRect = tt.getBoundingClientRect();
