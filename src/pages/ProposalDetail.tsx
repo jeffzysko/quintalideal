@@ -15,8 +15,9 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
-import { Copy, Share2, Eye, Clock, FileText, MessageCircle, Check, X, Edit, RefreshCw, CopyPlus, ChevronRight, Handshake, StickyNote, CalendarPlus, Trash2 } from 'lucide-react';
+import { Copy, Share2, Eye, Clock, FileText, MessageCircle, Check, X, Edit, RefreshCw, CopyPlus, ChevronRight, Handshake, StickyNote, CalendarPlus, Trash2, Layout } from 'lucide-react';
 import { QRCodeButton } from '@/components/proposals/QRCodeButton';
+import { SectionViewsReport } from '@/components/proposals/SectionViewsReport';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from '@/components/ui/alert-dialog';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -403,6 +404,17 @@ export default function ProposalDetail() {
               </CardContent>
             </Card>
           </div>
+
+          <Card className="shadow-sm border-border/50">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-sm font-bold flex items-center gap-2">
+                <Layout className="w-4 h-4 text-primary" /> Relatório de Engajamento
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="py-4">
+              <SectionViewsReport proposalId={proposal.id} />
+            </CardContent>
+          </Card>
 
           {/* Items summary */}
           <Card className="shadow-sm border-border/50">
