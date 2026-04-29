@@ -1382,6 +1382,38 @@ export type Database = {
           },
         ]
       }
+      proposal_section_views: {
+        Row: {
+          created_at: string
+          id: string
+          proposal_id: string
+          section: string
+          viewed_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          proposal_id: string
+          section: string
+          viewed_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          proposal_id?: string
+          section?: string
+          viewed_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "proposal_section_views_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       proposal_templates: {
         Row: {
           created_at: string
