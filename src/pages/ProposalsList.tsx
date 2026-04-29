@@ -160,7 +160,12 @@ export default function ProposalsList() {
         <PageHeader
           title="Propostas"
           rightSlot={
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-2">
+              <Button onClick={() => navigate('/propostas/nova')} size="sm" className="h-9">
+                <Plus className="w-4 h-4 mr-1.5" /> 
+                <span className="hidden sm:inline">Nova Proposta</span>
+                <span className="sm:hidden">Nova</span>
+              </Button>
               <NotificationBell />
               <UserAvatarMenu />
             </div>
@@ -177,24 +182,9 @@ export default function ProposalsList() {
           <OrcamentoUpgradeWall />
         ) : (
         <div className="max-w-5xl mx-auto px-4 md:px-6 py-4 sm:py-6">
-          {/* Desktop breadcrumbs + title */}
-          <div className="hidden md:flex items-center justify-between mb-5">
-            <div>
-              <Breadcrumbs />
-              <h1 className="text-page-title text-foreground mt-1">Propostas Comerciais</h1>
-              <p className="text-small text-muted-foreground mt-0.5">Gerencie suas propostas</p>
-            </div>
-            <Button onClick={() => navigate('/propostas/nova')} size="sm">
-              <Plus className="w-4 h-4 mr-1.5" /> Nova Proposta
-            </Button>
-          </div>
-
-          {/* Mobile title + action */}
-          <div className="flex items-center justify-between mb-4 md:hidden">
-            <h1 className="text-section-title text-foreground">Propostas</h1>
-            <Button onClick={() => navigate('/propostas/nova')} size="sm" className="h-9">
-              <Plus className="w-4 h-4 mr-1" /> Nova
-            </Button>
+          {/* Desktop breadcrumbs */}
+          <div className="hidden md:block mb-5">
+            <Breadcrumbs />
           </div>
 
           {/* Stats cards */}
