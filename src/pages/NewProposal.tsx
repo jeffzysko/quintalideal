@@ -440,6 +440,33 @@ export default function NewProposal() {
       // Event 3: WhatsApp auto trigger when proposal is sent
       if (finalStatus === 'enviada') {
         triggerWhatsAppAuto({ trigger_event: 'proposal_sent', proposal_id: proposalId, franchise_id: franchiseId });
+        
+        // Automatic follow-up after 48h if not opened
+        if (form.lead_id) {
+          const checkDate = new Date();
+          checkDate.setHours(checkDate.getHours() + 48);
+          
+          const { data: existingFollowups } = await supabase
+            .from('lead_followups')
+            .select('id')
+            .eq('lead_id', form.lead_id)
+            .eq('status', 'pendente')
+            .gt('scheduled_at', new Date().toISOString())
+            .lt('scheduled_at', checkDate.toISOString());
+
+          if (!existingFollowups || existingFollowups.length === 0) {
+            await supabase.from('lead_followups').insert({
+              lead_id: form.lead_id,
+              franchise_id: franchiseId,
+              user_id: user.id,
+              scheduled_at: checkDate.toISOString(),
+              note: `Follow-up automático: cliente não abriu a proposta [https://quintalideal.com.br/proposta/${proposalId}]`,
+              tipo: 'automatico',
+              status: 'pendente'
+            } as any);
+          }
+        }
+
         // Log usage event (async, non-blocking)
         supabase.from('usage_logs' as any).insert({
           franchise_id: franchiseId,
