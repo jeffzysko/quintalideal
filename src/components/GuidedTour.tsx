@@ -192,7 +192,7 @@ export function GuidedTour({ steps, storageKey, delay = 1500, onComplete }: Guid
 
   // Auto-skip logic
   useEffect(() => {
-    if (missingCount > 10) { // Skip if missing for 10 consecutive interval checks (~10s)
+    if (missingCount > 3) { // Skip if missing for 3 consecutive interval checks (~3s)
       handleNext();
     }
   }, [missingCount, handleNext]);
