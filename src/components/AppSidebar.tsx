@@ -172,7 +172,7 @@ const FRANCHISE_GROUPS: NavGroup[] = [
     items: [
       { title: 'Relatórios', url: '/relatorio-crm', icon: BarChart2, matchPaths: ['/relatorio-crm'] },
       { title: 'Planos', url: '/planos', icon: CreditCard, matchPaths: ['/planos'], dataTour: 'nav-planos' },
-      { title: 'Configurações', url: '/perfil', icon: Settings, matchPaths: ['/perfil'] },
+      { title: 'Configurações', url: '/perfil', icon: Settings, matchPaths: ['/perfil'], dataTour: 'nav-perfil' },
       { title: 'Suporte', url: '/suporte', icon: HelpCircle },
     ],
   },
