@@ -10,6 +10,7 @@ import { Progress } from '@/components/ui/progress';
 import { toast } from 'sonner';
 import { fireConfetti, haptic } from '@/lib/celebrations';
 import { FranchiseBenchmarkCard } from './FranchiseBenchmarkCard';
+import { CustomerSatisfactionCard } from './CustomerSatisfactionCard';
 import type { LeadRow } from '@/lib/lead-constants';
 
 interface AchievementsDashboardProps {
@@ -236,6 +237,9 @@ export function AchievementsDashboard({ franchiseId, leads }: AchievementsDashbo
     <div className="space-y-5">
       {/* Network benchmark (anonymous) */}
       <FranchiseBenchmarkCard franchiseId={franchiseId} />
+
+      {/* Customer satisfaction (NPS-style) */}
+      <CustomerSatisfactionCard franchiseId={franchiseId} />
 
       {/* Header stats */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">

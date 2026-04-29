@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import confetti from 'canvas-confetti';
+import { haptic } from '@/lib/celebrations';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -58,6 +60,26 @@ export function MonthlyGoals({ franchiseId, soldThisMonth }: MonthlyGoalsProps) 
   const salesGoal = goal?.sales_goal || 5;
   const progress = salesGoal > 0 ? Math.min(Math.round((soldThisMonth / salesGoal) * 100), 100) : 0;
   const monthName = now.toLocaleDateString('pt-BR', { month: 'long' });
+
+  // Celebrate when goal hits 100% — only once per franchise/month (persisted via localStorage)
+  useEffect(() => {
+    if (progress < 100 || salesGoal <= 0) return;
+    const key = `goal-celebrated-${franchiseId}-${year}-${month}`;
+    try {
+      if (localStorage.getItem(key)) return;
+      localStorage.setItem(key, '1');
+    } catch {
+      return;
+    }
+    haptic('heavy');
+    confetti({
+      particleCount: 120,
+      spread: 80,
+      origin: { y: 0.6 },
+      colors: ['#22c55e', '#3b82f6', '#f59e0b'],
+    });
+    toast.success(`🎉 Meta de ${monthName} atingida! Parabéns!`, { duration: 6000 });
+  }, [progress, salesGoal, franchiseId, year, month, monthName]);
 
   const handleSave = () => {
     const v = parseInt(goalValue);
