@@ -20,7 +20,8 @@ import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import { toWhatsAppPhone } from '@/lib/phone-utils';
-import { MapPin, GripVertical, MessageCircle, StickyNote, ArrowRightLeft, Send, Clock } from 'lucide-react';
+import { MapPin, GripVertical, MessageCircle, StickyNote, ArrowRightLeft, Send, Clock, AlertTriangle } from 'lucide-react';
+import { differenceInDays } from 'date-fns';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -253,12 +254,25 @@ export const LeadCard = memo(function LeadCard({
           )}
           {(() => {
             const lastTs = (lead as any).updated_at || lead.created_at;
-            const days = (Date.now() - new Date(lastTs).getTime()) / (1000 * 60 * 60 * 24);
-            const tone = days > 7 ? 'text-destructive' : days > 3 ? 'text-amber-500' : 'text-muted-foreground';
+            const days = differenceInDays(new Date(), new Date(lastTs));
+            let tone = 'text-muted-foreground';
+            let Icon = Clock;
+            
+            if (days >= 7) {
+              tone = 'text-destructive';
+              Icon = AlertTriangle;
+            } else if (days >= 5) {
+              tone = 'text-orange-500';
+              Icon = AlertTriangle;
+            } else if (days >= 3) {
+              tone = 'text-amber-500';
+              Icon = Clock;
+            }
+
             return (
-              <span className={cn('text-xs flex items-center gap-1.5 shrink-0 font-medium', tone)}>
-                <Clock className="w-3 h-3" />
-                {formatDistanceToNow(new Date(lastTs), { locale: ptBR, addSuffix: true }).replace('há ', '')}
+              <span className={cn('text-xs flex items-center gap-1.5 shrink-0 font-bold', tone)}>
+                <Icon className="w-3 h-3" />
+                {days >= 3 ? `${days}d parado` : formatDistanceToNow(new Date(lastTs), { locale: ptBR, addSuffix: true }).replace('há ', '')}
               </span>
             );
           })()}

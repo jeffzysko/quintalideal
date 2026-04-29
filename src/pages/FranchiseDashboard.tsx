@@ -328,6 +328,15 @@ export default function FranchiseDashboard({ overrideFranchiseId, embedded }: Fr
 
   const content = (
     <>
+      <GuidedTour
+        steps={[
+          { target: '[data-tour="sidebar"]', title: 'Menu Lateral', description: 'Navegue por todas as ferramentas da plataforma aqui.', placement: 'right' },
+          { target: '[data-tour="funnel-tab"]', title: 'Aba de Leads', description: 'Acompanhe seu funil de vendas e mova os leads entre as etapas.', placement: 'bottom' },
+          { target: '[data-tour="nav-propostas"]', title: 'Nova Proposta', description: 'Crie orçamentos profissionais em segundos para seus clientes.', placement: 'right' },
+          { target: '/perfil#whatsapp', title: 'Configurações de WhatsApp', description: 'Configure sua instância para automações e notificações.', fallbackModal: true }
+        ]}
+        storageKey="guided-tour-completed"
+      />
       <WelcomeWizard franchiseName={franchiseName || undefined} />
       {franchiseSlug && <FranchiseLinkBanner slug={franchiseSlug} />}
 

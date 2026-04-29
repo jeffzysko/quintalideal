@@ -86,7 +86,7 @@ export default function FranchiseLanding() {
   }
 
   return (
-    <>
+    <div className="relative">
       {franchise.meta_pixel_id && <MetaPixel pixelId={franchise.meta_pixel_id} />}
       <QuizFlow
         franchiseSlug={franchise.slug_url}
@@ -102,6 +102,6 @@ export default function FranchiseLanding() {
         brandScoreLabel={franchise.brand_score_label || undefined}
         isTestMode={false}
       />
-    </>
+    </div>
   );
 }

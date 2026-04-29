@@ -168,6 +168,7 @@ export default function HomePage() {
   return (
     <LazyMotion features={domAnimation}>
       <div className="h-[100dvh] flex flex-col relative overflow-hidden">
+        <MetaPixel pixelId={import.meta.env.VITE_META_PIXEL_ID || ''} />
         {/* ── Background image with cinematic overlay ── */}
         <m.div
           initial={{ scale: 1.15, opacity: 0 }}
