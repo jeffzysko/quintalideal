@@ -128,9 +128,34 @@ export default function ProposalDetail() {
   };
 
   const updateStatus = async (status: string) => {
-    await supabase.from('proposals').update({ status: status as any }).eq('id', proposal.id);
+    const { error: updateError } = await supabase.from('proposals').update({ status: status as any }).eq('id', proposal.id);
+    if (updateError) {
+      toast.error('Erro ao atualizar status');
+      return;
+    }
+    
     refetch();
     toast.success(`Status atualizado para ${STATUS_LABELS[status]}`);
+
+    // Send email when status is "enviada"
+    if (status === 'enviada') {
+      if (proposal.client_email?.trim()) {
+        supabase.functions.invoke('send-proposal-email', {
+          body: { proposal_id: proposal.id, type: 'update' },
+        }).then(({ data, error }) => {
+          if (error) {
+            console.error('Erro ao enviar e-mail:', error);
+            toast.error('Houve um erro ao enviar o e-mail para o cliente.');
+          } else if (data?.sent === false && data?.reason === 'client_email_missing') {
+            toast.warning('⚠️ Email não enviado: cliente sem email cadastrado. Compartilhe o link manualmente.');
+          } else {
+            toast.success('📧 E-mail enviado para o cliente!');
+          }
+        });
+      } else {
+        toast.warning('⚠️ Email não enviado: cliente sem email cadastrado. Compartilhe o link manualmente.');
+      }
+    }
   };
 
   const duplicateProposal = async () => {
