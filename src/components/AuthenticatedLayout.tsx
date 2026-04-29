@@ -9,7 +9,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Footer } from '@/components/Footer';
 import { Map, Trophy, Radar, Search } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { CommandPalette } from '@/components/CommandPalette';
 import { useProposalRealtime } from '@/hooks/useProposalRealtime';
