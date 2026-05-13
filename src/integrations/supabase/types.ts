@@ -818,6 +818,93 @@ export type Database = {
           },
         ]
       }
+      leads_feira: {
+        Row: {
+          atribuido_a: string | null
+          cidade: string | null
+          contatado_em: string | null
+          convertido_em: string | null
+          email: string | null
+          estado: string | null
+          evento: string | null
+          feira_id: string | null
+          feira_nome: string | null
+          feira_slug: string | null
+          id: string
+          ip: string | null
+          lead_id: string | null
+          nome: string
+          notas: string | null
+          orcamento: string | null
+          prazo_compra: string | null
+          recebido_em: string
+          score: number | null
+          status: string
+          tamanho_quintal: string | null
+          temperatura: string | null
+          utm_campaign: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          whatsapp: string
+        }
+        Insert: {
+          atribuido_a?: string | null
+          cidade?: string | null
+          contatado_em?: string | null
+          convertido_em?: string | null
+          email?: string | null
+          estado?: string | null
+          evento?: string | null
+          feira_id?: string | null
+          feira_nome?: string | null
+          feira_slug?: string | null
+          id?: string
+          ip?: string | null
+          lead_id?: string | null
+          nome: string
+          notas?: string | null
+          orcamento?: string | null
+          prazo_compra?: string | null
+          recebido_em?: string
+          score?: number | null
+          status?: string
+          tamanho_quintal?: string | null
+          temperatura?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          whatsapp: string
+        }
+        Update: {
+          atribuido_a?: string | null
+          cidade?: string | null
+          contatado_em?: string | null
+          convertido_em?: string | null
+          email?: string | null
+          estado?: string | null
+          evento?: string | null
+          feira_id?: string | null
+          feira_nome?: string | null
+          feira_slug?: string | null
+          id?: string
+          ip?: string | null
+          lead_id?: string | null
+          nome?: string
+          notas?: string | null
+          orcamento?: string | null
+          prazo_compra?: string | null
+          recebido_em?: string
+          score?: number | null
+          status?: string
+          tamanho_quintal?: string | null
+          temperatura?: string | null
+          utm_campaign?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          whatsapp?: string
+        }
+        Relationships: []
+      }
       notification_preferences: {
         Row: {
           created_at: string
