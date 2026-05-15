@@ -7,7 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { AlertDialog, AlertDialogContent, AlertDialogHeader, AlertDialogTitle, AlertDialogDescription, AlertDialogFooter, AlertDialogCancel, AlertDialogAction } from '@/components/ui/alert-dialog';
-import { Building2, Plus, Pencil, Trash2, Link2, Phone, Mail, MapPin, User, Power, PowerOff, UserPlus, Loader2 } from 'lucide-react';
+import { Building2, Plus, Pencil, Trash2, Link2, Phone, Mail, MapPin, User, Power, PowerOff, UserPlus, Loader2, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { SITE_URL } from '@/lib/constants';
@@ -77,7 +77,7 @@ export function AdminFranchiseManager() {
   const generateSlug = (name: string) => {
     return name
       .toLowerCase()
-      .normalize('NFD').replace(/[\u0300-\u036f]/g, '')
+      .normalize('NFD').replace(/[̀-ͯ]/g, '')
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
   };
@@ -233,6 +233,11 @@ export function AdminFranchiseManager() {
     }
   };
 
+  const copyId = (id: string) => {
+    navigator.clipboard.writeText(id);
+    toast.success('UUID copiado!');
+  };
+
   if (loading) {
     return (
       <div className="flex justify-center py-12">
@@ -336,6 +341,24 @@ export function AdminFranchiseManager() {
                         <Mail className="w-3 h-3 shrink-0" /> {f.email}
                       </div>
                     )}
+                  </div>
+
+                  {/* UUID da franquia — para integração com feiras */}
+                  <div className="mt-3 pt-2.5 border-t border-border/40 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <span className="text-xs text-muted-foreground/60 shrink-0">ID:</span>
+                      <code className="text-xs text-muted-foreground font-mono truncate">{f.id}</code>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 px-2 text-xs gap-1 text-muted-foreground hover:text-primary rounded-md shrink-0"
+                      onClick={() => copyId(f.id)}
+                      title="Copiar UUID da franquia"
+                    >
+                      <Copy className="w-3 h-3" />
+                      Copiar
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
