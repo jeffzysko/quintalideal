@@ -1,8 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 // ─── Segredo de integração ────────────────────────────────────────────────────
-// Configure como secret no Supabase do quintalideal:
-//   supabase secrets set LEADS_FEIRA_SECRET=<valor>
 const INTEGRATION_SECRET = Deno.env.get("LEADS_FEIRA_SECRET") ?? "";
 
 const corsHeaders = {
@@ -10,13 +8,13 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "content-type, x-integration-secret",
 };
 
-// ─── Normalização de cidade (igual à função do banco) ────────────────────────
+// ─── Normalização de cidade ──────────────────────────────────────────────────
 function normalizeCityName(city: string): string {
   return city
     .toLowerCase()
     .trim()
     .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")  // remove acentos
+    .replace(/[̀-ͯ]/g, "")
     .replace(/\s+/g, " ");
 }
 
@@ -25,27 +23,34 @@ type MatchStatus =
   | "matched_unique_franchise"
   | "matched_multiple_franchises"
   | "kept_with_origin_franchise"
-  | "no_city_match_found";
+  | "no_city_match_found"
+  | "distributed_to_all_organizers";
 
+/**
+ * Retorna a lista de franquias que devem receber o lead.
+ *
+ * Prioridade:
+ *  1. City match único → só essa franquia
+ *  2. City match múltiplo → prefere franquias organizadoras; se empate, usa a primeira organizadora
+ *  3. Sem city match + 1 organizadora → essa organizadora
+ *  4. Sem city match + múltiplas organizadoras → TODAS (cada uma recebe o lead)
+ *  5. Sem city match + sem organizadora → lista vazia (lead sem franquia)
+ */
 async function resolveTerritory(
   supabase: ReturnType<typeof createClient>,
   cidade: string | null,
-  originFranquiaId: string | null,
+  originFranquiaIds: string[],
 ): Promise<{
-  franquiaId: string | null;
+  franquiaIds: string[];
   matchStatus: MatchStatus;
   matchCount: number;
 }> {
+  // ── Sem cidade → fallback para organizadoras ──
   if (!cidade) {
-    return {
-      franquiaId: originFranquiaId,
-      matchStatus: "no_city_match_found",
-      matchCount: 0,
-    };
+    return buildFallback(originFranquiaIds, 0);
   }
 
   const cityNorm = normalizeCityName(cidade);
-
   const { data: matches, error } = await supabase
     .from("franchise_covered_cities")
     .select("franchise_id")
@@ -53,51 +58,121 @@ async function resolveTerritory(
 
   if (error || !matches) {
     console.warn("territory lookup error:", error?.message);
-    return {
-      franquiaId: originFranquiaId,
-      matchStatus: "no_city_match_found",
-      matchCount: 0,
-    };
+    return buildFallback(originFranquiaIds, 0);
   }
 
   const matchCount = matches.length;
+  const matchIds = matches.map((m) => m.franchise_id);
 
+  // ── Match único → direto ──
   if (matchCount === 1) {
     return {
-      franquiaId: matches[0].franchise_id,
+      franquiaIds: [matchIds[0]],
       matchStatus: "matched_unique_franchise",
       matchCount: 1,
     };
   }
 
+  // ── Múltiplos matches → preferir organizadoras ──
   if (matchCount > 1) {
-    // Se a franquia de origem está entre as que cobrem a cidade → mantém com ela
-    const originInMatches = originFranquiaId
-      ? matches.some((m) => m.franchise_id === originFranquiaId)
-      : false;
+    const organizingInMatches = originFranquiaIds.filter((id) => matchIds.includes(id));
 
-    if (originInMatches) {
+    if (organizingInMatches.length >= 1) {
+      // Usa a primeira organizadora que também cobre a cidade
       return {
-        franquiaId: originFranquiaId,
+        franquiaIds: [organizingInMatches[0]],
         matchStatus: "kept_with_origin_franchise",
         matchCount,
       };
     }
 
-    // Senão, usa a primeira (admin pode redistribuir manualmente depois)
+    // Nenhuma organizadora está nos matches → usa o primeiro match
     return {
-      franquiaId: matches[0].franchise_id,
+      franquiaIds: [matchIds[0]],
       matchStatus: "matched_multiple_franchises",
       matchCount,
     };
   }
 
-  // Nenhuma cidade encontrada → usa a franquia de origem da feira
+  // ── Nenhuma cidade encontrada → fallback ──
+  return buildFallback(originFranquiaIds, 0);
+}
+
+function buildFallback(
+  originFranquiaIds: string[],
+  matchCount: number,
+): { franquiaIds: string[]; matchStatus: MatchStatus; matchCount: number } {
+  if (originFranquiaIds.length === 0) {
+    return { franquiaIds: [], matchStatus: "no_city_match_found", matchCount };
+  }
+  if (originFranquiaIds.length === 1) {
+    return {
+      franquiaIds: [originFranquiaIds[0]],
+      matchStatus: "no_city_match_found",
+      matchCount,
+    };
+  }
+  // Múltiplas organizadoras → todas recebem
   return {
-    franquiaId: originFranquiaId,
-    matchStatus: "no_city_match_found",
-    matchCount: 0,
+    franquiaIds: originFranquiaIds,
+    matchStatus: "distributed_to_all_organizers",
+    matchCount,
   };
+}
+
+// ─── Inserção de um lead para uma franquia específica ────────────────────────
+async function insertLead(
+  supabase: ReturnType<typeof createClient>,
+  {
+    lead_id,
+    franquiaId,
+    originFranquiaIds,
+    matchStatus,
+    matchCount,
+    nome,
+    whatsapp,
+    email,
+    cidade,
+    respostas,
+    score,
+    refCodeSuffix,
+  }: {
+    lead_id: string | null | undefined;
+    franquiaId: string | null;
+    originFranquiaIds: string[];
+    matchStatus: MatchStatus;
+    matchCount: number;
+    nome: string;
+    whatsapp: string;
+    email: string | null;
+    cidade: string | null;
+    respostas: Record<string, unknown>;
+    score: number | null;
+    refCodeSuffix: string;
+  },
+) {
+  const { data, error } = await supabase
+    .from("leads")
+    .insert({
+      nome:                    nome.trim(),
+      telefone:                whatsapp,
+      email:                   email ?? null,
+      cidade:                  cidade ?? null,
+      franquia_id:             franquiaId ?? null,
+      origin_franchise_id:     originFranquiaIds[0] ?? null,
+      lead_city_normalized:    cidade ? normalizeCityName(cidade) : null,
+      territory_match_status:  matchStatus as string,
+      coverage_match_count:    matchCount,
+      distribution_rule_used:  "feira_integration",
+      pontuacao_quintal:       typeof score === "number" ? score : null,
+      respostas_questionario:  respostas,
+      status_lead:             "novo",
+      ref_code:                lead_id ? `feira_${lead_id}${refCodeSuffix}` : undefined,
+    })
+    .select("id")
+    .single();
+
+  return { data, error };
 }
 
 // ─── Handler principal ────────────────────────────────────────────────────────
@@ -113,7 +188,6 @@ Deno.serve(async (req) => {
     });
   }
 
-  // Validar segredo de integração
   const secret = req.headers.get("x-integration-secret");
   if (!INTEGRATION_SECRET || secret !== INTEGRATION_SECRET) {
     console.warn("receber-lead-feira: unauthorized", {
@@ -130,7 +204,6 @@ Deno.serve(async (req) => {
     Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!,
   );
 
-  // Ler body
   let body: Record<string, unknown>;
   try {
     body = await req.json();
@@ -145,7 +218,7 @@ Deno.serve(async (req) => {
     lead_id,
     feira_nome,
     feira_slug,
-    origin_franquia_id,
+    origin_franquia_ids,  // agora é array
     nome,
     whatsapp,
     email,
@@ -161,7 +234,7 @@ Deno.serve(async (req) => {
     utm_medium,
     utm_campaign,
     ip,
-  } = body as Record<string, string | number | null | undefined>;
+  } = body as Record<string, unknown>;
 
   if (!nome || !whatsapp) {
     return new Response(
@@ -170,12 +243,19 @@ Deno.serve(async (req) => {
     );
   }
 
-  // Evitar duplicatas: mesmo lead_id já recebido
+  // Normalizar origin_franquia_ids para sempre ser array de strings
+  const originFranquiaIds: string[] = Array.isArray(origin_franquia_ids)
+    ? (origin_franquia_ids as string[]).filter(Boolean)
+    : typeof origin_franquia_ids === "string" && origin_franquia_ids
+    ? [origin_franquia_ids]
+    : [];
+
+  // ── Dedup: verificar se lead_id já foi recebido para qualquer franquia ──────
   if (lead_id) {
     const { count } = await supabase
       .from("leads")
       .select("id", { count: "exact", head: true })
-      .eq("ref_code", `feira_${lead_id}`);
+      .like("ref_code", `feira_${lead_id}%`);
 
     if ((count ?? 0) > 0) {
       return new Response(
@@ -186,68 +266,88 @@ Deno.serve(async (req) => {
   }
 
   // ── Territory matching ──────────────────────────────────────────────────────
-  const { franquiaId, matchStatus, matchCount } = await resolveTerritory(
+  const { franquiaIds, matchStatus, matchCount } = await resolveTerritory(
     supabase,
     cidade as string | null,
-    origin_franquia_id as string | null,
+    originFranquiaIds,
   );
 
-  // ── Montar respostas_questionario com dados da feira ────────────────────────
+  // ── Respostas do questionário ───────────────────────────────────────────────
   const respostas = {
-    origem: "feira",
-    feira_nome: feira_nome ?? null,
-    feira_slug: feira_slug ?? null,
+    origem:          "feira",
+    feira_nome:      feira_nome      ?? null,
+    feira_slug:      feira_slug      ?? null,
     tamanho_quintal: tamanho_quintal ?? null,
-    prazo_compra: prazo_compra ?? null,
-    orcamento: orcamento ?? null,
-    temperatura: temperatura ?? null,
-    evento: evento ?? null,
-    utm_source: utm_source ?? null,
-    utm_medium: utm_medium ?? null,
-    utm_campaign: utm_campaign ?? null,
-    estado: estado ?? null,
-    ip: ip ?? null,
-    score_feira: score ?? null,
+    prazo_compra:    prazo_compra    ?? null,
+    orcamento:       orcamento       ?? null,
+    temperatura:     temperatura     ?? null,
+    evento:          evento          ?? null,
+    utm_source:      utm_source      ?? null,
+    utm_medium:      utm_medium      ?? null,
+    utm_campaign:    utm_campaign    ?? null,
+    estado:          estado          ?? null,
+    ip:              ip              ?? null,
+    score_feira:     score           ?? null,
+    origin_franquia_ids: originFranquiaIds,
   };
 
-  // ── Inserir na tabela leads principal ───────────────────────────────────────
-  const { data, error } = await supabase.from("leads").insert({
-    nome:                  (nome as string).trim(),
-    telefone:              whatsapp as string,          // campo no quintalideal é "telefone"
-    email:                 (email as string | null) ?? null,
-    cidade:                (cidade as string | null) ?? null,
-    franquia_id:           franquiaId ?? null,
-    origin_franchise_id:   (origin_franquia_id as string | null) ?? null,
-    lead_city_normalized:  cidade ? normalizeCityName(cidade as string) : null,
-    territory_match_status: matchStatus as string,
-    coverage_match_count:  matchCount,
-    distribution_rule_used: "feira_integration",
-    pontuacao_quintal:     typeof score === "number" ? score : null,
-    respostas_questionario: respostas,
-    status_lead:           "novo",
-    // ref_code especial para dedup (prefixo feira_ + UUID original)
-    ref_code:              lead_id ? `feira_${lead_id}` : undefined,
-  }).select("id").single();
+  // ── Inserção: uma entrada por franquia destino ──────────────────────────────
+  // Se franquiaIds estiver vazio, insere um lead sem franquia
+  const targets = franquiaIds.length > 0 ? franquiaIds : [null];
+  const isMulti = targets.length > 1;
+  const insertedIds: string[] = [];
 
-  if (error) {
-    console.error("receber-lead-feira: insert error", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { "Content-Type": "application/json" },
+  for (const franquiaId of targets) {
+    // Sufixo no ref_code para distinguir duplicatas em cenário multi-franquia
+    const refCodeSuffix = isMulti && franquiaId ? `_${franquiaId}` : "";
+
+    const { data, error } = await insertLead(supabase, {
+      lead_id: lead_id as string | null | undefined,
+      franquiaId,
+      originFranquiaIds,
+      matchStatus,
+      matchCount,
+      nome:     nome as string,
+      whatsapp: whatsapp as string,
+      email:    (email as string | null) ?? null,
+      cidade:   (cidade as string | null) ?? null,
+      respostas,
+      score:    typeof score === "number" ? score : null,
+      refCodeSuffix,
+    });
+
+    if (error) {
+      console.error("receber-lead-feira: insert error", error, { franquiaId });
+      // Continua tentando as demais franquias
+      continue;
+    }
+
+    insertedIds.push(data.id);
+    console.log("receber-lead-feira: lead inserido", {
+      id:         data.id,
+      lead_id,
+      feira:      feira_nome,
+      cidade,
+      franquia:   franquiaId,
+      territory:  matchStatus,
     });
   }
 
-  console.log("receber-lead-feira: lead inserido", {
-    id: data.id,
-    lead_id,
-    feira: feira_nome,
-    cidade,
-    franquia: franquiaId,
-    territory: matchStatus,
-  });
+  if (insertedIds.length === 0) {
+    return new Response(
+      JSON.stringify({ error: "INSERT_FAILED", message: "Não foi possível inserir o lead." }),
+      { status: 500, headers: { "Content-Type": "application/json" } },
+    );
+  }
 
   return new Response(
-    JSON.stringify({ success: true, id: data.id, franquia_id: franquiaId, territory: matchStatus }),
+    JSON.stringify({
+      success:    true,
+      ids:        insertedIds,
+      count:      insertedIds.length,
+      territory:  matchStatus,
+      franquias:  franquiaIds,
+    }),
     { status: 201, headers: { "Content-Type": "application/json" } },
   );
 });
