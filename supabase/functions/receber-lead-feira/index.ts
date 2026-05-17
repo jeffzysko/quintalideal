@@ -141,6 +141,13 @@ Deno.serve(async (req) => {
 
   const { franquiaIds, matchStatus, matchCount } = await resolveTerritory(supabase, cidade as string | null, originFranquiaIds);
 
+  // temperatura_manual preserva a classificação da feira no trigger do quintalideal.
+  // O trigger compute_lead_temperatura() usa temperatura_manual como override
+  // em vez de recalcular a partir das respostas do questionário padrão.
+  const temperaturaValida = ["quente", "morno", "frio"].includes(temperatura as string)
+    ? (temperatura as string)
+    : null;
+
   const respostas = {
     origem: "feira", feira_nome: feira_nome ?? null, feira_slug: feira_slug ?? null,
     tamanho_quintal: tamanho_quintal ?? null, prazo_compra: prazo_compra ?? null,
@@ -148,6 +155,8 @@ Deno.serve(async (req) => {
     utm_source: utm_source ?? null, utm_medium: utm_medium ?? null, utm_campaign: utm_campaign ?? null,
     estado: estado ?? null, ip: ip ?? null, score_feira: score ?? null,
     origin_franquia_ids: originFranquiaIds,
+    // Override para o trigger: usa a temperatura calculada na feira
+    ...(temperaturaValida ? { temperatura_manual: temperaturaValida } : {}),
   };
 
   const targets = franquiaIds.length > 0 ? franquiaIds : [null];
